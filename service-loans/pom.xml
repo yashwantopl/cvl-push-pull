@@ -49,7 +49,25 @@
   			 <groupId>org.springframework.boot</groupId>
    			 <artifactId>spring-boot-devtools</artifactId>
   		</dependency>
-  
+  		
+  		<!--Excel Reading-->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<!--Excel Reading-->
+
+		<dependency>
+			<groupId>com.capitaworld.loans.service.parent</groupId>
+			<artifactId>api-loans</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
