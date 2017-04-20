@@ -4,6 +4,6 @@ import org.json.simple.JSONObject;
 
 public interface ExcelExtractionService {
 	
-	public Boolean readCMA(String filePath);
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,String filePath);
 
 }

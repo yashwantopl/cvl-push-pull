@@ -11,5 +11,7 @@ public interface AssetsDetailsService {
 
 	public void saveOrUpdate(AssetsDetails assetsDetails);
 	
-	public JSONObject readAssetsDetails(FileInputStream file,XSSFSheet sheet);
+	public void readAssetsDetails(Long applicationId,Long storageDetailsId,FileInputStream file,XSSFSheet sheet);
+	
+	public void inActiveAssetsDetails(Long storageDetailsId);
 }

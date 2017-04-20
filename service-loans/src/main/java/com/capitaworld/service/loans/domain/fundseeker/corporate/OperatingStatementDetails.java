@@ -156,6 +156,7 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name="selling_genl_admn_expenses")
 	private Double sellingGenlAdmnExpenses;
 
+	@Column(name="sub_total_cost_Sales")
 	private Double subTotalCostSales;
 
 	@Column(name="sub_total_cost_sales_and_selling")
@@ -180,11 +181,23 @@ public class OperatingStatementDetails implements Serializable {
 	private Double totalGrossSales;
 
 	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster loanApplicationMaster;
+	
+	
+	public Long getStorageDetailsId() {
+		return storageDetailsId;
+	}
+
+	public void setStorageDetailsId(Long storageDetailsId) {
+		this.storageDetailsId = storageDetailsId;
+	}
 
 	public Long getId() {
 		return this.id;

@@ -70,6 +70,10 @@ public class LoanApplicationMaster implements Serializable {
 
 	public LoanApplicationMaster() {
 	}
+	
+	public LoanApplicationMaster(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return this.id;

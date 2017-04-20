@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
 import com.capitaworld.service.loans.utils.cma.OperatingStatementDetailsExcelReader;
@@ -23,6 +24,9 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 	@Autowired
 	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 	
+	@Autowired
+	LoanApplicationRepository loanApplicationRepository;
+	
 	@Override
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails) {
 		// TODO Auto-generated method stub
@@ -31,11 +35,17 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 	}
 
 	@Override
-	public void readOperatingStatementDetails(FileInputStream file,XSSFSheet sheet){
+	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,FileInputStream file,XSSFSheet sheet){
 		
-	       LoanApplicationMaster loanApplicationMaster=new LoanApplicationMaster();
-	       OperatingStatementDetailsExcelReader.run(sheet, loanApplicationMaster, operatingStatementDetailsRepository);
+	       OperatingStatementDetailsExcelReader.run(storageDetailsId,sheet, new LoanApplicationMaster(applicationId), operatingStatementDetailsRepository);
 	   
+	}
+
+	@Override
+	public void inActiveAssetsDetails(Long storageDetailsId) {
+		// TODO Auto-generated method stub
+		operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+		
 	}
 
 }

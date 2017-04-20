@@ -9,7 +9,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LiabilitiesDetailsService;
@@ -28,8 +32,17 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	@Autowired
 	AssetsDetailsService assetsDetailsService;
 	
-	@Override
-	public Boolean readCMA(String filePath) {
+	@Autowired
+	AssetsDetailsRepository assetsDetailsRepository;
+	
+	@Autowired
+	LiabilitiesDetailsRepository liabilitiesDetailsRepository; 
+	
+	@Autowired
+	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	
+	
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,String filePath) {
 		// TODO Auto-generated method stub
 		
 		FileInputStream file;
@@ -44,12 +57,17 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
 	         assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
 	         
-	         OperatingStatementDetailsService.readOperatingStatementDetails(file,operatingStatementSheet);
-	         liabilitiesDetailsService.readLiabilitiesDetails(file, liabilitiesSheet);
-	         assetsDetailsService.readAssetsDetails(file, assetsSheet);
+	         OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,file,operatingStatementSheet);
+	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId,file, liabilitiesSheet);
+	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId,file, assetsSheet);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
+			
+			assetsDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
+			liabilitiesDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
+			operatingStatementDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
+			
 			return false;
 		}
 		

@@ -11,5 +11,7 @@ public interface LiabilitiesDetailsService {
 
 	public void saveOrUpdate(LiabilitiesDetails liabilitiesDetails);
 	
-	public JSONObject readLiabilitiesDetails(FileInputStream file,XSSFSheet sheet);
+	public void readLiabilitiesDetails(Long applicationId,Long storageDetailsId,FileInputStream file,XSSFSheet sheet);
+	
+	public void inActiveAssetsDetails(Long storageDetailsId);
 }

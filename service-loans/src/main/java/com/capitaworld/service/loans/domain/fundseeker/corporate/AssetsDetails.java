@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -17,6 +18,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
 @Entity
+@Table(name="fs_corporate_cma_assets_details")
 public class AssetsDetails implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -109,9 +111,11 @@ public class AssetsDetails implements Serializable {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
-	private Double net_Block;
+	@Column(name="net_block")
+	private Double netBlock;
 
-	private Double net_working_Capital;
+	@Column(name="net_working_capital")
+	private Double netWorkingCapital;
 
 	@Column(name="non_consumable_store_and_spares")
 	private Double nonConsumableStoreAndSpares;
@@ -159,7 +163,7 @@ public class AssetsDetails implements Serializable {
 	@Column(name="total_assets")
 	private Double totalAssets;
 
-	private Double total_currentAssets;
+	private Double totalCurrentAssets;
 
 	@Column(name="total_intangible_assets")
 	private Double totalIntangibleAssets;
@@ -174,12 +178,25 @@ public class AssetsDetails implements Serializable {
 	private Double totalTermLiability;
 
 	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne
 	@JoinColumn(name="application_id")
-	private LoanApplicationMaster fsLoanApplicationMaster;
+	private LoanApplicationMaster loanApplicationMaster;
+	
+	
 
+
+	public Long getStorageDetailsId() {
+		return storageDetailsId;
+	}
+
+	public void setStorageDetailsId(Long storageDetailsId) {
+		this.storageDetailsId = storageDetailsId;
+	}
 
 	public Long getId() {
 		return this.id;
@@ -413,20 +430,22 @@ public class AssetsDetails implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Double getNet_Block() {
-		return this.net_Block;
+
+	public Double getNetBlock() {
+		return netBlock;
 	}
 
-	public void setNet_Block(Double net_Block) {
-		this.net_Block = net_Block;
+	public void setNetBlock(Double netBlock) {
+		this.netBlock = netBlock;
 	}
 
-	public Double getNet_working_Capital() {
-		return this.net_working_Capital;
+
+	public Double getNetWorkingCapital() {
+		return netWorkingCapital;
 	}
 
-	public void setNet_working_Capital(Double net_working_Capital) {
-		this.net_working_Capital = net_working_Capital;
+	public void setNetWorkingCapital(Double netWorkingCapital) {
+		this.netWorkingCapital = netWorkingCapital;
 	}
 
 	public Double getNonConsumableStoreAndSpares() {
@@ -557,12 +576,13 @@ public class AssetsDetails implements Serializable {
 		this.totalAssets = totalAssets;
 	}
 
-	public Double getTotal_currentAssets() {
-		return this.total_currentAssets;
+
+	public Double getTotalCurrentAssets() {
+		return totalCurrentAssets;
 	}
 
-	public void setTotal_currentAssets(Double total_currentAssets) {
-		this.total_currentAssets = total_currentAssets;
+	public void setTotalCurrentAssets(Double totalCurrentAssets) {
+		this.totalCurrentAssets = totalCurrentAssets;
 	}
 
 	public Double getTotalIntangibleAssets() {
@@ -605,12 +625,14 @@ public class AssetsDetails implements Serializable {
 		this.year = year;
 	}
 
-	public LoanApplicationMaster getFsLoanApplicationMaster() {
-		return this.fsLoanApplicationMaster;
+	public LoanApplicationMaster getLoanApplicationMaster() {
+		return loanApplicationMaster;
 	}
 
-	public void setFsLoanApplicationMaster(LoanApplicationMaster fsLoanApplicationMaster) {
-		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	public void setLoanApplicationMaster(LoanApplicationMaster loanApplicationMaster) {
+		this.loanApplicationMaster = loanApplicationMaster;
 	}
+
+	
 
 }

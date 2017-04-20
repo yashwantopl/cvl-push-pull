@@ -12,5 +12,7 @@ public interface OperatingStatementDetailsService {
 
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails);
 	
-	public void readOperatingStatementDetails(FileInputStream file,XSSFSheet sheet);
+	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,FileInputStream file,XSSFSheet sheet);
+	
+	public void inActiveAssetsDetails(Long storageDetailsId);
 }

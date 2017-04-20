@@ -7,15 +7,22 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
+import com.capitaworld.service.loans.utils.cma.AssetsDetailsExcelReader;
+import com.capitaworld.service.loans.utils.cma.LiabilitiesDetailsExcelReader;
 
 @Service
 public class AssetsDetailsServiceImpl implements AssetsDetailsService{
 
 	@Autowired
 	AssetsDetailsRepository assetsDetailsRepository; 
+	
+	@Autowired
+	LoanApplicationRepository LoanApplicationRepository;
 	
 	@Override
 	public void saveOrUpdate(AssetsDetails assetsDetails) {
@@ -24,9 +31,17 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService{
 	}
 
 	@Override
-	public JSONObject readAssetsDetails(FileInputStream file, XSSFSheet sheet) {
+	public void readAssetsDetails(Long applicationId,Long storageDetailsId,FileInputStream file, XSSFSheet sheet) {
 		// TODO Auto-generated method stub
-		return null;
+	      AssetsDetailsExcelReader.run(storageDetailsId,sheet, new LoanApplicationMaster(applicationId), assetsDetailsRepository);
+	       
+	}
+
+	@Override
+	public void inActiveAssetsDetails(Long storageDetailsId) {
+		// TODO Auto-generated method stub
+		assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+		
 	}
 
 }

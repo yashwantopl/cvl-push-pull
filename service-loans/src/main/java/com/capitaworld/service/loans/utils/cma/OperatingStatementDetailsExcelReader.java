@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils.cma;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,10 +15,10 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatem
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 
 public class OperatingStatementDetailsExcelReader {
-    public static ArrayList<String> operatingStatementMappingList = new ArrayList<String>();
+    public static List<String> operatingStatementMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    public static void run(XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
             operatingStatementMappingList.clear();
             operatingStatementMappingList.add("9");
             operatingStatementMappingList.add("10");
@@ -70,28 +71,27 @@ public class OperatingStatementDetailsExcelReader {
               * this method extract data from excel associate column and row wise
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"B","2014",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"C","2015",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"D","2016",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"E","2017",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"F","2018",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"G","2019",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"H","2020",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"I","2021",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"J","2022",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"K","2023",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"L","2024",operatingStatementDetailsRepository);
-        extractCellFromSheet(sheet,loanApplicationMaster, operatingStatementMappingList,"M","2025",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B","2014",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C","2015",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D","2016",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E","2017",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F","2018",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"G","2019",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"H","2020",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"I","2021",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"J","2022",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"K","2023",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"L","2024",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"M","2025",operatingStatementDetailsRepository);
         
 
     }
 
-    public static void extractCellFromSheet(XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ArrayList<String> arrayList,String column,String year,OperatingStatementDetailsRepository operatingStatementDetailsRepository)
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,OperatingStatementDetailsRepository operatingStatementDetailsRepository)
     {
         int arrayListCounter = 0;
         int nullCounter=0;
         for (int i = 0; i < operatingStatementMappingList.size(); i++) {
-           // System.out.println(getNumericDataFromCell(sheet,column+assetsMappingList.get(i)));
             if ((getNumericDataFromCell(sheet,column + operatingStatementMappingList.get(i)))==0.0) {
                 ++nullCounter;
             }
@@ -100,7 +100,8 @@ public class OperatingStatementDetailsExcelReader {
         if(!(nullCounter==45||nullCounter==46)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
             
-            //operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
+            operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
+            operatingStatementDetails.setStorageDetailsId(storageDetailsId);
            
             operatingStatementDetails.setYear(year);
 
