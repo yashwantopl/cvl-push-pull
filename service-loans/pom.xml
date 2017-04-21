@@ -68,6 +68,12 @@
 			<artifactId>api-loans</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
