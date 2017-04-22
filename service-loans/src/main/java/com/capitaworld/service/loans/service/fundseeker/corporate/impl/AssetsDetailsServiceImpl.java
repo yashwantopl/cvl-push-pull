@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.FileInputStream;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetai
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.utils.cma.AssetsDetailsExcelReader;
-import com.capitaworld.service.loans.utils.cma.LiabilitiesDetailsExcelReader;
 
 @Service
 public class AssetsDetailsServiceImpl implements AssetsDetailsService{

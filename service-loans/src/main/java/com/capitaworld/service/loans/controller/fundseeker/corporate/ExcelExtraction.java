@@ -7,14 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LiabilitiesDetailsService;

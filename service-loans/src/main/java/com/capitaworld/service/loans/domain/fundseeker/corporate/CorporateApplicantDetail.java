@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+
 import java.util.Date;
 
 
@@ -11,12 +14,13 @@ import java.util.Date;
  */
 @Entity
 @Table(name="fs_corporate_applicant_details")
-public class CorporateApplicantDetail implements Serializable {
+public class CorporateApplicantDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="application_id")
-	private Long applicationId;
+	@OneToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Lob
 	@Column(name="about_us")
@@ -112,11 +116,11 @@ public class CorporateApplicantDetail implements Serializable {
 	public CorporateApplicantDetail() {
 	}
 
-	public Long getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 

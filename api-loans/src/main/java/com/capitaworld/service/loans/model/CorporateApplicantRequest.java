@@ -1,16 +1,17 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The persistent class for the fs_corporate_applicant_details database table.
  * 
  */
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CorporateApplicantRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -31,19 +32,19 @@ public class CorporateApplicantRequest implements Serializable {
 	private Double latitude;
 
 	private Double longitude;
-	
+
 	private String organisationName;
 
 	private Address administrativeAddress;
-	
+
 	private Address registeredAddress;
 	private Boolean sameAs;
 
 	private String websiteAddress;
-	
-	private List<IndustrySector> industrylist;
-	
-	private List<IndustrySector> sectorlist;
+
+	private List<IndustrySector> industrylist = Collections.emptyList();
+
+	private List<IndustrySector> sectorlist = Collections.emptyList();;
 
 	public CorporateApplicantRequest() {
 	}
@@ -96,8 +97,6 @@ public class CorporateApplicantRequest implements Serializable {
 		this.groupName = groupName;
 	}
 
-	
-
 	public Long getKeyVericalFunding() {
 		return this.keyVericalFunding;
 	}
@@ -122,8 +121,6 @@ public class CorporateApplicantRequest implements Serializable {
 		this.longitude = longitude;
 	}
 
-	
-
 	public String getOrganisationName() {
 		return this.organisationName;
 	}
@@ -131,7 +128,6 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setOrganisationName(String organisationName) {
 		this.organisationName = organisationName;
 	}
-
 
 	public Boolean getSameAs() {
 		return this.sameAs;
