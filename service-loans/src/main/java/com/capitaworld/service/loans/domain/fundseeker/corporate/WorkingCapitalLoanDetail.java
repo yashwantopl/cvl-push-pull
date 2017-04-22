@@ -13,6 +13,9 @@ import java.util.Date;
  * The persistent class for the fs_corporate_working_capital_loan_details database table.
  * 
  */
+
+//hiren
+
 @Entity
 @Table(name="fs_corporate_working_capital_loan_details")
 @DiscriminatorValue("2")//2 for working capital
