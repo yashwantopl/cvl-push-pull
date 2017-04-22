@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
@@ -23,15 +25,17 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name="fs_loan_application_master")
+@Inheritance(strategy = InheritanceType.JOINED)
 @NamedQuery(name="LoanApplicationMaster.findAll", query="SELECT f FROM LoanApplicationMaster f")
 public class LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@Column(name="application_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 
-	private BigDecimal amount;
+	private Double amount;
 
 	@Column(name="category_code")
 	private String categoryCode;
@@ -83,11 +87,11 @@ public class LoanApplicationMaster implements Serializable {
 		this.id = id;
 	}
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return this.amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
