@@ -45,6 +45,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<IndustrySector> industrylist = Collections.emptyList();
 
 	private List<IndustrySector> sectorlist = Collections.emptyList();;
+	
+	private List<Subsector>   subsectors= Collections.emptyList();;
 
 	public CorporateApplicantRequest() {
 	}
@@ -176,5 +178,14 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setRegisteredAddress(Address registeredAddress) {
 		this.registeredAddress = registeredAddress;
 	}
+
+	public List<Subsector> getSubsectors() {
+		return subsectors;
+	}
+
+	public void setSubsectors(List<Subsector> subsectors) {
+		this.subsectors = subsectors;
+	}
+	
 
 }

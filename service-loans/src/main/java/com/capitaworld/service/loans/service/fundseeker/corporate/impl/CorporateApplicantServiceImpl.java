@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.IndustrySector;
+import com.capitaworld.service.loans.model.Subsector;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 
 @Service
@@ -24,11 +27,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
+	
+	@Autowired
+	private SubSectorRepository subSectorRepository;
 
 	@Override
 	public boolean saveOrUpdate(CorporateApplicantRequest applicantRequest) {
 
-		try {
+		try { 
 			CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
 			BeanUtils.copyProperties(applicantRequest, applicantDetail);
 			// address set
@@ -48,11 +54,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setAdministrativeCityId(applicantRequest.getAdministrativeAddress().getCityId());
 			applicantDetail.setAdministrativeStateId(applicantRequest.getAdministrativeAddress().getStateId());
 			applicantDetail.setAdministrativeCountryId(applicantRequest.getAdministrativeAddress().getCountryId());
+			applicantDetail.setCategoryCode("cat");
+			applicantDetail.setCreatedBy(applicantDetail.getId());
+			applicantDetail.setModifiedBy(applicantDetail.getId());
+			applicantDetail.setCreatedDate(new Date());
+			applicantDetail.setModifiedDate(new Date());
 			// end address set
-			// subIndValues ask to kushal
+			
 
 			applicantDetail = applicantRepository.save(applicantDetail);
 
+			
+			
 			IndustrySectorDetail industrySectorDetail = null;
 			for (IndustrySector industrySector : applicantRequest.getIndustrylist()) {
 				industrySectorDetail = new IndustrySectorDetail();
@@ -67,6 +80,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				industrySectorRepository.save(industrySectorDetail);
 			}
 
+			
+			SubsectorDetail subsectorDetail=null;
+			for (Subsector subsector: applicantRequest.getSubsectors()) {
+				subsectorDetail = new SubsectorDetail();
+				subsectorDetail.setApplicationId(applicantDetail.getId());
+				subsectorDetail.setSectorSubsectorTransactionId(subsector.getId());
+				subsectorDetail.setCreatedBy(applicantDetail.getId());
+				subsectorDetail.setModifiedBy(applicantDetail.getId());
+				subsectorDetail.setCreatedDate(new Date());
+				subsectorDetail.setModifiedDate(new Date());
+				subsectorDetail.setIsActive(true);
+				// create by and update
+				subSectorRepository.save(subsectorDetail);
+			}
 			return true;
 
 		} catch (Exception e) {
