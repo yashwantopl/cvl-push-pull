@@ -18,8 +18,6 @@ import java.util.Date;
 
 @Entity
 @Table(name="fs_corporate_working_capital_loan_details")
-@DiscriminatorValue("2")//2 for working capital
-
 public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 

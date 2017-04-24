@@ -42,11 +42,11 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private String websiteAddress;
 
-	private List<IndustrySector> industrylist = Collections.emptyList();
+	private List<Long> industrylist = Collections.emptyList();
 
-	private List<IndustrySector> sectorlist = Collections.emptyList();;
+	private List<Long> sectorlist = Collections.emptyList();;
 	
-	private List<Subsector>   subsectors= Collections.emptyList();;
+	private List<Long>   subsectors= Collections.emptyList();;
 
 	public CorporateApplicantRequest() {
 	}
@@ -147,19 +147,19 @@ public class CorporateApplicantRequest implements Serializable {
 		this.websiteAddress = websiteAddress;
 	}
 
-	public List<IndustrySector> getIndustrylist() {
+	public List<Long> getIndustrylist() {
 		return industrylist;
 	}
 
-	public void setIndustrylist(List<IndustrySector> industrylist) {
+	public void setIndustrylist(List<Long> industrylist) {
 		this.industrylist = industrylist;
 	}
 
-	public List<IndustrySector> getSectorlist() {
+	public List<Long> getSectorlist() {
 		return sectorlist;
 	}
 
-	public void setSectorlist(List<IndustrySector> sectorlist) {
+	public void setSectorlist(List<Long> sectorlist) {
 		this.sectorlist = sectorlist;
 	}
 
@@ -179,11 +179,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.registeredAddress = registeredAddress;
 	}
 
-	public List<Subsector> getSubsectors() {
+	public List<Long> getSubsectors() {
 		return subsectors;
 	}
 
-	public void setSubsectors(List<Subsector> subsectors) {
+	public void setSubsectors(List<Long> subsectors) {
 		this.subsectors = subsectors;
 	}
 	

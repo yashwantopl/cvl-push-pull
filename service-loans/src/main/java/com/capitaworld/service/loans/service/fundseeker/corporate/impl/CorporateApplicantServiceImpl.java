@@ -12,8 +12,6 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.IndustrySector;
-import com.capitaworld.service.loans.model.Subsector;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -65,12 +63,26 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail = applicantRepository.save(applicantDetail);
 
 			
-			
+			//industry data save
 			IndustrySectorDetail industrySectorDetail = null;
-			for (IndustrySector industrySector : applicantRequest.getIndustrylist()) {
+			for (Long id : applicantRequest.getIndustrylist()) {
 				industrySectorDetail = new IndustrySectorDetail();
 				industrySectorDetail.setApplicationId(applicantDetail.getId());
-				industrySectorDetail.setIndustryId(industrySector.getIndustryId());
+				industrySectorDetail.setIndustryId(id);
+				industrySectorDetail.setCreatedBy(applicantDetail.getId());
+				industrySectorDetail.setModifiedBy(applicantDetail.getId());
+				industrySectorDetail.setCreatedDate(new Date());
+				industrySectorDetail.setModifiedDate(new Date());
+				industrySectorDetail.setIsActive(true);
+				// create by and update
+				industrySectorRepository.save(industrySectorDetail);
+			}
+			
+			//sector data save
+			for (Long id : applicantRequest.getIndustrylist()) {
+				industrySectorDetail = new IndustrySectorDetail();
+				industrySectorDetail.setApplicationId(applicantDetail.getId());
+				industrySectorDetail.setSectorId(id);
 				industrySectorDetail.setCreatedBy(applicantDetail.getId());
 				industrySectorDetail.setModifiedBy(applicantDetail.getId());
 				industrySectorDetail.setCreatedDate(new Date());
@@ -80,12 +92,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				industrySectorRepository.save(industrySectorDetail);
 			}
 
-			
+			//sub sector save
 			SubsectorDetail subsectorDetail=null;
-			for (Subsector subsector: applicantRequest.getSubsectors()) {
+			for (Long id: applicantRequest.getSubsectors()) {
 				subsectorDetail = new SubsectorDetail();
 				subsectorDetail.setApplicationId(applicantDetail.getId());
-				subsectorDetail.setSectorSubsectorTransactionId(subsector.getId());
+				subsectorDetail.setSectorSubsectorTransactionId(id);
 				subsectorDetail.setCreatedBy(applicantDetail.getId());
 				subsectorDetail.setModifiedBy(applicantDetail.getId());
 				subsectorDetail.setCreatedDate(new Date());
@@ -104,7 +116,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public CorporateApplicantDetail getCorporateApplicant(CorporateApplicantDetail corporateApplicantDetail) {
+	public CorporateApplicantDetail getCorporateApplicant(Long corporateApplicantDetail) {
 		// TODO Auto-generated method stub
 		return null;
 	}
