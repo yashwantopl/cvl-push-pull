@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,7 +13,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name="fs_sector_subsector_details")
-public class SubsectorDetail {
+public class SubsectorDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@javax.persistence.Id

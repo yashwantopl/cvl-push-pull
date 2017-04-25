@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -32,7 +31,7 @@ public class LoanApplicationMaster implements Serializable {
 
 	@Id
 	@Column(name="application_id")
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	private Double amount;
@@ -184,4 +183,13 @@ public class LoanApplicationMaster implements Serializable {
 		this.applicationStatusMaster = applicationStatusMaster;
 	}
 
+	@Override
+	public String toString() {
+		return "LoanApplicationMaster [id=" + id + ", amount=" + amount + ", categoryCode=" + categoryCode
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", isActive=" + isActive
+				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name + ", productId="
+				+ productId + ", tenure=" + tenure + ", userId=" + userId + ", applicationStatusMaster="
+				+ applicationStatusMaster + "]";
+	}
+	
 }

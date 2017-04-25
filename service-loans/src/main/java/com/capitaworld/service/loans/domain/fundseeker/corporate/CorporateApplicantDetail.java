@@ -17,7 +17,6 @@ import java.util.Date;
 public class CorporateApplicantDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
 	@OneToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
