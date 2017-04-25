@@ -37,15 +37,11 @@ public class WorkingCapitalLoanServiceImpl implements WorkingCapitalLoanService 
 			logger.info("Application Id==>" + capitalLoanRequest.getApplicationId());
 			capitalLoanDetail.setIsActive(true);
 			capitalLoanDetail.setCreatedDate(new Date());
-			LoanApplicationMaster applicant = new LoanApplicationMaster();
-			try {
-				applicant = loanApplicationRepository.findOne(capitalLoanRequest.getApplicationId());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			LoanApplicationMaster applicant = loanApplicationRepository.findOne(capitalLoanRequest.getApplicationId());
 			logger.info("Application Object==>" + applicant.toString());
-			capitalLoanDetail.setApplicationId(applicant);
 			capitalLoanDetail.setCategoryCode(applicant.getCategoryCode());
+			capitalLoanDetail.setApplicationId(applicant);
+			
 			workingCapitalLoanDetailRepository.save(capitalLoanDetail);
 			return true;
 		} catch (Exception e) {
