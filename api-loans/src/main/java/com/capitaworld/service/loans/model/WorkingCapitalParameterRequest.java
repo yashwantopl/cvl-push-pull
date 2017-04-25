@@ -98,6 +98,16 @@ public class WorkingCapitalParameterRequest  implements Serializable {
 	}
 
 
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+
+
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+
+
 	public Integer getCurrency() {
 		return this.currency;
 	}

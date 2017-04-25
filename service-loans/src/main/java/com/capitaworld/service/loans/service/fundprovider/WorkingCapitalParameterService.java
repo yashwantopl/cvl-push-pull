@@ -5,5 +5,5 @@ import com.capitaworld.service.loans.model.WorkingCapitalParameterRequest;
 public interface WorkingCapitalParameterService {
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest);
 	
-	public WorkingCapitalParameterRequest getWorkingCapitalParameterParameter(Long id);
+	public WorkingCapitalParameterRequest getWorkingCapitalParameter(Long id);
 }
