@@ -21,6 +21,9 @@ import java.util.Date;
 public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@OneToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 	
 	@Column(name="accounting_systems_id")
 	private Integer accountingSystemsId;
@@ -65,8 +68,8 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	@Column(name="india_distribution_network_id")
 	private Integer indiaDistributionNetworkId;
 
-	@Column(name="Integerernal_audit_id")
-	private Integer IntegerernalAuditId;
+	@Column(name="internal_audit_id")
+	private Integer internalAuditId;
 
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -113,12 +116,31 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	private Boolean typeOfTechnologyCorporateId;
 
 	@Column(name="is_technology_tied")
-	private Boolean is_technology_tied;
+	private Boolean isTechnologyTied;
 
 	public WorkingCapitalLoanDetail() {
 	}
 
-	
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
+	}
+
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
+		this.applicationId = applicationId;
+	}
+
+
+	public Boolean getIsTechnologyTied() {
+		return isTechnologyTied;
+	}
+
+
+	public void setIsTechnologyTied(Boolean isTechnologyTied) {
+		this.isTechnologyTied = isTechnologyTied;
+	}
+
+
 	public Integer getAccountingSystemsId() {
 		return this.accountingSystemsId;
 	}
@@ -231,12 +253,12 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 		this.indiaDistributionNetworkId = indiaDistributionNetworkId;
 	}
 
-	public Integer getIntegerernalAuditId() {
-		return this.IntegerernalAuditId;
+	public Integer getInternalAuditId() {
+		return internalAuditId;
 	}
 
-	public void setIntegerernalAuditId(Integer IntegerernalAuditId) {
-		this.IntegerernalAuditId = IntegerernalAuditId;
+	public void setInternalAuditId(Integer internalAuditId) {
+		this.internalAuditId = internalAuditId;
 	}
 
 	public Boolean getIsActive() {
@@ -350,13 +372,4 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	public void setTypeOfTechnologyCorporateId(Boolean typeOfTechnologyCorporateId) {
 		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
 	}
-
-	public Boolean getWhetherTechnologyIsTied() {
-		return this.is_technology_tied;
-	}
-
-	public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
-		this.is_technology_tied = whetherTechnologyIsTied;
-	}
-
 }

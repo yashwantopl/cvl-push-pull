@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class WorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
@@ -30,7 +30,7 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Boolean typeOfTechnologyCorporateId;
-	private Boolean is_technology_tied;
+	private Boolean isTechnologyTied;
 
 	public WorkingCapitalLoanRequest() {
 	}
@@ -235,12 +235,11 @@ public class WorkingCapitalLoanRequest implements Serializable {
 		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
 	}
 
-	public Boolean getIs_technology_tied() {
-		return is_technology_tied;
+	public Boolean getIsTechnologyTied() {
+		return isTechnologyTied;
 	}
 
-	public void setIs_technology_tied(Boolean is_technology_tied) {
-		this.is_technology_tied = is_technology_tied;
+	public void setIsTechnologyTied(Boolean isTechnologyTied) {
+		this.isTechnologyTied = isTechnologyTied;
 	}
-
 }
