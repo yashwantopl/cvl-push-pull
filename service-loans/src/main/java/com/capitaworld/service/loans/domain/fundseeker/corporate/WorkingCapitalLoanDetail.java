@@ -63,7 +63,7 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	private Integer existingShareHoldersId;
 
 	@Column(name="have_existing_limit")
-	private String haveExistingLimit;
+	private Long haveExistingLimit;
 
 	@Column(name="india_distribution_network_id")
 	private Integer indiaDistributionNetworkId;
@@ -117,6 +117,9 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 
 	@Column(name="is_technology_tied")
 	private Boolean isTechnologyTied;
+	
+	@Column(name="collateral_security_amt_total")
+	private Double collateralSecurityAmtTotal;
 
 	public WorkingCapitalLoanDetail() {
 	}
@@ -237,11 +240,11 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 		this.existingShareHoldersId = existingShareHoldersId;
 	}
 
-	public String getHaveExistingLimit() {
+	public Long getHaveExistingLimit() {
 		return this.haveExistingLimit;
 	}
 
-	public void setHaveExistingLimit(String haveExistingLimit) {
+	public void setHaveExistingLimit(Long haveExistingLimit) {
 		this.haveExistingLimit = haveExistingLimit;
 	}
 
@@ -372,4 +375,13 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	public void setTypeOfTechnologyCorporateId(Boolean typeOfTechnologyCorporateId) {
 		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
 	}
+
+	public Double getCollateralSecurityAmtTotal() {
+		return collateralSecurityAmtTotal;
+	}
+
+	public void setCollateralSecurityAmtTotal(Double collateralSecurityAmtTotal) {
+		this.collateralSecurityAmtTotal = collateralSecurityAmtTotal;
+	}
+	
 }

@@ -4,7 +4,9 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 
 public interface CorporateApplicantService {
-	public boolean saveOrUpdate(CorporateApplicantRequest applicantRequest);
-	
+	public boolean save(CorporateApplicantRequest applicantRequest);
+
 	public CorporateApplicantDetail getCorporateApplicant(Long corporateApplicantDetail);
+	
+	public boolean update(CorporateApplicantRequest applicantRequest);
 }

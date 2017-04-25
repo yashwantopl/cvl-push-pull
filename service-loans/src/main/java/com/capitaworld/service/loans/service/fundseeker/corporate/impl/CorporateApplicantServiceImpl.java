@@ -30,7 +30,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private SubSectorRepository subSectorRepository;
 
 	@Override
-	public boolean saveOrUpdate(CorporateApplicantRequest applicantRequest) {
+	public boolean save(CorporateApplicantRequest applicantRequest) {
 
 		try { 
 			CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
@@ -52,6 +52,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setAdministrativeCityId(applicantRequest.getAdministrativeAddress().getCityId());
 			applicantDetail.setAdministrativeStateId(applicantRequest.getAdministrativeAddress().getStateId());
 			applicantDetail.setAdministrativeCountryId(applicantRequest.getAdministrativeAddress().getCountryId());
+			applicantDetail.setSameAs(applicantRequest.getSameAs());
 			applicantDetail.setCategoryCode("cat");
 			applicantDetail.setCreatedBy(applicantDetail.getId());
 			applicantDetail.setModifiedBy(applicantDetail.getId());
@@ -120,5 +121,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public boolean update(CorporateApplicantRequest applicantRequest) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 
 }

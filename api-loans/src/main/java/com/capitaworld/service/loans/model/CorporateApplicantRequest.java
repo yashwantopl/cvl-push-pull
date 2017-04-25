@@ -18,6 +18,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private Long applicationId;
 
 	private String aboutUs;
+	
+	private String panNo;
 
 	private Integer constitutionId;
 
@@ -45,8 +47,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<Long> industrylist = Collections.emptyList();
 
 	private List<Long> sectorlist = Collections.emptyList();;
-	
-	private List<Long>   subsectors= Collections.emptyList();;
+
+	private List<Long> subsectors = Collections.emptyList();;
 
 	public CorporateApplicantRequest() {
 	}
@@ -185,6 +187,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setSubsectors(List<Long> subsectors) {
 		this.subsectors = subsectors;
+	}
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
 	}
 	
 

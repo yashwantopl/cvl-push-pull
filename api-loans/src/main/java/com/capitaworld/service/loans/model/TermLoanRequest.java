@@ -1,133 +1,60 @@
-package com.capitaworld.service.loans.domain.fundseeker.corporate;
+package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import java.util.Date;
 
 /**
  * The persistent class for the fs_corporate_term_loan_details database table.
  * 
  */
-@Entity
-@Table(name = "fs_corporate_term_loan_details")
-// @DiscriminatorValue("1") // 1 for term loan
-
-public class TermLoanDetail extends LoanApplicationMaster implements Serializable {
+public class TermLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@OneToOne
-	@JoinColumn(name = "application_id")
-	private LoanApplicationMaster applicationId;
-
-	@Column(name = "accounting_systems_id")
+	private Long applicationId;
 	private Integer accountingSystemsId;
-
-	@Column(name = "brand_ambassador_id")
 	private Integer brandAmbassadorId;
-
-	@Column(name = "competence_id")
 	private Integer competenceId;
-
-	@Column(name = "created_by")
-	private Long createdBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_date")
-	private Date createdDate;
-
-	@Column(name = "credit_rating_id")
 	private Long creditRatingId;
-
-	@Column(name = "currency_id")
 	private Integer currencyId;
-
-	@Column(name = "denomination_id")
 	private Integer denominationId;
-
-	@Column(name = "distribution_and_marketing_tie_ups_id")
 	private Integer distributionAndMarketingTieUpsId;
-
-	@Column(name = "environment_certification_id")
 	private Integer environmentCertificationId;
-
-	@Column(name = "existing_share_holders_id")
 	private Integer existingShareHoldersId;
-
-	@Column(name = "india_distribution_network_id")
 	private Integer indiaDistributionNetworkId;
-
-	@Column(name = "internal_audit_id")
 	private Integer internalAuditId;
-
-	@Column(name = "is_active")
-	private Boolean isActive;
-
-	@Column(name = "is_depends_majorly_on_government")
 	private Boolean isDependsMajorlyOnGovernment;
-
-	@Column(name = "is_iso_certified")
 	private Boolean isIsoCertified;
-
-	@Column(name = "market_position_id")
 	private Integer marketPositionId;
-
-	@Column(name = "market_positioning_top_id")
 	private Integer marketPositioningTopId;
-
-	@Column(name = "market_share_turnover_id")
 	private Integer marketShareTurnoverId;
-
-	@Column(name = "marketing_positioning_id")
 	private Integer marketingPositioningId;
-
-	@Column(name = "modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "modified_date")
-	private Date modifiedDate;
-
-	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
-
-	@Lob
-	@Column(name = "project_brief")
 	private String projectBrief;
-
-	@Column(name = "technology_patented_id")
 	private Long technologyPatentedId;
-
-	@Column(name = "technology_requires_upgradation_id")
 	private Integer technologyRequiresUpgradationId;
-
-	@Column(name = "technology_type_id")
 	private Integer technologyTypeId;
-
-	@Column(name = "is_technology_tied")
 	private boolean whetherTechnologyIsTied;
-
-	@Column(name = "total_cost_of_estimate")
+	private String name;
+	private String categoryCode;
+	private Double amount;
+	private Long productId;
+	private int tenure;
+	private Long userId;
 	private Double totalCostOfEstimate;
-
-	@Column(name = "total_means_of_finance")
 	private Double totalMeansOfFinance;
 
-	public TermLoanDetail() {
+	public TermLoanRequest() {
 	}
 
-	public LoanApplicationMaster getApplicationId() {
+	public Long getApplicationId() {
 		return applicationId;
 	}
 
-	public void setApplicationId(LoanApplicationMaster applicationId) {
+	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
 
 	public Integer getAccountingSystemsId() {
-		return this.accountingSystemsId;
+		return accountingSystemsId;
 	}
 
 	public void setAccountingSystemsId(Integer accountingSystemsId) {
@@ -135,7 +62,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getBrandAmbassadorId() {
-		return this.brandAmbassadorId;
+		return brandAmbassadorId;
 	}
 
 	public void setBrandAmbassadorId(Integer brandAmbassadorId) {
@@ -143,31 +70,15 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getCompetenceId() {
-		return this.competenceId;
+		return competenceId;
 	}
 
 	public void setCompetenceId(Integer competenceId) {
 		this.competenceId = competenceId;
 	}
 
-	public Long getCreatedBy() {
-		return this.createdBy;
-	}
-
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Date getCreatedDate() {
-		return this.createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
 	public Long getCreditRatingId() {
-		return this.creditRatingId;
+		return creditRatingId;
 	}
 
 	public void setCreditRatingId(Long creditRatingId) {
@@ -175,7 +86,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getCurrencyId() {
-		return this.currencyId;
+		return currencyId;
 	}
 
 	public void setCurrencyId(Integer currencyId) {
@@ -183,7 +94,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getDenominationId() {
-		return this.denominationId;
+		return denominationId;
 	}
 
 	public void setDenominationId(Integer denominationId) {
@@ -191,7 +102,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getDistributionAndMarketingTieUpsId() {
-		return this.distributionAndMarketingTieUpsId;
+		return distributionAndMarketingTieUpsId;
 	}
 
 	public void setDistributionAndMarketingTieUpsId(Integer distributionAndMarketingTieUpsId) {
@@ -199,7 +110,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getEnvironmentCertificationId() {
-		return this.environmentCertificationId;
+		return environmentCertificationId;
 	}
 
 	public void setEnvironmentCertificationId(Integer environmentCertificationId) {
@@ -207,7 +118,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getExistingShareHoldersId() {
-		return this.existingShareHoldersId;
+		return existingShareHoldersId;
 	}
 
 	public void setExistingShareHoldersId(Integer existingShareHoldersId) {
@@ -215,7 +126,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getIndiaDistributionNetworkId() {
-		return this.indiaDistributionNetworkId;
+		return indiaDistributionNetworkId;
 	}
 
 	public void setIndiaDistributionNetworkId(Integer indiaDistributionNetworkId) {
@@ -223,23 +134,15 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getInternalAuditId() {
-		return this.internalAuditId;
+		return internalAuditId;
 	}
 
 	public void setInternalAuditId(Integer internalAuditId) {
 		this.internalAuditId = internalAuditId;
 	}
 
-	public Boolean getIsActive() {
-		return this.isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
 	public Boolean getIsDependsMajorlyOnGovernment() {
-		return this.isDependsMajorlyOnGovernment;
+		return isDependsMajorlyOnGovernment;
 	}
 
 	public void setIsDependsMajorlyOnGovernment(Boolean isDependsMajorlyOnGovernment) {
@@ -247,7 +150,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Boolean getIsIsoCertified() {
-		return this.isIsoCertified;
+		return isIsoCertified;
 	}
 
 	public void setIsIsoCertified(Boolean isIsoCertified) {
@@ -255,7 +158,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getMarketPositionId() {
-		return this.marketPositionId;
+		return marketPositionId;
 	}
 
 	public void setMarketPositionId(Integer marketPositionId) {
@@ -263,7 +166,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getMarketPositioningTopId() {
-		return this.marketPositioningTopId;
+		return marketPositioningTopId;
 	}
 
 	public void setMarketPositioningTopId(Integer marketPositioningTopId) {
@@ -271,7 +174,7 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getMarketShareTurnoverId() {
-		return this.marketShareTurnoverId;
+		return marketShareTurnoverId;
 	}
 
 	public void setMarketShareTurnoverId(Integer marketShareTurnoverId) {
@@ -279,31 +182,15 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public Integer getMarketingPositioningId() {
-		return this.marketingPositioningId;
+		return marketingPositioningId;
 	}
 
 	public void setMarketingPositioningId(Integer marketingPositioningId) {
 		this.marketingPositioningId = marketingPositioningId;
 	}
 
-	public Long getModifiedBy() {
-		return this.modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Date getModifiedDate() {
-		return this.modifiedDate;
-	}
-
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-
 	public Integer getProductServicesPerseId() {
-		return this.productServicesPerseId;
+		return productServicesPerseId;
 	}
 
 	public void setProductServicesPerseId(Integer productServicesPerseId) {
@@ -311,7 +198,27 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 	}
 
 	public String getProjectBrief() {
-		return this.projectBrief;
+		return projectBrief;
+	}
+
+	public void setProjectBrief(String projectBrief) {
+		this.projectBrief = projectBrief;
+	}
+
+	public Long getTechnologyPatentedId() {
+		return technologyPatentedId;
+	}
+
+	public void setTechnologyPatentedId(Long technologyPatentedId) {
+		this.technologyPatentedId = technologyPatentedId;
+	}
+
+	public Integer getTechnologyRequiresUpgradationId() {
+		return technologyRequiresUpgradationId;
+	}
+
+	public void setTechnologyRequiresUpgradationId(Integer technologyRequiresUpgradationId) {
+		this.technologyRequiresUpgradationId = technologyRequiresUpgradationId;
 	}
 
 	public Integer getTechnologyTypeId() {
@@ -322,32 +229,60 @@ public class TermLoanDetail extends LoanApplicationMaster implements Serializabl
 		this.technologyTypeId = technologyTypeId;
 	}
 
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
-	}
-
-	public Long getTechnologyPatentedId() {
-		return this.technologyPatentedId;
-	}
-
-	public void setTechnologyPatentedId(Long technologyPatentedId) {
-		this.technologyPatentedId = technologyPatentedId;
-	}
-
-	public Integer getTechnologyRequiresUpgradationId() {
-		return this.technologyRequiresUpgradationId;
-	}
-
-	public void setTechnologyRequiresUpgradationId(Integer technologyRequiresUpgradationId) {
-		this.technologyRequiresUpgradationId = technologyRequiresUpgradationId;
-	}
-
 	public boolean isWhetherTechnologyIsTied() {
 		return whetherTechnologyIsTied;
 	}
 
 	public void setWhetherTechnologyIsTied(boolean whetherTechnologyIsTied) {
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCategoryCode() {
+		return categoryCode;
+	}
+
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public int getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(int tenure) {
+		this.tenure = tenure;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Double getTotalCostOfEstimate() {

@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.service.fundseeker.corporate.WorkingCapitalLoanService;
+import com.capitaworld.service.loans.model.TermLoanRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TermLoanService;
 
 @RestController
-@RequestMapping("/working_capital")
-public class WorkingCapitalLoanController {
+@RequestMapping("/term_loan")
+public class TermLoanController {
 
-	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalLoanController.class);
+	private static final Logger logger = LoggerFactory.getLogger(TermLoanController.class);
 
 	@Autowired
-	private WorkingCapitalLoanService workingCapitalLoanService;
+	private TermLoanService termLoanService; 
 
 	@RequestMapping(value = "/primary/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -31,17 +31,17 @@ public class WorkingCapitalLoanController {
 	}
 
 	@RequestMapping(value = "/primary/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody WorkingCapitalLoanRequest capitalLoanRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanRequest termLoanRequest) {
 		System.out.println("111");
 		// request must not be null
-		if (capitalLoanRequest == null) {
-			logger.warn("WorkingCapitalLoanRequest Object can not be empty ==>" + capitalLoanRequest);
+		if (termLoanRequest == null) {
+			logger.warn("TermLoanRequest Object can not be empty ==>" + termLoanRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
-		boolean response = workingCapitalLoanService.saveOrUpdate(capitalLoanRequest);
+		boolean response = termLoanService.saveOrUpdate(termLoanRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);

@@ -16,9 +16,9 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Integer distributionAndMarketingTieUpsId;
 	private Integer environmentCertificationId;
 	private Integer existingShareHoldersId;
-	private String haveExistingLimit;
+	private Long haveExistingLimit;
 	private Integer indiaDistributionNetworkId;
-	private Integer integerernalAuditId;
+	private Integer internalAuditId;
 	private Boolean isDependsMajorlyOnGovernment;
 	private Boolean isIsoCertified;
 	private Integer marketPositionId;
@@ -33,6 +33,11 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Boolean isTechnologyTied;
 	private String name;
 	private String categoryCode;
+	private Double amount;
+	private Long productId;
+	private int tenure;
+	private Long userId;
+	private Double collateralSecurityAmtTotal;
 
 	public WorkingCapitalLoanRequest() {
 	}
@@ -125,11 +130,11 @@ public class WorkingCapitalLoanRequest implements Serializable {
 		this.existingShareHoldersId = existingShareHoldersId;
 	}
 
-	public String getHaveExistingLimit() {
+	public Long getHaveExistingLimit() {
 		return haveExistingLimit;
 	}
 
-	public void setHaveExistingLimit(String haveExistingLimit) {
+	public void setHaveExistingLimit(Long haveExistingLimit) {
 		this.haveExistingLimit = haveExistingLimit;
 	}
 
@@ -141,12 +146,12 @@ public class WorkingCapitalLoanRequest implements Serializable {
 		this.indiaDistributionNetworkId = indiaDistributionNetworkId;
 	}
 
-	public Integer getIntegerernalAuditId() {
-		return integerernalAuditId;
+	public Integer getInternalAuditId() {
+		return internalAuditId;
 	}
 
-	public void setIntegerernalAuditId(Integer integerernalAuditId) {
-		this.integerernalAuditId = integerernalAuditId;
+	public void setInternalAuditId(Integer internalAuditId) {
+		this.internalAuditId = internalAuditId;
 	}
 
 	public Boolean getIsDependsMajorlyOnGovernment() {
@@ -259,6 +264,46 @@ public class WorkingCapitalLoanRequest implements Serializable {
 
 	public void setCategoryCode(String categoryCode) {
 		this.categoryCode = categoryCode;
+	}
+
+	public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public int getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(int tenure) {
+		this.tenure = tenure;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Double getCollateralSecurityAmtTotal() {
+		return collateralSecurityAmtTotal;
+	}
+
+	public void setCollateralSecurityAmtTotal(Double collateralSecurityAmtTotal) {
+		this.collateralSecurityAmtTotal = collateralSecurityAmtTotal;
 	}
 	
 }

@@ -40,7 +40,7 @@ public class CorporateApplicantController {
 					HttpStatus.OK);
 		}
 
-		boolean response = applicantService.saveOrUpdate(applicantRequest);
+		boolean response = applicantService.save(applicantRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);

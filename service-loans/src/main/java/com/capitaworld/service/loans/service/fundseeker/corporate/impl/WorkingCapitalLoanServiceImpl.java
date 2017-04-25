@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.WorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.WorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.WorkingCapitalLoanService;
 
@@ -25,14 +23,24 @@ public class WorkingCapitalLoanServiceImpl implements WorkingCapitalLoanService 
 	@Autowired
 	private WorkingCapitalLoanDetailRepository workingCapitalLoanDetailRepository;
 
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalLoanRequest capitalLoanRequest) {
 		try {
+			if (capitalLoanRequest.getApplicationId() != null) {
+				workingCapitalLoanDetailRepository.updatePrimaryWorkingCapital(capitalLoanRequest.getAmount(),capitalLoanRequest.getName(), 1l,
+						capitalLoanRequest.getCategoryCode(), capitalLoanRequest.getHaveExistingLimit(),
+						capitalLoanRequest.getProjectBrief(), capitalLoanRequest.getCollateralSecurityAmtTotal(),
+						capitalLoanRequest.getCurrencyId(), capitalLoanRequest.getDenominationId(),
+						capitalLoanRequest.getApplicationId(),capitalLoanRequest.getCreditRatingId());
+				return true;
+			}
+			
 			WorkingCapitalLoanDetail capitalLoanDetail = new WorkingCapitalLoanDetail();
 			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail);
+			capitalLoanDetail.setAmount(capitalLoanRequest.getAmount());
+			capitalLoanDetail.setProductId(capitalLoanRequest.getProductId());
+			capitalLoanDetail.setTenure(capitalLoanRequest.getTenure());
+			capitalLoanDetail.setUserId(capitalLoanRequest.getUserId());
 			capitalLoanDetail.setCreatedBy(1l);
 			capitalLoanDetail.setIsActive(true);
 			capitalLoanDetail.setCreatedDate(new Date());

@@ -111,6 +111,9 @@ public class CorporateApplicantDetail extends LoanApplicationMaster implements S
 
 	@Column(name="website_address")
 	private String websiteAddress;
+	
+	@Column(name="pan")
+	private String panNo;
 
 	public CorporateApplicantDetail() {
 	}
@@ -362,5 +365,14 @@ public class CorporateApplicantDetail extends LoanApplicationMaster implements S
 	public void setWebsiteAddress(String websiteAddress) {
 		this.websiteAddress = websiteAddress;
 	}
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
+	}
+	
 
 }
