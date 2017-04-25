@@ -31,6 +31,8 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Integer technologyRequiresUpgradationId;
 	private Boolean typeOfTechnologyCorporateId;
 	private Boolean isTechnologyTied;
+	private String name;
+	private String categoryCode;
 
 	public WorkingCapitalLoanRequest() {
 	}
@@ -242,4 +244,21 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	public void setIsTechnologyTied(Boolean isTechnologyTied) {
 		this.isTechnologyTied = isTechnologyTied;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCategoryCode() {
+		return categoryCode;
+	}
+
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
+	}
+	
 }
