@@ -11,10 +11,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name="fp_term_loan_details")
-public class TermLoanParameter implements Serializable {
+public class TermLoanParameter extends ProductMaster implements Serializable {
 	private static final Long serialVersionUID = 1L;
 
-	@Id
+	
 	@OneToOne
 	@JoinColumn(name="fp_product_id")
 	private ProductMaster fpProductId;

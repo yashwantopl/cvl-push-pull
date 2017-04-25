@@ -7,20 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.TermLoanParameterRequest;
-import com.capitaworld.service.loans.model.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.TermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 
 @Service
 public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private static final Logger logger = LoggerFactory.getLogger(TermLoanParameterServiceImpl.class.getName());
 	@Autowired
-	private TermLoanDetailRepository termLoanDetailRepository;
+	private TermLoanParameterRepository termLoanParameterRepository;
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
 		// TODO Auto-generated method stub
@@ -28,7 +23,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			TermLoanParameter termLoanParameter= new TermLoanParameter();
 			BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
 
-			termLoanParameter = termLoanDetailRepository.save(termLoanParameter);
+			termLoanParameter = termLoanParameterRepository.save(termLoanParameter);
 			return true;
 			}
 

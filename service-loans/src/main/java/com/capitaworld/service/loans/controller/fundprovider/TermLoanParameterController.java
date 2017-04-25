@@ -11,13 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.TermLoanParameterRequest;
-import com.capitaworld.service.loans.model.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 
 @RestController
 @RequestMapping("/tl_parameter")

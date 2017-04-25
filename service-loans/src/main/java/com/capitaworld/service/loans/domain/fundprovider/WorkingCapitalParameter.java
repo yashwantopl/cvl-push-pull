@@ -14,7 +14,7 @@ import java.util.Date;
 public class WorkingCapitalParameter extends ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
+	
 	@OneToOne
 	@JoinColumn(name="fp_product_id")
 	private ProductMaster fpProductId;
