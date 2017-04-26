@@ -31,7 +31,6 @@ public class CorporateApplicantController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CorporateApplicantRequest applicantRequest) {
-		System.out.println("111");
 		// request must not be null
 		if (applicantRequest == null) {
 			logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);

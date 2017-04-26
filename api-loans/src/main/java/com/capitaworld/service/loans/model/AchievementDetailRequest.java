@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class AchievementDetailRequest implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Long id;
 
 	private Long applicationId;
@@ -16,8 +21,6 @@ public class AchievementDetailRequest implements Serializable {
 	private String milestoneAchievedDetail;
 
 	private String year;
-
-
 
 	
 	public Long getApplicationId() {

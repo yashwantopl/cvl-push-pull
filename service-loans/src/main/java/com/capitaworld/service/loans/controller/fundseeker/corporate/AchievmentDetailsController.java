@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.WorkingCapitalLoanService;
 
 @RestController
 @RequestMapping("/achievment_details")

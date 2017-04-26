@@ -49,6 +49,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private String categoryCode;
 	
 	private String name;
+	
+	private Long userId;
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -225,6 +227,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 	

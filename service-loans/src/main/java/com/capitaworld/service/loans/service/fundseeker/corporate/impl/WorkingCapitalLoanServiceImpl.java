@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.WorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.WorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.WorkingCapitalLoanService;
@@ -35,7 +35,7 @@ public class WorkingCapitalLoanServiceImpl implements WorkingCapitalLoanService 
 				return true;
 			}
 			
-			WorkingCapitalLoanDetail capitalLoanDetail = new WorkingCapitalLoanDetail();
+			FinalWorkingCapitalLoanDetail capitalLoanDetail = new FinalWorkingCapitalLoanDetail();
 			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail);
 			capitalLoanDetail.setAmount(capitalLoanRequest.getAmount());
 			capitalLoanDetail.setProductId(capitalLoanRequest.getProductId());
