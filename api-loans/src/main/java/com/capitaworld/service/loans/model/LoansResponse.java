@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.List;
+
 public class LoansResponse {
 
 	private Long id;
@@ -9,12 +11,14 @@ public class LoansResponse {
 	private String message;
 
 	private Object data;
+	
+	private List listData;
 
 	public LoansResponse() {
 		super();
 	}
 
-	public LoansResponse(String message,Integer status) {
+	public LoansResponse(String message, Integer status) {
 		super();
 		this.message = message;
 		this.status = status;
@@ -52,4 +56,12 @@ public class LoansResponse {
 		this.data = data;
 	}
 
+	public List getListData() {
+		return listData;
+	}
+
+	public void setListData(List listData) {
+		this.listData = listData;
+	}
+	
 }

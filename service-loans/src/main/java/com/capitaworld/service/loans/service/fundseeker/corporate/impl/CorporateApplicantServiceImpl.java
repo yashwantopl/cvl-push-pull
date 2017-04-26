@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
+import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -54,7 +56,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail.setIsActive(true);
 				// saveApplicant(applicantRequest, applicantDetail);
 			}
-			
+
 			applicantDetail.setCreatedBy(applicantRequest.getUserId());
 			applicantDetail.setModifiedBy(applicantRequest.getUserId());
 			applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
@@ -78,9 +80,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public CorporateApplicantDetail getCorporateApplicant(Long corporateApplicantDetail) {
+	public CorporateApplicantRequest getCorporateApplicant(Long corporateApplicantDetail) {
 		// TODO Auto-generated method stub
-		return null;
+		CorporateApplicantDetail applicantDetail = applicantRepository.findOne(corporateApplicantDetail);
+		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+		BeanUtils.copyProperties(applicantDetail, applicantRequest);
+		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+		return applicantRequest;
 	}
 
 	private void saveIndustry(Long applicationId, List<Long> industrylist) {
@@ -159,5 +165,35 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			to.setAdministrativeStateId(from.getAdministrativeAddress().getStateId());
 			to.setAdministrativeCountryId(from.getAdministrativeAddress().getCountryId());
 		}
+	}
+
+	private void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
+		// Setting Regsiterd Address
+		Address address = new Address();
+
+		address.setPremiseNumber(from.getRegisteredPremiseNumber());
+		address.setLandMark(from.getRegisteredLandMark());
+		address.setStreetName(from.getRegisteredStreetName());
+		address.setPincode(from.getRegisteredPincode());
+		address.setCityId(from.getRegisteredCityId());
+		address.setStateId(from.getRegisteredStateId());
+		address.setCountryId(from.getRegisteredCountryId());
+		to.setRegisteredAddress(address);
+		if (from.getSameAs() != null && from.getSameAs()) {
+			to.setAdministrativeAddress(address);
+		} else {
+			address = new Address();
+			address.setPremiseNumber(from.getAdministrativePremiseNumber());
+			address.setLandMark(from.getAdministrativeLandMark());
+			address.setStreetName(from.getAdministrativeStreetName());
+			address.setPincode(from.getAdministrativePincode());
+			address.setCityId(from.getAdministrativeCityId());
+			address.setStateId(from.getAdministrativeStateId());
+			address.setCountryId(from.getAdministrativeCountryId());
+			to.setAdministrativeAddress(address);
+
+		}
+
+		// Setting Administrative Address
 	}
 }

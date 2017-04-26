@@ -6,5 +6,5 @@ import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest);
 
-	public CorporateApplicantDetail getCorporateApplicant(Long corporateApplicantDetail);
+	public CorporateApplicantRequest getCorporateApplicant(Long corporateApplicantDetail);
 }
