@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
-import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -40,15 +39,39 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			if (applicantRequest.getApplicationId() != null) {
 				applicantDetail = applicantRepository.findOne(applicantRequest.getApplicationId());
 				applicantDetail.setId(applicantRequest.getApplicationId());
-				updateApplicant(applicantRequest, applicantDetail);
+				applicantDetail.setModifiedBy(applicantDetail.getId());
+				applicantDetail.setModifiedDate(new Date());
+				// inactive previous before adding new Data
+				int updatedRecords = industrySectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
+				logger.info("updated industrySector ==>" + updatedRecords);
+				// inactive previous before adding new Data
+				int subSecors = subSectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
+				logger.info("updated subSector==>" + subSecors);
 			} else {
 				applicantDetail = new CorporateApplicantDetail();
-				saveApplicant(applicantRequest, applicantDetail);
+				applicantDetail.setCreatedBy(1l);
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setIsActive(true);
+				// saveApplicant(applicantRequest, applicantDetail);
 			}
+			
+			applicantDetail.setCreatedBy(applicantRequest.getUserId());
+			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
+			BeanUtils.copyProperties(applicantRequest, applicantDetail);
+			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+			applicantDetail = applicantRepository.save(applicantDetail);
+			// industry data save
+			saveIndustry(applicantDetail.getId(), applicantRequest.getIndustrylist());
+			// Sector data save
+			saveSector(applicantDetail.getId(), applicantRequest.getSectorlist());
+			// sub sector save
+			saveSubSector(applicantDetail.getId(), applicantRequest.getSubsectors());
+
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while json parse in save profile :-");
+			logger.info("Exception Throw while Saving Profile:-");
 			e.printStackTrace();
 			return false;
 		}
@@ -60,57 +83,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return null;
 	}
 
-	private void updateApplicant(CorporateApplicantRequest applicantRequest, CorporateApplicantDetail applicantDetail) {
-		// TODO Auto-generated method stub
-		BeanUtils.copyProperties(applicantRequest, applicantDetail);
-		// address set
-		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
-		applicantDetail.setSameAs(applicantRequest.isSameAs());
-		applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
-		applicantDetail.setModifiedBy(applicantDetail.getId());
-		applicantDetail.setModifiedDate(new Date());
-		applicantDetail = applicantRepository.save(applicantDetail);
-
-		// inactive previous before adding new Data
-		int updatedRecords = industrySectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
-		logger.info("updated industrySector ==>" + updatedRecords);
-
-		// industry data save
-		saveIndustry(applicantDetail.getId(), applicantRequest.getIndustrylist());
-		// Sector data save
-		saveSector(applicantDetail.getId(), applicantRequest.getSectorlist());
-
-		// inactive previous before adding new Data
-		int subSecors = subSectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
-		logger.info("updated subSector==>" + subSecors);
-		
-		// sub sector save
-		saveSubSector(applicantDetail.getId(), applicantRequest.getSubsectors());
-	}
-
-	private void saveApplicant(CorporateApplicantRequest applicantRequest, CorporateApplicantDetail applicantDetail) {
-		BeanUtils.copyProperties(applicantRequest, applicantDetail);
-		// address set
-		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
-		applicantDetail.setSameAs(applicantRequest.isSameAs());
-		applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
-		applicantDetail.setCreatedBy(1l);
-		applicantDetail.setModifiedBy(1l);
-		applicantDetail.setCreatedDate(new Date());
-		applicantDetail.setModifiedDate(new Date());
-		applicantDetail.setIsActive(true);
-		applicantDetail = applicantRepository.save(applicantDetail);
-
-		// industry data save
-		saveIndustry(applicantDetail.getId(), applicantRequest.getIndustrylist());
-
-		// Sector data save
-		saveSector(applicantDetail.getId(), applicantRequest.getSectorlist());
-
-		// sub sector save
-		saveSubSector(applicantDetail.getId(), applicantRequest.getSubsectors());
-	}
-	
 	private void saveIndustry(Long applicationId, List<Long> industrylist) {
 		IndustrySectorDetail industrySectorDetail = null;
 		for (Long id : industrylist) {
@@ -187,35 +159,5 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			to.setAdministrativeStateId(from.getAdministrativeAddress().getStateId());
 			to.setAdministrativeCountryId(from.getAdministrativeAddress().getCountryId());
 		}
-	}
-
-	private void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
-		// Setting Registered Address
-		Address address = new Address();
-
-		address.setPremiseNumber(from.getRegisteredPremiseNumber());
-		address.setLandMark(from.getRegisteredLandMark());
-		address.setStreetName(from.getRegisteredStreetName());
-		address.setPincode(from.getRegisteredPincode());
-		address.setCityId(from.getRegisteredCityId());
-		address.setStateId(from.getRegisteredStateId());
-		address.setCountryId(from.getRegisteredCountryId());
-		to.setRegisteredAddress(address);
-
-		// Setting Administrative Address
-		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
-			to.setAdministrativeAddress(to.getRegisteredAddress());
-		} else {
-			address = new Address();
-			address.setPremiseNumber(from.getAdministrativePremiseNumber());
-			address.setLandMark(from.getAdministrativeLandMark());
-			address.setStreetName(from.getAdministrativeStreetName());
-			address.setPincode(from.getAdministrativePincode());
-			address.setCityId(from.getAdministrativeCityId());
-			address.setStateId(from.getAdministrativeStateId());
-			address.setCountryId(from.getAdministrativeCountryId());
-			to.setAdministrativeAddress(address);
-		}
-
 	}
 }

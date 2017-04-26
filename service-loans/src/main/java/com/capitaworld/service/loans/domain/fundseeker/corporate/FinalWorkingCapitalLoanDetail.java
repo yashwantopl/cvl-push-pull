@@ -17,8 +17,8 @@ import java.util.Date;
 //hiren
 
 @Entity
-@Table(name="fs_corporate_working_capital_loan_details")
-public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
+@Table(name="fs_corporate_final_wc_loan_details")
+public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
@@ -121,7 +121,7 @@ public class WorkingCapitalLoanDetail extends LoanApplicationMaster implements S
 	@Column(name="collateral_security_amt_total")
 	private Double collateralSecurityAmtTotal;
 
-	public WorkingCapitalLoanDetail() {
+	public FinalWorkingCapitalLoanDetail() {
 	}
 
 	public LoanApplicationMaster getApplicationId() {

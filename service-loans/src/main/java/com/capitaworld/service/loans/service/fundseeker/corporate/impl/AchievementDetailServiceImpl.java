@@ -9,7 +9,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
