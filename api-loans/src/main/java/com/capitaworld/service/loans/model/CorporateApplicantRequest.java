@@ -18,7 +18,7 @@ public class CorporateApplicantRequest implements Serializable {
 	private Long applicationId;
 
 	private String aboutUs;
-	
+
 	private String panNo;
 
 	private Integer constitutionId;
@@ -40,9 +40,15 @@ public class CorporateApplicantRequest implements Serializable {
 	private Address administrativeAddress;
 
 	private Address registeredAddress;
-	private Boolean sameAs;
+	private boolean sameAs;
 
 	private String websiteAddress;
+
+	private String landlineNo;
+	
+	private String categoryCode;
+	
+	private String name;
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -133,11 +139,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.organisationName = organisationName;
 	}
 
-	public Boolean getSameAs() {
-		return this.sameAs;
+	public boolean isSameAs() {
+		return sameAs;
 	}
 
-	public void setSameAs(Boolean sameAs) {
+	public void setSameAs(boolean sameAs) {
 		this.sameAs = sameAs;
 	}
 
@@ -196,6 +202,30 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setPanNo(String panNo) {
 		this.panNo = panNo;
 	}
-	
 
+	public String getLandlineNo() {
+		return landlineNo;
+	}
+
+	public void setLandlineNo(String landlineNo) {
+		this.landlineNo = landlineNo;
+	}
+
+	public String getCategoryCode() {
+		return categoryCode;
+	}
+
+	public void setCategoryCode(String categoryCode) {
+		this.categoryCode = categoryCode;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }

@@ -7,6 +7,4 @@ public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest);
 
 	public CorporateApplicantDetail getCorporateApplicant(Long corporateApplicantDetail);
-	
-	public boolean update(CorporateApplicantRequest applicantRequest);
 }
