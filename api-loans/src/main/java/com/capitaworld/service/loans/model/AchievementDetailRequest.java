@@ -19,7 +19,7 @@ public class AchievementDetailRequest implements Serializable {
 
 	private String year;
 
-	private Boolean isActive;
+	private Boolean isActive=true;
 	
 	
 

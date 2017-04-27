@@ -40,11 +40,11 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 				AchievementDetail achievementDetail = new AchievementDetail();
 				BeanUtils.copyProperties(achievementDetailRequest, achievementDetail);
 				if (achievementDetailRequest.getId() == null) {
-					achievementDetail.setCreatedBy(frameRequest.getApplicationId());
+					achievementDetail.setCreatedBy(frameRequest.getUserId());
 					achievementDetail.setCreatedDate(new Date());
 				}
 				achievementDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
-				achievementDetail.setModifiedBy(frameRequest.getApplicationId());
+				achievementDetail.setModifiedBy(frameRequest.getUserId());
 				achievementDetail.setModifiedDate(new Date());
 				achievementDetailsRepository.save(achievementDetail);
 			}

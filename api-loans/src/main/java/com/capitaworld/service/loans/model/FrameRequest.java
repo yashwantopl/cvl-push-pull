@@ -13,6 +13,8 @@ public class FrameRequest implements Serializable{
 
 	private Long applicationId;
 	
+	private Long userId;
+	
 	private List<Map<String, Object>> dataList;
 
 	public Long getApplicationId() {
@@ -31,6 +33,15 @@ public class FrameRequest implements Serializable{
 		this.dataList = dataList;
 	}
 
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	
 	
 
 	

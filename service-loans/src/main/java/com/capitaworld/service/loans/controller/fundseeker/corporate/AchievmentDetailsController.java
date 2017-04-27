@@ -43,6 +43,15 @@ public class AchievmentDetailsController {
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
+		//application id and user id must not be null
+		if(frameRequest.getApplicationId()==null||frameRequest.getUserId()==null)
+		{
+			logger.warn("application id and user id must not be null ==>" + frameRequest);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
 		try
 		{
 		boolean response = achievmentDetailsService.saveOrUpdate(frameRequest);
