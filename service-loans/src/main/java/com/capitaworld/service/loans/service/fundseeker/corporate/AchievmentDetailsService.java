@@ -12,4 +12,6 @@ public interface AchievmentDetailsService {
 	
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId);
 	
+	public Boolean remove(Long id);
+	
 }
