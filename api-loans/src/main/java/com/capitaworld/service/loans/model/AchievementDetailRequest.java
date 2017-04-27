@@ -15,21 +15,13 @@ public class AchievementDetailRequest implements Serializable {
 
 	private Long id;
 
-	private Long applicationId;
-
 	private String milestoneAchievedDetail;
 
 	private String year;
 
 	private Boolean isActive;
 	
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
+	
 
 	public Long getId() {
 		return this.id;

@@ -1,9 +1,10 @@
 package com.capitaworld.service.loans.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class LoansResponse {
+public class LoansResponse implements Serializable{
 
 	private Long id;
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 
@@ -34,17 +35,17 @@ public class AchievmentDetailsController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody List<AchievementDetailRequest> achievementDetailRequests) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest) {
 		// request must not be null
-		if (achievementDetailRequests == null) {
-			logger.warn("achievementDetailRequest list can not be empty ==>" + achievementDetailRequests);
+		if (frameRequest == null) {
+			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		try
 		{
-		boolean response = achievmentDetailsService.saveOrUpdate(achievementDetailRequests);
+		boolean response = achievmentDetailsService.saveOrUpdate(frameRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
