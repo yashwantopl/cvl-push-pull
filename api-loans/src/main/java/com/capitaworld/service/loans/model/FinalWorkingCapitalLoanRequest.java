@@ -2,21 +2,21 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
-public class WorkingCapitalLoanRequest implements Serializable {
+public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
 	private Integer competenceId;
-	private Long creditRatingId;
-	private Integer currencyId;
-	private Integer denominationId;
-	private String descriptionEnhancementLimit;
+	// private Long creditRatingId;
+	// private Integer currencyId;
+	// private Integer denominationId;
+	// private String descriptionEnhancementLimit;
 	private Integer distributionAndMarketingTieUpsId;
 	private Integer environmentCertificationId;
 	private Integer existingShareHoldersId;
-	private Long haveExistingLimit;
+	// private Long haveExistingLimit;
 	private Integer indiaDistributionNetworkId;
 	private Integer internalAuditId;
 	private Boolean isDependsMajorlyOnGovernment;
@@ -26,7 +26,7 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Integer marketShareTurnoverId;
 	private Integer marketingPositioningId;
 	private Integer productServicesPerseId;
-	private String projectBrief;
+	// private String projectBrief;
 	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Boolean typeOfTechnologyCorporateId;
@@ -37,9 +37,9 @@ public class WorkingCapitalLoanRequest implements Serializable {
 	private Long productId;
 	private int tenure;
 	private Long userId;
-	private Double collateralSecurityAmtTotal;
+	// private Double collateralSecurityAmtTotal;
 
-	public WorkingCapitalLoanRequest() {
+	public FinalWorkingCapitalLoanRequest() {
 	}
 
 	public Long getApplicationId() {
@@ -74,38 +74,6 @@ public class WorkingCapitalLoanRequest implements Serializable {
 		this.competenceId = competenceId;
 	}
 
-	public Long getCreditRatingId() {
-		return creditRatingId;
-	}
-
-	public void setCreditRatingId(Long creditRatingId) {
-		this.creditRatingId = creditRatingId;
-	}
-
-	public Integer getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public Integer getDenominationId() {
-		return denominationId;
-	}
-
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
-	}
-
-	public String getDescriptionEnhancementLimit() {
-		return descriptionEnhancementLimit;
-	}
-
-	public void setDescriptionEnhancementLimit(String descriptionEnhancementLimit) {
-		this.descriptionEnhancementLimit = descriptionEnhancementLimit;
-	}
-
 	public Integer getDistributionAndMarketingTieUpsId() {
 		return distributionAndMarketingTieUpsId;
 	}
@@ -128,14 +96,6 @@ public class WorkingCapitalLoanRequest implements Serializable {
 
 	public void setExistingShareHoldersId(Integer existingShareHoldersId) {
 		this.existingShareHoldersId = existingShareHoldersId;
-	}
-
-	public Long getHaveExistingLimit() {
-		return haveExistingLimit;
-	}
-
-	public void setHaveExistingLimit(Long haveExistingLimit) {
-		this.haveExistingLimit = haveExistingLimit;
 	}
 
 	public Integer getIndiaDistributionNetworkId() {
@@ -208,14 +168,6 @@ public class WorkingCapitalLoanRequest implements Serializable {
 
 	public void setProductServicesPerseId(Integer productServicesPerseId) {
 		this.productServicesPerseId = productServicesPerseId;
-	}
-
-	public String getProjectBrief() {
-		return projectBrief;
-	}
-
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
 	}
 
 	public Integer getTechnologyPatentedId() {
@@ -298,12 +250,4 @@ public class WorkingCapitalLoanRequest implements Serializable {
 		this.userId = userId;
 	}
 
-	public Double getCollateralSecurityAmtTotal() {
-		return collateralSecurityAmtTotal;
-	}
-
-	public void setCollateralSecurityAmtTotal(Double collateralSecurityAmtTotal) {
-		this.collateralSecurityAmtTotal = collateralSecurityAmtTotal;
-	}
-	
 }

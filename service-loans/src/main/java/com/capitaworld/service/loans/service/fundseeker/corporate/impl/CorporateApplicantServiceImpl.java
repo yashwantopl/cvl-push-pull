@@ -19,7 +19,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -54,11 +53,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail.setCreatedBy(1l);
 				applicantDetail.setCreatedDate(new Date());
 				applicantDetail.setIsActive(true);
-				// saveApplicant(applicantRequest, applicantDetail);
-			}
+				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 
-			applicantDetail.setCreatedBy(applicantRequest.getUserId());
-			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			}
+			applicantDetail.setName(applicantRequest.getName());
 			applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
 			BeanUtils.copyProperties(applicantRequest, applicantDetail);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
@@ -137,7 +136,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 	}
 
-	private void copyAddressFromRequestToDomain(CorporateApplicantRequest from, CorporateApplicantDetail to) {
+	private static void copyAddressFromRequestToDomain(CorporateApplicantRequest from, CorporateApplicantDetail to) {
 		// Setting Regsiterd Address
 		to.setRegisteredPremiseNumber(from.getRegisteredAddress().getPremiseNumber());
 		to.setRegisteredLandMark(from.getRegisteredAddress().getLandMark());
@@ -167,7 +166,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 	}
 
-	private void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
+	private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
 		// Setting Regsiterd Address
 		Address address = new Address();
 

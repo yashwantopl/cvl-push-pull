@@ -7,119 +7,118 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import java.util.Date;
 
-
-
 /**
- * The persistent class for the fs_corporate_working_capital_loan_details database table.
+ * The persistent class for the fs_corporate_working_capital_loan_details
+ * database table.
  * 
  */
 
-//hiren
+// hiren
 
 @Entity
-@Table(name="fs_corporate_final_wc_loan_details")
+@Table(name = "fs_corporate_final_wc_loan_details")
 public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
-	@JoinColumn(name="application_id")
+	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
-	
-	@Column(name="accounting_systems_id")
+
+	@Column(name = "accounting_systems_id")
 	private Integer accountingSystemsId;
 
-	@Column(name="brand_ambassador_id")
+	@Column(name = "brand_ambassador_id")
 	private Integer brandAmbassadorId;
 
-	@Column(name="competence_id")
+	@Column(name = "competence_id")
 	private Integer competenceId;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="credit_rating_id")
-	private Long creditRatingId;
+	// @Column(name="credit_rating_id")
+	// private Long creditRatingId;
 
-	@Column(name="currency_id")
-	private Integer currencyId;
+	// @Column(name="currency_id")
+	// private Integer currencyId;
 
-	@Column(name="denomination_id")
-	private Integer denominationId;
+	// @Column(name="denomination_id")
+	// private Integer denominationId;
 
-	@Column(name="description_enhancement_limit")
-	private String descriptionEnhancementLimit;
+	// @Column(name="description_enhancement_limit")
+	// private String descriptionEnhancementLimit;
 
-	@Column(name="distribution_and_marketing_tie_ups_id")
+	@Column(name = "distribution_and_marketing_tie_ups_id")
 	private Integer distributionAndMarketingTieUpsId;
 
-	@Column(name="environment_certification_id")
+	@Column(name = "environment_certification_id")
 	private Integer environmentCertificationId;
 
-	@Column(name="existing_share_holders_id")
+	@Column(name = "existing_share_holders_id")
 	private Integer existingShareHoldersId;
 
-	@Column(name="have_existing_limit")
-	private Long haveExistingLimit;
+	// @Column(name="have_existing_limit")
+	// private Long haveExistingLimit;
 
-	@Column(name="india_distribution_network_id")
+	@Column(name = "india_distribution_network_id")
 	private Integer indiaDistributionNetworkId;
 
-	@Column(name="internal_audit_id")
+	@Column(name = "internal_audit_id")
 	private Integer internalAuditId;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="is_depends_majorly_on_government")
+	@Column(name = "is_depends_majorly_on_government")
 	private Boolean isDependsMajorlyOnGovernment;
 
-	@Column(name="is_iso_certified")
+	@Column(name = "is_iso_certified")
 	private Boolean isIsoCertified;
 
-	@Column(name="market_position_id")
+	@Column(name = "market_position_id")
 	private Integer marketPositionId;
 
-	@Column(name="market_positioning_top_id")
+	@Column(name = "market_positioning_top_id")
 	private Integer marketPositioningTopId;
 
-	@Column(name="market_share_turnover_id")
+	@Column(name = "market_share_turnover_id")
 	private Integer marketShareTurnoverId;
 
-	@Column(name="marketing_positioning_id")
+	@Column(name = "marketing_positioning_id")
 	private Integer marketingPositioningId;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name="product_services_perse_id")
+	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
 
-	@Lob
-	@Column(name="project_brief")
-	private String projectBrief;
+	// @Lob
+	// @Column(name="project_brief")
+	// private String projectBrief;
 
-	@Column(name="technology_patented_id")
+	@Column(name = "technology_patented_id")
 	private Integer technologyPatentedId;
 
-	@Column(name="technology_requires_upgradation_id")
+	@Column(name = "technology_requires_upgradation_id")
 	private Integer technologyRequiresUpgradationId;
 
-	@Column(name="type_of_technology_corporate_id")
+	@Column(name = "type_of_technology_corporate_id")
 	private Boolean typeOfTechnologyCorporateId;
 
-	@Column(name="is_technology_tied")
+	@Column(name = "is_technology_tied")
 	private Boolean isTechnologyTied;
-	
-	@Column(name="collateral_security_amt_total")
-	private Double collateralSecurityAmtTotal;
+
+	// @Column(name="collateral_security_amt_total")
+	// private Double collateralSecurityAmtTotal;
 
 	public FinalWorkingCapitalLoanDetail() {
 	}
@@ -128,21 +127,17 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 		return applicationId;
 	}
 
-
 	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
-
 
 	public Boolean getIsTechnologyTied() {
 		return isTechnologyTied;
 	}
 
-
 	public void setIsTechnologyTied(Boolean isTechnologyTied) {
 		this.isTechnologyTied = isTechnologyTied;
 	}
-
 
 	public Integer getAccountingSystemsId() {
 		return this.accountingSystemsId;
@@ -184,38 +179,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 		this.createdDate = createdDate;
 	}
 
-	public Long getCreditRatingId() {
-		return this.creditRatingId;
-	}
-
-	public void setCreditRatingId(Long creditRatingId) {
-		this.creditRatingId = creditRatingId;
-	}
-
-	public Integer getCurrencyId() {
-		return this.currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public Integer getDenominationId() {
-		return this.denominationId;
-	}
-
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
-	}
-
-	public String getDescriptionEnhancementLimit() {
-		return this.descriptionEnhancementLimit;
-	}
-
-	public void setDescriptionEnhancementLimit(String descriptionEnhancementLimit) {
-		this.descriptionEnhancementLimit = descriptionEnhancementLimit;
-	}
-
 	public Integer getDistributionAndMarketingTieUpsId() {
 		return this.distributionAndMarketingTieUpsId;
 	}
@@ -238,14 +201,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 
 	public void setExistingShareHoldersId(Integer existingShareHoldersId) {
 		this.existingShareHoldersId = existingShareHoldersId;
-	}
-
-	public Long getHaveExistingLimit() {
-		return this.haveExistingLimit;
-	}
-
-	public void setHaveExistingLimit(Long haveExistingLimit) {
-		this.haveExistingLimit = haveExistingLimit;
 	}
 
 	public Integer getIndiaDistributionNetworkId() {
@@ -344,14 +299,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 		this.productServicesPerseId = productServicesPerseId;
 	}
 
-	public String getProjectBrief() {
-		return this.projectBrief;
-	}
-
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
-	}
-
 	public Integer getTechnologyPatentedId() {
 		return this.technologyPatentedId;
 	}
@@ -376,12 +323,4 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
 	}
 
-	public Double getCollateralSecurityAmtTotal() {
-		return collateralSecurityAmtTotal;
-	}
-
-	public void setCollateralSecurityAmtTotal(Double collateralSecurityAmtTotal) {
-		this.collateralSecurityAmtTotal = collateralSecurityAmtTotal;
-	}
-	
 }

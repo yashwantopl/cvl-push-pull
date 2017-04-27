@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.Collections;
 import java.util.List;
 
 public class LoansResponse {
@@ -12,7 +13,7 @@ public class LoansResponse {
 
 	private Object data;
 	
-	private List listData;
+	private List listData = Collections.emptyList();
 
 	public LoansResponse() {
 		super();

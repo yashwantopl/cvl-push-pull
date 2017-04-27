@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.WorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.WorkingCapitalLoanService;
 
@@ -24,42 +24,30 @@ public class WorkingCapitalLoanServiceImpl implements WorkingCapitalLoanService 
 	private WorkingCapitalLoanDetailRepository workingCapitalLoanDetailRepository;
 
 	@Override
-	public boolean saveOrUpdate(WorkingCapitalLoanRequest capitalLoanRequest) {
-		try {
-			if (capitalLoanRequest.getApplicationId() != null) {
-				workingCapitalLoanDetailRepository.updatePrimaryWorkingCapital(capitalLoanRequest.getAmount(),capitalLoanRequest.getName(), 1l,
-						capitalLoanRequest.getCategoryCode(), capitalLoanRequest.getHaveExistingLimit(),
-						capitalLoanRequest.getProjectBrief(), capitalLoanRequest.getCollateralSecurityAmtTotal(),
-						capitalLoanRequest.getCurrencyId(), capitalLoanRequest.getDenominationId(),
-						capitalLoanRequest.getApplicationId(),capitalLoanRequest.getCreditRatingId());
-				return true;
-			}
-			
-			FinalWorkingCapitalLoanDetail capitalLoanDetail = new FinalWorkingCapitalLoanDetail();
-			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail);
-			capitalLoanDetail.setAmount(capitalLoanRequest.getAmount());
-			capitalLoanDetail.setProductId(capitalLoanRequest.getProductId());
-			capitalLoanDetail.setTenure(capitalLoanRequest.getTenure());
+	public boolean saveOrUpdateFinalDetails(FinalWorkingCapitalLoanRequest capitalLoanRequest) {
+		FinalWorkingCapitalLoanDetail capitalLoanDetail = null;
+		if (capitalLoanRequest.getApplicationId() != null) {
+			capitalLoanDetail = workingCapitalLoanDetailRepository.findOne(capitalLoanRequest.getApplicationId());
+		} else {
+			capitalLoanDetail = new FinalWorkingCapitalLoanDetail();
 			capitalLoanDetail.setUserId(capitalLoanRequest.getUserId());
 			capitalLoanDetail.setCreatedBy(1l);
 			capitalLoanDetail.setIsActive(true);
 			capitalLoanDetail.setCreatedDate(new Date());
-			capitalLoanDetail.setModifiedBy(1l);
-			capitalLoanDetail.setModifiedDate(new Date());
-			capitalLoanDetail.setCategoryCode(capitalLoanRequest.getCategoryCode());
-			capitalLoanDetail.setName(capitalLoanRequest.getName());
-			workingCapitalLoanDetailRepository.save(capitalLoanDetail);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
 		}
 
+		capitalLoanDetail.setModifiedDate(new Date());
+		capitalLoanDetail.setModifiedBy(1l);
+		capitalLoanDetail.setCategoryCode(capitalLoanRequest.getCategoryCode());
+		capitalLoanDetail.setName(capitalLoanRequest.getName());
+		BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail);
+		workingCapitalLoanDetailRepository.save(capitalLoanDetail);
+		return true;
 	}
 
 	@Override
-	public WorkingCapitalLoanRequest getWorkingCapitalLoan(Long id) {
-		WorkingCapitalLoanRequest capitalLoanRequest = new WorkingCapitalLoanRequest();
+	public FinalWorkingCapitalLoanRequest getFinalWorkingCapitalLoan(Long id) {
+		FinalWorkingCapitalLoanRequest capitalLoanRequest = new FinalWorkingCapitalLoanRequest();
 		BeanUtils.copyProperties(workingCapitalLoanDetailRepository.findOne(id), capitalLoanRequest);
 		return capitalLoanRequest;
 

@@ -1,12 +1,12 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
-import com.capitaworld.service.loans.model.WorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.FinalWorkingCapitalLoanRequest;
 
 public interface WorkingCapitalLoanService {
 
-	public boolean saveOrUpdate(WorkingCapitalLoanRequest capitalLoanRequest);
+	public boolean saveOrUpdateFinalDetails(FinalWorkingCapitalLoanRequest capitalLoanRequest);
 	
-	public WorkingCapitalLoanRequest getWorkingCapitalLoan(Long id);
+	public FinalWorkingCapitalLoanRequest getFinalWorkingCapitalLoan(Long id);
 	
 	
 }
