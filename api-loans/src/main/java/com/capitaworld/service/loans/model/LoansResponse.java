@@ -6,6 +6,11 @@ import java.util.List;
 
 public class LoansResponse implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Long id;
 
 	private Integer status;
@@ -14,7 +19,7 @@ public class LoansResponse implements Serializable{
 
 	private Object data;
 	
-	private List listData = Collections.emptyList();
+	private List<?> listData = Collections.emptyList();
 
 	public LoansResponse() {
 		super();
