@@ -9,14 +9,14 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCap
 
 public interface WorkingCapitalLoanDetailRepository extends JpaRepository<FinalWorkingCapitalLoanDetail, Long> {
 
-	@Modifying
-	@Query("update FinalWorkingCapitalLoanDetail wc set wc.amount =:amount,wc.name =:name,wc.modifiedBy =:modifiedBy,wc.categoryCode =:categoryCode,wc.haveExistingLimit =:haveExistingLimit,wc.projectBrief =:projectBrief,wc.collateralSecurityAmtTotal =:collateralSecurityAmtTotal,wc.creditRatingId =:creditRatingId,wc.currencyId =:currencyId,wc.denominationId =:denominationId,wc.modifiedDate = NOW() where wc.applicationId.id =:applicationId and wc.isActive = true")
-	public int updatePrimaryWorkingCapital(@Param("amount") Double amount,@Param("name") String name, @Param("modifiedBy") Long modifiedBy,
-			@Param("categoryCode") String categoryCode, @Param("haveExistingLimit") Long haveExistingLimit,
-			@Param("projectBrief") String projectBrief,
-			@Param("collateralSecurityAmtTotal") Double collateralSecurityAmtTotal,
-			@Param("currencyId") Integer currencyId, @Param("denominationId") Integer denominationId,
-			@Param("applicationId") Long applicationId,
-			@Param("creditRatingId") Long creditRatingId);
+//	@Modifying
+//	@Query("update FinalWorkingCapitalLoanDetail wc set wc.amount =:amount,wc.name =:name,wc.modifiedBy =:modifiedBy,wc.categoryCode =:categoryCode,wc.haveExistingLimit =:haveExistingLimit,wc.projectBrief =:projectBrief,wc.collateralSecurityAmtTotal =:collateralSecurityAmtTotal,wc.creditRatingId =:creditRatingId,wc.currencyId =:currencyId,wc.denominationId =:denominationId,wc.modifiedDate = NOW() where wc.applicationId.id =:applicationId and wc.isActive = true")
+//	public int updatePrimaryWorkingCapital(@Param("amount") Double amount,@Param("name") String name, @Param("modifiedBy") Long modifiedBy,
+//			@Param("categoryCode") String categoryCode, @Param("haveExistingLimit") Long haveExistingLimit,
+//			@Param("projectBrief") String projectBrief,
+//			@Param("collateralSecurityAmtTotal") Double collateralSecurityAmtTotal,
+//			@Param("currencyId") Integer currencyId, @Param("denominationId") Integer denominationId,
+//			@Param("applicationId") Long applicationId,
+//			@Param("creditRatingId") Long creditRatingId);
 
 }
