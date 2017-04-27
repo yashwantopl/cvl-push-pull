@@ -12,7 +12,6 @@ public class AchievementDetailRequest implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 
 	private Long id;
 
@@ -22,6 +21,7 @@ public class AchievementDetailRequest implements Serializable {
 
 	private String year;
 
+	private Boolean isActive;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -54,5 +54,14 @@ public class AchievementDetailRequest implements Serializable {
 	public void setYear(String year) {
 		this.year = year;
 	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	
 
 }

@@ -30,18 +30,22 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 
 
 	@Override
-	public Boolean saveOrUpdate(AchievementDetailRequest achievementDetailRequest) {
+	public Boolean saveOrUpdate(List<AchievementDetailRequest> achievementDetailRequests) {
 		// TODO Auto-generated method stub
 		try { 
-			AchievementDetail achievementDetail= new AchievementDetail();
-			BeanUtils.copyProperties(achievementDetailRequest, achievementDetail);
-			achievementDetail.setApplicationId(loanApplicationRepository.findOne(achievementDetailRequest.getApplicationId()));
-			achievementDetail.setCreatedBy(achievementDetailRequest.getApplicationId());
-			achievementDetail.setCreatedDate(new Date());
-			achievementDetail.setModifiedBy(achievementDetailRequest.getApplicationId());
-			achievementDetail.setModifiedDate(new Date());
-			achievementDetail.setIsActive(true);
-			achievementDetailsRepository.save(achievementDetail);
+			
+			for (int i = 0; i < achievementDetailRequests.size(); i++) {
+				AchievementDetail achievementDetail= new AchievementDetail();
+				BeanUtils.copyProperties(achievementDetailRequests.get(i),achievementDetail);
+				if(achievementDetailRequests.get(i).getId()==null)
+				{
+					achievementDetail.setCreatedBy(achievementDetailRequests.get(i).getApplicationId());
+					achievementDetail.setCreatedDate(new Date());
+				}
+				achievementDetail.setModifiedBy(achievementDetailRequests.get(i).getApplicationId());
+				achievementDetail.setModifiedDate(new Date());
+				achievementDetailsRepository.save(achievementDetail);
+			}
 			return true;
 			}
 
@@ -54,13 +58,6 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	}
 
 
-	@Override
-	public AchievementDetailRequest getAchievementDetail(Long id) {
-		// TODO Auto-generated method stub
-		AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
-		BeanUtils.copyProperties(achievementDetailsRepository.findOne(id), achievementDetailRequest);
-		return achievementDetailRequest;
-	}
 
 
 	@Override
@@ -79,13 +76,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	}
 
 
-	@Override
-	public Boolean remove(Long id) {
-		// TODO Auto-generated method stub
-		Boolean flag;
-		flag=(achievementDetailsRepository.remove(id)>0)?true:false;
-		return flag;
-	}
+	
 
 	
 }
