@@ -15,6 +15,18 @@ public class SecurityCorporateDetailRequest implements Serializable {
 	private Long applicationId;
 
 	private String primarySecurityName;
+	
+	private Boolean isActive = true;
+	
+	
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	public SecurityCorporateDetailRequest() {
 	}

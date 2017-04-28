@@ -31,6 +31,19 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	private Double pat;
 
 	private Double sales;
+	
+	private Boolean isActive = true;
+	
+	
+	
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	public PastFinancialEstimatesDetailRequest() {
 	}

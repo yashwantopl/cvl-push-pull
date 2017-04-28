@@ -24,7 +24,7 @@ public class FutureFinancialEstimatesDetailRequest implements Serializable {
 
 	private Double fixedAssets;
 
-	private Boolean isActive;
+	private Boolean isActive = true;
 
 	private Double longTermDebt;
 
@@ -33,6 +33,8 @@ public class FutureFinancialEstimatesDetailRequest implements Serializable {
 	private Double pat;
 
 	private Double sales;
+	
+	
 
 	public FutureFinancialEstimatesDetailRequest() {
 	}

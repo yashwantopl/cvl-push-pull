@@ -14,26 +14,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 
+/**
+ * @author Sanket
+ *
+ */
 @RestController
-@RequestMapping("/achievment_details")
-public class AchievmentDetailsController {
-
-	private static final Logger logger = LoggerFactory.getLogger(AchievmentDetailsController.class);
-
+@RequestMapping("/security_corporate_details")
+public class SecurityCorporateDetailsController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsController.class);
+	
 	@Autowired
-	private AchievmentDetailsService achievmentDetailsService;
-
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
 	}
-
+	
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest) {
 		// request must not be null
@@ -54,7 +58,7 @@ public class AchievmentDetailsController {
 		
 		try
 		{
-		boolean response = achievmentDetailsService.saveOrUpdate(frameRequest);
+		boolean response = securityCorporateDetailsService.saveOrUpdate(frameRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -65,7 +69,7 @@ public class AchievmentDetailsController {
 		}
 		}
 		catch (Exception e) {
-			   logger.error("Error while saving Achievement Details==>", e);
+			   logger.error("Error while saving Security Corporate Details==>", e);
 			   return new ResponseEntity<LoansResponse>(
 			     new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 			     HttpStatus.OK);
@@ -78,12 +82,12 @@ public class AchievmentDetailsController {
 		// request must not be null
 		  try {
 		   if (id == null) {
-		    logger.warn("ID Require to get Achievement Details ==>" + id);
+		    logger.warn("ID Require to get Security Corporate Details ==>" + id);
 		    return new ResponseEntity<LoansResponse>(
 		      new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		   }
 
-		   List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailList(id);
+		   List<SecurityCorporateDetailRequest> response = securityCorporateDetailsService.getsecurityCorporateDetailsList(id);
 		   if (response != null && !response.isEmpty()) {
 		    LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		    loansResponse.setListData(response);
@@ -94,13 +98,12 @@ public class AchievmentDetailsController {
 		      HttpStatus.OK);
 		   }
 		  } catch (Exception e) {
-		   logger.error("Error while getting Achievement Details==>", e);
+		   logger.error("Error while getting Security Corporate Details==>", e);
 		   return new ResponseEntity<LoansResponse>(
 		     new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 		     HttpStatus.INTERNAL_SERVER_ERROR);
 		  }
 
 	}
-	
-	
+
 }

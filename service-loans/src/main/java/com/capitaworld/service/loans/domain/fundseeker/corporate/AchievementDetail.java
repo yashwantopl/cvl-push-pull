@@ -53,6 +53,7 @@ public class AchievementDetail implements Serializable {
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="modified_date")
 	private Date modifiedDate;
 
 	private String year;
