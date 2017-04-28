@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 
 /**

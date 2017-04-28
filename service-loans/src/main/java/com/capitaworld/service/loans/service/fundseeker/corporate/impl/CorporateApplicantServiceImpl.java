@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -37,29 +38,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public boolean save(CorporateApplicantRequest applicantRequest) {
 		CorporateApplicantDetail applicantDetail = null;
 		try {
-			if (applicantRequest.getApplicationId() != null) {
-				applicantDetail = applicantRepository.findOne(applicantRequest.getApplicationId());
-				applicantDetail.setId(applicantRequest.getApplicationId());
-				applicantDetail.setModifiedBy(applicantDetail.getId());
-				applicantDetail.setModifiedDate(new Date());
-				// inactive previous before adding new Data
-				int updatedRecords = industrySectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
-				logger.info("updated industrySector ==>" + updatedRecords);
-				// inactive previous before adding new Data
-				int subSecors = subSectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
-				logger.info("updated subSector==>" + subSecors);
-			} else {
-				applicantDetail = new CorporateApplicantDetail();
-				applicantDetail.setCreatedBy(1l);
-				applicantDetail.setCreatedDate(new Date());
-				applicantDetail.setIsActive(true);
-				applicantDetail.setCreatedBy(applicantRequest.getUserId());
-				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			// application id must not be null
+			applicantDetail = applicantRepository.findOne(applicantRequest.getId());
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			applicantDetail.setModifiedBy(applicantDetail.getId());
+			applicantDetail.setModifiedDate(new Date());
 
-			}
-			applicantDetail.setName(applicantRequest.getName());
-			applicantDetail.setCategoryCode(applicantRequest.getCategoryCode());
-			BeanUtils.copyProperties(applicantRequest, applicantDetail);
+			// inactive previous before adding new Data
+			int updatedRecords = industrySectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
+			logger.info("updated industrySector ==>" + updatedRecords);
+			// inactive previous before adding new Data
+			int subSecors = subSectorRepository.inActiveMappingByApplicationId(applicantDetail.getId());
+			logger.info("updated subSector==>" + subSecors);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
 			// industry data save

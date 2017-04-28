@@ -2,21 +2,14 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
-public class FinalWorkingCapitalLoanRequest implements Serializable {
+public class FinalWorkingCapitalLoanRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
 	private Integer competenceId;
-	// private Long creditRatingId;
-	// private Integer currencyId;
-	// private Integer denominationId;
-	// private String descriptionEnhancementLimit;
 	private Integer distributionAndMarketingTieUpsId;
 	private Integer environmentCertificationId;
 	private Integer existingShareHoldersId;
-	// private Long haveExistingLimit;
 	private Integer indiaDistributionNetworkId;
 	private Integer internalAuditId;
 	private Boolean isDependsMajorlyOnGovernment;
@@ -26,28 +19,12 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer marketShareTurnoverId;
 	private Integer marketingPositioningId;
 	private Integer productServicesPerseId;
-	// private String projectBrief;
 	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Boolean typeOfTechnologyCorporateId;
 	private Boolean isTechnologyTied;
-	private String name;
-	private String categoryCode;
-	private Double amount;
-	private Long productId;
-	private int tenure;
-	private Long userId;
-	// private Double collateralSecurityAmtTotal;
 
 	public FinalWorkingCapitalLoanRequest() {
-	}
-
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
 	}
 
 	public Integer getAccountingSystemsId() {
@@ -201,53 +178,4 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	public void setIsTechnologyTied(Boolean isTechnologyTied) {
 		this.isTechnologyTied = isTechnologyTied;
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCategoryCode() {
-		return categoryCode;
-	}
-
-	public void setCategoryCode(String categoryCode) {
-		this.categoryCode = categoryCode;
-	}
-
-	public Double getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Double amount) {
-		this.amount = amount;
-	}
-
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-	public int getTenure() {
-		return tenure;
-	}
-
-	public void setTenure(int tenure) {
-		this.tenure = tenure;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
 }

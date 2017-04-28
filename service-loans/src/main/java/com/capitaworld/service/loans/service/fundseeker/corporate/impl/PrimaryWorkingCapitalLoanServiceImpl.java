@@ -1,0 +1,40 @@
+package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
+
+import java.util.Date;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.model.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryWorkingCapitalLoanService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+
+@Service
+@Transactional
+public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapitalLoanService {
+
+	@Autowired
+	private PrimaryWorkingCapitalLoanDetailRepository primaryWCRepository;
+
+	@Override
+	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) {
+		PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository.findOne(capitalLoanRequest.getId());
+		capitalLoanDetail.setModifiedDate(new Date());
+		capitalLoanDetail.setModifiedBy(1l);
+		BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		primaryWCRepository.save(capitalLoanDetail);
+		return true;
+	}
+
+	@Override
+	public PrimaryWorkingCapitalLoanRequest get(Long id) {
+		PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
+		BeanUtils.copyProperties(primaryWCRepository.findOne(id), capitalLoanRequest);
+		return capitalLoanRequest;
+
+	}
+}

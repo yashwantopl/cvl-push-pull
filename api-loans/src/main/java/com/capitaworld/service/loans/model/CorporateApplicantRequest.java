@@ -12,10 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CorporateApplicantRequest implements Serializable {
+public class CorporateApplicantRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private Long applicationId;
 
 	private String aboutUs;
 
@@ -45,12 +43,6 @@ public class CorporateApplicantRequest implements Serializable {
 	private String websiteAddress;
 
 	private String landlineNo;
-	
-	private String categoryCode;
-	
-	private String name;
-	
-	private Long userId;
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -59,14 +51,6 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<Long> subsectors = Collections.emptyList();;
 
 	public CorporateApplicantRequest() {
-	}
-
-	public Long getApplicationId() {
-		return this.applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
 	}
 
 	public String getAboutUs() {
@@ -213,29 +197,4 @@ public class CorporateApplicantRequest implements Serializable {
 		this.landlineNo = landlineNo;
 	}
 
-	public String getCategoryCode() {
-		return categoryCode;
-	}
-
-	public void setCategoryCode(String categoryCode) {
-		this.categoryCode = categoryCode;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	
-	
 }

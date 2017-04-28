@@ -40,18 +40,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 	@Column(name = "created_date")
 	private Date createdDate;
 
-	// @Column(name="credit_rating_id")
-	// private Long creditRatingId;
-
-	// @Column(name="currency_id")
-	// private Integer currencyId;
-
-	// @Column(name="denomination_id")
-	// private Integer denominationId;
-
-	// @Column(name="description_enhancement_limit")
-	// private String descriptionEnhancementLimit;
-
 	@Column(name = "distribution_and_marketing_tie_ups_id")
 	private Integer distributionAndMarketingTieUpsId;
 
@@ -60,9 +48,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 
 	@Column(name = "existing_share_holders_id")
 	private Integer existingShareHoldersId;
-
-	// @Column(name="have_existing_limit")
-	// private Long haveExistingLimit;
 
 	@Column(name = "india_distribution_network_id")
 	private Integer indiaDistributionNetworkId;
@@ -101,10 +86,7 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
 
-	// @Lob
-	// @Column(name="project_brief")
-	// private String projectBrief;
-
+	
 	@Column(name = "technology_patented_id")
 	private Integer technologyPatentedId;
 
@@ -116,9 +98,6 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 
 	@Column(name = "is_technology_tied")
 	private Boolean isTechnologyTied;
-
-	// @Column(name="collateral_security_amt_total")
-	// private Double collateralSecurityAmtTotal;
 
 	public FinalWorkingCapitalLoanDetail() {
 	}

@@ -19,13 +19,12 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Long productId;
 
-	private int tenure;
+	private Integer tenure;
 
 	private Long userId;
+	
+	private Integer loanType;
 
-	private Integer currencyId;
-
-	private Integer denominationId;
 
 	public LoanApplicationRequest() {
 	}
@@ -74,11 +73,11 @@ public class LoanApplicationRequest implements Serializable {
 		this.productId = productId;
 	}
 
-	public int getTenure() {
-		return this.tenure;
+	public Integer getTenure() {
+		return tenure;
 	}
 
-	public void setTenure(int tenure) {
+	public void setTenure(Integer tenure) {
 		this.tenure = tenure;
 	}
 
@@ -90,19 +89,15 @@ public class LoanApplicationRequest implements Serializable {
 		this.userId = userId;
 	}
 
-	public Integer getCurrencyId() {
-		return currencyId;
+	public Integer getLoanType() {
+		return loanType;
 	}
 
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
+	public void setLoanType(Integer loanType) {
+		this.loanType = loanType;
 	}
 
-	public Integer getDenominationId() {
-		return denominationId;
-	}
+		
+	
 
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
-	}
 }

@@ -1,16 +1,16 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import java.util.Date;
-
 
 /**
  * The persistent class for the fp_term_loan_details database table.
  * 
  */
 public class TermLoanParameterRequest implements Serializable {
-	private static final Long serialVersionUID = 1L;
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7147132253130949658L;
 	private Long fpProductId;
 
 	private Integer currency;
@@ -109,7 +109,6 @@ public class TermLoanParameterRequest implements Serializable {
 	public void setFpProductId(Long fpProductId) {
 		this.fpProductId = fpProductId;
 	}
-
 
 	public Integer getCurrency() {
 		return this.currency;
@@ -431,7 +430,6 @@ public class TermLoanParameterRequest implements Serializable {
 		this.minTenure = minTenure;
 	}
 
-	
 	public Integer getProfitabilityHistory() {
 		return this.profitabilityHistory;
 	}

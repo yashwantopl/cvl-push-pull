@@ -63,11 +63,11 @@ public class LoansResponse implements Serializable{
 		this.data = data;
 	}
 
-	public List getListData() {
+	public List<?> getListData() {
 		return listData;
 	}
 
-	public void setListData(List listData) {
+	public void setListData(List<?> listData) {
 		this.listData = listData;
 	}
 	
