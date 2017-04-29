@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
@@ -22,9 +23,19 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 
 	@Override
 	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest) {
-		FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository.findOne(capitalLoanRequest.getId());
-		capitalLoanDetail.setModifiedDate(new Date());
-		capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
+		FinalWorkingCapitalLoanDetail capitalLoanDetail = null;
+		if (capitalLoanRequest.getId() != null && capitalLoanRequest.getApplicationId() != null) {
+			capitalLoanDetail = finalWCRepository.getByApplicationIDAndID(capitalLoanRequest.getApplicationId(),
+					capitalLoanRequest.getId());
+			capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
+			capitalLoanDetail.setModifiedDate(new Date());
+		} else {
+			capitalLoanDetail = new FinalWorkingCapitalLoanDetail();
+			capitalLoanDetail.setCreatedBy(capitalLoanRequest.getUserId());
+			capitalLoanDetail.setCreatedDate(new Date());
+			capitalLoanDetail.setIsActive(true);
+			capitalLoanDetail.setApplicationId(new LoanApplicationMaster(capitalLoanRequest.getApplicationId()));
+		}
 		BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
 		finalWCRepository.save(capitalLoanDetail);
 		return true;

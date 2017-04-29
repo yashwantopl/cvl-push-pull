@@ -2,8 +2,10 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
-public class FinalWorkingCapitalLoanRequest extends LoanApplicationRequest implements Serializable {
+public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private Long id;
+	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
 	private Integer competenceId;
@@ -23,8 +25,33 @@ public class FinalWorkingCapitalLoanRequest extends LoanApplicationRequest imple
 	private Integer technologyRequiresUpgradationId;
 	private Boolean typeOfTechnologyCorporateId;
 	private Boolean isTechnologyTied;
+	private Long userId;
 
 	public FinalWorkingCapitalLoanRequest() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	public Integer getAccountingSystemsId() {

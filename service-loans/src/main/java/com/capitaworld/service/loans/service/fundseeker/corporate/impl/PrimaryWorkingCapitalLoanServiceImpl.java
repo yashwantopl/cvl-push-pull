@@ -22,10 +22,11 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 
 	@Override
 	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) {
+		// ID must not be null
 		PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository.findOne(capitalLoanRequest.getId());
-		capitalLoanDetail.setModifiedDate(new Date());
-		capitalLoanDetail.setModifiedBy(1l);
 		BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
+		capitalLoanDetail.setModifiedDate(new Date());
 		primaryWCRepository.save(capitalLoanDetail);
 		return true;
 	}
@@ -35,6 +36,5 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 		PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
 		BeanUtils.copyProperties(primaryWCRepository.findOne(id), capitalLoanRequest);
 		return capitalLoanRequest;
-
 	}
 }

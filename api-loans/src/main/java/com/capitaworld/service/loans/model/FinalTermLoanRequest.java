@@ -6,15 +6,14 @@ import java.io.Serializable;
  * The persistent class for the fs_corporate_term_loan_details database table.
  * 
  */
-public class FinalTermLoanRequest extends LoanApplicationRequest implements Serializable {
+public class FinalTermLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	private Long id;
+	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
 	private Integer competenceId;
-//	private Long creditRatingId;
-//	private Integer currencyId;
-//	private Integer denominationId;
 	private Integer distributionAndMarketingTieUpsId;
 	private Integer environmentCertificationId;
 	private Integer existingShareHoldersId;
@@ -27,21 +26,32 @@ public class FinalTermLoanRequest extends LoanApplicationRequest implements Seri
 	private Integer marketShareTurnoverId;
 	private Integer marketingPositioningId;
 	private Integer productServicesPerseId;
-	private String projectBrief;
+	// private String projectBrief;
 	private Long technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Integer technologyTypeId;
 	private boolean whetherTechnologyIsTied;
-//	private String name;
-//	private String categoryCode;
-//	private Double amount;
-//	private Long productId;
-//	private int tenure;
-//	private Long userId;
-	private Double totalCostOfEstimate;
-	private Double totalMeansOfFinance;
+	// private Double totalCostOfEstimate;
+	// private Double totalMeansOfFinance;
+	private Long userId;
 
 	public FinalTermLoanRequest() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	public Integer getAccountingSystemsId() {
@@ -164,14 +174,6 @@ public class FinalTermLoanRequest extends LoanApplicationRequest implements Seri
 		this.productServicesPerseId = productServicesPerseId;
 	}
 
-	public String getProjectBrief() {
-		return projectBrief;
-	}
-
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
-	}
-
 	public Long getTechnologyPatentedId() {
 		return technologyPatentedId;
 	}
@@ -204,20 +206,12 @@ public class FinalTermLoanRequest extends LoanApplicationRequest implements Seri
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
 
-	public Double getTotalCostOfEstimate() {
-		return totalCostOfEstimate;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
-		this.totalCostOfEstimate = totalCostOfEstimate;
-	}
-
-	public Double getTotalMeansOfFinance() {
-		return totalMeansOfFinance;
-	}
-
-	public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
-		this.totalMeansOfFinance = totalMeansOfFinance;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 }

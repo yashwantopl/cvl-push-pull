@@ -47,8 +47,8 @@ public class TermLoanController {
 					HttpStatus.OK);
 		}
 
-		if (termLoanRequest.getId() == null) {
-			logger.warn("ID can not be empty ==>" + termLoanRequest.getId());
+		if (termLoanRequest.getApplicationId() == null) {
+			logger.warn("Application ID can not be empty ==>" + termLoanRequest.getId());
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}

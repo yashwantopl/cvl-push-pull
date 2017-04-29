@@ -1,11 +1,19 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import java.util.Date;
 
 /**
  * The persistent class for the fs_corporate_primary_wc_loan_details database
@@ -21,7 +29,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
-	
+
 	@Column(name = "created_by")
 	private Long createdBy;
 

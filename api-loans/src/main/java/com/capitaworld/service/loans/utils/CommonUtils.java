@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public class CommonUtils {
 
-	public static boolean isListNullOrEmpty(Collection data) {
+	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
 
@@ -14,8 +14,7 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3),
-		CAR_LOAN(4);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(4);
 		private int value;
 
 		private LoanType(int value) {
@@ -25,6 +24,20 @@ public class CommonUtils {
 		public int getValue() {
 			return value;
 		}
+
+		public static LoanType getType(Integer x) {
+			switch (x) {
+			case 1:
+				return WORKING_CAPITAL;
+			case 2:
+				return LoanType.TERM_LOAN;
+			}
+			return null;
+		}
+
+		// public static LoanType getLoanById(int value){
+		//
+		// }
 	}
 
 	// // start Loan Type Common Variable
@@ -51,7 +64,6 @@ public class CommonUtils {
 	// }
 
 	public interface IgnorableCopy {
-		public static final String[] CORPORATE = { "categoryCode", "productId", "name", "tenure", "userId",
-				"isActive" };
+		public static final String[] CORPORATE = { "userId" };
 	}
 }

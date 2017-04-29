@@ -24,8 +24,8 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest) {
 		PrimaryTermLoanDetail termLoanDetail = primaryTLRepository.findOne(termLoanRequest.getId());
 		BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		termLoanDetail.setModifiedBy(termLoanRequest.getUserId());
 		termLoanDetail.setModifiedDate(new Date());
-		termLoanDetail.setModifiedBy(1l);
 		primaryTLRepository.save(termLoanDetail);
 		return true;
 	}

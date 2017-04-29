@@ -46,9 +46,9 @@ public class WorkingCapitalLoanController {
 						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
-			if (capitalLoanRequest.getId() == null) {
-				logger.warn("ID can not be empty ==>" + capitalLoanRequest.getId());
+
+			if (capitalLoanRequest.getApplicationId() == null) {
+				logger.warn("Application ID can not be empty ==>" + capitalLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -127,6 +127,7 @@ public class WorkingCapitalLoanController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error while saving Primary Working Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),

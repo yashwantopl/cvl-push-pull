@@ -22,9 +22,14 @@ public class LoanApplicationRequest implements Serializable {
 	private Integer tenure;
 
 	private Long userId;
-	
-	private Integer loanType;
 
+	private String loanTypeMain;
+
+	private String loanType;
+	
+	private Integer currencyId;
+	
+	private Integer denominationId;
 
 	public LoanApplicationRequest() {
 	}
@@ -89,15 +94,36 @@ public class LoanApplicationRequest implements Serializable {
 		this.userId = userId;
 	}
 
-	public Integer getLoanType() {
+	public String getLoanTypeMain() {
+		return loanTypeMain;
+	}
+
+	public void setLoanTypeMain(String loanTypeMain) {
+		this.loanTypeMain = loanTypeMain;
+	}
+
+	public String getLoanType() {
 		return loanType;
 	}
 
-	public void setLoanType(Integer loanType) {
+	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
 
-		
-	
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
 
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public Integer getDenominationId() {
+		return denominationId;
+	}
+
+	public void setDenominationId(Integer denominationId) {
+		this.denominationId = denominationId;
+	}
+	
 }
