@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -26,6 +28,7 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Boolean typeOfTechnologyCorporateId;
 	private Boolean isTechnologyTied;
 	private Long userId;
+	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
 	public FinalWorkingCapitalLoanRequest() {
 	}
@@ -205,4 +208,13 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	public void setIsTechnologyTied(Boolean isTechnologyTied) {
 		this.isTechnologyTied = isTechnologyTied;
 	}
+
+	public List<Integer> getOverseasNetworkIds() {
+		return overseasNetworkIds;
+	}
+
+	public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
+		this.overseasNetworkIds = overseasNetworkIds;
+	}
+
 }

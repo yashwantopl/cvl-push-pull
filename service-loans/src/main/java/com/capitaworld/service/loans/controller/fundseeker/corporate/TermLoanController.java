@@ -36,7 +36,7 @@ public class TermLoanController {
 		return "Ping Succeed";
 	}
 
-	@RequestMapping(value = "/final/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FinalTermLoanRequest termLoanRequest) {
 		System.out.println("111");
 		// request must not be null
@@ -50,7 +50,7 @@ public class TermLoanController {
 		if (termLoanRequest.getApplicationId() == null) {
 			logger.warn("Application ID can not be empty ==>" + termLoanRequest.getId());
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 
 		boolean response = finalTLService.saveOrUpdate(termLoanRequest);
@@ -65,7 +65,7 @@ public class TermLoanController {
 
 	}
 
-	@RequestMapping(value = "/final/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${final}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id) {
 		// request must not be null
 		try {
@@ -93,7 +93,7 @@ public class TermLoanController {
 		}
 	}
 
-	@RequestMapping(value = "/primary/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryTermLoanRequest termLoanRequest) {
 		try {
 			// request must not be null
@@ -105,9 +105,9 @@ public class TermLoanController {
 			}
 
 			if (termLoanRequest.getId() == null) {
-				logger.warn("ID can not be empty ==>" + termLoanRequest.getId());
+				logger.warn("ID must not be empty ==>" + termLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -129,7 +129,7 @@ public class TermLoanController {
 		}
 	}
 
-	@RequestMapping(value = "/primary/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id) {
 		// request must not be null
 		try {

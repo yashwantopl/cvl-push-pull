@@ -35,7 +35,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
 				LoanApplicationRequest loanApplicationRequest = (LoanApplicationRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, LoanApplicationRequest.class);
-				LoanType type = CommonUtils.LoanType.valueOf(loanApplicationRequest.getProductId().toString());
+				LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+				if (type == null) {
+					continue;
+				}
+				
 				switch (type) {
 				case WORKING_CAPITAL:
 					applicationMaster = new PrimaryWorkingCapitalLoanDetail();
@@ -44,9 +48,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationMaster = new PrimaryTermLoanDetail();
 					break;
 				default:
-					applicationMaster = new LoanApplicationMaster();
-					break;
+					continue;
 				}
+
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
 				applicationMaster.setCreatedBy(loanApplicationRequest.getUserId());
 				applicationMaster.setCreatedDate(new Date());

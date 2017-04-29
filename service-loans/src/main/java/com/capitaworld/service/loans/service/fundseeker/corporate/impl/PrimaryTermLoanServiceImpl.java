@@ -23,6 +23,9 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	@Override
 	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest) {
 		PrimaryTermLoanDetail termLoanDetail = primaryTLRepository.findOne(termLoanRequest.getId());
+		if (termLoanDetail == null) {
+			return false;
+		}
 		BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
 		termLoanDetail.setModifiedBy(termLoanRequest.getUserId());
 		termLoanDetail.setModifiedDate(new Date());
@@ -32,8 +35,12 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 
 	@Override
 	public PrimaryTermLoanRequest get(Long id) {
+		PrimaryTermLoanDetail loanDetail = primaryTLRepository.findOne(id);
+		if (loanDetail == null) {
+			return null;
+		}
 		PrimaryTermLoanRequest capitalLoanRequest = new PrimaryTermLoanRequest();
-		BeanUtils.copyProperties(primaryTLRepository.findOne(id), capitalLoanRequest);
+		BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
 		return capitalLoanRequest;
 
 	}

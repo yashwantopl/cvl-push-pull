@@ -30,13 +30,13 @@ public class WorkingCapitalLoanController {
 	@Autowired
 	private PrimaryWorkingCapitalLoanService primaryWCService;
 
-	@RequestMapping(value = "/final/ping", method = RequestMethod.GET)
+	@RequestMapping(value = "${final}/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
 	}
 
-	@RequestMapping(value = "/final/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalWorkingCapitalLoanRequest capitalLoanRequest) {
 		try {
 			// request must not be null
@@ -48,9 +48,9 @@ public class WorkingCapitalLoanController {
 			}
 
 			if (capitalLoanRequest.getApplicationId() == null) {
-				logger.warn("Application ID can not be empty ==>" + capitalLoanRequest.getId());
+				logger.warn("Application ID must not be empty ==>" + capitalLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -71,7 +71,7 @@ public class WorkingCapitalLoanController {
 		}
 	}
 
-	@RequestMapping(value = "/final/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${final}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id) {
 		// request must not be null
 		try {
@@ -99,7 +99,7 @@ public class WorkingCapitalLoanController {
 		}
 	}
 
-	@RequestMapping(value = "/primary/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryWorkingCapitalLoanRequest capitalLoanRequest) {
 		try {
 			// request must not be null
@@ -111,9 +111,9 @@ public class WorkingCapitalLoanController {
 			}
 
 			if (capitalLoanRequest.getId() == null) {
-				logger.warn("ID can not be empty ==>" + capitalLoanRequest.getId());
+				logger.warn("ID must not be empty ==>" + capitalLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -135,7 +135,7 @@ public class WorkingCapitalLoanController {
 		}
 	}
 
-	@RequestMapping(value = "/primary/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id) {
 		// request must not be null
 		try {

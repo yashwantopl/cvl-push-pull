@@ -96,7 +96,7 @@ public class FinalWorkingCapitalLoanDetail implements Serializable {
 	@Column(name = "technology_requires_upgradation_id")
 	private Integer technologyRequiresUpgradationId;
 
-	@Column(name = "type_of_technology_corporate_id")
+	@Column(name = "technology_type_id")
 	private Boolean typeOfTechnologyCorporateId;
 
 	@Column(name = "is_technology_tied")

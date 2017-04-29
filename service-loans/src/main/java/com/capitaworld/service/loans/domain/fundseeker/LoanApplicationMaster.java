@@ -58,16 +58,16 @@ public class LoanApplicationMaster implements Serializable {
 	private String name;
 
 	@Column(name = "product_id")
-	private Long productId;
+	private Integer productId;
 
 	private Integer tenure;
 
 	@Column(name = "user_id")
 	private Long userId;
-	
+
 	@Column(name = "currency_id")
 	private Integer currencyId;
-	
+
 	@Column(name = "denomination_id")
 	private Integer denominationId;
 
@@ -155,11 +155,11 @@ public class LoanApplicationMaster implements Serializable {
 		this.name = name;
 	}
 
-	public Long getProductId() {
-		return this.productId;
+	public Integer getProductId() {
+		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 
@@ -202,5 +202,5 @@ public class LoanApplicationMaster implements Serializable {
 	public void setDenominationId(Integer denominationId) {
 		this.denominationId = denominationId;
 	}
-	
+
 }

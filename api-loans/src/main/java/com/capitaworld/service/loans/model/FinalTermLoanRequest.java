@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The persistent class for the fs_corporate_term_loan_details database table.
@@ -34,6 +36,7 @@ public class FinalTermLoanRequest implements Serializable {
 	// private Double totalCostOfEstimate;
 	// private Double totalMeansOfFinance;
 	private Long userId;
+	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
 	public FinalTermLoanRequest() {
 	}
@@ -212,6 +215,14 @@ public class FinalTermLoanRequest implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public List<Integer> getOverseasNetworkIds() {
+		return overseasNetworkIds;
+	}
+
+	public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
+		this.overseasNetworkIds = overseasNetworkIds;
 	}
 
 }
