@@ -10,8 +10,6 @@ import java.io.Serializable;
 public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long applicationId;
-
 	private Integer creditRatingId;
 
 	private String enhancementOfLimit;
@@ -27,14 +25,6 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 	private Integer denominationId;
 
 	public PrimaryWorkingCapitalLoanRequest() {
-	}
-
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
 	}
 
 	public Integer getCreditRatingId() {

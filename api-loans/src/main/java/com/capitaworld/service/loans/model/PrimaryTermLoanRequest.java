@@ -10,7 +10,6 @@ import java.io.Serializable;
 public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long applicationId;
 	private Integer creditRatingId;
 	private boolean isActive;
 	private String projectBrief;
@@ -87,11 +86,4 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 		this.denominationId = denominationId;
 	}
 
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
 }

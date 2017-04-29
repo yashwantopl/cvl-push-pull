@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
 import com.capitaworld.service.loans.model.FinalTermLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
@@ -22,9 +23,19 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 
 	@Override
 	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest) {
-		FinalTermLoanDetail termLoanDetail = termLoanDetailRepository.findOne(termLoanRequest.getId());
-		termLoanDetail.setModifiedBy(termLoanRequest.getUserId());
-		termLoanDetail.setModifiedDate(new Date());
+		FinalTermLoanDetail termLoanDetail = null;
+		if (termLoanRequest.getId() != null && termLoanRequest.getApplicationId() != null) {
+			termLoanDetail = termLoanDetailRepository.getByApplicationIDAndID(termLoanRequest.getApplicationId(),
+					termLoanRequest.getId());
+			termLoanDetail.setModifiedBy(termLoanRequest.getUserId());
+			termLoanDetail.setModifiedDate(new Date());
+		} else {
+			termLoanDetail = new FinalTermLoanDetail();
+			termLoanDetail.setCreatedBy(termLoanRequest.getUserId());
+			termLoanDetail.setCreatedDate(new Date());
+			termLoanDetail.setIsActive(true);
+			termLoanDetail.setApplicationId(new LoanApplicationMaster(termLoanRequest.getApplicationId()));
+		}
 		BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
 		termLoanDetail = termLoanDetailRepository.save(termLoanDetail);
 		return true;

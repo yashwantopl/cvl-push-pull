@@ -1,11 +1,21 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import java.util.Date;
 
 /**
  * The persistent class for the fs_corporate_applicant_details database table.
@@ -13,8 +23,12 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "fs_corporate_applicant_details")
-public class CorporateApplicantDetail extends LoanApplicationMaster implements Serializable {
+public class CorporateApplicantDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@OneToOne
 	@JoinColumn(name = "application_id")
@@ -118,6 +132,14 @@ public class CorporateApplicantDetail extends LoanApplicationMaster implements S
 	private String landlineNo;
 
 	public CorporateApplicantDetail() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public LoanApplicationMaster getApplicationId() {
