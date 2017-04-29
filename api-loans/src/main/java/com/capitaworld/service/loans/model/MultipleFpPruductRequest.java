@@ -7,26 +7,17 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FrameRequest implements Serializable{
+public class MultipleFpPruductRequest implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private Long applicationId;
 	
 	private Long userId;
 	
 	private List<Map<String, Object>> dataList;
 
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
-
+	
 	public List<Map<String, Object>> getDataList() {
 		return dataList;
 	}

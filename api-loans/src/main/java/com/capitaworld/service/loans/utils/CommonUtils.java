@@ -14,7 +14,7 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(4);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(4),PERSONAL_LOAN(5),LAP_LOAN(6),LAS_LOAN(7);
 		private int value;
 
 		private LoanType(int value) {
@@ -30,7 +30,7 @@ public class CommonUtils {
 			case 1:
 				return WORKING_CAPITAL;
 			case 2:
-				return LoanType.TERM_LOAN;
+				return TERM_LOAN;
 			}
 			return null;
 		}
@@ -65,5 +65,6 @@ public class CommonUtils {
 
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId" };
+		public static final String[] FP_PRODUCT = { "userId" };
 	}
 }

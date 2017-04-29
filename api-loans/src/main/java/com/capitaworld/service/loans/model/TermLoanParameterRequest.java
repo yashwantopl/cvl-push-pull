@@ -6,18 +6,15 @@ import java.io.Serializable;
  * The persistent class for the fp_term_loan_details database table.
  * 
  */
-public class TermLoanParameterRequest implements Serializable {
+public class TermLoanParameterRequest extends ProductMasterRequest implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7147132253130949658L;
-	private Long fpProductId;
 
 	private Integer currency;
 
 	private Integer denomination;
-
-	private Boolean isActive;
 
 	private Boolean isCollateralDisplay;
 
@@ -96,18 +93,10 @@ public class TermLoanParameterRequest implements Serializable {
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
+	
 
 	private Long uninterestedIndustry;
-
 	public TermLoanParameterRequest() {
-	}
-
-	public Long getFpProductId() {
-		return this.fpProductId;
-	}
-
-	public void setFpProductId(Long fpProductId) {
-		this.fpProductId = fpProductId;
 	}
 
 	public Integer getCurrency() {
@@ -124,14 +113,6 @@ public class TermLoanParameterRequest implements Serializable {
 
 	public void setDenomination(Integer denomination) {
 		this.denomination = denomination;
-	}
-
-	public Boolean getIsActive() {
-		return this.isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
 	}
 
 	public Boolean getIsCollateralDisplay() {
@@ -453,5 +434,7 @@ public class TermLoanParameterRequest implements Serializable {
 	public void setUninterestedIndustry(Long uninterestedIndustry) {
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
+
+	
 
 }

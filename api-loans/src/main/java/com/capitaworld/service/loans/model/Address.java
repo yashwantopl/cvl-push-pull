@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Address {
 
 	private Long cityId;
