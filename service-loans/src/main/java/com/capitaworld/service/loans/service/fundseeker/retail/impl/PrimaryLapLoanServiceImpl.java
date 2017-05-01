@@ -28,7 +28,7 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			return false;
 		}
 		BeanUtils.copyProperties(lapLoanDetailRequest, primaryLapLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-		primaryLapLoanDetail.setModifiedBy(primaryLapLoanDetail.getUserId());
+		primaryLapLoanDetail.setModifiedBy(lapLoanDetailRequest.getUserId());
 		primaryLapLoanDetail.setModifiedDate(new Date());
 		primaryLapLoanDetailRepository.save(primaryLapLoanDetail);
 		return true;
