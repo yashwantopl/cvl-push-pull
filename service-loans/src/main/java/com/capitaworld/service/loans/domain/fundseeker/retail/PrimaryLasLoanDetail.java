@@ -21,13 +21,12 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  */
 @Entity
 @Table(name="fs_retail_las_loan_details")
-@NamedQuery(name="FsRetailLasLoanDetail.findAll", query="SELECT f FROM FsRetailLasLoanDetail f")
 public class PrimaryLasLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
 	@JoinColumn(name = "application_id")
-	private Long applicationId;
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -55,13 +54,19 @@ public class PrimaryLasLoanDetail extends LoanApplicationMaster implements Seria
 	public PrimaryLasLoanDetail() {
 	}
 
-	public Long getApplicationId() {
-		return this.applicationId;
+	
+
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
+
+
 
 	public Long getCreatedBy() {
 		return this.createdBy;

@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,12 +20,11 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  */
 @Entity
 @Table(name="fs_retail_lap_loan_details")
-@NamedQuery(name="FsRetailLapLoanDetail.findAll", query="SELECT f FROM FsRetailLapLoanDetail f")
 public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@OneToOne
 	@JoinColumn(name = "application_id")
-	private Long applicationId;
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="address_city")
 	private Integer addressCity;
@@ -104,13 +102,16 @@ public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Seria
 	public PrimaryLapLoanDetail() {
 	}
 
-	public Long getApplicationId() {
-		return this.applicationId;
+	
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
+
 
 	public Integer getAddressCity() {
 		return this.addressCity;

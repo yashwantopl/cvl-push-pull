@@ -14,13 +14,12 @@ import java.util.Date;
  */
 @Entity
 @Table(name="fs_retail_personal_loan_details")
-@NamedQuery(name="FsRetailPersonalLoanDetail.findAll", query="SELECT f FROM FsRetailPersonalLoanDetail f")
 public class PrimaryPersonalLoanDetail extends LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
 	@JoinColumn(name = "application_id")
-	private Long applicationId;
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -48,13 +47,19 @@ public class PrimaryPersonalLoanDetail extends LoanApplicationMaster implements 
 	public PrimaryPersonalLoanDetail() {
 	}
 
-	public Long getApplicationId() {
-		return this.applicationId;
+	
+
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
+
+
 
 	public Long getCreatedBy() {
 		return this.createdBy;
