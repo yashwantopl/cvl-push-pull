@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
@@ -105,6 +106,26 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	private static void copyAddressFromDomainToRequest(RetailApplicantDetail from, RetailApplicantRequest to) {
-
+		Address address = new Address();
+		address.setPremiseNumber(from.getPermanentPremiseNumberName());
+		address.setLandMark(from.getPermanentLandMark());
+		address.setStreetName(from.getAddressStreetName());
+		address.setCityId(from.getPermanentCityId());
+		address.setStateId(from.getPermanentStateId());
+		address.setCountryId(from.getPermanentCountryId());
+		address.setPincode(from.getPermanentPincode());
+		to.setFirstAddress(address);
+		if (from.getAddressSameAs()) {
+			to.setSecondAddress(address);
+		} else {
+			address = new Address();
+			address.setPremiseNumber(from.getOfficePremiseNumberName());
+			address.setLandMark(from.getOfficeLandMark());
+			address.setStreetName(from.getPermanentStreetName());
+			address.setCityId(from.getOfficeCityId());
+			address.setStateId(from.getOfficeStateId());
+			address.setCountryId(from.getOfficeCountryId());
+			address.setPincode(from.getOfficePincode());
+		}
 	}
 }

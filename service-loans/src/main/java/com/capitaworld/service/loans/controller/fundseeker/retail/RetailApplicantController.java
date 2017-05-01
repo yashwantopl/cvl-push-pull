@@ -43,7 +43,7 @@ public class RetailApplicantController {
 		if (applicantRequest.getApplicationId() == null) {
 			logger.warn("Application Id can not be empty ==>", applicantRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 
 		}

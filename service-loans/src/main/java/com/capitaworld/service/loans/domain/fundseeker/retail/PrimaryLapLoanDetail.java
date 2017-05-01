@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
@@ -50,7 +48,6 @@ public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="created_by")
 	private Long createdBy;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="created_date")
 	private Date createdDate;
 
@@ -69,7 +66,6 @@ public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="modified_by")
 	private Long modifiedBy;
 
-	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
