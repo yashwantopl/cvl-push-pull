@@ -6,14 +6,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.LasParameter;
-import com.capitaworld.service.loans.model.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.LasParameterRequest;
-import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
-import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.LasLoanParameterService;
 
 @Service

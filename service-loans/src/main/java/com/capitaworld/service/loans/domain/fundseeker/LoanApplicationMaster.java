@@ -25,7 +25,7 @@ import javax.persistence.TemporalType;
 @Table(name = "fs_loan_application_master")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQuery(name = "LoanApplicationMaster.findAll", query = "SELECT f FROM LoanApplicationMaster f")
-public abstract class LoanApplicationMaster implements Serializable {
+public class LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -58,12 +58,18 @@ public abstract class LoanApplicationMaster implements Serializable {
 	private String name;
 
 	@Column(name = "product_id")
-	private Long productId;
+	private Integer productId;
 
 	private Integer tenure;
 
 	@Column(name = "user_id")
 	private Long userId;
+
+	@Column(name = "currency_id")
+	private Integer currencyId;
+
+	@Column(name = "denomination_id")
+	private Integer denominationId;
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
@@ -149,11 +155,11 @@ public abstract class LoanApplicationMaster implements Serializable {
 		this.name = name;
 	}
 
-	public Long getProductId() {
-		return this.productId;
+	public Integer getProductId() {
+		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 
@@ -181,13 +187,20 @@ public abstract class LoanApplicationMaster implements Serializable {
 		this.applicationStatusMaster = applicationStatusMaster;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanApplicationMaster [id=" + id + ", amount=" + amount + ", categoryCode=" + categoryCode
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", isActive=" + isActive
-				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name + ", productId="
-				+ productId + ", tenure=" + tenure + ", userId=" + userId + ", applicationStatusMaster="
-				+ applicationStatusMaster + "]";
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public Integer getDenominationId() {
+		return denominationId;
+	}
+
+	public void setDenominationId(Integer denominationId) {
+		this.denominationId = denominationId;
 	}
 
 }

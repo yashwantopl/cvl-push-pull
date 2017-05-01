@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,12 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @Service
@@ -28,17 +31,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest) {
 		try {
+			LoanApplicationMaster applicationMaster = null;
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
 				LoanApplicationRequest loanApplicationRequest = (LoanApplicationRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, LoanApplicationRequest.class);
-				if (loanApplicationRequest.getLoanType() == CommonUtils.LoanType.CORPORATE) {
-					CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
-					BeanUtils.copyProperties(loanApplicationRequest, applicantDetail);
-					loanApplicationRepository.save(applicantDetail);
-
-				} else if (loanApplicationRequest.getLoanType() == CommonUtils.LoanType.RETAIL) {
-
+				LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+				if (type == null) {
+					continue;
 				}
+				
+				switch (type) {
+				case WORKING_CAPITAL:
+					applicationMaster = new PrimaryWorkingCapitalLoanDetail();
+					break;
+				case TERM_LOAN:
+					applicationMaster = new PrimaryTermLoanDetail();
+					break;
+				default:
+					continue;
+				}
+
+				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
+				applicationMaster.setCreatedBy(loanApplicationRequest.getUserId());
+				applicationMaster.setCreatedDate(new Date());
+				applicationMaster.setIsActive(true);
+				loanApplicationRepository.save(applicationMaster);
 			}
 			return true;
 		}

@@ -1,7 +1,7 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Date;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,36 +10,37 @@ import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.model.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 public class TermLoanParameterServiceImpl implements TermLoanParameterService {
-	private static final Logger logger = LoggerFactory.getLogger(TermLoanParameterServiceImpl.class.getName());
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
+
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
 		// TODO Auto-generated method stub
-		try { 
-			TermLoanParameter termLoanParameter= new TermLoanParameter();
-			BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
+		TermLoanParameter termLoanParameter = null;
 
-			termLoanParameter = termLoanParameterRepository.save(termLoanParameter);
-			return true;
-			}
-
-		 catch (Exception e) {
-			logger.info("Exception Throw while json parse in save TermLoanParameter :-");
-			e.printStackTrace();
+		termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
+		if (termLoanParameter == null) {
 			return false;
 		}
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getId());
+		termLoanParameter.setModifiedDate(new Date());
+		termLoanParameterRepository.save(termLoanParameter);
+		return true;
+
 	}
+
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
 		// TODO Auto-generated method stub
-		return null;
+		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
+		TermLoanParameter loanParameter = termLoanParameterRepository.getTermLoanParameter(id);
+		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
+		return termLoanParameterRequest;
 	}
-	
-	
-	
 
 }

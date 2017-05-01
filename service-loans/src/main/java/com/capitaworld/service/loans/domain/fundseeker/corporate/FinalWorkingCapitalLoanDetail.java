@@ -17,8 +17,12 @@ import java.util.Date;
 
 @Entity
 @Table(name = "fs_corporate_final_wc_loan_details")
-public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster implements Serializable {
+public class FinalWorkingCapitalLoanDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@OneToOne
 	@JoinColumn(name = "application_id")
@@ -86,20 +90,27 @@ public class FinalWorkingCapitalLoanDetail extends LoanApplicationMaster impleme
 	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
 
-	
 	@Column(name = "technology_patented_id")
 	private Integer technologyPatentedId;
 
 	@Column(name = "technology_requires_upgradation_id")
 	private Integer technologyRequiresUpgradationId;
 
-	@Column(name = "type_of_technology_corporate_id")
+	@Column(name = "technology_type_id")
 	private Boolean typeOfTechnologyCorporateId;
 
 	@Column(name = "is_technology_tied")
 	private Boolean isTechnologyTied;
 
 	public FinalWorkingCapitalLoanDetail() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public LoanApplicationMaster getApplicationId() {

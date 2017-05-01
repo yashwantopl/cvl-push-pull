@@ -38,17 +38,15 @@ public class CorporateApplicantController {
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
-		
-		if(applicantRequest.getId()==null)
-		{
-			logger.warn("Application Idcan not be empty ==>", applicantRequest);
+
+		if (applicantRequest.getApplicationId() == null) {
+			logger.warn("Application Id can not be empty ==>", applicantRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
-			
+
 		}
-		
-		
+
 		boolean response = applicantService.save(applicantRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

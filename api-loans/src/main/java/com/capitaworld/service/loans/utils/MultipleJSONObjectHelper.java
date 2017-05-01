@@ -6,7 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser.Feature;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 /**
  * Created by win7 on 11/16/2016.
@@ -35,6 +39,7 @@ public class MultipleJSONObjectHelper implements Serializable {
 
 	public static <T> T getObjectFromMap(Map map, Class<?> clazz) throws IOException {
 		final ObjectMapper mapper = new ObjectMapper(); // jackson's
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return (T) mapper.convertValue(map, clazz);
 	}
 

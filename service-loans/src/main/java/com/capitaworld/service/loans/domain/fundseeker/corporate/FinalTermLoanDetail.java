@@ -1,20 +1,33 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import java.util.Date;
 
 /**
  * The persistent class for the fs_corporate_term_loan_details database table.
  * 
  */
 @Entity
-@Table(name = "fs_corporate_term_loan_details")
-public class FinalTermLoanDetail extends LoanApplicationMaster implements Serializable {
+@Table(name = "fs_corporate_final_term_loan_details")
+public class FinalTermLoanDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	@OneToOne
 	@JoinColumn(name = "application_id")
@@ -36,14 +49,14 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name = "credit_rating_id")
-	private Long creditRatingId;
+	// @Column(name = "credit_rating_id")
+	// private Long creditRatingId;
 
-	@Column(name = "currency_id")
-	private Integer currencyId;
-
-	@Column(name = "denomination_id")
-	private Integer denominationId;
+	// @Column(name = "currency_id")
+	// private Integer currencyId;
+	//
+	// @Column(name = "denomination_id")
+	// private Integer denominationId;
 
 	@Column(name = "distribution_and_marketing_tie_ups_id")
 	private Integer distributionAndMarketingTieUpsId;
@@ -91,9 +104,9 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
 
-	@Lob
-	@Column(name = "project_brief")
-	private String projectBrief;
+	// @Lob
+	// @Column(name = "project_brief")
+	// private String projectBrief;
 
 	@Column(name = "technology_patented_id")
 	private Long technologyPatentedId;
@@ -107,13 +120,21 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 	@Column(name = "is_technology_tied")
 	private boolean whetherTechnologyIsTied;
 
-	@Column(name = "total_cost_of_estimate")
-	private Double totalCostOfEstimate;
+	// @Column(name = "total_cost_of_estimate")
+	// private Double totalCostOfEstimate;
 
-	@Column(name = "total_means_of_finance")
-	private Double totalMeansOfFinance;
+	// @Column(name = "total_means_of_finance")
+	// private Double totalMeansOfFinance;
 
 	public FinalTermLoanDetail() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public LoanApplicationMaster getApplicationId() {
@@ -162,30 +183,6 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
-	}
-
-	public Long getCreditRatingId() {
-		return this.creditRatingId;
-	}
-
-	public void setCreditRatingId(Long creditRatingId) {
-		this.creditRatingId = creditRatingId;
-	}
-
-	public Integer getCurrencyId() {
-		return this.currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public Integer getDenominationId() {
-		return this.denominationId;
-	}
-
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
 	}
 
 	public Integer getDistributionAndMarketingTieUpsId() {
@@ -308,20 +305,12 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 		this.productServicesPerseId = productServicesPerseId;
 	}
 
-	public String getProjectBrief() {
-		return this.projectBrief;
-	}
-
 	public Integer getTechnologyTypeId() {
 		return technologyTypeId;
 	}
 
 	public void setTechnologyTypeId(Integer technologyTypeId) {
 		this.technologyTypeId = technologyTypeId;
-	}
-
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
 	}
 
 	public Long getTechnologyPatentedId() {
@@ -347,21 +336,4 @@ public class FinalTermLoanDetail extends LoanApplicationMaster implements Serial
 	public void setWhetherTechnologyIsTied(boolean whetherTechnologyIsTied) {
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
-
-	public Double getTotalCostOfEstimate() {
-		return totalCostOfEstimate;
-	}
-
-	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
-		this.totalCostOfEstimate = totalCostOfEstimate;
-	}
-
-	public Double getTotalMeansOfFinance() {
-		return totalMeansOfFinance;
-	}
-
-	public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
-		this.totalMeansOfFinance = totalMeansOfFinance;
-	}
-
 }

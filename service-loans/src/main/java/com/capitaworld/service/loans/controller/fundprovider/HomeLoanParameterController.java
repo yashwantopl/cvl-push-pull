@@ -11,13 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.CarLoanParameterRequest;
 import com.capitaworld.service.loans.model.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.TermLoanParameterRequest;
-import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 
 @RestController
 @RequestMapping("/home_parameter")

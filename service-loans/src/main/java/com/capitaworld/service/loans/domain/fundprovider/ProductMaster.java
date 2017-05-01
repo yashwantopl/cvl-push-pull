@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 @Table(name="fp_product_master")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class ProductMaster implements Serializable {
+public abstract class ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -52,7 +52,7 @@ public class ProductMaster implements Serializable {
 	private Date modifiedDate;
 
 	@Column(name="is_active")
-	private Boolean isActive;
+	private Boolean isActive=true;
 
 	
 	public ProductMaster() {
