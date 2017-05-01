@@ -52,9 +52,9 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private List<Long> industrylist = Collections.emptyList();
 
-	private List<Long> sectorlist = Collections.emptyList();;
+	private List<Long> sectorlist = Collections.emptyList();
 
-	private List<Long> subsectors = Collections.emptyList();;
+	private List<Long> subsectors = Collections.emptyList();
 
 	public CorporateApplicantRequest() {
 	}

@@ -13,8 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
 /**
  * The persistent class for the fs_corporate_overseas_network_mapping_details
  * database table.

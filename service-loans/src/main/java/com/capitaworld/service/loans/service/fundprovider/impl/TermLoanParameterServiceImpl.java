@@ -2,8 +2,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 public class TermLoanParameterServiceImpl implements TermLoanParameterService {
-	private static final Logger logger = LoggerFactory.getLogger(TermLoanParameterServiceImpl.class.getName());
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
 
@@ -24,26 +21,24 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
 		// TODO Auto-generated method stub
 		TermLoanParameter termLoanParameter = null;
-		
-			termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
-			if (termLoanParameter == null) {
-				return false;
-			}
-			BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
-			termLoanParameter.setModifiedBy(termLoanParameterRequest.getId());
-			termLoanParameter.setModifiedDate(new Date());
-			termLoanParameterRepository.save(termLoanParameter);
-			return true;
-		
 
-		
+		termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
+		if (termLoanParameter == null) {
+			return false;
+		}
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getId());
+		termLoanParameter.setModifiedDate(new Date());
+		termLoanParameterRepository.save(termLoanParameter);
+		return true;
+
 	}
 
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
 		// TODO Auto-generated method stub
-		TermLoanParameterRequest termLoanParameterRequest=new TermLoanParameterRequest();
-		TermLoanParameter loanParameter=termLoanParameterRepository.getTermLoanParameter(id);
+		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
+		TermLoanParameter loanParameter = termLoanParameterRepository.getTermLoanParameter(id);
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		return termLoanParameterRequest;
 	}

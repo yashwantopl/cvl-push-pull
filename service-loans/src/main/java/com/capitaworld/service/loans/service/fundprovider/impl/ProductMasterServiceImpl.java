@@ -3,8 +3,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,14 +13,12 @@ import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @Service
 public class ProductMasterServiceImpl implements ProductMasterService {
-	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class.getName());
-
+	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
 
