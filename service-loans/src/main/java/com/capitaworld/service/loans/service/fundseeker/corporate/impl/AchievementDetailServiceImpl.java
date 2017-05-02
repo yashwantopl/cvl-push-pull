@@ -61,7 +61,6 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 
 	@Override
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId) {
-		// TODO Auto-generated method stub
 
 		List<AchievementDetail> achievementDetails = achievementDetailsRepository
 				.listAchievementFromAppId(applicationId);

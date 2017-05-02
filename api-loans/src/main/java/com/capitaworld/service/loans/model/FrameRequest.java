@@ -18,6 +18,18 @@ public class FrameRequest implements Serializable{
 	private Long userId;
 	
 	private List<Map<String, Object>> dataList;
+	
+	private int applicantType;
+
+	
+
+	public int getApplicantType() {
+		return applicantType;
+	}
+
+	public void setApplicantType(int applicantType) {
+		this.applicantType = applicantType;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
