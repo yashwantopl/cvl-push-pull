@@ -33,6 +33,19 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	private String qualification;
 
 	private Double totalExperience;
+	
+	private Boolean isActive = true;
+	
+	
+	
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
 
 	public PromotorBackgroundDetailRequest() {
 	}

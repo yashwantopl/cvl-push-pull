@@ -9,6 +9,11 @@ import java.io.Serializable;
  */
 public class ExistingProductDetailRequest implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Long id;
 
 	private String application;
@@ -16,6 +21,8 @@ public class ExistingProductDetailRequest implements Serializable {
 	private Long applicationId;
 
 	private String product;
+	
+	private Boolean isActive=true;
 
 	public ExistingProductDetailRequest() {
 	}
@@ -52,5 +59,14 @@ public class ExistingProductDetailRequest implements Serializable {
 	public void setProduct(String product) {
 		this.product = product;
 	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	
 
 }

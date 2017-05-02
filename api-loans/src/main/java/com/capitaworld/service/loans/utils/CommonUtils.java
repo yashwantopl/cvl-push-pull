@@ -51,4 +51,12 @@ public class CommonUtils {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode" };
 		public static final String[] FP_PRODUCT = { "userId" };
 	}
+	
+	
+	public interface ApplicantType{
+		public static final int APPLICANT = 1;
+		public static final int COAPPLICANT = 2;
+		public static final int GARRANTOR = 3;
+		
+	}
 }

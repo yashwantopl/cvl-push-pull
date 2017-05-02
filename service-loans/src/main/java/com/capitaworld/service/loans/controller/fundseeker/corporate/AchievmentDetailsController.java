@@ -84,7 +84,7 @@ public class AchievmentDetailsController {
 		   }
 
 		   List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailList(id);
-		   if (response != null) {
+		   if (response != null && !response.isEmpty()) {
 		    LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		    loansResponse.setListData(response);
 		    return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

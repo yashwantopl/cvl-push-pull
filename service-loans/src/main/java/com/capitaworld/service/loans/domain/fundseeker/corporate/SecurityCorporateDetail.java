@@ -8,9 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
 /**
@@ -28,8 +32,9 @@ public class SecurityCorporateDetail implements Serializable {
 
 	private Double amount;
 
-	@Column(name="application_id")
-	private Long applicationId;
+	@ManyToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -70,11 +75,11 @@ public class SecurityCorporateDetail implements Serializable {
 		this.amount = amount;
 	}
 
-	public Long getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 

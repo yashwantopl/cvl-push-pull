@@ -1,8 +1,20 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
 /**
@@ -18,8 +30,9 @@ public class FutureFinancialEstimatesDetail implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="application_id")
-	private Long applicationId;
+	@ManyToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -73,11 +86,11 @@ public class FutureFinancialEstimatesDetail implements Serializable {
 		this.id = id;
 	}
 
-	public Long getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 

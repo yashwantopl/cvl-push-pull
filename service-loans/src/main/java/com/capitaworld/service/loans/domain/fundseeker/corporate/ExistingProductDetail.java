@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+
 import java.util.Date;
 
 
@@ -21,8 +24,9 @@ public class ExistingProductDetail implements Serializable {
 	@Lob
 	private String application;
 
-	@Column(name="application_id")
-	private Long applicationId;
+	@ManyToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -63,11 +67,11 @@ public class ExistingProductDetail implements Serializable {
 		this.application = application;
 	}
 
-	public Long getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 

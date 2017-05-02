@@ -1,8 +1,21 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
 /**
@@ -18,8 +31,9 @@ public class OwnershipDetail implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="application_id")
-	private Long applicationId;
+	@ManyToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -35,7 +49,8 @@ public class OwnershipDetail implements Serializable {
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date modified_Date;
+	@Column(name = "modified_Date")
+	private Date modifiedDate;
 
 	@Lob
 	private String remarks;
@@ -57,11 +72,11 @@ public class OwnershipDetail implements Serializable {
 		this.id = id;
 	}
 
-	public Long getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 
@@ -97,12 +112,12 @@ public class OwnershipDetail implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public Date getModified_Date() {
-		return this.modified_Date;
+	public Date getModifiedDate() {
+		return this.modifiedDate;
 	}
 
-	public void setModified_Date(Date modified_Date) {
-		this.modified_Date = modified_Date;
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
 	public String getRemarks() {
