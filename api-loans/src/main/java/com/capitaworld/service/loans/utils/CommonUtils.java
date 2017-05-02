@@ -31,6 +31,16 @@ public class CommonUtils {
 				return WORKING_CAPITAL;
 			case 2:
 				return TERM_LOAN;
+			case 3:
+				return HOME_LOAN;
+			case 4:
+				return CAR_LOAN;
+			case 5:
+				return PERSONAL_LOAN;
+			case 6:
+				return LAP_LOAN;
+			case 7:
+				return LAS_LOAN;
 			}
 			return null;
 		}

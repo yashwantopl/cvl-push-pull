@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -39,13 +42,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (type == null) {
 					continue;
 				}
-				
+
 				switch (type) {
 				case WORKING_CAPITAL:
 					applicationMaster = new PrimaryWorkingCapitalLoanDetail();
 					break;
 				case TERM_LOAN:
 					applicationMaster = new PrimaryTermLoanDetail();
+					break;
+				case LAS_LOAN:
+					applicationMaster = new PrimaryLasLoanDetail();
+					break;
+				case LAP_LOAN:
+					applicationMaster = new PrimaryLapLoanDetail();
+					break;
+				case PERSONAL_LOAN:
+					applicationMaster = new PrimaryPersonalLoanDetail();
 					break;
 				default:
 					continue;

@@ -41,14 +41,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		try {
 			// application id must not be null
 			if (applicantRequest.getId() != null && applicantRequest.getApplicationId() != null) {
-				applicantDetail = applicantRepository.findOne(applicantRequest.getId());
+				applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
+						applicantRequest.getApplicationId());
+				if (applicantDetail == null) {
+					return false;
+				}
 				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 				applicantDetail.setModifiedDate(new Date());
 				// inactive previous before adding new Data
-				int updatedRecords = industrySectorRepository.inActiveMappingByApplicationId(applicantDetail.getApplicationId().getId());
+				int updatedRecords = industrySectorRepository
+						.inActiveMappingByApplicationId(applicantDetail.getApplicationId().getId());
 				logger.info("updated industrySector ==>" + updatedRecords);
 				// inactive previous before adding new Data
-				int subSecors = subSectorRepository.inActiveMappingByApplicationId(applicantDetail.getApplicationId().getId());
+				int subSecors = subSectorRepository
+						.inActiveMappingByApplicationId(applicantDetail.getApplicationId().getId());
 				logger.info("updated subSector==>" + subSecors);
 			} else {
 				applicantDetail = new CorporateApplicantDetail();
@@ -83,6 +89,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public CorporateApplicantRequest getCorporateApplicant(Long corporateApplicantDetail) {
 		// TODO Auto-generated method stub
 		CorporateApplicantDetail applicantDetail = applicantRepository.findOne(corporateApplicantDetail);
+		if (applicantDetail == null) {
+			return null;
+		}
 		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
 		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
@@ -139,31 +148,31 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	private static void copyAddressFromRequestToDomain(CorporateApplicantRequest from, CorporateApplicantDetail to) {
 		// Setting Regsiterd Address
-		to.setRegisteredPremiseNumber(from.getRegisteredAddress().getPremiseNumber());
-		to.setRegisteredLandMark(from.getRegisteredAddress().getLandMark());
-		to.setRegisteredStreetName(from.getRegisteredAddress().getStreetName());
-		to.setRegisteredPincode(from.getRegisteredAddress().getPincode());
-		to.setRegisteredCityId(from.getRegisteredAddress().getCityId());
-		to.setRegisteredStateId(from.getRegisteredAddress().getStateId());
-		to.setRegisteredCountryId(from.getRegisteredAddress().getCountryId());
+		to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
+		to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
+		to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
+		to.setRegisteredPincode(from.getFirstAddress().getPincode());
+		to.setRegisteredCityId(from.getFirstAddress().getCityId());
+		to.setRegisteredStateId(from.getFirstAddress().getStateId());
+		to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
 
 		// Setting Administrative Address
 		if (from.isSameAs()) {
-			to.setAdministrativePremiseNumber(from.getRegisteredAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getRegisteredAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getRegisteredAddress().getStreetName());
-			to.setAdministrativePincode(from.getRegisteredAddress().getPincode());
-			to.setAdministrativeCityId(from.getRegisteredAddress().getCityId());
-			to.setAdministrativeStateId(from.getRegisteredAddress().getStateId());
-			to.setAdministrativeCountryId(from.getRegisteredAddress().getCountryId());
+			to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
+			to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
+			to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
+			to.setAdministrativePincode(from.getFirstAddress().getPincode());
+			to.setAdministrativeCityId(from.getFirstAddress().getCityId());
+			to.setAdministrativeStateId(from.getFirstAddress().getStateId());
+			to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
 		} else {
-			to.setAdministrativePremiseNumber(from.getAdministrativeAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getAdministrativeAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getAdministrativeAddress().getStreetName());
-			to.setAdministrativePincode(from.getAdministrativeAddress().getPincode());
-			to.setAdministrativeCityId(from.getAdministrativeAddress().getCityId());
-			to.setAdministrativeStateId(from.getAdministrativeAddress().getStateId());
-			to.setAdministrativeCountryId(from.getAdministrativeAddress().getCountryId());
+			to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
+			to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
+			to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
+			to.setAdministrativePincode(from.getSecondAddress().getPincode());
+			to.setAdministrativeCityId(from.getSecondAddress().getCityId());
+			to.setAdministrativeStateId(from.getSecondAddress().getStateId());
+			to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
 		}
 	}
 
@@ -178,9 +187,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		address.setCityId(from.getRegisteredCityId());
 		address.setStateId(from.getRegisteredStateId());
 		address.setCountryId(from.getRegisteredCountryId());
-		to.setRegisteredAddress(address);
+		to.setFirstAddress(address);
 		if (from.getSameAs() != null && from.getSameAs()) {
-			to.setAdministrativeAddress(address);
+			to.setSecondAddress(address);
 		} else {
 			address = new Address();
 			address.setPremiseNumber(from.getAdministrativePremiseNumber());
@@ -190,7 +199,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			address.setCityId(from.getAdministrativeCityId());
 			address.setStateId(from.getAdministrativeStateId());
 			address.setCountryId(from.getAdministrativeCountryId());
-			to.setAdministrativeAddress(address);
+			to.setSecondAddress(address);
 
 		}
 

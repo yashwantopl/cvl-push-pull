@@ -39,9 +39,10 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private String organisationName;
 
-	private Address administrativeAddress;
+	private Address firstAddress;
 
-	private Address registeredAddress;
+	private Address secondAddress;
+	
 	private boolean sameAs;
 
 	private String websiteAddress;
@@ -187,20 +188,20 @@ public class CorporateApplicantRequest implements Serializable {
 		this.sectorlist = sectorlist;
 	}
 
-	public Address getAdministrativeAddress() {
-		return administrativeAddress;
+	public Address getFirstAddress() {
+		return firstAddress;
 	}
 
-	public void setAdministrativeAddress(Address administrativeAddress) {
-		this.administrativeAddress = administrativeAddress;
+	public void setFirstAddress(Address firstAddress) {
+		this.firstAddress = firstAddress;
 	}
 
-	public Address getRegisteredAddress() {
-		return registeredAddress;
+	public Address getSecondAddress() {
+		return secondAddress;
 	}
 
-	public void setRegisteredAddress(Address registeredAddress) {
-		this.registeredAddress = registeredAddress;
+	public void setSecondAddress(Address secondAddress) {
+		this.secondAddress = secondAddress;
 	}
 
 	public List<Long> getSubsectors() {
