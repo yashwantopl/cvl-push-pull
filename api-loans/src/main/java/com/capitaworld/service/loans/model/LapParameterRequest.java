@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LapParameterRequest implements Serializable {
+public class LapParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long fpProductId;
