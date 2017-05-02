@@ -2,7 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
 
-import com.capitaworld.service.loans.model.GuarantorRequest;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 
 public interface GuarantorService {
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId);

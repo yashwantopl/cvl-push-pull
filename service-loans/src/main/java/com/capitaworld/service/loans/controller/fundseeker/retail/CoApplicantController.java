@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 
 @RestController
-@RequestMapping("/fs_retail_profile")
-public class RetailApplicantController {
+@RequestMapping("/co_applicant")
+public class CoApplicantController {
 
-	private static final Logger logger = LoggerFactory.getLogger(RetailApplicantController.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(CoApplicantController.class.getName());
 	@Autowired
-	private RetailApplicantService applicantService;
+	private CoApplicantService coApplicantService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -31,7 +31,7 @@ public class RetailApplicantController {
 	}
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody CoApplicantRequest applicantRequest) {
 		// request must not be null
 		try {
 
@@ -45,12 +45,12 @@ public class RetailApplicantController {
 			if (applicantRequest.getApplicationId() == null) {
 				logger.warn("Application Id can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("Appli cation ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 
 			}
 
-			boolean response = applicantService.save(applicantRequest);
+			boolean response = coApplicantService.save(applicantRequest, applicantRequest.getApplicationId());
 			if (response) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
@@ -68,17 +68,18 @@ public class RetailApplicantController {
 
 	}
 
-	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
+	@RequestMapping(value = "${primary}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
 			if (id == null) {
-				logger.warn("ID Require to get Retail Profile Details ==>" + id);
+				logger.warn("ID Require to get CoApplicant Profile Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			RetailApplicantRequest response = applicantService.get(id);
+			CoApplicantRequest response = coApplicantService.get(id, applicationId);
 			if (response != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
@@ -89,7 +90,7 @@ public class RetailApplicantController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Retail Applicant Profile Details==>", e);
+			logger.error("Error while getting Co Applicant Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

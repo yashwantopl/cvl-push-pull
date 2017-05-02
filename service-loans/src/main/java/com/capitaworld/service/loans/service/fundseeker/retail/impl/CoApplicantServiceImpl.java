@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.model.CoApplicantRequest;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 
@@ -67,7 +67,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	public CoApplicantRequest get(Long id, Long applicationId) {
 		CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
 		if (applicantDetail == null) {
-			throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id);
+			throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id + " and ApplicationId==>" + applicationId);
 		}
 		CoApplicantRequest applicantRequest = new CoApplicantRequest();
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);

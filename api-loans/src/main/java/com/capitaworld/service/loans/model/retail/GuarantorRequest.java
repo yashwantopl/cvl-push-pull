@@ -1,24 +1,15 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.retail;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.service.loans.model.Address;
 
-/**
- * The persistent class for the fs_retail_applicant_details database table.
- * 
- */
-public class RetailApplicantRequest implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class GuarantorRequest {
 
-	// Common Fields
 	private Long id;
 	private Long applicationId;
-
-	// Primary Fields
-	private Integer titleId;
+	private Long userId;
 	private String firstName;
+	private Boolean isActive;
+	private Integer titleId;
 	private String middleName;
 	private String lastName;
 	private Integer statusId;
@@ -31,8 +22,6 @@ public class RetailApplicantRequest implements Serializable {
 	private Address secondAddress;
 	private boolean addressSameAs;
 	private String contactNo;
-	private List<CoApplicantRequest> coApplicants = Collections.emptyList();
-	private List<GuarantorRequest> guarantors = Collections.emptyList();
 	private String companyName;
 	private Integer employedWithId;
 	private String employedWithOther;
@@ -43,92 +32,6 @@ public class RetailApplicantRequest implements Serializable {
 	private String selfEmployedOccupationOther;
 	private Double landSize;
 	private Integer alliedActivityId;
-
-	// Final common Retail Fields
-	private Integer castId;
-	private String castOther;
-	private Integer religion;
-	private String religionOther;
-	private String birthPlace;
-	private String fatherName;
-	private String motherName;
-	private String spouseName;
-	private Boolean isSpouseEmployed;
-	private Integer noChildren;
-	private Integer noDependent;
-	private Integer highestQualification;
-	private String highestQualificationOther;
-	private Date qualifyingYear;
-	private String institute;
-	private Integer residenceType;
-	private Double annualRent;
-	private Double annualTurnover;
-	private Integer noPartners;
-
-	// private Boolean addressSameAs;
-
-	// private Date birthDate;
-
-	// private Date businessStartDate;
-
-	// private String currentDepartment;
-	// private String currentDesignation;
-	// private String currentIndustry;
-	// private Integer currentJobMonth;
-	// private Integer currentJobYear;
-
-	// private Integer employmentStatus;
-
-	//
-
-	// private Integer interestRate;
-
-	//
-	//
-	//
-
-	// private String nameOfEntity;
-
-	//
-	// private Integer officeType;
-	// private Integer ownershipType;
-	//
-	// private String partnersName;
-	// private String poaHolderName;
-	// private String presentlyIrrigated;
-	// private String previousEmployersAddress;
-	// private String previousEmployersName;
-	// private Integer previousJobMonth;
-	// private Integer previousJobYear;
-
-	// private String rainFed;
-
-	// private Integer repaymentCycle;
-	// private Integer repaymentMode;
-
-	// private Double residingMonth;
-	// private Double residingYear;
-	// private String seasonalIrrigated;
-
-	// private String shareholding;
-
-	//
-	// private Integer totalExperienceMonth;
-	// private Integer totalExperienceYear;
-	// private Double totalLandOwned;
-	// private Date tradeLicenseExpiryDate;
-	// private String tradeLicenseNumber;
-	// private String unattended;
-	// private String websiteAddress;
-	private Long userId;
-
-	public RetailApplicantRequest() {
-	}
-
-	public RetailApplicantRequest(Long id) {
-		super();
-		this.id = id;
-	}
 
 	public Long getId() {
 		return id;
@@ -146,12 +49,12 @@ public class RetailApplicantRequest implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Integer getTitleId() {
-		return titleId;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setTitleId(Integer titleId) {
-		this.titleId = titleId;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public String getFirstName() {
@@ -160,6 +63,22 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Integer getTitleId() {
+		return titleId;
+	}
+
+	public void setTitleId(Integer titleId) {
+		this.titleId = titleId;
 	}
 
 	public String getMiddleName() {
@@ -256,30 +175,6 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
-	}
-
-	public List<CoApplicantRequest> getCoApplicants() {
-		return coApplicants;
-	}
-
-	public void setCoApplicants(List<CoApplicantRequest> coApplicants) {
-		this.coApplicants = coApplicants;
-	}
-
-	public List<GuarantorRequest> getGuarantors() {
-		return guarantors;
-	}
-
-	public void setGuarantors(List<GuarantorRequest> guarantors) {
-		this.guarantors = guarantors;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public String getCompanyName() {

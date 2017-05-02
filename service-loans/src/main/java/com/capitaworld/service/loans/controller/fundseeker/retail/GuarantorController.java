@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 
 @RestController
-@RequestMapping("/fs_retail_profile")
-public class RetailApplicantController {
+@RequestMapping("/guarantor")
+public class GuarantorController {
 
-	private static final Logger logger = LoggerFactory.getLogger(RetailApplicantController.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(GuarantorController.class.getName());
+
 	@Autowired
-	private RetailApplicantService applicantService;
+	private GuarantorService guarantorService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -31,7 +32,7 @@ public class RetailApplicantController {
 	}
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody GuarantorRequest applicantRequest) {
 		// request must not be null
 		try {
 
@@ -50,7 +51,7 @@ public class RetailApplicantController {
 
 			}
 
-			boolean response = applicantService.save(applicantRequest);
+			boolean response = guarantorService.save(applicantRequest, applicantRequest.getApplicationId());
 			if (response) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
@@ -68,17 +69,18 @@ public class RetailApplicantController {
 
 	}
 
-	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
+	@RequestMapping(value = "${primary}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
 			if (id == null) {
-				logger.warn("ID Require to get Retail Profile Details ==>" + id);
+				logger.warn("ID Require to get CoApplicant Profile Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			RetailApplicantRequest response = applicantService.get(id);
+			GuarantorRequest response = guarantorService.get(id, applicationId);
 			if (response != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
@@ -89,7 +91,7 @@ public class RetailApplicantController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Retail Applicant Profile Details==>", e);
+			logger.error("Error while getting Guarantor Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

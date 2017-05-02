@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.model.GuarantorRequest;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 
