@@ -14,56 +14,68 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Double accessoriesCost;
+	private String carModelName;
 
-	private String carColour;
+	private Integer carType;
 
-	private String carRegistrationNumber;
+	private String carVarient;
 
-	private String carSupplier;
+	private Integer certifiedDealer;
+
+	private String dealerName;
 
 	private Date deliveryDate;
 
-	private Double insuranceCost;
+	private Double downPayment;
 
-	private Double loanTotalCost;
+	private String manufacturerName;
 
-	private Double othersCost;
+	private Integer newCarPurchaseType;
 
-	private Double roadTax;
+	private Double onRoadCarPrice;
 
-	private Double vehicleCost;
+	private Date purchasePreownedDate;
 
-	public Double getAccessoriesCost() {
-		return accessoriesCost;
+	private Date purchaseReimbursmentDate;
+
+	public String getCarModelName() {
+		return carModelName;
 	}
 
-	public void setAccessoriesCost(Double accessoriesCost) {
-		this.accessoriesCost = accessoriesCost;
+	public void setCarModelName(String carModelName) {
+		this.carModelName = carModelName;
 	}
 
-	public String getCarColour() {
-		return carColour;
+	public Integer getCarType() {
+		return carType;
 	}
 
-	public void setCarColour(String carColour) {
-		this.carColour = carColour;
+	public void setCarType(Integer carType) {
+		this.carType = carType;
 	}
 
-	public String getCarRegistrationNumber() {
-		return carRegistrationNumber;
+	public String getCarVarient() {
+		return carVarient;
 	}
 
-	public void setCarRegistrationNumber(String carRegistrationNumber) {
-		this.carRegistrationNumber = carRegistrationNumber;
+	public void setCarVarient(String carVarient) {
+		this.carVarient = carVarient;
 	}
 
-	public String getCarSupplier() {
-		return carSupplier;
+	public Integer getCertifiedDealer() {
+		return certifiedDealer;
 	}
 
-	public void setCarSupplier(String carSupplier) {
-		this.carSupplier = carSupplier;
+	public void setCertifiedDealer(Integer certifiedDealer) {
+		this.certifiedDealer = certifiedDealer;
+	}
+
+	public String getDealerName() {
+		return dealerName;
+	}
+
+	public void setDealerName(String dealerName) {
+		this.dealerName = dealerName;
 	}
 
 	public Date getDeliveryDate() {
@@ -74,47 +86,54 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 		this.deliveryDate = deliveryDate;
 	}
 
-	public Double getInsuranceCost() {
-		return insuranceCost;
+	public Double getDownPayment() {
+		return downPayment;
 	}
 
-	public void setInsuranceCost(Double insuranceCost) {
-		this.insuranceCost = insuranceCost;
+	public void setDownPayment(Double downPayment) {
+		this.downPayment = downPayment;
 	}
 
-	public Double getLoanTotalCost() {
-		return loanTotalCost;
+	public String getManufacturerName() {
+		return manufacturerName;
 	}
 
-	public void setLoanTotalCost(Double loanTotalCost) {
-		this.loanTotalCost = loanTotalCost;
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 
-	public Double getOthersCost() {
-		return othersCost;
+	public Integer getNewCarPurchaseType() {
+		return newCarPurchaseType;
 	}
 
-	public void setOthersCost(Double othersCost) {
-		this.othersCost = othersCost;
+	public void setNewCarPurchaseType(Integer newCarPurchaseType) {
+		this.newCarPurchaseType = newCarPurchaseType;
 	}
 
-	public Double getRoadTax() {
-		return roadTax;
+	public Double getOnRoadCarPrice() {
+		return onRoadCarPrice;
 	}
 
-	public void setRoadTax(Double roadTax) {
-		this.roadTax = roadTax;
+	public void setOnRoadCarPrice(Double onRoadCarPrice) {
+		this.onRoadCarPrice = onRoadCarPrice;
 	}
 
-	public Double getVehicleCost() {
-		return vehicleCost;
+	public Date getPurchasePreownedDate() {
+		return purchasePreownedDate;
 	}
 
-	public void setVehicleCost(Double vehicleCost) {
-		this.vehicleCost = vehicleCost;
+	public void setPurchasePreownedDate(Date purchasePreownedDate) {
+		this.purchasePreownedDate = purchasePreownedDate;
 	}
-	
-	
+
+	public Date getPurchaseReimbursmentDate() {
+		return purchaseReimbursmentDate;
+	}
+
+	public void setPurchaseReimbursmentDate(Date purchaseReimbursmentDate) {
+		this.purchaseReimbursmentDate = purchaseReimbursmentDate;
+	}
+
 
 
 }

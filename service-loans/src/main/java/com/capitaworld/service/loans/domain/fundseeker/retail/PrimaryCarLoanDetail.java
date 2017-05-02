@@ -27,17 +27,17 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	@Column(name="accessories_cost")
-	private Double accessoriesCost;
+	@Column(name="car_model_name")
+	private String carModelName;
 
-	@Column(name="car_colour")
-	private String carColour;
+	@Column(name="car_type")
+	private Integer carType;
 
-	@Column(name="car_registration_number")
-	private String carRegistrationNumber;
+	@Column(name="car_varient")
+	private String carVarient;
 
-	@Column(name="car_supplier")
-	private String carSupplier;
+	@Column(name="certified_dealer")
+	private Integer certifiedDealer;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -46,18 +46,21 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="created_date")
 	private Date createdDate;
 
+	@Column(name="dealer_name")
+	private String dealerName;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="delivery_date")
 	private Date deliveryDate;
 
-	@Column(name="insurance_cost")
-	private Double insuranceCost;
+	@Column(name="down_payment")
+	private Double downPayment;
 
 	@Column(name="is_active")
 	private Boolean isActive;
 
-	@Column(name="loan_total_cost")
-	private Double loanTotalCost;
+	@Column(name="manufacturer_name")
+	private String manufacturerName;
 
 	@Column(name="modified_by")
 	private Long modifiedBy;
@@ -66,60 +69,65 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
-	@Column(name="others_cost")
-	private Double othersCost;
+	@Column(name="new_car_purchase_type")
+	private Integer newCarPurchaseType;
 
-	@Column(name="road_tax")
-	private Double roadTax;
+	@Column(name="on_road_car_price")
+	private Double onRoadCarPrice;
 
-	@Column(name="vehicle_cost")
-	private Double vehicleCost;
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="purchase_preowned_date")
+	private Date purchasePreownedDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="purchase_reimbursment_date")
+	private Date purchaseReimbursmentDate;
 
 	public PrimaryCarLoanDetail() {
 	}
 
 	public LoanApplicationMaster getApplicationId() {
-		return this.applicationId;
+		return applicationId;
 	}
 
 	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 
-	public Double getAccessoriesCost() {
-		return this.accessoriesCost;
+	public String getCarModelName() {
+		return carModelName;
 	}
 
-	public void setAccessoriesCost(Double accessoriesCost) {
-		this.accessoriesCost = accessoriesCost;
+	public void setCarModelName(String carModelName) {
+		this.carModelName = carModelName;
 	}
 
-	public String getCarColour() {
-		return this.carColour;
+	public Integer getCarType() {
+		return carType;
 	}
 
-	public void setCarColour(String carColour) {
-		this.carColour = carColour;
+	public void setCarType(Integer carType) {
+		this.carType = carType;
 	}
 
-	public String getCarRegistrationNumber() {
-		return this.carRegistrationNumber;
+	public String getCarVarient() {
+		return carVarient;
 	}
 
-	public void setCarRegistrationNumber(String carRegistrationNumber) {
-		this.carRegistrationNumber = carRegistrationNumber;
+	public void setCarVarient(String carVarient) {
+		this.carVarient = carVarient;
 	}
 
-	public String getCarSupplier() {
-		return this.carSupplier;
+	public Integer getCertifiedDealer() {
+		return certifiedDealer;
 	}
 
-	public void setCarSupplier(String carSupplier) {
-		this.carSupplier = carSupplier;
+	public void setCertifiedDealer(Integer certifiedDealer) {
+		this.certifiedDealer = certifiedDealer;
 	}
 
 	public Long getCreatedBy() {
-		return this.createdBy;
+		return createdBy;
 	}
 
 	public void setCreatedBy(Long createdBy) {
@@ -127,47 +135,55 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	}
 
 	public Date getCreatedDate() {
-		return this.createdDate;
+		return createdDate;
 	}
 
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
 
+	public String getDealerName() {
+		return dealerName;
+	}
+
+	public void setDealerName(String dealerName) {
+		this.dealerName = dealerName;
+	}
+
 	public Date getDeliveryDate() {
-		return this.deliveryDate;
+		return deliveryDate;
 	}
 
 	public void setDeliveryDate(Date deliveryDate) {
 		this.deliveryDate = deliveryDate;
 	}
 
-	public Double getInsuranceCost() {
-		return this.insuranceCost;
+	public Double getDownPayment() {
+		return downPayment;
 	}
 
-	public void setInsuranceCost(Double insuranceCost) {
-		this.insuranceCost = insuranceCost;
+	public void setDownPayment(Double downPayment) {
+		this.downPayment = downPayment;
 	}
 
 	public Boolean getIsActive() {
-		return this.isActive;
+		return isActive;
 	}
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
 
-	public Double getLoanTotalCost() {
-		return this.loanTotalCost;
+	public String getManufacturerName() {
+		return manufacturerName;
 	}
 
-	public void setLoanTotalCost(Double loanTotalCost) {
-		this.loanTotalCost = loanTotalCost;
+	public void setManufacturerName(String manufacturerName) {
+		this.manufacturerName = manufacturerName;
 	}
 
 	public Long getModifiedBy() {
-		return this.modifiedBy;
+		return modifiedBy;
 	}
 
 	public void setModifiedBy(Long modifiedBy) {
@@ -175,35 +191,45 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	}
 
 	public Date getModifiedDate() {
-		return this.modifiedDate;
+		return modifiedDate;
 	}
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Double getOthersCost() {
-		return this.othersCost;
+	public Integer getNewCarPurchaseType() {
+		return newCarPurchaseType;
 	}
 
-	public void setOthersCost(Double othersCost) {
-		this.othersCost = othersCost;
+	public void setNewCarPurchaseType(Integer newCarPurchaseType) {
+		this.newCarPurchaseType = newCarPurchaseType;
 	}
 
-	public Double getRoadTax() {
-		return this.roadTax;
+	public Double getOnRoadCarPrice() {
+		return onRoadCarPrice;
 	}
 
-	public void setRoadTax(Double roadTax) {
-		this.roadTax = roadTax;
+	public void setOnRoadCarPrice(Double onRoadCarPrice) {
+		this.onRoadCarPrice = onRoadCarPrice;
 	}
 
-	public Double getVehicleCost() {
-		return this.vehicleCost;
+	public Date getPurchasePreownedDate() {
+		return purchasePreownedDate;
 	}
 
-	public void setVehicleCost(Double vehicleCost) {
-		this.vehicleCost = vehicleCost;
+	public void setPurchasePreownedDate(Date purchasePreownedDate) {
+		this.purchasePreownedDate = purchasePreownedDate;
 	}
+
+	public Date getPurchaseReimbursmentDate() {
+		return purchaseReimbursmentDate;
+	}
+
+	public void setPurchaseReimbursmentDate(Date purchaseReimbursmentDate) {
+		this.purchaseReimbursmentDate = purchaseReimbursmentDate;
+	}
+
+	
 
 }

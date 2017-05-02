@@ -30,13 +30,12 @@ public class FinalCarLoanDetail implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "application_id")
-	private LoanApplicationMaster applicationId;
-
 	@Column(name="accessories_cost")
 	private Double accessoriesCost;
 
+	@OneToOne
+	@JoinColumn(name = "application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="car_colour")
 	private String carColour;
@@ -83,6 +82,9 @@ public class FinalCarLoanDetail implements Serializable {
 	@Column(name="vehicle_cost")
 	private Double vehicleCost;
 
+	public FinalCarLoanDetail() {
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -91,20 +93,20 @@ public class FinalCarLoanDetail implements Serializable {
 		this.id = id;
 	}
 
-	public LoanApplicationMaster getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(LoanApplicationMaster applicationId) {
-		this.applicationId = applicationId;
-	}
-
 	public Double getAccessoriesCost() {
 		return accessoriesCost;
 	}
 
 	public void setAccessoriesCost(Double accessoriesCost) {
 		this.accessoriesCost = accessoriesCost;
+	}
+
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(LoanApplicationMaster applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	public String getCarColour() {

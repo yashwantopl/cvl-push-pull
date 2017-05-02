@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -13,219 +14,237 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Double builtUpArea;
+	private Double area;
 
-	private Double carpetArea;
+	private Double bunglowCost;
 
-	private Double estimatedRentalIncome;
+	private Integer completionTimeInMonth;
 
-	private String projectCityState;
+	private Integer completionTimeInYear;
 
-	private Integer propertyAddressCity;
+	private Integer constructionCompletionTimeInMonth;
 
-	private Integer propertyAddressCountry;
+	private Integer constructionCompletionTimeInYear;
 
-	private String propertyAddressLandmark;
+	private Double constructionCost;
 
-	private String propertyAddressPincode;
+	private Date dateOfLoanTaken;
 
-	private String propertyAddressPremise;
+	private Double downPayment;
 
-	private Integer propertyAddressState;
+	private Boolean isConstructionCompleted;
 
-	private String propertyAddressStreet;
+	private Boolean isLoanTaken;
 
-	private String propertyUsed;
+	private Double landArea;
 
-	private String sellerName;
+	private Double landPlotCost;
 
-	private Integer sellersAddressCity;
+	private String otherRenovationType;
 
-	private Integer sellersAddressCountry;
+	private Integer projectCity;
 
-	private String sellersAddressLandmark;
+	private String projectName;
 
-	private String sellersAddressPincode;
+	private Double propertyPrice;
 
-	private String sellersAddressPremise;
+	private Integer propertyType;
 
-	private Integer sellersAddressState;
+	private Integer propertyUsedType;
 
-	private String sellersAddressStreet;
+	private Integer renovationCompletionTimeInMonth;
 
-	private Double superBuiltUpArea;
+	private Integer renovationCompletionTimeInYear;
 
-	public PrimaryHomeLoanDetailRequest() {
+	private Double renovationCost;
+
+	private Integer renovationType;
+
+	
+	public Double getArea() {
+		return area;
 	}
 
-	public Double getBuiltUpArea() {
-		return builtUpArea;
+	public void setArea(Double area) {
+		this.area = area;
 	}
 
-	public void setBuiltUpArea(Double builtUpArea) {
-		this.builtUpArea = builtUpArea;
+	public Double getBunglowCost() {
+		return bunglowCost;
 	}
 
-	public Double getCarpetArea() {
-		return carpetArea;
+	public void setBunglowCost(Double bunglowCost) {
+		this.bunglowCost = bunglowCost;
 	}
 
-	public void setCarpetArea(Double carpetArea) {
-		this.carpetArea = carpetArea;
+	public Integer getCompletionTimeInMonth() {
+		return completionTimeInMonth;
 	}
 
-	public Double getEstimatedRentalIncome() {
-		return estimatedRentalIncome;
+	public void setCompletionTimeInMonth(Integer completionTimeInMonth) {
+		this.completionTimeInMonth = completionTimeInMonth;
 	}
 
-	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
-		this.estimatedRentalIncome = estimatedRentalIncome;
+	public Integer getCompletionTimeInYear() {
+		return completionTimeInYear;
 	}
 
-	public String getProjectCityState() {
-		return projectCityState;
+	public void setCompletionTimeInYear(Integer completionTimeInYear) {
+		this.completionTimeInYear = completionTimeInYear;
 	}
 
-	public void setProjectCityState(String projectCityState) {
-		this.projectCityState = projectCityState;
+	public Integer getConstructionCompletionTimeInMonth() {
+		return constructionCompletionTimeInMonth;
 	}
 
-	public Integer getPropertyAddressCity() {
-		return propertyAddressCity;
+	public void setConstructionCompletionTimeInMonth(Integer constructionCompletionTimeInMonth) {
+		this.constructionCompletionTimeInMonth = constructionCompletionTimeInMonth;
 	}
 
-	public void setPropertyAddressCity(Integer propertyAddressCity) {
-		this.propertyAddressCity = propertyAddressCity;
+	public Integer getConstructionCompletionTimeInYear() {
+		return constructionCompletionTimeInYear;
 	}
 
-	public Integer getPropertyAddressCountry() {
-		return propertyAddressCountry;
+	public void setConstructionCompletionTimeInYear(Integer constructionCompletionTimeInYear) {
+		this.constructionCompletionTimeInYear = constructionCompletionTimeInYear;
 	}
 
-	public void setPropertyAddressCountry(Integer propertyAddressCountry) {
-		this.propertyAddressCountry = propertyAddressCountry;
+	public Double getConstructionCost() {
+		return constructionCost;
 	}
 
-	public String getPropertyAddressLandmark() {
-		return propertyAddressLandmark;
+	public void setConstructionCost(Double constructionCost) {
+		this.constructionCost = constructionCost;
 	}
 
-	public void setPropertyAddressLandmark(String propertyAddressLandmark) {
-		this.propertyAddressLandmark = propertyAddressLandmark;
+	public Date getDateOfLoanTaken() {
+		return dateOfLoanTaken;
 	}
 
-	public String getPropertyAddressPincode() {
-		return propertyAddressPincode;
+	public void setDateOfLoanTaken(Date dateOfLoanTaken) {
+		this.dateOfLoanTaken = dateOfLoanTaken;
 	}
 
-	public void setPropertyAddressPincode(String propertyAddressPincode) {
-		this.propertyAddressPincode = propertyAddressPincode;
+	public Double getDownPayment() {
+		return downPayment;
 	}
 
-	public String getPropertyAddressPremise() {
-		return propertyAddressPremise;
+	public void setDownPayment(Double downPayment) {
+		this.downPayment = downPayment;
 	}
 
-	public void setPropertyAddressPremise(String propertyAddressPremise) {
-		this.propertyAddressPremise = propertyAddressPremise;
+	public Boolean getIsConstructionCompleted() {
+		return isConstructionCompleted;
 	}
 
-	public Integer getPropertyAddressState() {
-		return propertyAddressState;
+	public void setIsConstructionCompleted(Boolean isConstructionCompleted) {
+		this.isConstructionCompleted = isConstructionCompleted;
 	}
 
-	public void setPropertyAddressState(Integer propertyAddressState) {
-		this.propertyAddressState = propertyAddressState;
+	public Boolean getIsLoanTaken() {
+		return isLoanTaken;
 	}
 
-	public String getPropertyAddressStreet() {
-		return propertyAddressStreet;
+	public void setIsLoanTaken(Boolean isLoanTaken) {
+		this.isLoanTaken = isLoanTaken;
 	}
 
-	public void setPropertyAddressStreet(String propertyAddressStreet) {
-		this.propertyAddressStreet = propertyAddressStreet;
+	public Double getLandArea() {
+		return landArea;
 	}
 
-	public String getPropertyUsed() {
-		return propertyUsed;
+	public void setLandArea(Double landArea) {
+		this.landArea = landArea;
 	}
 
-	public void setPropertyUsed(String propertyUsed) {
-		this.propertyUsed = propertyUsed;
+	public Double getLandPlotCost() {
+		return landPlotCost;
 	}
 
-	public String getSellerName() {
-		return sellerName;
+	public void setLandPlotCost(Double landPlotCost) {
+		this.landPlotCost = landPlotCost;
 	}
 
-	public void setSellerName(String sellerName) {
-		this.sellerName = sellerName;
+	public String getOtherRenovationType() {
+		return otherRenovationType;
 	}
 
-	public Integer getSellersAddressCity() {
-		return sellersAddressCity;
+	public void setOtherRenovationType(String otherRenovationType) {
+		this.otherRenovationType = otherRenovationType;
 	}
 
-	public void setSellersAddressCity(Integer sellersAddressCity) {
-		this.sellersAddressCity = sellersAddressCity;
+	public Integer getProjectCity() {
+		return projectCity;
 	}
 
-	public Integer getSellersAddressCountry() {
-		return sellersAddressCountry;
+	public void setProjectCity(Integer projectCity) {
+		this.projectCity = projectCity;
 	}
 
-	public void setSellersAddressCountry(Integer sellersAddressCountry) {
-		this.sellersAddressCountry = sellersAddressCountry;
+	public String getProjectName() {
+		return projectName;
 	}
 
-	public String getSellersAddressLandmark() {
-		return sellersAddressLandmark;
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 	}
 
-	public void setSellersAddressLandmark(String sellersAddressLandmark) {
-		this.sellersAddressLandmark = sellersAddressLandmark;
+	public Double getPropertyPrice() {
+		return propertyPrice;
 	}
 
-	public String getSellersAddressPincode() {
-		return sellersAddressPincode;
+	public void setPropertyPrice(Double propertyPrice) {
+		this.propertyPrice = propertyPrice;
 	}
 
-	public void setSellersAddressPincode(String sellersAddressPincode) {
-		this.sellersAddressPincode = sellersAddressPincode;
+	public Integer getPropertyType() {
+		return propertyType;
 	}
 
-	public String getSellersAddressPremise() {
-		return sellersAddressPremise;
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
 	}
 
-	public void setSellersAddressPremise(String sellersAddressPremise) {
-		this.sellersAddressPremise = sellersAddressPremise;
+	public Integer getPropertyUsedType() {
+		return propertyUsedType;
 	}
 
-	public Integer getSellersAddressState() {
-		return sellersAddressState;
+	public void setPropertyUsedType(Integer propertyUsedType) {
+		this.propertyUsedType = propertyUsedType;
 	}
 
-	public void setSellersAddressState(Integer sellersAddressState) {
-		this.sellersAddressState = sellersAddressState;
+	public Integer getRenovationCompletionTimeInMonth() {
+		return renovationCompletionTimeInMonth;
 	}
 
-	public String getSellersAddressStreet() {
-		return sellersAddressStreet;
+	public void setRenovationCompletionTimeInMonth(Integer renovationCompletionTimeInMonth) {
+		this.renovationCompletionTimeInMonth = renovationCompletionTimeInMonth;
 	}
 
-	public void setSellersAddressStreet(String sellersAddressStreet) {
-		this.sellersAddressStreet = sellersAddressStreet;
+	public Integer getRenovationCompletionTimeInYear() {
+		return renovationCompletionTimeInYear;
 	}
 
-	public Double getSuperBuiltUpArea() {
-		return superBuiltUpArea;
+	public void setRenovationCompletionTimeInYear(Integer renovationCompletionTimeInYear) {
+		this.renovationCompletionTimeInYear = renovationCompletionTimeInYear;
 	}
 
-	public void setSuperBuiltUpArea(Double superBuiltUpArea) {
-		this.superBuiltUpArea = superBuiltUpArea;
+	public Double getRenovationCost() {
+		return renovationCost;
 	}
 
+	public void setRenovationCost(Double renovationCost) {
+		this.renovationCost = renovationCost;
+	}
 
+	public Integer getRenovationType() {
+		return renovationType;
+	}
+
+	public void setRenovationType(Integer renovationType) {
+		this.renovationType = renovationType;
+	}
+
+	
 
 }
