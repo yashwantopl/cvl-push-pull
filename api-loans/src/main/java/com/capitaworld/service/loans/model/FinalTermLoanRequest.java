@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * The persistent class for the fs_corporate_term_loan_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FinalTermLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 

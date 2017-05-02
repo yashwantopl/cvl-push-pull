@@ -1,9 +1,12 @@
 package com.capitaworld.service.loans.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author Sanket
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FinancialArrangementsDetailRequest {
 	
 	private Long id;

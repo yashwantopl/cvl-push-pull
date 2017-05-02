@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 
 public interface TermLoanParameterRepository extends JpaRepository<TermLoanParameter, Long>{
-	@Query("from TermLoanParameter tp where tp.id =:id")
-	public TermLoanParameter getTermLoanParameter(@Param("id") Long id);
+	@Query("from TermLoanParameter tp where tp.fpProductId.id =:id and isActive=true")
+	public TermLoanParameter getByID(@Param("id") Long id);
 }

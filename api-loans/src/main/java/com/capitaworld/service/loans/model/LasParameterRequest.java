@@ -2,11 +2,14 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * The persistent class for the fp_loan_against_share_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LasParameterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

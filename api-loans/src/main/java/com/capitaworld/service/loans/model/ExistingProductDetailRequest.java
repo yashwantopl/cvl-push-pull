@@ -2,11 +2,14 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * The persistent class for the fs_corporate_existing_product_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExistingProductDetailRequest implements Serializable {
 
 	/**

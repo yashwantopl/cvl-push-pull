@@ -2,11 +2,14 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * The persistent class for the fs_retail_las_loan_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PrimaryLasLoanDetailRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 

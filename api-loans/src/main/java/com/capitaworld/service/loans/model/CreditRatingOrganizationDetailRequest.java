@@ -2,11 +2,14 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 /**
  * The persistent class for the fs_corporate_credit_rating_organization_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditRatingOrganizationDetailRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
