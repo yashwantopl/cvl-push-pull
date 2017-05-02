@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.domain.fundseeker.retail;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+
 import java.util.Date;
 import java.math.BigInteger;
 
@@ -10,310 +13,310 @@ import java.math.BigInteger;
  *
  */
 
-
 /**
  * The persistent class for the fs_retail_co_applicant_details database table.
  * 
  */
 @Entity
-@Table(name="fs_retail_co_applicant_details")
+@Table(name = "fs_retail_co_applicant_details")
 public class CoApplicantDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="aadhar_number")
+	@ManyToOne
+	@JoinColumn(name = "application_id")
+	private LoanApplicationMaster applicationId;
+
+	@Column(name = "aadhar_number")
 	private String aadharNumber;
 
-	@Column(name="address_city")
+	@Column(name = "address_city")
 	private Integer addressCity;
 
-	@Column(name="address_country")
+	@Column(name = "address_country")
 	private Integer addressCountry;
 
-	@Column(name="address_landmark")
+	@Column(name = "address_landmark")
 	private String addressLandmark;
 
-	@Column(name="address_pincode")
+	@Column(name = "address_pincode")
 	private BigInteger addressPincode;
 
-	@Column(name="address_premise_name")
+	@Column(name = "address_premise_name")
 	private String addressPremiseName;
 
-	@Column(name="address_same_as")
+	@Column(name = "address_same_as")
 	private Boolean addressSameAs;
 
-	@Column(name="address_state")
+	@Column(name = "address_state")
 	private Integer addressState;
 
-	@Column(name="address_street_name")
+	@Column(name = "address_street_name")
 	private String addressStreetName;
 
-	@Column(name="allied_activity_id")
+	@Column(name = "allied_activity_id")
 	private Integer alliedActivityId;
 
-	@Column(name="annual_rent")
+	@Column(name = "annual_rent")
 	private Double annualRent;
 
-	@Column(name="annual_turnover")
+	@Column(name = "annual_turnover")
 	private Double annualTurnover;
 
-	@Column(name="application_id")
-	private BigInteger applicationId;
-
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="birth_date")
+	@Column(name = "birth_date")
 	private Date birthDate;
 
-	@Column(name="birth_place")
+	@Column(name = "birth_place")
 	private String birthPlace;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="business_start_date")
+	@Column(name = "business_start_date")
 	private Date businessStartDate;
 
-	@Column(name="cast_id")
+	@Column(name = "cast_id")
 	private Integer castId;
 
-	@Column(name="cast_other")
+	@Column(name = "cast_other")
 	private String castOther;
 
-	@Column(name="company_name")
+	@Column(name = "company_name")
 	private String companyName;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="current_department")
+	@Column(name = "current_department")
 	private String currentDepartment;
 
-	@Column(name="current_designation")
+	@Column(name = "current_designation")
 	private String currentDesignation;
 
-	@Column(name="current_industry")
+	@Column(name = "current_industry")
 	private String currentIndustry;
 
-	@Column(name="current_job_month")
+	@Column(name = "current_job_month")
 	private Integer currentJobMonth;
 
-	@Column(name="current_job_year")
+	@Column(name = "current_job_year")
 	private Integer currentJobYear;
 
-	@Column(name="employed_with_id")
+	@Column(name = "employed_with_id")
 	private Integer employedWithId;
 
-	@Column(name="employed_with_other")
+	@Column(name = "employed_with_other")
 	private String employedWithOther;
 
-	@Column(name="employment_status")
+	@Column(name = "employment_status")
 	private Integer employmentStatus;
 
-	@Column(name="entity_name")
+	@Column(name = "entity_name")
 	private String entityName;
 
-	@Column(name="father_name")
+	@Column(name = "father_name")
 	private String fatherName;
 
-	@Column(name="first_name")
+	@Column(name = "first_name")
 	private String firstName;
 
-	@Column(name="highest_qualification")
+	@Column(name = "highest_qualification")
 	private Integer highestQualification;
 
-	@Column(name="highest_qualification_other")
+	@Column(name = "highest_qualification_other")
 	private String highestQualificationOther;
 
-	@Column(name="industry_type_id")
+	@Column(name = "industry_type_id")
 	private Integer industryTypeId;
 
-	@Column(name="industry_type_other")
+	@Column(name = "industry_type_other")
 	private String industryTypeOther;
 
 	private String institute;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="is_spouse_employed")
+	@Column(name = "is_spouse_employed")
 	private Boolean isSpouseEmployed;
 
-	@Column(name="land_size")
+	@Column(name = "land_size")
 	private Double landSize;
 
-	@Column(name="last_name")
+	@Column(name = "last_name")
 	private String lastName;
 
-	@Column(name="middle_name")
+	@Column(name = "middle_name")
 	private String middleName;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name="monthly_income")
+	@Column(name = "monthly_income")
 	private Double monthlyIncome;
 
-	@Column(name="mother_name")
+	@Column(name = "mother_name")
 	private String motherName;
 
-	@Column(name="name_of_entity")
+	@Column(name = "name_of_entity")
 	private String nameOfEntity;
 
-	@Column(name="no_children")
+	@Column(name = "no_children")
 	private Integer noChildren;
 
-	@Column(name="no_dependent")
+	@Column(name = "no_dependent")
 	private Integer noDependent;
 
-	@Column(name="no_partners")
+	@Column(name = "no_partners")
 	private Integer noPartners;
 
-	@Column(name="occupation_id")
+	@Column(name = "occupation_id")
 	private Integer occupationId;
 
-	@Column(name="office_city_id")
+	@Column(name = "office_city_id")
 	private Integer officeCityId;
 
-	@Column(name="office_country_id")
+	@Column(name = "office_country_id")
 	private Integer officeCountryId;
 
-	@Column(name="office_land_mark")
+	@Column(name = "office_land_mark")
 	private String officeLandMark;
 
-	@Column(name="office_pincode")
+	@Column(name = "office_pincode")
 	private Integer officePincode;
 
-	@Column(name="office_premise_number_name")
+	@Column(name = "office_premise_number_name")
 	private String officePremiseNumberName;
 
-	@Column(name="office_state_id")
+	@Column(name = "office_state_id")
 	private Integer officeStateId;
 
-	@Column(name="office_street_name")
+	@Column(name = "office_street_name")
 	private String officeStreetName;
 
-	@Column(name="office_type")
+	@Column(name = "office_type")
 	private Integer officeType;
 
-	@Column(name="ownership_type")
+	@Column(name = "ownership_type")
 	private Integer ownershipType;
 
 	private String pan;
 
-	@Column(name="partners_name")
+	@Column(name = "partners_name")
 	private String partnersName;
 
-	@Column(name="permanent_city_id")
+	@Column(name = "permanent_city_id")
 	private Integer permanentCityId;
 
-	@Column(name="permanent_country_id")
+	@Column(name = "permanent_country_id")
 	private Integer permanentCountryId;
 
-	@Column(name="permanent_land_mark")
+	@Column(name = "permanent_land_mark")
 	private String permanentLandMark;
 
-	@Column(name="permanent_pincode")
+	@Column(name = "permanent_pincode")
 	private Integer permanentPincode;
 
-	@Column(name="permanent_premise_number_name")
+	@Column(name = "permanent_premise_number_name")
 	private String permanentPremiseNumberName;
 
-	@Column(name="permanent_state_id")
+	@Column(name = "permanent_state_id")
 	private Integer permanentStateId;
 
-	@Column(name="permanent_street_name")
+	@Column(name = "permanent_street_name")
 	private String permanentStreetName;
 
-	@Column(name="poa_holder_name")
+	@Column(name = "poa_holder_name")
 	private String poaHolderName;
 
-	@Column(name="presently_irrigated")
+	@Column(name = "presently_irrigated")
 	private String presentlyIrrigated;
 
-	@Column(name="previous_employers_address")
+	@Column(name = "previous_employers_address")
 	private String previousEmployersAddress;
 
-	@Column(name="previous_employers_name")
+	@Column(name = "previous_employers_name")
 	private String previousEmployersName;
 
-	@Column(name="previous_job_month")
+	@Column(name = "previous_job_month")
 	private Integer previousJobMonth;
 
-	@Column(name="previous_job_year")
+	@Column(name = "previous_job_year")
 	private Integer previousJobYear;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="qualifying_year")
+	@Column(name = "qualifying_year")
 	private Date qualifyingYear;
 
-	@Column(name="rain_fed")
+	@Column(name = "rain_fed")
 	private String rainFed;
 
-	@Column(name="relationship_with_applicant")
+	@Column(name = "relationship_with_applicant")
 	private Integer relationshipWithApplicant;
 
 	private Integer religion;
 
-	@Column(name="religion_other")
+	@Column(name = "religion_other")
 	private String religionOther;
 
-	@Column(name="residence_type")
+	@Column(name = "residence_type")
 	private Integer residenceType;
 
-	@Column(name="residing_month")
+	@Column(name = "residing_month")
 	private Double residingMonth;
 
-	@Column(name="residing_year")
+	@Column(name = "residing_year")
 	private Double residingYear;
 
-	@Column(name="seasonal_irrigated")
+	@Column(name = "seasonal_irrigated")
 	private String seasonalIrrigated;
 
-	@Column(name="self_employed_occupation_id")
+	@Column(name = "self_employed_occupation_id")
 	private Integer selfEmployedOccupationId;
 
-	@Column(name="self_employed_occupation_other")
+	@Column(name = "self_employed_occupation_other")
 	private String selfEmployedOccupationOther;
 
 	private String shareholding;
 
-	@Column(name="spouse_name")
+	@Column(name = "spouse_name")
 	private String spouseName;
 
-	@Column(name="status_id")
+	@Column(name = "status_id")
 	private Integer statusId;
 
-	@Column(name="title_id")
+	@Column(name = "title_id")
 	private Integer titleId;
 
-	@Column(name="total_experience_month")
+	@Column(name = "total_experience_month")
 	private Integer totalExperienceMonth;
 
-	@Column(name="total_experience_year")
+	@Column(name = "total_experience_year")
 	private Integer totalExperienceYear;
 
-	@Column(name="total_land_owned")
+	@Column(name = "total_land_owned")
 	private Double totalLandOwned;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="trade_license_expiry_date")
+	@Column(name = "trade_license_expiry_date")
 	private Date tradeLicenseExpiryDate;
 
-	@Column(name="trade_license_number")
+	@Column(name = "trade_license_number")
 	private String tradeLicenseNumber;
 
 	private String unattended;
 
-	@Column(name="website_address")
+	@Column(name = "website_address")
 	private String websiteAddress;
 
 	public CoApplicantDetail() {
@@ -423,11 +426,11 @@ public class CoApplicantDetail implements Serializable {
 		this.annualTurnover = annualTurnover;
 	}
 
-	public BigInteger getApplicationId() {
-		return this.applicationId;
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
 	}
 
-	public void setApplicationId(BigInteger applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 

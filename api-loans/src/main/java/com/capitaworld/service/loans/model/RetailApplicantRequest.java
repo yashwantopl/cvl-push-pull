@@ -1,22 +1,22 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The persistent class for the fs_retail_applicant_details database table.
  * 
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class RetailApplicantRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//Common Fields
+	// Common Fields
 	private Long id;
 	private Long applicationId;
-	
-	//Primary Fields
+
+	// Primary Fields
 	private Integer titleId;
 	private String firstName;
 	private String middleName;
@@ -29,10 +29,10 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
-	private boolean sameAs;
+	private boolean addressSameAs;
 	private String contactNo;
-	private CoApplicantRequest coApplicant;
-	private GuarantorRequest guarantor;
+	private List<CoApplicantRequest> coApplicants = Collections.emptyList();
+	private List<GuarantorRequest> guarantors = Collections.emptyList();
 	private String companyName;
 	private Integer employedWithId;
 	private String employedWithOther;
@@ -44,15 +44,32 @@ public class RetailApplicantRequest implements Serializable {
 	private Double landSize;
 	private Integer alliedActivityId;
 
+	// Final common Retail Fields
+	private Integer castId;
+	private String castOther;
+	private Integer religion;
+	private String religionOther;
+	private String birthPlace;
+	private String fatherName;
+	private String motherName;
+	private String spouseName;
+	private Boolean isSpouseEmployed;
+	private Integer noChildren;
+	private Integer noDependent;
+	private Integer highestQualification;
+	private String highestQualificationOther;
+	private Date qualifyingYear;
+	private String institute;
+	private Integer residenceType;
+	private Double annualRent;
+	private Double annualTurnover;
+	private Integer noPartners;
+
 	// private Boolean addressSameAs;
 
-	// private Double annualRent;
-	// private Double annualTurnover;
 	// private Date birthDate;
-	// private String birthPlace;
+
 	// private Date businessStartDate;
-	// private Integer castId;
-	// private String castOther;
 
 	// private String currentDepartment;
 	// private String currentDesignation;
@@ -62,23 +79,16 @@ public class RetailApplicantRequest implements Serializable {
 
 	// private Integer employmentStatus;
 
-	// private String fatherName;
 	//
-	// private Integer highestQualification;
-	// private String highestQualificationOther;
 
-	// private String institute;
 	// private Integer interestRate;
-	// private Boolean isSpouseEmployed;
 
 	//
 	//
 	//
-	// private String motherName;
+
 	// private String nameOfEntity;
-	// private Integer noChildren;
-	// private Integer noDependent;
-	// private Integer noPartners;
+
 	//
 	// private Integer officeType;
 	// private Integer ownershipType;
@@ -90,19 +100,18 @@ public class RetailApplicantRequest implements Serializable {
 	// private String previousEmployersName;
 	// private Integer previousJobMonth;
 	// private Integer previousJobYear;
-	// private Date qualifyingYear;
+
 	// private String rainFed;
-	// private Integer religion;
-	// private String religionOther;
+
 	// private Integer repaymentCycle;
 	// private Integer repaymentMode;
-	// private Integer residenceType;
+
 	// private Double residingMonth;
 	// private Double residingYear;
 	// private String seasonalIrrigated;
 
 	// private String shareholding;
-	// private String spouseName;
+
 	//
 	// private Integer totalExperienceMonth;
 	// private Integer totalExperienceYear;
@@ -233,12 +242,12 @@ public class RetailApplicantRequest implements Serializable {
 		this.secondAddress = secondAddress;
 	}
 
-	public boolean isSameAs() {
-		return sameAs;
+	public boolean isAddressSameAs() {
+		return addressSameAs;
 	}
 
-	public void setSameAs(boolean sameAs) {
-		this.sameAs = sameAs;
+	public void setAddressSameAs(boolean addressSameAs) {
+		this.addressSameAs = addressSameAs;
 	}
 
 	public String getContactNo() {
@@ -249,20 +258,20 @@ public class RetailApplicantRequest implements Serializable {
 		this.contactNo = contactNo;
 	}
 
-	public CoApplicantRequest getCoApplicant() {
-		return coApplicant;
+	public List<CoApplicantRequest> getCoApplicants() {
+		return coApplicants;
 	}
 
-	public void setCoApplicant(CoApplicantRequest coApplicant) {
-		this.coApplicant = coApplicant;
+	public void setCoApplicants(List<CoApplicantRequest> coApplicants) {
+		this.coApplicants = coApplicants;
 	}
 
-	public GuarantorRequest getGuarantor() {
-		return guarantor;
+	public List<GuarantorRequest> getGuarantors() {
+		return guarantors;
 	}
 
-	public void setGuarantor(GuarantorRequest guarantor) {
-		this.guarantor = guarantor;
+	public void setGuarantors(List<GuarantorRequest> guarantors) {
+		this.guarantors = guarantors;
 	}
 
 	public Long getUserId() {

@@ -33,26 +33,34 @@ public class RetailApplicantController {
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest) {
 		// request must not be null
-		if (applicantRequest == null) {
-			logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
+		try {
 
-		if (applicantRequest.getApplicationId() == null) {
-			logger.warn("Application Id can not be empty ==>", applicantRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
+			if (applicantRequest == null) {
+				logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 
-		}
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>", applicantRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 
-		boolean response = applicantService.save(applicantRequest);
-		if (response) {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-					HttpStatus.OK);
-		} else {
+			}
+
+			boolean response = applicantService.save(applicantRequest);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

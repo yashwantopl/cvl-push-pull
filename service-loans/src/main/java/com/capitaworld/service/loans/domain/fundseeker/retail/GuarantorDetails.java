@@ -9,9 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 /**
  * @author Sanket
@@ -19,304 +23,305 @@ import javax.persistence.TemporalType;
  */
 
 @Entity
-@Table(name="fs_retail_guarantor_details")
-public class GuarantorDetails implements Serializable{
+@Table(name = "fs_retail_guarantor_details")
+public class GuarantorDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="aadhar_number")
+	@ManyToOne
+	@JoinColumn(name = "application_id")
+	private LoanApplicationMaster applicationId;
+
+	@Column(name = "aadhar_number")
 	private String aadharNumber;
 
-	@Column(name="address_city")
-	private int addressCity;
+	@Column(name = "address_city")
+	private Integer addressCity;
 
-	@Column(name="address_country")
-	private int addressCountry;
+	@Column(name = "address_country")
+	private Integer addressCountry;
 
-	@Column(name="address_landmark")
+	@Column(name = "address_landmark")
 	private String addressLandmark;
 
-	@Column(name="address_pincode")
+	@Column(name = "address_pincode")
 	private BigInteger addressPincode;
 
-	@Column(name="address_premise_name")
+	@Column(name = "address_premise_name")
 	private String addressPremiseName;
 
-	@Column(name="address_same_as")
+	@Column(name = "address_same_as")
 	private byte addressSameAs;
 
-	@Column(name="address_state")
-	private int addressState;
+	@Column(name = "address_state")
+	private Integer addressState;
 
-	@Column(name="address_street_name")
+	@Column(name = "address_street_name")
 	private String addressStreetName;
 
-	@Column(name="allied_activity_id")
-	private int alliedActivityId;
+	@Column(name = "allied_activity_id")
+	private Integer alliedActivityId;
 
-	@Column(name="annual_rent")
+	@Column(name = "annual_rent")
 	private Double annualRent;
 
-	@Column(name="annual_turnover")
+	@Column(name = "annual_turnover")
 	private Double annualTurnover;
 
-	@Column(name="application_id")
-	private BigInteger applicationId;
-
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="birth_date")
+	@Column(name = "birth_date")
 	private Date birthDate;
 
-	@Column(name="birth_place")
+	@Column(name = "birth_place")
 	private String birthPlace;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="business_start_date")
+	@Column(name = "business_start_date")
 	private Date businessStartDate;
 
-	@Column(name="cast_id")
-	private int castId;
+	@Column(name = "cast_id")
+	private Integer castId;
 
-	@Column(name="cast_other")
+	@Column(name = "cast_other")
 	private String castOther;
 
-	@Column(name="company_name")
+	@Column(name = "company_name")
 	private String companyName;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="current_department")
+	@Column(name = "current_department")
 	private String currentDepartment;
 
-	@Column(name="current_designation")
+	@Column(name = "current_designation")
 	private String currentDesignation;
 
-	@Column(name="current_industry")
+	@Column(name = "current_industry")
 	private String currentIndustry;
 
-	@Column(name="current_job_month")
-	private int currentJobMonth;
+	@Column(name = "current_job_month")
+	private Integer currentJobMonth;
 
-	@Column(name="current_job_year")
-	private int currentJobYear;
+	@Column(name = "current_job_year")
+	private Integer currentJobYear;
 
-	@Column(name="employed_with_id")
-	private int employedWithId;
+	@Column(name = "employed_with_id")
+	private Integer employedWithId;
 
-	@Column(name="employed_with_other")
+	@Column(name = "employed_with_other")
 	private String employedWithOther;
 
-	@Column(name="employment_status")
-	private int employmentStatus;
+	@Column(name = "employment_status")
+	private Integer employmentStatus;
 
-	@Column(name="entity_name")
+	@Column(name = "entity_name")
 	private String entityName;
 
-	@Column(name="father_name")
+	@Column(name = "father_name")
 	private String fatherName;
 
-	@Column(name="first_name")
+	@Column(name = "first_name")
 	private String firstName;
 
-	@Column(name="highest_qualification")
-	private int highestQualification;
+	@Column(name = "highest_qualification")
+	private Integer highestQualification;
 
-	@Column(name="highest_qualification_other")
+	@Column(name = "highest_qualification_other")
 	private String highestQualificationOther;
 
-	@Column(name="industry_type_id")
-	private int industryTypeId;
+	@Column(name = "industry_type_id")
+	private Integer industryTypeId;
 
-	@Column(name="industry_type_other")
+	@Column(name = "industry_type_other")
 	private String industryTypeOther;
 
 	private String institute;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="is_spouse_employed")
+	@Column(name = "is_spouse_employed")
 	private Boolean isSpouseEmployed;
 
-	@Column(name="land_size")
+	@Column(name = "land_size")
 	private Double landSize;
 
-	@Column(name="last_name")
+	@Column(name = "last_name")
 	private String lastName;
 
-	@Column(name="middle_name")
+	@Column(name = "middle_name")
 	private String middleName;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name="monthly_income")
+	@Column(name = "monthly_income")
 	private Double monthlyIncome;
 
-	@Column(name="mother_name")
+	@Column(name = "mother_name")
 	private String motherName;
 
-	@Column(name="name_of_entity")
+	@Column(name = "name_of_entity")
 	private String nameOfEntity;
 
-	@Column(name="no_children")
-	private int noChildren;
+	@Column(name = "no_children")
+	private Integer noChildren;
 
-	@Column(name="no_dependent")
-	private int noDependent;
+	@Column(name = "no_dependent")
+	private Integer noDependent;
 
-	@Column(name="no_partners")
-	private int noPartners;
+	@Column(name = "no_partners")
+	private Integer noPartners;
 
-	@Column(name="occupation_id")
-	private int occupationId;
+	@Column(name = "occupation_id")
+	private Integer occupationId;
 
-	@Column(name="office_city_id")
-	private int officeCityId;
+	@Column(name = "office_city_id")
+	private Integer officeCityId;
 
-	@Column(name="office_country_id")
-	private int officeCountryId;
+	@Column(name = "office_country_id")
+	private Integer officeCountryId;
 
-	@Column(name="office_land_mark")
+	@Column(name = "office_land_mark")
 	private String officeLandMark;
 
-	@Column(name="office_pincode")
-	private int officePincode;
+	@Column(name = "office_pincode")
+	private Integer officePincode;
 
-	@Column(name="office_premise_number_name")
+	@Column(name = "office_premise_number_name")
 	private String officePremiseNumberName;
 
-	@Column(name="office_state_id")
-	private int officeStateId;
+	@Column(name = "office_state_id")
+	private Integer officeStateId;
 
-	@Column(name="office_street_name")
+	@Column(name = "office_street_name")
 	private String officeStreetName;
 
-	@Column(name="office_type")
-	private int officeType;
+	@Column(name = "office_type")
+	private Integer officeType;
 
-	@Column(name="ownership_type")
-	private int ownershipType;
+	@Column(name = "ownership_type")
+	private Integer ownershipType;
 
 	private String pan;
 
-	@Column(name="partners_name")
+	@Column(name = "partners_name")
 	private String partnersName;
 
-	@Column(name="permanent_city_id")
-	private int permanentCityId;
+	@Column(name = "permanent_city_id")
+	private Integer permanentCityId;
 
-	@Column(name="permanent_country_id")
-	private int permanentCountryId;
+	@Column(name = "permanent_country_id")
+	private Integer permanentCountryId;
 
-	@Column(name="permanent_land_mark")
+	@Column(name = "permanent_land_mark")
 	private String permanentLandMark;
 
-	@Column(name="permanent_pincode")
-	private int permanentPincode;
+	@Column(name = "permanent_pincode")
+	private Integer permanentPincode;
 
-	@Column(name="permanent_premise_number_name")
+	@Column(name = "permanent_premise_number_name")
 	private String permanentPremiseNumberName;
 
-	@Column(name="permanent_state_id")
-	private int permanentStateId;
+	@Column(name = "permanent_state_id")
+	private Integer permanentStateId;
 
-	@Column(name="permanent_street_name")
+	@Column(name = "permanent_street_name")
 	private String permanentStreetName;
 
-	@Column(name="poa_holder_name")
+	@Column(name = "poa_holder_name")
 	private String poaHolderName;
 
-	@Column(name="presently_irrigated")
+	@Column(name = "presently_irrigated")
 	private String presentlyIrrigated;
 
-	@Column(name="previous_employers_address")
+	@Column(name = "previous_employers_address")
 	private String previousEmployersAddress;
 
-	@Column(name="previous_employers_name")
+	@Column(name = "previous_employers_name")
 	private String previousEmployersName;
 
-	@Column(name="previous_job_month")
-	private int previousJobMonth;
+	@Column(name = "previous_job_month")
+	private Integer previousJobMonth;
 
-	@Column(name="previous_job_year")
-	private int previousJobYear;
+	@Column(name = "previous_job_year")
+	private Integer previousJobYear;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="qualifying_year")
+	@Column(name = "qualifying_year")
 	private Date qualifyingYear;
 
-	@Column(name="rain_fed")
+	@Column(name = "rain_fed")
 	private String rainFed;
 
-	@Column(name="relationship_with_applicant")
-	private int relationshipWithApplicant;
+	// @Column(name = "relationship_with_applicant")
+	// private Integer relationshipWithApplicant;
 
-	private int religion;
+	private Integer religion;
 
-	@Column(name="religion_other")
+	@Column(name = "religion_other")
 	private String religionOther;
 
-	@Column(name="residence_type")
-	private int residenceType;
+	@Column(name = "residence_type")
+	private Integer residenceType;
 
-	@Column(name="residing_month")
+	@Column(name = "residing_month")
 	private Double residingMonth;
 
-	@Column(name="residing_year")
+	@Column(name = "residing_year")
 	private Double residingYear;
 
-	@Column(name="seasonal_irrigated")
+	@Column(name = "seasonal_irrigated")
 	private String seasonalIrrigated;
 
-	@Column(name="self_employed_occupation_id")
-	private int selfEmployedOccupationId;
+	@Column(name = "self_employed_occupation_id")
+	private Integer selfEmployedOccupationId;
 
-	@Column(name="self_employed_occupation_other")
+	@Column(name = "self_employed_occupation_other")
 	private String selfEmployedOccupationOther;
 
 	private String shareholding;
 
-	@Column(name="spouse_name")
+	@Column(name = "spouse_name")
 	private String spouseName;
 
-	@Column(name="status_id")
-	private int statusId;
+	@Column(name = "status_id")
+	private Integer statusId;
 
-	@Column(name="title_id")
-	private int titleId;
+	@Column(name = "title_id")
+	private Integer titleId;
 
-	@Column(name="total_experience_month")
-	private int totalExperienceMonth;
+	@Column(name = "total_experience_month")
+	private Integer totalExperienceMonth;
 
-	@Column(name="total_experience_year")
-	private int totalExperienceYear;
+	@Column(name = "total_experience_year")
+	private Integer totalExperienceYear;
 
-	@Column(name="total_land_owned")
+	@Column(name = "total_land_owned")
 	private Double totalLandOwned;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="trade_license_expiry_date")
+	@Column(name = "trade_license_expiry_date")
 	private Date tradeLicenseExpiryDate;
 
-	@Column(name="trade_license_number")
+	@Column(name = "trade_license_number")
 	private String tradeLicenseNumber;
 
 	private String unattended;
 
-	@Column(name="website_address")
+	@Column(name = "website_address")
 	private String websiteAddress;
 
 	public Long getId() {
@@ -335,19 +340,19 @@ public class GuarantorDetails implements Serializable{
 		this.aadharNumber = aadharNumber;
 	}
 
-	public int getAddressCity() {
+	public Integer getAddressCity() {
 		return addressCity;
 	}
 
-	public void setAddressCity(int addressCity) {
+	public void setAddressCity(Integer addressCity) {
 		this.addressCity = addressCity;
 	}
 
-	public int getAddressCountry() {
+	public Integer getAddressCountry() {
 		return addressCountry;
 	}
 
-	public void setAddressCountry(int addressCountry) {
+	public void setAddressCountry(Integer addressCountry) {
 		this.addressCountry = addressCountry;
 	}
 
@@ -383,11 +388,11 @@ public class GuarantorDetails implements Serializable{
 		this.addressSameAs = addressSameAs;
 	}
 
-	public int getAddressState() {
+	public Integer getAddressState() {
 		return addressState;
 	}
 
-	public void setAddressState(int addressState) {
+	public void setAddressState(Integer addressState) {
 		this.addressState = addressState;
 	}
 
@@ -399,11 +404,11 @@ public class GuarantorDetails implements Serializable{
 		this.addressStreetName = addressStreetName;
 	}
 
-	public int getAlliedActivityId() {
+	public Integer getAlliedActivityId() {
 		return alliedActivityId;
 	}
 
-	public void setAlliedActivityId(int alliedActivityId) {
+	public void setAlliedActivityId(Integer alliedActivityId) {
 		this.alliedActivityId = alliedActivityId;
 	}
 
@@ -423,11 +428,11 @@ public class GuarantorDetails implements Serializable{
 		this.annualTurnover = annualTurnover;
 	}
 
-	public BigInteger getApplicationId() {
+	public LoanApplicationMaster getApplicationId() {
 		return applicationId;
 	}
 
-	public void setApplicationId(BigInteger applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 
@@ -455,11 +460,11 @@ public class GuarantorDetails implements Serializable{
 		this.businessStartDate = businessStartDate;
 	}
 
-	public int getCastId() {
+	public Integer getCastId() {
 		return castId;
 	}
 
-	public void setCastId(int castId) {
+	public void setCastId(Integer castId) {
 		this.castId = castId;
 	}
 
@@ -519,27 +524,27 @@ public class GuarantorDetails implements Serializable{
 		this.currentIndustry = currentIndustry;
 	}
 
-	public int getCurrentJobMonth() {
+	public Integer getCurrentJobMonth() {
 		return currentJobMonth;
 	}
 
-	public void setCurrentJobMonth(int currentJobMonth) {
+	public void setCurrentJobMonth(Integer currentJobMonth) {
 		this.currentJobMonth = currentJobMonth;
 	}
 
-	public int getCurrentJobYear() {
+	public Integer getCurrentJobYear() {
 		return currentJobYear;
 	}
 
-	public void setCurrentJobYear(int currentJobYear) {
+	public void setCurrentJobYear(Integer currentJobYear) {
 		this.currentJobYear = currentJobYear;
 	}
 
-	public int getEmployedWithId() {
+	public Integer getEmployedWithId() {
 		return employedWithId;
 	}
 
-	public void setEmployedWithId(int employedWithId) {
+	public void setEmployedWithId(Integer employedWithId) {
 		this.employedWithId = employedWithId;
 	}
 
@@ -551,11 +556,11 @@ public class GuarantorDetails implements Serializable{
 		this.employedWithOther = employedWithOther;
 	}
 
-	public int getEmploymentStatus() {
+	public Integer getEmploymentStatus() {
 		return employmentStatus;
 	}
 
-	public void setEmploymentStatus(int employmentStatus) {
+	public void setEmploymentStatus(Integer employmentStatus) {
 		this.employmentStatus = employmentStatus;
 	}
 
@@ -583,11 +588,11 @@ public class GuarantorDetails implements Serializable{
 		this.firstName = firstName;
 	}
 
-	public int getHighestQualification() {
+	public Integer getHighestQualification() {
 		return highestQualification;
 	}
 
-	public void setHighestQualification(int highestQualification) {
+	public void setHighestQualification(Integer highestQualification) {
 		this.highestQualification = highestQualification;
 	}
 
@@ -599,11 +604,11 @@ public class GuarantorDetails implements Serializable{
 		this.highestQualificationOther = highestQualificationOther;
 	}
 
-	public int getIndustryTypeId() {
+	public Integer getIndustryTypeId() {
 		return industryTypeId;
 	}
 
-	public void setIndustryTypeId(int industryTypeId) {
+	public void setIndustryTypeId(Integer industryTypeId) {
 		this.industryTypeId = industryTypeId;
 	}
 
@@ -703,51 +708,51 @@ public class GuarantorDetails implements Serializable{
 		this.nameOfEntity = nameOfEntity;
 	}
 
-	public int getNoChildren() {
+	public Integer getNoChildren() {
 		return noChildren;
 	}
 
-	public void setNoChildren(int noChildren) {
+	public void setNoChildren(Integer noChildren) {
 		this.noChildren = noChildren;
 	}
 
-	public int getNoDependent() {
+	public Integer getNoDependent() {
 		return noDependent;
 	}
 
-	public void setNoDependent(int noDependent) {
+	public void setNoDependent(Integer noDependent) {
 		this.noDependent = noDependent;
 	}
 
-	public int getNoPartners() {
+	public Integer getNoPartners() {
 		return noPartners;
 	}
 
-	public void setNoPartners(int noPartners) {
+	public void setNoPartners(Integer noPartners) {
 		this.noPartners = noPartners;
 	}
 
-	public int getOccupationId() {
+	public Integer getOccupationId() {
 		return occupationId;
 	}
 
-	public void setOccupationId(int occupationId) {
+	public void setOccupationId(Integer occupationId) {
 		this.occupationId = occupationId;
 	}
 
-	public int getOfficeCityId() {
+	public Integer getOfficeCityId() {
 		return officeCityId;
 	}
 
-	public void setOfficeCityId(int officeCityId) {
+	public void setOfficeCityId(Integer officeCityId) {
 		this.officeCityId = officeCityId;
 	}
 
-	public int getOfficeCountryId() {
+	public Integer getOfficeCountryId() {
 		return officeCountryId;
 	}
 
-	public void setOfficeCountryId(int officeCountryId) {
+	public void setOfficeCountryId(Integer officeCountryId) {
 		this.officeCountryId = officeCountryId;
 	}
 
@@ -759,11 +764,11 @@ public class GuarantorDetails implements Serializable{
 		this.officeLandMark = officeLandMark;
 	}
 
-	public int getOfficePincode() {
+	public Integer getOfficePincode() {
 		return officePincode;
 	}
 
-	public void setOfficePincode(int officePincode) {
+	public void setOfficePincode(Integer officePincode) {
 		this.officePincode = officePincode;
 	}
 
@@ -775,11 +780,11 @@ public class GuarantorDetails implements Serializable{
 		this.officePremiseNumberName = officePremiseNumberName;
 	}
 
-	public int getOfficeStateId() {
+	public Integer getOfficeStateId() {
 		return officeStateId;
 	}
 
-	public void setOfficeStateId(int officeStateId) {
+	public void setOfficeStateId(Integer officeStateId) {
 		this.officeStateId = officeStateId;
 	}
 
@@ -791,19 +796,19 @@ public class GuarantorDetails implements Serializable{
 		this.officeStreetName = officeStreetName;
 	}
 
-	public int getOfficeType() {
+	public Integer getOfficeType() {
 		return officeType;
 	}
 
-	public void setOfficeType(int officeType) {
+	public void setOfficeType(Integer officeType) {
 		this.officeType = officeType;
 	}
 
-	public int getOwnershipType() {
+	public Integer getOwnershipType() {
 		return ownershipType;
 	}
 
-	public void setOwnershipType(int ownershipType) {
+	public void setOwnershipType(Integer ownershipType) {
 		this.ownershipType = ownershipType;
 	}
 
@@ -823,19 +828,19 @@ public class GuarantorDetails implements Serializable{
 		this.partnersName = partnersName;
 	}
 
-	public int getPermanentCityId() {
+	public Integer getPermanentCityId() {
 		return permanentCityId;
 	}
 
-	public void setPermanentCityId(int permanentCityId) {
+	public void setPermanentCityId(Integer permanentCityId) {
 		this.permanentCityId = permanentCityId;
 	}
 
-	public int getPermanentCountryId() {
+	public Integer getPermanentCountryId() {
 		return permanentCountryId;
 	}
 
-	public void setPermanentCountryId(int permanentCountryId) {
+	public void setPermanentCountryId(Integer permanentCountryId) {
 		this.permanentCountryId = permanentCountryId;
 	}
 
@@ -847,11 +852,11 @@ public class GuarantorDetails implements Serializable{
 		this.permanentLandMark = permanentLandMark;
 	}
 
-	public int getPermanentPincode() {
+	public Integer getPermanentPincode() {
 		return permanentPincode;
 	}
 
-	public void setPermanentPincode(int permanentPincode) {
+	public void setPermanentPincode(Integer permanentPincode) {
 		this.permanentPincode = permanentPincode;
 	}
 
@@ -863,11 +868,11 @@ public class GuarantorDetails implements Serializable{
 		this.permanentPremiseNumberName = permanentPremiseNumberName;
 	}
 
-	public int getPermanentStateId() {
+	public Integer getPermanentStateId() {
 		return permanentStateId;
 	}
 
-	public void setPermanentStateId(int permanentStateId) {
+	public void setPermanentStateId(Integer permanentStateId) {
 		this.permanentStateId = permanentStateId;
 	}
 
@@ -911,19 +916,19 @@ public class GuarantorDetails implements Serializable{
 		this.previousEmployersName = previousEmployersName;
 	}
 
-	public int getPreviousJobMonth() {
+	public Integer getPreviousJobMonth() {
 		return previousJobMonth;
 	}
 
-	public void setPreviousJobMonth(int previousJobMonth) {
+	public void setPreviousJobMonth(Integer previousJobMonth) {
 		this.previousJobMonth = previousJobMonth;
 	}
 
-	public int getPreviousJobYear() {
+	public Integer getPreviousJobYear() {
 		return previousJobYear;
 	}
 
-	public void setPreviousJobYear(int previousJobYear) {
+	public void setPreviousJobYear(Integer previousJobYear) {
 		this.previousJobYear = previousJobYear;
 	}
 
@@ -943,19 +948,11 @@ public class GuarantorDetails implements Serializable{
 		this.rainFed = rainFed;
 	}
 
-	public int getRelationshipWithApplicant() {
-		return relationshipWithApplicant;
-	}
-
-	public void setRelationshipWithApplicant(int relationshipWithApplicant) {
-		this.relationshipWithApplicant = relationshipWithApplicant;
-	}
-
-	public int getReligion() {
+	public Integer getReligion() {
 		return religion;
 	}
 
-	public void setReligion(int religion) {
+	public void setReligion(Integer religion) {
 		this.religion = religion;
 	}
 
@@ -967,11 +964,11 @@ public class GuarantorDetails implements Serializable{
 		this.religionOther = religionOther;
 	}
 
-	public int getResidenceType() {
+	public Integer getResidenceType() {
 		return residenceType;
 	}
 
-	public void setResidenceType(int residenceType) {
+	public void setResidenceType(Integer residenceType) {
 		this.residenceType = residenceType;
 	}
 
@@ -999,11 +996,11 @@ public class GuarantorDetails implements Serializable{
 		this.seasonalIrrigated = seasonalIrrigated;
 	}
 
-	public int getSelfEmployedOccupationId() {
+	public Integer getSelfEmployedOccupationId() {
 		return selfEmployedOccupationId;
 	}
 
-	public void setSelfEmployedOccupationId(int selfEmployedOccupationId) {
+	public void setSelfEmployedOccupationId(Integer selfEmployedOccupationId) {
 		this.selfEmployedOccupationId = selfEmployedOccupationId;
 	}
 
@@ -1031,35 +1028,35 @@ public class GuarantorDetails implements Serializable{
 		this.spouseName = spouseName;
 	}
 
-	public int getStatusId() {
+	public Integer getStatusId() {
 		return statusId;
 	}
 
-	public void setStatusId(int statusId) {
+	public void setStatusId(Integer statusId) {
 		this.statusId = statusId;
 	}
 
-	public int getTitleId() {
+	public Integer getTitleId() {
 		return titleId;
 	}
 
-	public void setTitleId(int titleId) {
+	public void setTitleId(Integer titleId) {
 		this.titleId = titleId;
 	}
 
-	public int getTotalExperienceMonth() {
+	public Integer getTotalExperienceMonth() {
 		return totalExperienceMonth;
 	}
 
-	public void setTotalExperienceMonth(int totalExperienceMonth) {
+	public void setTotalExperienceMonth(Integer totalExperienceMonth) {
 		this.totalExperienceMonth = totalExperienceMonth;
 	}
 
-	public int getTotalExperienceYear() {
+	public Integer getTotalExperienceYear() {
 		return totalExperienceYear;
 	}
 
-	public void setTotalExperienceYear(int totalExperienceYear) {
+	public void setTotalExperienceYear(Integer totalExperienceYear) {
 		this.totalExperienceYear = totalExperienceYear;
 	}
 
@@ -1102,8 +1099,5 @@ public class GuarantorDetails implements Serializable{
 	public void setWebsiteAddress(String websiteAddress) {
 		this.websiteAddress = websiteAddress;
 	}
-	
-	
-	
 
 }

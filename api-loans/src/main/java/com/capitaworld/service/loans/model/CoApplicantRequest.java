@@ -4,9 +4,13 @@ public class CoApplicantRequest {
 
 	private Long id;
 
-	private String name;
+	private String firstName;
 
-	private Integer relationShipWith;
+	private Integer relationshipWithApplicant;
+
+	private Long userId;
+
+	private Boolean isActive;
 
 	public Long getId() {
 		return id;
@@ -16,20 +20,36 @@ public class CoApplicantRequest {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public Integer getRelationShipWith() {
-		return relationShipWith;
+	public Integer getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
 	}
 
-	public void setRelationShipWith(Integer relationShipWith) {
-		this.relationShipWith = relationShipWith;
+	public void setRelationshipWithApplicant(Integer relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 }

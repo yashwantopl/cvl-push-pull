@@ -12,8 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.CoApplicantRequest;
+import com.capitaworld.service.loans.model.GuarantorRequest;
 import com.capitaworld.service.loans.model.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 
 @Service
@@ -25,16 +29,23 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
 
+	@Autowired
+	private CoApplicantService coApplicantService;
+
+	@Autowired
+	private GuarantorService guarantorService;
+
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest) {
 		RetailApplicantDetail applicantDetail = null;
 		try {
-			// application id must not be null
 			if (applicantRequest.getId() != null && applicantRequest.getApplicationId() != null) {
 				applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
 						applicantRequest.getApplicationId());
 				if (applicantDetail == null) {
-					return false;
+					throw new NullPointerException(
+							"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
+									+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
 				}
 				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 				applicantDetail.setModifiedDate(new Date());
@@ -49,10 +60,23 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			BeanUtils.copyProperties(applicantRequest, applicantDetail);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
+
+			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
+				boolean result = coApplicantService.save(request, applicantRequest.getApplicationId());
+				if (!result) {
+					return false;
+				}
+			}
+			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
+				boolean result = guarantorService.save(request, applicantRequest.getApplicationId());
+				if (!result) {
+					return false;
+				}
+			}
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving Profile:-");
+			logger.info("Exception Throw while Saving Retail Profile:-");
 			e.printStackTrace();
 			return false;
 		}
@@ -62,11 +86,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public RetailApplicantRequest get(Long id) {
 		RetailApplicantDetail applicantDetail = applicantRepository.findOne(id);
 		if (applicantDetail == null) {
-			return null;
+			throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id);
 		}
 		RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
 		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+		applicantRequest.setCoApplicants(coApplicantService.getList(applicantRequest.getApplicationId()));
+		applicantRequest.setGuarantors(guarantorService.getList(applicantRequest.getApplicationId()));
 		return applicantRequest;
 	}
 
@@ -81,7 +107,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			to.setPermanentPincode(from.getFirstAddress().getPincode());
 		}
 
-		if (from.isSameAs()) {
+		if (from.isAddressSameAs()) {
 			if (from.getFirstAddress() != null) {
 				to.setOfficePremiseNumberName(from.getFirstAddress().getPremiseNumber());
 				to.setOfficeStreetName(from.getFirstAddress().getStreetName());
