@@ -37,6 +37,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	public WorkingCapitalParameterRequest getWorkingCapitalParameter(Long id) {
 		WorkingCapitalParameterRequest workingCapitalParameterRequest= new WorkingCapitalParameterRequest();
 		WorkingCapitalParameter loanParameter = workingCapitalParameterRepository.getByID(id);
+		if(loanParameter==null)
+			return null;
 		BeanUtils.copyProperties(loanParameter, workingCapitalParameterRequest);
 		return workingCapitalParameterRequest;
 	}

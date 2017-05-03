@@ -37,6 +37,8 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 	public CarLoanParameterRequest getCarLoanParameterRequest(Long id) {
 		CarLoanParameterRequest carLoanParameterRequest= new CarLoanParameterRequest();
 		CarLoanParameter carLoanParameter = carLoanParameterRepository.getByID(id);
+		if(carLoanParameter==null)
+			return null;
 		BeanUtils.copyProperties(carLoanParameter, carLoanParameterRequest);
 		return carLoanParameterRequest;
 	}

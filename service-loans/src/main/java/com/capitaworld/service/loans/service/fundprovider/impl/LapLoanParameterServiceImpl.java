@@ -37,6 +37,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		// TODO Auto-generated method stub
 		LapParameterRequest lapParameterRequest= new LapParameterRequest();
 		LapParameter lapParameter = lapParameterRepository.getByID(id);
+		if(lapParameter==null)
+			return null;
 		BeanUtils.copyProperties(lapParameter, lapParameterRequest);
 		return lapParameterRequest;
 	}

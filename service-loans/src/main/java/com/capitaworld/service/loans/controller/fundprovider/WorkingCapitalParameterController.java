@@ -31,43 +31,51 @@ public class WorkingCapitalParameterController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody WorkingCapitalParameterRequest  workingCapitalParameterRequest) {
+	public ResponseEntity<LoansResponse> save(
+			@RequestBody WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		// request must not be null
-		if (workingCapitalParameterRequest == null) {
-			logger.warn("workingCapitalParameterRequest Object can not be empty ==>", workingCapitalParameterRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
 
-		if(workingCapitalParameterRequest.getId()==null)
-		{
-			logger.warn("workingCapitalParameterRequest id can not be empty ==>", workingCapitalParameterRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
-		
-		if(workingCapitalParameterRequest.getId()==null)
-		{
-			logger.warn("user id can not be empty ==>", workingCapitalParameterRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
-		
-		boolean response = workingCapitalParameterService.saveOrUpdate(workingCapitalParameterRequest);
-		if (response) {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-					HttpStatus.OK);
-		} else {
+		try {
+			if (workingCapitalParameterRequest == null) {
+				logger.warn("workingCapitalParameterRequest Object can not be empty ==>",
+						workingCapitalParameterRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if (workingCapitalParameterRequest.getId() == null) {
+				logger.warn("workingCapitalParameterRequest id can not be empty ==>", workingCapitalParameterRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if (workingCapitalParameterRequest.getUserId() == null) {
+				logger.warn("user id can not be empty ==>", workingCapitalParameterRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			boolean response = workingCapitalParameterService.saveOrUpdate(workingCapitalParameterRequest);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving working capital  Parameter==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
 		// request must not be null
@@ -78,7 +86,8 @@ public class WorkingCapitalParameterController {
 						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			WorkingCapitalParameterRequest parameterRequest= workingCapitalParameterService.getWorkingCapitalParameter(id);
+			WorkingCapitalParameterRequest parameterRequest = workingCapitalParameterService
+					.getWorkingCapitalParameter(id);
 			if (parameterRequest != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(parameterRequest);
@@ -95,6 +104,5 @@ public class WorkingCapitalParameterController {
 					HttpStatus.OK);
 		}
 	}
-
 
 }

@@ -38,6 +38,8 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 		// TODO Auto-generated method stub
 		LasParameterRequest lasParameterRequest= new LasParameterRequest();
 		LasParameter lasParameter = lasParameterRepository.getByID(id);
+		if(lasParameter==null)
+			return null;
 		BeanUtils.copyProperties(lasParameter, lasParameterRequest);
 		return lasParameterRequest;
 	}

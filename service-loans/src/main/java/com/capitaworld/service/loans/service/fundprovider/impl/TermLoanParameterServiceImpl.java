@@ -39,6 +39,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getByID(id);
+		if(loanParameter==null)
+			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		return termLoanParameterRequest;
 	}
