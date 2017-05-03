@@ -54,7 +54,7 @@ public class GuarantorDetails implements Serializable {
 	private String addressPremiseName;
 
 	@Column(name = "address_same_as")
-	private byte addressSameAs;
+	private boolean addressSameAs;
 
 	@Column(name = "address_state")
 	private Integer addressState;
@@ -380,11 +380,11 @@ public class GuarantorDetails implements Serializable {
 		this.addressPremiseName = addressPremiseName;
 	}
 
-	public byte getAddressSameAs() {
+	public boolean getAddressSameAs() {
 		return addressSameAs;
 	}
 
-	public void setAddressSameAs(byte addressSameAs) {
+	public void setAddressSameAs(boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 

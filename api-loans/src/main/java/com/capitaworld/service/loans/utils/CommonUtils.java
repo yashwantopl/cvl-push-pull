@@ -50,13 +50,28 @@ public class CommonUtils {
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode" };
 		public static final String[] FP_PRODUCT = { "userId" };
+		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "statusId",
+				"occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
+				"addressSameAs", "contactNo", "companyName", "employedWithId", "employedWithOther", "entityName",
+				"industryTypeId", "industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther",
+				"landSize", "alliedActivityId", "userId" };
+
+		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
+				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
+				"annualRent", "annualTurnover", "noPartners", "birthDate", "businessStartDate", "currentDepartment",
+				"currentDesignation", "currentIndustry", "currentJobMonth", "currentJobYear", "employmentStatus",
+				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",
+				"presentlyIrrigated", "previousEmployersAddress", "previousEmployersName", "previousJobMonth",
+				"previousJobYear", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear",
+				"seasonalIrrigated", "shareholding", "totalExperienceMonth", "totalExperienceYear", "totalLandOwned",
+				"tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
-	
-	
-	public interface ApplicantType{
+
+	public interface ApplicantType {
 		public static final int APPLICANT = 1;
 		public static final int COAPPLICANT = 2;
 		public static final int GARRANTOR = 3;
-		
+
 	}
 }

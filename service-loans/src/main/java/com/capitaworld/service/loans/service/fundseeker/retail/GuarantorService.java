@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 
 public interface GuarantorService {
@@ -10,4 +11,8 @@ public interface GuarantorService {
 	public GuarantorRequest get(Long id, Long applicationId);
 	
 	public List<GuarantorRequest> getList(Long applicationId);
+	
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest);
+
+	public FinalCommonRetailRequest getFinal(Long id, Long applicationId);
 }
