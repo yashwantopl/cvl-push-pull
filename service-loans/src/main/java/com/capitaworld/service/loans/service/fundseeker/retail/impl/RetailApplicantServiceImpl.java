@@ -110,7 +110,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		return applicantRequest;
 	}
 
-	@Autowired
+	@Override
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) {
 		try {
 			if (applicantRequest.getId() == null || applicantRequest.getApplicationId() == null) {
