@@ -17,25 +17,25 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private Integer currency;
 
-	private Boolean isAgeDisplay;
+	private Boolean isAgeDisplay=false;
 
-	private Boolean isAgeMandatory;
+	private Boolean isAgeMandatory=false;
 
-	private Boolean isGeographicalDisplay;
+	private Boolean isGeographicalDisplay=false;
 
-	private Boolean isGeographicalMandatory;
+	private Boolean isGeographicalMandatory=false;
 
-	private Boolean isLoanAmountDisplay;
+	private Boolean isLoanAmountDisplay=false;
 
-	private Boolean isLoanAmountMandatory;
+	private Boolean isLoanAmountMandatory=false;
 
-	private Boolean isTenureDisplay;
+	private Boolean isTenureDisplay=false;
 
-	private Boolean isTenureMandatory;
+	private Boolean isTenureMandatory=false;
 
-	private Boolean isYearlyIncomeRangeDisplay;
+	private Boolean isYearlyIncomeRangeDisplay=false;
 
-	private Boolean isYearlyIncomeRangeMandatory;
+	private Boolean isYearlyIncomeRangeMandatory=false;
 
 	private Double maxAge;
 

@@ -38,6 +38,8 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		// TODO Auto-generated method stub
 		PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
 		PersonalLoanParameter personalLoanParameter = personalLoanParameterRepository.getByID(id);
+		if(personalLoanParameter==null)
+			return null;
 		BeanUtils.copyProperties(personalLoanParameter, personalLoanParameterRequest);
 		return personalLoanParameterRequest;
 	}

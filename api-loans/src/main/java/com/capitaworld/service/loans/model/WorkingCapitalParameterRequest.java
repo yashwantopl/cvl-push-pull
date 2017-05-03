@@ -16,49 +16,49 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay;
+	private Boolean isCollateralDisplay=false;
 
-	private Boolean isCollateralMandatory;
+	private Boolean isCollateralMandatory=false;
 
-	private Boolean isCreditRatingDisplay;
+	private Boolean isCreditRatingDisplay=false;
 
-	private Boolean isCreditRatingMandatory;
+	private Boolean isCreditRatingMandatory=false;
 
-	private Boolean isDebtEquityDisplay;
+	private Boolean isDebtEquityDisplay=false;
 
-	private Boolean isDebtEquityMandatory;
+	private Boolean isDebtEquityMandatory=false;
 
-	private Boolean isEstablishmentDisplay;
+	private Boolean isEstablishmentDisplay=false;
 
-	private Boolean isEstablishmentMandatory;
+	private Boolean isEstablishmentMandatory=false;
 
-	private Boolean isGeographicalDisplay;
+	private Boolean isGeographicalDisplay=false;
 
-	private Boolean isGeographicalMandatory;
+	private Boolean isGeographicalMandatory=false;
 
-	private Boolean isIndustrySectorDisplay;
+	private Boolean isIndustrySectorDisplay=false;
 
-	private Boolean isIndustrySectorMandatory;
+	private Boolean isIndustrySectorMandatory=false;
 
-	private Boolean isInvestmentSizeDisplay;
+	private Boolean isInvestmentSizeDisplay=false;
 
-	private Boolean isInvestmentSizeMandatory;
+	private Boolean isInvestmentSizeMandatory=false;
 
-	private Boolean isNetworthDisplay;
+	private Boolean isNetworthDisplay=false;
 
-	private Boolean isNetworthMandatory;
+	private Boolean isNetworthMandatory=false;
 
-	private Boolean isPastYearTurnoverDisplay;
+	private Boolean isPastYearTurnoverDisplay=false;
 
-	private Boolean isPastYearTurnoverMandatory;
+	private Boolean isPastYearTurnoverMandatory=false;
 
-	private Boolean isProfitabilityHistoryDisplay;
+	private Boolean isProfitabilityHistoryDisplay=false;
 
-	private Boolean isProfitabilityHistoryMandatory;
+	private Boolean isProfitabilityHistoryMandatory=false;
 
-	private Boolean isTenureDisplay;
+	private Boolean isTenureDisplay=false;
 
-	private Boolean isTenureMandatory;
+	private Boolean isTenureMandatory=false;
 
 	private Integer longTermCreditRating;
 

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 /**
  * The persistent class for the fp_car_loan_details database table.
  * 
@@ -16,31 +15,31 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	private Long fpProductId;
 
 	private Integer currency;
+	
+	private Boolean isAgeDisplay = false;
 
-	private Boolean isAgeDisplay;
+	private Boolean isAgeMandatory = false;
 
-	private Boolean isAgeMandatory;
+	private Boolean isAssetValueDisplay = false;
 
-	private Boolean isAssetValueDisplay;
+	private Boolean isAssetValueMandatory = false;
 
-	private Boolean isAssetValueMandatory;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalDisplay;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isGeographicalMandatory;
+	private Boolean isLoanAmountDisplay = false;
 
-	private Boolean isLoanAmountDisplay;
+	private Boolean isLoanAmountMandatory = false;
 
-	private Boolean isLoanAmountMandatory;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureDisplay;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isTenureMandatory;
+	private Boolean isYearlyIncomeRangeDisplay = false;
 
-	private Boolean isYearlyIncomeRangeDisplay;
-
-	private Boolean isYearlyIncomeRangeMandatory;
-
+	private Boolean isYearlyIncomeRangeMandatory = false;
+	
 	private Double maxAge;
 
 	private Double maxAssetValue;
@@ -60,7 +59,6 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	private Double minTenure;
 
 	private Double minYearlyIncomeRange;
-
 
 	public CarLoanParameterRequest() {
 	}
@@ -256,7 +254,5 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	public void setMinYearlyIncomeRange(Double minYearlyIncomeRange) {
 		this.minYearlyIncomeRange = minYearlyIncomeRange;
 	}
-
-
 
 }

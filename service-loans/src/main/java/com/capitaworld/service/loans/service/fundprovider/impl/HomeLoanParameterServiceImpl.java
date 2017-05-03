@@ -38,6 +38,8 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// TODO Auto-generated method stub
 		HomeLoanParameterRequest homeLoanParameterRequest= new HomeLoanParameterRequest();
 		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);
+		if(homeLoanParameter==null)
+			return null;
 		BeanUtils.copyProperties(homeLoanParameter, homeLoanParameterRequest);
 		return homeLoanParameterRequest;
 	}
