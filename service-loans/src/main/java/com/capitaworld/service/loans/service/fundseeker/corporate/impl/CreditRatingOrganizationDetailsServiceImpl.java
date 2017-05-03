@@ -69,9 +69,9 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 				.listCreditRatingOrganizationDetailsFromAppId(id);
 		List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
 
-		for (int i = 0; i < creditRatingOrganizationDetails.size(); i++) {
+		for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {
 			CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
-			BeanUtils.copyProperties(creditRatingOrganizationDetails.get(i), creditRatingOrganizationDetailsRequest);
+			BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
 			creditRatingOrganizationDetailRequests.add(creditRatingOrganizationDetailsRequest);
 		}
 		return creditRatingOrganizationDetailRequests;

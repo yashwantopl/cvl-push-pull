@@ -70,9 +70,9 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 				.listAssociatedConcernFromAppId(id);
 		List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
 
-		for (int i = 0; i < associatedConcernDetail.size(); i++) {
+		for (AssociatedConcernDetail detail : associatedConcernDetail) {
 			AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
-			BeanUtils.copyProperties(associatedConcernDetail.get(i), associatedConcernDetailRequest);
+			BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
 			associatedConcernDetailRequests.add(associatedConcernDetailRequest);
 		}
 		return associatedConcernDetailRequests;

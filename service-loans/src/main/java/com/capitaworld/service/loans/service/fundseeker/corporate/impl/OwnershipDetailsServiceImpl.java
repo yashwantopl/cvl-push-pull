@@ -72,9 +72,9 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService{
 				.listOwnershipFromAppId(applicationId);
 		List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
 
-		for (int i = 0; i < ownershipDetails.size(); i++) {
+		for (OwnershipDetail detail : ownershipDetails) {
 			OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
-			BeanUtils.copyProperties(ownershipDetails.get(i), ownershipDetailRequest);
+			BeanUtils.copyProperties(detail, ownershipDetailRequest);
 			ownershipDetailRequests.add(ownershipDetailRequest);
 		}
 		return ownershipDetailRequests;

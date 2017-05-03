@@ -106,9 +106,9 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		
 		List<CreditCardsDetailRequest> creditCardsRequests = new ArrayList<CreditCardsDetailRequest>();
 
-		for (int i = 0; i < creditCardsDetails.size(); i++) {
+		for (CreditCardsDetail detail : creditCardsDetails) {
 			CreditCardsDetailRequest creditCardsRequest = new CreditCardsDetailRequest();
-			BeanUtils.copyProperties(creditCardsDetails.get(i), creditCardsRequest);
+			BeanUtils.copyProperties(detail, creditCardsRequest);
 			creditCardsRequests.add(creditCardsRequest);
 		}
 		return creditCardsRequests;

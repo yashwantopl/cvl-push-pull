@@ -106,9 +106,9 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		
 		List<ExistingLoanDetailRequest> existingLoanDetailRequests = new ArrayList<ExistingLoanDetailRequest>();
 
-		for (int i = 0; i < existingLoanDetails.size(); i++) {
+		for (ExistingLoanDetail detail : existingLoanDetails) {
 			ExistingLoanDetailRequest existingLoanDetailRequest = new ExistingLoanDetailRequest();
-			BeanUtils.copyProperties(existingLoanDetails.get(i), existingLoanDetailRequest);
+			BeanUtils.copyProperties(detail, existingLoanDetailRequest);
 			existingLoanDetailRequests.add(existingLoanDetailRequest);
 		}
 		return existingLoanDetailRequests;

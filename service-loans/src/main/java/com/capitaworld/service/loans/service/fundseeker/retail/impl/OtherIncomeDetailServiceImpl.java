@@ -107,9 +107,9 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService{
 		
 		List<OtherIncomeDetailRequest> otherIncomeRequests = new ArrayList<OtherIncomeDetailRequest>();
 
-		for (int i = 0; i < otherIncomeDetails.size(); i++) {
+		for (OtherIncomeDetail detail : otherIncomeDetails) {
 			OtherIncomeDetailRequest otherIncomeRequest = new OtherIncomeDetailRequest();
-			BeanUtils.copyProperties(otherIncomeDetails.get(i), otherIncomeRequest);
+			BeanUtils.copyProperties(detail, otherIncomeRequest);
 			otherIncomeRequests.add(otherIncomeRequest);
 		}
 		return otherIncomeRequests;

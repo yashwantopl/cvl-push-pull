@@ -106,9 +106,9 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		
 		List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
 
-		for (int i = 0; i < existingLoanDetails.size(); i++) {
+		for (BankAccountHeldDetail detail : existingLoanDetails) {
 			BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
-			BeanUtils.copyProperties(existingLoanDetails.get(i), existingLoanDetailRequest);
+			BeanUtils.copyProperties(detail, existingLoanDetailRequest);
 			existingLoanDetailRequests.add(existingLoanDetailRequest);
 		}
 		return existingLoanDetailRequests;

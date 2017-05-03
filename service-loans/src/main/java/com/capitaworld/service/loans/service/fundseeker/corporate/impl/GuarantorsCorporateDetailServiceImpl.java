@@ -72,9 +72,9 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 				.listGuarantorsCorporateFromAppId(id);
 		List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequests = new ArrayList<GuarantorsCorporateDetailRequest>();
 
-		for (int i = 0; i < guarantorsCorporateDetail.size(); i++) {
+		for (GuarantorsCorporateDetail detail : guarantorsCorporateDetail) {
 			GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = new GuarantorsCorporateDetailRequest();
-			BeanUtils.copyProperties(guarantorsCorporateDetail.get(i), guarantorsCorporateDetailRequest);
+			BeanUtils.copyProperties(detail, guarantorsCorporateDetailRequest);
 			guarantorsCorporateDetailRequests.add(guarantorsCorporateDetailRequest);
 		}
 		return guarantorsCorporateDetailRequests;

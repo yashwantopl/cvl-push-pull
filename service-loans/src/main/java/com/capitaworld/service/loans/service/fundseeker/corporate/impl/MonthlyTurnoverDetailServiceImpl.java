@@ -72,9 +72,9 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 				.listMonthlyTurnoverFromAppId(id);
 		List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
 
-		for (int i = 0; i < monthlyTurnoverDetails.size(); i++) {
+		for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
 			MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = new MonthlyTurnoverDetailRequest();
-			BeanUtils.copyProperties(monthlyTurnoverDetails.get(i), monthlyTurnoverDetailRequest);
+			BeanUtils.copyProperties(detail, monthlyTurnoverDetailRequest);
 			monthlyTurnoverDetailRequests.add(monthlyTurnoverDetailRequest);
 		}
 		return monthlyTurnoverDetailRequests;

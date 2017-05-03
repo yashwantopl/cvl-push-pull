@@ -106,9 +106,9 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 		
 		List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>();
 
-		for (int i = 0; i < fixedDepositsDetails.size(); i++) {
+		for (FixedDepositsDetail detail : fixedDepositsDetails) {
 			FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
-			BeanUtils.copyProperties(fixedDepositsDetails.get(i), fixedDepositsDetailRequest);
+			BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
 			fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
 		}
 		return fixedDepositsDetailRequests;

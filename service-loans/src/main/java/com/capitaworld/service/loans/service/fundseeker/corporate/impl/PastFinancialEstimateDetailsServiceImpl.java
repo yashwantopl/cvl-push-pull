@@ -71,9 +71,9 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				.listPastFinancialEstimateDetailsFromAppId(id);
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimateDetailRequests = new ArrayList<PastFinancialEstimatesDetailRequest>();
 
-		for (int i = 0; i < pastFinancialEstimateDetails.size(); i++) {
+		for (PastFinancialEstimatesDetail detail : pastFinancialEstimateDetails) {
 			PastFinancialEstimatesDetailRequest pastFinancialEstimateDetailRequest = new PastFinancialEstimatesDetailRequest();
-			BeanUtils.copyProperties(pastFinancialEstimateDetails.get(i), pastFinancialEstimateDetailRequest);
+			BeanUtils.copyProperties(detail, pastFinancialEstimateDetailRequest);
 			pastFinancialEstimateDetailRequests.add(pastFinancialEstimateDetailRequest);
 		}
 		return pastFinancialEstimateDetailRequests;

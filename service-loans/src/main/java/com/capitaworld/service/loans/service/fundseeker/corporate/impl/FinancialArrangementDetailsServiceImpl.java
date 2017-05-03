@@ -69,9 +69,9 @@ private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDe
 				.listSecurityCorporateDetailFromAppId(id);
 		List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
 
-		for (int i = 0; i < financialArrangementDetails.size(); i++) {
+		for (FinancialArrangementsDetail detail : financialArrangementDetails) {
 			FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
-			BeanUtils.copyProperties(financialArrangementDetails.get(i), financialArrangementDetailsRequest);
+			BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
 			financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
 		}
 		return financialArrangementDetailRequests;

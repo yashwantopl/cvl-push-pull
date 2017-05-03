@@ -70,9 +70,9 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 					.listProposedProductFromAppId(id);
 			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
 
-			for (int i = 0; i < proposedProductDetails.size(); i++) {
+			for (ProposedProductDetail detail : proposedProductDetails) {
 				ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
-				BeanUtils.copyProperties(proposedProductDetails.get(i), proposedProductDetailRequest);
+				BeanUtils.copyProperties(detail, proposedProductDetailRequest);
 				proposedProductDetailRequests.add(proposedProductDetailRequest);
 			}
 			return proposedProductDetailRequests;

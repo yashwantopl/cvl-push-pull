@@ -70,9 +70,9 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 				.listExistingProductFromAppId(applicationId);
 		List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
 
-		for (int i = 0; i < existingProductDetails.size(); i++) {
+		for (ExistingProductDetail detail : existingProductDetails) {
 			ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
-			BeanUtils.copyProperties(existingProductDetails.get(i), existingProductDetailRequest);
+			BeanUtils.copyProperties(detail, existingProductDetailRequest);
 			existingProductDetailRequests.add(existingProductDetailRequest);
 		}
 		return existingProductDetailRequests;

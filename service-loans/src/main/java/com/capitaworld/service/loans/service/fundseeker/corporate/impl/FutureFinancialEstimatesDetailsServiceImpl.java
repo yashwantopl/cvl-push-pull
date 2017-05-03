@@ -69,9 +69,9 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				.listFutureFinancialEstimateDetailsFromAppId(id);
 		List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimateDetailRequests = new ArrayList<FutureFinancialEstimatesDetailRequest>();
 
-		for (int i = 0; i < futureFinancialEstimateDetails.size(); i++) {
+		for (FutureFinancialEstimatesDetail detail : futureFinancialEstimateDetails) {
 			FutureFinancialEstimatesDetailRequest futureFinancialEstimateDetailRequest = new FutureFinancialEstimatesDetailRequest();
-			BeanUtils.copyProperties(futureFinancialEstimateDetails.get(i), futureFinancialEstimateDetailRequest);
+			BeanUtils.copyProperties(detail, futureFinancialEstimateDetailRequest);
 			futureFinancialEstimateDetailRequests.add(futureFinancialEstimateDetailRequest);
 		}
 		return futureFinancialEstimateDetailRequests;

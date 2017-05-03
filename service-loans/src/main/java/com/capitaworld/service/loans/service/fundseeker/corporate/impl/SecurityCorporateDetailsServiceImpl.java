@@ -69,9 +69,9 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 				.listSecurityCorporateDetailFromAppId(id);
 		List<SecurityCorporateDetailRequest> securityCorporateDetailRequests = new ArrayList<SecurityCorporateDetailRequest>();
 
-		for (int i = 0; i < securityCorporateDetails.size(); i++) {
+		for (SecurityCorporateDetail detail : securityCorporateDetails) {
 			SecurityCorporateDetailRequest securityCorporateDetailsRequest = new SecurityCorporateDetailRequest();
-			BeanUtils.copyProperties(securityCorporateDetails.get(i), securityCorporateDetailsRequest);
+			BeanUtils.copyProperties(detail, securityCorporateDetailsRequest);
 			securityCorporateDetailRequests.add(securityCorporateDetailsRequest);
 		}
 		return securityCorporateDetailRequests;

@@ -106,9 +106,9 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 		
 		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();
 
-		for (int i = 0; i < referencesRetailDetails.size(); i++) {
+		for (ReferencesRetailDetail detail : referencesRetailDetails) {
 			ReferenceRetailDetailsRequest referencesRetailRequest = new ReferenceRetailDetailsRequest();
-			BeanUtils.copyProperties(referencesRetailDetails.get(i), referencesRetailRequest);
+			BeanUtils.copyProperties(detail, referencesRetailRequest);
 			referencesRetailRequests.add(referencesRetailRequest);
 		}
 		return referencesRetailRequests;

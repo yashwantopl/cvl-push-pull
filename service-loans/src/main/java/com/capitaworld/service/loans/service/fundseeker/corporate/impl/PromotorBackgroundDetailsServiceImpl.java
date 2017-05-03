@@ -69,9 +69,9 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 				.listPromotorBackgroundFromAppId(applicationId);
 		List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
 
-		for (int i = 0; i < promotorBackgroundDetails.size(); i++) {
+		for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {
 			PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = new PromotorBackgroundDetailRequest();
-			BeanUtils.copyProperties(promotorBackgroundDetails.get(i), promotorBackgroundDetailRequest);
+			BeanUtils.copyProperties(detail, promotorBackgroundDetailRequest);
 			promotorBackgroundDetailRequests.add(promotorBackgroundDetailRequest);
 		}
 		return promotorBackgroundDetailRequests;

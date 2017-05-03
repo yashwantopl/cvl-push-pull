@@ -106,9 +106,9 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 		
 		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();
 
-		for (int i = 0; i < otherCurrentAssetDetails.size(); i++) {
+		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
 			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
-			BeanUtils.copyProperties(otherCurrentAssetDetails.get(i), otherCurrentAssetRequest);
+			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
 		}
 		return otherCurrentAssetRequests;

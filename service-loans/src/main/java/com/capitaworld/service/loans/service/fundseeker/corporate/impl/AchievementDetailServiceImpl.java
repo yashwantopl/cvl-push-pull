@@ -66,9 +66,9 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 				.listAchievementFromAppId(applicationId);
 		List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>();
 
-		for (int i = 0; i < achievementDetails.size(); i++) {
+		for (AchievementDetail detail :achievementDetails) {
 			AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
-			BeanUtils.copyProperties(achievementDetails.get(i), achievementDetailRequest);
+			BeanUtils.copyProperties(detail, achievementDetailRequest);
 			achievementDetailRequests.add(achievementDetailRequest);
 		}
 		return achievementDetailRequests;
