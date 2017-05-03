@@ -21,7 +21,7 @@ public class CoApplicantRequest {
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
-	private boolean addressSameAs;
+	private Boolean addressSameAs;
 	private String contactNo;
 	private String companyName;
 	private Integer employedWithId;
@@ -171,11 +171,11 @@ public class CoApplicantRequest {
 		this.secondAddress = secondAddress;
 	}
 
-	public boolean isAddressSameAs() {
+	public Boolean isAddressSameAs() {
 		return addressSameAs;
 	}
 
-	public void setAddressSameAs(boolean addressSameAs) {
+	public void setAddressSameAs(Boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 

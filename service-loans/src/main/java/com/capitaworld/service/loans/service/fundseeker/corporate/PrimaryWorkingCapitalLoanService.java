@@ -4,9 +4,9 @@ import com.capitaworld.service.loans.model.PrimaryWorkingCapitalLoanRequest;
 
 public interface PrimaryWorkingCapitalLoanService {
 
-	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest);
+	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) throws Exception;
 	
-	public PrimaryWorkingCapitalLoanRequest get(Long id);
+	public PrimaryWorkingCapitalLoanRequest get(Long id) throws Exception;
 	
 	
 }

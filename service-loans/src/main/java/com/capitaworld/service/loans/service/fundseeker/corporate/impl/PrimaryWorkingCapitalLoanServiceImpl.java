@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,31 +19,46 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @Transactional
 public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapitalLoanService {
 
+	private static final Logger logger = LoggerFactory.getLogger(PrimaryWorkingCapitalLoanServiceImpl.class.getName());
+	
 	@Autowired
 	private PrimaryWorkingCapitalLoanDetailRepository primaryWCRepository;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) {
-		// ID must not be null
-		PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository.findOne(capitalLoanRequest.getId());
-		if (capitalLoanDetail == null) {
-			return false;
+	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) throws Exception {
+		try {
+			// ID must not be null
+			PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository.findOne(capitalLoanRequest.getId());
+			if (capitalLoanDetail == null) {
+				throw new NullPointerException(
+						"PrimaryWorkingDetail not exist in DB with ID=>" + capitalLoanRequest.getId());
+			}
+			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
+			capitalLoanDetail.setModifiedDate(new Date());
+			primaryWCRepository.save(capitalLoanDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while Primary Working Details Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-		capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
-		capitalLoanDetail.setModifiedDate(new Date());
-		primaryWCRepository.save(capitalLoanDetail);
-		return true;
 	}
 
 	@Override
-	public PrimaryWorkingCapitalLoanRequest get(Long id) {
-		PrimaryWorkingCapitalLoanDetail loanDetail = primaryWCRepository.findOne(id);
-		if (loanDetail == null) {
-			return null;
+	public PrimaryWorkingCapitalLoanRequest get(Long id) throws Exception {
+		try {
+			PrimaryWorkingCapitalLoanDetail loanDetail = primaryWCRepository.findOne(id);
+			if (loanDetail == null) {
+				throw new NullPointerException("PrimaryWorkingDetail not exist in DB with ID=>" + id);
+			}
+			PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
+			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
+			return capitalLoanRequest;
+		} catch (Exception e) {
+			logger.error("Error while Getting Working Details Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
-		BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
-		return capitalLoanRequest;
 	}
 }

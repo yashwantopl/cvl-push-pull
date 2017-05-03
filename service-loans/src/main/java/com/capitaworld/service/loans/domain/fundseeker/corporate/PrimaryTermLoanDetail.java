@@ -55,7 +55,7 @@ public class PrimaryTermLoanDetail extends LoanApplicationMaster implements Seri
 	@Column(name = "total_means_of_finance")
 	private Double totalMeansOfFinance;
 
-	@Column(name = "total_of_collatral_detail")
+	@Column(name = "collateral_security_amt_total")
 	private Double totalOfCollatralDetail;
 
 	public PrimaryTermLoanDetail() {

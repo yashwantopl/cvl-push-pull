@@ -71,17 +71,18 @@ public class WorkingCapitalLoanController {
 		}
 	}
 
-	@RequestMapping(value = "${final}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id) {
+	@RequestMapping(value = "${final}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Final Working Details ==>" + id);
+			if (id == null || applicationId == null) {
+				logger.warn("ID and ApplicationId Require to get Final Working Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			FinalWorkingCapitalLoanRequest response = finalWCService.get(id);
+			FinalWorkingCapitalLoanRequest response = finalWCService.get(id, applicationId);
 			if (response != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
@@ -113,8 +114,7 @@ public class WorkingCapitalLoanController {
 			if (capitalLoanRequest.getId() == null) {
 				logger.warn("ID must not be empty ==>" + capitalLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			boolean response = primaryWCService.saveOrUpdate(capitalLoanRequest);

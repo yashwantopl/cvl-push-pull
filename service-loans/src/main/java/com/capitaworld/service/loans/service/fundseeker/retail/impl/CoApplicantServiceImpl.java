@@ -30,14 +30,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private CoApplicantDetailRepository coApplicantDetailRepository;
 
 	@Override
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId) {
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId) throws Exception {
 		try {
 			CoApplicantDetail coDetails = null;
 			if (applicantRequest.getId() != null && applicationId != null) {
 				coDetails = coApplicantDetailRepository.get(applicationId, applicantRequest.getId());
 				if (coDetails == null) {
-					throw new NullPointerException(
-							"CoApplicant Id Record not exists in DB : " + applicantRequest.getId());
+					throw new NullPointerException("CoApplicant Id Record not exists in DB : "
+							+ applicantRequest.getId() + " Applicant Id ==>" + applicationId);
 				}
 				if (applicantRequest.getIsActive() != null && !applicantRequest.getIsActive().booleanValue()) {
 					coApplicantDetailRepository.inactiveCoApplicant(applicationId, applicantRequest.getId());
@@ -58,39 +58,52 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving CoApplicant Profile:-");
+			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public CoApplicantRequest get(Long id, Long applicationId) {
-		CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
-		if (applicantDetail == null) {
-			throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + id
-					+ " and ApplicationId==>" + applicationId);
+	public CoApplicantRequest get(Long id, Long applicationId) throws Exception {
+		try {
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
+			if (applicantDetail == null) {
+				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + id
+						+ " and ApplicationId==>" + applicationId);
+			}
+			CoApplicantRequest applicantRequest = new CoApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting CoApplicant Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		CoApplicantRequest applicantRequest = new CoApplicantRequest();
-		BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
-		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-		return applicantRequest;
+
 	}
 
 	@Override
-	public List<CoApplicantRequest> getList(Long applicationId) {
-		List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId);
-		List<CoApplicantRequest> requests = new ArrayList<>(details.size());
-		for (CoApplicantDetail detail : details) {
-			CoApplicantRequest request = new CoApplicantRequest();
-			BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
-			requests.add(request);
+	public List<CoApplicantRequest> getList(Long applicationId) throws Exception {
+		try {
+			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId);
+			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
+			for (CoApplicantDetail detail : details) {
+				CoApplicantRequest request = new CoApplicantRequest();
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				requests.add(request);
+			}
+			return requests;
+		} catch (Exception e) {
+			logger.error("Error while getting List of CoApplicant Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		return requests;
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
 		try {
 			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
 				return false;
@@ -108,22 +121,28 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving CoApplicant Profile:-");
+			logger.error("Error while Saving Final CoApplicant Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) {
-		CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
-		if (applicantDetail == null) {
-			throw new NullPointerException("CoApplicantDetail Record of Final Portion not exists in DB of ID : " + id
-					+ " and Application Id ==>" + applicationId);
+	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+		try {
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
+			if (applicantDetail == null) {
+				throw new NullPointerException("CoApplicantDetail Record of Final Portion not exists in DB of ID : "
+						+ id + " and Application Id ==>" + applicationId);
+			}
+			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Final CoApplicant Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
-		BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
-		return applicantRequest;
 	}
 
 	public static void copyAddressFromRequestToDomain(CoApplicantRequest from, CoApplicantDetail to) {
@@ -165,7 +184,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		Address address = new Address();
 		address.setPremiseNumber(from.getPermanentPremiseNumberName());
 		address.setLandMark(from.getPermanentLandMark());
-		address.setStreetName(from.getAddressStreetName());
+		address.setStreetName(from.getPermanentStreetName());
 		address.setCityId(from.getPermanentCityId().longValue());
 		address.setStateId(from.getPermanentStateId());
 		address.setCountryId(from.getPermanentCountryId());
@@ -177,11 +196,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			address = new Address();
 			address.setPremiseNumber(from.getOfficePremiseNumberName());
 			address.setLandMark(from.getOfficeLandMark());
-			address.setStreetName(from.getPermanentStreetName());
+			address.setStreetName(from.getOfficeStreetName());
 			address.setCityId(from.getOfficeCityId().longValue());
 			address.setStateId(from.getOfficeStateId());
 			address.setCountryId(from.getOfficeCountryId());
 			address.setPincode(from.getOfficePincode().longValue());
+			to.setSecondAddress(address);
 		}
 	}
 }

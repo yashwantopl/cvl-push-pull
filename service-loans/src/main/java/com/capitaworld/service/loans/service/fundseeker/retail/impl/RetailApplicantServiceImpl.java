@@ -38,7 +38,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private GuarantorService guarantorService;
 
 	@Override
-	public boolean save(RetailApplicantRequest applicantRequest) {
+	public boolean save(RetailApplicantRequest applicantRequest) throws Exception {
 		RetailApplicantDetail applicantDetail = null;
 		try {
 			if (applicantRequest.getId() != null && applicantRequest.getApplicationId() != null) {
@@ -78,46 +78,58 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving Retail Profile:-");
+			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long id, Long applicationId) {
-		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
-		if (applicantDetail == null) {
-			throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id);
+	public RetailApplicantRequest get(Long id, Long applicationId) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			if (applicantDetail == null) {
+				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id);
+			}
+			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId));
+			applicantRequest.setGuarantors(guarantorService.getList(applicationId));
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while Saving Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
-		BeanUtils.copyProperties(applicantDetail, applicantRequest);
-		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-		applicantRequest.setCoApplicants(coApplicantService.getList(applicantRequest.getApplicationId()));
-		applicantRequest.setGuarantors(guarantorService.getList(applicantRequest.getApplicationId()));
-		return applicantRequest;
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) {
-		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
-		if (applicantDetail == null) {
-			throw new NullPointerException(
-					"RetailApplicantDetail Record of Final Portion not exists in DB of ID : " + id);
+	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			if (applicantDetail == null) {
+				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
+						+ id + "  ApplicationId==>" + applicationId);
+			}
+			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while Saving Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
-		BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
-		return applicantRequest;
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
 		try {
 			if (applicantRequest.getId() == null || applicantRequest.getApplicationId() == null) {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " ID (Primary Key)==>" + applicantRequest.getId());
 			}
-			
+
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
 					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
@@ -130,11 +142,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRepository.save(applicantDetail);
 			return true;
-
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving Retail Profile Final Portion:-");
+			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
@@ -189,11 +200,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			address = new Address();
 			address.setPremiseNumber(from.getOfficePremiseNumberName());
 			address.setLandMark(from.getOfficeLandMark());
-			address.setStreetName(from.getPermanentStreetName());
+			address.setStreetName(from.getOfficeStreetName());
 			address.setCityId(from.getOfficeCityId());
 			address.setStateId(from.getOfficeStateId());
 			address.setCountryId(from.getOfficeCountryId());
 			address.setPincode(from.getOfficePincode());
+			to.setSecondAddress(address);
 		}
 	}
 }

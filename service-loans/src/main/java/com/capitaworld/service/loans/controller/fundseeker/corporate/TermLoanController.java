@@ -37,59 +37,69 @@ public class TermLoanController {
 	}
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FinalTermLoanRequest termLoanRequest) {
-		System.out.println("111");
-		// request must not be null
-		if (termLoanRequest == null) {
-			logger.warn("TermLoanRequest Object can not be empty ==>" + termLoanRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
+	public ResponseEntity<LoansResponse> save(@RequestBody FinalTermLoanRequest termLoanRequest) throws Exception {
+		try {
+			// request must not be null
+			if (termLoanRequest == null) {
+				logger.warn("TermLoanRequest Object can not be empty ==>" + termLoanRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 
-		if (termLoanRequest.getApplicationId() == null) {
-			logger.warn("Application ID can not be empty ==>" + termLoanRequest.getId());
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
+			if (termLoanRequest.getApplicationId() == null) {
+				logger.warn("Application ID can not be empty ==>" + termLoanRequest.getId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 
-		boolean response = finalTLService.saveOrUpdate(termLoanRequest);
-		if (response) {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-					HttpStatus.OK);
-		} else {
+			boolean response = finalTLService.saveOrUpdate(termLoanRequest);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			}
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving final information of Term Loan");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
-	@RequestMapping(value = "${final}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id) {
-		// request must not be null
+	@RequestMapping(value = "${final}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId) {
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Final Term Loan Details ==>" + id);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
+			try {
+				if (id == null || applicationId == null) {
+					logger.warn("ID and ApplicationId Require to get Final Term Loan Details ==>" + id);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
 
-			FinalTermLoanRequest response = finalTLService.get(id);
-			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
+				FinalTermLoanRequest response = finalTLService.get(id, applicationId);
+				if (response != null) {
+					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					loansResponse.setData(response);
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				} else {
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.OK);
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting Final Term Loan Details==>", e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Final Term Loan Details==>", e);
+			logger.error("Error while getting  final information of Term Loan");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
 
@@ -107,8 +117,7 @@ public class TermLoanController {
 			if (termLoanRequest.getId() == null) {
 				logger.warn("ID must not be empty ==>" + termLoanRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse("ID must not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			boolean response = primaryTLService.saveOrUpdate(termLoanRequest);

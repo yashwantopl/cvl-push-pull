@@ -61,7 +61,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	@Column(name = "project_brief")
 	private String projectBrief;
 
-	@Column(name = "total_collteral_details")
+	@Column(name = "collateral_security_amt_total")
 	private double totalCollteralDetails;
 
 	public PrimaryWorkingCapitalLoanDetail() {

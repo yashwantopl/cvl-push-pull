@@ -30,7 +30,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public boolean save(GuarantorRequest guarantorRequest, Long applicationId) {
+	public boolean save(GuarantorRequest guarantorRequest, Long applicationId) throws Exception {
 		try {
 			if (guarantorRequest == null || applicationId == null) {
 				return false;
@@ -61,38 +61,50 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving Profile:-");
+			logger.error("Error while Saving Guarantor Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public GuarantorRequest get(Long id, Long applicationId) {
-		GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, id);
-		if (guarantorDetail == null) {
-			throw new NullPointerException("GuarantorDetails Record not exists in DB of ID : " + id);
+	public GuarantorRequest get(Long id, Long applicationId) throws Exception {
+		try {
+			GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, id);
+			if (guarantorDetail == null) {
+				throw new NullPointerException("GuarantorDetails Record not exists in DB of ID : " + id);
+			}
+			GuarantorRequest guaRequest = new GuarantorRequest();
+			BeanUtils.copyProperties(guarantorDetail, guaRequest);
+			copyAddressFromDomainToRequest(guarantorDetail, guaRequest);
+			return guaRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Guarantor Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		GuarantorRequest guaRequest = new GuarantorRequest();
-		BeanUtils.copyProperties(guarantorDetail, guaRequest);
-		copyAddressFromDomainToRequest(guarantorDetail, guaRequest);
-		return guaRequest;
 	}
 
 	@Override
-	public List<GuarantorRequest> getList(Long applicationId) {
-		List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId);
-		List<GuarantorRequest> requests = new ArrayList<>(details.size());
-		for (GuarantorDetails detail : details) {
-			GuarantorRequest request = new GuarantorRequest();
-			BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
-			requests.add(request);
+	public List<GuarantorRequest> getList(Long applicationId) throws Exception {
+		try {
+			List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId);
+			List<GuarantorRequest> requests = new ArrayList<>(details.size());
+			for (GuarantorDetails detail : details) {
+				GuarantorRequest request = new GuarantorRequest();
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				requests.add(request);
+			}
+			return requests;
+		} catch (Exception e) {
+			logger.error("Error while getting list of Guarantor Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		return requests;
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
 		try {
 			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
 				return false;
@@ -110,22 +122,28 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving CoApplicant Profile:-");
+			logger.error("Error while Saving final Guarantor Retail Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) {
-		GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, id);
-		if (guaDetail == null) {
-			throw new NullPointerException("GuarantorDetails Record of Final Portion not exists in DB of ID : " + id
-					+ " and Application Id ==>" + applicationId);
+	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+		try {
+			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, id);
+			if (guaDetail == null) {
+				throw new NullPointerException("GuarantorDetails Record of Final Portion not exists in DB of ID : " + id
+						+ " and Application Id ==>" + applicationId);
+			}
+			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting final Guarantor Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
-		BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
-		return applicantRequest;
 	}
 
 	public static void copyAddressFromRequestToDomain(GuarantorRequest from, GuarantorDetails to) {
@@ -167,7 +185,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 		Address address = new Address();
 		address.setPremiseNumber(from.getPermanentPremiseNumberName());
 		address.setLandMark(from.getPermanentLandMark());
-		address.setStreetName(from.getAddressStreetName());
+		address.setStreetName(from.getPermanentStreetName());
 		address.setCityId(from.getPermanentCityId().longValue());
 		address.setStateId(from.getPermanentStateId());
 		address.setCountryId(from.getPermanentCountryId());
@@ -179,11 +197,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 			address = new Address();
 			address.setPremiseNumber(from.getOfficePremiseNumberName());
 			address.setLandMark(from.getOfficeLandMark());
-			address.setStreetName(from.getPermanentStreetName());
+			address.setStreetName(from.getOfficeStreetName());
 			address.setCityId(from.getOfficeCityId().longValue());
 			address.setStateId(from.getOfficeStateId());
 			address.setCountryId(from.getOfficeCountryId());
 			address.setPincode(from.getOfficePincode().longValue());
+			to.setSecondAddress(address);
 		}
 	}
 }

@@ -69,7 +69,7 @@ public class RetailApplicantController {
 
 	}
 
-	@RequestMapping(value = "${profile}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "${profile}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
 			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null

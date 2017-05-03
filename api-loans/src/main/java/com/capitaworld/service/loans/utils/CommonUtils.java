@@ -54,7 +54,7 @@ public class CommonUtils {
 				"occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
 				"addressSameAs", "contactNo", "companyName", "employedWithId", "employedWithOther", "entityName",
 				"industryTypeId", "industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther",
-				"landSize", "alliedActivityId", "userId" };
+				"landSize", "alliedActivityId", "userId"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
