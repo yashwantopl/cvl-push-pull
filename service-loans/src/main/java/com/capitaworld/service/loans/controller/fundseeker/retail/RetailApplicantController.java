@@ -105,7 +105,7 @@ public class RetailApplicantController {
 		try {
 
 			if (applicantRequest == null) {
-				logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
+				logger.warn("RetailApplicant Object can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
