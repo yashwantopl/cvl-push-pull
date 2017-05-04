@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,32 +32,69 @@ public class CorporateApplicantController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CorporateApplicantRequest applicantRequest) {
-		// request must not be null
-		if (applicantRequest == null) {
-			logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
+		try {
+			// request must not be null
+			if (applicantRequest == null) {
+				logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 
-		if (applicantRequest.getApplicationId() == null) {
-			logger.warn("Application Id can not be empty ==>", applicantRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>", applicantRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 
-		}
+			}
 
-		boolean response = applicantService.save(applicantRequest);
-		if (response) {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-					HttpStatus.OK);
-		} else {
+			boolean response = applicantService.save(applicantRequest);
+			if (response) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	@RequestMapping(value = "/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId) {
+		// request must not be null
+		try {
+			if (id == null || applicationId == null) {
+				logger.warn("ID and ApplicationId Require to get Corporate Profile Details. ID ==>" + id
+						+ " Application Id ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			CorporateApplicantRequest response = applicantService.getCorporateApplicant(id, applicationId);
+			if (response != null) {
+				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse.setData(response);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

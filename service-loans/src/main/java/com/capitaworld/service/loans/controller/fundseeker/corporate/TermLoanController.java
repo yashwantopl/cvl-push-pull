@@ -60,11 +60,13 @@ public class TermLoanController {
 						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving final information of Term Loan");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
@@ -75,9 +77,10 @@ public class TermLoanController {
 		try {
 			try {
 				if (id == null || applicationId == null) {
-					logger.warn("ID and ApplicationId Require to get Final Term Loan Details ==>" + id);
+					logger.warn("ID and ApplicationId Require to get Final Term Loan Details. ID==>" + id
+							+ " and ApplicationId==>" + applicationId);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 
 				FinalTermLoanRequest response = finalTLService.get(id, applicationId);
@@ -99,7 +102,8 @@ public class TermLoanController {
 		} catch (Exception e) {
 			logger.error("Error while getting  final information of Term Loan");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 

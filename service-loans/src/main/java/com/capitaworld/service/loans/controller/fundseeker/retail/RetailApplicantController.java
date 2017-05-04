@@ -44,7 +44,7 @@ public class RetailApplicantController {
 			}
 
 			if (applicantRequest.getApplicationId() == null) {
-				logger.warn("Application Id can not be empty ==>", applicantRequest);
+				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -58,7 +58,7 @@ public class RetailApplicantController {
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.INTERNAL_SERVER_ERROR);
+						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,10 +74,11 @@ public class RetailApplicantController {
 			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Retail Profile Details ==>" + id);
+			if (id == null || applicationId == null) {
+				logger.warn("ID and ApplicationId Require to get Retail Profile Details. ID==>" + id
+						+ " and Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			RetailApplicantRequest response = applicantService.get(id, applicationId);
@@ -111,11 +112,10 @@ public class RetailApplicantController {
 			}
 
 			if (applicantRequest.getId() == null || applicantRequest.getApplicationId() == null) {
-				logger.warn("Application Id or ID(Primary Key) can not be empty ==>", applicantRequest);
+				logger.warn("Application Id or ID(Primary Key) can not be empty. ID ==>" + applicantRequest.getId()
+						+ " and Application ID==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Application Id or ID(Primary Key) can not be empty.",
-								HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
 
@@ -126,7 +126,7 @@ public class RetailApplicantController {
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.INTERNAL_SERVER_ERROR);
+						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,10 +142,11 @@ public class RetailApplicantController {
 			@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Retail Final Profile Details ==>" + id);
+			if (id == null || applicationId == null) {
+				logger.warn("ID and Application ID Require to get Retail Final Profile Details. ID==>" + id
+						+ " and Application ID==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			FinalCommonRetailRequest response = applicantService.getFinal(id, applicationId);

@@ -48,7 +48,7 @@ public class WorkingCapitalLoanController {
 			}
 
 			if (capitalLoanRequest.getApplicationId() == null) {
-				logger.warn("Application ID must not be empty ==>" + capitalLoanRequest.getId());
+				logger.warn("Application ID must not be empty ==>" + capitalLoanRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -77,9 +77,10 @@ public class WorkingCapitalLoanController {
 		// request must not be null
 		try {
 			if (id == null || applicationId == null) {
-				logger.warn("ID and ApplicationId Require to get Final Working Details ==>" + id);
+				logger.warn("ID and ApplicationId Require to get Final Working Details. ID==>" + id
+						+ " Applcation ID ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			FinalWorkingCapitalLoanRequest response = finalWCService.get(id, applicationId);
@@ -142,7 +143,7 @@ public class WorkingCapitalLoanController {
 			if (id == null) {
 				logger.warn("ID Require to get Primary Working Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(id);

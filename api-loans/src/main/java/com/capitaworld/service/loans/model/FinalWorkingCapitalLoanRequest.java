@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -27,8 +28,8 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer productServicesPerseId;
 	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
-	private Boolean typeOfTechnologyCorporateId;
-	private Boolean isTechnologyTied;
+	private Integer technologyTypeId;
+	private Boolean whetherTechnologyIsTied;
 	private Long userId;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
@@ -195,20 +196,20 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 		this.technologyRequiresUpgradationId = technologyRequiresUpgradationId;
 	}
 
-	public Boolean getTypeOfTechnologyCorporateId() {
-		return typeOfTechnologyCorporateId;
+	public Integer getTechnologyTypeId() {
+		return technologyTypeId;
 	}
 
-	public void setTypeOfTechnologyCorporateId(Boolean typeOfTechnologyCorporateId) {
-		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
+	public void setTechnologyTypeId(Integer technologyTypeId) {
+		this.technologyTypeId = technologyTypeId;
 	}
 
-	public Boolean getIsTechnologyTied() {
-		return isTechnologyTied;
+	public Boolean getWhetherTechnologyIsTied() {
+		return whetherTechnologyIsTied;
 	}
 
-	public void setIsTechnologyTied(Boolean isTechnologyTied) {
-		this.isTechnologyTied = isTechnologyTied;
+	public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
+		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
 
 	public List<Integer> getOverseasNetworkIds() {

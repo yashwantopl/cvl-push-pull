@@ -36,7 +36,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private SubSectorRepository subSectorRepository;
 
 	@Override
-	public boolean save(CorporateApplicantRequest applicantRequest) {
+	public boolean save(CorporateApplicantRequest applicantRequest) throws Exception {
 		CorporateApplicantDetail applicantDetail = null;
 		try {
 			// application id must not be null
@@ -44,7 +44,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
 						applicantRequest.getApplicationId());
 				if (applicantDetail == null) {
-					return false;
+					throw new NullPointerException(
+							"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
+									+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
 				}
 				applicantDetail.setModifiedBy(applicantRequest.getUserId());
 				applicantDetail.setModifiedDate(new Date());
@@ -79,23 +81,31 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Exception Throw while Saving Profile:-");
+			logger.error("Error while Saving Corporate Profile:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public CorporateApplicantRequest getCorporateApplicant(Long corporateApplicantDetail) {
-		// TODO Auto-generated method stub
-		CorporateApplicantDetail applicantDetail = applicantRepository.findOne(corporateApplicantDetail);
-		if (applicantDetail == null) {
-			return null;
+	public CorporateApplicantRequest getCorporateApplicant(Long id, Long applicationId) throws Exception {
+		try {
+			// TODO Auto-generated method stub
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			if (applicantDetail == null) {
+				throw new NullPointerException(
+						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
+								+ applicationId + "ID==>" + id);
+			}
+			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Corporate Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
 		}
-		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
-		BeanUtils.copyProperties(applicantDetail, applicantRequest);
-		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-		return applicantRequest;
 	}
 
 	private void saveIndustry(Long applicationId, List<Long> industrylist) {

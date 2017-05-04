@@ -23,10 +23,6 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 
 	private Double totalCollteralDetails;
 
-	private Integer currencyId;
-
-	private Integer denominationId;
-
 	public PrimaryWorkingCapitalLoanRequest() {
 	}
 
@@ -68,22 +64,6 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 
 	public void setTotalCollteralDetails(Double totalCollteralDetails) {
 		this.totalCollteralDetails = totalCollteralDetails;
-	}
-
-	public Integer getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public Integer getDenominationId() {
-		return denominationId;
-	}
-
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
 	}
 
 }

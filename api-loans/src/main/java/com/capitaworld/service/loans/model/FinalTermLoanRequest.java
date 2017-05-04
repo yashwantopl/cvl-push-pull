@@ -31,13 +31,10 @@ public class FinalTermLoanRequest implements Serializable {
 	private Integer marketShareTurnoverId;
 	private Integer marketingPositioningId;
 	private Integer productServicesPerseId;
-	// private String projectBrief;
-	private Long technologyPatentedId;
+	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Integer technologyTypeId;
-	private boolean whetherTechnologyIsTied;
-	// private Double totalCostOfEstimate;
-	// private Double totalMeansOfFinance;
+	private Boolean whetherTechnologyIsTied;
 	private Long userId;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
@@ -180,11 +177,11 @@ public class FinalTermLoanRequest implements Serializable {
 		this.productServicesPerseId = productServicesPerseId;
 	}
 
-	public Long getTechnologyPatentedId() {
+	public Integer getTechnologyPatentedId() {
 		return technologyPatentedId;
 	}
 
-	public void setTechnologyPatentedId(Long technologyPatentedId) {
+	public void setTechnologyPatentedId(Integer technologyPatentedId) {
 		this.technologyPatentedId = technologyPatentedId;
 	}
 
@@ -204,11 +201,11 @@ public class FinalTermLoanRequest implements Serializable {
 		this.technologyTypeId = technologyTypeId;
 	}
 
-	public boolean isWhetherTechnologyIsTied() {
+	public Boolean isWhetherTechnologyIsTied() {
 		return whetherTechnologyIsTied;
 	}
 
-	public void setWhetherTechnologyIsTied(boolean whetherTechnologyIsTied) {
+	public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
 

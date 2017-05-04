@@ -1,11 +1,20 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-
-import java.util.Date;
 
 /**
  * The persistent class for the fs_corporate_working_capital_loan_details
@@ -97,10 +106,10 @@ public class FinalWorkingCapitalLoanDetail implements Serializable {
 	private Integer technologyRequiresUpgradationId;
 
 	@Column(name = "technology_type_id")
-	private Boolean typeOfTechnologyCorporateId;
+	private Integer technologyTypeId;
 
 	@Column(name = "is_technology_tied")
-	private Boolean isTechnologyTied;
+	private Boolean whetherTechnologyIsTied;
 
 	public FinalWorkingCapitalLoanDetail() {
 	}
@@ -121,12 +130,12 @@ public class FinalWorkingCapitalLoanDetail implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Boolean getIsTechnologyTied() {
-		return isTechnologyTied;
+	public Boolean getWhetherTechnologyIsTied() {
+		return whetherTechnologyIsTied;
 	}
 
-	public void setIsTechnologyTied(Boolean isTechnologyTied) {
-		this.isTechnologyTied = isTechnologyTied;
+	public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
+		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
 
 	public Integer getAccountingSystemsId() {
@@ -305,12 +314,12 @@ public class FinalWorkingCapitalLoanDetail implements Serializable {
 		this.technologyRequiresUpgradationId = technologyRequiresUpgradationId;
 	}
 
-	public Boolean getTypeOfTechnologyCorporateId() {
-		return this.typeOfTechnologyCorporateId;
+	public Integer getTechnologyTypeId() {
+		return technologyTypeId;
 	}
 
-	public void setTypeOfTechnologyCorporateId(Boolean typeOfTechnologyCorporateId) {
-		this.typeOfTechnologyCorporateId = typeOfTechnologyCorporateId;
+	public void setTechnologyTypeId(Integer technologyTypeId) {
+		this.technologyTypeId = technologyTypeId;
 	}
 
 }

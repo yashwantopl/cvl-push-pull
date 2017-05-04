@@ -104,12 +104,8 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "product_services_perse_id")
 	private Integer productServicesPerseId;
 
-	// @Lob
-	// @Column(name = "project_brief")
-	// private String projectBrief;
-
 	@Column(name = "technology_patented_id")
-	private Long technologyPatentedId;
+	private Integer technologyPatentedId;
 
 	@Column(name = "technology_requires_upgradation_id")
 	private Integer technologyRequiresUpgradationId;
@@ -120,11 +116,6 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "is_technology_tied")
 	private boolean whetherTechnologyIsTied;
 
-	// @Column(name = "total_cost_of_estimate")
-	// private Double totalCostOfEstimate;
-
-	// @Column(name = "total_means_of_finance")
-	// private Double totalMeansOfFinance;
 
 	public FinalTermLoanDetail() {
 	}
@@ -313,11 +304,11 @@ public class FinalTermLoanDetail implements Serializable {
 		this.technologyTypeId = technologyTypeId;
 	}
 
-	public Long getTechnologyPatentedId() {
+	public Integer getTechnologyPatentedId() {
 		return this.technologyPatentedId;
 	}
 
-	public void setTechnologyPatentedId(Long technologyPatentedId) {
+	public void setTechnologyPatentedId(Integer technologyPatentedId) {
 		this.technologyPatentedId = technologyPatentedId;
 	}
 

@@ -19,8 +19,6 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 	private Double totalCostOfEstimate;
 	private Double totalMeansOfFinance;
 	private Double totalOfCollatralDetail;
-	private Integer currencyId;
-	private Integer denominationId;
 
 	public PrimaryTermLoanRequest() {
 	}
@@ -71,22 +69,6 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 
 	public void setTotalOfCollatralDetail(Double totalOfCollatralDetail) {
 		this.totalOfCollatralDetail = totalOfCollatralDetail;
-	}
-
-	public Integer getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
-
-	public Integer getDenominationId() {
-		return denominationId;
-	}
-
-	public void setDenominationId(Integer denominationId) {
-		this.denominationId = denominationId;
 	}
 
 }
