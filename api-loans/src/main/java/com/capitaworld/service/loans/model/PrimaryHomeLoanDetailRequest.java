@@ -32,9 +32,9 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 
 	private Double downPayment;
 
-	private Boolean isConstructionCompleted;
+	private Boolean isConstructionCompleted=false;
 
-	private Boolean isLoanTaken;
+	private Boolean isLoanTaken=false;
 
 	private Double landArea;
 

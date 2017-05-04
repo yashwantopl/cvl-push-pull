@@ -26,7 +26,7 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 	public boolean saveOrUpdate(FinalCarLoanDetailRequest finalCarLoanDetailRequest) {
 		FinalCarLoanDetail finalCarLoanDetail= null;
 		if (finalCarLoanDetailRequest.getId() != null && finalCarLoanDetailRequest.getApplicationId() != null) {
-			finalCarLoanDetail = finalCarLoanDetailRepository.getByApplicationID(finalCarLoanDetailRequest.getApplicationId());
+			finalCarLoanDetail = finalCarLoanDetailRepository.getByApplicationID(finalCarLoanDetailRequest.getApplicationId(),finalCarLoanDetailRequest.getId());
 			if (finalCarLoanDetail == null) {
 				return false;
 			}

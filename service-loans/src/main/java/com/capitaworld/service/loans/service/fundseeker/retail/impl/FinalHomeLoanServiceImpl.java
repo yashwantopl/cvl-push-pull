@@ -26,7 +26,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest) {
 		FinalHomeLoanDetail finalHomeLoanDetail= null;
 		if (finalHomeLoanDetailRequest.getId() != null && finalHomeLoanDetailRequest.getApplicationId() != null) {
-			finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationID(finalHomeLoanDetailRequest.getApplicationId());
+			finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationID(finalHomeLoanDetailRequest.getApplicationId(),finalHomeLoanDetailRequest.getId());
 			if (finalHomeLoanDetail == null) {
 				return false;
 			}

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
@@ -59,13 +61,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				case PERSONAL_LOAN:
 					applicationMaster = new PrimaryPersonalLoanDetail();
 					break;
+				case HOME_LOAN:
+					applicationMaster = new PrimaryHomeLoanDetail();
+					break;
+				case CAR_LOAN:
+					applicationMaster = new PrimaryCarLoanDetail();
+					break;
+					
 				default:
 					continue;
 				}
 
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
-				applicationMaster.setCreatedBy(loanApplicationRequest.getUserId());
+				applicationMaster.setCreatedBy(commonRequest.getUserId());
 				applicationMaster.setCreatedDate(new Date());
+				applicationMaster.setModifiedBy(commonRequest.getUserId());
+				applicationMaster.setModifiedDate(new Date());
 				applicationMaster.setIsActive(true);
 				loanApplicationRepository.save(applicationMaster);
 			}

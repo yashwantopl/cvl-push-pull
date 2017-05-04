@@ -30,6 +30,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
 		primaryHomeLoanDetail.setModifiedBy(homeLoanDetailRequest.getUserId());
 		primaryHomeLoanDetail.setModifiedDate(new Date());
+		primaryHomeLoanDetail.setIsActive(true);
 		primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
 		return true;
 	}

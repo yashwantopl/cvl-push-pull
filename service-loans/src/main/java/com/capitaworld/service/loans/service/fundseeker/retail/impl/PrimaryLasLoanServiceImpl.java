@@ -28,6 +28,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			return false;
 		}
 		BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		primaryLasLoanDetail.setIsActive(true);
 		primaryLasLoanDetail.setModifiedBy(lasLoanDetailRequest.getUserId());
 		primaryLasLoanDetail.setModifiedDate(new Date());
 		primaryLasLoanDetailRepository.save(primaryLasLoanDetail);

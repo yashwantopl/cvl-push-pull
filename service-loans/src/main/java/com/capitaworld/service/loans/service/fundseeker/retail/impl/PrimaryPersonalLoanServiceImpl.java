@@ -28,6 +28,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			return false;
 		}
 		BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		primaryPersonalLoanDetail.setIsActive(true);
 		primaryPersonalLoanDetail.setModifiedBy(personalLoanRequest.getUserId());
 		primaryPersonalLoanDetail.setModifiedDate(new Date());
 		personalLoanDetailRepository.save(primaryPersonalLoanDetail);

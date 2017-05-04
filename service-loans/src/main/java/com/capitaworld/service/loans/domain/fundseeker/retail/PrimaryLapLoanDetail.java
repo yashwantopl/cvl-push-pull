@@ -52,7 +52,7 @@ public class PrimaryLapLoanDetail extends LoanApplicationMaster implements Seria
 	private Date createdDate;
 
 	@Column(name="is_active")
-	private Boolean isActive;
+	private Boolean isActive=true;
 
 	@Column(name="land_area")
 	private Double landArea;
