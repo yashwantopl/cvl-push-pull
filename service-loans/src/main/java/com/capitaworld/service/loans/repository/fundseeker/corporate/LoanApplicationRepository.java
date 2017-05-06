@@ -12,10 +12,13 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 public interface LoanApplicationRepository extends JpaRepository<LoanApplicationMaster, Long> {
 
 	@Modifying
-	@Query("update LoanApplicationMaster lm set lm.isActive = false where lm.id =:id and lm.isActive = true")
-	public int inActive(@Param("id") Long id);
+	@Query("update LoanApplicationMaster lm set lm.isActive = false,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
+	public int inActive(@Param("id") Long id, @Param("userId") Long userId);
 
 	@Query("from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
 	public List<LoanApplicationMaster> getUserLoans(@Param("userId") Long userId);
+
+	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")
+	public LoanApplicationMaster getByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
 }

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
-import com.capitaworld.service.loans.model.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalWorkingCapitalLoanService;
@@ -32,34 +32,33 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 	private OverseasNetworkRepository networkRepository;
 
 	@Override
-	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest) throws Exception {
+	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
 		try {
-			FinalWorkingCapitalLoanDetail capitalLoanDetail = null;
-			if (capitalLoanRequest.getId() != null && capitalLoanRequest.getApplicationId() != null) {
-				capitalLoanDetail = finalWCRepository.getByApplicationIDAndID(capitalLoanRequest.getApplicationId(),
-						capitalLoanRequest.getId());
-				if (capitalLoanDetail == null) {
+			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
+					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), userId);
+			if (capitalLoanDetail != null) {
 
-					throw new NullPointerException("FinalWorkingCapitalLoanDetail not exist in DB with ID=>"
-							+ capitalLoanRequest.getId() + " applicationId==>" + capitalLoanRequest.getApplicationId());
+				// throw new NullPointerException("FinalWorkingCapitalLoanDetail
+				// not exist in DB with ID=>"
+				// + capitalLoanRequest.getId() + " applicationId==>" +
+				// capitalLoanRequest.getApplicationId());
 
-				}
 				// Inactive Previous Mapping
 				networkRepository.inActiveMappingByApplicationId(capitalLoanRequest.getApplicationId());
-				capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
+				capitalLoanDetail.setModifiedBy(userId);
 				capitalLoanDetail.setModifiedDate(new Date());
 			} else {
 				capitalLoanDetail = new FinalWorkingCapitalLoanDetail();
-				capitalLoanDetail.setCreatedBy(capitalLoanRequest.getUserId());
+				capitalLoanDetail.setCreatedBy(userId);
 				capitalLoanDetail.setCreatedDate(new Date());
 				capitalLoanDetail.setIsActive(true);
 				capitalLoanDetail.setApplicationId(new LoanApplicationMaster(capitalLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID);
 			capitalLoanDetail = finalWCRepository.save(capitalLoanDetail);
 
 			// saving Data
-			saveOverseasNetworkMapping(capitalLoanRequest.getApplicationId(), capitalLoanRequest.getUserId(),
+			saveOverseasNetworkMapping(capitalLoanRequest.getApplicationId(), userId,
 					capitalLoanRequest.getOverseasNetworkIds());
 			return true;
 		} catch (Exception e) {
@@ -72,7 +71,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 	@Override
 	public FinalWorkingCapitalLoanRequest get(Long id, Long applicationId) throws Exception {
 		try {
-			FinalWorkingCapitalLoanDetail loanDetails = finalWCRepository.getByApplicationIDAndID(applicationId, id);
+			FinalWorkingCapitalLoanDetail loanDetails = finalWCRepository.getByApplicationAndUserId(applicationId, id);
 			if (loanDetails == null) {
 				throw new NullPointerException("FinalWorkingCapitalLoanDetail not exist in DB with ID=>" + id
 						+ " applicationId==>" + applicationId);

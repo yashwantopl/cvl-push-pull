@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
-import com.capitaworld.service.loans.model.CarLoanParameterRequest;
+import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
 
 public interface CarLoanParameterService {
 	public boolean saveOrUpdate(CarLoanParameterRequest carLoanParameterRequest);

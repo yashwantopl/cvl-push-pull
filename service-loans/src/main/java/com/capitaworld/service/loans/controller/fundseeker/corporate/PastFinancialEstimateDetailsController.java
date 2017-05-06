@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 
 /**

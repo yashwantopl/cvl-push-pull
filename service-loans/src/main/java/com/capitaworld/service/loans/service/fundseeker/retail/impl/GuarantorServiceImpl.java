@@ -30,33 +30,32 @@ public class GuarantorServiceImpl implements GuarantorService {
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public boolean save(GuarantorRequest guarantorRequest, Long applicationId) throws Exception {
+	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			if (guarantorRequest == null || applicationId == null) {
-				return false;
-			}
-			GuarantorDetails guarantorDetails = null;
-			if (guarantorRequest.getId() != null && applicationId != null) {
-				guarantorDetails = guarantorDetailsRepository.get(applicationId, guarantorRequest.getId());
-				if (guarantorDetails == null) {
-					throw new NullPointerException(
-							"CoApplicant Id Record not exists in DB : " + guarantorRequest.getId());
-				}
+			GuarantorDetails guarantorDetails = guarantorDetailsRepository.get(applicationId, userId);
+			if (guarantorDetails != null) {
+				// throw new NullPointerException(
+				// "CoApplicant Id Record not exists in DB : " +
+				// guarantorRequest.getId());
+
 				if (guarantorRequest.getIsActive() != null && !guarantorRequest.getIsActive().booleanValue()) {
 					guarantorDetailsRepository.inactiveGuarantor(applicationId, guarantorRequest.getId());
 					return true;
 				}
-				guarantorDetails.setModifiedBy(guarantorRequest.getUserId());
+				guarantorDetails.setModifiedBy(userId);
 				guarantorDetails.setModifiedDate(new Date());
 			} else {
 				guarantorDetails = new GuarantorDetails();
 				guarantorDetails.setFirstName(guarantorRequest.getFirstName());
-				guarantorDetails.setCreatedBy(guarantorRequest.getUserId());
+				guarantorDetails.setCreatedBy(userId);
 				guarantorDetails.setCreatedDate(new Date());
 				guarantorDetails.setApplicationId(new LoanApplicationMaster(applicationId));
 			}
 			BeanUtils.copyProperties(guarantorRequest, guarantorDetails);
 			copyAddressFromRequestToDomain(guarantorRequest, guarantorDetails);
+			Date birthDate = CommonUtils.getDateByDateMonthYear(guarantorRequest.getDate(), guarantorRequest.getMonth(),
+					guarantorRequest.getYear());
+			guarantorDetails.setBirthDate(birthDate);
 			guarantorDetailsRepository.save(guarantorDetails);
 			return true;
 
@@ -68,15 +67,19 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public GuarantorRequest get(Long id, Long applicationId) throws Exception {
+	public GuarantorRequest get(Long userId, Long applicationId) throws Exception {
 		try {
-			GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, id);
+			GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, userId);
 			if (guarantorDetail == null) {
-				throw new NullPointerException("GuarantorDetails Record not exists in DB of ID : " + id);
+				throw new NullPointerException("GuarantorDetails Record not exists in DB of ID : " + userId);
 			}
 			GuarantorRequest guaRequest = new GuarantorRequest();
 			BeanUtils.copyProperties(guarantorDetail, guaRequest);
 			copyAddressFromDomainToRequest(guarantorDetail, guaRequest);
+			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(guarantorDetail.getBirthDate());
+			guaRequest.setDate(saperatedTime[0]);
+			guaRequest.setMonth(saperatedTime[1]);
+			guaRequest.setYear(saperatedTime[2]);
 			return guaRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Guarantor Retail Profile:-");
@@ -86,9 +89,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public List<GuarantorRequest> getList(Long applicationId) throws Exception {
+	public List<GuarantorRequest> getList(Long applicationId, Long userId) throws Exception {
 		try {
-			List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId);
+			List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId, userId);
 			List<GuarantorRequest> requests = new ArrayList<>(details.size());
 			for (GuarantorDetails detail : details) {
 				GuarantorRequest request = new GuarantorRequest();
@@ -104,18 +107,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
-				return false;
-			}
-			GuarantorDetails guaDetails = guarantorDetailsRepository.get(applicantRequest.getApplicationId(),
-					applicantRequest.getId());
+			GuarantorDetails guaDetails = guarantorDetailsRepository.get(applicantRequest.getApplicationId(), userId);
 			if (guaDetails == null) {
-				throw new NullPointerException("Guarantor Id Record not exists in DB ID: " + applicantRequest.getId()
-						+ " and Application Id==>" + applicantRequest.getApplicationId());
+				throw new NullPointerException("Guarantor Id Record not exists in DB : Application Id==>"
+						+ applicantRequest.getApplicationId());
 			}
-			guaDetails.setModifiedBy(applicantRequest.getUserId());
+			guaDetails.setModifiedBy(userId);
 			guaDetails.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, guaDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			guarantorDetailsRepository.save(guaDetails);
@@ -129,11 +128,11 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId) throws Exception {
 		try {
-			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, id);
+			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, userId);
 			if (guaDetail == null) {
-				throw new NullPointerException("GuarantorDetails Record of Final Portion not exists in DB of ID : " + id
+				throw new NullPointerException("GuarantorDetails Record of Final Portion not exists in DB of User ID : " + userId
 						+ " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();

@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 

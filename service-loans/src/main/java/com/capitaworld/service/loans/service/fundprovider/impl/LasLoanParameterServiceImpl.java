@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundprovider.LasParameter;
-import com.capitaworld.service.loans.model.LasParameterRequest;
+import com.capitaworld.service.loans.model.retail.LasParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.LasLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;

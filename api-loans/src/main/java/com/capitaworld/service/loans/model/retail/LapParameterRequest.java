@@ -1,21 +1,22 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 
+import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
- * The persistent class for the fp_home_loan_details database table.
+ * The persistent class for the fp_loan_against_property_details database table.
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HomeLoanParameterRequest extends ProductMasterRequest implements Serializable {
+public class LapParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long fpProductId;
 
-	private Long currency;
+	private Integer currency;
 
 	private Boolean isAgeDisplay=false;
 
@@ -61,8 +62,8 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Double minYearlyIncomeRange;
 
-	
-	public HomeLoanParameterRequest() {
+
+	public LapParameterRequest() {
 	}
 
 	public Long getFpProductId() {
@@ -73,17 +74,14 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 		this.fpProductId = fpProductId;
 	}
 
-	
-
-	public Long getCurrency() {
+	public Integer getCurrency() {
 		return this.currency;
 	}
 
-	public void setCurrency(Long currency) {
+	public void setCurrency(Integer currency) {
 		this.currency = currency;
 	}
 
-	
 	public Boolean getIsAgeDisplay() {
 		return this.isAgeDisplay;
 	}
@@ -260,5 +258,5 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minYearlyIncomeRange = minYearlyIncomeRange;
 	}
 
-
+	
 }

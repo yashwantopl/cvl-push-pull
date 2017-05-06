@@ -59,7 +59,6 @@ public class FinalCommonRetailRequest {
 	private String tradeLicenseNumber;
 	private String unattended;
 	private String websiteAddress;
-	private Long userId;
 
 	public Long getId() {
 		return id;
@@ -493,11 +492,4 @@ public class FinalCommonRetailRequest {
 		this.websiteAddress = websiteAddress;
 	}
 
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
 }

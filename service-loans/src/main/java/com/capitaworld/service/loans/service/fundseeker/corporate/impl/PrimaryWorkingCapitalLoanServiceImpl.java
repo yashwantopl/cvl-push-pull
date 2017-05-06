@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryWorkingCapitalLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;

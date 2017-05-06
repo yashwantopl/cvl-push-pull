@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
-import com.capitaworld.service.loans.model.FinalCarLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCarLoanDetailRequest;
 
 public interface FinalCarLoanService {
 

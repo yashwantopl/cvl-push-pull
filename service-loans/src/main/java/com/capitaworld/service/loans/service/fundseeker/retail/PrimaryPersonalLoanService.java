@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
-import com.capitaworld.service.loans.model.PrimaryPersonalLoanRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
 
 public interface PrimaryPersonalLoanService {
 

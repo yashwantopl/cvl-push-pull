@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,13 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Transactional
 public class LoanApplicationServiceImpl implements LoanApplicationService {
 
+	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public boolean saveOrUpdate(FrameRequest commonRequest) {
+	public boolean saveOrUpdate(FrameRequest commonRequest) throws Exception {
 		try {
 			LoanApplicationMaster applicationMaster = null;
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
@@ -67,7 +71,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				case CAR_LOAN:
 					applicationMaster = new PrimaryCarLoanDetail();
 					break;
-					
+
 				default:
 					continue;
 				}
@@ -84,27 +88,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		catch (Exception e) {
-			// logger.info("Exception in save achievementDetail :-");
+			logger.error("Error while Saving Loan Details:-");
 			e.printStackTrace();
-			return false;
+			throw new Exception("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public LoanApplicationRequest get(Long id) {
+	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationRepository.findOne(id), applicationRequest);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		if (applicationMaster == null) {
+			throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
+		}
+		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		return applicationRequest;
 	}
 
 	@Override
-	public boolean inActive(Long id) {
-		loanApplicationRepository.inActive(id);
+	public boolean inActive(Long id, Long userId) throws Exception {
+		loanApplicationRepository.inActive(id, userId);
 		return true;
 	}
 
 	@Override
-	public List<LoanApplicationRequest> getList(Long userId) {
+	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
 		List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
 		List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 		for (LoanApplicationMaster master : results) {

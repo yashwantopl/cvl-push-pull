@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
 
 @RestController

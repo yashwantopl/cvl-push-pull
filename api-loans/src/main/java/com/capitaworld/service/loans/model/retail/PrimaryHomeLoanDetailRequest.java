@@ -1,8 +1,9 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 import java.util.Date;
 
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 

@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -36,19 +36,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private SubSectorRepository subSectorRepository;
 
 	@Override
-	public boolean save(CorporateApplicantRequest applicantRequest) throws Exception {
-		CorporateApplicantDetail applicantDetail = null;
+	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
 		try {
 			// application id must not be null
-			if (applicantRequest.getId() != null && applicantRequest.getApplicationId() != null) {
-				applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
-						applicantRequest.getApplicationId());
-				if (applicantDetail == null) {
-					throw new NullPointerException(
-							"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-									+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
-				}
-				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicantRequest.getApplicationId());
+			if (applicantDetail != null) {
+				// throw new NullPointerException("Applicant ID does not match
+				// with the database==> Applicant ID==>"
+				// + applicantRequest.getApplicationId() + " and User Id==>" +
+				// userId);
+				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
 				// inactive previous before adding new Data
 				int updatedRecords = industrySectorRepository
@@ -60,14 +59,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				logger.info("updated subSector==>" + subSecors);
 			} else {
 				applicantDetail = new CorporateApplicantDetail();
-				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedBy(userId);
 				applicantDetail.setCreatedDate(new Date());
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE);
-			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.ID);
+			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
@@ -77,7 +76,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			saveSector(applicantDetail.getApplicationId().getId(), applicantRequest.getSectorlist());
 			// sub sector save
 			saveSubSector(applicantDetail.getApplicationId().getId(), applicantRequest.getSubsectors());
-
 			return true;
 
 		} catch (Exception e) {
@@ -88,14 +86,15 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public CorporateApplicantRequest getCorporateApplicant(Long id, Long applicationId) throws Exception {
+	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception {
 		try {
 			// TODO Auto-generated method stub
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException(
 						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-								+ applicationId + "ID==>" + id);
+								+ applicationId + "User ID==>" + userId);
 			}
 			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);

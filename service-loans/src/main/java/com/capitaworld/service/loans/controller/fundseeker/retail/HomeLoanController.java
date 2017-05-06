@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.FinalHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PrimaryHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
 

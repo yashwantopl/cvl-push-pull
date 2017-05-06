@@ -6,7 +6,6 @@ public class GuarantorRequest {
 
 	private Long id;
 	private Long applicationId;
-	private Long userId;
 	private String firstName;
 	private Boolean isActive;
 	private Integer titleId;
@@ -32,6 +31,11 @@ public class GuarantorRequest {
 	private String selfEmployedOccupationOther;
 	private Double landSize;
 	private Integer alliedActivityId;
+	
+	private Integer genderId;
+	private Integer date;
+	private Integer month;
+	private Integer year;
 
 	public Long getId() {
 		return id;
@@ -47,14 +51,6 @@ public class GuarantorRequest {
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public String getFirstName() {
@@ -255,6 +251,38 @@ public class GuarantorRequest {
 
 	public void setAlliedActivityId(Integer alliedActivityId) {
 		this.alliedActivityId = alliedActivityId;
+	}
+
+	public Integer getGenderId() {
+		return genderId;
+	}
+
+	public void setGenderId(Integer genderId) {
+		this.genderId = genderId;
+	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
+	}
+
+	public Integer getDate() {
+		return date;
+	}
+
+	public void setDate(Integer date) {
+		this.date = date;
 	}
 
 }

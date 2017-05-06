@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
-import com.capitaworld.service.loans.model.TermLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;

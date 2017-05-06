@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.model.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryTermLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -25,7 +25,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	private PrimaryTermLoanDetailRepository primaryTLRepository;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest) throws Exception {
+	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception {
 		try {
 			PrimaryTermLoanDetail termLoanDetail = primaryTLRepository.findOne(termLoanRequest.getId());
 			if (termLoanDetail == null) {
@@ -33,7 +33,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 						"PrimaryTermLoanDetail not exist in DB with ID=>" + termLoanRequest.getId());
 			}
 			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-			termLoanDetail.setModifiedBy(termLoanRequest.getUserId());
+			termLoanDetail.setModifiedBy(userId);
 			termLoanDetail.setModifiedDate(new Date());
 			primaryTLRepository.save(termLoanDetail);
 			return true;
@@ -49,8 +49,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 		try {
 			PrimaryTermLoanDetail loanDetail = primaryTLRepository.findOne(id);
 			if (loanDetail == null) {
-				throw new NullPointerException(
-						"PrimaryTermLoanDetail not exist in DB with ID=>" + id);
+				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>" + id);
 			}
 			PrimaryTermLoanRequest capitalLoanRequest = new PrimaryTermLoanRequest();
 			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);

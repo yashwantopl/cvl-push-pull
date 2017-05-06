@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 
 public interface PrimaryTermLoanDetailRepository extends JpaRepository<PrimaryTermLoanDetail, Long> {
-	@Query("from PrimaryTermLoanDetail pd where pd.applicationId.id =:applicationId and pd.id =:id")
-	public PrimaryTermLoanDetail getByApplicationIDAndID(@Param("applicationId") Long applicationId,
-			@Param("id") Long id);
+	@Query("from PrimaryTermLoanDetail pd where pd.applicationId.id =:applicationId and pd.applicationId.userId =:userId")
+	public PrimaryTermLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,
+			@Param("userId") Long id);
 }

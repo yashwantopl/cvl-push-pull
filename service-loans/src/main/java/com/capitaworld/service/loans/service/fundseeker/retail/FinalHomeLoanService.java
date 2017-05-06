@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
-import com.capitaworld.service.loans.model.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
 
 public interface FinalHomeLoanService {
 

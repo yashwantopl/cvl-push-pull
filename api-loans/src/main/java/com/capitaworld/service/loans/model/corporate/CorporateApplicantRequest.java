@@ -1,9 +1,10 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.Address;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -42,14 +43,12 @@ public class CorporateApplicantRequest implements Serializable {
 	private Address firstAddress;
 
 	private Address secondAddress;
-	
+
 	private boolean sameAs;
 
 	private String websiteAddress;
 
 	private String landlineNo;
-
-	private Long userId;
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -58,14 +57,6 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<Long> subsectors = Collections.emptyList();
 
 	public CorporateApplicantRequest() {
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public Long getId() {

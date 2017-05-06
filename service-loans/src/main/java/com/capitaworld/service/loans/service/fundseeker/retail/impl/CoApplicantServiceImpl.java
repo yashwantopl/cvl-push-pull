@@ -30,30 +30,31 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private CoApplicantDetailRepository coApplicantDetailRepository;
 
 	@Override
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId) throws Exception {
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = null;
-			if (applicantRequest.getId() != null && applicationId != null) {
-				coDetails = coApplicantDetailRepository.get(applicationId, applicantRequest.getId());
-				if (coDetails == null) {
-					throw new NullPointerException("CoApplicant Id Record not exists in DB : "
-							+ applicantRequest.getId() + " Applicant Id ==>" + applicationId);
-				}
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, userId);
+			if (coDetails != null) {
+				// throw new NullPointerException("CoApplicant Id Record not
+				// exists in DB : " + applicantRequest.getId()
+				// + " Applicant Id ==>" + applicationId);
 				if (applicantRequest.getIsActive() != null && !applicantRequest.getIsActive().booleanValue()) {
 					coApplicantDetailRepository.inactiveCoApplicant(applicationId, applicantRequest.getId());
 					return true;
 				}
-				coDetails.setModifiedBy(applicantRequest.getUserId());
+				coDetails.setModifiedBy(userId);
 				coDetails.setModifiedDate(new Date());
 			} else {
 				coDetails = new CoApplicantDetail();
 				coDetails.setRelationshipWithApplicant(applicantRequest.getRelationshipWithApplicant());
-				coDetails.setCreatedBy(applicantRequest.getUserId());
+				coDetails.setCreatedBy(userId);
 				coDetails.setCreatedDate(new Date());
 				coDetails.setApplicationId(new LoanApplicationMaster(applicationId));
 			}
 			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, coDetails);
+			Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(), applicantRequest.getMonth(),
+					applicantRequest.getYear());
+			coDetails.setBirthDate(birthDate);
 			coApplicantDetailRepository.save(coDetails);
 			return true;
 
@@ -65,16 +66,20 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public CoApplicantRequest get(Long id, Long applicationId) throws Exception {
+	public CoApplicantRequest get(Long userId, Long applicationId) throws Exception {
 		try {
-			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId);
 			if (applicantDetail == null) {
-				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + id
+				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + userId
 						+ " and ApplicationId==>" + applicationId);
 			}
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
+			applicantRequest.setDate(saperatedTime[0]);
+			applicantRequest.setMonth(saperatedTime[1]);
+			applicantRequest.setYear(saperatedTime[2]);
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
@@ -85,9 +90,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<CoApplicantRequest> getList(Long applicationId) throws Exception {
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
 		try {
-			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId);
+			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
 			for (CoApplicantDetail detail : details) {
 				CoApplicantRequest request = new CoApplicantRequest();
@@ -103,18 +108,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
-				return false;
-			}
 			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(),
-					applicantRequest.getId());
+					userId);
 			if (coDetails == null) {
 				throw new NullPointerException("CoApplicant Id Record not exists in DB ID: " + applicantRequest.getId()
 						+ " and Application Id==>" + applicantRequest.getApplicationId());
 			}
-			coDetails.setModifiedBy(applicantRequest.getUserId());
+			coDetails.setModifiedBy(userId);
 			coDetails.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			coApplicantDetailRepository.save(coDetails);
@@ -128,12 +130,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId) throws Exception {
 		try {
-			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, id);
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record of Final Portion not exists in DB of ID : "
-						+ id + " and Application Id ==>" + applicationId);
+						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
@@ -156,7 +158,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			to.setPermanentPincode(from.getFirstAddress().getPincode().intValue());
 		}
 
-		if (from.isAddressSameAs()) {
+		if (from.getAddressSameAs()) {
 			if (from.getFirstAddress() != null) {
 				to.setOfficePremiseNumberName(from.getFirstAddress().getPremiseNumber());
 				to.setOfficeStreetName(from.getFirstAddress().getStreetName());

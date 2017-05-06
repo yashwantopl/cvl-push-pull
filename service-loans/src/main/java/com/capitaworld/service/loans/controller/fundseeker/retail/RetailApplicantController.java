@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.retail;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/fs_retail_profile")
@@ -32,15 +35,15 @@ public class RetailApplicantController {
 	}
 
 	@RequestMapping(value = "${profile}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
-
-			if (applicantRequest == null) {
-				logger.warn("CorporateApplicantRequest Object can not be empty ==>", applicantRequest);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId  can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (applicantRequest.getApplicationId() == null) {
@@ -51,15 +54,10 @@ public class RetailApplicantController {
 
 			}
 
-			boolean response = applicantService.save(applicantRequest);
-			if (response) {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			applicantService.save(applicantRequest, userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
@@ -69,11 +67,13 @@ public class RetailApplicantController {
 
 	}
 
-	@RequestMapping(value = "${profile}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
-			@PathVariable("applicationId") Long applicationId) {
+	@RequestMapping(value = "${profile}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+
 			if (id == null || applicationId == null) {
 				logger.warn("ID and ApplicationId Require to get Retail Profile Details. ID==>" + id
 						+ " and Application Id ==>" + applicationId);
@@ -100,34 +100,28 @@ public class RetailApplicantController {
 	}
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequest applicantRequest) {
+	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequest applicantRequest,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
-
-			if (applicantRequest == null) {
-				logger.warn("RetailApplicant Object can not be empty ==>", applicantRequest);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("userId can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			if (applicantRequest.getId() == null || applicantRequest.getApplicationId() == null) {
-				logger.warn("Application Id or ID(Primary Key) can not be empty. ID ==>" + applicantRequest.getId()
-						+ " and Application ID==>" + applicantRequest.getApplicationId());
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id  can not be empty Application ID==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
 
-			boolean response = applicantService.saveFinal(applicantRequest);
-			if (response) {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			applicantService.saveFinal(applicantRequest, userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
@@ -137,11 +131,12 @@ public class RetailApplicantController {
 
 	}
 
-	@RequestMapping(value = "${final}/get/{id}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id,
-			@PathVariable("applicationId") Long applicationId) {
+	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (id == null || applicationId == null) {
 				logger.warn("ID and Application ID Require to get Retail Final Profile Details. ID==>" + id
 						+ " and Application ID==>" + applicationId);

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.FinalCarLoanDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PrimaryCarLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCarLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalCarLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
 

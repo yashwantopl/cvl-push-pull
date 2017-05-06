@@ -1,21 +1,22 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 
+import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
- * The persistent class for the fp_loan_against_share_details database table.
+ * The persistent class for the fp_home_loan_details database table.
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LasParameterRequest extends ProductMasterRequest implements Serializable {
+public class HomeLoanParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long fpProductId;
 
-	private Integer currency;
+	private Long currency;
 
 	private Boolean isAgeDisplay=false;
 
@@ -47,6 +48,8 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 
 	private Double maxLoanAmount;
 
+	private Double maxTenure;
+
 	private Double maxYearlyIncomeRange;
 
 	private Double minAge;
@@ -55,13 +58,12 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 
 	private Double minLoanAmount;
 
+	private Double minTenure;
+
 	private Double minYearlyIncomeRange;
 
-	private Integer tenureMonth;
-
-	private Integer tenureYear;
-
-	public LasParameterRequest() {
+	
+	public HomeLoanParameterRequest() {
 	}
 
 	public Long getFpProductId() {
@@ -72,15 +74,17 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 		this.fpProductId = fpProductId;
 	}
 
+	
 
-	public Integer getCurrency() {
+	public Long getCurrency() {
 		return this.currency;
 	}
 
-	public void setCurrency(Integer currency) {
+	public void setCurrency(Long currency) {
 		this.currency = currency;
 	}
 
+	
 	public Boolean getIsAgeDisplay() {
 		return this.isAgeDisplay;
 	}
@@ -201,6 +205,14 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 		this.maxLoanAmount = maxLoanAmount;
 	}
 
+	public Double getMaxTenure() {
+		return this.maxTenure;
+	}
+
+	public void setMaxTenure(Double maxTenure) {
+		this.maxTenure = maxTenure;
+	}
+
 	public Double getMaxYearlyIncomeRange() {
 		return this.maxYearlyIncomeRange;
 	}
@@ -233,6 +245,14 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 		this.minLoanAmount = minLoanAmount;
 	}
 
+	public Double getMinTenure() {
+		return this.minTenure;
+	}
+
+	public void setMinTenure(Double minTenure) {
+		this.minTenure = minTenure;
+	}
+
 	public Double getMinYearlyIncomeRange() {
 		return this.minYearlyIncomeRange;
 	}
@@ -241,20 +261,5 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 		this.minYearlyIncomeRange = minYearlyIncomeRange;
 	}
 
-	public Integer getTenureMonth() {
-		return this.tenureMonth;
-	}
-
-	public void setTenureMonth(Integer tenureMonth) {
-		this.tenureMonth = tenureMonth;
-	}
-
-	public Integer getTenureYear() {
-		return this.tenureYear;
-	}
-
-	public void setTenureYear(Integer tenureYear) {
-		this.tenureYear = tenureYear;
-	}
 
 }

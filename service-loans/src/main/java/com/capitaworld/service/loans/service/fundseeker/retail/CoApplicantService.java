@@ -6,13 +6,13 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 
 public interface CoApplicantService {
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId) throws Exception;
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception;
 
-	public CoApplicantRequest get(Long id, Long applicationId) throws Exception;
+	public CoApplicantRequest get(Long userId, Long applicationId) throws Exception;
 
-	public List<CoApplicantRequest> getList(Long applicationId) throws Exception;
-	
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception;
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception;
 
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception;
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception;
+
+	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId) throws Exception;
 }

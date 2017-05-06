@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
-import com.capitaworld.service.loans.model.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;

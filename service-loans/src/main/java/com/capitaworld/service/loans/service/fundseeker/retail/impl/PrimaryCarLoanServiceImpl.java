@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
-import com.capitaworld.service.loans.model.PrimaryCarLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;

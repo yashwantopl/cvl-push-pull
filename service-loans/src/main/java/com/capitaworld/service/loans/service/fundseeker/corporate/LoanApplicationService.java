@@ -7,12 +7,12 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 
 public interface LoanApplicationService {
 
-	public boolean saveOrUpdate(FrameRequest commonRequest);
+	public boolean saveOrUpdate(FrameRequest commonRequest) throws Exception;
 	
-	public LoanApplicationRequest get(Long id);
+	public LoanApplicationRequest get(Long id,Long userId) throws Exception;
 	
-	public boolean inActive(Long id);
+	public boolean inActive(Long id,Long userId) throws Exception;
 	
-	public List<LoanApplicationRequest> getList(Long userId);	
+	public List<LoanApplicationRequest> getList(Long userId) throws Exception;	
 	
 }

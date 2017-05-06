@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
-import com.capitaworld.service.loans.model.FinalTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 
 public interface FinalTermLoanService {
 
-	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest) throws Exception;
+	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest, Long userId) throws Exception;
 
-	public FinalTermLoanRequest get(Long id,Long applicationId) throws Exception;
+	public FinalTermLoanRequest get(Long userId, Long applicationId) throws Exception;
 }

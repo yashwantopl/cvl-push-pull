@@ -334,6 +334,9 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name = "website_address")
 	private String websiteAddress;
+	
+	@Column(name = "gender_id")
+	private Integer genderId;
 
 	public RetailApplicantDetail() {
 	}
@@ -1154,4 +1157,12 @@ public class RetailApplicantDetail implements Serializable {
 		this.websiteAddress = websiteAddress;
 	}
 
+	public Integer getGenderId() {
+		return genderId;
+	}
+
+	public void setGenderId(Integer genderId) {
+		this.genderId = genderId;
+	}
+	
 }

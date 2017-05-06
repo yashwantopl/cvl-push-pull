@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -6,14 +6,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * The persistent class for the fs_corporate_term_loan_details database table.
- * 
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FinalTermLoanRequest implements Serializable {
+public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
-
 	private Long id;
 	private Long applicationId;
 	private Integer accountingSystemsId;
@@ -35,10 +30,9 @@ public class FinalTermLoanRequest implements Serializable {
 	private Integer technologyRequiresUpgradationId;
 	private Integer technologyTypeId;
 	private Boolean whetherTechnologyIsTied;
-	private Long userId;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
-	public FinalTermLoanRequest() {
+	public FinalWorkingCapitalLoanRequest() {
 	}
 
 	public Long getId() {
@@ -201,20 +195,12 @@ public class FinalTermLoanRequest implements Serializable {
 		this.technologyTypeId = technologyTypeId;
 	}
 
-	public Boolean isWhetherTechnologyIsTied() {
+	public Boolean getWhetherTechnologyIsTied() {
 		return whetherTechnologyIsTied;
 	}
 
 	public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
 	}
 
 	public List<Integer> getOverseasNetworkIds() {

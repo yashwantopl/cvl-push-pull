@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 
 public interface RetailApplicantDetailRepository extends JpaRepository<RetailApplicantDetail, Long> {
 
-	@Query("from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.id =:id")
-	public RetailApplicantDetail getByApplicationAndID(@Param("id") Long id,
+	@Query("from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId")
+	public RetailApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 }

@@ -38,22 +38,23 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private GuarantorService guarantorService;
 
 	@Override
-	public boolean save(RetailApplicantRequest applicantRequest) throws Exception {
-		RetailApplicantDetail applicantDetail = null;
+	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
+
 		try {
-			if (applicantRequest.getId() != null && applicantRequest.getApplicationId() != null) {
-				applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
-						applicantRequest.getApplicationId());
-				if (applicantDetail == null) {
-					throw new NullPointerException(
-							"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-									+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
-				}
-				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicantRequest.getApplicationId());
+			if (applicantDetail != null) {
+				// throw new NullPointerException(
+				// "Applicant ID and ID(Primary Key) does not match with the
+				// database==> Applicant ID==>"
+				// + applicantRequest.getApplicationId() + "ID==>" +
+				// applicantRequest.getId());
+
+				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
 			} else {
 				applicantDetail = new RetailApplicantDetail();
-				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedBy(userId);
 				applicantDetail.setCreatedDate(new Date());
 				applicantDetail.setActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
@@ -61,19 +62,16 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+			Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(), applicantRequest.getMonth(),
+					applicantRequest.getYear());
+			applicantDetail.setBirthDate(birthDate);
 			applicantDetail = applicantRepository.save(applicantDetail);
 
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				boolean result = coApplicantService.save(request, applicantRequest.getApplicationId());
-				if (!result) {
-					return false;
-				}
+				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				boolean result = guarantorService.save(request, applicantRequest.getApplicationId());
-				if (!result) {
-					return false;
-				}
+				guarantorService.save(request, applicantRequest.getApplicationId(), userId);
 			}
 			return true;
 
@@ -85,17 +83,22 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long id, Long applicationId) throws Exception {
+	public RetailApplicantRequest get(Long userId, Long applicationId) throws Exception {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicationId);
 			if (applicantDetail == null) {
-				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + id);
+				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + userId);
 			}
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId));
-			applicantRequest.setGuarantors(guarantorService.getList(applicationId));
+			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));
+			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
+			applicantRequest.setDate(saperatedTime[0]);
+			applicantRequest.setMonth(saperatedTime[1]);
+			applicantRequest.setYear(saperatedTime[2]);
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -107,7 +110,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(id, applicationId);
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
 						+ id + "  ApplicationId==>" + applicationId);
@@ -123,21 +126,21 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			if (applicantRequest.getId() == null || applicantRequest.getApplicationId() == null) {
+			if (applicantRequest.getApplicationId() == null) {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
-						+ applicantRequest.getApplicationId() + " ID (Primary Key)==>" + applicantRequest.getId());
+						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
 
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndID(applicantRequest.getId(),
-					applicantRequest.getApplicationId());
+			RetailApplicantDetail applicantDetail = applicantRepository
+					.getByApplicationAndUserId(applicantRequest.getId(), applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
 				throw new NullPointerException(
 						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
 								+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
 			}
-			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRepository.save(applicantDetail);

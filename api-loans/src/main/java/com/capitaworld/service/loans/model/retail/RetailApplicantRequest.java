@@ -13,11 +13,11 @@ import com.capitaworld.service.loans.model.Address;
 public class RetailApplicantRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-//	Common Fields
+	// Common Fields
 	private Long id;
 	private Long applicationId;
 
-//	Primary Fields
+	// Primary Fields
 	private Integer titleId;
 	private String firstName;
 	private String middleName;
@@ -44,7 +44,11 @@ public class RetailApplicantRequest implements Serializable {
 	private String selfEmployedOccupationOther;
 	private Double landSize;
 	private Integer alliedActivityId;
-	private Long userId;
+
+	private Integer genderId;
+	private Integer date;
+	private Integer month;
+	private Integer year;
 
 	public RetailApplicantRequest() {
 	}
@@ -198,13 +202,6 @@ public class RetailApplicantRequest implements Serializable {
 		this.guarantors = guarantors;
 	}
 
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
 
 	public String getCompanyName() {
 		return companyName;
@@ -284,6 +281,38 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setAlliedActivityId(Integer alliedActivityId) {
 		this.alliedActivityId = alliedActivityId;
+	}
+
+	public Integer getGenderId() {
+		return genderId;
+	}
+
+	public void setGenderId(Integer genderId) {
+		this.genderId = genderId;
+	}
+
+	public Integer getDate() {
+		return date;
+	}
+
+	public void setDate(Integer date) {
+		this.date = date;
+	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
+
+	public Integer getYear() {
+		return year;
+	}
+
+	public void setYear(Integer year) {
+		this.year = year;
 	}
 
 }

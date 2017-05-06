@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;

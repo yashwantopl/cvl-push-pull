@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
-import com.capitaworld.service.loans.model.TermLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 
 public interface TermLoanParameterService {
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest);

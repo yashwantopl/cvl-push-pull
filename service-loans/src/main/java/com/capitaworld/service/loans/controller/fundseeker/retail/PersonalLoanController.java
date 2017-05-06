@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PrimaryPersonalLoanRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
 
 @RestController

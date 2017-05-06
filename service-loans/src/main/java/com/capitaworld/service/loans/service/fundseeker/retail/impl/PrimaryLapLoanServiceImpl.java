@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
-import com.capitaworld.service.loans.model.PrimaryLapLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.PrimaryLapLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLapLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;

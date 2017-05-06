@@ -73,7 +73,11 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 		</dependency>
-		
+		<dependency>
+   			<groupId>com.capitaworld.service.auth</groupId>
+   			<artifactId>client-auth</artifactId>
+   			<version>1.0.0</version>
+  		</dependency>
 	</dependencies>
 
 	<build>
