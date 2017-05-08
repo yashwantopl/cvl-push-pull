@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.EntityInformationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LiabilitiesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ManagementDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -36,6 +39,12 @@ public class ExcelExtraction {
 	
 	@Autowired
 	OperatingStatementDetailsService operatingStatementDetailsService; 
+	
+	@Autowired
+	private EntityInformationDetailService entityInformationDetailService; 
+	
+	@Autowired
+	private ManagementDetailService managementDetailService; 
 	
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
@@ -102,5 +111,64 @@ public class ExcelExtraction {
 		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
 		
 	}
+	
+	@RequestMapping(value = "/read_dpr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> extractDPR(@RequestBody ExcelRequest excelRequest) {
+	
+		String filePath=excelRequest.getFilePath();
+		Long applicationId=excelRequest.getApplicationId();
+		Long storageDetailsId=excelRequest.getStorageDetailsId();
+		
+		
+		if(CommonUtils.isObjectNullOrEmpty(filePath) || CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(storageDetailsId))
+		{
+			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.OK.value());
+			log.error("request parameter is null or empty");
+			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		}
+		
+		
+		if(!(excelExtractionService.readDPR(applicationId,storageDetailsId,filePath)))
+		{
+			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.OK.value());
+			log.error("Something went wrong");
+			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		}
+		
+		LoansResponse res= new LoansResponse("File successfully read", HttpStatus.OK.value());
+		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(value = "/in_active_dpr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> inActiveDPR(@RequestBody ExcelRequest excelRequest) {
+	
+		Long storageDetailsId=excelRequest.getStorageDetailsId();
+		
+		
+		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
+		{
+			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.OK.value());
+			log.error("request parameter is null or empty");
+			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		}
+		
+		try {
+			entityInformationDetailService.inActiveEntityInformationDetails(storageDetailsId);
+			managementDetailService.inActiveManagementDetails(storageDetailsId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			
+			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.OK.value());
+			log.error("Something went wrong");
+			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		}
+		
+		
+		LoansResponse res= new LoansResponse("DPR Detailes inActivated", HttpStatus.OK.value());
+		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		
+	}
+	
 
 }
