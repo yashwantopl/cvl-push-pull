@@ -11,9 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.BalanceSheetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DprUserDataDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.EntityInformationDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
@@ -23,6 +26,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ManagementDeta
 import com.capitaworld.service.loans.service.fundseeker.corporate.MarketPositioningService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.MarketScenerioService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OperatingStatementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProfitibilityStatementDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposalService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ResourcesService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ScotService;
@@ -81,6 +85,18 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	@Autowired
 	ScotService scotService;
 	
+	@Autowired
+	BalanceSheetDetailService balanceSheetDetailService;
+	
+	@Autowired
+	ProfitibilityStatementDetailService profitibilityStatementDetailService;
+	
+	@Autowired
+	BalanceSheetDetailRepository balanceSheetDetailRepository;
+	
+	@Autowired
+	ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
+	
 	
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,String filePath) {
 		// TODO Auto-generated method stub
@@ -104,16 +120,15 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 		catch (Exception e) {
 			// TODO: handle exception
 			
-			assetsDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
-			liabilitiesDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
-			operatingStatementDetailsRepository.inActiveAssetsDetails((long) storageDetailsId);
+			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			
 			return false;
 		}
 		
 		return true;
 	}
-
 
 	@Override
 	public Boolean readDPR(Long applicationId, Long storageDetailsId, String filePath) {
@@ -162,6 +177,36 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			feasibilityService.inActiveFeasibilityDetails(storageDetailsId);
 			scotService.inActiveScotDetails(storageDetailsId);
 			dprUserDataDetailService.inActiveDprUserDataDetails(storageDetailsId);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	
+	@Override
+	public Boolean readBS(Long applicationId, Long storageDetailsId, String filePath) {
+		// TODO Auto-generated method stub
+		FileInputStream file;
+		XSSFWorkbook workbook;
+		XSSFSheet balanceSheet,profitibilityStatementSheet;
+		
+		try{
+			 file = new FileInputStream(new File(filePath));
+			 workbook = new XSSFWorkbook(file);
+			 
+			 balanceSheet  = workbook.getSheetAt(0);//pass BS sheet to function
+			 profitibilityStatementSheet  = workbook.getSheetAt(1);//pass BS sheet to function
+	         
+			 balanceSheetDetailService.readBalanceSheetDetails(applicationId, storageDetailsId, file, balanceSheet);
+			 profitibilityStatementDetailService.readProfitibilityStatementDetail(applicationId, storageDetailsId, file, profitibilityStatementSheet);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			
+			balanceSheetDetailRepository.inActiveBalanceSheetDetail(storageDetailsId);
+			profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetail(storageDetailsId);
+			
 			return false;
 		}
 		

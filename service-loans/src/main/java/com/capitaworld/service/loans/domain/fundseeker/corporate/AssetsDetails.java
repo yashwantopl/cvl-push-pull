@@ -163,6 +163,7 @@ public class AssetsDetails implements Serializable {
 	@Column(name="total_assets")
 	private Double totalAssets;
 
+	@Column(name="total_current_assets")
 	private Double totalCurrentAssets;
 
 	@Column(name="total_intangible_assets")
