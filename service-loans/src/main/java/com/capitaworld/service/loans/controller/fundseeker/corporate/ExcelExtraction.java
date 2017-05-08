@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.ExcelRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.BalanceSheetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.EntityInformationDetailService;
@@ -57,11 +57,11 @@ public class ExcelExtraction {
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		
-		return "Welcome to Loan Application Service...";
+		return "Welcome to Excel Extration Service...";
 	}
 
 	@RequestMapping(value = "/read_cma", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> readCMA(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> readCMA(@RequestBody ExcelRequest excelRequest) {
 	
 		String filePath=excelRequest.getFilePath();
 		Long applicationId=excelRequest.getApplicationId();
@@ -70,35 +70,35 @@ public class ExcelExtraction {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) && CommonUtils.isObjectNullOrEmpty(applicationId) && CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
 		if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,filePath)))
 		{
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
-		LoansResponse res= new LoansResponse("CMA successfully read", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("CMA successfully read", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	
 	@RequestMapping(value = "/inactive_cma", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> inActiveCMA(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> inActiveCMA(@RequestBody ExcelRequest excelRequest) {
 	
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
 		
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		try {
@@ -108,19 +108,19 @@ public class ExcelExtraction {
 		} catch (Exception e) {
 			// TODO: handle exception
 			
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
-		LoansResponse res= new LoansResponse("CMA Detailes inActivated", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("CMA Detailes inActivated", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	
 	@RequestMapping(value = "/read_dpr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> extractDPR(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> extractDPR(@RequestBody ExcelRequest excelRequest) {
 	
 		String filePath=excelRequest.getFilePath();
 		Long applicationId=excelRequest.getApplicationId();
@@ -129,35 +129,35 @@ public class ExcelExtraction {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) || CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.OK.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
 		if(!(excelExtractionService.readDPR(applicationId,storageDetailsId,filePath)))
 		{
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
-		LoansResponse res= new LoansResponse("DPR successfully read", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("DPR successfully read", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	
 	@RequestMapping(value = "/inactive_dpr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> inActiveDPR(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> inActiveDPR(@RequestBody ExcelRequest excelRequest) {
 	
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
 		
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.OK.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		try {
@@ -166,20 +166,20 @@ public class ExcelExtraction {
 		} catch (Exception e) {
 			// TODO: handle exception
 			
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
-		LoansResponse res= new LoansResponse("DPR Detailes inActivated", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("DPR Detailes inActivated", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	
 	
 	@RequestMapping(value = "/read_bs", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> readBS(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> readBS(@RequestBody ExcelRequest excelRequest) {
 	
 		String filePath=excelRequest.getFilePath();
 		Long applicationId=excelRequest.getApplicationId();
@@ -188,36 +188,36 @@ public class ExcelExtraction {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) && CommonUtils.isObjectNullOrEmpty(applicationId) && CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
 		if(!(excelExtractionService.readBS(applicationId,storageDetailsId,filePath)))
 		{
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
-		LoansResponse res= new LoansResponse("BS successfully read", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("BS successfully read", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	
 	
 	@RequestMapping(value = "/inactive_bs", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> inActiveBS(@RequestBody ExcelRequest excelRequest) {
+	public ResponseEntity<ExcelResponse> inActiveBS(@RequestBody ExcelRequest excelRequest) {
 	
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
 		
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			LoansResponse res= new LoansResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
+			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
 			log.error("request parameter is null or empty");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		try {
@@ -226,14 +226,14 @@ public class ExcelExtraction {
 		} catch (Exception e) {
 			// TODO: handle exception
 			
-			LoansResponse res= new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Something went wrong");
-			return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
-		LoansResponse res= new LoansResponse("BS Detailes inActivated", HttpStatus.OK.value());
-		return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+		ExcelResponse res= new ExcelResponse("BS Detailes inActivated", HttpStatus.OK.value());
+		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		
 	}
 	

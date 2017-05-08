@@ -23,5 +23,10 @@
 			<artifactId>spring-web</artifactId>
 			<version>4.2.4.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.loans.service.parent</groupId>
+			<artifactId>api-loans</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
   </dependencies>
 </project>

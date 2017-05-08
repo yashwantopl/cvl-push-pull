@@ -25,6 +25,21 @@ public class ExcelResponse implements Serializable {
 	private Object data;
 	
 	private List<?> listData = Collections.emptyList();
+	
+	
+
+	public ExcelResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	public ExcelResponse(String message,Integer status) {
+		super();
+		this.status = status;
+		this.message = message;
+	}
+
 
 	public Long getId() {
 		return id;
