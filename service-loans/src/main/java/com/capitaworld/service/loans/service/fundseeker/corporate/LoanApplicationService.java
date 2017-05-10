@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 
 public interface LoanApplicationService {
 
@@ -14,5 +15,7 @@ public interface LoanApplicationService {
 	public boolean inActive(Long id,Long userId) throws Exception;
 	
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception;	
+	
+	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> list);
 	
 }

@@ -58,7 +58,7 @@ public class LoanApplicationMaster implements Serializable {
 	private String name;
 
 	@Column(name = "product_id")
-	private Integer productId;
+	private Long productId;
 
 	private Integer tenure;
 
@@ -155,11 +155,12 @@ public class LoanApplicationMaster implements Serializable {
 		this.name = name;
 	}
 
-	public Integer getProductId() {
+	
+	public Long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Integer productId) {
+	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -121,6 +123,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			requests.add(request);
 		}
 		return requests;
+	}
+	
+	@Override
+	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> userList)
+	{
+		List<LoansResponse> loansResponses=new ArrayList<LoansResponse>();
+		for(Long id:userList)
+		{
+			LoansResponse loansResponse=new LoansResponse();
+			loansResponse.setId(id);
+			loansResponse.setListData(loanApplicationRepository.getListByUserId(id));
+			loansResponses.add(loansResponse);
+		}
+		return loansResponses;
 	}
 
 }

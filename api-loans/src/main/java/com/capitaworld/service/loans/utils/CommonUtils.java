@@ -55,7 +55,7 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(4), PERSONAL_LOAN(5), LAP_LOAN(6), LAS_LOAN(7);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14);
 		private int value;
 
 		private LoanType(int value) {
@@ -74,13 +74,13 @@ public class CommonUtils {
 				return TERM_LOAN;
 			case 3:
 				return HOME_LOAN;
-			case 4:
+			case 12:
 				return CAR_LOAN;
-			case 5:
-				return PERSONAL_LOAN;
-			case 6:
-				return LAP_LOAN;
 			case 7:
+				return PERSONAL_LOAN;
+			case 13:
+				return LAP_LOAN;
+			case 14:
 				return LAS_LOAN;
 			}
 			return null;
