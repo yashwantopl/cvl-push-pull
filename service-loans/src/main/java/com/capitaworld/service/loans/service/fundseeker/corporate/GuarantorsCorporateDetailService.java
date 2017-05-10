@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
  */
 public interface GuarantorsCorporateDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id);
 

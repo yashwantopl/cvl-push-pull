@@ -19,7 +19,7 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 	private String projectBrief;
 	private Double totalCostOfEstimate;
 	private Double totalMeansOfFinance;
-	private Double totalOfCollatralDetail;
+	private Double totalCollateralDetails;
 
 	public PrimaryTermLoanRequest() {
 	}
@@ -64,12 +64,12 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 		this.totalMeansOfFinance = totalMeansOfFinance;
 	}
 
-	public Double getTotalOfCollatralDetail() {
-		return totalOfCollatralDetail;
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
 	}
 
-	public void setTotalOfCollatralDetail(Double totalOfCollatralDetail) {
-		this.totalOfCollatralDetail = totalOfCollatralDetail;
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
 	}
 
 }

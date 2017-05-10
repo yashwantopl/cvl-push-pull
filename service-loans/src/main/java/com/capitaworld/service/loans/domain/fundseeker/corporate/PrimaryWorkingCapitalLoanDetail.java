@@ -38,14 +38,14 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	private Date createdDate;
 
 	@Column(name = "credit_rating_id")
-	private int creditRatingId;
+	private Integer creditRatingId;
 
 	@Lob
 	@Column(name = "enhancement_of_limit")
 	private String enhancementOfLimit;
 
 	@Column(name = "have_existing_limit")
-	private boolean haveExistingLimit;
+	private Boolean haveExistingLimit;
 
 	@Column(name = "is_active")
 	private boolean isActive;
@@ -62,7 +62,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	private String projectBrief;
 
 	@Column(name = "collateral_security_amt_total")
-	private double totalCollteralDetails;
+	private Double totalCollateralDetails;
 
 	public PrimaryWorkingCapitalLoanDetail() {
 	}
@@ -91,11 +91,12 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 		this.createdDate = createdDate;
 	}
 
-	public int getCreditRatingId() {
-		return this.creditRatingId;
+	
+	public Integer getCreditRatingId() {
+		return creditRatingId;
 	}
 
-	public void setCreditRatingId(int creditRatingId) {
+	public void setCreditRatingId(Integer creditRatingId) {
 		this.creditRatingId = creditRatingId;
 	}
 
@@ -107,11 +108,11 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 		this.enhancementOfLimit = enhancementOfLimit;
 	}
 
-	public boolean getHaveExistingLimit() {
-		return this.haveExistingLimit;
+	public Boolean getHaveExistingLimit() {
+		return haveExistingLimit;
 	}
 
-	public void setHaveExistingLimit(boolean haveExistingLimit) {
+	public void setHaveExistingLimit(Boolean haveExistingLimit) {
 		this.haveExistingLimit = haveExistingLimit;
 	}
 
@@ -147,12 +148,12 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 		this.projectBrief = projectBrief;
 	}
 
-	public double getTotalCollteralDetails() {
-		return this.totalCollteralDetails;
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
 	}
 
-	public void setTotalCollteralDetails(double totalCollteralDetails) {
-		this.totalCollteralDetails = totalCollteralDetails;
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
 	}
 
 }

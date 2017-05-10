@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.GuarantorsCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -27,17 +28,16 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporateDetailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AchievementDetailServiceImpl.class.getName());
 	@Autowired
-	private  GuarantorsCorporateDetailRepository  guarantorsCorporateDetailRepository;
+	private GuarantorsCorporateDetailRepository guarantorsCorporateDetailRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
-
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = (GuarantorsCorporateDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +48,8 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 					guarantorsCorporateDetail.setCreatedBy(frameRequest.getUserId());
 					guarantorsCorporateDetail.setCreatedDate(new Date());
 				}
-				guarantorsCorporateDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				guarantorsCorporateDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				guarantorsCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				guarantorsCorporateDetail.setModifiedDate(new Date());
 				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);
@@ -59,11 +60,10 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		catch (Exception e) {
 			logger.info("Exception  in save monthlyTurnoverDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
-
 
 	@Override
 	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id) {

@@ -7,7 +7,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 
 public interface AchievmentDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest  frameRequest);
+	public Boolean saveOrUpdate(FrameRequest  frameRequest) throws Exception;
 	
 	
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId);

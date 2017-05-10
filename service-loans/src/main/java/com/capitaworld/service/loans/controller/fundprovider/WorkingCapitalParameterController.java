@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/wc_parameter")
@@ -64,13 +65,13 @@ public class WorkingCapitalParameterController {
 						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving working capital  Parameter==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -83,7 +84,7 @@ public class WorkingCapitalParameterController {
 			if (id == null) {
 				logger.warn("ID Require to get  Working capital loan parameter ==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			WorkingCapitalParameterRequest parameterRequest = workingCapitalParameterService
@@ -94,13 +95,13 @@ public class WorkingCapitalParameterController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while Working capital Loan parameter Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 	}

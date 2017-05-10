@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.LapParameterRequest;
 import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/lap_parameter")
@@ -62,7 +63,7 @@ public class LapLoanParameterController {
 					HttpStatus.OK);
 		} else {
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -75,7 +76,7 @@ public class LapLoanParameterController {
 			if (id == null) {
 				logger.warn("ID Require to get lap loan parameter ==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			LapParameterRequest parameterRequest= lapLoanParameterService.getLapParameterRequest(id);
@@ -85,13 +86,13 @@ public class LapLoanParameterController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting lap Loan Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 	}

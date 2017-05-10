@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
  */
 public interface PromotorBackgroundDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId);
 

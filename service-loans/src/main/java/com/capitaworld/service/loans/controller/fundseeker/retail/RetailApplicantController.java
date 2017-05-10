@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.retail;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -40,18 +44,16 @@ public class RetailApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("userId  can not be empty ==>", applicantRequest);
+			if (applicantRequest == null) {
+				logger.warn("applicantRequest  can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (applicantRequest.getApplicationId() == null) {
 				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
-
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			applicantService.save(applicantRequest, userId);
@@ -61,7 +63,7 @@ public class RetailApplicantController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -72,29 +74,28 @@ public class RetailApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (id == null || applicationId == null) {
-				logger.warn("ID and ApplicationId Require to get Retail Profile Details. ID==>" + id
-						+ " and Application Id ==>" + applicationId);
+			if (applicationId == null) {
+				logger.warn("ApplicationId Require to get Retail Profile Details. Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			RetailApplicantRequest response = applicantService.get(id, applicationId);
+			RetailApplicantRequest response = applicantService.get(userId, applicationId);
 			if (response != null) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -105,16 +106,16 @@ public class RetailApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("userId can not be empty ==>", applicantRequest);
+			if (applicantRequest == null) {
+				logger.warn("applicantRequest can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (applicantRequest.getApplicationId() == null) {
 				logger.warn("Application Id  can not be empty Application ID==>" + applicantRequest.getApplicationId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
 
@@ -125,7 +126,7 @@ public class RetailApplicantController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -136,28 +137,72 @@ public class RetailApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (id == null || applicationId == null) {
-				logger.warn("ID and Application ID Require to get Retail Final Profile Details. ID==>" + id
-						+ " and Application ID==>" + applicationId);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("Application ID Require to get Retail Final Profile Details. Application ID==>"
+						+ applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			FinalCommonRetailRequest response = applicantService.getFinal(id, applicationId);
-			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			FinalCommonRetailRequest response = applicantService.getFinal(userId, applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Retail Applicant Final Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("Application ID Require to get  Co-Applicant Profile Details. Application ID==>"
+						+ applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<CoApplicantRequest> coApplicants = applicantService.getCoApplicants(userId, applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(coApplicants);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Retail Co-Applicant Profile Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/get_guarantors/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getGuarantors(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("Application ID Require to get Retail Guarantor Profile Details. Application ID==>"
+						+ applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<GuarantorRequest> coApplicants = applicantService.getGuarantors(userId, applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(coApplicants);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Retail Guarantor Profile Profile Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

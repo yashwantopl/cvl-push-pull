@@ -29,15 +29,17 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		String accessToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
 		String refreshToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
 		String username = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_USERNAME);
+		String loginToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_LOGIN_TOKEN);
 
-		if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(username) || StringUtils.isEmpty(refreshToken)) {
+		if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(username) || StringUtils.isEmpty(refreshToken) || StringUtils.isEmpty(loginToken)) {
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
 			return false;
 		}
 
 		AuthClient client = new AuthClient(environment.getRequiredProperty(AUTH_URL));
-		AuthRequest AuthRequest = new AuthRequest(username, accessToken, refreshToken);
-		AuthClientResponse authResponse = client.isAccessTokenValidOrNot(AuthRequest);
+		AuthRequest authRequest = new AuthRequest(username, accessToken, refreshToken);
+		authRequest.setLoginToken(Integer.valueOf(loginToken));
+		AuthClientResponse authResponse = client.isAccessTokenValidOrNot(authRequest);
 		if (!authResponse.isAuthenticate()) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return false;

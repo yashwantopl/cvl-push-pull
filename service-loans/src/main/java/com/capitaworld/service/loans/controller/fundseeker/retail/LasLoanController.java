@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.PrimaryLasLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLasLoanService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/las")
@@ -56,13 +57,13 @@ public class LasLoanController {
 						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving personal==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -76,7 +77,7 @@ public class LasLoanController {
 			if (id == null) {
 				logger.warn("ID Require to get Primary las loan Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			PrimaryLasLoanDetailRequest response = lasLoanService.get(id);
@@ -86,13 +87,13 @@ public class LasLoanController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Primary lasLoan Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

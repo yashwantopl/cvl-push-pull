@@ -39,27 +39,27 @@ public class CorporateApplicantController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("User Id can not be empty ==>", userId);
+			
+			if (applicantRequest == null) {
+				logger.warn("applicantRequest  can not be empty ==>", userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (applicantRequest.getApplicationId() == null) {
 				logger.warn("Application Id can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
-
 			}
-
+			
 			applicantService.save(applicantRequest, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace();             
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -72,9 +72,8 @@ public class CorporateApplicantController {
 		try {
 			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (id == null || applicationId == null) {
-				logger.warn("ID and ApplicationId Require to get Corporate Profile Details. ID ==>" + id
-						+ " Application Id ==>" + applicationId);
+			if (applicationId == null) {
+				logger.warn("ApplicationId Require to get Corporate Profile Details. Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -86,13 +85,13 @@ public class CorporateApplicantController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

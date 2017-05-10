@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
  */
 public interface CreditRatingOrganizationDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id);
 

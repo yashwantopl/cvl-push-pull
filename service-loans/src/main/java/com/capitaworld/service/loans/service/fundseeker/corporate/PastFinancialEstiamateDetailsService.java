@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRe
  */
 public interface PastFinancialEstiamateDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id);
 

@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
  */
 public interface ProposedProductDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id);
 

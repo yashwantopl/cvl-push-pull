@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
  */
 public interface MonthlyTurnoverDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id);
 

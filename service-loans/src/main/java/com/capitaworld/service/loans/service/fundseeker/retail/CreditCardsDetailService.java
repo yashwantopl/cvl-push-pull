@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
  */
 public interface CreditCardsDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<CreditCardsDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception;
 

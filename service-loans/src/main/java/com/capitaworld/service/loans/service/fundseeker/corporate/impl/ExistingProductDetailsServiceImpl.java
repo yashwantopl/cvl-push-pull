@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -37,7 +38,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	
 	
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ExistingProductDetailRequest existingProductDetailRequest = (ExistingProductDetailRequest) MultipleJSONObjectHelper
@@ -59,7 +60,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 		catch (Exception e) {
 			logger.info("Exception  in save existingProductDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.USER_ID);
 		}
 	}
 

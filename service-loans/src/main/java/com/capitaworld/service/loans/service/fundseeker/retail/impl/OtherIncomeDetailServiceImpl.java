@@ -47,7 +47,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService{
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				OtherIncomeDetailRequest otherIncomeDetailRequest = (OtherIncomeDetailRequest) MultipleJSONObjectHelper
@@ -82,7 +82,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService{
 		catch (Exception e) {
 			logger.info("Exception  in save otherIncomeDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

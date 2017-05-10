@@ -30,23 +30,23 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CreditCardsDetailServiceImpl.class);
 
 	@Autowired
 	private CreditCardsDetailRepository creditCardsDetailRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
-	
+
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				CreditCardsDetailRequest creditCardsDetailRequest = (CreditCardsDetailRequest) MultipleJSONObjectHelper
@@ -57,20 +57,23 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 					crediCardsDetail.setCreatedBy(frameRequest.getUserId());
 					crediCardsDetail.setCreatedDate(new Date());
 				}
-				switch(frameRequest.getApplicantType()) {
+				switch (frameRequest.getApplicantType()) {
 				case CommonUtils.ApplicantType.APPLICANT:
-					crediCardsDetail.setApplicantionId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+					crediCardsDetail
+							.setApplicantionId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
-					crediCardsDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
+					crediCardsDetail.setCoApplicantDetailId(
+							coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
-					crediCardsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
+					crediCardsDetail
+							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
-				default :
-					throw new Exception();
+				default:
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
-				
+
 				crediCardsDetail.setModifiedBy(frameRequest.getUserId());
 				crediCardsDetail.setModifiedDate(new Date());
 				creditCardsDetailRepository.save(crediCardsDetail);
@@ -81,7 +84,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		catch (Exception e) {
 			logger.info("Exception  in save crediCardsDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -89,7 +92,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 	@Override
 	public List<CreditCardsDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception {
 
-		List<CreditCardsDetail> creditCardsDetails = new ArrayList<CreditCardsDetail>() ;
+		List<CreditCardsDetail> creditCardsDetails = new ArrayList<CreditCardsDetail>();
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			creditCardsDetails = creditCardsDetailRepository.listCreditCardsFromAppId(id);
@@ -103,7 +106,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		default:
 			throw new Exception();
 		}
-		
+
 		List<CreditCardsDetailRequest> creditCardsRequests = new ArrayList<CreditCardsDetailRequest>();
 
 		for (CreditCardsDetail detail : creditCardsDetails) {
@@ -113,7 +116,5 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		}
 		return creditCardsRequests;
 	}
-	
-	
 
 }

@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -26,18 +27,18 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
  */
 @Service
 @Transactional
-public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundDetailsService{
+public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(PromotorBackgroundDetailsServiceImpl.class);
-	
+
 	@Autowired
 	private PromotorBackgroundDetailsRepository promotorBackgroundDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = (PromotorBackgroundDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 					promotorBackgroundDetail.setCreatedBy(frameRequest.getUserId());
 					promotorBackgroundDetail.setCreatedDate(new Date());
 				}
-				promotorBackgroundDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				promotorBackgroundDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				promotorBackgroundDetail.setModifiedBy(frameRequest.getUserId());
 				promotorBackgroundDetail.setModifiedDate(new Date());
 				promotorBackgroundDetailsRepository.save(promotorBackgroundDetail);
@@ -59,10 +61,10 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 		catch (Exception e) {
 			logger.info("Exception  in save promoterBackgroundDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
 	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId) {
 		List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
@@ -76,6 +78,5 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 		}
 		return promotorBackgroundDetailRequests;
 	}
-
 
 }

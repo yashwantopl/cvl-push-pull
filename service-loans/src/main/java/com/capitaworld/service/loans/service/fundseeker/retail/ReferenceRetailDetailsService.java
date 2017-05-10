@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
  */
 public interface ReferenceRetailDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailList(Long id, int applicationType) throws Exception;
 

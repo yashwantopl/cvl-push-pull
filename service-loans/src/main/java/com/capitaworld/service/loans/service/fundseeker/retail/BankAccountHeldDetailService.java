@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
  */
 public interface BankAccountHeldDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception;
 

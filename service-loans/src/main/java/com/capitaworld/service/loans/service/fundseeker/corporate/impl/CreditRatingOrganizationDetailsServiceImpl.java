@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -29,15 +30,15 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingOrganizationDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreditRatingOrganizationDetailsServiceImpl.class);
-	
+
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationsDetailRequest = (CreditRatingOrganizationDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 					creditRatingOrganizationDetail.setCreatedBy(frameRequest.getUserId());
 					creditRatingOrganizationDetail.setCreatedDate(new Date());
 				}
-				creditRatingOrganizationDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				creditRatingOrganizationDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				creditRatingOrganizationDetail.setModifiedBy(frameRequest.getUserId());
 				creditRatingOrganizationDetail.setModifiedDate(new Date());
 				creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);
@@ -59,7 +61,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 		catch (Exception e) {
 			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

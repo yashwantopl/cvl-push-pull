@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FutureFinancialEstimatesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -26,18 +27,18 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
  */
 @Service
 @Transactional
-public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinancialEstimatesDetailsService{
-	
+public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinancialEstimatesDetailsService {
+
 	private static final Logger logger = LoggerFactory.getLogger(FutureFinancialEstimatesDetailsServiceImpl.class);
 
 	@Autowired
 	private FutureFinancialEstimatesDetailsRepository futureFinancialEstimateDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FutureFinancialEstimatesDetailRequest futureFinancialEstimateDetailRequest = (FutureFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 					futureFinancialEstimateDetail.setCreatedBy(frameRequest.getUserId());
 					futureFinancialEstimateDetail.setCreatedDate(new Date());
 				}
-				futureFinancialEstimateDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				futureFinancialEstimateDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				futureFinancialEstimateDetail.setModifiedBy(frameRequest.getUserId());
 				futureFinancialEstimateDetail.setModifiedDate(new Date());
 				futureFinancialEstimateDetailsRepository.save(futureFinancialEstimateDetail);
@@ -59,7 +61,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		catch (Exception e) {
 			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

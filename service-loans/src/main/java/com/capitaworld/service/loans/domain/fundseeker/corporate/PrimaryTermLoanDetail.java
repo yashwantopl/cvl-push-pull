@@ -56,7 +56,7 @@ public class PrimaryTermLoanDetail extends LoanApplicationMaster implements Seri
 	private Double totalMeansOfFinance;
 
 	@Column(name = "collateral_security_amt_total")
-	private Double totalOfCollatralDetail;
+	private Double totalCollateralDetails;
 
 	public PrimaryTermLoanDetail() {
 	}
@@ -141,12 +141,14 @@ public class PrimaryTermLoanDetail extends LoanApplicationMaster implements Seri
 		this.totalMeansOfFinance = totalMeansOfFinance;
 	}
 
-	public Double getTotalOfCollatralDetail() {
-		return totalOfCollatralDetail;
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
 	}
 
-	public void setTotalOfCollatralDetail(Double totalOfCollatralDetail) {
-		this.totalOfCollatralDetail = totalOfCollatralDetail;
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
 	}
+
+	
 
 }

@@ -32,21 +32,21 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExistingLoanDetailsServiceImpl.class);
-	
+
 	@Autowired
 	private ExistingLoanDetailsRepository existingLoanDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
-	
+
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
-	
+
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ExistingLoanDetailRequest existinfLoanDetailRequest = (ExistingLoanDetailRequest) MultipleJSONObjectHelper
@@ -57,20 +57,23 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 					existingLoanDetail.setCreatedBy(frameRequest.getUserId());
 					existingLoanDetail.setCreatedDate(new Date());
 				}
-				switch(frameRequest.getApplicantType()) {
+				switch (frameRequest.getApplicantType()) {
 				case CommonUtils.ApplicantType.APPLICANT:
-					existingLoanDetail.setApplicantId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+					existingLoanDetail
+							.setApplicantId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
-					existingLoanDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
+					existingLoanDetail.setCoApplicantDetailId(
+							coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
-					existingLoanDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
+					existingLoanDetail
+							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
-				default :
+				default:
 					throw new Exception();
 				}
-				
+
 				existingLoanDetail.setModifiedBy(frameRequest.getUserId());
 				existingLoanDetail.setModifiedDate(new Date());
 				existingLoanDetailsRepository.save(existingLoanDetail);
@@ -81,7 +84,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		catch (Exception e) {
 			logger.info("Exception  in save existingLoanDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -89,7 +92,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 	@Override
 	public List<ExistingLoanDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception {
 
-		List<ExistingLoanDetail> existingLoanDetails = new ArrayList<ExistingLoanDetail>() ;
+		List<ExistingLoanDetail> existingLoanDetails = new ArrayList<ExistingLoanDetail>();
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			existingLoanDetails = existingLoanDetailsRepository.listExistingLoanFromAppId(id);
@@ -103,7 +106,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		default:
 			throw new Exception();
 		}
-		
+
 		List<ExistingLoanDetailRequest> existingLoanDetailRequests = new ArrayList<ExistingLoanDetailRequest>();
 
 		for (ExistingLoanDetail detail : existingLoanDetails) {

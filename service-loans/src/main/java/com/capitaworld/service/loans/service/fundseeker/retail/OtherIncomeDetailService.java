@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
  */
 public interface OtherIncomeDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws Exception;
 

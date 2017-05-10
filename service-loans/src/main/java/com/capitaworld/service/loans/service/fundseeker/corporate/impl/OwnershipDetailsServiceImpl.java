@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -26,20 +27,18 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
  */
 @Service
 @Transactional
-public class OwnershipDetailsServiceImpl implements OwnershipDetailsService{
+public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 
-		
 	private static final Logger logger = LoggerFactory.getLogger(ExistingProductDetailsServiceImpl.class.getName());
 	@Autowired
 	public OwnershipDetailsRepository ownershipDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
-	
+
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
-	
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				OwnershipDetailRequest ownershipDetailRequest = (OwnershipDetailRequest) MultipleJSONObjectHelper
@@ -61,15 +60,13 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService{
 		catch (Exception e) {
 			logger.info("Exception  in save ownershipDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
-
 	@Override
 	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId) {
-		List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository
-				.listOwnershipFromAppId(applicationId);
+		List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
 		List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
 
 		for (OwnershipDetail detail : ownershipDetails) {

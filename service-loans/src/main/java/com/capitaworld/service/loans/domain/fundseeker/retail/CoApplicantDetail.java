@@ -318,6 +318,12 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "website_address")
 	private String websiteAddress;
+	
+	@Column(name = "gender_id")
+	private Integer genderId;
+	
+	@Column(name = "contact_no")
+	private String contactNo;
 
 	public CoApplicantDetail() {
 	}
@@ -1104,6 +1110,22 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setWebsiteAddress(String websiteAddress) {
 		this.websiteAddress = websiteAddress;
+	}
+
+	public Integer getGenderId() {
+		return genderId;
+	}
+
+	public void setGenderId(Integer genderId) {
+		this.genderId = genderId;
+	}
+
+	public String getContactNo() {
+		return contactNo;
+	}
+
+	public void setContactNo(String contactNo) {
+		this.contactNo = contactNo;
 	}
 
 }

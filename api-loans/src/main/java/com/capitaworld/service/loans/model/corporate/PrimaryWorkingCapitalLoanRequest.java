@@ -18,11 +18,11 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 
 	private String enhancementOfLimit;
 
-	private boolean haveExistingLimit;
+	private Boolean haveExistingLimit;
 
 	private String projectBrief;
 
-	private Double totalCollteralDetails;
+	private Double totalCollateralDetails;
 
 	public PrimaryWorkingCapitalLoanRequest() {
 	}
@@ -43,11 +43,11 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 		this.enhancementOfLimit = enhancementOfLimit;
 	}
 
-	public boolean isHaveExistingLimit() {
+	public Boolean getHaveExistingLimit() {
 		return haveExistingLimit;
 	}
 
-	public void setHaveExistingLimit(boolean haveExistingLimit) {
+	public void setHaveExistingLimit(Boolean haveExistingLimit) {
 		this.haveExistingLimit = haveExistingLimit;
 	}
 
@@ -59,12 +59,12 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 		this.projectBrief = projectBrief;
 	}
 
-	public Double getTotalCollteralDetails() {
-		return totalCollteralDetails;
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
 	}
 
-	public void setTotalCollteralDetails(Double totalCollteralDetails) {
-		this.totalCollteralDetails = totalCollteralDetails;
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
 	}
 
 }

@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
  */
 public interface FixedDepositsDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws Exception;
 

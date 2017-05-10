@@ -11,4 +11,8 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	@Query("from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId")
 	public RetailApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
+	
+	@Query("select rt.currencyId from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId")
+	public Integer getCurrency(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
 }

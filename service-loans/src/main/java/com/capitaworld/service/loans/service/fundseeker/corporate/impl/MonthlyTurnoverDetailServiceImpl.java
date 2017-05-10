@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.MonthlyTurnoverDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -37,7 +38,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 	
 	
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = (MonthlyTurnoverDetailRequest) MultipleJSONObjectHelper
@@ -59,7 +60,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		catch (Exception e) {
 			logger.info("Exception  in save monthlyTurnoverDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

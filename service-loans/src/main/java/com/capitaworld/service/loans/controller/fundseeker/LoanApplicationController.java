@@ -46,9 +46,9 @@ public class LoanApplicationController {
 			if (userId == null) {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-
+			commonRequest.setUserId(userId);
 			loanApplicationService.saveOrUpdate(commonRequest);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -56,7 +56,7 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 	}
@@ -70,7 +70,8 @@ public class LoanApplicationController {
 				logger.warn("ID And UserId Require to get Loan Application Details. ID==>" + id + " and UserId==>"
 						+ userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 			}
 			LoanApplicationRequest response = loanApplicationService.get(id, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -80,7 +81,7 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -94,7 +95,7 @@ public class LoanApplicationController {
 			if (userId == null) {
 				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			List<LoanApplicationRequest> response = loanApplicationService.getList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -104,7 +105,7 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -114,11 +115,11 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (id == null || userId == null) {
-				logger.warn("id And UserId Require to Inactive Loan Application Details ==>" + id + " and User Id==>"
-						+ userId);
+			if (userId == null) {
+				logger.warn("UserId Require to Inactive Loan Application Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 			}
 			loanApplicationService.inActive(id, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Inactivated", HttpStatus.OK.value()),
@@ -127,7 +128,7 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

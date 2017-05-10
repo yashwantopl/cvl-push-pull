@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -29,15 +30,15 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
-	
+
 	@Autowired
 	private SecurityCorporateDetailsRepository securityCorporateDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				SecurityCorporateDetailRequest securityCorporateDetailRequest = (SecurityCorporateDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 					securityCorporateDetail.setCreatedBy(frameRequest.getUserId());
 					securityCorporateDetail.setCreatedDate(new Date());
 				}
-				securityCorporateDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				securityCorporateDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				securityCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				securityCorporateDetail.setModifiedDate(new Date());
 				securityCorporateDetailsRepository.save(securityCorporateDetail);
@@ -59,7 +61,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 		catch (Exception e) {
 			logger.info("Exception  in save securityCorporateDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

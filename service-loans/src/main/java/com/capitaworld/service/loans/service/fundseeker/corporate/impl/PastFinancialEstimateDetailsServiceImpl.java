@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRe
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -28,17 +29,17 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Transactional
 public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEstiamateDetailsService {
 
-	private static final Logger logger = LoggerFactory.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
-	
+	private static final Logger logger = LoggerFactory
+			.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
+
 	@Autowired
-	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository; 
-	
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
-	
+
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PastFinancialEstimatesDetailRequest pastFinancialEstimateDetailRequest = (PastFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -49,7 +50,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					pastFinancialEstimateDetail.setCreatedBy(frameRequest.getUserId());
 					pastFinancialEstimateDetail.setCreatedDate(new Date());
 				}
-				pastFinancialEstimateDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				pastFinancialEstimateDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				pastFinancialEstimateDetail.setModifiedBy(frameRequest.getUserId());
 				pastFinancialEstimateDetail.setModifiedDate(new Date());
 				pastFinancialEstimateDetailsRepository.save(pastFinancialEstimateDetail);
@@ -60,10 +62,9 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		catch (Exception e) {
 			logger.info("Exception  in save pastFinancialEstimateDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
 
 	@Override
 	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) {

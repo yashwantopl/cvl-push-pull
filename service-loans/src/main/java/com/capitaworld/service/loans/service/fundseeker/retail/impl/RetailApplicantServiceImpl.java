@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +89,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
-				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of ID : " + userId);
+				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of Application ID : "
+						+ applicationId + " and User Id==>" + userId);
 			}
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
@@ -121,7 +123,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -150,6 +152,17 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			e.printStackTrace();
 			throw new Exception("Something went Wrong !");
 		}
+	}
+
+	@Override
+	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
+		// TODO Auto-generated method stub
+		return coApplicantService.getList(applicationId, userId);
+	}
+
+	@Override
+	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception {
+		return guarantorService.getList(applicationId, userId);
 	}
 
 	public static void copyAddressFromRequestToDomain(RetailApplicantRequest from, RetailApplicantDetail to) {
@@ -191,7 +204,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		Address address = new Address();
 		address.setPremiseNumber(from.getPermanentPremiseNumberName());
 		address.setLandMark(from.getPermanentLandMark());
-		address.setStreetName(from.getAddressStreetName());
+		address.setStreetName(from.getPermanentStreetName());
 		address.setCityId(from.getPermanentCityId());
 		address.setStateId(from.getPermanentStateId());
 		address.setCountryId(from.getPermanentCountryId());

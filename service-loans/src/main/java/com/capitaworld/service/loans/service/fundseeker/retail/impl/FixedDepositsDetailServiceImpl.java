@@ -46,7 +46,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = (FixedDepositsDetailsRequest) MultipleJSONObjectHelper
@@ -81,7 +81,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 		catch (Exception e) {
 			logger.info("Exception  in save fixedDepositsDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

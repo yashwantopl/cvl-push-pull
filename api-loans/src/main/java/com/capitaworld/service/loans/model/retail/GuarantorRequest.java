@@ -19,7 +19,7 @@ public class GuarantorRequest {
 	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
-	private boolean addressSameAs;
+	private Boolean addressSameAs;
 	private String contactNo;
 	private String companyName;
 	private Integer employedWithId;
@@ -157,11 +157,12 @@ public class GuarantorRequest {
 		this.secondAddress = secondAddress;
 	}
 
-	public boolean isAddressSameAs() {
+
+	public Boolean getAddressSameAs() {
 		return addressSameAs;
 	}
 
-	public void setAddressSameAs(boolean addressSameAs) {
+	public void setAddressSameAs(Boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 

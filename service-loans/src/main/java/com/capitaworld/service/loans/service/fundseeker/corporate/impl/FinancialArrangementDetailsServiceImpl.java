@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -27,17 +28,17 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class FinancialArrangementDetailsServiceImpl implements FinancialArrangementDetailsService {
-	
-private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
+
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FinancialArrangementsDetailRequest financialArrangementsDetailRequest = (FinancialArrangementsDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDe
 					financialArrangementsDetail.setCreatedBy(frameRequest.getUserId());
 					financialArrangementsDetail.setCreatedDate(new Date());
 				}
-				financialArrangementsDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				financialArrangementsDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				financialArrangementsDetail.setModifiedBy(frameRequest.getUserId());
 				financialArrangementsDetail.setModifiedDate(new Date());
 				financialArrangementDetailsRepository.save(financialArrangementsDetail);
@@ -59,7 +61,7 @@ private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDe
 		catch (Exception e) {
 			logger.info("Exception  in save financialArrangementsDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

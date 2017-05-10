@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -36,7 +37,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = (AssociatedConcernDetailRequest) MultipleJSONObjectHelper
@@ -58,7 +59,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		catch (Exception e) {
 			logger.info("Exception  in save monthlyTurnoverDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

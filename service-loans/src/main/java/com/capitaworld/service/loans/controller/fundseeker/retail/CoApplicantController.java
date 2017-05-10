@@ -42,17 +42,16 @@ public class CoApplicantController {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (userId == null) {
-				logger.warn("userId can not be empty ==>", applicantRequest);
+			if (applicantRequest == null) {
+				logger.warn("applicantRequest can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			if (applicantRequest.getApplicationId() == null) {
-				logger.warn("Application Id can not be empty ==>", applicantRequest);
+			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
+				logger.warn("Application Id and ID can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Appli cation ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
 
@@ -63,27 +62,27 @@ public class CoApplicantController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
-	@RequestMapping(value = "${profile}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+	@RequestMapping(value = "${profile}/get/{applicationId}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (userId == null || applicationId == null) {
-				logger.warn("ID and Application ID Require to get CoApplicant Profile Details. ID==>" + userId
-						+ " and Application ID==>" + applicationId);
+			if (applicationId == null || id == null) {
+				logger.warn("ID and Application ID Require to get CoApplicant Profile Details. Application ID==>"
+						+ applicationId + " and ID==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			CoApplicantRequest response = coApplicantService.get(userId, applicationId);
+			CoApplicantRequest response = coApplicantService.get(userId, applicationId, id);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -91,7 +90,7 @@ public class CoApplicantController {
 		} catch (Exception e) {
 			logger.error("Error while getting Co Applicant Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -104,18 +103,17 @@ public class CoApplicantController {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (userId == null) {
-				logger.warn("userId can not be empty ==>", applicantRequest);
+			if (applicantRequest == null) {
+				logger.warn("applicantRequest can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			if (applicantRequest.getApplicationId() == null) {
+			if (applicantRequest.getApplicationId() == null || applicantRequest.getId() == null) {
 				logger.warn("ID and Application Id can not be empty Application ID==>"
-						+ applicantRequest.getApplicationId());
+						+ applicantRequest.getApplicationId() + " and ID==>" + applicantRequest.getId());
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Appli cation ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
 
@@ -126,26 +124,26 @@ public class CoApplicantController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
 
-	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+	@RequestMapping(value = "${final}/get/{applicationId}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id,
+			@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null || applicationId == null) {
-				logger.warn("ID and Application ID Require to get CoApplicant Profile Details. ID==>" + userId
-						+ " and Application ID==>" + applicationId);
+			if (applicationId == null || id == null) {
+				logger.warn("Application ID and IDRequire to get CoApplicant Profile Details. Application ID==>"
+						+ applicationId + " and ID==>" + id);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Something went wrong!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			CoApplicantRequest response = coApplicantService.get(userId, applicationId);
+			CoApplicantRequest response = coApplicantService.get(userId, applicationId, id);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -153,7 +151,7 @@ public class CoApplicantController {
 		} catch (Exception e) {
 			logger.error("Error while getting Co Applicant Profile Details==>", e);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Something went wrong!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

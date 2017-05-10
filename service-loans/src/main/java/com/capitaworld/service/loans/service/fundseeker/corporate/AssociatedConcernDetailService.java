@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
  */
 public interface AssociatedConcernDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest);
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id);
 

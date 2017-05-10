@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @Service
@@ -31,7 +32,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -54,7 +55,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 		catch (Exception e) {
 			logger.info("Exception  in save achievementDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -66,7 +67,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 				.listAchievementFromAppId(applicationId);
 		List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>();
 
-		for (AchievementDetail detail :achievementDetails) {
+		for (AchievementDetail detail : achievementDetails) {
 			AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
 			BeanUtils.copyProperties(detail, achievementDetailRequest);
 			achievementDetailRequests.add(achievementDetailRequest);

@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -27,17 +28,17 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class ProposedProductDetailsServiceImpl implements ProposedProductDetailsService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ProposedProductDetailsServiceImpl.class);
-	
+
 	@Autowired
 	private ProposedProductDetailsRepository proposedProductDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ProposedProductDetailRequest proposedProductDetailRequest = (ProposedProductDetailRequest) MultipleJSONObjectHelper
@@ -48,7 +49,8 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 					proposedProductDetail.setCreatedBy(frameRequest.getUserId());
 					proposedProductDetail.setCreatedDate(new Date());
 				}
-				proposedProductDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				proposedProductDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				proposedProductDetail.setModifiedBy(frameRequest.getUserId());
 				proposedProductDetail.setModifiedDate(new Date());
 				proposedProductDetailsRepository.save(proposedProductDetail);
@@ -59,23 +61,23 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 		catch (Exception e) {
 			logger.info("Exception  in save proposedProductDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
 	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id) {
-			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
-					.listProposedProductFromAppId(id);
-			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
+		List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
+				.listProposedProductFromAppId(id);
+		List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
 
-			for (ProposedProductDetail detail : proposedProductDetails) {
-				ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
-				BeanUtils.copyProperties(detail, proposedProductDetailRequest);
-				proposedProductDetailRequests.add(proposedProductDetailRequest);
-			}
-			return proposedProductDetailRequests;
+		for (ProposedProductDetail detail : proposedProductDetails) {
+			ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
+			BeanUtils.copyProperties(detail, proposedProductDetailRequest);
+			proposedProductDetailRequests.add(proposedProductDetailRequest);
+		}
+		return proposedProductDetailRequests;
 	}
 
 }

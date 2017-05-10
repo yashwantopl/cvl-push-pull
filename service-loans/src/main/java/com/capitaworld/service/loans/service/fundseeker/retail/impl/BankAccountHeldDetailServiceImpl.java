@@ -30,23 +30,23 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(BankAccountHeldDetailServiceImpl.class);
-	
+
 	@Autowired
 	private BankAccountHeldDetailRepository bankAccountHeldDetailRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
-	
+
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				BankAccountHeldDetailsRequest bankAccountHeldDetailRequest = (BankAccountHeldDetailsRequest) MultipleJSONObjectHelper
@@ -57,20 +57,23 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 					bankAccountHeldDetail.setCreatedBy(frameRequest.getUserId());
 					bankAccountHeldDetail.setCreatedDate(new Date());
 				}
-				switch(frameRequest.getApplicantType()) {
+				switch (frameRequest.getApplicantType()) {
 				case CommonUtils.ApplicantType.APPLICANT:
-					bankAccountHeldDetail.setApplicantId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+					bankAccountHeldDetail
+							.setApplicantId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
-					bankAccountHeldDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
+					bankAccountHeldDetail.setCoApplicantDetailId(
+							coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
-					bankAccountHeldDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
+					bankAccountHeldDetail
+							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
-				default :
+				default:
 					throw new Exception();
 				}
-				
+
 				bankAccountHeldDetail.setModifiedBy(frameRequest.getUserId());
 				bankAccountHeldDetail.setModifiedDate(new Date());
 				bankAccountHeldDetailRepository.save(bankAccountHeldDetail);
@@ -81,15 +84,16 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		catch (Exception e) {
 			logger.info("Exception  in save bankAccountHeldDetail  :-");
 			e.printStackTrace();
-			return false;
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception {
+	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType)
+			throws Exception {
 
-		List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>() ;
+		List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>();
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);
@@ -103,7 +107,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		default:
 			throw new Exception();
 		}
-		
+
 		List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
 
 		for (BankAccountHeldDetail detail : existingLoanDetails) {

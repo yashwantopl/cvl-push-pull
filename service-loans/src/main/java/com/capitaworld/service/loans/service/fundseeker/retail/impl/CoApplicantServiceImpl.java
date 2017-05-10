@@ -17,6 +17,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -28,11 +29,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository; 
 
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, userId);
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, userId,
+					applicantRequest.getId());
 			if (coDetails != null) {
 				// throw new NullPointerException("CoApplicant Id Record not
 				// exists in DB : " + applicantRequest.getId()
@@ -52,9 +57,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, coDetails);
-			Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(), applicantRequest.getMonth(),
-					applicantRequest.getYear());
-			coDetails.setBirthDate(birthDate);
+			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
+					&& applicantRequest.getYear() != null) {
+				Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(),
+						applicantRequest.getMonth(), applicantRequest.getYear());
+				coDetails.setBirthDate(birthDate);
+			}
 			coApplicantDetailRepository.save(coDetails);
 			return true;
 
@@ -66,12 +74,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public CoApplicantRequest get(Long userId, Long applicationId) throws Exception {
+	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
 		try {
-			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId);
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
-				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + userId
-						+ " and ApplicationId==>" + applicationId);
+				throw new NullPointerException("CoApplicantDetail Record not exists in DB of ID : " + id
+						+ " and ApplicationId==>" + applicationId + " userId ==>" + userId);
 			}
 			CoApplicantRequest applicantRequest = new CoApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_FINAL);
@@ -80,6 +88,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
@@ -110,8 +119,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	@Override
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(),
-					userId);
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(), userId,
+					applicantRequest.getId());
 			if (coDetails == null) {
 				throw new NullPointerException("CoApplicant Id Record not exists in DB ID: " + applicantRequest.getId()
 						+ " and Application Id==>" + applicantRequest.getApplicationId());
@@ -130,9 +139,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId) throws Exception {
+	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId, Long id) throws Exception {
 		try {
-			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId);
+			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record of Final Portion not exists in DB of ID : "
 						+ userId + " and Application Id ==>" + applicationId);
@@ -152,31 +161,46 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			to.setPermanentPremiseNumberName(from.getFirstAddress().getPremiseNumber());
 			to.setPermanentStreetName(from.getFirstAddress().getStreetName());
 			to.setPermanentLandMark(from.getFirstAddress().getLandMark());
-			to.setPermanentCityId(from.getFirstAddress().getCityId().intValue());
+			if (from.getFirstAddress().getCityId() != null) {
+				to.setPermanentCityId(from.getFirstAddress().getCityId().intValue());
+			}
 			to.setPermanentStateId(from.getFirstAddress().getStateId());
 			to.setPermanentCountryId(from.getFirstAddress().getCountryId());
-			to.setPermanentPincode(from.getFirstAddress().getPincode().intValue());
+			if (from.getFirstAddress().getPincode() != null) {
+				to.setPermanentPincode(from.getFirstAddress().getPincode().intValue());
+			}
 		}
 
-		if (from.getAddressSameAs()) {
+		if (from.getAddressSameAs() != null && from.getAddressSameAs().booleanValue()) {
 			if (from.getFirstAddress() != null) {
 				to.setOfficePremiseNumberName(from.getFirstAddress().getPremiseNumber());
 				to.setOfficeStreetName(from.getFirstAddress().getStreetName());
 				to.setOfficeLandMark(from.getFirstAddress().getLandMark());
-				to.setOfficeCityId(from.getFirstAddress().getCityId().intValue());
+				if (from.getFirstAddress().getCityId() != null) {
+					to.setOfficeCityId(from.getFirstAddress().getCityId().intValue());
+				}
 				to.setOfficeStateId(from.getFirstAddress().getStateId());
 				to.setOfficeCountryId(from.getFirstAddress().getCountryId());
-				to.setOfficePincode(from.getFirstAddress().getPincode().intValue());
+				if (from.getFirstAddress().getPincode() != null) {
+					to.setOfficePincode(from.getFirstAddress().getPincode().intValue());
+				}
+				
 			}
 		} else {
 			if (from.getSecondAddress() != null) {
 				to.setOfficePremiseNumberName(from.getSecondAddress().getPremiseNumber());
 				to.setOfficeStreetName(from.getSecondAddress().getStreetName());
 				to.setOfficeLandMark(from.getSecondAddress().getLandMark());
-				to.setOfficeCityId(from.getSecondAddress().getCityId().intValue());
+				if (from.getSecondAddress().getCityId() != null) {
+					to.setOfficeCityId(from.getSecondAddress().getCityId().intValue());
+				}
+				
 				to.setOfficeStateId(from.getSecondAddress().getStateId());
 				to.setOfficeCountryId(from.getSecondAddress().getCountryId());
-				to.setOfficePincode(from.getSecondAddress().getPincode().intValue());
+				if (from.getSecondAddress().getPincode() != null) {
+					to.setOfficePincode(from.getSecondAddress().getPincode().intValue());
+				}
+				
 			}
 		}
 
@@ -187,22 +211,30 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		address.setPremiseNumber(from.getPermanentPremiseNumberName());
 		address.setLandMark(from.getPermanentLandMark());
 		address.setStreetName(from.getPermanentStreetName());
-		address.setCityId(from.getPermanentCityId().longValue());
+		if (from.getPermanentCityId() != null) {
+			address.setCityId(from.getPermanentCityId().longValue());
+		}
 		address.setStateId(from.getPermanentStateId());
 		address.setCountryId(from.getPermanentCountryId());
-		address.setPincode(from.getPermanentPincode().longValue());
+		if (from.getPermanentPincode() != null) {
+			address.setPincode(from.getPermanentPincode().longValue());
+		}
 		to.setFirstAddress(address);
-		if (from.getAddressSameAs()) {
+		if (from.getAddressSameAs() != null && from.getAddressSameAs()) {
 			to.setSecondAddress(address);
 		} else {
 			address = new Address();
 			address.setPremiseNumber(from.getOfficePremiseNumberName());
 			address.setLandMark(from.getOfficeLandMark());
 			address.setStreetName(from.getOfficeStreetName());
-			address.setCityId(from.getOfficeCityId().longValue());
+			if (from.getOfficeCityId() != null) {
+				address.setCityId(from.getOfficeCityId().longValue());
+			}
 			address.setStateId(from.getOfficeStateId());
 			address.setCountryId(from.getOfficeCountryId());
-			address.setPincode(from.getOfficePincode().longValue());
+			if (from.getOfficePincode() != null) {
+				address.setPincode(from.getOfficePincode().longValue());
+			}
 			to.setSecondAddress(address);
 		}
 	}
