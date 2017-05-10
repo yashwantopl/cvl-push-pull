@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
@@ -15,6 +17,8 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -88,6 +92,19 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public ProductMaster getProductMaster(Long id) {
 		// TODO Auto-generated method stub
 		return productMasterRepository.findOne(id);
+	}
+
+	@Override
+	public List<ProductMasterRequest> getList(Long userId) {
+		// TODO Auto-generated method stub
+		List<ProductMaster> results = productMasterRepository.getUserProductList(userId);
+		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
+		for (ProductMaster master : results) {
+			ProductMasterRequest request = new ProductMasterRequest();
+			BeanUtils.copyProperties(master, request);
+			requests.add(request);
+		}
+		return requests;
 	}
 
 }
