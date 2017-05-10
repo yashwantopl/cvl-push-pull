@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
@@ -17,8 +18,6 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -27,6 +26,7 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @Service
+@Transactional
 public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Autowired
@@ -35,7 +35,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public boolean saveOrUpdate(MultipleFpPruductRequest productMasters) {
 		// TODO Auto-generated method stub
-
+		//inactive old record before saving new record
+		productMasterRepository.inActive(productMasters.getUserId());
 		try {
 			for (Map<String, Object> obj : productMasters.getDataList()) {
 				ProductMasterRequest productMasterRequest = (ProductMasterRequest) MultipleJSONObjectHelper
