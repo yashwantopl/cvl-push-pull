@@ -43,7 +43,7 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 
 	private String otherRenovationType;
 
-	private Integer projectCity;
+	private String projectCity;
 
 	private String projectName;
 
@@ -174,11 +174,11 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 		this.otherRenovationType = otherRenovationType;
 	}
 
-	public Integer getProjectCity() {
+	public String getProjectCity() {
 		return projectCity;
 	}
 
-	public void setProjectCity(Integer projectCity) {
+	public void setProjectCity(String projectCity) {
 		this.projectCity = projectCity;
 	}
 

@@ -143,7 +143,7 @@ public class CoApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			CoApplicantRequest response = coApplicantService.get(userId, applicationId, id);
+			FinalCommonRetailRequest response = coApplicantService.getFinal(userId, applicationId, id);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

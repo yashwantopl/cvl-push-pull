@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class CarLoanParameterController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CarLoanParameterController.class.getName());
+	
 	@Autowired
 	private CarLoanParameterService carLoanParameterService;
 
@@ -44,14 +45,6 @@ public class CarLoanParameterController {
 		if(carLoanParameterRequest.getId()==null)
 		{
 			logger.warn("carLoanParameterRequest id can not be empty ==>", carLoanParameterRequest);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
-		}
-		
-		if(carLoanParameterRequest.getId()==null)
-		{
-			logger.warn("user id can not be empty ==>", carLoanParameterRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);

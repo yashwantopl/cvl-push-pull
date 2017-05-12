@@ -73,8 +73,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 		try {
 			FinalWorkingCapitalLoanDetail loanDetails = finalWCRepository.getByApplicationAndUserId(applicationId, id);
 			if (loanDetails == null) {
-				throw new NullPointerException("FinalWorkingCapitalLoanDetail not exist in DB with ID=>" + id
-						+ " applicationId==>" + applicationId);
+				return null;
 			}
 			FinalWorkingCapitalLoanRequest capitalLoanRequest = new FinalWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetails, capitalLoanRequest);

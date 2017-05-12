@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,32 +19,50 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @Transactional
 public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanService {
 
+	private static final Logger logger = LoggerFactory.getLogger(PrimaryPersonalLoanServiceImpl.class.getName());
+
 	@Autowired
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest) {
+	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws Exception {
 		// ID must not be null
-		PrimaryPersonalLoanDetail primaryPersonalLoanDetail= personalLoanDetailRepository.findOne(personalLoanRequest.getId());
-		if (primaryPersonalLoanDetail == null) {
-			return false;
+		try {
+			PrimaryPersonalLoanDetail primaryPersonalLoanDetail = personalLoanDetailRepository
+					.getByApplicationAndUserId(personalLoanRequest.getId(), userId);
+			if (primaryPersonalLoanDetail == null) {
+				throw new NullPointerException("PrimaryPersonalLoanDetail not exist in DB with ID=>"
+						+ personalLoanRequest.getId() + " and User Id ==>" + userId);
+			}
+			BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail,
+					CommonUtils.IgnorableCopy.CORPORATE);
+			primaryPersonalLoanDetail.setIsActive(true);
+			primaryPersonalLoanDetail.setModifiedBy(userId);
+			primaryPersonalLoanDetail.setModifiedDate(new Date());
+			personalLoanDetailRepository.save(primaryPersonalLoanDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while saving PrimaryCarLoan Details");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-		primaryPersonalLoanDetail.setIsActive(true);
-		primaryPersonalLoanDetail.setModifiedBy(personalLoanRequest.getUserId());
-		primaryPersonalLoanDetail.setModifiedDate(new Date());
-		personalLoanDetailRepository.save(primaryPersonalLoanDetail);
-		return true;
 	}
 
 	@Override
-	public PrimaryPersonalLoanRequest get(Long id) {
-		PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.findOne(id);
-		if (loanDetail == null) {
-			return null;
+	public PrimaryPersonalLoanRequest get(Long id, Long userId) throws Exception {
+		try {
+			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(id, userId);
+			if (loanDetail == null) {
+				throw new NullPointerException(
+						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + id + " and User Id ==>" + userId);
+			}
+			PrimaryPersonalLoanRequest personalLoanRequest = new PrimaryPersonalLoanRequest();
+			BeanUtils.copyProperties(loanDetail, personalLoanRequest);
+			return personalLoanRequest;
+		} catch (Exception e) {
+			logger.error("Error while saving PrimaryCarLoan Details");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		PrimaryPersonalLoanRequest personalLoanRequest= new PrimaryPersonalLoanRequest();
-		BeanUtils.copyProperties(loanDetail, personalLoanRequest);
-		return personalLoanRequest;
 	}
 }

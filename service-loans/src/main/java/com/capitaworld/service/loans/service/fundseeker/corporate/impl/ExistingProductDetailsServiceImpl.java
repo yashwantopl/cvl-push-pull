@@ -32,11 +32,10 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	private static final Logger logger = LoggerFactory.getLogger(ExistingProductDetailsServiceImpl.class.getName());
 	@Autowired
 	public ExistingProductDetailsRepository existingProductDetailsRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
-	
+
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
@@ -49,7 +48,8 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 					existingProductDetail.setCreatedBy(frameRequest.getUserId());
 					existingProductDetail.setCreatedDate(new Date());
 				}
-				existingProductDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				existingProductDetail
+						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				existingProductDetail.setModifiedBy(frameRequest.getUserId());
 				existingProductDetail.setModifiedDate(new Date());
 				existingProductDetailsRepository.save(existingProductDetail);
@@ -60,23 +60,28 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 		catch (Exception e) {
 			logger.info("Exception  in save existingProductDetail  :-");
 			e.printStackTrace();
-			throw new Exception(CommonUtils.USER_ID);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
 
 	@Override
-	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId) {
-		List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
-				.listExistingProductFromAppId(applicationId);
-		List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
+	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId) throws Exception {
+		try {
+			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
+					.listExistingProductFromAppId(applicationId);
+			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
 
-		for (ExistingProductDetail detail : existingProductDetails) {
-			ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
-			BeanUtils.copyProperties(detail, existingProductDetailRequest);
-			existingProductDetailRequests.add(existingProductDetailRequest);
+			for (ExistingProductDetail detail : existingProductDetails) {
+				ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
+				BeanUtils.copyProperties(detail, existingProductDetailRequest);
+				existingProductDetailRequests.add(existingProductDetailRequest);
+			}
+			return existingProductDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception  in save existingProductDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return existingProductDetailRequests;
-	}
 
+	}
 }

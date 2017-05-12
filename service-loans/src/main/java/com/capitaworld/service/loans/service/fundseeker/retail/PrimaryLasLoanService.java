@@ -6,7 +6,7 @@ public interface PrimaryLasLoanService {
 
 	public boolean saveOrUpdate(PrimaryLasLoanDetailRequest lasLoanDetailRequest);
 	
-	public PrimaryLasLoanDetailRequest get(Long id);
+	public PrimaryLasLoanDetailRequest get(Long id) throws Exception;
 	
 	
 }

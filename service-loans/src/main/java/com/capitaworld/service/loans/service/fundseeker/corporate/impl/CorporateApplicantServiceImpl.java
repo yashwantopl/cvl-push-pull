@@ -41,7 +41,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
-	
+
 	@Autowired
 	private SubSectorMappingRepository subSectorMappingRepository;
 
@@ -167,31 +167,37 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	private static void copyAddressFromRequestToDomain(CorporateApplicantRequest from, CorporateApplicantDetail to) {
 		// Setting Regsiterd Address
-		to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
-		to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
-		to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
-		to.setRegisteredPincode(from.getFirstAddress().getPincode());
-		to.setRegisteredCityId(from.getFirstAddress().getCityId());
-		to.setRegisteredStateId(from.getFirstAddress().getStateId());
-		to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+		if (from.getFirstAddress() != null) {
+			to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
+			to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
+			to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
+			to.setRegisteredPincode(from.getFirstAddress().getPincode());
+			to.setRegisteredCityId(from.getFirstAddress().getCityId());
+			to.setRegisteredStateId(from.getFirstAddress().getStateId());
+			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+		}
 
 		// Setting Administrative Address
 		if (from.isSameAs()) {
-			to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
-			to.setAdministrativePincode(from.getFirstAddress().getPincode());
-			to.setAdministrativeCityId(from.getFirstAddress().getCityId());
-			to.setAdministrativeStateId(from.getFirstAddress().getStateId());
-			to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			if (from.getFirstAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
+				to.setAdministrativePincode(from.getFirstAddress().getPincode());
+				to.setAdministrativeCityId(from.getFirstAddress().getCityId());
+				to.setAdministrativeStateId(from.getFirstAddress().getStateId());
+				to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			}
 		} else {
-			to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
-			to.setAdministrativePincode(from.getSecondAddress().getPincode());
-			to.setAdministrativeCityId(from.getSecondAddress().getCityId());
-			to.setAdministrativeStateId(from.getSecondAddress().getStateId());
-			to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			if (from.getSecondAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
+				to.setAdministrativePincode(from.getSecondAddress().getPincode());
+				to.setAdministrativeCityId(from.getSecondAddress().getCityId());
+				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
+				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			}
 		}
 	}
 
@@ -234,14 +240,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list) {
 		// TODO Auto-generated method stub
-		List<SubSectorListRequest> subSectorListRequests =new ArrayList<SubSectorListRequest>(list.size());
-		for(Long id:list)
-		{
-			SubSectorListRequest subSectorListRequest=new SubSectorListRequest();
+		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
+		for (Long id : list) {
+			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);
-			
+
 		}
 		return subSectorListRequests;
 	}

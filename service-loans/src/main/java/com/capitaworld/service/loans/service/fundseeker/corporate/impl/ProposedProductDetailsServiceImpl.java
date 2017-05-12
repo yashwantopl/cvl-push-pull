@@ -67,17 +67,25 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 	}
 
 	@Override
-	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id) {
-		List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
-				.listProposedProductFromAppId(id);
-		List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
+	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id) throws Exception {
+		try {
+			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
+					.listProposedProductFromAppId(id);
+			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
 
-		for (ProposedProductDetail detail : proposedProductDetails) {
-			ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
-			BeanUtils.copyProperties(detail, proposedProductDetailRequest);
-			proposedProductDetailRequests.add(proposedProductDetailRequest);
+			for (ProposedProductDetail detail : proposedProductDetails) {
+				ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
+				BeanUtils.copyProperties(detail, proposedProductDetailRequest);
+				proposedProductDetailRequests.add(proposedProductDetailRequest);
+			}
+			return proposedProductDetailRequests;
 		}
-		return proposedProductDetailRequests;
+
+		catch (Exception e) {
+			logger.info("Exception  in save proposedProductDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 }
