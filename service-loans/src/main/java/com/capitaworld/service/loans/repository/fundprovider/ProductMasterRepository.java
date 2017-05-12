@@ -17,4 +17,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMaster> getUserProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId and pm.isActive = true")
+	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId);
 }

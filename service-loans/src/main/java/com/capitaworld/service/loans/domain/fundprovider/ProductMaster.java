@@ -4,57 +4,57 @@ import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
 
-
 /**
  * The persistent class for the fp_product_master database table.
  * 
  */
 @Entity
-@Table(name="fp_product_master")
+@Table(name = "fp_product_master")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="fp_product_id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "fp_product_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String name;
 
-	@Column(name="product_id")
+	@Column(name = "fp_name")
+	private String fpName;
+
+	@Column(name = "product_id")
 	private Long productId;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="start_date")
+	@Column(name = "start_date")
 	private Date startDate;
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="end_date")
+	@Column(name = "end_date")
 	private Date endDate;
 
-
-	@Column(name="user_id")
+	@Column(name = "user_id")
 	private Long userId;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
-	
-	@Column(name="modified_by")
+
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name="is_active")
-	private Boolean isActive=true;
+	@Column(name = "is_active")
+	private Boolean isActive = true;
 
-	
 	public ProductMaster() {
 	}
 
@@ -116,6 +116,14 @@ public abstract class ProductMaster implements Serializable {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public String getFpName() {
+		return fpName;
+	}
+
+	public void setFpName(String fpName) {
+		this.fpName = fpName;
 	}
 
 	public void setName(String name) {

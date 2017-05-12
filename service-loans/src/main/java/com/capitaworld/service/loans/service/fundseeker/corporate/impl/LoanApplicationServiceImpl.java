@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -20,10 +21,14 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDet
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -37,6 +42,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest) throws Exception {
@@ -123,19 +134,64 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return requests;
 	}
-	
+
 	@Override
-	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> userList)
-	{
-		List<LoansResponse> loansResponses=new ArrayList<LoansResponse>();
-		for(Long id:userList)
-		{
-			LoansResponse loansResponse=new LoansResponse();
+	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> userList) {
+		List<LoansResponse> loansResponses = new ArrayList<LoansResponse>();
+		for (Long id : userList) {
+			LoansResponse loansResponse = new LoansResponse();
 			loansResponse.setId(id);
 			loansResponse.setListData(loanApplicationRepository.getListByUserId(id));
 			loansResponses.add(loansResponse);
 		}
 		return loansResponses;
+	}
+
+	@Override
+	public String getApplicationType(Long applicationId) {
+		// TODO Auto-generated method stub
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (applicationMaster != null) {
+			if (applicationMaster.getProductId() == 1 || applicationMaster.getProductId() == 2) {
+				return CommonUtils.CORPORATE;
+			} else if (applicationMaster.getProductId() == 3 || applicationMaster.getProductId() == 12
+					|| applicationMaster.getProductId() == 7 || applicationMaster.getProductId() == 13
+					|| applicationMaster.getProductId() == 14) {
+				return CommonUtils.RETAIL;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String getUserNameByApplicationId(Long applicationId,Long userId) {
+		// TODO Auto-generated method stub
+		String userType = getApplicationType(applicationId);
+		String userName;
+		if (userType == null)
+			return null;
+
+		if (userType.equals(CommonUtils.CORPORATE)) {
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+					.getByApplicationAndUserId(userId, applicationId);
+			if (corporateApplicantDetail != null) {
+				userName = corporateApplicantDetail.getOrganisationName();
+				if (userName != null || userName.length() != 0) {
+					return userName;
+				}
+			}
+		} else if (userType.equals(CommonUtils.RETAIL)) {
+			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+			if (retailApplicantDetail != null) {
+				userName = retailApplicantDetail.getFirstName() + retailApplicantDetail.getLastName();
+				if (userName != null || userName.length() != 0) {
+					return userName;
+				}
+			}
+		} else {
+			return null;
+		}
+		return null;
 	}
 
 }

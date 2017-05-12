@@ -40,73 +40,73 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	private Integer denomination;
 
 	@Column(name="is_active")
-	private Boolean isActive;
+	private Boolean isActive=true;
 
 	@Column(name="is_collateral_display")
-	private Boolean isCollateralDisplay;
+	private Boolean isCollateralDisplay=false;
 
 	@Column(name="is_collateral_mandatory")
-	private Boolean isCollateralMandatory;
+	private Boolean isCollateralMandatory=false;
 
 	@Column(name="is_credit_rating_display")
-	private Boolean isCreditRatingDisplay;
+	private Boolean isCreditRatingDisplay=false;
 
 	@Column(name="is_credit_rating_mandatory")
-	private Boolean isCreditRatingMandatory;
+	private Boolean isCreditRatingMandatory=false;
 
 	@Column(name="is_debt_equity_display")
-	private Boolean isDebtEquityDisplay;
+	private Boolean isDebtEquityDisplay=false;
 
 	@Column(name="is_debt_equity_mandatory")
-	private Boolean isDebtEquityMandatory;
+	private Boolean isDebtEquityMandatory=false;
 
 	@Column(name="is_establishment_display")
-	private Boolean isEstablishmentDisplay;
+	private Boolean isEstablishmentDisplay=false;
 
 	@Column(name="is_establishment_mandatory")
-	private Boolean isEstablishmentMandatory;
+	private Boolean isEstablishmentMandatory=false;
 
 	@Column(name="is_geographical_display")
-	private Boolean isGeographicalDisplay;
+	private Boolean isGeographicalDisplay=false;
 
 	@Column(name="is_geographical_mandatory")
-	private Boolean isGeographicalMandatory;
+	private Boolean isGeographicalMandatory=false;
 
 	@Column(name="is_industry_sector_display")
-	private Boolean isIndustrySectorDisplay;
+	private Boolean isIndustrySectorDisplay=false;
 
 	@Column(name="is_industry_sector_mandatory")
-	private Boolean isIndustrySectorMandatory;
+	private Boolean isIndustrySectorMandatory=false;
 
 	@Column(name="is_investment_size_display")
-	private Boolean isInvestmentSizeDisplay;
+	private Boolean isInvestmentSizeDisplay=false;
 
 	@Column(name="is_investment_size_mandatory")
-	private Boolean isInvestmentSizeMandatory;
+	private Boolean isInvestmentSizeMandatory=false;
 
 	@Column(name="is_networth_display")
-	private Boolean isNetworthDisplay;
+	private Boolean isNetworthDisplay=false;
 
 	@Column(name="is_networth_mandatory")
-	private Boolean isNetworthMandatory;
+	private Boolean isNetworthMandatory=false;
 
 	@Column(name="is_past_year_turnover_display")
-	private Boolean isPastYearTurnoverDisplay;
+	private Boolean isPastYearTurnoverDisplay=false;
 
 	@Column(name="is_past_year_turnover_mandatory")
-	private Boolean isPastYearTurnoverMandatory;
+	private Boolean isPastYearTurnoverMandatory=false;
 
 	@Column(name="is_profitability_history_display")
-	private Boolean isProfitabilityHistoryDisplay;
+	private Boolean isProfitabilityHistoryDisplay=false;
 
 	@Column(name="is_profitability_history_mandatory")
-	private Boolean isProfitabilityHistoryMandatory;
+	private Boolean isProfitabilityHistoryMandatory=false;
 
 	@Column(name="is_tenure_display")
-	private Boolean isTenureDisplay;
+	private Boolean isTenureDisplay=false;
 
 	@Column(name="is_tenure_mandatory")
-	private Boolean isTenureMandatory;
+	private Boolean isTenureMandatory=false;
 
 	@Column(name="Long_term_credit_rating")
 	private Integer LongTermCreditRating;

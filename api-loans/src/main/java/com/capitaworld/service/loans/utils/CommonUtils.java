@@ -9,6 +9,8 @@ public class CommonUtils {
 	public static final String USER_ID = "userId";
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
+	public static final String CORPORATE = "corporate";
+	public static final String RETAIL = "retail";
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());

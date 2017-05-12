@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -72,6 +73,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						break;
 				}
 				BeanUtils.copyProperties(productMasterRequest, productMaster);
+				productMaster.setFpName(productMasters.getFpName());
 				productMaster.setUserId(productMasters.getUserId());
 				productMaster.setCreatedBy(productMasters.getUserId());
 				productMaster.setCreatedDate(new Date());
@@ -106,6 +108,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			requests.add(request);
 		}
 		return requests;
+	}
+
+	@Override
+	public String getUserNameByApplicationId(Long productId, Long userId) {
+		// TODO Auto-generated method stub
+		
+		ProductMaster productMaster=productMasterRepository.getUserProduct(productId,userId);
+		if(productMaster!=null)
+		{
+		return productMaster.getFpName();
+		}
+		return null;
 	}
 
 }

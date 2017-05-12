@@ -15,6 +15,8 @@ public class MultipleFpPruductRequest implements Serializable{
 	
 	private Long userId;
 	
+	private String fpName;
+	
 	private List<Map<String, Object>> dataList;
 
 	
@@ -33,6 +35,16 @@ public class MultipleFpPruductRequest implements Serializable{
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
+
+	public String getFpName() {
+		return fpName;
+	}
+
+	public void setFpName(String fpName) {
+		this.fpName = fpName;
+	}
+	
+	
 
 	
 	

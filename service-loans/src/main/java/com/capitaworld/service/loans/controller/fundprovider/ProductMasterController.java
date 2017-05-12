@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
+import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
@@ -29,6 +30,12 @@ public class ProductMasterController {
 	
 	@Autowired
 	private ProductMasterService productMasterService;
+	
+	@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	public String getPing() {
+		logger.info("Ping success");
+		return "Ping Succeed";
+	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody MultipleFpPruductRequest multipleFpPruductRequest, HttpServletRequest request) {
@@ -56,7 +63,13 @@ public class ProductMasterController {
 						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-
+			if(multipleFpPruductRequest.getFpName()==null || multipleFpPruductRequest.getFpName().length()==0)
+			{
+				logger.warn("fund provider name  can not be empty ==>" + multipleFpPruductRequest);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 
 			boolean response = productMasterService.saveOrUpdate(multipleFpPruductRequest);
 			if (response) {
@@ -94,6 +107,45 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getUserNameByProductId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUserNameByProductId(@RequestBody Long productId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+
+			if (productId == null) {
+				logger.warn("productId ID Require to get Details ==>" + productId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (userId == null) {
+				logger.warn("UserId Require to get user name ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			String response = productMasterService.getUserNameByApplicationId(productId, userId);
+			LoansResponse loansResponse;
+			if(response==null)
+			{
+				 loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+			}
+			else
+			{
+			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			}
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting user name ==>", e);	
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

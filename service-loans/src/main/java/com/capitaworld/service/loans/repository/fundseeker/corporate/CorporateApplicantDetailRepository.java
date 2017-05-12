@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 
 public interface CorporateApplicantDetailRepository extends JpaRepository<CorporateApplicantDetail, Long> {
 
-	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId")
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public CorporateApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 }
