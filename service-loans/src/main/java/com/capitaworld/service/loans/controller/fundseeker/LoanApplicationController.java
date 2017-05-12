@@ -144,6 +144,7 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+
 			List<LoansResponse> response = loanApplicationService.getLoanDetailsByUserIdList(userIdList);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);

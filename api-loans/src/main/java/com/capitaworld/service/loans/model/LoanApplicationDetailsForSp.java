@@ -12,6 +12,10 @@ public class LoanApplicationDetailsForSp {
 	
 	
 
+	public LoanApplicationDetailsForSp() {
+		super();
+	}
+
 	public LoanApplicationDetailsForSp(Long id, Integer productId, Double amount, Integer denominationId) {
 		super();
 		this.id = id;
