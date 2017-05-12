@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -90,6 +92,45 @@ public class CorporateApplicantController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getSectorListByIndustryList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody List<Long> industryIdList,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			//Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long id=1l;
+			if (id == null) {
+				logger.warn("userId  Require to get sectors Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			if (industryIdList == null) {
+				logger.warn("industryIdList  Require to get sectors Details ==>" + industryIdList);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			List<Long> response = applicantService.getSectorListByIndustryId(industryIdList);
+			LoansResponse loansResponse;
+			if(response==null||response.isEmpty())
+			{
+				 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			}
+			else
+			{
+			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

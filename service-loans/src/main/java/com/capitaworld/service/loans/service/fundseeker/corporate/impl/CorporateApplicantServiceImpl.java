@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -34,6 +35,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private SubSectorRepository subSectorRepository;
+
+	@Autowired
+	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -213,5 +217,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 
 		// Setting Administrative Address
+	}
+
+	@Override
+	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception {
+		// TODO Auto-generated method stub
+		return sectorIndustryMappingRepository.getSectorListByIndustryList(sectorList);
 	}
 }
