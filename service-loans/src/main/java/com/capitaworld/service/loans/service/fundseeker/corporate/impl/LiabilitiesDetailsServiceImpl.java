@@ -6,7 +6,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -33,7 +32,7 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId,FileInputStream file, XSSFSheet sheet) {
 		// TODO Auto-generated method stub
 		  
-	       LiabilitiesDetailsExcelReader.run(storageDetailsId,sheet,new LoanApplicationMaster(applicationId), liabilitiesDetailsRepository);
+		LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), liabilitiesDetailsRepository);
 	
 	}
 

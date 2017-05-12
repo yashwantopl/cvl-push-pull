@@ -4,4 +4,8 @@ public interface ExcelExtractionService {
 	
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,String filePath);
 
+	public Boolean readDPR(Long applicationId, Long storageDetailsId, String filePath);
+	
+	public Boolean readBS(Long applicationId,Long storageDetailsId,String filePath);
+
 }

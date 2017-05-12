@@ -19,13 +19,13 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
-@Table(name="application_status_master")
+@Table(name="fs_application_status_master")
 @NamedQuery(name="ApplicationStatusMaster.findAll", query="SELECT a FROM ApplicationStatusMaster a")
 public class ApplicationStatusMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	private String code;

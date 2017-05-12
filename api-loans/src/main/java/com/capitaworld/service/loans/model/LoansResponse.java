@@ -1,6 +1,15 @@
 package com.capitaworld.service.loans.model;
 
-public class LoansResponse {
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+
+public class LoansResponse implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 
@@ -9,12 +18,14 @@ public class LoansResponse {
 	private String message;
 
 	private Object data;
+	
+	private List<?> listData = Collections.emptyList();
 
 	public LoansResponse() {
 		super();
 	}
 
-	public LoansResponse(String message,Integer status) {
+	public LoansResponse(String message, Integer status) {
 		super();
 		this.message = message;
 		this.status = status;
@@ -52,4 +63,12 @@ public class LoansResponse {
 		this.data = data;
 	}
 
+	public List<?> getListData() {
+		return listData;
+	}
+
+	public void setListData(List<?> listData) {
+		this.listData = listData;
+	}
+	
 }

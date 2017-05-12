@@ -24,7 +24,7 @@ public class AssetsDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name="advance_payment_taxes")
@@ -163,6 +163,7 @@ public class AssetsDetails implements Serializable {
 	@Column(name="total_assets")
 	private Double totalAssets;
 
+	@Column(name="total_current_assets")
 	private Double totalCurrentAssets;
 
 	@Column(name="total_intangible_assets")
