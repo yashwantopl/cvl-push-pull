@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +17,11 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -38,6 +41,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
+	
+	@Autowired
+	private SubSectorMappingRepository subSectorMappingRepository;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -223,5 +229,19 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception {
 		// TODO Auto-generated method stub
 		return sectorIndustryMappingRepository.getSectorListByIndustryList(sectorList);
+	}
+
+	@Override
+	public List<SubSectorListRequest> getSubSectorList(List<Long> list) {
+		// TODO Auto-generated method stub
+		List<SubSectorListRequest> subSectorListRequests =new ArrayList<SubSectorListRequest>(list.size());
+		for(Long id:list)
+		{
+			SubSectorListRequest subSectorListRequest=new SubSectorListRequest();
+			subSectorListRequest.setSectorId(id);
+			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
+			
+		}
+		return null;
 	}
 }

@@ -169,8 +169,8 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			//Long userId=1750l;
+			//Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId=1750l;
 			if (userId == null) {
 				logger.warn("UserId Require to get user name ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
@@ -197,4 +197,6 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
 }

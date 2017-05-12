@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -117,6 +118,45 @@ public class CorporateApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			List<Long> response = applicantService.getSectorListByIndustryId(industryIdList);
+			LoansResponse loansResponse;
+			if(response==null||response.isEmpty())
+			{
+				 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			}
+			else
+			{
+			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getSubSectorListBySectorList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getSubSectorListBySectorList(@RequestBody List<Long> sectorIdList,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			//Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long id=1l;
+			if (id == null) {
+				logger.warn("userId  Require to get sectors Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			if (sectorIdList == null) {
+				logger.warn("sectorIdList  Require to get sectors Details ==>" + sectorIdList);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			List<SubSectorListRequest> response = applicantService.getSubSectorList(sectorIdList);
 			LoansResponse loansResponse;
 			if(response==null||response.isEmpty())
 			{
