@@ -98,8 +98,8 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			// Long id=1l;
+			//Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+			 Long id=1l;
 			if (id == null) {
 				logger.warn("userId  Require to get sectors Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(

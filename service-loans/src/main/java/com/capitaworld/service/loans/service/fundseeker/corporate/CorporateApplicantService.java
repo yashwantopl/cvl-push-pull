@@ -10,7 +10,7 @@ public interface CorporateApplicantService {
 
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception;
 	
-	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception;
+	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception;
 	
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);
 }

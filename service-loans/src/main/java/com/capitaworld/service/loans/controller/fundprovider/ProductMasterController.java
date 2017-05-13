@@ -71,11 +71,11 @@ public class ProductMasterController {
 						HttpStatus.OK);
 			}
 
-			boolean response = productMasterService.saveOrUpdate(multipleFpPruductRequest);
-			if (response) {
-
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			List<CommonResponse> response = productMasterService.saveOrUpdate(multipleFpPruductRequest);
+			if (response==null||!response.isEmpty()) {
+				LoansResponse loansResponse = new LoansResponse("Data saved.", HttpStatus.OK.value());
+				loansResponse.setListData(response);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

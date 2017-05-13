@@ -232,9 +232,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception {
+	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception {
 		// TODO Auto-generated method stub
-		return sectorIndustryMappingRepository.getSectorListByIndustryList(sectorList);
+		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
 
 	@Override
@@ -243,8 +243,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
-			if(industrySectorRepository.findOneBySectorId(id)!=null)
-			subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+			if(sectorIndustryMappingRepository.findIndustryBySectorId(id)!=null)
+			subSectorListRequest.setIndustryId(sectorIndustryMappingRepository.findIndustryBySectorId(id));
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);

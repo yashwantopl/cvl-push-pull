@@ -34,10 +34,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private ProductMasterRepository productMasterRepository;
 
 	@Override
-	public boolean saveOrUpdate(MultipleFpPruductRequest productMasters) {
+	public List<CommonResponse> saveOrUpdate(MultipleFpPruductRequest productMasters) {
 		// TODO Auto-generated method stub
 		//inactive old record before saving new record
 		productMasterRepository.inActive(productMasters.getUserId());
+		List<CommonResponse> commonResponses=new ArrayList<CommonResponse>();
 		try {
 			for (Map<String, Object> obj : productMasters.getDataList()) {
 				ProductMasterRequest productMasterRequest = (ProductMasterRequest) MultipleJSONObjectHelper
@@ -80,14 +81,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setModifiedBy(productMasters.getUserId());
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
-				productMasterRepository.save(productMaster);
+				ProductMaster master=productMasterRepository.save(productMaster);
+				CommonResponse commonResponse=new  CommonResponse();
+				commonResponse.setId(master.getId());
+				commonResponses.add(commonResponse);
 			}
-			return true;
+			return commonResponses;
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 

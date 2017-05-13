@@ -28,6 +28,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getId());
+		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
 		workingCapitalParameterRepository.save(workingCapitalParameter);
 		return true;

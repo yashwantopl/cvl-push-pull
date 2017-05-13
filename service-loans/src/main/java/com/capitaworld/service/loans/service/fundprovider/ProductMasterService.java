@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 
 public interface ProductMasterService {
-	public boolean saveOrUpdate(MultipleFpPruductRequest productsRequest);
+	public List<CommonResponse>  saveOrUpdate(MultipleFpPruductRequest productsRequest);
 	
 	public ProductMaster getProductMaster(Long id);
 	
