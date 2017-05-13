@@ -6,7 +6,9 @@ public class SubSectorListRequest {
 	
 	Long sectorId;
 	
-	List<Long> subSectorIdList;
+	Long industryId;
+	
+	List<SubSectorMappingRequest> subSectorIdList;
 
 	public Long getSectorId() {
 		return sectorId;
@@ -16,14 +18,23 @@ public class SubSectorListRequest {
 		this.sectorId = sectorId;
 	}
 
-	public List<Long> getSubSectorIdList() {
+	public List<SubSectorMappingRequest> getSubSectorIdList() {
 		return subSectorIdList;
 	}
 
-	public void setSubSectorIdList(List<Long> subSectorIdList) {
+	public void setSubSectorIdList(List<SubSectorMappingRequest> subSectorIdList) {
 		this.subSectorIdList = subSectorIdList;
 	}
 
+	public Long getIndustryId() {
+		return industryId;
+	}
+
+	public void setIndustryId(Long industryId) {
+		this.industryId = industryId;
+	}
+
+	
 		
 	
 	

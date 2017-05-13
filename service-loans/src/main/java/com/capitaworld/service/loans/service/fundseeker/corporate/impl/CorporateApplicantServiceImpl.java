@@ -243,6 +243,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
+			if(industrySectorRepository.findOneBySectorId(id)!=null)
+			subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);
