@@ -10,7 +10,8 @@ import java.util.Date;
  * 
  */
 @Entity
-@Table(name="fs_corporate_sector_industry_map")
+@Table(name="industry_sector_details")
+
 public class IndustrySectorDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
