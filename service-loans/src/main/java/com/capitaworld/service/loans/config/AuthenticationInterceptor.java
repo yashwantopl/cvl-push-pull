@@ -25,7 +25,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-
+/*
 		String accessToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
 		String refreshToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
 		String username = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_USERNAME);
@@ -44,7 +44,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return false;
 		}
-		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
+		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());*/
 		return true;
 	}
 
