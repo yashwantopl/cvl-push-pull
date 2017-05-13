@@ -118,4 +118,26 @@ public class CommonUtils {
 		public static final int GARRANTOR = 3;
 
 	}
+	
+	public interface UserMainType {
+		public static final int RETAIL = 1;
+		public static final int CORPORATE = 2;
+	}
+	
+	public static int getUserMainType(int productId)
+	{
+		if(productId == 1 || productId == 2)
+			return 2;
+		else 
+			return 1;
+	}
+	
+	
+	public static String getCorporateLoanType(int productId)
+	{
+		if(productId == 1 || productId == 2)
+			return "DEBT";
+		else 
+			return "EQUITY";
+	}
 }
