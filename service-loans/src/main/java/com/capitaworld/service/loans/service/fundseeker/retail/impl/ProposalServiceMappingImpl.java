@@ -38,7 +38,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
-public class ProposalServiceImpl implements ProposalService {
+public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	Environment environment;
