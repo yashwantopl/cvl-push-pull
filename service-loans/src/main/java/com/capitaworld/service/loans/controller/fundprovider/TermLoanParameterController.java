@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class TermLoanParameterController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanParameterRequest  termLoanParameterRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanParameterRequest  termLoanParameterRequest,HttpServletRequest request) {
 		// request must not be null
 		if (termLoanParameterRequest == null) {
 			logger.warn("termLoanParameterRequest Object can not be empty ==>", termLoanParameterRequest);
@@ -49,9 +51,10 @@ public class TermLoanParameterController {
 					HttpStatus.OK);
 		}
 		
-		if(termLoanParameterRequest.getId()==null)
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if(userId==null)
 		{
-			logger.warn("user id can not be empty ==>", termLoanParameterRequest);
+			logger.warn("userId  id can not be empty ==>", userId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
