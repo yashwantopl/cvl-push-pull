@@ -109,6 +109,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(applicationId));
+			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
+			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -243,8 +246,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
-			if(industrySectorRepository.findOneBySectorId(id)!=null)
-			subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+			if (industrySectorRepository.findOneBySectorId(id) != null)
+				subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);

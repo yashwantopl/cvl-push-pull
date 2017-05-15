@@ -199,7 +199,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case PERSONAL_LOAN:
 				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
@@ -251,7 +251,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case PERSONAL_LOAN:
 				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,

@@ -42,7 +42,7 @@ public class LoanApplicationMaster implements Serializable {
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_date")
+	@Column(name = "created_date", columnDefinition = "date default sysdate")
 	private Date createdDate;
 
 	@Column(name = "is_active")
@@ -54,7 +54,7 @@ public class LoanApplicationMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_date")
 	private Date modifiedDate;
-
+	
 	private String name;
 
 	@Column(name = "product_id")
