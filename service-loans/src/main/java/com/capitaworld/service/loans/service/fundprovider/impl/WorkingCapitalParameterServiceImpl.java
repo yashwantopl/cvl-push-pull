@@ -41,6 +41,17 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if(loanParameter==null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, workingCapitalParameterRequest);
+		/*workingCapitalParameterRequest.setMaxCollateral(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMaxCollateral()));
+		workingCapitalParameterRequest.setMinCollateral(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMinCollateral()));
+		workingCapitalParameterRequest.setMaxDebtEquity(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMaxDebtEquity()));
+		workingCapitalParameterRequest.setMinDebtEquity(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMinDebtEquity()));
+		workingCapitalParameterRequest.setMaxInvestSize(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMaxInvestSize()));
+		workingCapitalParameterRequest.setMinInvestSize(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMinInvestSize()));
+		workingCapitalParameterRequest.setMaxNetworth(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMaxNetworth()));
+		workingCapitalParameterRequest.setMinNetworth(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMinNetworth()));
+		workingCapitalParameterRequest.setMaxPastTurnover(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMaxPastTurnover()));
+		workingCapitalParameterRequest.setMinPastTurnover(CommonUtils.convertToDecimal(workingCapitalParameterRequest.getMinPastTurnover()));*/
+		
 		return workingCapitalParameterRequest;
 	}
 	

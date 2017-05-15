@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.domain.fundprovider;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -108,19 +110,19 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer maxAgeEstablishment;
 
 	@Column(name="max_collateral")
-	private Double maxCollateral;
+	private BigDecimal maxCollateral;
 
 	@Column(name="max_debt_equity")
-	private Double maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
 	@Column(name="max_invest_size")
-	private Double maxInvestSize;
+	private BigDecimal maxInvestSize;
 
 	@Column(name="max_networth")
-	private Double maxNetworth;
+	private BigDecimal maxNetworth;
 
 	@Column(name="max_past_turnover")
-	private Double maxPastTurnover;
+	private BigDecimal maxPastTurnover;
 
 	@Column(name="max_tenure")
 	private Integer maxTenure;
@@ -129,19 +131,19 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer minAgeEstablishment;
 
 	@Column(name="min_collateral")
-	private Double minCollateral;
+	private BigDecimal minCollateral;
 
 	@Column(name="min_debt_equity")
-	private Double minDebtEquity;
+	private BigDecimal minDebtEquity;
 
 	@Column(name="min_invest_size")
-	private Double minInvestSize;
+	private BigDecimal minInvestSize;
 
 	@Column(name="min_networth")
-	private Double minNetworth;
+	private BigDecimal minNetworth;
 
 	@Column(name="min_past_turnover")
-	private Double minPastTurnover;
+	private BigDecimal minPastTurnover;
 
 	@Column(name="min_tenure")
 	private Integer minTenure;
@@ -405,43 +407,43 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public Double getMaxCollateral() {
+	public BigDecimal getMaxCollateral() {
 		return this.maxCollateral;
 	}
 
-	public void setMaxCollateral(Double maxCollateral) {
+	public void setMaxCollateral(BigDecimal maxCollateral) {
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Double getMaxDebtEquity() {
+	public BigDecimal getMaxDebtEquity() {
 		return this.maxDebtEquity;
 	}
 
-	public void setMaxDebtEquity(Double maxDebtEquity) {
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
 		this.maxDebtEquity = maxDebtEquity;
 	}
 
-	public Double getMaxInvestSize() {
+	public BigDecimal getMaxInvestSize() {
 		return this.maxInvestSize;
 	}
 
-	public void setMaxInvestSize(Double maxInvestSize) {
+	public void setMaxInvestSize(BigDecimal maxInvestSize) {
 		this.maxInvestSize = maxInvestSize;
 	}
 
-	public Double getMaxNetworth() {
+	public BigDecimal getMaxNetworth() {
 		return this.maxNetworth;
 	}
 
-	public void setMaxNetworth(Double maxNetworth) {
+	public void setMaxNetworth(BigDecimal maxNetworth) {
 		this.maxNetworth = maxNetworth;
 	}
 
-	public Double getMaxPastTurnover() {
+	public BigDecimal getMaxPastTurnover() {
 		return this.maxPastTurnover;
 	}
 
-	public void setMaxPastTurnover(Double maxPastTurnover) {
+	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
 		this.maxPastTurnover = maxPastTurnover;
 	}
 
@@ -461,43 +463,43 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
 
-	public Double getMinCollateral() {
+	public BigDecimal getMinCollateral() {
 		return this.minCollateral;
 	}
 
-	public void setMinCollateral(Double minCollateral) {
+	public void setMinCollateral(BigDecimal minCollateral) {
 		this.minCollateral = minCollateral;
 	}
 
-	public Double getMinDebtEquity() {
+	public BigDecimal getMinDebtEquity() {
 		return this.minDebtEquity;
 	}
 
-	public void setMinDebtEquity(Double minDebtEquity) {
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
 	}
 
-	public Double getMinInvestSize() {
+	public BigDecimal getMinInvestSize() {
 		return this.minInvestSize;
 	}
 
-	public void setMinInvestSize(Double minInvestSize) {
+	public void setMinInvestSize(BigDecimal minInvestSize) {
 		this.minInvestSize = minInvestSize;
 	}
 
-	public Double getMinNetworth() {
+	public BigDecimal getMinNetworth() {
 		return this.minNetworth;
 	}
 
-	public void setMinNetworth(Double minNetworth) {
+	public void setMinNetworth(BigDecimal minNetworth) {
 		this.minNetworth = minNetworth;
 	}
 
-	public Double getMinPastTurnover() {
+	public BigDecimal getMinPastTurnover() {
 		return this.minPastTurnover;
 	}
 
-	public void setMinPastTurnover(Double minPastTurnover) {
+	public void setMinPastTurnover(BigDecimal minPastTurnover) {
 		this.minPastTurnover = minPastTurnover;
 	}
 
