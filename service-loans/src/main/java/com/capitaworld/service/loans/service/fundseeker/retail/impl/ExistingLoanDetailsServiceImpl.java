@@ -71,7 +71,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception();
+					throw new Exception("Invalid Application Type==>" + frameRequest.getApplicantType());
 				}
 
 				existingLoanDetail.setModifiedBy(frameRequest.getUserId());
@@ -104,7 +104,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 			existingLoanDetails = existingLoanDetailsRepository.listExistingLoanFromGarrId(id);
 			break;
 		default:
-			throw new Exception();
+			throw new Exception("Invalid Application Type==>" + applicationType);
 		}
 
 		List<ExistingLoanDetailRequest> existingLoanDetailRequests = new ArrayList<ExistingLoanDetailRequest>();

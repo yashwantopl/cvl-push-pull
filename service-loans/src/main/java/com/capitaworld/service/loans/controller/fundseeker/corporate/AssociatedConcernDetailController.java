@@ -45,7 +45,7 @@ public class AssociatedConcernDetailController {
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		
+
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -56,10 +56,9 @@ public class AssociatedConcernDetailController {
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.OK.value()),
-					HttpStatus.OK);
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.OK.value()), HttpStatus.OK);
 		}
-		
+
 		try {
 			frameRequest.setUserId(userId);
 			associatedConcernDetaillService.saveOrUpdate(frameRequest);
@@ -87,15 +86,10 @@ public class AssociatedConcernDetailController {
 
 			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
 					.getAssociatedConcernsDetailList(id);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
 		} catch (Exception e) {
 			logger.error("Error while getting Associated Concerns Details==>", e);
 			return new ResponseEntity<LoansResponse>(

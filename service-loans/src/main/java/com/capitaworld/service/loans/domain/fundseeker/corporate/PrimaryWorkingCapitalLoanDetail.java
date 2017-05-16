@@ -30,13 +30,6 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	@Column(name = "created_by")
-	private Long createdBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_date")
-	private Date createdDate;
-
 	@Column(name = "credit_rating_id")
 	private Integer creditRatingId;
 
@@ -47,16 +40,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	@Column(name = "have_existing_limit")
 	private Boolean haveExistingLimit;
 
-	@Column(name = "is_active")
-	private boolean isActive;
-
-	@Column(name = "modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "modified_date")
-	private Date modifiedDate;
-
+	
 	@Lob
 	@Column(name = "project_brief")
 	private String projectBrief;
@@ -75,23 +59,6 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 		this.applicationId = applicationId;
 	}
 
-	public Long getCreatedBy() {
-		return this.createdBy;
-	}
-
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Date getCreatedDate() {
-		return this.createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	
 	public Integer getCreditRatingId() {
 		return creditRatingId;
 	}
@@ -114,30 +81,6 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 
 	public void setHaveExistingLimit(Boolean haveExistingLimit) {
 		this.haveExistingLimit = haveExistingLimit;
-	}
-
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public Long getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Date getModifiedDate() {
-		return this.modifiedDate;
-	}
-
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
 	}
 
 	public String getProjectBrief() {

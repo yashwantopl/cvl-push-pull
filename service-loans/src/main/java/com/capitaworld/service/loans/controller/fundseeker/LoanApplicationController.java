@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -50,7 +49,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
-			loanApplicationService.saveOrUpdate(commonRequest);
+			loanApplicationService.saveOrUpdate(commonRequest,userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -145,6 +144,7 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+
 			List<LoansResponse> response = loanApplicationService.getLoanDetailsByUserIdList(userIdList);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
@@ -158,43 +158,4 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getUserNameByApplicationId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUserNameByApplicationId(@RequestBody Long applicationId,
-			HttpServletRequest request) {
-		// request must not be null
-		try {
-
-			if (applicationId == null) {
-				logger.warn("application ID Require to get Details ==>" + applicationId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			//Long userId=1750l;
-			if (userId == null) {
-				logger.warn("UserId Require to get user name ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
-			}
-			String response = loanApplicationService.getUserNameByApplicationId(applicationId,userId);
-			LoansResponse loansResponse;
-			if(response==null)
-			{
-				 loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
-			}
-			else
-			{
-			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			}
-			loansResponse.setData(response);
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
-		} catch (Exception e) {
-			logger.error("Error while getting user name ==>", e);	
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 }

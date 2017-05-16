@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,8 +17,11 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -34,6 +38,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private SubSectorRepository subSectorRepository;
+
+	@Autowired
+	private SectorIndustryMappingRepository sectorIndustryMappingRepository;
+
+	@Autowired
+	private SubSectorMappingRepository subSectorMappingRepository;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -99,6 +109,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(applicationId));
+			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
+			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -157,31 +170,37 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	private static void copyAddressFromRequestToDomain(CorporateApplicantRequest from, CorporateApplicantDetail to) {
 		// Setting Regsiterd Address
-		to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
-		to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
-		to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
-		to.setRegisteredPincode(from.getFirstAddress().getPincode());
-		to.setRegisteredCityId(from.getFirstAddress().getCityId());
-		to.setRegisteredStateId(from.getFirstAddress().getStateId());
-		to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+		if (from.getFirstAddress() != null) {
+			to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
+			to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
+			to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
+			to.setRegisteredPincode(from.getFirstAddress().getPincode());
+			to.setRegisteredCityId(from.getFirstAddress().getCityId());
+			to.setRegisteredStateId(from.getFirstAddress().getStateId());
+			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+		}
 
 		// Setting Administrative Address
 		if (from.isSameAs()) {
-			to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
-			to.setAdministrativePincode(from.getFirstAddress().getPincode());
-			to.setAdministrativeCityId(from.getFirstAddress().getCityId());
-			to.setAdministrativeStateId(from.getFirstAddress().getStateId());
-			to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			if (from.getFirstAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
+				to.setAdministrativePincode(from.getFirstAddress().getPincode());
+				to.setAdministrativeCityId(from.getFirstAddress().getCityId());
+				to.setAdministrativeStateId(from.getFirstAddress().getStateId());
+				to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			}
 		} else {
-			to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
-			to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
-			to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
-			to.setAdministrativePincode(from.getSecondAddress().getPincode());
-			to.setAdministrativeCityId(from.getSecondAddress().getCityId());
-			to.setAdministrativeStateId(from.getSecondAddress().getStateId());
-			to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			if (from.getSecondAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
+				to.setAdministrativePincode(from.getSecondAddress().getPincode());
+				to.setAdministrativeCityId(from.getSecondAddress().getCityId());
+				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
+				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			}
 		}
 	}
 
@@ -213,5 +232,27 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 
 		// Setting Administrative Address
+	}
+
+	@Override
+	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception {
+		// TODO Auto-generated method stub
+		return sectorIndustryMappingRepository.getSectorListByIndustryList(sectorList);
+	}
+
+	@Override
+	public List<SubSectorListRequest> getSubSectorList(List<Long> list) {
+		// TODO Auto-generated method stub
+		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
+		for (Long id : list) {
+			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
+			if (industrySectorRepository.findOneBySectorId(id) != null)
+				subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+			subSectorListRequest.setSectorId(id);
+			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
+			subSectorListRequests.add(subSectorListRequest);
+
+		}
+		return subSectorListRequests;
 	}
 }

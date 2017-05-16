@@ -4,9 +4,9 @@ import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
 
 public interface PrimaryPersonalLoanService {
 
-	public boolean saveOrUpdate(PrimaryPersonalLoanRequest primaryPersonalLoanRequest);
+	public boolean saveOrUpdate(PrimaryPersonalLoanRequest primaryPersonalLoanRequest,Long userId) throws Exception;
 	
-	public PrimaryPersonalLoanRequest get(Long id);
+	public PrimaryPersonalLoanRequest get(Long id,Long userId) throws Exception;
 	
 	
 }

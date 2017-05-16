@@ -69,26 +69,24 @@ public class AchievmentDetailsController {
 
 	}
 
-	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
+	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Achievement Details ==>" + id);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("ID Require to get Achievement Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailList(id);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			List<AchievementDetailRequest> response = achievmentDetailsService.getAchievementDetailList(applicationId,
+					userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
 		} catch (Exception e) {
 			logger.error("Error while getting Achievement Details==>", e);
 			return new ResponseEntity<LoansResponse>(

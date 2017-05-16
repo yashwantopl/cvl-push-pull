@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -22,7 +23,7 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Integer productId;
 
-	private Integer tenure;
+	private Double tenure;
 
 	private Long userId;
 
@@ -30,6 +31,8 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Integer denominationId;
 
+	private Date createdDate;
+	
 	public LoanApplicationRequest() {
 	}
 
@@ -78,11 +81,11 @@ public class LoanApplicationRequest implements Serializable {
 		this.productId = productId;
 	}
 
-	public Integer getTenure() {
+	public Double getTenure() {
 		return tenure;
 	}
 
-	public void setTenure(Integer tenure) {
+	public void setTenure(Double tenure) {
 		this.tenure = tenure;
 	}
 
@@ -109,5 +112,14 @@ public class LoanApplicationRequest implements Serializable {
 	public void setDenominationId(Integer denominationId) {
 		this.denominationId = denominationId;
 	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	
 
 }
