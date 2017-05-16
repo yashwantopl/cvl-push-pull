@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 
 public interface RetailApplicantDetailRepository extends JpaRepository<RetailApplicantDetail, Long> {
@@ -15,4 +16,6 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	@Query("select rt.currencyId from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true")
 	public Integer getCurrency(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
+	
+	public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
 }

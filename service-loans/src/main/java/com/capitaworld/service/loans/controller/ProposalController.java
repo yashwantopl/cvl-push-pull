@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.service.ProposalService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 
 
@@ -31,8 +32,7 @@ public class ProposalController {
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest) {
 		
 		// request must not be null
-		//Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-		
+		Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
 		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
 		
@@ -44,10 +44,8 @@ public class ProposalController {
 	public ResponseEntity<List<FundProviderProposalDetails>> fundseekerProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest) {
 		
 		// request must not be null
-		//Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-		Long userId=1755L;
-		
-		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);	
+		Long userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);
 		return new ResponseEntity<List<FundProviderProposalDetails>>(proposalDetailsList,HttpStatus.OK);
 		
 	}

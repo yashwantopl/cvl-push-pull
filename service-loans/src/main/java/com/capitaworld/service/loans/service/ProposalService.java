@@ -7,7 +7,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 
 public interface ProposalService {
 
-	public List  fundproviderProposal(ProposalMappingRequest request);
+	public List<?>  fundproviderProposal(ProposalMappingRequest request);
 	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
 }
