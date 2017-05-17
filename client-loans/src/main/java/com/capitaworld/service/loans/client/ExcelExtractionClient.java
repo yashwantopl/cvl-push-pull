@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.client;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
@@ -44,7 +47,8 @@ public class ExcelExtractionClient {
 	public ExcelResponse readCMA(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(READ_CMA);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
@@ -54,7 +58,8 @@ public class ExcelExtractionClient {
 	public ExcelResponse readDPR(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(READ_DPR);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
@@ -64,7 +69,8 @@ public class ExcelExtractionClient {
 	public ExcelResponse inactiveCMA(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(INACTIVE_CMA);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
@@ -74,7 +80,8 @@ public class ExcelExtractionClient {
 	public ExcelResponse inactiveDPR(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(INACTIVE_DPR);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
@@ -84,7 +91,8 @@ public class ExcelExtractionClient {
 	public ExcelResponse readBS(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(READ_BS);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
@@ -94,11 +102,17 @@ public class ExcelExtractionClient {
 	public ExcelResponse inactiveBS(ExcelRequest request) throws ExcelException {
 		String url = matchBaseUrl.concat(INACTIVE_BS);
 		try {
-			return restTemplate.postForObject(url, request, ExcelResponse.class);
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Excel Extration service is not available");
 		}
 	}
-
+	
+	private HttpEntity<ExcelRequest> setHttpHeader(ExcelRequest request){
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("req_auth", "true");
+	    return new HttpEntity<ExcelRequest>(request, headers);
+	}
 }
