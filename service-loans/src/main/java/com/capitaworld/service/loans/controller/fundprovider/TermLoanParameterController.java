@@ -59,7 +59,7 @@ public class TermLoanParameterController {
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
-		
+		termLoanParameterRequest.setUserId(userId);
 		boolean response = termLoanParameterService.saveOrUpdate(termLoanParameterRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

@@ -3,7 +3,10 @@ package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +15,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private static final long serialVersionUID = 1L;
 
 	
-	private Long fpProductId;
+	
 
 	private Integer currency;
 
@@ -97,19 +100,16 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Integer shortTermCreditRating;
 
 	private Long uninterestedIndustry;
+	
+	private List<DataRequest> industrylist = Collections.emptyList();
+
+	private List<DataRequest> sectorlist = Collections.emptyList();
 
 	public WorkingCapitalParameterRequest() {
 	}
 
 
-	public Long getFpProductId() {
-		return fpProductId;
-	}
-
-
-	public void setFpProductId(Long fpProductId) {
-		this.fpProductId = fpProductId;
-	}
+	
 
 
 	public Integer getCurrency() {
@@ -450,5 +450,42 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setUninterestedIndustry(Long uninterestedIndustry) {
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
+
+
+
+
+
+	public List<DataRequest> getIndustrylist() {
+		return industrylist;
+	}
+
+
+
+
+
+	public void setIndustrylist(List<DataRequest> industrylist) {
+		this.industrylist = industrylist;
+	}
+
+
+
+
+
+	public List<DataRequest> getSectorlist() {
+		return sectorlist;
+	}
+
+
+
+
+
+	public void setSectorlist(List<DataRequest> sectorlist) {
+		this.sectorlist = sectorlist;
+	}
+
+
+
+	
+	
 
 }

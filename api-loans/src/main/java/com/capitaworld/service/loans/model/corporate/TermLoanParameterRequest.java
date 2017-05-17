@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -97,6 +100,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
+	
+	private List<?> industrylist = Collections.emptyList();
+
+	private List<?> sectorlist = Collections.emptyList();
 	
 
 	private Long uninterestedIndustry;
@@ -439,6 +446,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
 
+	public List<?> getIndustrylist() {
+		return industrylist;
+	}
+
+	public void setIndustrylist(List<?> industrylist) {
+		this.industrylist = industrylist;
+	}
+
+	public List<?> getSectorlist() {
+		return sectorlist;
+	}
+
+	public void setSectorlist(List<?> sectorlist) {
+		this.sectorlist = sectorlist;
+	}
+
+	
 	
 
 }

@@ -98,8 +98,8 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			//Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			 Long id=1l;
+			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
+			// Long id=1l;
 			if (id == null) {
 				logger.warn("userId  Require to get sectors Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -134,27 +134,15 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			//Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			Long id=1l;
-			if (id == null) {
-				logger.warn("userId  Require to get sectors Details ==>" + id);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
+			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (sectorIdList == null) {
 				logger.warn("sectorIdList  Require to get sectors Details ==>" + sectorIdList);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			List<SubSectorListRequest> response = applicantService.getSubSectorList(sectorIdList);
-			LoansResponse loansResponse;
-			if (response == null || response.isEmpty()) {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			} else {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
