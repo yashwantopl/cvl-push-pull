@@ -50,7 +50,9 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
+
 			loanApplicationService.saveOrUpdate(commonRequest, userId);
+
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
