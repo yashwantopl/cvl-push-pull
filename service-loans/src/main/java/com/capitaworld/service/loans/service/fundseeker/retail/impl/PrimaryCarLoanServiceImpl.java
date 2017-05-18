@@ -29,7 +29,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 		// ID must not be null
 		try {
 			PrimaryCarLoanDetail primaryCarLoanDetail = primaryCarLoanDetailRepository
-					.getByApplicationAndUserId(carLoanDetailRequest.getId(), userId);
+					.getByApplicationAndUserId(carLoanDetailRequest.getId(), (CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getClientId()) ? userId : carLoanDetailRequest.getClientId()));
 			if (primaryCarLoanDetail == null) {
 				throw new NullPointerException("PrimaryCarLoanDetail not exist in DB with ID=>"
 						+ carLoanDetailRequest.getId() + " and User Id ==>" + userId);

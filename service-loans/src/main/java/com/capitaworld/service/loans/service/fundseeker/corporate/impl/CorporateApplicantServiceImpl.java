@@ -50,7 +50,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		try {
 			// application id must not be null
 
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				// throw new NullPointerException("Applicant ID does not match
