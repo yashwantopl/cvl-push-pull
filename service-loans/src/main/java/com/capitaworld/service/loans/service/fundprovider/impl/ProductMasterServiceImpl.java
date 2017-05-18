@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
@@ -41,7 +42,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public List<CommonResponse> saveOrUpdate(MultipleFpPruductRequest productMasters) {
 		// TODO Auto-generated method stub
 		//inactive old record before saving new record
-		productMasterRepository.inActive(productMasters.getUserId());
+		productMasterRepository.inActive((CommonUtils.isObjectNullOrEmpty(productMasters.getClientId()) ? productMasters.getUserId() : productMasters.getClientId()));
 		WorkingCapitalParameter capitalParameter=null ;
 		
 		List<CommonResponse> commonResponses=new ArrayList<CommonResponse>();
@@ -85,10 +86,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				}
 				BeanUtils.copyProperties(productMasterRequest, productMaster);
 				productMaster.setFpName(productMasters.getFpName());
-				productMaster.setUserId(productMasters.getUserId());
+				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(productMasters.getClientId()) ? productMasters.getUserId() : productMasters.getClientId()));
 				productMaster.setCreatedBy(productMasters.getUserId());
 				productMaster.setCreatedDate(new Date());
 				productMaster.setModifiedBy(productMasters.getUserId());
+				productMaster.setIsParameterFilled(true);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
 				ProductMaster master=productMasterRepository.save(productMaster);

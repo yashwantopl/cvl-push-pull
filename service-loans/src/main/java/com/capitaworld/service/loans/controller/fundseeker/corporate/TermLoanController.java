@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -41,7 +42,7 @@ public class TermLoanController {
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FinalTermLoanRequest termLoanRequest,
-			HttpServletRequest request) throws Exception {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) throws Exception {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -57,7 +58,9 @@ public class TermLoanController {
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				termLoanRequest.setClientId(clientId);
+			}
 			finalTLService.saveOrUpdate(termLoanRequest, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -72,10 +75,15 @@ public class TermLoanController {
 
 	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
 			try {
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+					userId = clientId;
+				}else{
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				}
 				if (userId == null || applicationId == null) {
 					logger.warn("ID and ApplicationId Require to get Final Term Loan Details. ID==>" + userId
 							+ " and ApplicationId==>" + applicationId);

@@ -42,7 +42,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
 
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				// throw new NullPointerException(

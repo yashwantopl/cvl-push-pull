@@ -36,7 +36,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			GuarantorDetails guarantorDetails = guarantorDetailsRepository.get(applicationId, userId,
+			GuarantorDetails guarantorDetails = guarantorDetailsRepository.get(applicationId, (CommonUtils.isObjectNullOrEmpty(guarantorRequest.getClientId()) ? userId : guarantorRequest.getClientId()),
 					guarantorRequest.getId());
 			if (guarantorDetails != null) {
 				// throw new NullPointerException(
@@ -119,7 +119,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	@Override
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			GuarantorDetails guaDetails = guarantorDetailsRepository.get(applicantRequest.getApplicationId(), userId,
+			GuarantorDetails guaDetails = guarantorDetailsRepository.get(applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getId());
 			if (guaDetails == null) {
 				throw new NullPointerException("Guarantor Id Record not exists in DB : Application Id==>"

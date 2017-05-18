@@ -95,13 +95,14 @@
     		<version>0.0.1</version>
    		</dependency>
    		
+
    		<!-- api of one form -->
 		<dependency>
 			<groupId>com.capitaworld.oneform.service.parent</groupId>
 			<artifactId>client-oneform</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-   		
+
 	</dependencies>
 
 	<build>
