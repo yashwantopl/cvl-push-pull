@@ -89,6 +89,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setCreatedBy(productMasters.getUserId());
 				productMaster.setCreatedDate(new Date());
 				productMaster.setModifiedBy(productMasters.getUserId());
+				productMaster.setIsParameterFilled(true);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
 				ProductMaster master=productMasterRepository.save(productMaster);
