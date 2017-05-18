@@ -9,7 +9,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingC
 public interface PrimaryWorkingCapitalLoanDetailRepository
 		extends JpaRepository<PrimaryWorkingCapitalLoanDetail, Long> {
 
-	@Query("from PrimaryWorkingCapitalLoanDetail pd where pd.applicationId.id =:applicationId and pd.applicationId.userId =:userId")
+	@Query("from PrimaryWorkingCapitalLoanDetail pd where pd.applicationId.id =:applicationId and pd.applicationId.userId =:userId and pd.isActive = true")
 	public PrimaryWorkingCapitalLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,
 			@Param("userId") Long id);
 }

@@ -32,7 +32,13 @@ public class LoanApplicationRequest implements Serializable {
 	private Integer denominationId;
 
 	private Date createdDate;
+
+	private boolean hasAlreadyApplied;
 	
+	private String loanTypeMain;
+	
+	private String loanTypeSub;
+
 	public LoanApplicationRequest() {
 	}
 
@@ -72,7 +78,6 @@ public class LoanApplicationRequest implements Serializable {
 		this.name = name;
 	}
 
-	
 	public Integer getProductId() {
 		return productId;
 	}
@@ -120,6 +125,29 @@ public class LoanApplicationRequest implements Serializable {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-	
+
+	public boolean isHasAlreadyApplied() {
+		return hasAlreadyApplied;
+	}
+
+	public void setHasAlreadyApplied(boolean hasAlreadyApplied) {
+		this.hasAlreadyApplied = hasAlreadyApplied;
+	}
+
+	public String getLoanTypeMain() {
+		return loanTypeMain;
+	}
+
+	public void setLoanTypeMain(String loanTypeMain) {
+		this.loanTypeMain = loanTypeMain;
+	}
+
+	public String getLoanTypeSub() {
+		return loanTypeSub;
+	}
+
+	public void setLoanTypeSub(String loanTypeSub) {
+		this.loanTypeSub = loanTypeSub;
+	}
 
 }

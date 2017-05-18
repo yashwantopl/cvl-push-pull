@@ -38,40 +38,40 @@ public class LasParameter extends ProductMaster implements Serializable {
 	private Boolean isActive;
 
 	@Column(name="is_age_display")
-	private Boolean isAgeDisplay;
+	private Boolean isAgeDisplay=false;
 
 	@Column(name="is_age_mandatory")
-	private Boolean isAgeMandatory;
+	private Boolean isAgeMandatory=false;
 
 	@Column(name="is_asset_value_display")
-	private Boolean isAssetValueDisplay;
+	private Boolean isAssetValueDisplay=false;
 
 	@Column(name="is_asset_value_mandatory")
-	private Boolean isAssetValueMandatory;
+	private Boolean isAssetValueMandatory=false;
 
 	@Column(name="is_geographical_display")
-	private Boolean isGeographicalDisplay;
+	private Boolean isGeographicalDisplay=false;
 
 	@Column(name="is_geographical_mandatory")
-	private Boolean isGeographicalMandatory;
+	private Boolean isGeographicalMandatory=false;
 
 	@Column(name="is_loan_amount_display")
-	private Boolean isLoanAmountDisplay;
+	private Boolean isLoanAmountDisplay=false;
 
 	@Column(name="is_loan_amount_mandatory")
-	private Boolean isLoanAmountMandatory;
+	private Boolean isLoanAmountMandatory=false;
 
 	@Column(name="is_tenure_display")
-	private Boolean isTenureDisplay;
+	private Boolean isTenureDisplay=false;
 
 	@Column(name="is_tenure_mandatory")
-	private Boolean isTenureMandatory;
+	private Boolean isTenureMandatory=false;
 
 	@Column(name="is_yearly_income_range_display")
-	private Boolean isYearlyIncomeRangeDisplay;
+	private Boolean isYearlyIncomeRangeDisplay=false;
 
 	@Column(name="is_yearly_income_range_mandatory")
-	private Boolean isYearlyIncomeRangeMandatory;
+	private Boolean isYearlyIncomeRangeMandatory=false;
 
 	@Column(name="max_age")
 	private Double maxAge;

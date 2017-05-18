@@ -12,7 +12,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 public interface ProductMasterRepository extends JpaRepository<ProductMaster, Long>{
 
 	@Modifying
-	@Query("update ProductMaster pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId ,pm.userId =:userId where pm.isActive = true")
+	@Query("update ProductMaster pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")

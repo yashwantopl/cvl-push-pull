@@ -91,7 +91,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		} catch (Exception e) {
 			logger.error("Error while Saving Corporate Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -181,7 +181,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 
 		// Setting Administrative Address
-		if (from.isSameAs()) {
+		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
 			if (from.getFirstAddress() != null) {
 				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
 				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
@@ -235,9 +235,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<Long> getSectorListByIndustryId(List<Long> sectorList) throws Exception {
+	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception {
 		// TODO Auto-generated method stub
-		return sectorIndustryMappingRepository.getSectorListByIndustryList(sectorList);
+		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
 
 	@Override
@@ -248,6 +248,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
 			if (industrySectorRepository.findOneBySectorId(id) != null)
 				subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+
+			if (sectorIndustryMappingRepository.findIndustryBySectorId(id) != null)
+				subSectorListRequest.setIndustryId(sectorIndustryMappingRepository.findIndustryBySectorId(id));
+
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);

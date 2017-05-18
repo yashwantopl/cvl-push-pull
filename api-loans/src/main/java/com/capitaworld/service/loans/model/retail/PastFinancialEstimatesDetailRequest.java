@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
 /**
- * The persistent class for the fs_corporate_past_financial_estimates_details database table.
+ * The persistent class for the fs_corporate_past_financial_estimates_details
+ * database table.
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,11 +34,8 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	private Double pat;
 
 	private Double sales;
-	
+
 	private Boolean isActive = true;
-	
-	
-	
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -49,6 +46,10 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	}
 
 	public PastFinancialEstimatesDetailRequest() {
+	}
+
+	public PastFinancialEstimatesDetailRequest(String financialYear) {
+		this.financialYear = financialYear;
 	}
 
 	public Long getId() {
@@ -66,8 +67,6 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
-
-	
 
 	public Double getCurrentAssets() {
 		return this.currentAssets;
@@ -117,7 +116,6 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 		this.fixedAssets = fixedAssets;
 	}
 
-	
 	public Double getNetWorth() {
 		return this.netWorth;
 	}

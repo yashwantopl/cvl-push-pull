@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -32,12 +33,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+	
+	@Autowired
+	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
 
 	@Override
-	public boolean saveOrUpdate(MultipleFpPruductRequest productMasters) {
+	public List<CommonResponse> saveOrUpdate(MultipleFpPruductRequest productMasters) {
 		// TODO Auto-generated method stub
 		//inactive old record before saving new record
 		productMasterRepository.inActive(productMasters.getUserId());
+		WorkingCapitalParameter capitalParameter=null ;
+		
+		List<CommonResponse> commonResponses=new ArrayList<CommonResponse>();
 		try {
 			for (Map<String, Object> obj : productMasters.getDataList()) {
 				ProductMasterRequest productMasterRequest = (ProductMasterRequest) MultipleJSONObjectHelper
@@ -49,6 +56,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					switch (loanType) {
 					case WORKING_CAPITAL:
 						productMaster = new WorkingCapitalParameter();
+						if(productMasterRequest.getId()!=null)
+						capitalParameter =workingCapitalParameterRepository.findOne(productMasterRequest.getId());
+						if(capitalParameter!=null)
+						BeanUtils.copyProperties(capitalParameter,productMaster);
 						break;
 					case TERM_LOAN:
 						productMaster = new TermLoanParameter();
@@ -78,16 +89,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setCreatedBy(productMasters.getUserId());
 				productMaster.setCreatedDate(new Date());
 				productMaster.setModifiedBy(productMasters.getUserId());
+				productMaster.setIsParameterFilled(true);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
-				productMasterRepository.save(productMaster);
+				ProductMaster master=productMasterRepository.save(productMaster);
+				CommonResponse commonResponse=new  CommonResponse();
+				commonResponse.setId(master.getId());
+				commonResponses.add(commonResponse);
 			}
-			return true;
+			return commonResponses;
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 

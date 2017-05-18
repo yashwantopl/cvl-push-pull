@@ -12,5 +12,9 @@ public interface SectorIndustryMappingRepository extends JpaRepository<SectorInd
 	
 	@Query("select si.sectorId from SectorIndustryMapping si where si.industryId in :industryList and si.isActive = true")
 	public List<Long> getSectorListByIndustryList(@Param("industryList") List<Long> industryList);
+	
+
+	@Query("select o.industryId from SectorIndustryMapping o where o.sectorId = :sectorId")
+	public Long findIndustryBySectorId(@Param("sectorId")Long sectorId);
 
 }

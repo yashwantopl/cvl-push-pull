@@ -55,6 +55,7 @@ public class WorkingCapitalParameterController {
 			}
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			//Long userId=1755l;
 			if(userId==null)
 			{
 				logger.warn("userId  id can not be empty ==>", userId);
@@ -62,7 +63,7 @@ public class WorkingCapitalParameterController {
 						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
+			workingCapitalParameterRequest.setUserId(userId);
 			boolean response = workingCapitalParameterService.saveOrUpdate(workingCapitalParameterRequest);
 			if (response) {
 				return new ResponseEntity<LoansResponse>(
