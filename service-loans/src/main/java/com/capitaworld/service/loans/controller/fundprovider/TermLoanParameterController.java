@@ -52,6 +52,7 @@ public class TermLoanParameterController {
 		}
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		//Long userId=1755l;
 		if(userId==null)
 		{
 			logger.warn("userId  id can not be empty ==>", userId);
@@ -93,7 +94,7 @@ public class TermLoanParameterController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Term Loan Details==>", e);
+			logger.error("Error while getting  Term Loan Parameter==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
