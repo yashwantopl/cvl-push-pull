@@ -29,7 +29,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 		// ID must not be null
 		try {
 			PrimaryPersonalLoanDetail primaryPersonalLoanDetail = personalLoanDetailRepository
-					.getByApplicationAndUserId(personalLoanRequest.getId(), userId);
+					.getByApplicationAndUserId(personalLoanRequest.getId(), (CommonUtils.isObjectNullOrEmpty(personalLoanRequest.getClientId()) ? userId : personalLoanRequest.getClientId()));
 			if (primaryPersonalLoanDetail == null) {
 				throw new NullPointerException("PrimaryPersonalLoanDetail not exist in DB with ID=>"
 						+ personalLoanRequest.getId() + " and User Id ==>" + userId);

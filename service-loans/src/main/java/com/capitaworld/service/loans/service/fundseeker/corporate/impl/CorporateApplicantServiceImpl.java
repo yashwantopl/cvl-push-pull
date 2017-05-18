@@ -50,7 +50,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		try {
 			// application id must not be null
 
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				// throw new NullPointerException("Applicant ID does not match
@@ -248,8 +248,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
 			if (industrySectorRepository.findOneBySectorId(id) != null)
 				subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+
 			if (sectorIndustryMappingRepository.findIndustryBySectorId(id) != null)
 				subSectorListRequest.setIndustryId(sectorIndustryMappingRepository.findIndustryBySectorId(id));
+
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);

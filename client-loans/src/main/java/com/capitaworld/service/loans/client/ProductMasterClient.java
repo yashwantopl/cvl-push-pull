@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.client;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -30,7 +33,11 @@ public class ProductMasterClient {
 	public LoansResponse getUserNameByProductId(Long request) throws  LoansException {
 		String url = productMasterBaseUrl.concat(USERNAME_BY_PRODUCT_ID);
 		try {
-			return restTemplate.postForObject(url, request, LoansResponse.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
+		    return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("product masteis not available");
