@@ -13,6 +13,6 @@ public interface MonthlyTurnoverDetailService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id);
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id) throws Exception;
 
 }

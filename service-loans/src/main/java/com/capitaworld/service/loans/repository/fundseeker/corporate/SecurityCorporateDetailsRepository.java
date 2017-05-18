@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 
@@ -14,6 +15,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorpora
 public interface SecurityCorporateDetailsRepository extends JpaRepository<SecurityCorporateDetail, Long> {
 
 	@Query("select o from SecurityCorporateDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<SecurityCorporateDetail> listSecurityCorporateDetailFromAppId(Long id);
+	public List<SecurityCorporateDetail> listSecurityCorporateDetailFromAppId(@Param("id") Long id);
 
 }

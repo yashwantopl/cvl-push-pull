@@ -9,9 +9,8 @@ import org.springframework.data.repository.query.Param;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
 
 public interface AchievementDetailsRepository extends JpaRepository<AchievementDetail, Long> {
-	
-	
-	@Query("from AchievementDetail  a where a.applicationId.id=:id AND a.isActive=true")
-	public List<AchievementDetail> listAchievementFromAppId(@Param("id") Long id);
+
+	@Query("from AchievementDetail  a where a.applicationId.id=:id and a.applicationId.userId =:userId AND a.isActive=true")
+	public List<AchievementDetail> listAchievementFromAppId(@Param("id") Long id, @Param("userId") Long userId);
 	
 }

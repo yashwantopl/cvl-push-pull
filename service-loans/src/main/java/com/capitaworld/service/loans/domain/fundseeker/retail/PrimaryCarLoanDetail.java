@@ -39,13 +39,6 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="certified_dealer")
 	private Integer certifiedDealer;
 
-	@Column(name="created_by")
-	private Long createdBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
-	private Date createdDate;
-
 	@Column(name="dealer_name")
 	private String dealerName;
 
@@ -56,18 +49,8 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	@Column(name="down_payment")
 	private Double downPayment;
 
-	@Column(name="is_active")
-	private Boolean isActive;
-
 	@Column(name="manufacturer_name")
 	private String manufacturerName;
-
-	@Column(name="modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
-	private Date modifiedDate;
 
 	@Column(name="new_car_purchase_type")
 	private Integer newCarPurchaseType;
@@ -126,22 +109,6 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 		this.certifiedDealer = certifiedDealer;
 	}
 
-	public Long getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
 	public String getDealerName() {
 		return dealerName;
 	}
@@ -166,36 +133,12 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 		this.downPayment = downPayment;
 	}
 
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
-	}
-
 	public String getManufacturerName() {
 		return manufacturerName;
 	}
 
 	public void setManufacturerName(String manufacturerName) {
 		this.manufacturerName = manufacturerName;
-	}
-
-	public Long getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
 	}
 
 	public Integer getNewCarPurchaseType() {
@@ -229,7 +172,5 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	public void setPurchaseReimbursmentDate(Date purchaseReimbursmentDate) {
 		this.purchaseReimbursmentDate = purchaseReimbursmentDate;
 	}
-
-	
 
 }

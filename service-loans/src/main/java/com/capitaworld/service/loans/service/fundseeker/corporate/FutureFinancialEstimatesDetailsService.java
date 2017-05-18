@@ -13,6 +13,8 @@ public interface FutureFinancialEstimatesDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id);
+	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id) throws Exception;
+	
+	public List<FutureFinancialEstimatesDetailRequest> getFutureEstimateDetailsList(Long userId,Long applicationId) throws Exception;
 
 }

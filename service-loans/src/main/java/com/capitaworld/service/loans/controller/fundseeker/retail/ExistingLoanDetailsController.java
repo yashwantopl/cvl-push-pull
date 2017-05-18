@@ -49,8 +49,7 @@ public class ExistingLoanDetailsController {
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
 		if (frameRequest.getApplicationId() == null || frameRequest.getApplicantType() == 0) {
@@ -62,15 +61,10 @@ public class ExistingLoanDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			boolean response = existingLoanDetailsService.saveOrUpdate(frameRequest);
-			if (response) {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			existingLoanDetailsService.saveOrUpdate(frameRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
 		} catch (Exception e) {
 			logger.error("Error while saving Existing Loan Details==>", e);
 			return new ResponseEntity<LoansResponse>(
@@ -92,15 +86,10 @@ public class ExistingLoanDetailsController {
 
 			List<ExistingLoanDetailRequest> response = existingLoanDetailsService.getExistingLoanDetailList(id,
 					applicationType);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
 		} catch (Exception e) {
 			logger.error("Error while getting Existing Loan Details==>", e);
 			return new ResponseEntity<LoansResponse>(
