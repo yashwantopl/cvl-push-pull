@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -27,9 +27,6 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	private static final Logger logger = LoggerFactory.getLogger(AchievementDetailServiceImpl.class.getName());
 	@Autowired
 	private AchievementDetailsRepository achievementDetailsRepository;
-
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -44,7 +41,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 					achievementDetail.setCreatedBy(frameRequest.getUserId());
 					achievementDetail.setCreatedDate(new Date());
 				}
-				achievementDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				achievementDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				achievementDetail.setModifiedBy(frameRequest.getUserId());
 				achievementDetail.setModifiedDate(new Date());
 				achievementDetailsRepository.save(achievementDetail);
@@ -61,18 +58,24 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	}
 
 	@Override
-	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId) {
+	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId, Long userId) throws Exception {
+		try {
+			List<AchievementDetail> achievementDetails = achievementDetailsRepository
+					.listAchievementFromAppId(applicationId,userId);
+			List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>(
+					achievementDetails.size());
 
-		List<AchievementDetail> achievementDetails = achievementDetailsRepository
-				.listAchievementFromAppId(applicationId);
-		List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>();
-
-		for (AchievementDetail detail : achievementDetails) {
-			AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
-			BeanUtils.copyProperties(detail, achievementDetailRequest);
-			achievementDetailRequests.add(achievementDetailRequest);
+			for (AchievementDetail detail : achievementDetails) {
+				AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
+				BeanUtils.copyProperties(detail, achievementDetailRequest);
+				achievementDetailRequests.add(achievementDetailRequest);
+			}
+			return achievementDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception getting achievementDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return achievementDetailRequests;
 	}
 
 }

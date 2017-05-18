@@ -47,22 +47,12 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	@Column(name="construction_cost")
 	private Double constructionCost;
 
-	@Column(name="created_by")
-	private Long createdBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
-	private Date createdDate;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="date_of_loan_taken")
 	private Date dateOfLoanTaken;
 
 	@Column(name="down_payment")
 	private Double downPayment;
-
-	@Column(name="is_active")
-	private Boolean isActive;
 
 	@Column(name="is_construction_completed")
 	private Boolean isConstructionCompleted;
@@ -76,18 +66,11 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	@Column(name="land_plot_cost")
 	private Double landPlotCost;
 
-	@Column(name="modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
-	private Date modifiedDate;
-
 	@Column(name="other_renovation_type")
 	private String otherRenovationType;
 
 	@Column(name="project_city")
-	private Integer projectCity;
+	private String projectCity;
 
 	@Column(name="project_name")
 	private String projectName;
@@ -177,22 +160,6 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 		this.constructionCost = constructionCost;
 	}
 
-	public Long getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(Long createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-
 	public Date getDateOfLoanTaken() {
 		return dateOfLoanTaken;
 	}
@@ -207,14 +174,6 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 
 	public void setDownPayment(Double downPayment) {
 		this.downPayment = downPayment;
-	}
-
-	public Boolean getIsActive() {
-		return isActive;
-	}
-
-	public void setIsActive(Boolean isActive) {
-		this.isActive = isActive;
 	}
 
 	public Boolean getIsConstructionCompleted() {
@@ -249,22 +208,6 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 		this.landPlotCost = landPlotCost;
 	}
 
-	public Long getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(Long modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-
 	public String getOtherRenovationType() {
 		return otherRenovationType;
 	}
@@ -273,11 +216,11 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 		this.otherRenovationType = otherRenovationType;
 	}
 
-	public Integer getProjectCity() {
+	public String getProjectCity() {
 		return projectCity;
 	}
 
-	public void setProjectCity(Integer projectCity) {
+	public void setProjectCity(String projectCity) {
 		this.projectCity = projectCity;
 	}
 

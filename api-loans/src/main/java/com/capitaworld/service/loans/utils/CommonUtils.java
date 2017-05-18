@@ -11,6 +11,7 @@ public class CommonUtils {
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
 	public static final String CORPORATE = "corporate";
 	public static final String RETAIL = "retail";
+	public static final String ONE_FORM = "oneForm";
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -22,17 +23,17 @@ public class CommonUtils {
 	}
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
-		
+
 		System.out.println("date=>" + date);
 		System.out.println("Month=>" + month);
 		System.out.println("Year=>" + year);
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
-		 calendar.setTime(new Date());
+		calendar.setTime(new Date());
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, month);
 		calendar.set(Calendar.YEAR, year);
-		
+
 		return calendar.getTime();
 	}
 
@@ -93,15 +94,16 @@ public class CommonUtils {
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode" };
 		public static final String ID = "id";
-		public static final String[] FP_PRODUCT = { "userId" };
-		public static final String[] RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName",
-				"statusId", "occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress",
-				"secondAddress", "addressSameAs", "contactNo", "companyName", "employedWithId", "employedWithOther",
-				"entityName", "industryTypeId", "industryTypeOther", "selfEmployedOccupationId",
-				"selfEmployedOccupationOther", "landSize", "alliedActivityId", "userId" };
+		
+		public static final String[] FP_PRODUCT = { "userId", "productId" };
+		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "statusId",
+				"occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
+				"addressSameAs", "contactNo", "companyName", "employedWithId", "employedWithOther", "entityName",
+				"industryTypeId", "industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther",
+				"landSize", "alliedActivityId", "userId" };
 
-		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther",
-				"birthPlace", "fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
+		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
 				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
 				"annualRent", "annualTurnover", "noPartners", "birthDate", "businessStartDate", "currentDepartment",
 				"currentDesignation", "currentIndustry", "currentJobMonth", "currentJobYear", "employmentStatus",
@@ -117,5 +119,25 @@ public class CommonUtils {
 		public static final int COAPPLICANT = 2;
 		public static final int GARRANTOR = 3;
 
+	}
+	
+
+	public interface UserMainType {
+		public static final int RETAIL = 1;
+		public static final int CORPORATE = 2;
+	}
+
+	public static int getUserMainType(int productId) {
+		if (productId == 1 || productId == 2)
+			return 2;
+		else
+			return 1;
+	}
+
+	public static String getCorporateLoanType(int productId) {
+		if (productId == 1 || productId == 2)
+			return "DEBT";
+		else
+			return "EQUITY";
 	}
 }

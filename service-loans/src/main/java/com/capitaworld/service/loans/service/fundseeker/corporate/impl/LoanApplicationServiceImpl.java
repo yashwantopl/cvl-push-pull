@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -21,14 +20,17 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDet
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -44,13 +46,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
-	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
 
 	@Autowired
-	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
+
+	@Autowired
+	private PrimaryLasLoanDetailRepository primaryLasLoanDetailRepository;
+
+	@Autowired
+	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
+
+	@Autowired
+	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
+
+	@Autowired
+	private PrimaryPersonalLoanDetailRepository primaryPersonalLoanDetailRepository;
+
+	@Autowired
+	private PrimaryCarLoanDetailRepository primaryCarLoanDetailRepository;
 
 	@Override
-	public boolean saveOrUpdate(FrameRequest commonRequest) throws Exception {
+	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
 			LoanApplicationMaster applicationMaster = null;
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
@@ -87,34 +104,43 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				default:
 					continue;
 				}
-
+				logger.info("userId==>" + userId);
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
-				applicationMaster.setCreatedBy(commonRequest.getUserId());
+				applicationMaster.setUserId(userId);
+				applicationMaster.setCreatedBy(userId);
 				applicationMaster.setCreatedDate(new Date());
-				applicationMaster.setModifiedBy(commonRequest.getUserId());
+				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
-				applicationMaster.setIsActive(true);
-				loanApplicationRepository.save(applicationMaster);
+				// For Demo now we have put it static,
+				applicationMaster.setIsApplicantPrimaryFilled(true);
+				// later on we will validate and change it.
+				applicationMaster = loanApplicationRepository.save(applicationMaster);
+				lockPrimary(applicationMaster.getId(), userId, applicationMaster.getProductId());
+				logger.info("applicationMaster==>" + applicationMaster.toString());
 			}
 			return true;
-		}
-
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
-		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
-		if (applicationMaster == null) {
-			throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
+		try {
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+			if (applicationMaster == null) {
+				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
+			}
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			return applicationRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		BeanUtils.copyProperties(applicationMaster, applicationRequest);
-		return applicationRequest;
 	}
 
 	@Override
@@ -125,14 +151,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
-		List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
-		List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
-		for (LoanApplicationMaster master : results) {
-			LoanApplicationRequest request = new LoanApplicationRequest();
-			BeanUtils.copyProperties(master, request);
-			requests.add(request);
+		try {
+			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
+			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
+			for (LoanApplicationMaster master : results) {
+				LoanApplicationRequest request = new LoanApplicationRequest();
+				BeanUtils.copyProperties(master, request);
+				requests.add(request);
+			}
+			return requests;
+		} catch (Exception e) {
+			logger.error("Error while Getting Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return requests;
 	}
 
 	@Override
@@ -148,50 +180,107 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String getApplicationType(Long applicationId) {
-		// TODO Auto-generated method stub
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
-		if (applicationMaster != null) {
-			if (applicationMaster.getProductId() == 1 || applicationMaster.getProductId() == 2) {
-				return CommonUtils.CORPORATE;
-			} else if (applicationMaster.getProductId() == 3 || applicationMaster.getProductId() == 12
-					|| applicationMaster.getProductId() == 7 || applicationMaster.getProductId() == 13
-					|| applicationMaster.getProductId() == 14) {
-				return CommonUtils.RETAIL;
+	public boolean lockPrimary(Long applicationId, Long userId, Integer productId) throws Exception {
+		try {
+			LoanApplicationMaster applicationMaster = null;
+			LoanType type = CommonUtils.LoanType.getType(productId);
+			if (type == null) {
+				throw new Exception("Invalid Product Id==>" + productId);
 			}
+			switch (type) {
+			case WORKING_CAPITAL:
+				applicationMaster = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(applicationId,
+						userId);
+				break;
+			case TERM_LOAN:
+				applicationMaster = primaryTermLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case LAS_LOAN:
+				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case LAP_LOAN:
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				break;
+			case PERSONAL_LOAN:
+				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
+						userId);
+				break;
+			case HOME_LOAN:
+				applicationMaster = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case CAR_LOAN:
+				applicationMaster = primaryCarLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			default:
+				throw new Exception("Invalid Product Id==>" + productId);
+			}
+
+			if (applicationMaster == null) {
+				throw new Exception(
+						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
+								+ applicationMaster);
+			}
+
+			applicationMaster.setIsPrimaryLocked(true);
+			loanApplicationRepository.save(applicationMaster);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Locking Profile and Primary Information");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return null;
 	}
 
 	@Override
-	public String getUserNameByApplicationId(Long applicationId,Long userId) {
-		// TODO Auto-generated method stub
-		String userType = getApplicationType(applicationId);
-		String userName;
-		if (userType == null)
-			return null;
+	public boolean lockFinal(Long applicationId, Long userId, Integer productId) throws Exception {
+		try {
+			LoanApplicationMaster applicationMaster = null;
+			LoanType type = CommonUtils.LoanType.getType(productId);
+			if (type == null) {
+				throw new Exception("Invalid Product Id==>" + productId);
+			}
+			switch (type) {
+			case WORKING_CAPITAL:
+				applicationMaster = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(applicationId,
+						userId);
+				break;
+			case TERM_LOAN:
+				applicationMaster = primaryTermLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case LAS_LOAN:
+				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case LAP_LOAN:
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				break;
+			case PERSONAL_LOAN:
+				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
+						userId);
+				break;
+			case HOME_LOAN:
+				applicationMaster = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			case CAR_LOAN:
+				applicationMaster = primaryCarLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
+				break;
+			default:
+				throw new Exception("Invalid Product Id==>" + productId);
+			}
 
-		if (userType.equals(CommonUtils.CORPORATE)) {
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.getByApplicationAndUserId(userId, applicationId);
-			if (corporateApplicantDetail != null) {
-				userName = corporateApplicantDetail.getOrganisationName();
-				if (userName != null || userName.length() != 0) {
-					return userName;
-				}
+			if (applicationMaster == null) {
+				throw new Exception(
+						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
+								+ applicationMaster);
 			}
-		} else if (userType.equals(CommonUtils.RETAIL)) {
-			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			if (retailApplicantDetail != null) {
-				userName = retailApplicantDetail.getFirstName() + retailApplicantDetail.getLastName();
-				if (userName != null || userName.length() != 0) {
-					return userName;
-				}
-			}
-		} else {
-			return null;
+
+			applicationMaster.setIsFinalLocked(true);
+			loanApplicationRepository.save(applicationMaster);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Locking Final Information");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return null;
 	}
 
 }

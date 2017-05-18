@@ -13,6 +13,6 @@ public interface PromotorBackgroundDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId);
+	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId) throws Exception;
 
 }

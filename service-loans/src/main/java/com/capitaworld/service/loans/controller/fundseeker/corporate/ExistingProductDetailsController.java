@@ -45,7 +45,7 @@ public class ExistingProductDetailsController {
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		
+
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -86,15 +86,9 @@ public class ExistingProductDetailsController {
 
 			List<ExistingProductDetailRequest> response = existingProductDetailsService
 					.getExistingProductDetailList(id);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Existing Product Details==>", e);
 			return new ResponseEntity<LoansResponse>(

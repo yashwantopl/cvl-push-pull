@@ -63,11 +63,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
-			Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(), applicantRequest.getMonth(),
-					applicantRequest.getYear());
-			applicantDetail.setBirthDate(birthDate);
+			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
+					&& applicantRequest.getYear() != null) {
+				Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(),
+						applicantRequest.getMonth(), applicantRequest.getYear());
+				applicantDetail.setBirthDate(birthDate);
+			}
 			applicantDetail = applicantRepository.save(applicantDetail);
-
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
 			}
@@ -89,8 +91,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
-				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of Application ID : "
-						+ applicationId + " and User Id==>" + userId);
+				// throw new NullPointerException("RetailApplicantDetail Record
+				// not exists in DB of Application ID : "
+				// + applicationId + " and User Id==>" + userId);
+				return null;
 			}
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
@@ -105,7 +109,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -135,12 +139,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
 
-			RetailApplicantDetail applicantDetail = applicantRepository
-					.getByApplicationAndUserId(applicantRequest.getId(), applicantRequest.getApplicationId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
 				throw new NullPointerException(
 						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-								+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
+								+ applicantRequest.getApplicationId() + "User ID==>" + userId);
 			}
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());

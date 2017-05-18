@@ -60,8 +60,8 @@ public class PromotorBackgroundDetail implements Serializable {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
-	@Column(name="mr_or_mrs")
-	private Boolean mrOrMrs;
+	@Column(name="salutation_id")
+	private Integer salutationId;
 
 	@Column(name="pan_no")
 	private String panNo;
@@ -158,12 +158,12 @@ public class PromotorBackgroundDetail implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Boolean getMrOrMrs() {
-		return this.mrOrMrs;
+	public Integer getSalutationId() {
+		return salutationId;
 	}
 
-	public void setMrOrMrs(Boolean mrOrMrs) {
-		this.mrOrMrs = mrOrMrs;
+	public void setSalutationId(Integer salutationId) {
+		this.salutationId = salutationId;
 	}
 
 	public String getPanNo() {

@@ -4,7 +4,7 @@ public class LoanApplicationDetailsForSp {
 
 	private Long id;
 	
-	private Long productId;
+	private Integer productId;
 	
 	private Double amount;
 	
@@ -12,7 +12,11 @@ public class LoanApplicationDetailsForSp {
 	
 	
 
-	public LoanApplicationDetailsForSp(Long id, Long productId, Double amount, Integer denominationId) {
+	public LoanApplicationDetailsForSp() {
+		super();
+	}
+
+	public LoanApplicationDetailsForSp(Long id, Integer productId, Double amount, Integer denominationId) {
 		super();
 		this.id = id;
 		this.productId = productId;
@@ -28,11 +32,11 @@ public class LoanApplicationDetailsForSp {
 		this.id = id;
 	}
 
-	public Long getProductId() {
+	public Integer getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 

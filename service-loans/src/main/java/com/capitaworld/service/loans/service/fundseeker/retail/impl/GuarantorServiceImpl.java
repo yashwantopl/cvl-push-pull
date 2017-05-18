@@ -29,7 +29,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
-	
+
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
@@ -44,7 +44,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 				// guarantorRequest.getId());
 
 				if (guarantorRequest.getIsActive() != null && !guarantorRequest.getIsActive().booleanValue()) {
-					guarantorDetailsRepository.inactiveGuarantor(applicationId, userId, guarantorRequest.getId());
+					guarantorDetailsRepository.inactiveGuarantor(applicationId, guarantorRequest.getId());
 					return true;
 				}
 				guarantorDetails.setModifiedBy(userId);
@@ -70,7 +70,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Guarantor Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 		} catch (Exception e) {
 			logger.error("Error while getting Guarantor Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			if (from.getFirstAddress().getPincode() != null) {
 				to.setPermanentPincode(from.getFirstAddress().getPincode().intValue());
 			}
-			
+
 		}
 
 		if (from.getAddressSameAs() != null && from.getAddressSameAs().booleanValue()) {
@@ -221,7 +221,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			address.setPincode(from.getPermanentPincode().longValue());
 		}
 		to.setFirstAddress(address);
-		if (from.getAddressSameAs()) {
+		if (from.getAddressSameAs() != null && from.getAddressSameAs().booleanValue()) {
 			to.setSecondAddress(address);
 		} else {
 			address = new Address();

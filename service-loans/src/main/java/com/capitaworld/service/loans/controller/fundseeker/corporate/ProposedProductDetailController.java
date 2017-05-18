@@ -85,15 +85,10 @@ public class ProposedProductDetailController {
 
 			List<ProposedProductDetailRequest> response = proposedProductDetailsService
 					.getProposedProductDetailList(id);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
 		} catch (Exception e) {
 			logger.error("Error while getting Proposed Product Details==>", e);
 			return new ResponseEntity<LoansResponse>(

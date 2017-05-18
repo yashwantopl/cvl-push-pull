@@ -68,7 +68,6 @@
 			<artifactId>api-loans</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
@@ -78,6 +77,31 @@
    			<artifactId>client-auth</artifactId>
    			<version>1.0.0</version>
   		</dependency>
+  		<dependency>
+			<groupId>com.capitaworld.client.matchengine</groupId>
+    		<artifactId>client-matchengine</artifactId>
+    		<version>1.0.0</version>
+		</dependency>
+
+  		<dependency>
+  			<groupId>com.capitaworld.client.users</groupId>
+  			<artifactId>client-users</artifactId>
+  			<version>1.0.0</version>
+  		</dependency>
+  		
+  		<dependency>
+    		<groupId>com.capitaworld.service.dms</groupId>
+    		<artifactId>client-dms</artifactId>
+    		<version>0.0.1</version>
+   		</dependency>
+   		
+   		<!-- api of one form -->
+		<dependency>
+			<groupId>com.capitaworld.oneform.service.parent</groupId>
+			<artifactId>client-oneform</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+   		
 	</dependencies>
 
 	<build>

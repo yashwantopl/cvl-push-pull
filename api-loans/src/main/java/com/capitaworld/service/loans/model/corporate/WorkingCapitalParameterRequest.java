@@ -2,7 +2,11 @@ package com.capitaworld.service.loans.model.corporate;
 
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -11,7 +15,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private static final long serialVersionUID = 1L;
 
 	
-	private Long fpProductId;
+	
 
 	private Integer currency;
 
@@ -65,29 +69,29 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer maxAgeEstablishment;
 
-	private Double maxCollateral;
+	private BigDecimal maxCollateral;
 
-	private Double maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
-	private Double maxInvestSize;
+	private BigDecimal maxInvestSize;
 
-	private Double maxNetworth;
+	private BigDecimal maxNetworth;
 
-	private Double maxPastTurnover;
+	private BigDecimal maxPastTurnover;
 
 	private Integer maxTenure;
 
 	private Integer minAgeEstablishment;
 
-	private Double minCollateral;
+	private BigDecimal minCollateral;
 
-	private Double minDebtEquity;
+	private BigDecimal minDebtEquity;
 
-	private Double minInvestSize;
+	private BigDecimal minInvestSize;
 
-	private Double minNetworth;
+	private BigDecimal minNetworth;
 
-	private Double minPastTurnover;
+	private BigDecimal minPastTurnover;
 
 	private Integer minTenure;
 
@@ -96,19 +100,24 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Integer shortTermCreditRating;
 
 	private Long uninterestedIndustry;
+	
+	private List<DataRequest> industrylist = Collections.emptyList();
+
+	private List<DataRequest> sectorlist = Collections.emptyList();
+	
+	private List<DataRequest> countryList = Collections.emptyList();
+	
+	private List<DataRequest> stateList = Collections.emptyList();
+	
+	private List<DataRequest> cityList = Collections.emptyList();
+	
+
 
 	public WorkingCapitalParameterRequest() {
 	}
 
 
-	public Long getFpProductId() {
-		return fpProductId;
-	}
-
-
-	public void setFpProductId(Long fpProductId) {
-		this.fpProductId = fpProductId;
-	}
+	
 
 
 	public Integer getCurrency() {
@@ -320,43 +329,43 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public Double getMaxCollateral() {
+	public BigDecimal getMaxCollateral() {
 		return this.maxCollateral;
 	}
 
-	public void setMaxCollateral(Double maxCollateral) {
+	public void setMaxCollateral(BigDecimal maxCollateral) {
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Double getMaxDebtEquity() {
+	public BigDecimal getMaxDebtEquity() {
 		return this.maxDebtEquity;
 	}
 
-	public void setMaxDebtEquity(Double maxDebtEquity) {
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
 		this.maxDebtEquity = maxDebtEquity;
 	}
 
-	public Double getMaxInvestSize() {
+	public BigDecimal getMaxInvestSize() {
 		return this.maxInvestSize;
 	}
 
-	public void setMaxInvestSize(Double maxInvestSize) {
+	public void setMaxInvestSize(BigDecimal maxInvestSize) {
 		this.maxInvestSize = maxInvestSize;
 	}
 
-	public Double getMaxNetworth() {
+	public BigDecimal getMaxNetworth() {
 		return this.maxNetworth;
 	}
 
-	public void setMaxNetworth(Double maxNetworth) {
+	public void setMaxNetworth(BigDecimal maxNetworth) {
 		this.maxNetworth = maxNetworth;
 	}
 
-	public Double getMaxPastTurnover() {
+	public BigDecimal getMaxPastTurnover() {
 		return this.maxPastTurnover;
 	}
 
-	public void setMaxPastTurnover(Double maxPastTurnover) {
+	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
 		this.maxPastTurnover = maxPastTurnover;
 	}
 
@@ -376,43 +385,43 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
 
-	public Double getMinCollateral() {
+	public BigDecimal getMinCollateral() {
 		return this.minCollateral;
 	}
 
-	public void setMinCollateral(Double minCollateral) {
+	public void setMinCollateral(BigDecimal minCollateral) {
 		this.minCollateral = minCollateral;
 	}
 
-	public Double getMinDebtEquity() {
+	public BigDecimal getMinDebtEquity() {
 		return this.minDebtEquity;
 	}
 
-	public void setMinDebtEquity(Double minDebtEquity) {
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
 	}
 
-	public Double getMinInvestSize() {
+	public BigDecimal getMinInvestSize() {
 		return this.minInvestSize;
 	}
 
-	public void setMinInvestSize(Double minInvestSize) {
+	public void setMinInvestSize(BigDecimal minInvestSize) {
 		this.minInvestSize = minInvestSize;
 	}
 
-	public Double getMinNetworth() {
+	public BigDecimal getMinNetworth() {
 		return this.minNetworth;
 	}
 
-	public void setMinNetworth(Double minNetworth) {
+	public void setMinNetworth(BigDecimal minNetworth) {
 		this.minNetworth = minNetworth;
 	}
 
-	public Double getMinPastTurnover() {
+	public BigDecimal getMinPastTurnover() {
 		return this.minPastTurnover;
 	}
 
-	public void setMinPastTurnover(Double minPastTurnover) {
+	public void setMinPastTurnover(BigDecimal minPastTurnover) {
 		this.minPastTurnover = minPastTurnover;
 	}
 
@@ -449,5 +458,92 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setUninterestedIndustry(Long uninterestedIndustry) {
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
+
+
+
+
+
+	public List<DataRequest> getIndustrylist() {
+		return industrylist;
+	}
+
+
+
+
+
+	public void setIndustrylist(List<DataRequest> industrylist) {
+		this.industrylist = industrylist;
+	}
+
+
+
+
+
+	public List<DataRequest> getSectorlist() {
+		return sectorlist;
+	}
+
+
+
+
+
+	public void setSectorlist(List<DataRequest> sectorlist) {
+		this.sectorlist = sectorlist;
+	}
+
+
+
+
+
+	public List<DataRequest> getStateList() {
+		return stateList;
+	}
+
+
+
+
+
+	public void setStateList(List<DataRequest> stateList) {
+		this.stateList = stateList;
+	}
+
+
+
+
+
+	public List<DataRequest> getCityList() {
+		return cityList;
+	}
+
+
+
+
+
+	public void setCityList(List<DataRequest> cityList) {
+		this.cityList = cityList;
+	}
+
+
+
+
+
+	public List<DataRequest> getCountryList() {
+		return countryList;
+	}
+
+
+
+
+
+	public void setCountryList(List<DataRequest> countryList) {
+		this.countryList = countryList;
+	}
+	
+	
+
+
+
+	
+	
 
 }
