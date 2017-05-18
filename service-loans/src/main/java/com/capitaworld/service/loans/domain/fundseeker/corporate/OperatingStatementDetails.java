@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -17,12 +18,13 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
 @Entity
+@Table(name="fs_corporate_cma_operating_statement_details")
 public class OperatingStatementDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name="add_operating_stock")
@@ -81,7 +83,8 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name="is_active")
 	private Boolean isActive;
 
-	private Double less_exciseDuty;
+	@Column(name="less_excise_duty")
+	private Double lessExciseDuty;
 
 	@Column(name="modified_by")
 	private Long modifiedBy;
@@ -153,7 +156,8 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name="selling_genl_admn_expenses")
 	private Double sellingGenlAdmnExpenses;
 
-	private Double sub_total_cost_Sales;
+	@Column(name="sub_total_cost_Sales")
+	private Double subTotalCostSales;
 
 	@Column(name="sub_total_cost_sales_and_selling")
 	private Double subTotalCostSalesAndSelling;
@@ -177,11 +181,23 @@ public class OperatingStatementDetails implements Serializable {
 	private Double totalGrossSales;
 
 	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne
 	@JoinColumn(name="application_id")
-	private LoanApplicationMaster fsLoanApplicationMaster;
+	private LoanApplicationMaster loanApplicationMaster;
+	
+	
+	public Long getStorageDetailsId() {
+		return storageDetailsId;
+	}
+
+	public void setStorageDetailsId(Long storageDetailsId) {
+		this.storageDetailsId = storageDetailsId;
+	}
 
 	public Long getId() {
 		return this.id;
@@ -343,12 +359,13 @@ public class OperatingStatementDetails implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public Double getLess_exciseDuty() {
-		return this.less_exciseDuty;
+
+	public Double getLessExciseDuty() {
+		return lessExciseDuty;
 	}
 
-	public void setLess_exciseDuty(Double less_exciseDuty) {
-		this.less_exciseDuty = less_exciseDuty;
+	public void setLessExciseDuty(Double lessExciseDuty) {
+		this.lessExciseDuty = lessExciseDuty;
 	}
 
 	public Long getModifiedBy() {
@@ -535,12 +552,13 @@ public class OperatingStatementDetails implements Serializable {
 		this.sellingGenlAdmnExpenses = sellingGenlAdmnExpenses;
 	}
 
-	public Double getSub_total_cost_Sales() {
-		return this.sub_total_cost_Sales;
+
+	public Double getSubTotalCostSales() {
+		return subTotalCostSales;
 	}
 
-	public void setSub_total_cost_Sales(Double sub_total_cost_Sales) {
-		this.sub_total_cost_Sales = sub_total_cost_Sales;
+	public void setSubTotalCostSales(Double subTotalCostSales) {
+		this.subTotalCostSales = subTotalCostSales;
 	}
 
 	public Double getSubTotalCostSalesAndSelling() {
@@ -607,11 +625,13 @@ public class OperatingStatementDetails implements Serializable {
 		this.year = year;
 	}
 
-	public LoanApplicationMaster getFsLoanApplicationMaster() {
-		return this.fsLoanApplicationMaster;
+	public LoanApplicationMaster getLoanApplicationMaster() {
+		return loanApplicationMaster;
 	}
 
-	public void setFsLoanApplicationMaster(LoanApplicationMaster fsLoanApplicationMaster) {
-		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	public void setLoanApplicationMaster(LoanApplicationMaster loanApplicationMaster) {
+		this.loanApplicationMaster = loanApplicationMaster;
 	}
+
+	
 }

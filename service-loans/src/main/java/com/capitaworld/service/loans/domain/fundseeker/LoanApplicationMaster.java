@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
@@ -16,59 +17,70 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 /**
  * The persistent class for the fs_loan_application_master database table.
  * 
  */
 @Entity
-@Table(name="fs_loan_application_master")
-@NamedQuery(name="LoanApplicationMaster.findAll", query="SELECT f FROM LoanApplicationMaster f")
+@Table(name = "fs_loan_application_master")
+@Inheritance(strategy = InheritanceType.JOINED)
+@NamedQuery(name = "LoanApplicationMaster.findAll", query = "SELECT f FROM LoanApplicationMaster f")
 public class LoanApplicationMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "application_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private BigDecimal amount;
+	private Double amount;
 
-	@Column(name="category_code")
+	@Column(name = "category_code")
 	private String categoryCode;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
 	private String name;
 
-	@Column(name="product_id")
+	@Column(name = "product_id")
 	private Long productId;
 
-	private int tenure;
+	private Integer tenure;
 
-	@Column(name="user_id")
+	@Column(name = "user_id")
 	private Long userId;
 
-	//bi-directional many-to-one association to ApplicationStatusMaster
+	@Column(name = "currency_id")
+	private Integer currencyId;
+
+	@Column(name = "denomination_id")
+	private Integer denominationId;
+
+	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
-	@JoinColumn(name="status")
+	@JoinColumn(name = "status")
 	private ApplicationStatusMaster applicationStatusMaster;
 
 	public LoanApplicationMaster() {
+	}
+
+	public LoanApplicationMaster(Long id) {
+		this.id = id;
 	}
 
 	public Long getId() {
@@ -79,11 +91,11 @@ public class LoanApplicationMaster implements Serializable {
 		this.id = id;
 	}
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return this.amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
@@ -143,19 +155,20 @@ public class LoanApplicationMaster implements Serializable {
 		this.name = name;
 	}
 
+	
 	public Long getProductId() {
-		return this.productId;
+		return productId;
 	}
 
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
 
-	public int getTenure() {
-		return this.tenure;
+	public Integer getTenure() {
+		return tenure;
 	}
 
-	public void setTenure(int tenure) {
+	public void setTenure(Integer tenure) {
 		this.tenure = tenure;
 	}
 
@@ -167,13 +180,28 @@ public class LoanApplicationMaster implements Serializable {
 		this.userId = userId;
 	}
 
-
 	public ApplicationStatusMaster getApplicationStatusMaster() {
 		return this.applicationStatusMaster;
 	}
 
 	public void setApplicationStatusMaster(ApplicationStatusMaster applicationStatusMaster) {
 		this.applicationStatusMaster = applicationStatusMaster;
+	}
+
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public Integer getDenominationId() {
+		return denominationId;
+	}
+
+	public void setDenominationId(Integer denominationId) {
+		this.denominationId = denominationId;
 	}
 
 }

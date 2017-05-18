@@ -1,0 +1,422 @@
+2017-04-21 18:27:31 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 6260 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 18:27:31 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 18:27:32 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@50fde23d: startup date [Fri Apr 21 18:27:32 IST 2017]; root of context hierarchy
+2017-04-21 18:27:32 [background-preinit] INFO 	o.h.validator.internal.util.Version-[Version.java:30]-HV000001: Hibernate Validator 5.3.4.Final
+2017-04-21 18:27:33 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$1fd45f0b] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 18:27:33 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8080 (http)
+2017-04-21 18:27:33 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 18:27:33 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 1640 ms
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 18:27:33 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 18:27:33 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:27:33 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 18:27:33 [restartedMain] INFO 	org.hibernate.Version-[Version.java:37]-HHH000412: Hibernate Core {5.0.12.Final}
+2017-04-21 18:27:33 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:213]-HHH000206: hibernate.properties not found
+2017-04-21 18:27:33 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:317]-HHH000021: Bytecode provider name : javassist
+2017-04-21 18:27:33 [restartedMain] INFO 	o.h.annotations.common.Version-[JavaReflectionManager.java:66]-HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2017-04-21 18:27:34 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 18:27:34 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 18:27:34 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-1 - Started.
+2017-04-21 18:27:34 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 18:27:34 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 18:27:34 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:27:34 [restartedMain] WARN 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:550]-Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtraction': Unsatisfied dependency expressed through field 'excelExtractionService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtractionServiceImpl': Unsatisfied dependency expressed through field 'OperatingStatementDetailsService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'operatingStatementDetailsServiceImpl': Unsatisfied dependency expressed through field 'operatingStatementDetailsRepository'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'operatingStatementDetailsRepository': Cannot create inner bean '(inner bean)#6901eba5' of type [org.springframework.orm.jpa.SharedEntityManagerCreator] while setting bean property 'entityManager'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#6901eba5': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'entityManagerFactory' available
+2017-04-21 18:27:34 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:27:34 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-1 - Close initiated...
+2017-04-21 18:27:34 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-1 - Closed.
+2017-04-21 18:27:34 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Stopping service Tomcat
+2017-04-21 18:27:34 [restartedMain] INFO 	o.s.b.a.l.AutoConfigurationReportLoggingInitializer-[AutoConfigurationReportLoggingInitializer.java:101]-
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2017-04-21 18:27:34 [restartedMain] ERROR	o.s.b.d.LoggingFailureAnalysisReporter-[LoggingFailureAnalysisReporter.java:42]-
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field operatingStatementDetailsRepository in com.capitaworld.service.loans.service.fundseeker.corporate.impl.OperatingStatementDetailsServiceImpl required a bean named 'entityManagerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'entityManagerFactory' in your configuration.
+
+2017-04-21 18:29:15 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 6688 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 18:29:15 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 18:29:15 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@50fde23d: startup date [Fri Apr 21 18:29:15 IST 2017]; root of context hierarchy
+2017-04-21 18:29:15 [background-preinit] INFO 	o.h.validator.internal.util.Version-[Version.java:30]-HV000001: Hibernate Validator 5.3.4.Final
+2017-04-21 18:29:16 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$466ef4c7] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 18:29:16 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8080 (http)
+2017-04-21 18:29:16 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 18:29:16 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 18:29:16 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 18:29:16 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 1624 ms
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 18:29:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 18:29:17 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:29:17 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 18:29:17 [restartedMain] INFO 	org.hibernate.Version-[Version.java:37]-HHH000412: Hibernate Core {5.0.12.Final}
+2017-04-21 18:29:17 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:213]-HHH000206: hibernate.properties not found
+2017-04-21 18:29:17 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:317]-HHH000021: Bytecode provider name : javassist
+2017-04-21 18:29:17 [restartedMain] INFO 	o.h.annotations.common.Version-[JavaReflectionManager.java:66]-HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2017-04-21 18:29:17 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 18:29:17 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 18:29:17 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-1 - Started.
+2017-04-21 18:29:17 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 18:29:17 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 18:29:18 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 18:29:18 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:29:18 [restartedMain] WARN 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:550]-Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtraction': Unsatisfied dependency expressed through field 'excelExtractionService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtractionServiceImpl': Unsatisfied dependency expressed through field 'OperatingStatementDetailsService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'operatingStatementDetailsServiceImpl': Unsatisfied dependency expressed through field 'operatingStatementDetailsRepository'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'operatingStatementDetailsRepository': Cannot create inner bean '(inner bean)#23e1c16b' of type [org.springframework.orm.jpa.SharedEntityManagerCreator] while setting bean property 'entityManager'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#23e1c16b': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'entityManagerFactory' available
+2017-04-21 18:29:18 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:29:18 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-1 - Close initiated...
+2017-04-21 18:29:18 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-1 - Closed.
+2017-04-21 18:29:18 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Stopping service Tomcat
+2017-04-21 18:29:18 [restartedMain] INFO 	o.s.b.a.l.AutoConfigurationReportLoggingInitializer-[AutoConfigurationReportLoggingInitializer.java:101]-
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2017-04-21 18:29:18 [restartedMain] ERROR	o.s.b.d.LoggingFailureAnalysisReporter-[LoggingFailureAnalysisReporter.java:42]-
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field operatingStatementDetailsRepository in com.capitaworld.service.loans.service.fundseeker.corporate.impl.OperatingStatementDetailsServiceImpl required a bean named 'entityManagerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'entityManagerFactory' in your configuration.
+
+2017-04-21 18:32:01 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 4948 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 18:32:01 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 18:32:01 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@33a4913d: startup date [Fri Apr 21 18:32:01 IST 2017]; root of context hierarchy
+2017-04-21 18:32:01 [background-preinit] INFO 	o.h.validator.internal.util.Version-[Version.java:30]-HV000001: Hibernate Validator 5.3.4.Final
+2017-04-21 18:32:02 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$a071d843] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 18:32:03 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 18:32:03 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 18:32:03 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 1657 ms
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 18:32:03 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 18:32:03 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:32:03 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 18:32:03 [restartedMain] INFO 	org.hibernate.Version-[Version.java:37]-HHH000412: Hibernate Core {5.0.12.Final}
+2017-04-21 18:32:03 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:213]-HHH000206: hibernate.properties not found
+2017-04-21 18:32:03 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:317]-HHH000021: Bytecode provider name : javassist
+2017-04-21 18:32:03 [restartedMain] INFO 	o.h.annotations.common.Version-[JavaReflectionManager.java:66]-HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2017-04-21 18:32:03 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 18:32:03 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 18:32:03 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-1 - Started.
+2017-04-21 18:32:04 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 18:32:04 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 18:32:04 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 18:32:04 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:32:04 [restartedMain] WARN 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:550]-Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtraction': Unsatisfied dependency expressed through field 'excelExtractionService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtractionServiceImpl': Unsatisfied dependency expressed through field 'OperatingStatementDetailsService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'operatingStatementDetailsServiceImpl': Unsatisfied dependency expressed through field 'operatingStatementDetailsRepository'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'operatingStatementDetailsRepository': Cannot create inner bean '(inner bean)#61f94be1' of type [org.springframework.orm.jpa.SharedEntityManagerCreator] while setting bean property 'entityManager'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#61f94be1': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'entityManagerFactory' available
+2017-04-21 18:32:04 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:32:04 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-1 - Close initiated...
+2017-04-21 18:32:04 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-1 - Closed.
+2017-04-21 18:32:04 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Stopping service Tomcat
+2017-04-21 18:32:04 [restartedMain] INFO 	o.s.b.a.l.AutoConfigurationReportLoggingInitializer-[AutoConfigurationReportLoggingInitializer.java:101]-
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2017-04-21 18:32:04 [restartedMain] ERROR	o.s.b.d.LoggingFailureAnalysisReporter-[LoggingFailureAnalysisReporter.java:42]-
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field operatingStatementDetailsRepository in com.capitaworld.service.loans.service.fundseeker.corporate.impl.OperatingStatementDetailsServiceImpl required a bean named 'entityManagerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'entityManagerFactory' in your configuration.
+
+2017-04-21 18:58:12 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 6268 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 18:58:12 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 18:58:12 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@50fde23d: startup date [Fri Apr 21 18:58:12 IST 2017]; root of context hierarchy
+2017-04-21 18:58:12 [background-preinit] INFO 	o.h.validator.internal.util.Version-[Version.java:30]-HV000001: Hibernate Validator 5.3.4.Final
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.b.f.s.DefaultListableBeanFactory-[DefaultListableBeanFactory.java:828]-Overriding bean definition for bean 'operatingStatementDetailsRepository' with a different definition: replacing [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null]
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.b.f.s.DefaultListableBeanFactory-[DefaultListableBeanFactory.java:828]-Overriding bean definition for bean 'assetsDetailsRepository' with a different definition: replacing [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null]
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.b.f.s.DefaultListableBeanFactory-[DefaultListableBeanFactory.java:828]-Overriding bean definition for bean 'liabilitiesDetailsRepository' with a different definition: replacing [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null]
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.b.f.s.DefaultListableBeanFactory-[DefaultListableBeanFactory.java:828]-Overriding bean definition for bean 'loanApplicationRepository' with a different definition: replacing [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null] with [Root bean: class [org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null]
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$930a9822] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 18:58:13 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 18:58:13 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 18:58:13 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 1695 ms
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 18:58:14 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 18:58:14 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:58:14 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 18:58:14 [restartedMain] INFO 	org.hibernate.Version-[Version.java:37]-HHH000412: Hibernate Core {5.0.12.Final}
+2017-04-21 18:58:14 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:213]-HHH000206: hibernate.properties not found
+2017-04-21 18:58:14 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:317]-HHH000021: Bytecode provider name : javassist
+2017-04-21 18:58:14 [restartedMain] INFO 	o.h.annotations.common.Version-[JavaReflectionManager.java:66]-HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2017-04-21 18:58:14 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 18:58:14 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 18:58:14 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-1 - Started.
+2017-04-21 18:58:14 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 18:58:14 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 18:58:15 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 18:58:15 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:58:15 [restartedMain] WARN 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:550]-Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtraction': Unsatisfied dependency expressed through field 'excelExtractionService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'excelExtractionServiceImpl': Unsatisfied dependency expressed through field 'OperatingStatementDetailsService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'operatingStatementDetailsServiceImpl': Unsatisfied dependency expressed through field 'operatingStatementDetailsRepository'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'operatingStatementDetailsRepository': Cannot create inner bean '(inner bean)#23e1c16b' of type [org.springframework.orm.jpa.SharedEntityManagerCreator] while setting bean property 'entityManager'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#23e1c16b': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'entityManagerFactory' available
+2017-04-21 18:58:15 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 18:58:15 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-1 - Close initiated...
+2017-04-21 18:58:15 [restartedMain] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-1 - Closed.
+2017-04-21 18:58:15 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Stopping service Tomcat
+2017-04-21 18:58:15 [restartedMain] INFO 	o.s.b.a.l.AutoConfigurationReportLoggingInitializer-[AutoConfigurationReportLoggingInitializer.java:101]-
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2017-04-21 18:58:15 [restartedMain] ERROR	o.s.b.d.LoggingFailureAnalysisReporter-[LoggingFailureAnalysisReporter.java:42]-
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field operatingStatementDetailsRepository in com.capitaworld.service.loans.service.fundseeker.corporate.impl.OperatingStatementDetailsServiceImpl required a bean named 'entityManagerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'entityManagerFactory' in your configuration.
+
+2017-04-21 19:03:49 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 1268 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 19:03:49 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 19:03:49 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3eec5bac: startup date [Fri Apr 21 19:03:49 IST 2017]; root of context hierarchy
+2017-04-21 19:03:49 [background-preinit] INFO 	o.h.validator.internal.util.Version-[Version.java:30]-HV000001: Hibernate Validator 5.3.4.Final
+2017-04-21 19:03:50 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$86831770] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 19:03:50 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 19:03:50 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 19:03:50 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 1646 ms
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 19:03:50 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 19:03:50 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:03:50 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 19:03:51 [restartedMain] INFO 	org.hibernate.Version-[Version.java:37]-HHH000412: Hibernate Core {5.0.12.Final}
+2017-04-21 19:03:51 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:213]-HHH000206: hibernate.properties not found
+2017-04-21 19:03:51 [restartedMain] INFO 	org.hibernate.cfg.Environment-[Environment.java:317]-HHH000021: Bytecode provider name : javassist
+2017-04-21 19:03:51 [restartedMain] INFO 	o.h.annotations.common.Version-[JavaReflectionManager.java:66]-HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2017-04-21 19:03:51 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 19:03:51 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-1 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 19:03:51 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-1 - Started.
+2017-04-21 19:03:51 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 19:03:51 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 19:03:52 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerAdapter-[RequestMappingHandlerAdapter.java:534]-Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3eec5bac: startup date [Fri Apr 21 19:03:49 IST 2017]; root of context hierarchy
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/in_active_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.inActive(org.json.simple.JSONObject)
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/ping],methods=[GET]}" onto public java.lang.String com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.getPing()
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/read_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.extractCMA(org.json.simple.JSONObject)
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2017-04-21 19:03:52 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.b.a.w.WebMvcAutoConfiguration$WelcomePageHandlerMapping-[WebMvcAutoConfiguration.java:525]-Adding welcome page: class path resource [static/index.html]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.b.d.a.OptionalLiveReloadServer-[OptionalLiveReloadServer.java:58]-LiveReload server is running on port 35729
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:431]-Registering beans for JMX exposure on startup
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:916]-Bean with name 'loansDataStore' has been autodetected for JMX exposure
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:671]-Located MBean 'loansDataStore': registering with JMX server as MBean [com.zaxxer.hikari:name=loansDataStore,type=HikariDataSource]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Initializing ProtocolHandler ["http-nio-8282"]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Starting ProtocolHandler [http-nio-8282]
+2017-04-21 19:03:53 [restartedMain] INFO 	o.a.tomcat.util.net.NioSelectorPool-[DirectJDKLog.java:179]-Using a shared selector for servlet write/read
+2017-04-21 19:03:53 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:198]-Tomcat started on port(s): 8282 (http)
+2017-04-21 19:03:53 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:57]-Started LoansMain in 4.764 seconds (JVM running for 5.224)
+2017-04-21 19:04:16 [Thread-6] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:987]-Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3eec5bac: startup date [Fri Apr 21 19:03:49 IST 2017]; root of context hierarchy
+2017-04-21 19:04:16 [Thread-6] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:449]-Unregistering JMX-exposed beans on shutdown
+2017-04-21 19:04:16 [Thread-6] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanRegistrationSupport.java:241]-Unregistering JMX-exposed beans
+2017-04-21 19:04:16 [Thread-6] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:16 [Thread-6] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-1 - Close initiated...
+2017-04-21 19:04:16 [Thread-6] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-1 - Closed.
+2017-04-21 19:04:16 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 1268 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 19:04:16 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 19:04:16 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@7b0767cd: startup date [Fri Apr 21 19:04:16 IST 2017]; root of context hierarchy
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$86831770] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 19:04:17 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 479 ms
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 19:04:17 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:17 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 19:04:17 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 19:04:17 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-2 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 19:04:17 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-2 - Started.
+2017-04-21 19:04:17 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 19:04:17 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 19:04:17 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerAdapter-[RequestMappingHandlerAdapter.java:534]-Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@7b0767cd: startup date [Fri Apr 21 19:04:16 IST 2017]; root of context hierarchy
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/in_active_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.inActive(org.json.simple.JSONObject)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/ping],methods=[GET]}" onto public java.lang.String com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.getPing()
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/read_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.extractCMA(org.json.simple.JSONObject)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.b.a.w.WebMvcAutoConfiguration$WelcomePageHandlerMapping-[WebMvcAutoConfiguration.java:525]-Adding welcome page: class path resource [static/index.html]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.b.d.a.OptionalLiveReloadServer-[OptionalLiveReloadServer.java:58]-LiveReload server is running on port 35729
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:431]-Registering beans for JMX exposure on startup
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:916]-Bean with name 'loansDataStore' has been autodetected for JMX exposure
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:671]-Located MBean 'loansDataStore': registering with JMX server as MBean [com.zaxxer.hikari:name=loansDataStore,type=HikariDataSource]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Initializing ProtocolHandler ["http-nio-8282"]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Starting ProtocolHandler [http-nio-8282]
+2017-04-21 19:04:17 [restartedMain] INFO 	o.a.tomcat.util.net.NioSelectorPool-[DirectJDKLog.java:179]-Using a shared selector for servlet write/read
+2017-04-21 19:04:17 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:198]-Tomcat started on port(s): 8282 (http)
+2017-04-21 19:04:17 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:57]-Started LoansMain in 1.009 seconds (JVM running for 29.484)
+2017-04-21 19:04:31 [Thread-10] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:987]-Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@7b0767cd: startup date [Fri Apr 21 19:04:16 IST 2017]; root of context hierarchy
+2017-04-21 19:04:31 [Thread-10] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:449]-Unregistering JMX-exposed beans on shutdown
+2017-04-21 19:04:31 [Thread-10] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanRegistrationSupport.java:241]-Unregistering JMX-exposed beans
+2017-04-21 19:04:31 [Thread-10] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:31 [Thread-10] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-2 - Close initiated...
+2017-04-21 19:04:31 [Thread-10] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-2 - Closed.
+2017-04-21 19:04:31 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 1268 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 19:04:31 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 19:04:31 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1d70f0b5: startup date [Fri Apr 21 19:04:31 IST 2017]; root of context hierarchy
+2017-04-21 19:04:31 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$86831770] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 19:04:31 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 19:04:31 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 19:04:31 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 454 ms
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 19:04:31 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 19:04:31 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:31 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 19:04:31 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 19:04:31 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-3 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 19:04:31 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-3 - Started.
+2017-04-21 19:04:31 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 19:04:31 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 19:04:31 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 19:04:31 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerAdapter-[RequestMappingHandlerAdapter.java:534]-Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1d70f0b5: startup date [Fri Apr 21 19:04:31 IST 2017]; root of context hierarchy
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/in_active_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.inActive(org.json.simple.JSONObject)
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/ping],methods=[GET]}" onto public java.lang.String com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.getPing()
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/read_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.extractCMA(org.json.simple.JSONObject)
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.b.a.w.WebMvcAutoConfiguration$WelcomePageHandlerMapping-[WebMvcAutoConfiguration.java:525]-Adding welcome page: class path resource [static/index.html]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.b.d.a.OptionalLiveReloadServer-[OptionalLiveReloadServer.java:58]-LiveReload server is running on port 35729
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:431]-Registering beans for JMX exposure on startup
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:916]-Bean with name 'loansDataStore' has been autodetected for JMX exposure
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:671]-Located MBean 'loansDataStore': registering with JMX server as MBean [com.zaxxer.hikari:name=loansDataStore,type=HikariDataSource]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Initializing ProtocolHandler ["http-nio-8282"]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Starting ProtocolHandler [http-nio-8282]
+2017-04-21 19:04:32 [restartedMain] INFO 	o.a.tomcat.util.net.NioSelectorPool-[DirectJDKLog.java:179]-Using a shared selector for servlet write/read
+2017-04-21 19:04:32 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:198]-Tomcat started on port(s): 8282 (http)
+2017-04-21 19:04:32 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:57]-Started LoansMain in 0.879 seconds (JVM running for 43.915)
+2017-04-21 19:06:58 [Thread-16] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:987]-Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1d70f0b5: startup date [Fri Apr 21 19:04:31 IST 2017]; root of context hierarchy
+2017-04-21 19:06:58 [Thread-16] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:449]-Unregistering JMX-exposed beans on shutdown
+2017-04-21 19:06:58 [Thread-16] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanRegistrationSupport.java:241]-Unregistering JMX-exposed beans
+2017-04-21 19:06:58 [Thread-16] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:548]-Closing JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:06:58 [Thread-16] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:204]-HikariPool-3 - Close initiated...
+2017-04-21 19:06:58 [Thread-16] INFO 	com.zaxxer.hikari.pool.HikariPool-[HikariPool.java:241]-HikariPool-3 - Closed.
+2017-04-21 19:06:59 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:48]-Starting LoansMain on Hiren with PID 1268 (H:\STS_Loans\project\service-loans\service-loans\target\classes started by hiren in H:\STS_Loans\project\service-loans\service-loans)
+2017-04-21 19:06:59 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[SpringApplication.java:637]-No active profile set, falling back to default profiles: default
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.b.c.e.AnnotationConfigEmbeddedWebApplicationContext-[AbstractApplicationContext.java:582]-Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1531584: startup date [Fri Apr 21 19:06:59 IST 2017]; root of context hierarchy
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker-[PostProcessorRegistrationDelegate.java:325]-Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$86831770] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:89]-Tomcat initialized with port(s): 8282 (http)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.a.catalina.core.StandardService-[DirectJDKLog.java:179]-Starting service Tomcat
+2017-04-21 19:06:59 [restartedMain] INFO 	o.a.catalina.core.StandardEngine-[DirectJDKLog.java:179]-Starting Servlet Engine: Apache Tomcat/8.5.11
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.a.c.c.C.[.[localhost].[/loans]-[DirectJDKLog.java:179]-Initializing Spring embedded WebApplicationContext
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.web.context.ContextLoader-[EmbeddedWebApplicationContext.java:276]-Root WebApplicationContext: initialization completed in 475 ms
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'dispatcherServlet' to [/]
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.ServletRegistrationBean-[ServletRegistrationBean.java:190]-Mapping servlet: 'webServlet' to [/h2-console/*]
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-04-21 19:06:59 [localhost-startStop-1] INFO 	o.s.b.w.s.FilterRegistrationBean-[AbstractFilterRegistrationBean.java:258]-Mapping filter: 'requestContextFilter' to: [/*]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[LocalContainerEntityManagerFactoryBean.java:349]-Building JPA container EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:06:59 [restartedMain] INFO 	o.h.jpa.internal.util.LogHelper-[LogHelper.java:31]-HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2017-04-21 19:06:59 [restartedMain] WARN 	org.hibernate.orm.deprecation-[EntityManagerFactoryBuilderImpl.java:785]-HHH90000006: Attempted to specify unsupported NamingStrategy via setting [hibernate.ejb.naming_strategy]; NamingStrategy has been removed in favor of the split ImplicitNamingStrategy and PhysicalNamingStrategy; use [hibernate.implicit_naming_strategy] or [hibernate.physical_naming_strategy], respectively, instead.
+2017-04-21 19:06:59 [restartedMain] WARN 	com.zaxxer.hikari.HikariConfig-[HikariConfig.java:804]-HikariPool-4 - idleTimeout is close to or more than maxLifetime, disabling it.
+2017-04-21 19:06:59 [restartedMain] INFO 	com.zaxxer.hikari.HikariDataSource-[HikariDataSource.java:93]-HikariPool-4 - Started.
+2017-04-21 19:06:59 [restartedMain] INFO 	org.hibernate.dialect.Dialect-[Dialect.java:156]-HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2017-04-21 19:06:59 [restartedMain] WARN 	o.h.b.i.SessionFactoryBuilderImpl-[SessionFactoryBuilderImpl.java:648]-Unrecognized hbm2ddl_auto value : none.  Supported values include create, create-drop, update, and validate.  Ignoring
+2017-04-21 19:06:59 [restartedMain] INFO 	o.h.h.i.QueryTranslatorFactoryInitiator-[QueryTranslatorFactoryInitiator.java:47]-HHH000397: Using ASTQueryTranslatorFactory
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.o.j.LocalContainerEntityManagerFactoryBean-[AbstractEntityManagerFactoryBean.java:379]-Initialized JPA EntityManagerFactory for persistence unit 'default'
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerAdapter-[RequestMappingHandlerAdapter.java:534]-Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1531584: startup date [Fri Apr 21 19:06:59 IST 2017]; root of context hierarchy
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/in_active_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.inActive(org.json.simple.JSONObject)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/ping],methods=[GET]}" onto public java.lang.String com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.getPing()
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/cw_excel/read_cma],methods=[POST],consumes=[application/json],produces=[application/json]}" onto public org.springframework.http.ResponseEntity<com.capitaworld.service.loans.model.LoansResponse> com.capitaworld.service.loans.controller.fundseeker.corporate.ExcelExtraction.extractCMA(org.json.simple.JSONObject)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.m.m.a.RequestMappingHandlerMapping-[AbstractHandlerMethodMapping.java:543]-Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.w.s.h.SimpleUrlHandlerMapping-[AbstractUrlHandlerMapping.java:362]-Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.b.a.w.WebMvcAutoConfiguration$WelcomePageHandlerMapping-[WebMvcAutoConfiguration.java:525]-Adding welcome page: class path resource [static/index.html]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.b.d.a.OptionalLiveReloadServer-[OptionalLiveReloadServer.java:58]-LiveReload server is running on port 35729
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:431]-Registering beans for JMX exposure on startup
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:916]-Bean with name 'loansDataStore' has been autodetected for JMX exposure
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.j.e.a.AnnotationMBeanExporter-[MBeanExporter.java:671]-Located MBean 'loansDataStore': registering with JMX server as MBean [com.zaxxer.hikari:name=loansDataStore,type=HikariDataSource]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Initializing ProtocolHandler ["http-nio-8282"]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.a.coyote.http11.Http11NioProtocol-[DirectJDKLog.java:179]-Starting ProtocolHandler [http-nio-8282]
+2017-04-21 19:06:59 [restartedMain] INFO 	o.a.tomcat.util.net.NioSelectorPool-[DirectJDKLog.java:179]-Using a shared selector for servlet write/read
+2017-04-21 19:06:59 [restartedMain] INFO 	o.s.b.c.e.t.TomcatEmbeddedServletContainer-[TomcatEmbeddedServletContainer.java:198]-Tomcat started on port(s): 8282 (http)
+2017-04-21 19:06:59 [restartedMain] INFO 	c.c.service.loans.boot.LoansMain-[StartupInfoLogger.java:57]-Started LoansMain in 0.891 seconds (JVM running for 191.711)

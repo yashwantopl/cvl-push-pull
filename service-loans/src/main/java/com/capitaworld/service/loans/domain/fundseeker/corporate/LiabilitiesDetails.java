@@ -10,18 +10,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 @Entity
+@Table(name="fs_corporate_cma_liabilities_details")
 public class LiabilitiesDetails implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name="advance_payments_from_customers")
@@ -133,11 +135,23 @@ public class LiabilitiesDetails implements Serializable{
 	private Double whichBpAndBd;
 
 	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster fsLoanApplicationMaster;
+	
+	
+	public Long getStorageDetailsId() {
+		return storageDetailsId;
+	}
+
+	public void setStorageDetailsId(Long storageDetailsId) {
+		this.storageDetailsId = storageDetailsId;
+	}
 
 	public Long getId() {
 		return this.id;
