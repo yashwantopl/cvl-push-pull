@@ -14,6 +14,10 @@ public interface IndustrySectorRepository extends JpaRepository<IndustrySectorDe
 	@Modifying
 	@Query("update IndustrySectorDetail isd set isd.isActive = false where isd.applicationId =:applicationId and isd.isActive = true")
 	public int inActiveMappingByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query("update IndustrySectorDetail isd set isd.isActive = false where isd.fpProductId =:fpProductId and isd.isActive = true")
+	public int inActiveMappingByFpProductId(@Param("fpProductId") Long fpProductId);
 
 	@Query("select o.industryId from IndustrySectorDetail o where o.sectorId = :sectorId")
 	public Long findOneBySectorId(@Param("sectorId")Long sectorId);

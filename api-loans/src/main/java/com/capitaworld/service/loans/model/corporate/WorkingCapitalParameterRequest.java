@@ -104,6 +104,14 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private List<DataRequest> industrylist = Collections.emptyList();
 
 	private List<DataRequest> sectorlist = Collections.emptyList();
+	
+	private List<DataRequest> countryList = Collections.emptyList();
+	
+	private List<DataRequest> stateList = Collections.emptyList();
+	
+	private List<DataRequest> cityList = Collections.emptyList();
+	
+
 
 	public WorkingCapitalParameterRequest() {
 	}
@@ -482,6 +490,56 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setSectorlist(List<DataRequest> sectorlist) {
 		this.sectorlist = sectorlist;
 	}
+
+
+
+
+
+	public List<DataRequest> getStateList() {
+		return stateList;
+	}
+
+
+
+
+
+	public void setStateList(List<DataRequest> stateList) {
+		this.stateList = stateList;
+	}
+
+
+
+
+
+	public List<DataRequest> getCityList() {
+		return cityList;
+	}
+
+
+
+
+
+	public void setCityList(List<DataRequest> cityList) {
+		this.cityList = cityList;
+	}
+
+
+
+
+
+	public List<DataRequest> getCountryList() {
+		return countryList;
+	}
+
+
+
+
+
+	public void setCountryList(List<DataRequest> countryList) {
+		this.countryList = countryList;
+	}
+	
+	
 
 
 
