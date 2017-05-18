@@ -206,4 +206,5 @@ public class FutureFinancialEstimatesDetail implements Serializable {
 		this.sales = sales;
 	}
 
+	
 }

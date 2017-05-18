@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
@@ -31,16 +33,23 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoa
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
 public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
+
+	@Autowired
+	private Environment environment;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -65,6 +74,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PrimaryCarLoanDetailRepository primaryCarLoanDetailRepository;
+
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -157,6 +172,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request);
+				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
+				int userMainType = CommonUtils.getUserMainType(master.getProductId());
+				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+					request.setLoanTypeMain(CommonUtils.CORPORATE);
+				} else {
+					request.setLoanTypeMain(CommonUtils.RETAIL);
+				}
+				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				requests.add(request);
 			}
 			return requests;
@@ -199,7 +222,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case PERSONAL_LOAN:
 				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
@@ -251,7 +274,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationID(applicationId, userId);
+				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 				break;
 			case PERSONAL_LOAN:
 				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
@@ -280,6 +303,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			logger.error("Error while Locking Final Information");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public UserResponse setLastAccessApplication(Long applicationId, Long userId) throws Exception {
+		try {
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setLastAccessApplicantId(applicationId);
+			usersRequest.setId(userId);
+			UsersClient client = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
+			return client.setLastAccessApplicant(usersRequest);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+
+		}
+
+	}
+
+	private boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId) {
+		if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
+			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+		} else {
+			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		}
 	}
 

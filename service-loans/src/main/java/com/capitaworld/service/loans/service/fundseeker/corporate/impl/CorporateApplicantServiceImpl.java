@@ -91,7 +91,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		} catch (Exception e) {
 			logger.error("Error while Saving Corporate Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -109,11 +109,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(applicationId));
+			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
+			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -178,7 +181,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 
 		// Setting Administrative Address
-		if (from.isSameAs()) {
+		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
 			if (from.getFirstAddress() != null) {
 				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
 				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
@@ -243,8 +246,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
-			if(sectorIndustryMappingRepository.findIndustryBySectorId(id)!=null)
-			subSectorListRequest.setIndustryId(sectorIndustryMappingRepository.findIndustryBySectorId(id));
+			if (industrySectorRepository.findOneBySectorId(id) != null)
+				subSectorListRequest.setIndustryId(industrySectorRepository.findOneBySectorId(id));
+			if (sectorIndustryMappingRepository.findIndustryBySectorId(id) != null)
+				subSectorListRequest.setIndustryId(sectorIndustryMappingRepository.findIndustryBySectorId(id));
 			subSectorListRequest.setSectorId(id);
 			subSectorListRequest.setSubSectorIdList(subSectorMappingRepository.getSectorListByIndustryList(id));
 			subSectorListRequests.add(subSectorListRequest);

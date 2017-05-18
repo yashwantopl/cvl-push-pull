@@ -24,7 +24,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CityListByStateIdListClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.IndustryClient;
 import com.capitaworld.service.oneform.client.SectorClient;
@@ -37,7 +36,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	@Autowired
 	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
 
-	@Autowired
+	@Autowired	
 	private IndustrySectorRepository industrySectorRepository;
 	
 	@Autowired 

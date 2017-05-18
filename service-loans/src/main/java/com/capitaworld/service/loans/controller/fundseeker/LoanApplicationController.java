@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.users.model.UserResponse;
 
 @RestController
 @RequestMapping("/loan_application")
@@ -49,7 +50,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
-//			loanApplicationService.saveOrUpdate(commonRequest);
+			loanApplicationService.saveOrUpdate(commonRequest, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -152,6 +153,35 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/set_last_application_access/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> setLastApplicationAccess(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("applicationId Require to Set last Access Profile ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			UserResponse userResponse = loanApplicationService.setLastAccessApplication(applicationId, userId);
+			if (userResponse != null && userResponse.getStatus() == 200) {
+				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse.setData(userResponse);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while Setting Last Access profile==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

@@ -134,8 +134,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (sectorIdList == null) {
+			if (sectorIdList == null) {	
 				logger.warn("sectorIdList  Require to get sectors Details ==>" + sectorIdList);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);

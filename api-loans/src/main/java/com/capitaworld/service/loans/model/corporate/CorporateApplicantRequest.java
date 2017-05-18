@@ -44,7 +44,7 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Address secondAddress;
 
-	private boolean sameAs;
+	private Boolean sameAs;
 
 	private String websiteAddress;
 
@@ -147,11 +147,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.organisationName = organisationName;
 	}
 
-	public boolean isSameAs() {
+	public Boolean getSameAs() {
 		return sameAs;
 	}
 
-	public void setSameAs(boolean sameAs) {
+	public void setSameAs(Boolean sameAs) {
 		this.sameAs = sameAs;
 	}
 

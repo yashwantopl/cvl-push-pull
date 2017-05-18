@@ -9,10 +9,11 @@ public class CommonUtils {
 	public static final String USER_ID = "userId";
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
-	public static final String CORPORATE = "corporate";
-	public static final String RETAIL = "retail";
+	public static final String CORPORATE = "Corporate";
+	public static final String RETAIL = "Retail";
 	public static final String ONE_FORM = "oneForm";
-
+	public static final String USER_CLIENT_URL = "userURL";
+	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
@@ -94,7 +95,6 @@ public class CommonUtils {
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode" };
 		public static final String ID = "id";
-		
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "statusId",
 				"occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
@@ -120,7 +120,6 @@ public class CommonUtils {
 		public static final int GARRANTOR = 3;
 
 	}
-	
 
 	public interface UserMainType {
 		public static final int RETAIL = 1;

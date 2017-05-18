@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.model.corporate;
 
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -14,56 +13,53 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class WorkingCapitalParameterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	
-	
-
 	private Integer currency;
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay=false;
+	private Boolean isCollateralDisplay = false;
 
-	private Boolean isCollateralMandatory=false;
+	private Boolean isCollateralMandatory = false;
 
-	private Boolean isCreditRatingDisplay=false;
+	private Boolean isCreditRatingDisplay = false;
 
-	private Boolean isCreditRatingMandatory=false;
+	private Boolean isCreditRatingMandatory = false;
 
-	private Boolean isDebtEquityDisplay=false;
+	private Boolean isDebtEquityDisplay = false;
 
-	private Boolean isDebtEquityMandatory=false;
+	private Boolean isDebtEquityMandatory = false;
 
-	private Boolean isEstablishmentDisplay=false;
+	private Boolean isEstablishmentDisplay = false;
 
-	private Boolean isEstablishmentMandatory=false;
+	private Boolean isEstablishmentMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isIndustrySectorDisplay=false;
+	private Boolean isIndustrySectorDisplay = false;
 
-	private Boolean isIndustrySectorMandatory=false;
+	private Boolean isIndustrySectorMandatory = false;
 
-	private Boolean isInvestmentSizeDisplay=false;
+	private Boolean isInvestmentSizeDisplay = false;
 
-	private Boolean isInvestmentSizeMandatory=false;
+	private Boolean isInvestmentSizeMandatory = false;
 
-	private Boolean isNetworthDisplay=false;
+	private Boolean isNetworthDisplay = false;
 
-	private Boolean isNetworthMandatory=false;
+	private Boolean isNetworthMandatory = false;
 
-	private Boolean isPastYearTurnoverDisplay=false;
+	private Boolean isPastYearTurnoverDisplay = false;
 
-	private Boolean isPastYearTurnoverMandatory=false;
+	private Boolean isPastYearTurnoverMandatory = false;
 
-	private Boolean isProfitabilityHistoryDisplay=false;
+	private Boolean isProfitabilityHistoryDisplay = false;
 
-	private Boolean isProfitabilityHistoryMandatory=false;
+	private Boolean isProfitabilityHistoryMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
+	private Boolean isTenureMandatory = false;
 
 	private Integer longTermCreditRating;
 
@@ -100,28 +96,22 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Integer shortTermCreditRating;
 
 	private Long uninterestedIndustry;
-	
+
 	private List<DataRequest> industrylist = Collections.emptyList();
 
 	private List<DataRequest> sectorlist = Collections.emptyList();
-	
-	private List<DataRequest> countryList = Collections.emptyList();
-	
-	private List<DataRequest> stateList = Collections.emptyList();
-	
-	private List<DataRequest> cityList = Collections.emptyList();
-	
 
+	private List<DataRequest> countryList = Collections.emptyList();
+
+	private List<DataRequest> stateList = Collections.emptyList();
+
+	private List<DataRequest> cityList = Collections.emptyList();
 
 	public WorkingCapitalParameterRequest() {
 	}
 
-
-	
-
-
 	public Integer getCurrency() {
-		return this.currency;
+		return currency;
 	}
 
 	public void setCurrency(Integer currency) {
@@ -129,16 +119,15 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getDenomination() {
-		return this.denomination;
+		return denomination;
 	}
 
 	public void setDenomination(Integer denomination) {
 		this.denomination = denomination;
 	}
 
-
 	public Boolean getIsCollateralDisplay() {
-		return this.isCollateralDisplay;
+		return isCollateralDisplay;
 	}
 
 	public void setIsCollateralDisplay(Boolean isCollateralDisplay) {
@@ -146,7 +135,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsCollateralMandatory() {
-		return this.isCollateralMandatory;
+		return isCollateralMandatory;
 	}
 
 	public void setIsCollateralMandatory(Boolean isCollateralMandatory) {
@@ -154,7 +143,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsCreditRatingDisplay() {
-		return this.isCreditRatingDisplay;
+		return isCreditRatingDisplay;
 	}
 
 	public void setIsCreditRatingDisplay(Boolean isCreditRatingDisplay) {
@@ -162,7 +151,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsCreditRatingMandatory() {
-		return this.isCreditRatingMandatory;
+		return isCreditRatingMandatory;
 	}
 
 	public void setIsCreditRatingMandatory(Boolean isCreditRatingMandatory) {
@@ -170,7 +159,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsDebtEquityDisplay() {
-		return this.isDebtEquityDisplay;
+		return isDebtEquityDisplay;
 	}
 
 	public void setIsDebtEquityDisplay(Boolean isDebtEquityDisplay) {
@@ -178,7 +167,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsDebtEquityMandatory() {
-		return this.isDebtEquityMandatory;
+		return isDebtEquityMandatory;
 	}
 
 	public void setIsDebtEquityMandatory(Boolean isDebtEquityMandatory) {
@@ -186,7 +175,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsEstablishmentDisplay() {
-		return this.isEstablishmentDisplay;
+		return isEstablishmentDisplay;
 	}
 
 	public void setIsEstablishmentDisplay(Boolean isEstablishmentDisplay) {
@@ -194,7 +183,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsEstablishmentMandatory() {
-		return this.isEstablishmentMandatory;
+		return isEstablishmentMandatory;
 	}
 
 	public void setIsEstablishmentMandatory(Boolean isEstablishmentMandatory) {
@@ -202,7 +191,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsGeographicalDisplay() {
-		return this.isGeographicalDisplay;
+		return isGeographicalDisplay;
 	}
 
 	public void setIsGeographicalDisplay(Boolean isGeographicalDisplay) {
@@ -210,7 +199,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsGeographicalMandatory() {
-		return this.isGeographicalMandatory;
+		return isGeographicalMandatory;
 	}
 
 	public void setIsGeographicalMandatory(Boolean isGeographicalMandatory) {
@@ -218,7 +207,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsIndustrySectorDisplay() {
-		return this.isIndustrySectorDisplay;
+		return isIndustrySectorDisplay;
 	}
 
 	public void setIsIndustrySectorDisplay(Boolean isIndustrySectorDisplay) {
@@ -226,7 +215,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsIndustrySectorMandatory() {
-		return this.isIndustrySectorMandatory;
+		return isIndustrySectorMandatory;
 	}
 
 	public void setIsIndustrySectorMandatory(Boolean isIndustrySectorMandatory) {
@@ -234,7 +223,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsInvestmentSizeDisplay() {
-		return this.isInvestmentSizeDisplay;
+		return isInvestmentSizeDisplay;
 	}
 
 	public void setIsInvestmentSizeDisplay(Boolean isInvestmentSizeDisplay) {
@@ -242,7 +231,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsInvestmentSizeMandatory() {
-		return this.isInvestmentSizeMandatory;
+		return isInvestmentSizeMandatory;
 	}
 
 	public void setIsInvestmentSizeMandatory(Boolean isInvestmentSizeMandatory) {
@@ -250,7 +239,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsNetworthDisplay() {
-		return this.isNetworthDisplay;
+		return isNetworthDisplay;
 	}
 
 	public void setIsNetworthDisplay(Boolean isNetworthDisplay) {
@@ -258,7 +247,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsNetworthMandatory() {
-		return this.isNetworthMandatory;
+		return isNetworthMandatory;
 	}
 
 	public void setIsNetworthMandatory(Boolean isNetworthMandatory) {
@@ -266,7 +255,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsPastYearTurnoverDisplay() {
-		return this.isPastYearTurnoverDisplay;
+		return isPastYearTurnoverDisplay;
 	}
 
 	public void setIsPastYearTurnoverDisplay(Boolean isPastYearTurnoverDisplay) {
@@ -274,7 +263,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsPastYearTurnoverMandatory() {
-		return this.isPastYearTurnoverMandatory;
+		return isPastYearTurnoverMandatory;
 	}
 
 	public void setIsPastYearTurnoverMandatory(Boolean isPastYearTurnoverMandatory) {
@@ -282,7 +271,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsProfitabilityHistoryDisplay() {
-		return this.isProfitabilityHistoryDisplay;
+		return isProfitabilityHistoryDisplay;
 	}
 
 	public void setIsProfitabilityHistoryDisplay(Boolean isProfitabilityHistoryDisplay) {
@@ -290,7 +279,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsProfitabilityHistoryMandatory() {
-		return this.isProfitabilityHistoryMandatory;
+		return isProfitabilityHistoryMandatory;
 	}
 
 	public void setIsProfitabilityHistoryMandatory(Boolean isProfitabilityHistoryMandatory) {
@@ -298,7 +287,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsTenureDisplay() {
-		return this.isTenureDisplay;
+		return isTenureDisplay;
 	}
 
 	public void setIsTenureDisplay(Boolean isTenureDisplay) {
@@ -306,7 +295,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Boolean getIsTenureMandatory() {
-		return this.isTenureMandatory;
+		return isTenureMandatory;
 	}
 
 	public void setIsTenureMandatory(Boolean isTenureMandatory) {
@@ -314,7 +303,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getLongTermCreditRating() {
-		return this.longTermCreditRating;
+		return longTermCreditRating;
 	}
 
 	public void setLongTermCreditRating(Integer longTermCreditRating) {
@@ -322,7 +311,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMaxAgeEstablishment() {
-		return this.maxAgeEstablishment;
+		return maxAgeEstablishment;
 	}
 
 	public void setMaxAgeEstablishment(Integer maxAgeEstablishment) {
@@ -330,7 +319,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMaxCollateral() {
-		return this.maxCollateral;
+		return maxCollateral;
 	}
 
 	public void setMaxCollateral(BigDecimal maxCollateral) {
@@ -338,7 +327,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMaxDebtEquity() {
-		return this.maxDebtEquity;
+		return maxDebtEquity;
 	}
 
 	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
@@ -346,7 +335,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMaxInvestSize() {
-		return this.maxInvestSize;
+		return maxInvestSize;
 	}
 
 	public void setMaxInvestSize(BigDecimal maxInvestSize) {
@@ -354,7 +343,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMaxNetworth() {
-		return this.maxNetworth;
+		return maxNetworth;
 	}
 
 	public void setMaxNetworth(BigDecimal maxNetworth) {
@@ -362,7 +351,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMaxPastTurnover() {
-		return this.maxPastTurnover;
+		return maxPastTurnover;
 	}
 
 	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
@@ -370,7 +359,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMaxTenure() {
-		return this.maxTenure;
+		return maxTenure;
 	}
 
 	public void setMaxTenure(Integer maxTenure) {
@@ -378,7 +367,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMinAgeEstablishment() {
-		return this.minAgeEstablishment;
+		return minAgeEstablishment;
 	}
 
 	public void setMinAgeEstablishment(Integer minAgeEstablishment) {
@@ -386,7 +375,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMinCollateral() {
-		return this.minCollateral;
+		return minCollateral;
 	}
 
 	public void setMinCollateral(BigDecimal minCollateral) {
@@ -394,7 +383,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMinDebtEquity() {
-		return this.minDebtEquity;
+		return minDebtEquity;
 	}
 
 	public void setMinDebtEquity(BigDecimal minDebtEquity) {
@@ -402,7 +391,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMinInvestSize() {
-		return this.minInvestSize;
+		return minInvestSize;
 	}
 
 	public void setMinInvestSize(BigDecimal minInvestSize) {
@@ -410,7 +399,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMinNetworth() {
-		return this.minNetworth;
+		return minNetworth;
 	}
 
 	public void setMinNetworth(BigDecimal minNetworth) {
@@ -418,7 +407,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public BigDecimal getMinPastTurnover() {
-		return this.minPastTurnover;
+		return minPastTurnover;
 	}
 
 	public void setMinPastTurnover(BigDecimal minPastTurnover) {
@@ -426,17 +415,15 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMinTenure() {
-		return this.minTenure;
+		return minTenure;
 	}
 
 	public void setMinTenure(Integer minTenure) {
 		this.minTenure = minTenure;
 	}
 
-	
-
 	public String getProfitabilityHistory() {
-		return this.profitabilityHistory;
+		return profitabilityHistory;
 	}
 
 	public void setProfitabilityHistory(String profitabilityHistory) {
@@ -444,7 +431,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getShortTermCreditRating() {
-		return this.shortTermCreditRating;
+		return shortTermCreditRating;
 	}
 
 	public void setShortTermCreditRating(Integer shortTermCreditRating) {
@@ -452,98 +439,51 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Long getUninterestedIndustry() {
-		return this.uninterestedIndustry;
+		return uninterestedIndustry;
 	}
 
 	public void setUninterestedIndustry(Long uninterestedIndustry) {
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
 
-
-
-
-
 	public List<DataRequest> getIndustrylist() {
 		return industrylist;
 	}
-
-
-
-
 
 	public void setIndustrylist(List<DataRequest> industrylist) {
 		this.industrylist = industrylist;
 	}
 
-
-
-
-
 	public List<DataRequest> getSectorlist() {
 		return sectorlist;
 	}
-
-
-
-
 
 	public void setSectorlist(List<DataRequest> sectorlist) {
 		this.sectorlist = sectorlist;
 	}
 
+	public List<DataRequest> getCountryList() {
+		return countryList;
+	}
 
-
-
+	public void setCountryList(List<DataRequest> countryList) {
+		this.countryList = countryList;
+	}
 
 	public List<DataRequest> getStateList() {
 		return stateList;
 	}
 
-
-
-
-
 	public void setStateList(List<DataRequest> stateList) {
 		this.stateList = stateList;
 	}
-
-
-
-
 
 	public List<DataRequest> getCityList() {
 		return cityList;
 	}
 
-
-
-
-
 	public void setCityList(List<DataRequest> cityList) {
 		this.cityList = cityList;
 	}
-
-
-
-
-
-	public List<DataRequest> getCountryList() {
-		return countryList;
-	}
-
-
-
-
-
-	public void setCountryList(List<DataRequest> countryList) {
-		this.countryList = countryList;
-	}
-	
-	
-
-
-
-	
-	
 
 }

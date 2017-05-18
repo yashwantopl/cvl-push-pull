@@ -73,18 +73,20 @@ public class FutureFinancialEstimatesDetailsController {
 
 	}
 
-	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Future Financial Estimate Details ==>" + id);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("ID Require to get Future Financial Estimate Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			List<FutureFinancialEstimatesDetailRequest> response = futureFinancialEstiamateDetailsService
-					.getFutureFinancialEstimateDetailsList(id);
+					.getFutureEstimateDetailsList(userId, applicationId);
 			if (response != null && !response.isEmpty()) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setListData(response);
