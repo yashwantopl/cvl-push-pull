@@ -183,6 +183,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 						yearList.add(new FutureFinancialEstimatesDetailRequest(
 								currentYearForAfterDate + (i) + " - " + (currentYearForAfterDate + (i + 1))));
 					}
+					return yearList;
 				} else {
 					int currentYearForBeforeDate = cal.get(Calendar.YEAR) - 1;
 					for (int i = 0; i < tenure; i++) {
@@ -207,6 +208,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 						futureFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
 								futureFinancialYears.get(i).getId());
 						futureFinancialYears.remove(i);
+						recordSize = futureFinancialYears.size(); 
 					}
 					return getRequestFromDomain(futureFinancialYears);
 				} else {
