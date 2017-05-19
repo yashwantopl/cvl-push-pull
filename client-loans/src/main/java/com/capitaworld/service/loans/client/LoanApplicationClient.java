@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.client;
 
 import java.util.List;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -32,7 +35,11 @@ public class LoanApplicationClient {
 	public LoansResponse getLoanDetailsByUserIdList(List<Long> request) throws  LoansException {
 		String url = loanApplicationBaseUrl.concat(LOAN_APPLICATION_DETAILS_BY_USER_ID);
 		try {
-			return restTemplate.postForObject(url, request, LoansResponse.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<List<Long>> entity = new HttpEntity<List<Long>>(request, headers);
+		    return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
@@ -41,7 +48,11 @@ public class LoanApplicationClient {
 	public LoansResponse getUserNameByApplicationId(Long request) throws  LoansException {
 		String url = loanApplicationBaseUrl.concat(USERNAME_BY_APPLICATON_ID);
 		try {
-			return restTemplate.postForObject(url, request, LoansResponse.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
+		    return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();

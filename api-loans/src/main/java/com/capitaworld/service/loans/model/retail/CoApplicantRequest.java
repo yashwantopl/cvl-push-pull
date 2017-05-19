@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.model.Address;
 public class CoApplicantRequest {
 
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 	private String firstName;
 	private Integer relationshipWithApplicant;
@@ -52,6 +53,15 @@ public class CoApplicantRequest {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public String getFirstName() {

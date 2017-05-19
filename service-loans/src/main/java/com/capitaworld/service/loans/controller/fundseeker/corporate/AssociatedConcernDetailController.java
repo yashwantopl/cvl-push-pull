@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
@@ -42,7 +45,7 @@ public class AssociatedConcernDetailController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
@@ -61,6 +64,9 @@ public class AssociatedConcernDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				frameRequest.setClientId(clientId);
+			}
 			associatedConcernDetaillService.saveOrUpdate(frameRequest);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -86,7 +92,21 @@ public class AssociatedConcernDetailController {
 
 			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
 					.getAssociatedConcernsDetailList(id);
+			Integer currentYear = null;
+			if (!CommonUtils.isListNullOrEmpty(response)) {
+				currentYear = response.get(0).getCurrentYear();
+				if (currentYear != null) {
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(new Date());
+					currentYear = calendar.get(Calendar.YEAR);
+				}
+			} else {
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new Date());
+				currentYear = calendar.get(Calendar.YEAR);
+			}
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(currentYear);
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 

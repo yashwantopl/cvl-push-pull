@@ -119,9 +119,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				default:
 					continue;
 				}
-				logger.info("userId==>" + userId);
+				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()));
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
-				applicationMaster.setUserId(userId);
+				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()));
 				applicationMaster.setCreatedBy(userId);
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
@@ -130,7 +130,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setIsApplicantPrimaryFilled(true);
 				// later on we will validate and change it.
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
-				lockPrimary(applicationMaster.getId(), userId, applicationMaster.getProductId());
+				lockPrimary(applicationMaster.getId(), (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()), applicationMaster.getProductId());
 				logger.info("applicationMaster==>" + applicationMaster.toString());
 			}
 			return true;
