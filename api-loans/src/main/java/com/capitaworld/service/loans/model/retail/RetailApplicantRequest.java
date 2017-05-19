@@ -15,6 +15,7 @@ public class RetailApplicantRequest implements Serializable {
 
 	// Common Fields
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 
 	// Primary Fields
@@ -60,6 +61,15 @@ public class RetailApplicantRequest implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public void setId(Long id) {

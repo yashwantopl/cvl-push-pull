@@ -18,6 +18,8 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Long id;
 
+	private Long clientId;
+	
 	private Long applicationId;
 
 	private String aboutUs;
@@ -65,6 +67,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public Long getApplicationId() {

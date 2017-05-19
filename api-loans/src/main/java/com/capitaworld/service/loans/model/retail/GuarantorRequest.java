@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.model.Address;
 public class GuarantorRequest {
 
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 	private String firstName;
 	private Boolean isActive;
@@ -43,6 +44,14 @@ public class GuarantorRequest {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public Long getApplicationId() {
