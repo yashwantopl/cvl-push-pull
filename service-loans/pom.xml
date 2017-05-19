@@ -7,7 +7,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
   <artifactId>service-loans</artifactId>
-  
+	<version>0.0.1</version>  
     <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -63,11 +63,7 @@
 		</dependency>
 		<!--Excel Reading-->
 
-		<dependency>
-			<groupId>com.capitaworld.loans.service.parent</groupId>
-			<artifactId>api-loans</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
@@ -95,13 +91,18 @@
     		<version>0.0.1</version>
    		</dependency>
    		
+
    		<!-- api of one form -->
 		<dependency>
 			<groupId>com.capitaworld.oneform.service.parent</groupId>
 			<artifactId>client-oneform</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-   		
+		<dependency>
+			<groupId>com.capitaworld.api.loans</groupId>
+			<artifactId>api-loans</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

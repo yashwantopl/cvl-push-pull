@@ -35,7 +35,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest, Long userId) throws Exception {
 		try {
 			FinalTermLoanDetail termLoanDetail = termLoanDetailRepository
-					.getByApplicationAndUserId(termLoanRequest.getApplicationId(), userId);
+					.getByApplicationAndUserId(termLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId()));
 			if (termLoanDetail != null) {
 				// Inactive Previous Mapping
 				networkRepository.inActiveMappingByApplicationId(termLoanRequest.getApplicationId());

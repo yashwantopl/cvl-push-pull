@@ -39,6 +39,17 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 
 	private Date purchaseReimbursmentDate;
 
+	private Long clientId;
+	
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+
 	public String getCarModelName() {
 		return carModelName;
 	}
