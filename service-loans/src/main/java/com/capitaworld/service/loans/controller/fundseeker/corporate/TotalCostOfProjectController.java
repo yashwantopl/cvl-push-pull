@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,24 +16,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
-/**
- * @author Sanket
- *
- */
 @RestController
-@RequestMapping("/associated_concern_details")
-public class AssociatedConcernDetailController {
-
-	private static final Logger logger = LoggerFactory.getLogger(AssociatedConcernDetailController.class);
+@RequestMapping("/total_cost_of_project")
+public class TotalCostOfProjectController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(TotalCostOfProjectController.class);
 
 	@Autowired
-	private AssociatedConcernDetailService associatedConcernDetaillService;
+	private TotalCostOfProjectService totalCostOfProjectService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -49,26 +43,25 @@ public class AssociatedConcernDetailController {
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 		if (frameRequest == null) {
-			logger.warn("frameRequest can not be empty ==>" + frameRequest);
+			logger.warn("frameRequest must not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-
-		// application id must not be null
+		// application id and user id must not be null
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.OK.value()), HttpStatus.OK);
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
-
 		try {
 			frameRequest.setUserId(userId);
-			associatedConcernDetaillService.saveOrUpdate(frameRequest);
+			totalCostOfProjectService.saveOrUpdate(frameRequest);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Associated Concerns Details==>", e);
+			logger.error("Error while saving Total Cost Of Project Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -76,38 +69,25 @@ public class AssociatedConcernDetailController {
 
 	}
 
-	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	@RequestMapping(value = "/getList/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		// request must not be null
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Associated Concerns Details ==>" + id);
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("ID Require to get Total Cost Of Project ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
-					.getAssociatedConcernsDetailList(id);
-			Integer currentYear = null;
-			if (!CommonUtils.isListNullOrEmpty(response)) {
-				currentYear = response.get(0).getCurrentYear();
-				if (currentYear != null) {
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(new Date());
-					currentYear = calendar.get(Calendar.YEAR);
-				}
-			} else {
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(new Date());
-				currentYear = calendar.get(Calendar.YEAR);
-			}
+			List<TotalCostOfProjectRequest> response = totalCostOfProjectService.getCostOfProjectDetailList(applicationId, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setData(currentYear);
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Associated Concerns Details==>", e);
+			logger.error("Error while getting Achievement Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

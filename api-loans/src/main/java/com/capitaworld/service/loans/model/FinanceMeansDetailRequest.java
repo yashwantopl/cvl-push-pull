@@ -24,6 +24,8 @@ public class FinanceMeansDetailRequest implements Serializable {
 	private Double toBeIncurred;
 
 	private Double total;
+	
+	private Boolean isActive = true;
 
 	public FinanceMeansDetailRequest() {
 	}
@@ -75,6 +77,14 @@ public class FinanceMeansDetailRequest implements Serializable {
 
 	public void setTotal(Double total) {
 		this.total = total;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 }
