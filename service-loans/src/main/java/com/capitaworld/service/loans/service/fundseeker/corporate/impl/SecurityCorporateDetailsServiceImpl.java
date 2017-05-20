@@ -66,10 +66,10 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 	}
 
 	@Override
-	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id) throws Exception {
+	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws Exception {
 		try {
 			List<SecurityCorporateDetail> securityCorporateDetails = securityCorporateDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id);
+					.listSecurityCorporateDetailFromAppId(id,userId);
 			List<SecurityCorporateDetailRequest> securityCorporateDetailRequests = new ArrayList<SecurityCorporateDetailRequest>();
 
 			for (SecurityCorporateDetail detail : securityCorporateDetails) {

@@ -74,8 +74,9 @@ public class FinancialArrangementDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id , HttpServletRequest request) {
 		// request must not be null
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Financial Arrangement Details ==>" + id);
@@ -84,7 +85,7 @@ public class FinancialArrangementDetailsController {
 			}
 
 			List<FinancialArrangementsDetailRequest> response = financialArrangementDetailsService
-					.getFinancialArrangementDetailsList(id);
+					.getFinancialArrangementDetailsList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

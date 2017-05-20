@@ -75,8 +75,9 @@ public class GuarantorsCorporateDetailController {
 	}	
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
 		// request must not be null
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Guarantors Corporate Details ==>" + id);
@@ -85,7 +86,7 @@ public class GuarantorsCorporateDetailController {
 			}
 
 			List<GuarantorsCorporateDetailRequest> response = guarantorsCorporateDetailService
-					.getGuarantorsCorporateDetailList(id);
+					.getGuarantorsCorporateDetailList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

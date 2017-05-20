@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.ExistingProduct
  */
 public interface ExistingProductDetailsRepository extends JpaRepository<ExistingProductDetail, Long>{
 	
-	@Query("from ExistingProductDetail  a where a.applicationId.id=:id AND a.isActive=true")
-	public List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id);
+	@Query("from ExistingProductDetail  a where a.applicationId.id=:id and a.applicationId.userId =:userId AND a.isActive=true")
+	public List<ExistingProductDetail> listExistingProductFromAppId(@Param("id") Long id, @Param("userId") Long userId);
 
 }

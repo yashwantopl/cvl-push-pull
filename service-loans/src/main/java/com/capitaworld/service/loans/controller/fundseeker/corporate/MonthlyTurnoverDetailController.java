@@ -75,8 +75,9 @@ public class MonthlyTurnoverDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
 		// request must not be null
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Monthly Turnover Details ==>" + id);
@@ -84,7 +85,7 @@ public class MonthlyTurnoverDetailController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<MonthlyTurnoverDetailRequest> response = monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(id);
+			List<MonthlyTurnoverDetailRequest> response = monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

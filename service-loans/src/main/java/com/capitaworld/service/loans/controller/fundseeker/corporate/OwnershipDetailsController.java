@@ -75,7 +75,8 @@ public class OwnershipDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		// request must not be null
 		try {
 			if (id == null) {
@@ -84,7 +85,7 @@ public class OwnershipDetailsController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<OwnershipDetailRequest> response = ownershipDetailsService.getOwnershipDetailList(id);
+			List<OwnershipDetailRequest> response = ownershipDetailsService.getOwnershipDetailList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

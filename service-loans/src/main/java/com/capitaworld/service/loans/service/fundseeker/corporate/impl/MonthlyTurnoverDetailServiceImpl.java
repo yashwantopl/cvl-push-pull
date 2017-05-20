@@ -67,10 +67,10 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 	}
 
 	@Override
-	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id) throws Exception {
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws Exception {
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
-					.listMonthlyTurnoverFromAppId(id);
+					.listMonthlyTurnoverFromAppId(id,userId);
 			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
 
 			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
