@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -38,7 +39,7 @@ public class GuarantorController {
 	// Primary Portion
 	@RequestMapping(value = "${profile}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody GuarantorRequest applicantRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -54,7 +55,9 @@ public class GuarantorController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				applicantRequest.setClientId(clientId);
+			}
 			guarantorService.save(applicantRequest, applicantRequest.getApplicationId(), userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -70,10 +73,15 @@ public class GuarantorController {
 
 	@RequestMapping(value = "${profile}/get/{applicationId}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("id") Long id, HttpServletRequest request) {
+			@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null || id == null) {
 				logger.warn("applicationId and ID Require to get CoApplicant Profile Details. Application ID==>"
 						+ applicationId + " and ID==>" + id);
@@ -97,11 +105,13 @@ public class GuarantorController {
 	// Final Portion
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequest applicantRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				applicantRequest.setClientId(clientId);
+			}
 			if (applicantRequest == null) {
 				logger.warn("applicantRequest can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
@@ -129,11 +139,15 @@ public class GuarantorController {
 
 	@RequestMapping(value = "${final}/get/{applicationId}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("id") Long id, HttpServletRequest request) {
+			@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null || id == null) {
 				logger.warn("applicationId and ID Require to get CoApplicant Profile Details ==>" + applicationId
 						+ " and ID==>" + id);

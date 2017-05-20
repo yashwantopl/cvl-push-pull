@@ -31,7 +31,9 @@ import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.users.client.UsersClient;
@@ -44,22 +46,22 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
-	Environment environment;
+	private Environment environment;
 
 	@Autowired
-	LoanApplicationRepository loanApplicationRepository;
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
-	CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	RetailApplicantDetailRepository retailApplicantDetailRepository;
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 	
 	@Autowired
-	ProductMasterRepository productMasterRepository;
+	private ProductMasterRepository productMasterRepository;
 	
 	@Autowired
-	IndustrySectorRepository industrySectorRepository;
+	private IndustrySectorRepository industrySectorRepository;
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
@@ -280,4 +282,31 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return proposalDetailsList;
 	}
 
+	@Override
+	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request) {
+		ProposalCountResponse response = new ProposalCountResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.proposalCountOfFundProvider(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public ProposalCountResponse fundSeekerProposalCount(ProposalMappingRequest request) {
+		ProposalCountResponse response = new ProposalCountResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.proposalCountOfFundSeeker(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	
 }

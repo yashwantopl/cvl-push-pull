@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -41,10 +42,13 @@ public class WorkingCapitalLoanController {
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalWorkingCapitalLoanRequest capitalLoanRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				capitalLoanRequest.setClientId(clientId);
+			}
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + capitalLoanRequest);
 				return new ResponseEntity<LoansResponse>(
@@ -71,11 +75,15 @@ public class WorkingCapitalLoanController {
 
 	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+			Long userId = null;
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (userId == null || applicationId == null) {
 				logger.warn("ID and ApplicationId Require to get Final Working Details. ID==>" + userId
 						+ " Applcation ID ==>" + applicationId);

@@ -6,13 +6,13 @@ import java.io.Serializable;
  * @author Sanket
  *
  */
-public class MonthlyTurnoverDetailRequest implements Serializable{
+public class MonthlyTurnoverDetailRequest implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long id;
 
 	private Double amount;
@@ -20,6 +20,14 @@ public class MonthlyTurnoverDetailRequest implements Serializable{
 	private Boolean isActive = true;
 
 	private String monthName;
+
+	public MonthlyTurnoverDetailRequest() {
+
+	}
+
+	public MonthlyTurnoverDetailRequest(String monthName) {
+		this.monthName = monthName;
+	}
 
 	public Long getId() {
 		return id;
@@ -52,7 +60,5 @@ public class MonthlyTurnoverDetailRequest implements Serializable{
 	public void setMonthName(String monthName) {
 		this.monthName = monthName;
 	}
-	
-	
 
 }

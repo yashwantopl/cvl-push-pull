@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+
 import java.util.Date;
 
 
@@ -21,8 +24,9 @@ public class FinanceMeansDetail implements Serializable {
 	@Column(name="already_infused")
 	private Double alreadyInfused;
 
-	@Column(name="application_id")
-	private Long applicationId;
+	@ManyToOne
+	@JoinColumn(name="application_id")
+	private LoanApplicationMaster applicationId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -35,7 +39,7 @@ public class FinanceMeansDetail implements Serializable {
 	private Long financeMeansCategoryId;
 
 	@Column(name="is_active")
-	private byte isActive;
+	private Boolean isActive;
 
 	@Column(name="modified_by")
 	private Long modifiedBy;
@@ -68,11 +72,11 @@ public class FinanceMeansDetail implements Serializable {
 		this.alreadyInfused = alreadyInfused;
 	}
 
-	public Long getApplicationId() {
-		return this.applicationId;
+	public LoanApplicationMaster getApplicationId() {
+		return applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
+	public void setApplicationId(LoanApplicationMaster applicationId) {
 		this.applicationId = applicationId;
 	}
 
@@ -100,11 +104,11 @@ public class FinanceMeansDetail implements Serializable {
 		this.financeMeansCategoryId = financeMeansCategoryId;
 	}
 
-	public byte getIsActive() {
-		return this.isActive;
+	public Boolean getIsActive() {
+		return isActive;
 	}
 
-	public void setIsActive(byte isActive) {
+	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
 
