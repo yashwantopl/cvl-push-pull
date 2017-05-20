@@ -34,9 +34,9 @@ public class LoanApplicationRequest implements Serializable {
 	private Date createdDate;
 
 	private boolean hasAlreadyApplied;
-	
+
 	private String loanTypeMain;
-	
+
 	private String loanTypeSub;
 
 	public LoanApplicationRequest() {
@@ -87,11 +87,11 @@ public class LoanApplicationRequest implements Serializable {
 	}
 
 	public Double getTenure() {
-		return tenure;
+		return ((this.tenure != null && this.tenure > 0.00) ? this.tenure / 12 : null);
 	}
 
 	public void setTenure(Double tenure) {
-		this.tenure = tenure;
+		this.tenure = (tenure != null ? tenure * 12 : null);
 	}
 
 	public Long getUserId() {
