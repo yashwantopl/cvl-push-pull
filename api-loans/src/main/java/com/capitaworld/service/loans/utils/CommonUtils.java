@@ -15,6 +15,7 @@ public class CommonUtils {
 	public static final String RETAIL = "Retail";
 	public static final String ONE_FORM = "oneForm";
 	public static final String USER_CLIENT_URL = "userURL";
+	public static final String MATCHES_URL = "matchesURL" ;
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());

@@ -213,8 +213,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 					return getRequestFromDomain(futureFinancialYears);
 				} else {
 					// add dynamic records to db
-					String recordYearsArray[] = futureFinancialYears.get((recordSize - 1)).getFinancialYear().toString()
-							.split("-");
+					String recordYearsArray[] = futureFinancialYears.get((recordSize - 1)).getFinancialYear().split("-");
 					int lastYear = Integer.parseInt(recordYearsArray[1].trim());
 					int count = 0;
 					for (int i = recordSize; i < tenure; i++) {
