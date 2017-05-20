@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -120,6 +121,101 @@ public class CorporateUploadController {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@RequestMapping(value = "/other_doc", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> uploadDoc(@RequestPart("uploadRequest") String documentRequestString,
+			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
+				logger.warn("Document Request Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+
+			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+			if (response != null && response.getStatus() == 200) {
+				logger.info("File Uploaded SuccessFully");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				logger.error("Error While Uploading Document==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/other_doc/get", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDocList(@RequestBody DocumentRequest documentRequest,
+			HttpServletRequest request) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
+				logger.warn("Document Request Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+
+			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
+			if (response != null && response.getStatus() == 200) {
+				logger.info("File Uploaded SuccessFully -->");
+				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+				finalResponse.setListData(response.getDataList());
+				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
+			} else {
+				logger.warn("Invalid Request while Getting Documents");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/other_doc/delete/{docId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> removeDoc(@PathVariable("docId")Long docId,
+			HttpServletRequest request) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(docId)) {
+				logger.warn("Document Id not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+			
+			JSONObject json = new JSONObject();
+			json.put("id", docId);
+			DocumentResponse response = dmsClient.deleteProductDocument(json.toJSONString());
+			if (response != null && response.getStatus() == 200) {
+				logger.info("File SuccessFully Removed.");
+				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+				finalResponse.setListData(response.getDataList());
+				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
+			} else {
+				logger.warn("Invalid Request while Deleting Document");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }
