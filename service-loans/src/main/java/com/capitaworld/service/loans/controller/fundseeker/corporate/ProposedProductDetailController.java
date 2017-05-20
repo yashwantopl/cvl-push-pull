@@ -78,7 +78,9 @@ public class ProposedProductDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		// request must not be null
 		try {
 			if (id == null) {
@@ -88,7 +90,7 @@ public class ProposedProductDetailController {
 			}
 
 			List<ProposedProductDetailRequest> response = proposedProductDetailsService
-					.getProposedProductDetailList(id);
+					.getProposedProductDetailList(id,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

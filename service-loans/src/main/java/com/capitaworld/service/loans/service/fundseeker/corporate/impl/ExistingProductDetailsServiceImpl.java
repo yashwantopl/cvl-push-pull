@@ -65,10 +65,10 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	}
 
 	@Override
-	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId) throws Exception {
+	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws Exception {
 		try {
 			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
-					.listExistingProductFromAppId(applicationId);
+					.listExistingProductFromAppId(applicationId,userId);
 			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
 
 			for (ExistingProductDetail detail : existingProductDetails) {
