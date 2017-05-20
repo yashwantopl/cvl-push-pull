@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 /**
@@ -10,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
  */
 public interface ScotService {
 
-	public void readScotDetails(Long applicationId, Long storageDetailsId, FileInputStream file, XSSFSheet scotSheet);
+	public void readScotDetails(Long applicationId, Long storageDetailsId, XSSFSheet scotSheet);
 
 	public void inActiveScotDetails(Long storageDetailsId);
 
