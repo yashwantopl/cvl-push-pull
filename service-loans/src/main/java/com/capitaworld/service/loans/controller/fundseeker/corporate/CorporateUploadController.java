@@ -32,8 +32,6 @@ public class CorporateUploadController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadController.class);
 
-	private static final String DMS_BASE_URL_KEY = "dmsURL";
-
 	@Autowired
 	private Environment environment;
 
@@ -83,7 +81,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			DocumentRequest docRequest = new DocumentRequest();
 			docRequest.setApplicationId(applicationId);
 			docRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
@@ -106,7 +104,7 @@ public class CorporateUploadController {
 	@SuppressWarnings("unchecked")
 	private DocumentResponse uploadProfilePic(Long applicantId, String fileName, MultipartFile multipartFile) {
 
-		DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+		DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("applicationId", applicantId);
 		jsonObj.put("productDocumentMappingId", DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
@@ -132,7 +130,7 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
 			if (response != null && response.getStatus() == 200) {
@@ -162,7 +160,7 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
 			if (response != null && response.getStatus() == 200) {
@@ -172,6 +170,37 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
 				logger.warn("Invalid Request while Getting Documents");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/excel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> uploadExcel(@RequestPart("uploadRequest") String documentRequestString,
+			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
+				logger.warn("Document Request Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
+
+			byte [] data = multipartFiles.getBytes();
+			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+			if (response != null && response.getStatus() == 200) {
+				logger.info("File Uploaded SuccessFully");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				logger.error("Error While Uploading Document==>");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -194,7 +223,7 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(DMS_BASE_URL_KEY));
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			
 			JSONObject json = new JSONObject();
 			json.put("id", docId);
