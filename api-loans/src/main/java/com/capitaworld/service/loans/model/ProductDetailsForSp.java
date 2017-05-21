@@ -6,11 +6,11 @@ public class ProductDetailsForSp {
 	
 	private Integer productId;
 	
-	private Double name;
+	private String name;
 
 	
 	
-	public ProductDetailsForSp(Long id, Integer productId, Double name) {
+	public ProductDetailsForSp(Long id, Integer productId, String name) {
 		super();
 		this.id = id;
 		this.productId = productId;
@@ -33,11 +33,11 @@ public class ProductDetailsForSp {
 		this.productId = productId;
 	}
 
-	public Double getName() {
+	public String getName() {
 		return name;
 	}
 
-	public void setName(Double name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 	
