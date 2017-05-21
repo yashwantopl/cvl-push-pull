@@ -92,10 +92,8 @@ public class AssociatedConcernDetailController {
 			}
 
 			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
-
 					.getAssociatedConcernsDetailList(id,userId);
-
-			Integer currentYear = null;
+				Integer currentYear = null;
 			if (!CommonUtils.isListNullOrEmpty(response)) {
 				currentYear = response.get(0).getCurrentYear();
 				if (currentYear != null) {

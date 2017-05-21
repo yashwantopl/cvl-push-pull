@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 
@@ -15,4 +16,7 @@ public interface ProductMasterService {
 	public List<ProductMasterRequest> getList(Long userId);
 	
 	public String getUserNameByApplicationId(Long productId,Long userId);
+	
+	public List<LoansResponse> getProductDetailsByUserIdList(List<Long> list);
+	
 }
