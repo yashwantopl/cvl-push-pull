@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.utils.dpr;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -16,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDeta
  */
 public class DprSeventhSheetExcelReader
 {
-    public static void run(Long applicationId, Long storageDetailsId, FileInputStream file,
+    public static void run(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet, DprUserDataDetail dprUserDataDetail) {
 
         //save 792 question

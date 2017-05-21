@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class ProfitibilityStatementDetailServiceImpl implements ProfitibilitySta
 	}
 
 	@Override
-	public void readProfitibilityStatementDetail(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readProfitibilityStatementDetail(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet) {
 		// TODO Auto-generated method stub
 		ProfitabilityStatementExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), profitibilityStatementDetailRepository);

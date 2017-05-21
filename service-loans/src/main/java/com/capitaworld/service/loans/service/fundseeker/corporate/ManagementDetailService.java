@@ -10,7 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
  */
 public interface ManagementDetailService {
 
-	public void readManagementDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readManagementDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet keyManagementSheet);
 
 	public void inActiveManagementDetails(Long storageDetailsId);

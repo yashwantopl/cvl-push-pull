@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,7 @@ public class ScotServiceImpl implements ScotService {
 	ScotAnalysisDetailRepository scotAnalysisDetailRepository;
 
 	@Override
-	public void readScotDetails(Long applicationId, Long storageDetailsId, FileInputStream file, XSSFSheet scotSheet) {
+	public void readScotDetails(Long applicationId, Long storageDetailsId, XSSFSheet scotSheet) {
 		DprTenthSheetExcelReader.run(storageDetailsId, scotSheet,
 				loanApplicationRepository.findOne(applicationId), scotAnalysisDetailRepository);
 		

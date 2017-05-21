@@ -24,4 +24,6 @@ public interface LoanApplicationService {
 	public boolean lockFinal(Long applicationId, Long userId,  Integer productId) throws Exception;
 	
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
+	
+	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws Exception;
 }
