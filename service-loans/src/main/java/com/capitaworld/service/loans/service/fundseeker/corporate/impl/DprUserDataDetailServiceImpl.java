@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
 import java.util.Date;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -29,7 +28,7 @@ public class DprUserDataDetailServiceImpl implements DprUserDataDetailService {
 	LoanApplicationRepository loanApplicationRepository; 
 
 	@Override
-	public void readDprUserDataDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readDprUserDataDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet productsSheet, DprUserDataDetail dprUserDataDetail) {
 		
 		DprThirdSheetExcelReader.run(storageDetailsId, productsSheet,
