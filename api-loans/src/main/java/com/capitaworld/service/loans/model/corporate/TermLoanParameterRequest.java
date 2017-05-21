@@ -360,11 +360,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxTenure() {
-		return maxTenure;
+		return ((this.maxTenure != null && this.maxTenure > 0) ? this.maxTenure / 12 : null);
 	}
 
 	public void setMaxTenure(Double maxTenure) {
-		this.maxTenure = maxTenure;
+		 this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
 	}
 
 	public Integer getMinAgeEstablishment() {
@@ -416,11 +416,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinTenure() {
-		return minTenure;
+		return ((this.minTenure != null && this.minTenure > 0) ? this.minTenure / 12 : null);
 	}
 
 	public void setMinTenure(Double minTenure) {
-		this.minTenure = minTenure;
+		this.minTenure = (minTenure != null ? minTenure * 12 : null);
 	}
 
 	public Integer getProfitabilityHistory() {

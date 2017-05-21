@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -135,6 +136,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		return productMaster.getFpName();
 		}
 		return null;
+	}
+	
+	@Override
+	public List<LoansResponse> getProductDetailsByUserIdList(List<Long> list){
+		List<LoansResponse> loansResponses = new ArrayList<LoansResponse>();
+		for (Long id : list) {
+			LoansResponse loansResponse = new LoansResponse();
+			loansResponse.setId(id);
+			loansResponse.setListData(productMasterRepository.getListByUserId(id));
+			loansResponses.add(loansResponse);
+		}
+		return loansResponses;
 	}
 
 }
