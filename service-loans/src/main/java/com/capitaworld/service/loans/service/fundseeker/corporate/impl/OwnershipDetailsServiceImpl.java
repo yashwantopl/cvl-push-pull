@@ -65,9 +65,9 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 	}
 
 	@Override
-	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId) throws Exception {
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId) throws Exception {
 		try {
-			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
+			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId,userId);
 			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
 
 			for (OwnershipDetail detail : ownershipDetails) {

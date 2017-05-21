@@ -13,6 +13,6 @@ public interface SecurityCorporateDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id) throws Exception;
+	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws Exception;
 
 }

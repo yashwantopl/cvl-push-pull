@@ -359,11 +359,11 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMaxTenure() {
-		return maxTenure;
+		return ((this.maxTenure != null && this.maxTenure > 0) ? this.maxTenure / 12 : null);
 	}
 
 	public void setMaxTenure(Integer maxTenure) {
-		this.maxTenure = maxTenure;
+		 this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
 	}
 
 	public Integer getMinAgeEstablishment() {
@@ -415,11 +415,11 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public Integer getMinTenure() {
-		return minTenure;
+		return ((this.minTenure != null && this.minTenure > 0) ? this.minTenure / 12 : null);
 	}
 
 	public void setMinTenure(Integer minTenure) {
-		this.minTenure = minTenure;
+		 this.minTenure = (minTenure != null ? minTenure * 12 : null);
 	}
 
 	public String getProfitabilityHistory() {
@@ -486,4 +486,5 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.cityList = cityList;
 	}
 
+	
 }

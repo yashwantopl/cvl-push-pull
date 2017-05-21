@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConce
  */
 public interface AssociatedConcernDetailRepository extends JpaRepository<AssociatedConcernDetail, Long> {
 
-	@Query("select o from AssociatedConcernDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<AssociatedConcernDetail> listAssociatedConcernFromAppId(@Param("id")Long id);
+	@Query("select o from AssociatedConcernDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
+	public List<AssociatedConcernDetail> listAssociatedConcernFromAppId(@Param("id")Long id, @Param("userId") Long userId);
 
 }

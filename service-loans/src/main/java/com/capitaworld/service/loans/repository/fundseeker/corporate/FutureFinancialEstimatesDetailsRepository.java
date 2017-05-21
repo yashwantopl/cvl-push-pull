@@ -15,8 +15,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FutureFinancial
  */
 public interface FutureFinancialEstimatesDetailsRepository extends JpaRepository<FutureFinancialEstimatesDetail, Long> {
 
-	@Query("select o from FutureFinancialEstimatesDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<FutureFinancialEstimatesDetail> listFutureFinancialEstimateDetailsFromAppId(@Param("id") Long id);
+	@Query("select o from FutureFinancialEstimatesDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
+	public List<FutureFinancialEstimatesDetail> listFutureFinancialEstimateDetailsFromAppId(@Param("id") Long id, @Param("userId") Long userId);
 
 	@Modifying
 	@Query("update FutureFinancialEstimatesDetail o set o.isActive = false where o.applicationId.id = :applicationId and o.isActive = true and o.id =:id")

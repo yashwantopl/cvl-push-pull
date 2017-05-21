@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
  */
 public interface PromotorBackgroundDetailsRepository extends JpaRepository<PromotorBackgroundDetail, Long> {
 
-	@Query("select o from PromotorBackgroundDetail o where o.applicationId.id = :id and isActive = true")
-	public List<PromotorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
+	@Query("from PromotorBackgroundDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and isActive = true")
+	public List<PromotorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id,@Param("userId")Long userId);
 
 }
