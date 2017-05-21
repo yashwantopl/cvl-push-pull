@@ -27,8 +27,6 @@ public class ProposalController {
 	@Autowired
 	ProposalService proposalService;
 	
-
-	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest) {
 		
