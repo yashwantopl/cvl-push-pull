@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingOrg
  */
 public interface CreditRatingOrganizationDetailsRepository extends JpaRepository<CreditRatingOrganizationDetail, Long> {
 
-	@Query("select o from CreditRatingOrganizationDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<CreditRatingOrganizationDetail> listCreditRatingOrganizationDetailsFromAppId(@Param("id")Long id);
+	@Query("select o from CreditRatingOrganizationDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
+	public List<CreditRatingOrganizationDetail> listCreditRatingOrganizationDetailsFromAppId(@Param("id")Long id, @Param("userId") Long userId);
 
 }

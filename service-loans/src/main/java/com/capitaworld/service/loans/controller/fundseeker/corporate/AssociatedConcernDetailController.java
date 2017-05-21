@@ -81,8 +81,9 @@ public class AssociatedConcernDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
 		// request must not be null
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Associated Concerns Details ==>" + id);
@@ -91,7 +92,8 @@ public class AssociatedConcernDetailController {
 			}
 
 			List<AssociatedConcernDetailRequest> response = associatedConcernDetaillService
-					.getAssociatedConcernsDetailList(id);
+					.getAssociatedConcernsDetailList(id,userId);
+				
 			Integer currentYear = null;
 			if (!CommonUtils.isListNullOrEmpty(response)) {
 				currentYear = response.get(0).getCurrentYear();
@@ -105,6 +107,7 @@ public class AssociatedConcernDetailController {
 				calendar.setTime(new Date());
 				currentYear = calendar.get(Calendar.YEAR);
 			}
+
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(currentYear);
 			loansResponse.setListData(response);
