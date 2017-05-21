@@ -36,7 +36,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, userId,
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getId());
 			if (coDetails != null) {
 				// throw new NullPointerException("CoApplicant Id Record not
@@ -119,7 +119,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	@Override
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(), userId,
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getId());
 			if (coDetails == null) {
 				throw new NullPointerException("CoApplicant Id Record not exists in DB ID: " + applicantRequest.getId()

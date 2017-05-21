@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -41,7 +42,7 @@ public class CarLoanController {
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody PrimaryCarLoanDetailRequest carLoanDetailRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -57,7 +58,9 @@ public class CarLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				carLoanDetailRequest.setClientId(clientId);
+			}
 			primaryCarLoanService.saveOrUpdate(carLoanDetailRequest, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -71,10 +74,15 @@ public class CarLoanController {
 	}
 
 	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id,HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long)request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				userId = clientId;
+			}else{
+				userId = (Long)request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (id == null) {
 				logger.warn("ID Require to get Primary car loan Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(

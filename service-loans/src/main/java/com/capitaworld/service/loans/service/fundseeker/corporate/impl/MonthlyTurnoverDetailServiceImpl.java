@@ -1,8 +1,13 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -71,6 +76,10 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(id,userId);
+			if(CommonUtils.isListNullOrEmpty(monthlyTurnoverDetails)){
+				return getList();
+			}
+			
 			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
 
 			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
@@ -86,6 +95,46 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	public List<MonthlyTurnoverDetailRequest> getList() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		// get current date time with Calendar()
+		Calendar cal = Calendar.getInstance();
+		int currentYear = cal.get(Calendar.YEAR);
+		int currentMonth = cal.get(Calendar.MONTH) + 1;
+		int currentDate = cal.get(Calendar.DATE);
+		Date comparisonDate = null;
+		Date todayDate = null;
+		List<MonthlyTurnoverDetailRequest> yearList = new ArrayList<>();
+		try {
+			comparisonDate = dateFormat.parse(currentYear + "-" + currentMonth + "-15");
+			todayDate = dateFormat.parse(dateFormat.format(cal.getTime()));
+			if (todayDate.compareTo(comparisonDate) > 0) {
+				int year = cal.get(Calendar.YEAR);
+				cal.set(year, currentMonth - 1, currentDate);
+				for (int i = 0; i < 12; i++) {
+					cal.add(Calendar.MONTH, -1);
+					yearList.add(new MonthlyTurnoverDetailRequest(
+							cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " - "
+									+ cal.get(Calendar.YEAR)));
+				}
+			} else if (todayDate.compareTo(comparisonDate) < 0) {
+				System.out.println("Comparison Date is before Today's Date");
+				int year = cal.get(Calendar.YEAR);
+				cal.set(year, currentMonth - 2, currentDate);
+				for (int i = 0; i < 12; i++) {
+					cal.add(Calendar.MONTH, -1);
+					yearList.add(new MonthlyTurnoverDetailRequest(
+							cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " - "
+									+ cal.get(Calendar.YEAR)));
+				}
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return yearList;
 	}
 
 }

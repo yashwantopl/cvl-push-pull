@@ -35,7 +35,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
 		try {
 			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
-					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), userId);
+					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId()));
 			if (capitalLoanDetail != null) {
 
 				// throw new NullPointerException("FinalWorkingCapitalLoanDetail

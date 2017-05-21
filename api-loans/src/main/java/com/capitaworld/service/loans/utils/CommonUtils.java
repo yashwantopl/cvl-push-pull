@@ -7,12 +7,16 @@ import java.util.Date;
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
+	public static final String USER_TYPE = "userType";
+	public static final int USER_TYPE_SERVICEPROVIDER = 3;
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
 	public static final String CORPORATE = "Corporate";
 	public static final String RETAIL = "Retail";
 	public static final String ONE_FORM = "oneForm";
 	public static final String USER_CLIENT_URL = "userURL";
+	public static final String MATCHES_URL = "matchesURL" ;
+	public static final String DMS_BASE_URL_KEY = "dmsURL";
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());

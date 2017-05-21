@@ -119,9 +119,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				default:
 					continue;
 				}
-				logger.info("userId==>" + userId);
+				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
+						: commonRequest.getClientId()));
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
-				applicationMaster.setUserId(userId);
+				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
+						: commonRequest.getClientId()));
 				applicationMaster.setCreatedBy(userId);
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
@@ -130,7 +132,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setIsApplicantPrimaryFilled(true);
 				// later on we will validate and change it.
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
-				lockPrimary(applicationMaster.getId(), userId, applicationMaster.getProductId());
+				lockPrimary(applicationMaster.getId(), (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId())
+						? userId : commonRequest.getClientId()), applicationMaster.getProductId());
 				logger.info("applicationMaster==>" + applicationMaster.toString());
 			}
 			return true;
@@ -327,6 +330,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		} else {
 			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+		}
+	}
+
+	@Override
+	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws Exception {
+		try {
+			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+		} catch (Exception e) {
+			logger.error("Error while getting Product Id by Application Id");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

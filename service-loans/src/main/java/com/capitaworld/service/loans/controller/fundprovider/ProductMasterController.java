@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
@@ -38,13 +39,16 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody MultipleFpPruductRequest multipleFpPruductRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> save(@RequestBody MultipleFpPruductRequest multipleFpPruductRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
 			// request must not be null
 			
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			multipleFpPruductRequest.setUserId(userId);
-
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				multipleFpPruductRequest.setClientId(clientId);
+			}
+			
 			if (userId == null) {
 				logger.warn("userId  can not be empty ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
@@ -90,11 +94,15 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/getList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getList(HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+			Long userId = null;
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (userId == null) {
 				logger.warn("UserId Require to get product Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
