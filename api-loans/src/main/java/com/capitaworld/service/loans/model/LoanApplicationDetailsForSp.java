@@ -5,11 +5,11 @@ public class LoanApplicationDetailsForSp {
 	private Long id;
 	
 	private Integer productId;
-	
+	private String productName;
 	private Double amount;
 	
 	private Integer denominationId;
-	
+	private String denominationValue;
 	
 
 	public LoanApplicationDetailsForSp() {
@@ -22,6 +22,22 @@ public class LoanApplicationDetailsForSp {
 		this.productId = productId;
 		this.amount = amount;
 		this.denominationId = denominationId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getDenominationValue() {
+		return denominationValue;
+	}
+
+	public void setDenominationValue(String denominationValue) {
+		this.denominationValue = denominationValue;
 	}
 
 	public Long getId() {

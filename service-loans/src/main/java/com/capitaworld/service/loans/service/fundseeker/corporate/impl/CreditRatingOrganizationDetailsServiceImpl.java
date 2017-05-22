@@ -67,10 +67,10 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	}
 
 	@Override
-	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id) throws Exception {
+	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id,Long userId) throws Exception {
 		try {
 			List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
-					.listCreditRatingOrganizationDetailsFromAppId(id);
+					.listCreditRatingOrganizationDetailsFromAppId(id,userId);
 			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
 
 			for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {

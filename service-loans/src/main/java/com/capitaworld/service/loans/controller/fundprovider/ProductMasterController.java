@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationContro
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
+import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -154,6 +155,31 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting user name ==>", e);	
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+
+			if (userId == null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<ProductDetailsForSp> response = productMasterService.getProductDetailsByUserIdList(userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
