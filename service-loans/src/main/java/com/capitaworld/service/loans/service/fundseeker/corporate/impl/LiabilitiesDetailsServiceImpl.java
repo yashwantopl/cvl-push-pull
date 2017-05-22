@@ -29,7 +29,7 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 	}
 
 	@Override
-	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId,FileInputStream file, XSSFSheet sheet) {
+	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId, XSSFSheet sheet) {
 		// TODO Auto-generated method stub
 		  
 		LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), liabilitiesDetailsRepository);

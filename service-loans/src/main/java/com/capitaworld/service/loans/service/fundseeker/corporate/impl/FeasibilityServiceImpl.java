@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +34,7 @@ public class FeasibilityServiceImpl implements FeasibilityService {
 	RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository; 
 
 	@Override
-	public void readFeasibilityDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readFeasibilityDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet feasibilitySheet, DprUserDataDetail dprUserDataDetail) {
 
 		DprNinthSheetExcelReader.run(storageDetailsId, feasibilitySheet,

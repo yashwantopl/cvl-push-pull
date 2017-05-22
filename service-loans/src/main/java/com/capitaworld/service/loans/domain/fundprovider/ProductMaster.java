@@ -25,7 +25,7 @@ public abstract class ProductMaster implements Serializable {
 	private String fpName;
 
 	@Column(name = "product_id")
-	private Long productId;
+	private Integer productId;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "start_date")
@@ -133,11 +133,11 @@ public abstract class ProductMaster implements Serializable {
 		this.name = name;
 	}
 
-	public Long getProductId() {
+	public Integer getProductId() {
 		return this.productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 

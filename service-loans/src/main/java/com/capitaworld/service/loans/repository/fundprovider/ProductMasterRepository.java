@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.model.ProductDetailsForSp;
 
 public interface ProductMasterRepository extends JpaRepository<ProductMaster, Long>{
 
@@ -20,4 +21,8 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId and pm.isActive = true")
 	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId);
+	
+	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
+	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
+	
 }

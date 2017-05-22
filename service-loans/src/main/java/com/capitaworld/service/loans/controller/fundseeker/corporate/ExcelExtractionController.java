@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
@@ -25,9 +26,9 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/cw_excel")
-public class ExcelExtraction {
+public class ExcelExtractionController {
 
-	private final Logger log = LoggerFactory.getLogger(ExcelExtraction.class);
+	private final Logger log = LoggerFactory.getLogger(ExcelExtractionController.class);
 	
 	@Autowired
 	ExcelExtractionService excelExtractionService;
@@ -75,11 +76,12 @@ public class ExcelExtraction {
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
+		MultipartFile file=null;
 		
-		if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,filePath)))
+		if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,file)))
 		{
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Something went wrong");
+			log.error("Error while reading CMA");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -109,7 +111,7 @@ public class ExcelExtraction {
 			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Something went wrong");
+			log.error("Error while inactive CMA");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -125,7 +127,7 @@ public class ExcelExtraction {
 		String filePath=excelRequest.getFilePath();
 		Long applicationId=excelRequest.getApplicationId();
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
-		
+		MultipartFile file=null;
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) || CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
@@ -135,10 +137,10 @@ public class ExcelExtraction {
 		}
 		
 		
-		if(!(excelExtractionService.readDPR(applicationId,storageDetailsId,filePath)))
+		if(!(excelExtractionService.readDPR(applicationId,storageDetailsId,file)))
 		{
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
-			log.error("Something went wrong");
+			log.error("Error while reading DPR");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -167,7 +169,7 @@ public class ExcelExtraction {
 			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
-			log.error("Something went wrong");
+			log.error("Error while inactive DPR");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -184,7 +186,7 @@ public class ExcelExtraction {
 		String filePath=excelRequest.getFilePath();
 		Long applicationId=excelRequest.getApplicationId();
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
-		
+		MultipartFile file=null;
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) && CommonUtils.isObjectNullOrEmpty(applicationId) && CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
@@ -194,10 +196,10 @@ public class ExcelExtraction {
 		}
 		
 		
-		if(!(excelExtractionService.readBS(applicationId,storageDetailsId,filePath)))
+		if(!(excelExtractionService.readBS(applicationId,storageDetailsId,file)))
 		{
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Something went wrong");
+			log.error("Error while reading BS");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -227,7 +229,7 @@ public class ExcelExtraction {
 			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Something went wrong");
+			log.error("Error while inactive BS");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		

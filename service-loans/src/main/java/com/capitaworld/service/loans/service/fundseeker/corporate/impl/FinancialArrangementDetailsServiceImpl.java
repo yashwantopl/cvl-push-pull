@@ -67,10 +67,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id)throws Exception {
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId)throws Exception {
 		try {
 			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id);
+					.listSecurityCorporateDetailFromAppId(id,userId);
 			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {

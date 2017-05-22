@@ -31,7 +31,7 @@ public class KeyManagementDetailServiceImpl implements ManagementDetailService{
 	EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository; 
 	
 	@Override
-	public void readManagementDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readManagementDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet keyManagementSheet) {
 
 		DprSecondSheetExcelReader.run(storageDetailsId, keyManagementSheet,
