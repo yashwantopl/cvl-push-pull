@@ -11,12 +11,15 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingC
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.*;
 import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
@@ -81,6 +84,12 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private IndustrySectorRepository industrySectorRepository;
+
+    @Autowired
+    private SubSectorRepository subSectorRepository;
+
     protected static final String DMS_URL = "dmsURL";
     protected static final String ONE_FORM_URL = "oneForm";
 
@@ -96,6 +105,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
         workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
         workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+
 
         //set city
         List<Long> cityList = new ArrayList<>();
@@ -165,6 +175,24 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
+        List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
+        List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
+
+
+        IndustrySectorSubSectorTeaser industrySectorSubSectorTeaser = new IndustrySectorSubSectorTeaser (environment.getProperty(ONE_FORM_URL));
+        IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest=new IndustrySectorSubSectorTeaserRequest();
+        industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
+        industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
+        industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
+        try {
+            OneFormResponse oneFormResponse=industrySectorSubSectorTeaser.send(industrySectorSubSectorTeaserRequest);
+            workingCapitalPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         //get value of working capital data
         PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(toApplicationId, userId);

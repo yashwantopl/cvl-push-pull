@@ -36,11 +36,20 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+    private List<?> industrySector;
 
     private List<Object> brochureList;
     private List<Object> certificateList;
     private List<Object> panCardList;
     private List<Object> profilePic;
+
+    public List<?> getIndustrySector() {
+        return industrySector;
+    }
+
+    public void setIndustrySector(List<?> industrySector) {
+        this.industrySector = industrySector;
+    }
 
     public String getOrganisationName() {
         return organisationName;
