@@ -67,10 +67,10 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 	}
 
 	@Override
-	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id) throws Exception {
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws Exception {
 		try {
 			List<GuarantorsCorporateDetail> guarantorsCorporateDetail = guarantorsCorporateDetailRepository
-					.listGuarantorsCorporateFromAppId(id);
+					.listGuarantorsCorporateFromAppId(id,userId);
 			List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequests = new ArrayList<GuarantorsCorporateDetailRequest>();
 
 			for (GuarantorsCorporateDetail detail : guarantorsCorporateDetail) {

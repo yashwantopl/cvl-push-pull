@@ -66,11 +66,11 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	}
 
 	@Override
-	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id) throws Exception {
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
 		try {
 
 			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
-					.listAssociatedConcernFromAppId(id);
+					.listAssociatedConcernFromAppId(id,userId);
 			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
 
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {

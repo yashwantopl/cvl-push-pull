@@ -66,10 +66,10 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 	}
 
 	@Override
-	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId) throws Exception {
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws Exception {
 		try {
 			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
-					.listPromotorBackgroundFromAppId(applicationId);
+					.listPromotorBackgroundFromAppId(applicationId,userId);
 			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
 
 			for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {

@@ -160,4 +160,29 @@ public class ProductMasterController {
 		}
 	}
 	
+	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody List<Long> userIdList,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+
+			if (userIdList == null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userIdList);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<LoansResponse> response = productMasterService.getProductDetailsByUserIdList(userIdList);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 }

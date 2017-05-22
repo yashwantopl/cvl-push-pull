@@ -67,10 +67,10 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 	}
 
 	@Override
-	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id) throws Exception {
+	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id,Long userId) throws Exception {
 		try {
 			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
-					.listProposedProductFromAppId(id);
+					.listProposedProductFromAppId(id,userId);
 			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
 
 			for (ProposedProductDetail detail : proposedProductDetails) {
