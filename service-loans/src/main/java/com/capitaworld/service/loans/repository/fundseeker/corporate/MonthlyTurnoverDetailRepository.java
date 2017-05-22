@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.MonthlyTurnover
  */
 public interface MonthlyTurnoverDetailRepository extends JpaRepository<MonthlyTurnoverDetail, Long> {
 
-	@Query("select o from MonthlyTurnoverDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<MonthlyTurnoverDetail> listMonthlyTurnoverFromAppId(@Param("id")Long id);
+	@Query("select o from MonthlyTurnoverDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
+	public List<MonthlyTurnoverDetail> listMonthlyTurnoverFromAppId(@Param("id")Long id, @Param("userId") Long userId);
 
 }

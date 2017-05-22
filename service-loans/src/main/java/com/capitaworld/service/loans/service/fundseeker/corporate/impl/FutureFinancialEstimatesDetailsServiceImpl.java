@@ -73,10 +73,10 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 	}
 
 	@Override
-	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id) throws Exception {
+	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id,Long userId) throws Exception {
 		try {
 			List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
-					.listFutureFinancialEstimateDetailsFromAppId(id);
+					.listFutureFinancialEstimateDetailsFromAppId(id,userId);
 			List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimateDetailRequests = new ArrayList<FutureFinancialEstimatesDetailRequest>();
 
 			for (FutureFinancialEstimatesDetail detail : futureFinancialEstimateDetails) {
@@ -98,7 +98,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 	public List<FutureFinancialEstimatesDetailRequest> getFutureEstimateDetailsList(Long userId, Long applicationId)
 			throws Exception {
 		List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
-				.listFutureFinancialEstimateDetailsFromAppId(applicationId);
+				.listFutureFinancialEstimateDetailsFromAppId(applicationId,userId);
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		LoanType loanType = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		if (loanType == null) {
@@ -213,8 +213,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 					return getRequestFromDomain(futureFinancialYears);
 				} else {
 					// add dynamic records to db
-					String recordYearsArray[] = futureFinancialYears.get((recordSize - 1)).getFinancialYear().toString()
-							.split("-");
+					String recordYearsArray[] = futureFinancialYears.get((recordSize - 1)).getFinancialYear().split("-");
 					int lastYear = Integer.parseInt(recordYearsArray[1].trim());
 					int count = 0;
 					for (int i = recordSize; i < tenure; i++) {

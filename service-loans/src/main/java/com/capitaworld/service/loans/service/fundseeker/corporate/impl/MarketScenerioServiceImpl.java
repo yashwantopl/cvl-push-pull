@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,7 @@ public class MarketScenerioServiceImpl implements MarketScenerioService {
 
 
 	@Override
-	public void readMarketScenerioDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readMarketScenerioDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet technologySheet, DprUserDataDetail dprUserDataDetail) {
 		
 		DprFifthSheetExcelReader.run(storageDetailsId, technologySheet, dprUserDataDetail);}

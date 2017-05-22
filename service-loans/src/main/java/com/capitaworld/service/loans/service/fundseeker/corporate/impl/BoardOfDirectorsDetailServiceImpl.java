@@ -31,7 +31,7 @@ public class BoardOfDirectorsDetailServiceImpl implements EntityInformationDetai
 	private LoanApplicationRepository loanApplicationRepository; 
 
 	@Override
-	public void readEntityInformationDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readEntityInformationDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet managementSheet) {
 
 		DprFirstSheetExcelReader.run(storageDetailsId, managementSheet,

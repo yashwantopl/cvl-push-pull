@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.FileInputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +26,7 @@ public class ProposalServiceImpl implements ProposalService {
 	ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository; 
 
 	@Override
-	public void readProposalDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readProposalDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet proposalSheet, DprUserDataDetail dprUserDataDetail) {
 		DprEighthSheetExcelReader.run(storageDetailsId, proposalSheet,
 				loanApplicationRepository.findOne(applicationId), projectImplementationScheduleDetailRepository,dprUserDataDetail);

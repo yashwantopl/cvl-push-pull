@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -119,9 +120,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				default:
 					continue;
 				}
-				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()));
+				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
+						: commonRequest.getClientId()));
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
-				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()));
+				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
+						: commonRequest.getClientId()));
 				applicationMaster.setCreatedBy(userId);
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
@@ -130,7 +133,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setIsApplicantPrimaryFilled(true);
 				// later on we will validate and change it.
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
-				lockPrimary(applicationMaster.getId(), (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId : commonRequest.getClientId()), applicationMaster.getProductId());
+				lockPrimary(applicationMaster.getId(), (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId())
+						? userId : commonRequest.getClientId()), applicationMaster.getProductId());
 				logger.info("applicationMaster==>" + applicationMaster.toString());
 			}
 			return true;
@@ -191,15 +195,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> userList) {
-		List<LoansResponse> loansResponses = new ArrayList<LoansResponse>();
-		for (Long id : userList) {
-			LoansResponse loansResponse = new LoansResponse();
-			loansResponse.setId(id);
-			loansResponse.setListData(loanApplicationRepository.getListByUserId(id));
-			loansResponses.add(loansResponse);
-		}
-		return loansResponses;
+	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {			
+			return loanApplicationRepository.getListByUserId(userId);
 	}
 
 	@Override
@@ -327,6 +324,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		} else {
 			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+		}
+	}
+
+	@Override
+	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws Exception {
+		try {
+			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+		} catch (Exception e) {
+			logger.error("Error while getting Product Id by Application Id");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

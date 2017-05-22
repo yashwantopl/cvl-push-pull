@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -148,18 +149,18 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody List<Long> userIdList,
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId,
 			HttpServletRequest request) {
 		// request must not be null
 		try {
 
-			if (userIdList == null) {
-				logger.warn("UserId Require to get Loan Applications Details ==>" + userIdList);
+			if (userId== null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<LoansResponse> response = loanApplicationService.getLoanDetailsByUserIdList(userIdList);
+			List<LoanApplicationDetailsForSp> response = loanApplicationService.getLoanDetailsByUserIdList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -195,6 +196,35 @@ public class LoanApplicationController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Setting Last Access profile==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/get_product_by_application/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProductByApplication(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get Product Id ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Integer productId = loanApplicationService.getProductIdByApplicationId(applicationId, userId);
+			if (!CommonUtils.isObjectNullOrEmpty(productId)) {
+				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse.setId(productId.longValue());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while Getting Product Id by Application Id==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

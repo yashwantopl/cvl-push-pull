@@ -10,7 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
  */
 public interface EntityInformationDetailService {
 
-	public void readEntityInformationDetails(Long applicationId, Long storageDetailsId, FileInputStream file,
+	public void readEntityInformationDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet managementSheet);
 
 	public void inActiveEntityInformationDetails(Long storageDetailsId);

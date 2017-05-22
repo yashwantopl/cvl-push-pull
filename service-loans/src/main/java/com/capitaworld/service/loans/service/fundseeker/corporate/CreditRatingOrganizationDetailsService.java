@@ -13,6 +13,6 @@ public interface CreditRatingOrganizationDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id) throws Exception;
+	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id,Long userId) throws Exception;
 
 }

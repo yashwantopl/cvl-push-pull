@@ -32,8 +32,14 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.oneform.client.IndustryClient;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.FundproviderType;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -44,22 +50,22 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
-	Environment environment;
+	private Environment environment;
 
 	@Autowired
-	LoanApplicationRepository loanApplicationRepository;
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
-	CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	RetailApplicantDetailRepository retailApplicantDetailRepository;
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 	
 	@Autowired
-	ProductMasterRepository productMasterRepository;
+	private ProductMasterRepository productMasterRepository;
 	
 	@Autowired
-	IndustrySectorRepository industrySectorRepository;
+	private IndustrySectorRepository industrySectorRepository;
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
@@ -96,7 +102,37 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 					
 					corporateProposalDetails.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
-					corporateProposalDetails.setIndustry("industry");
+					
+					//for get industry id
+					List<Long> listIndustryIds=industrySectorRepository.getIndustryByApplicationId(applicationId);
+					if(listIndustryIds.size()>0)
+					{
+						IndustryClient industryClient=new  IndustryClient(environment.getProperty(CommonUtils.ONE_FORM));
+						OneFormResponse formResponse=industryClient.send(listIndustryIds);
+						
+						List<Map<String, Object>> loanResponseDatalist = (List<Map<String, Object>>) formResponse.getListData();
+						String industry = "";
+						if(loanResponseDatalist!=null)
+						{
+							for(int k=0;k<loanResponseDatalist.size();k++)
+							{
+								MasterResponse masterResponse=new MasterResponse();
+								masterResponse= MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(i),
+								         MasterResponse.class);
+								industry += masterResponse.getValue() + " ,";
+							}
+							corporateProposalDetails.setIndustry(industry);
+						}
+						else
+						{
+							corporateProposalDetails.setIndustry("NA");
+						}
+					}
+					else
+					{
+						corporateProposalDetails.setIndustry("NA");
+					}
+					
 					String amount="";
 					if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
 						amount += "NA";
@@ -106,7 +142,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
 						amount += " NA";
 					else
-						amount += " " + loanApplicationMaster.getDenominationId().toString();
+						amount += " " + Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();
 							
 					corporateProposalDetails.setAmount(amount);
 
@@ -155,8 +191,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					else name+=retailApplicantDetail.getFirstName();
 					
 					retailProposalDetails.setName(name);
-					
-					//retailProposalDetails.setName(retailApplicantDetail.getFirstName() + " "+ retailApplicantDetail.getMiddleName() + " " + retailApplicantDetail.getLastName());
 
 					// calling DMS for getting fp profile image path
 					
@@ -238,7 +272,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long productId = proposalrequest.getFpProductId();
 					
 					fundProviderProposalDetails.setName(fundProviderDetailsRequest.getOrganizationName());
-					fundProviderProposalDetails.setWhoAreYou(fundProviderDetailsRequest.getBusinessTypeMaster().getId().toString());
+					fundProviderProposalDetails.setWhoAreYou(FundproviderType.getById(Integer.parseInt(fundProviderDetailsRequest.getBusinessTypeMaster().getId().toString())).getValue());
 					fundProviderProposalDetails.setFpType("DEBT");
 
 					// calling DMS for getting fp profile image path
@@ -280,4 +314,31 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return proposalDetailsList;
 	}
 
+	@Override
+	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request) {
+		ProposalCountResponse response = new ProposalCountResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.proposalCountOfFundProvider(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public ProposalCountResponse fundSeekerProposalCount(ProposalMappingRequest request) {
+		ProposalCountResponse response = new ProposalCountResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.proposalCountOfFundSeeker(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	
 }

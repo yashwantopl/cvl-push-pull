@@ -26,8 +26,6 @@ public class MatchesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MatchesController.class);
 
-	private static final String MATCHES_URL = "matchesURL" ;
-	
 	@Autowired
 	private Environment environment;
 
@@ -46,8 +44,8 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			logger.info("MATCHES_URL==>" + environment.getRequiredProperty(MATCHES_URL));
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(MATCHES_URL));
+			logger.info("MATCHES_URL==>" + environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				return new ResponseEntity<LoansResponse>(
@@ -75,7 +73,7 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(MATCHES_URL));
+			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				return new ResponseEntity<LoansResponse>(
@@ -103,7 +101,7 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(MATCHES_URL));
+			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundProvider(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				return new ResponseEntity<LoansResponse>(
@@ -131,7 +129,7 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(MATCHES_URL));
+			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundProvider(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				return new ResponseEntity<LoansResponse>(
