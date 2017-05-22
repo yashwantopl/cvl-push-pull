@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -194,15 +195,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoansResponse> getLoanDetailsByUserIdList(List<Long> userList) {
-		List<LoansResponse> loansResponses = new ArrayList<LoansResponse>();
-		for (Long id : userList) {
-			LoansResponse loansResponse = new LoansResponse();
-			loansResponse.setId(id);
-			loansResponse.setListData(loanApplicationRepository.getListByUserId(id));
-			loansResponses.add(loansResponse);
-		}
-		return loansResponses;
+	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {			
+			return loanApplicationRepository.getListByUserId(userId);
 	}
 
 	@Override

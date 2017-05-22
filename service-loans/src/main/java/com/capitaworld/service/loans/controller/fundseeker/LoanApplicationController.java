@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -148,18 +149,18 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody List<Long> userIdList,
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId,
 			HttpServletRequest request) {
 		// request must not be null
 		try {
 
-			if (userIdList == null) {
-				logger.warn("UserId Require to get Loan Applications Details ==>" + userIdList);
+			if (userId== null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<LoansResponse> response = loanApplicationService.getLoanDetailsByUserIdList(userIdList);
+			List<LoanApplicationDetailsForSp> response = loanApplicationService.getLoanDetailsByUserIdList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
