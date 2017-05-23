@@ -25,7 +25,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -274,15 +274,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public List<ProfileViewPLResponse> getGuarantorServiceResponse(Long applicantId, Long userId) throws Exception {
+	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId) throws Exception {
 		try{
 		List<GuarantorDetails> guarantorDetails= guarantorDetailsRepository.getList(applicantId, userId);
 		if(guarantorDetails!=null && !guarantorDetails.isEmpty()){
-		List<ProfileViewPLResponse> plResponses = new ArrayList<ProfileViewPLResponse>();
+		List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 		
 		for (GuarantorDetails guarantorDetail : guarantorDetails) {
 			
-			ProfileViewPLResponse profileViewPLResponse = new ProfileViewPLResponse();
+			RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 			
 			profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
 			profileViewPLResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(guarantorDetail.getModifiedDate()));

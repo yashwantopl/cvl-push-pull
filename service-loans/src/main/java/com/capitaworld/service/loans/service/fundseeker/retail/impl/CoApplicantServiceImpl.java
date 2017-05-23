@@ -25,7 +25,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -275,15 +275,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<ProfileViewPLResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
+	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
 		try{
 		List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
 		if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
-		List<ProfileViewPLResponse> plResponses = new ArrayList<ProfileViewPLResponse>();
+		List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 		
 		for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 			
-			ProfileViewPLResponse profileViewPLResponse = new ProfileViewPLResponse();
+			RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 			
 			profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
 			profileViewPLResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(coApplicantDetail.getModifiedDate()));

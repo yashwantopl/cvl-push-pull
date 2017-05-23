@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.AddressResponse;
  * @author Sanket
  *
  */
-public class ProfileViewPLResponse {
+public class RetailProfileViewResponse {
 	
 
 	
