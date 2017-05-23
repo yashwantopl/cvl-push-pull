@@ -17,6 +17,7 @@ public class CommonUtils {
 	public static final String USER_CLIENT_URL = "userURL";
 	public static final String MATCHES_URL = "matchesURL" ;
 	public static final String DMS_BASE_URL_KEY = "dmsURL";
+	public static final String NOT_APPLICABLE = "NA";
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
