@@ -163,10 +163,6 @@ public class CommonUtils {
 		birthDay.setTime(date);
         Calendar now = Calendar.getInstance();
         now.setTimeInMillis(System.currentTimeMillis());
-        System.out.println("Bday :==="+date);
-        System.out.println("Now :==="+now.getTime());
-        System.out.println("now year : == "+now.get(Calendar.YEAR));
-        System.out.println("bday year : == "+birthDay.get(Calendar.YEAR));
         
         years = now.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
         System.out.println("Age :==="+years);

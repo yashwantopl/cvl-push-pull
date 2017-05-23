@@ -35,8 +35,10 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
@@ -423,6 +425,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 			profileViewPLResponse.setTitle(guarantorDetail.getTitleId()!=null?Title.getById(guarantorDetail.getTitleId()).getValue():null);
 			
 			profileViewPLResponse.setAge(guarantorDetail.getBirthDate()!=null?CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString():null);
+			
+			
+			if(guarantorDetail.getApplicationId()!=null){
+				profileViewPLResponse.setTenure(guarantorDetail.getApplicationId().getTenure()!=null?guarantorDetail.getApplicationId().getTenure().toString():null);
+				profileViewPLResponse.setLoanType(guarantorDetail.getApplicationId().getProductId()!=null?LoanType.getById(guarantorDetail.getApplicationId().getProductId()).getValue():null);
+				profileViewPLResponse.setLoanAmount(guarantorDetail.getApplicationId().getAmount()!=null?guarantorDetail.getApplicationId().getAmount().toString():null);
+				profileViewPLResponse.setCurrency(guarantorDetail.getApplicationId().getCurrencyId()!=null?Currency.getById(guarantorDetail.getApplicationId().getCurrencyId()).getValue():null);
+			}
+			
 			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
