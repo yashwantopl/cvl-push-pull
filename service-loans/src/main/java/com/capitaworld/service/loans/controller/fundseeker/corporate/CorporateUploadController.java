@@ -186,6 +186,48 @@ public class CorporateUploadController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	
+	@RequestMapping(value = "/excel_doc/get", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getExcelDocList(@RequestBody DocumentRequest documentRequest,
+			HttpServletRequest request) {
+		try {
+			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
+				logger.warn("Document Request Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
+
+			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
+			if (response != null && response.getStatus() == 200) {
+				logger.info("File Uploaded SuccessFully -->");
+				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+				if(!(response.getDataList().size()>0))
+				{
+					try {
+					    Thread.sleep(4000); //4000 milliseconds is four second.
+					    finalResponse = new LoansResponse(response.getMessage(), response.getStatus());	    
+					} catch(InterruptedException ex) {
+					    Thread.currentThread().interrupt();
+					}
+				}
+				finalResponse.setListData(response.getDataList());
+				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
+			} else {
+				logger.warn("Invalid Request while Getting Documents");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	@RequestMapping(value = "/excel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadExcel(@RequestPart("uploadRequest") String documentRequestString,

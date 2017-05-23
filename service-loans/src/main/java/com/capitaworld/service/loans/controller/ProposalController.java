@@ -18,6 +18,9 @@ import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+
+import ch.qos.logback.core.util.LocationUtil;
 
 
 @RestController
@@ -57,5 +60,24 @@ public class ProposalController {
 	@RequestMapping(value = "/count/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalCountResponse> fundSeekerProposalCount(@RequestBody ProposalMappingRequest request) {
 		return new ResponseEntity<ProposalCountResponse>(proposalService.fundSeekerProposalCount(request),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/get", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> get(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
+		
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		ProposalMappingResponse response = proposalService.get(request);
+		response.setUserType(userType);
+		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> changeStatus(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		request.setLastActionPerformedBy(userType);
+		request.setUserId(userId);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 }
