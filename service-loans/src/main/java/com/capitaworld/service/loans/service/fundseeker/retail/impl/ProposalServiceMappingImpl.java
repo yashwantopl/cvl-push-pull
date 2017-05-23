@@ -112,12 +112,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						
 						List<Map<String, Object>> loanResponseDatalist = (List<Map<String, Object>>) formResponse.getListData();
 						String industry = "";
-						if(loanResponseDatalist!=null)
+						if(loanResponseDatalist.size()>0)
 						{
 							for(int k=0;k<loanResponseDatalist.size();k++)
 							{
 								MasterResponse masterResponse=new MasterResponse();
-								masterResponse= MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(i),
+								masterResponse= MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 								         MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
 							}
