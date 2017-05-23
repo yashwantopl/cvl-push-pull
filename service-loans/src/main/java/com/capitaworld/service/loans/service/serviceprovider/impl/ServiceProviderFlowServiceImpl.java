@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.serviceprovider.impl;
 
 import java.util.ArrayList;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				} else {
 					spClientDetail.setClientCountry("NA");
 				}
+
 				if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
+
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
 					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
