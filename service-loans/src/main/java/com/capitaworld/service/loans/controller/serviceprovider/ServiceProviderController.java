@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-
-
 import org.json.simple.JSONObject;
 
 import org.slf4j.Logger;
@@ -39,11 +37,13 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> clientList(@RequestBody UsersRequest usersRequest,HttpServletRequest request){
 		if(CommonUtils.isObjectNullOrEmpty(usersRequest) || CommonUtils.isObjectNullOrEmpty(usersRequest.getUserType())){
 			return new ResponseEntity<UserResponse>(
+
 					new UserResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		try {
 			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()), usersRequest.getUserType().getCode());
+
 			if(clientList != null){
 				logger.info("Serivce provider's client list");
 				return new ResponseEntity<UserResponse>(
@@ -66,6 +66,7 @@ public class ServiceProviderController {
 		
 	}
 	
+
 	@RequestMapping(value = "/client/count",method = RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UserResponse> spClientCount(HttpServletRequest request){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
