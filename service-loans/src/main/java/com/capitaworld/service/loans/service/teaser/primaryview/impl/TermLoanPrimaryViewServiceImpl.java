@@ -1,28 +1,11 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.*;
-import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -31,26 +14,79 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
+import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.CityByCityListIdClient;
+import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
+import com.capitaworld.service.oneform.client.IndustryClient;
+import com.capitaworld.service.oneform.client.IndustrySectorSubSectorTeaser;
+import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
+import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditRatingFund;
+import com.capitaworld.service.oneform.enums.CreditRatingTerm;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.NatureFacility;
+import com.capitaworld.service.oneform.enums.Particular;
+import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 
-/**
- * Created by dhaval on 19-May-17.
- */
 @Service
 @Transactional
-public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrimaryViewService {
+public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewService {
 
-	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalPrimaryViewServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(TermLoanPrimaryViewServiceImpl.class);
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
+	private PrimaryTermLoanDetailRepository primaryTermLoanLoanDetailRepository;
 
 	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService;
@@ -91,25 +127,31 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	@Autowired
 	private SubSectorRepository subSectorRepository;
 
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService;
+
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+
 	protected static final String DMS_URL = "dmsURL";
 	protected static final String ONE_FORM_URL = "oneForm";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
 
 	@Override
-	public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId, Long userId) {
-		WorkingCapitalPrimaryViewResponse workingCapitalPrimaryViewResponse = new WorkingCapitalPrimaryViewResponse();
+	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Long userId) {
+		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);
 		// set value to response
 		if (corporateApplicantDetail != null)
-			BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
+			BeanUtils.copyProperties(corporateApplicantDetail, termLoanPrimaryViewResponse);
 		if (corporateApplicantDetail.getConstitutionId() != null)
-			workingCapitalPrimaryViewResponse
+			termLoanPrimaryViewResponse
 					.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
 		if (corporateApplicantDetail.getEstablishmentMonth() != null)
-			workingCapitalPrimaryViewResponse.setEstablishmentMonth(
+			termLoanPrimaryViewResponse.setEstablishmentMonth(
 					EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
 		// set city
@@ -125,16 +167,18 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 					MasterResponse masterResponse = MultipleJSONObjectHelper
 							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					workingCapitalPrimaryViewResponse.setCity(masterResponse.getValue());
+					termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
 				} else {
-					workingCapitalPrimaryViewResponse.setCity(CommonUtils.NOT_APPLICABLE);
+					termLoanPrimaryViewResponse.setCity(CommonUtils.NOT_APPLICABLE);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
 		// set state
 		List<Long> stateList = new ArrayList<>();
+
 		stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
 		StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
 				environment.getProperty(ONE_FORM_URL));
@@ -146,17 +190,18 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 					MasterResponse masterResponse = MultipleJSONObjectHelper
 							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					workingCapitalPrimaryViewResponse.setState(masterResponse.getValue());
+					termLoanPrimaryViewResponse.setState(masterResponse.getValue());
 				} else {
-					workingCapitalPrimaryViewResponse.setState(CommonUtils.NOT_APPLICABLE);
+					termLoanPrimaryViewResponse.setState(CommonUtils.NOT_APPLICABLE);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 
+		}
 		// set country
 		List<Long> countryList = new ArrayList<>();
+
 		countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
 		CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
 				environment.getProperty(ONE_FORM_URL));
@@ -168,14 +213,15 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 					MasterResponse masterResponse = MultipleJSONObjectHelper
 							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					workingCapitalPrimaryViewResponse.setCountry(masterResponse.getValue());
+					termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
 				} else {
-					workingCapitalPrimaryViewResponse.setCountry(CommonUtils.NOT_APPLICABLE);
+					termLoanPrimaryViewResponse.setCountry(CommonUtils.NOT_APPLICABLE);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+
 		IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
 		List<Long> keyVerticalFundingId = new ArrayList<>();
 		keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
@@ -187,16 +233,16 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 					MasterResponse masterResponse = MultipleJSONObjectHelper
 							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					workingCapitalPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
+					termLoanPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
 				} else {
-					workingCapitalPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+					termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
 				}
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
 
+		}
 		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
 		List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
 		List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
@@ -211,32 +257,29 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			try {
 				OneFormResponse oneFormResponse = industrySectorSubSectorTeaser
 						.send(industrySectorSubSectorTeaserRequest);
-				workingCapitalPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
+				termLoanPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
-		// get value of working capital data
-		PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository
+		// get value of Term Loan data
+		PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
 				.getByApplicationAndUserId(toApplicationId, userId);
 		// set value to response
-		if (primaryWorkingCapitalLoanDetail != null)
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, workingCapitalPrimaryViewResponse);
-		if (primaryWorkingCapitalLoanDetail.getCurrencyId() != null
-				&& primaryWorkingCapitalLoanDetail.getDenominationId() != null)
-			workingCapitalPrimaryViewResponse.setCurrencyDenomination(
-					Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
-							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-		if (primaryWorkingCapitalLoanDetail.getProductId() != null)
-			workingCapitalPrimaryViewResponse
-					.setLoanType(LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue());
-		if (primaryWorkingCapitalLoanDetail.getModifiedDate() != null)
-			workingCapitalPrimaryViewResponse
-					.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+		if (primaryTermLoanDetail != null)
+			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
+		if (primaryTermLoanDetail.getCurrencyId() != null && primaryTermLoanDetail.getDenominationId() != null)
+			termLoanPrimaryViewResponse
+					.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in "
+							+ Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
+		if (primaryTermLoanDetail.getProductId() != null)
+			termLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
+
+		if (primaryTermLoanDetail.getModifiedDate() != null)
+			termLoanPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 		// get value of proposed product and set in response
 		try {
-			workingCapitalPrimaryViewResponse.setProposedProductDetailRequestList(
+			termLoanPrimaryViewResponse.setProposedProductDetailRequestList(
 					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Proposed Product {}", e);
@@ -244,7 +287,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 		// get value of Existing product and set in response
 		try {
-			workingCapitalPrimaryViewResponse.setExistingProductDetailRequestList(
+			termLoanPrimaryViewResponse.setExistingProductDetailRequestList(
 					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Existing Product {}", e);
@@ -252,7 +295,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 		// get value of achievement details and set in response
 		try {
-			workingCapitalPrimaryViewResponse.setAchievementDetailList(
+			termLoanPrimaryViewResponse.setAchievementDetailList(
 					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Achievement Details {}", e);
@@ -266,9 +309,9 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
 				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-				if (creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null)
-					creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
-							.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
+				if(creditRatingOrganizationDetailRequest.getCreditRatingFundId()!=null)
+				creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
+						.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
 
 				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
 						environment.getProperty(ONE_FORM_URL));
@@ -279,20 +322,20 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				if (masterResponse != null) {
 					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
 				} else {
-					workingCapitalPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+					termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
 				}
 
-				if (creditRatingOrganizationDetailRequest.getCreditRatingTermId() != null)
-					creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
-							.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
-				if (creditRatingOrganizationDetailRequest.getRatingAgencyId() != null)
-					creditRatingOrganizationDetailResponse.setRatingAgency(
-							RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+				if(creditRatingOrganizationDetailRequest.getCreditRatingTermId()!=null)
+				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
+						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+				if(creditRatingOrganizationDetailRequest.getRatingAgencyId()!=null)
+				creditRatingOrganizationDetailResponse.setRatingAgency(
+						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
 				creditRatingOrganizationDetailResponse
 						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
 			}
-			workingCapitalPrimaryViewResponse
+			termLoanPrimaryViewResponse
 					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
@@ -307,12 +350,12 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
 				BeanUtils.copyProperties(ownershipDetailRequest, ownershipDetailResponse);
-				if (ownershipDetailRequest.getShareHoldingCategoryId() != null)
-					ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory
-							.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+				if(ownershipDetailRequest.getShareHoldingCategoryId()!=null)
+				ownershipDetailResponse.setShareHoldingCategory(
+						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
 				ownershipDetailResponseList.add(ownershipDetailResponse);
 			}
-			workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
+			termLoanPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Ownership Details {}", e);
@@ -327,21 +370,20 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetailResponse);
-				if (promotorBackgroundDetailRequest.getSalutationId() != null)
-					promotorBackgroundDetailResponse.setPromotorsName(
-							Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() + " "
-									+ promotorBackgroundDetailRequest.getPromotorsName());
+				if(promotorBackgroundDetailRequest.getSalutationId()!=null)
+				promotorBackgroundDetailResponse
+						.setPromotorsName(Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue()
+								+ " " + promotorBackgroundDetailRequest.getPromotorsName());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
-			workingCapitalPrimaryViewResponse
-					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
+			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
 		}
 
 		// get value of Past Financial and set in response
 		try {
-			workingCapitalPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(
+			termLoanPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(
 					pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Past Financial {}", e);
@@ -349,7 +391,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 		// get value of Future Projection and set in response
 		try {
-			workingCapitalPrimaryViewResponse
+			termLoanPrimaryViewResponse
 					.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
 							.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
 		} catch (Exception e) {
@@ -358,7 +400,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 		// get value of Security and set in response
 		try {
-			workingCapitalPrimaryViewResponse.setSecurityCorporateDetailRequestList(
+			termLoanPrimaryViewResponse.setSecurityCorporateDetailRequestList(
 					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Security Details {}", e);
@@ -374,16 +416,56 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetailResponse);
-				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
-					financialArrangementsDetailResponse.setFacilityNature(NatureFacility
-							.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				if(financialArrangementsDetailRequest.getFacilityNatureId()!=null)
+				financialArrangementsDetailResponse.setFacilityNature(
+						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
-			workingCapitalPrimaryViewResponse
+			termLoanPrimaryViewResponse
 					.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+		}
+
+		// get Finance Means Details and set in response
+		try {
+			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+					.getMeansOfFinanceList(toApplicationId, userId);
+			List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+			for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+				FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+				BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+				
+				if(financeMeansDetailRequest.getFinanceMeansCategoryId()!=null)
+				detailResponse.setFinanceMeansCategory(FinanceCategory
+						.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+						.getValue());
+				financeMeansDetailResponsesList.add(detailResponse);
+			}
+			termLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			logger.error("Problem to get Data of Finance Means Details {}", e1);
+		}
+
+		// get Total cost of project and set in response
+		try {
+			List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+					.getCostOfProjectDetailList(toApplicationId, userId);
+			List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+			for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+				BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+				if(costOfProjectRequest.getParticularsId()!=null)
+				costOfProjectResponse.setParticulars(Particular
+						.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+				costOfProjectResponses.add(costOfProjectResponse);
+			}
+			termLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 
 		// get list of Brochure
@@ -391,10 +473,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
+			termLoanPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
@@ -402,10 +484,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		// get list fo certificate
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
+			termLoanPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
@@ -413,10 +495,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		// get list of pan card
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
+			termLoanPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
@@ -424,29 +506,15 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		// get profile pic
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PROFIEL_PICTURE);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			workingCapitalPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
+			termLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 
-		return workingCapitalPrimaryViewResponse;
+		return termLoanPrimaryViewResponse;
 	}
 
-	@Override
-	public boolean validateWorkingCapitalPrimaryViewRequest(String toApplicationId) {
-		if (!CommonUtil.isObjectNullOrEmpty(toApplicationId)) {
-			try {
-				Long.parseLong(toApplicationId);
-				return false;
-			} catch (NumberFormatException e) {
-				return true;
-			}
-		} else {
-			logger.warn("Invalid Request {}", toApplicationId);
-			return true;
-		}
-	}
 }

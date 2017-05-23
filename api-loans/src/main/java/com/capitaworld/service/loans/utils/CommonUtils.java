@@ -18,6 +18,7 @@ public class CommonUtils {
 	public static final String USER_CLIENT_URL = "userURL";
 	public static final String MATCHES_URL = "matchesURL" ;
 	public static final String DMS_BASE_URL_KEY = "dmsURL";
+	public static final String NOT_APPLICABLE = "NA";
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -163,10 +164,6 @@ public class CommonUtils {
 		birthDay.setTime(date);
         Calendar now = Calendar.getInstance();
         now.setTimeInMillis(System.currentTimeMillis());
-        System.out.println("Bday :==="+date);
-        System.out.println("Now :==="+now.getTime());
-        System.out.println("now year : == "+now.get(Calendar.YEAR));
-        System.out.println("bday year : == "+birthDay.get(Calendar.YEAR));
         
         years = now.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
         System.out.println("Age :==="+years);

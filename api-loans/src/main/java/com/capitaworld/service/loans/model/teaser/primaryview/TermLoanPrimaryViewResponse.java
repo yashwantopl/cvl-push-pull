@@ -5,10 +5,8 @@ import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRe
 
 import java.util.List;
 
-/**
- * Created by dhaval on 19-May-17.
- */
-public class WorkingCapitalPrimaryViewResponse {
+
+public class TermLoanPrimaryViewResponse {
 
     private String organisationName;
     private String aboutUs;
@@ -26,6 +24,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private String currencyDenomination;
     private String LoanType;
     private String dateOfProposal;
+    private Double tenure;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<AchievementDetailRequest> AchievementDetailList;
     private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
@@ -36,6 +35,10 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+    
+    private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
+    private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
+    
     private List<?> industrySector;
 
     private List<Object> brochureList;
@@ -49,14 +52,6 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setIndustrySector(List<?> industrySector) {
         this.industrySector = industrySector;
-    }
-
-    public String getCurrencyDenomination() {
-        return currencyDenomination;
-    }
-
-    public void setCurrencyDenomination(String currencyDenomination) {
-        this.currencyDenomination = currencyDenomination;
     }
 
     public String getOrganisationName() {
@@ -161,6 +156,18 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setProjectBrief(String projectBrief) {
         this.projectBrief = projectBrief;
+    }
+
+    public String getCurrencyDenomination() {
+        return currencyDenomination;
+    }
+
+    public void setCurrencyDenomination(String currencyDenomination) {
+        this.currencyDenomination = currencyDenomination;
+    }
+
+    public String getLoanType() {
+        return LoanType;
     }
 
     public void setLoanType(String loanType) {
@@ -287,11 +294,27 @@ public class WorkingCapitalPrimaryViewResponse {
         this.profilePic = profilePic;
     }
 
-    public String getLoanType() {
-        return LoanType;
-    }
+	public Double getTenure() {
+		return tenure;
+	}
 
-    public void setLoanType(String loanType) {
-        LoanType = loanType;
-    }
+	public void setTenure(Double tenure) {
+		this.tenure = tenure;
+	}
+
+	public List<FinanceMeansDetailResponse> getFinanceMeansDetailResponseList() {
+		return financeMeansDetailResponseList;
+	}
+
+	public void setFinanceMeansDetailResponseList(List<FinanceMeansDetailResponse> financeMeansDetailResponseList) {
+		this.financeMeansDetailResponseList = financeMeansDetailResponseList;
+	}
+
+	public List<TotalCostOfProjectResponse> getTotalCostOfProjectResponseList() {
+		return totalCostOfProjectResponseList;
+	}
+
+	public void setTotalCostOfProjectResponseList(List<TotalCostOfProjectResponse> totalCostOfProjectResponseList) {
+		this.totalCostOfProjectResponseList = totalCostOfProjectResponseList;
+	}	
 }
