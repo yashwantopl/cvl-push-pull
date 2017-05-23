@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationContro
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
+import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -161,18 +162,18 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody List<Long> userIdList,
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId,
 			HttpServletRequest request) {
 		// request must not be null
 		try {
 
-			if (userIdList == null) {
-				logger.warn("UserId Require to get Loan Applications Details ==>" + userIdList);
+			if (userId == null) {
+				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<LoansResponse> response = productMasterService.getProductDetailsByUserIdList(userIdList);
+			List<ProductDetailsForSp> response = productMasterService.getProductDetailsByUserIdList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
