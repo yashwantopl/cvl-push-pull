@@ -2,36 +2,67 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.CityByCityListIdClient;
+import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
+import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
 @Transactional
 public class GuarantorServiceImpl implements GuarantorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GuarantorServiceImpl.class.getName());
+	
+	protected static final String DMS_URL = "dmsURL";
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
+	@Autowired
+	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
+	
+	@Autowired
+	Environment environment; 
 
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
@@ -237,6 +268,198 @@ public class GuarantorServiceImpl implements GuarantorService {
 				address.setPincode(from.getOfficePincode().longValue());
 			}
 			to.setSecondAddress(address);
+		}
+	}
+
+	@Override
+	public List<ProfileViewPLResponse> getGuarantorServiceResponse(Long applicantId, Long userId) throws Exception {
+		try{
+		List<GuarantorDetails> guarantorDetails= guarantorDetailsRepository.getList(applicantId, userId);
+		if(guarantorDetails!=null && !guarantorDetails.isEmpty()){
+		List<ProfileViewPLResponse> plResponses = new ArrayList<ProfileViewPLResponse>();
+		
+		for (GuarantorDetails guarantorDetail : guarantorDetails) {
+			
+			ProfileViewPLResponse profileViewPLResponse = new ProfileViewPLResponse();
+			
+			profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+			profileViewPLResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(guarantorDetail.getModifiedDate()));
+			try{
+			if(guarantorDetail.getEmployedWithId()!=8){
+			profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+			}
+			else{
+				profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+			}
+			}
+			catch (Exception e) {
+			}
+			profileViewPLResponse.setFirstName(guarantorDetail.getFirstName());
+			try{
+			profileViewPLResponse.setGender(Gender.getById(guarantorDetail.getGenderId()).getValue());
+			}
+			catch (Exception e) {
+			}
+			profileViewPLResponse.setLastName(guarantorDetail.getLastName());
+			profileViewPLResponse.setMaritalStatus(guarantorDetail.getStatusId()!=null?MaritalStatus.getById(guarantorDetail.getStatusId()).getValue():null);
+			profileViewPLResponse.setMiddleName(guarantorDetail.getMiddleName());
+			profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome()!=null?guarantorDetail.getMonthlyIncome(): 0 ));
+			profileViewPLResponse.setNatureOfOccupation(guarantorDetail.getOccupationId()!=null?OccupationNature.getById(guarantorDetail.getOccupationId()).getValue():null);
+			AddressResponse officeAddress = new AddressResponse();
+			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try{
+			List<Long> officeCity = new ArrayList<Long>(1);
+			Long officeCityLong = null;
+			if(guarantorDetail.getOfficeCityId()!=null){
+				officeCityLong = Long.valueOf(guarantorDetail.getOfficeCityId().toString());
+			
+			officeCity.add(officeCityLong);
+			OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+			MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)formResponse.getListData().get(0), MasterResponse.class);
+			officeAddress.setCity(dataCity.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try{
+			List<Long> officeCountry = new ArrayList<Long>(1);
+			Long officeCountryLong = null;
+			if(guarantorDetail.getOfficeCountryId()!=null){
+				officeCountryLong = Long.valueOf(guarantorDetail.getOfficeCountryId().toString());
+			
+			officeCountry.add(officeCountryLong);
+			OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+			MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)country.getListData().get(0), MasterResponse.class);
+			officeAddress.setCountry(dataCountry.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try{
+			List<Long> officeState = new ArrayList<Long>(1);
+			Long officeStateLong = null;
+			if(guarantorDetail.getOfficeCountryId()!=null){
+				officeStateLong = Long.valueOf(guarantorDetail.getOfficeStateId().toString());
+			
+			officeState.add(officeStateLong);
+			OneFormResponse state = stateListByStateListIdClient.send(officeState);
+			MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)state.getListData().get(0), MasterResponse.class);
+			officeAddress.setState(dataState.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			officeAddress.setLandMark(guarantorDetail.getOfficeLandMark());
+			officeAddress.setPincode(guarantorDetail.getOfficePincode()!=null?guarantorDetail.getOfficePincode().toString():null);
+			officeAddress.setPremiseNumber(guarantorDetail.getOfficePremiseNumberName());
+			officeAddress.setStreetName(guarantorDetail.getOfficeStreetName());
+			profileViewPLResponse.setOfficeAddress(officeAddress);
+			
+			AddressResponse permanentAddress = new AddressResponse();
+			try{
+			List<Long> permanentCity = new ArrayList<Long>(1);
+			Long permanentCityLong = null;
+			if(guarantorDetail.getOfficeCityId()!=null){
+				permanentCityLong = Long.valueOf(guarantorDetail.getPermanentCityId().toString());
+			
+			permanentCity.add(permanentCityLong);
+			OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+			MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)formResponsePermanentCity.getListData().get(0), MasterResponse.class);
+			permanentAddress.setCity(dataCity.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			try{
+			List<Long> permanentCountry = new ArrayList<Long>(1);
+			Long permanentCountryLong = null;
+			if(guarantorDetail.getOfficeCountryId()!=null){
+				permanentCountryLong = Long.valueOf(guarantorDetail.getPermanentCountryId().toString());
+			
+			permanentCountry.add(permanentCountryLong);
+			OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+			MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)countryPermanent.getListData().get(0), MasterResponse.class);
+			officeAddress.setCountry(dataCountry.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			try{
+			List<Long> permanentState = new ArrayList<Long>(1);
+			Long permanentStateLong = null;
+			if(guarantorDetail.getOfficeCountryId()!=null){
+				permanentStateLong = Long.valueOf(guarantorDetail.getPermanentStateId().toString());
+			
+			permanentState.add(permanentStateLong);
+			OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+			MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)statePermanent.getListData().get(0), MasterResponse.class);
+			officeAddress.setState(dataState.getValue());
+			}
+			}
+			catch (Exception e) {
+			}
+			permanentAddress.setLandMark(guarantorDetail.getPermanentLandMark());
+			permanentAddress.setPincode(guarantorDetail.getPermanentPincode()!=null?guarantorDetail.getPermanentPincode().toString():null);
+			permanentAddress.setPremiseNumber(guarantorDetail.getPermanentPremiseNumberName());
+			permanentAddress.setStreetName(guarantorDetail.getPermanentStreetName());
+			profileViewPLResponse.setPermanentAddress(permanentAddress);
+			
+			try{
+			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(applicantId, userId);
+			
+			if(loanDetail.getLoanPurpose()!=7 && loanDetail.getLoanPurpose()!=null){
+				profileViewPLResponse.setPurposeOfLoan(PersonalLoanPurpose.getById(Integer.valueOf(loanDetail.getLoanPurpose().toString())).getValue());
+			}
+			else{
+				profileViewPLResponse.setPurposeOfLoan(loanDetail.getLoanPurposeOther());
+			}
+			}
+			catch (Exception e) {
+			}
+			
+			
+			profileViewPLResponse.setTitle(guarantorDetail.getTitleId()!=null?Title.getById(guarantorDetail.getTitleId()).getValue():null);
+			
+			profileViewPLResponse.setAge(guarantorDetail.getBirthDate()!=null?CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString():null);
+			
+			//get list of Pan Card
+	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
+	        DocumentRequest documentRequestPanCard = new DocumentRequest();
+	        documentRequestPanCard.setApplicationId(applicantId);
+	        documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+	        documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_PAN_CARD);
+	        try {
+	            DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
+	            profileViewPLResponse.setPanCardList(documentResponse.getDataList());
+	        } catch (DocumentException e) {
+	            e.printStackTrace();
+	        }
+
+			//get list of Aadhar Card
+	        DocumentRequest documentRequestAadharCard = new DocumentRequest();
+	        documentRequestAadharCard.setApplicationId(applicantId);
+	        documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+	        documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD);
+	        try {
+	            DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
+	            profileViewPLResponse.setAadharCardList(documentResponse.getDataList());
+	        } catch (DocumentException e) {
+	            e.printStackTrace();
+	        }
+			
+			plResponses.add(profileViewPLResponse);
+		}
+		
+		return plResponses;
+		}
+		else {
+			throw new Exception("No Data found");
+		}
+		}
+		catch (Exception e) {
+			throw new Exception("Error Fetching Guarantor Details");
 		}
 	}
 }
