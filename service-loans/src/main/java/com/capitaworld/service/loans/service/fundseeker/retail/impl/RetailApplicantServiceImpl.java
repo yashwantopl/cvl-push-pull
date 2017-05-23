@@ -39,8 +39,10 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
@@ -414,6 +416,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 //			profileViewPLResponse.setPurposeOfLoan(.applicantDetail.getp);
 			profileViewPLResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
 			profileViewPLResponse.setAge(applicantDetail.getBirthDate()!=null?CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString():null);
+			
+			if(applicantDetail.getApplicationId()!=null){
+				profileViewPLResponse.setTenure(applicantDetail.getApplicationId().getTenure()!=null?applicantDetail.getApplicationId().getTenure().toString():null);
+				profileViewPLResponse.setLoanType(applicantDetail.getApplicationId().getProductId()!=null?LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue():null);
+				profileViewPLResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount()!=null?applicantDetail.getApplicationId().getAmount().toString():null);
+				profileViewPLResponse.setCurrency(applicantDetail.getApplicationId().getCurrencyId()!=null?Currency.getById(applicantDetail.getApplicationId().getCurrencyId()).getValue():null);
+			}
 			
 			
 			//get list of Pan Card
