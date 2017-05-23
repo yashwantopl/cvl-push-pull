@@ -2,12 +2,12 @@ package com.capitaworld.service.loans.service.serviceprovider.impl;
 
 import java.util.ArrayList;
 
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -110,7 +110,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				} else {
 					spClientDetail.setClientCountry("NA");
 				}
-
 				if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
 					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
@@ -121,8 +120,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					}
 					spClientDetail.setListData(fsApplicationDetails);
 					clientListings.add(spClientDetail);
-				} else if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
 
+				} else if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
 					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
 					List<ProductDetailsForSp> fpProductsDetails = new ArrayList<ProductDetailsForSp>();
 					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
@@ -138,8 +137,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			e.printStackTrace();
 			throw new Exception("Error while getting client list.");
 		}
-
-
 	}
 	
 	@Override
