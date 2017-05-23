@@ -36,6 +36,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+
     private List<?> industrySector;
 
     private List<Object> brochureList;
@@ -43,12 +44,21 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<Object> panCardList;
     private List<Object> profilePic;
 
+
     public List<?> getIndustrySector() {
         return industrySector;
     }
 
     public void setIndustrySector(List<?> industrySector) {
         this.industrySector = industrySector;
+    }
+
+    public String getCurrencyDenomination() {
+        return currencyDenomination;
+    }
+
+    public void setCurrencyDenomination(String currencyDenomination) {
+        this.currencyDenomination = currencyDenomination;
     }
 
     public String getOrganisationName() {
@@ -82,6 +92,7 @@ public class WorkingCapitalPrimaryViewResponse {
     public void setWebsiteAddress(String websiteAddress) {
         this.websiteAddress = websiteAddress;
     }
+
 
     public String getCity() {
         return city;
@@ -289,5 +300,21 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setProfilePic(List<Object> profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public String getLoanType() {
+        return LoanType;
+    }
+
+    public void setLoanType(String loanType) {
+        LoanType = loanType;
+    }
+
+    public String getDateOfProposal() {
+        return dateOfProposal;
+    }
+
+    public void setDateOfProposal(String dateOfProposal) {
+        this.dateOfProposal = dateOfProposal;
     }
 }
