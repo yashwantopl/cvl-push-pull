@@ -14,9 +14,9 @@ public class WorkingCapitalPrimaryViewResponse {
     private String aboutUs;
     private String panNo;
     private String websiteAddress;
-    private Long administrativeCityId;
-    private Integer administrativeCountryId;
-    private Integer administrativeStateId;
+    private String city;
+    private String country;
+    private String state;
     private String constitution;
     private String establishmentMonth;
     private Integer establishmentYear;
@@ -37,12 +37,21 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
 
+    private List<?> industrySector;
+
     private List<Object> brochureList;
     private List<Object> certificateList;
     private List<Object> panCardList;
     private List<Object> profilePic;
 
 
+    public List<?> getIndustrySector() {
+        return industrySector;
+    }
+
+    public void setIndustrySector(List<?> industrySector) {
+        this.industrySector = industrySector;
+    }
 
     public String getCurrencyDenomination() {
         return currencyDenomination;
@@ -84,28 +93,29 @@ public class WorkingCapitalPrimaryViewResponse {
         this.websiteAddress = websiteAddress;
     }
 
-    public Long getAdministrativeCityId() {
-        return administrativeCityId;
+
+    public String getCity() {
+        return city;
     }
 
-    public void setAdministrativeCityId(Long administrativeCityId) {
-        this.administrativeCityId = administrativeCityId;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public Integer getAdministrativeCountryId() {
-        return administrativeCountryId;
+    public String getCountry() {
+        return country;
     }
 
-    public void setAdministrativeCountryId(Integer administrativeCountryId) {
-        this.administrativeCountryId = administrativeCountryId;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
-    public Integer getAdministrativeStateId() {
-        return administrativeStateId;
+    public String getState() {
+        return state;
     }
 
-    public void setAdministrativeStateId(Integer administrativeStateId) {
-        this.administrativeStateId = administrativeStateId;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getConstitution() {
@@ -154,6 +164,30 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setProjectBrief(String projectBrief) {
         this.projectBrief = projectBrief;
+    }
+
+    public String getCurrencyDenomination() {
+        return currencyDenomination;
+    }
+
+    public void setCurrencyDenomination(String currencyDenomination) {
+        this.currencyDenomination = currencyDenomination;
+    }
+
+    public String getLoanType() {
+        return LoanType;
+    }
+
+    public void setLoanType(String loanType) {
+        LoanType = loanType;
+    }
+
+    public String getDateOfProposal() {
+        return dateOfProposal;
+    }
+
+    public void setDateOfProposal(String dateOfProposal) {
+        this.dateOfProposal = dateOfProposal;
     }
 
     public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
