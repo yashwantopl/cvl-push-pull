@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.json.simple.JSONObject;
 
 import org.slf4j.Logger;

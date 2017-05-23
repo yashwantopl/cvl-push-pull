@@ -17,9 +17,12 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRe
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+
 import com.capitaworld.service.oneform.client.*;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
+import com.capitaworld.service.oneform.client.IndustryClient;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +109,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
         workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
         workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
-
 
         //set city
         List<Long> cityList = new ArrayList<>();
@@ -192,7 +195,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         //get value of working capital data
         PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(toApplicationId, userId);
@@ -311,6 +313,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             logger.error("Problem to get Data of Security Details {}", e);
         }
 
+
         //get value of Financial Arrangements and set in response
         try {
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
@@ -335,7 +338,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         DocumentRequest documentRequest = new DocumentRequest();
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(1l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
@@ -347,7 +350,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list fo certificate
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(2l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
@@ -359,14 +362,13 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list of pan card
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(3l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-
 
         //get profile pic
         documentRequest.setApplicationId(toApplicationId);
