@@ -37,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import java.util.LinkedHashMap;
-
 import java.util.List;
 import java.util.Map;
 
@@ -180,7 +179,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             e.printStackTrace();
         }
 
-
         List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
         List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
         List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
@@ -235,7 +233,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
                 creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
 
-
                 RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
                 OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()));
                 MasterResponse masterResponse= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)oneFormResponse.getData(),MasterResponse.class);
@@ -244,6 +241,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 }else{
                     workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
                 }
+
                 creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
                 creditRatingOrganizationDetailResponse.setRatingAgency(RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
                 creditRatingOrganizationDetailResponse.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
@@ -315,7 +313,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             logger.error("Problem to get Data of Security Details {}", e);
         }
 
-        //get value of Security and set in response
+
+        //get value of Financial Arrangements and set in response
         try {
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
             List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -339,7 +338,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         DocumentRequest documentRequest = new DocumentRequest();
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(1l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
@@ -351,7 +350,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list fo certificate
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(2l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
@@ -359,10 +358,11 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             e.printStackTrace();
         }
 
+
         //get list of pan card
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(3l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());

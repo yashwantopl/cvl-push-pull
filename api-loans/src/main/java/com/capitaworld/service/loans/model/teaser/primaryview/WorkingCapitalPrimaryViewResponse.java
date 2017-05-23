@@ -44,7 +44,6 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<Object> panCardList;
     private List<Object> profilePic;
 
-
     public List<?> getIndustrySector() {
         return industrySector;
     }
@@ -92,7 +91,6 @@ public class WorkingCapitalPrimaryViewResponse {
     public void setWebsiteAddress(String websiteAddress) {
         this.websiteAddress = websiteAddress;
     }
-
 
     public String getCity() {
         return city;
@@ -301,6 +299,7 @@ public class WorkingCapitalPrimaryViewResponse {
     public void setProfilePic(List<Object> profilePic) {
         this.profilePic = profilePic;
     }
+
 
     public String getLoanType() {
         return LoanType;
