@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +36,11 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> clientList(@RequestBody UsersRequest usersRequest,HttpServletRequest request){
 		if(CommonUtils.isObjectNullOrEmpty(usersRequest) || CommonUtils.isObjectNullOrEmpty(usersRequest.getUserType())){
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		try {
-			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Long.valueOf("576"), usersRequest.getUserType().getCode());
+			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()), usersRequest.getUserType().getCode());
 			if(clientList != null){
 				logger.info("Serivce provider's client list");
 				return new ResponseEntity<UserResponse>(
@@ -63,4 +63,35 @@ public class ServiceProviderController {
 		
 	}
 	
+
+	@RequestMapping(value = "/client/count",method = RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserResponse> spClientCount(HttpServletRequest request){
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		try {
+			JSONObject spClientCount = serviceProviderFlowService.spClientCount(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()));
+			if(!spClientCount.isEmpty()){
+				logger.info("Serivce provider's client count");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse(spClientCount,"Serivce provider's client count", HttpStatus.OK.value()),
+						HttpStatus.OK);
+			}else{
+				logger.info("Something went wrong while fetching SP client count..!");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse("Something went wrong while fetching SP client count..!-->", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);	
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error("Something went wrong while fetching SP client count..!");
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Something went wrong while fetching SP client count..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
 }

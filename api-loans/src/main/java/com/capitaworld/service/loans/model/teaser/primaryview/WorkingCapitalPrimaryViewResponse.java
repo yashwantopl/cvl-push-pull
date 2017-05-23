@@ -51,6 +51,14 @@ public class WorkingCapitalPrimaryViewResponse {
         this.industrySector = industrySector;
     }
 
+    public String getCurrencyDenomination() {
+        return currencyDenomination;
+    }
+
+    public void setCurrencyDenomination(String currencyDenomination) {
+        this.currencyDenomination = currencyDenomination;
+    }
+
     public String getOrganisationName() {
         return organisationName;
     }
@@ -153,18 +161,6 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setProjectBrief(String projectBrief) {
         this.projectBrief = projectBrief;
-    }
-
-    public String getCurrencyDenomination() {
-        return currencyDenomination;
-    }
-
-    public void setCurrencyDenomination(String currencyDenomination) {
-        this.currencyDenomination = currencyDenomination;
-    }
-
-    public String getLoanType() {
-        return LoanType;
     }
 
     public void setLoanType(String loanType) {
@@ -289,5 +285,13 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setProfilePic(List<Object> profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public String getLoanType() {
+        return LoanType;
+    }
+
+    public void setLoanType(String loanType) {
+        LoanType = loanType;
     }
 }

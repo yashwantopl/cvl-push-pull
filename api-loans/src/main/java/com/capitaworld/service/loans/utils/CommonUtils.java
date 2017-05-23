@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -143,5 +144,33 @@ public class CommonUtils {
 			return "DEBT";
 		else
 			return "EQUITY";
+	}
+	
+	public static String getStringDateFromDate(Date date){
+		if(date!=null ){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		return dateFormat.format(date);
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	public static Integer getAgeFromBirthDate(Date date){
+		if(date!=null){
+		Integer years = 0;
+		Calendar birthDay = Calendar.getInstance();
+		birthDay.setTime(date);
+        Calendar now = Calendar.getInstance();
+        now.setTimeInMillis(System.currentTimeMillis());
+        
+        years = now.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
+        System.out.println("Age :==="+years);
+        return years;
+		}
+		else{
+			return null;
+		}
 	}
 }

@@ -33,8 +33,6 @@ public class WorkingCapitalPrimaryViewController {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-        //Long userId =1750l;
-
         boolean isValidateRequest = workingCapitalPrimaryViewService.validateWorkingCapitalPrimaryViewRequest(toApplicationId);
         if(isValidateRequest){
             logger.warn("Invalid Request {}", toApplicationId);
