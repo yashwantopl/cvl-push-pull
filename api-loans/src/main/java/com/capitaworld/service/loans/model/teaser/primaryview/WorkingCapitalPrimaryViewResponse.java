@@ -52,14 +52,6 @@ public class WorkingCapitalPrimaryViewResponse {
         this.industrySector = industrySector;
     }
 
-    public String getCurrencyDenomination() {
-        return currencyDenomination;
-    }
-
-    public void setCurrencyDenomination(String currencyDenomination) {
-        this.currencyDenomination = currencyDenomination;
-    }
-
     public String getOrganisationName() {
         return organisationName;
     }
@@ -170,22 +162,6 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setCurrencyDenomination(String currencyDenomination) {
         this.currencyDenomination = currencyDenomination;
-    }
-
-    public String getLoanType() {
-        return LoanType;
-    }
-
-    public void setLoanType(String loanType) {
-        LoanType = loanType;
-    }
-
-    public String getDateOfProposal() {
-        return dateOfProposal;
-    }
-
-    public void setDateOfProposal(String dateOfProposal) {
-        this.dateOfProposal = dateOfProposal;
     }
 
     public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
