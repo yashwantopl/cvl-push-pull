@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
 
 public interface GuarantorService {
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception;
@@ -15,4 +16,6 @@ public interface GuarantorService {
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest,Long userId) throws Exception;
 
 	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId, Long id) throws Exception;
+
+	public List<ProfileViewPLResponse> getGuarantorServiceResponse(Long applicantId, Long userId) throws Exception;
 }
