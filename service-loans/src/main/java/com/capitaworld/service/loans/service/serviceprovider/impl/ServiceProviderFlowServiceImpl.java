@@ -114,7 +114,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 
 
 				if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
-
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
 					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
