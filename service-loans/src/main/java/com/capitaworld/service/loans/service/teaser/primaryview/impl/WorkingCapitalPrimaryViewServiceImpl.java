@@ -335,7 +335,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         DocumentRequest documentRequest = new DocumentRequest();
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(1l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
@@ -347,7 +347,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list fo certificate
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(2l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
@@ -359,7 +359,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list of pan card
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(3l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
