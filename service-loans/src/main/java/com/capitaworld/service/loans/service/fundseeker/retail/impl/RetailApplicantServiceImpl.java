@@ -27,7 +27,7 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -268,11 +268,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public ProfileViewPLResponse getProfileViewPLResponse(Long applicantId, Long userId) throws Exception {
+	public RetailProfileViewResponse getProfileViewPLResponse(Long applicantId, Long userId) throws Exception {
 		try{
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId, applicantId);
 		if(applicantDetail!=null){
-			ProfileViewPLResponse profileViewPLResponse = new ProfileViewPLResponse();
+			RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 			
 			profileViewPLResponse.setCompanyName(applicantDetail.getCompanyName());
 			profileViewPLResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
