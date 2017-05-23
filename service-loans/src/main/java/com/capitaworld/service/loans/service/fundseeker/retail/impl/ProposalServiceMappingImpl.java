@@ -112,12 +112,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						
 						List<Map<String, Object>> loanResponseDatalist = (List<Map<String, Object>>) formResponse.getListData();
 						String industry = "";
-						if(loanResponseDatalist!=null)
+						if(loanResponseDatalist.size()>0)
 						{
 							for(int k=0;k<loanResponseDatalist.size();k++)
 							{
 								MasterResponse masterResponse=new MasterResponse();
-								masterResponse= MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(i),
+								masterResponse= MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 								         MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
 							}
@@ -272,7 +272,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Long productId = proposalrequest.getFpProductId();
 					
 					fundProviderProposalDetails.setName(fundProviderDetailsRequest.getOrganizationName());
-					fundProviderProposalDetails.setWhoAreYou(FundproviderType.getById(Integer.parseInt(fundProviderDetailsRequest.getBusinessTypeMaster().getId().toString())).getValue());
+					fundProviderProposalDetails.setWhoAreYou(FundproviderType.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 					fundProviderProposalDetails.setFpType("DEBT");
 
 					// calling DMS for getting fp profile image path
@@ -334,6 +334,34 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
 			response = client.proposalCountOfFundSeeker(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public ProposalMappingResponse get(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.getProposal(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public ProposalMappingResponse changeStatus(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.changeStatus(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}

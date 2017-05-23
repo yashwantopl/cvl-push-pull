@@ -38,6 +38,10 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request) {
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		matchRequest.setUserId(userId);
+		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -67,6 +71,10 @@ public class MatchesController {
 	@RequestMapping(value = "/${retail}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSRetail(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request) {
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		matchRequest.setUserId(userId);
+		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -95,6 +103,10 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request) {
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		matchRequest.setUserId(userId);
+		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -123,6 +135,10 @@ public class MatchesController {
 	@RequestMapping(value = "/${retail}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPRetail(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request) {
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		matchRequest.setUserId(userId);
+		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
