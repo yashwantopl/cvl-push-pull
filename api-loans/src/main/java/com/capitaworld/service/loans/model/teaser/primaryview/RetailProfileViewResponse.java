@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.AddressResponse;
  * @author Sanket
  *
  */
-public class ProfileViewPLResponse {
+public class RetailProfileViewResponse {
 	
 
 	
@@ -30,10 +30,48 @@ public class ProfileViewPLResponse {
 	private List<Object> panCardList;
 	private List<Object> aadharCardList;
 	private String age;
+	private String tenure;
+	private String loanType;
+	private String relationshipWithApplicant;
+	private String currency;
+	private String loanAmount;
 	
 	
 	
 	
+	
+	
+	
+	public String getLoanAmount() {
+		return loanAmount;
+	}
+	public void setLoanAmount(String loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+	public String getTenure() {
+		return tenure;
+	}
+	public void setTenure(String tenure) {
+		this.tenure = tenure;
+	}
+	public String getLoanType() {
+		return loanType;
+	}
+	public void setLoanType(String loanType) {
+		this.loanType = loanType;
+	}
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
 	public String getAge() {
 		return age;
 	}

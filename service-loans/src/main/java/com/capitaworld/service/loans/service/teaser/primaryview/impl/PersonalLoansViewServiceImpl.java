@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoandsPrimaryViewResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
@@ -52,17 +52,17 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
     }
 
 	@Override
-	public PersonalLoandsPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId, Long userId) throws Exception {
+	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId, Long userId) throws Exception {
 
 		try{
-		PersonalLoandsPrimaryViewResponse response = new PersonalLoandsPrimaryViewResponse();
-		ProfileViewPLResponse profileViewPLResponse = retailApplicantService.getProfileViewPLResponse( applicantId,  userId);
+		RetailPrimaryViewResponse response = new RetailPrimaryViewResponse();
+		RetailProfileViewResponse profileViewPLResponse = retailApplicantService.getProfileViewPLResponse( applicantId,  userId);
 		response.setPersonalProfileRespoonse(profileViewPLResponse);
 		
-		List<ProfileViewPLResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId,userId);	
+		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId,userId);	
 		response.setCoApplicantResponse(coApplicantResponse);
 		
-		List<ProfileViewPLResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId,userId);
+		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId,userId);
 		response.setGarantorResponse(garantorResponse);
 		return response;
 		}

@@ -25,7 +25,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -35,11 +35,14 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
+import com.capitaworld.service.oneform.enums.RelationshipType;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -272,15 +275,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<ProfileViewPLResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
+	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
 		try{
 		List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
 		if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
-		List<ProfileViewPLResponse> plResponses = new ArrayList<ProfileViewPLResponse>();
+		List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 		
 		for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 			
-			ProfileViewPLResponse profileViewPLResponse = new ProfileViewPLResponse();
+			RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 			
 			profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
 			profileViewPLResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(coApplicantDetail.getModifiedDate()));
@@ -424,6 +427,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			profileViewPLResponse.setTitle(coApplicantDetail.getTitleId()!=null?Title.getById(coApplicantDetail.getTitleId()).getValue():null);
 			
 			profileViewPLResponse.setAge(coApplicantDetail.getBirthDate()!=null?CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString():null);
+			
+			
+			if(coApplicantDetail.getApplicationId()!=null){
+				profileViewPLResponse.setTenure(coApplicantDetail.getApplicationId().getTenure()!=null?coApplicantDetail.getApplicationId().getTenure().toString():null);
+				profileViewPLResponse.setLoanType(coApplicantDetail.getApplicationId().getProductId()!=null?LoanType.getById(coApplicantDetail.getApplicationId().getProductId()).getValue():null);
+				profileViewPLResponse.setLoanAmount(coApplicantDetail.getApplicationId().getAmount()!=null?coApplicantDetail.getApplicationId().getAmount().toString():null);
+				profileViewPLResponse.setCurrency(coApplicantDetail.getApplicationId().getCurrencyId()!=null?Currency.getById(coApplicantDetail.getApplicationId().getCurrencyId()).getValue():null);
+			}
+			
+			profileViewPLResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant()!=null ? RelationshipType.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue():null);
 			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
