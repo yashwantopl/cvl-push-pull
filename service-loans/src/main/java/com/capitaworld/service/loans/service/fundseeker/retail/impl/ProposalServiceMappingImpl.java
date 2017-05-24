@@ -368,5 +368,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return response;
 	}
 
+	@Override
+	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.listOfFundSeekerProposal(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 	
 }

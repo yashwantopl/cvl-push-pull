@@ -67,6 +67,8 @@ public class ProposalController {
 		
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		request.setUserType(userType);
+		request.setUserId(userId);
 		ProposalMappingResponse response = proposalService.get(request);
 		response.setUserType(userType);
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
@@ -79,5 +81,10 @@ public class ProposalController {
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/listfundseekerproposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> listOfFundSeekerProposal(@RequestBody ProposalMappingRequest request) {
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.listOfFundSeekerProposal(request),HttpStatus.OK);
 	}
 }
