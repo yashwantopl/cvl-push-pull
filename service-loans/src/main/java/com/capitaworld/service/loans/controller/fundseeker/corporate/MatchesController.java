@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.MatchResponse;
+
 
 @RestController
 @RequestMapping("/matches")

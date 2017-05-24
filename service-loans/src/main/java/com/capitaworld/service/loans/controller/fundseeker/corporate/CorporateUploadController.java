@@ -207,12 +207,13 @@ public class CorporateUploadController {
 				if(!(response.getDataList().size()>0))
 				{
 					try {
-					    Thread.sleep(4000); //4000 milliseconds is four second.
-					    finalResponse = new LoansResponse(response.getMessage(), response.getStatus());	    
+					    Thread.sleep(3000); //3000 milliseconds is three second.
+					    response = dmsClient.listProductDocument(documentRequest);
 					} catch(InterruptedException ex) {
 					    Thread.currentThread().interrupt();
 					}
 				}
+				finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
