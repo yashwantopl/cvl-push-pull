@@ -7,9 +7,5 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewR
  *
  */
 public interface PersonalLoansViewService {
-
-	public Boolean validatePersonalLoansPrimaryViewRequest(String toApplicationId);
-
 	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long parseLong, Long userId) throws Exception;
-
 }
