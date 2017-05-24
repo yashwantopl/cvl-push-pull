@@ -36,6 +36,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			}
 			BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail,
 					CommonUtils.IgnorableCopy.CORPORATE);
+			primaryPersonalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(personalLoanRequest.getTenure()) ? null : (personalLoanRequest.getTenure() * 12));
 			primaryPersonalLoanDetail.setIsActive(true);
 			primaryPersonalLoanDetail.setModifiedBy(userId);
 			primaryPersonalLoanDetail.setModifiedDate(new Date());
@@ -58,6 +59,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			}
 			PrimaryPersonalLoanRequest personalLoanRequest = new PrimaryPersonalLoanRequest();
 			BeanUtils.copyProperties(loanDetail, personalLoanRequest);
+			personalLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return personalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details");

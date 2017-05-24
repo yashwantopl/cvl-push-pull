@@ -19,6 +19,8 @@ public class PrimaryLasLoanDetailRequest extends LoanApplicationRequest implemen
 	private Integer loanPurpose;
 
 	private String loanPurposeOther;
+	
+	private Integer month;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -44,5 +46,12 @@ public class PrimaryLasLoanDetailRequest extends LoanApplicationRequest implemen
 		this.loanPurposeOther = loanPurposeOther;
 	}
 
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
+	}
 
 }

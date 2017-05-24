@@ -34,6 +34,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 						"PrimaryWorkingDetail not exist in DB with ID=>" + capitalLoanRequest.getId());
 			}
 			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			capitalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getTenure()) ? null : (capitalLoanRequest.getTenure() * 12 ));
 			capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
 			capitalLoanDetail.setModifiedDate(new Date());
 			primaryWCRepository.save(capitalLoanDetail);
@@ -54,6 +55,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			}
 			PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
+			capitalLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Working Details Profile:-");

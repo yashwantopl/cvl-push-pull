@@ -28,6 +28,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			return false;
 		}
 		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		primaryHomeLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getTenure()) ? null : (homeLoanDetailRequest.getTenure() * 12));
 		primaryHomeLoanDetail.setModifiedBy(homeLoanDetailRequest.getUserId());
 		primaryHomeLoanDetail.setModifiedDate(new Date());
 		primaryHomeLoanDetail.setIsActive(true);
@@ -43,6 +44,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		}
 		PrimaryHomeLoanDetailRequest primaryHomeLoanDetailRequest= new PrimaryHomeLoanDetailRequest();
 		BeanUtils.copyProperties(loanDetail, primaryHomeLoanDetailRequest);
+		primaryHomeLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 		return primaryHomeLoanDetailRequest;
 	}
 }

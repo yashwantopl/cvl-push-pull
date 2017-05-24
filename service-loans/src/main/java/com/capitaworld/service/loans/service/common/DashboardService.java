@@ -4,4 +4,6 @@ import com.capitaworld.service.loans.model.DashboardProfileResponse;
 
 public interface DashboardService {
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId,Long userId) throws Exception ;
+	
+	public Integer getCount(int userType) throws Exception;
 }

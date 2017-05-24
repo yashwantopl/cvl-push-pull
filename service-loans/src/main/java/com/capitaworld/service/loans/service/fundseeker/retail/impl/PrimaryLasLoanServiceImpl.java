@@ -28,6 +28,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			return false;
 		}
 		BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		primaryLasLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(lasLoanDetailRequest.getTenure()) ? null : (lasLoanDetailRequest.getTenure() * 12));
 		primaryLasLoanDetail.setIsActive(true);
 		primaryLasLoanDetail.setModifiedBy(lasLoanDetailRequest.getUserId());
 		primaryLasLoanDetail.setModifiedDate(new Date());
@@ -43,6 +44,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 		}
 		PrimaryLasLoanDetailRequest lasLoanDetailRequest= new PrimaryLasLoanDetailRequest();
 		BeanUtils.copyProperties(loanDetail, lasLoanDetailRequest);
+		lasLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 		return lasLoanDetailRequest;
 	}
 }

@@ -67,4 +67,12 @@ public class CommonDocumentUtils {
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
+	
+//	public static Integer getYear(Long yearId,Environment environment){
+//		
+//	}
+//	
+//public static Integer getMonth(Long yearId,Environment environment){
+//		
+//	}
 }

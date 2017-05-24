@@ -33,6 +33,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 						"PrimaryTermLoanDetail not exist in DB with ID=>" + termLoanRequest.getId());
 			}
 			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null : (termLoanRequest.getTenure() * 12 ));
 			termLoanDetail.setModifiedBy(userId);
 			termLoanDetail.setModifiedDate(new Date());
 			primaryTLRepository.save(termLoanDetail);
@@ -40,7 +41,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -51,13 +52,14 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			if (loanDetail == null) {
 				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>" + id);
 			}
-			PrimaryTermLoanRequest capitalLoanRequest = new PrimaryTermLoanRequest();
-			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
-			return capitalLoanRequest;
+			PrimaryTermLoanRequest termLoanRequest = new PrimaryTermLoanRequest();
+			BeanUtils.copyProperties(loanDetail, termLoanRequest);
+			termLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			return termLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

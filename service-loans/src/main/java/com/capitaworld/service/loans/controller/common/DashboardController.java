@@ -66,5 +66,37 @@ public class DashboardController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/get_fsfp_count", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFsOrFpCount(@RequestBody DataRequest data, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			Long userId = null;
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if(CommonUtils.isObjectNullOrEmpty(data.getId())){
+				logger.warn("UserType must not be Empty");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
+			Integer count = dashboardService.getCount(data.getId().intValue());
+			LoansResponse loansResponse = new LoansResponse("Data Found",
+					HttpStatus.OK.value());
+			loansResponse.setData(count);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting count of Users==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 }
