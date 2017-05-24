@@ -38,6 +38,7 @@ import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -437,6 +438,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			
 			profileViewPLResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant()!=null ? RelationshipType.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue():null);
+			profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
+			if(coApplicantDetail.getIndustryTypeId()!=null&&coApplicantDetail.getIndustryTypeId()!=16){
+			profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+			}
+			else{
+				profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
+			}
+			
 			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
