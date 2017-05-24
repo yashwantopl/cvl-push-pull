@@ -442,6 +442,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 				profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
 			}
 			
+			profileViewPLResponse.setPan(guarantorDetail.getPan());
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 	        DocumentRequest documentRequestPanCard = new DocumentRequest();

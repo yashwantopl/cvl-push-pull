@@ -434,6 +434,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				profileViewPLResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
 			}
 			
+			profileViewPLResponse.setPan(applicantDetail.getPan());
+			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 	        DocumentRequest documentRequestPanCard = new DocumentRequest();
@@ -446,6 +448,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	        } catch (DocumentException e) {
 	            e.printStackTrace();
 	        }
+	        
+	        
 
 			//get list of Aadhar Card
 	        DocumentRequest documentRequestAadharCard = new DocumentRequest();

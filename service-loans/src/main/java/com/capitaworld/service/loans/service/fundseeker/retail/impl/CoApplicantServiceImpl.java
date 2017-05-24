@@ -446,7 +446,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
 			}
 			
-			
+			profileViewPLResponse.setPan(coApplicantDetail.getPan());
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 	        DocumentRequest documentRequestPanCard = new DocumentRequest();
