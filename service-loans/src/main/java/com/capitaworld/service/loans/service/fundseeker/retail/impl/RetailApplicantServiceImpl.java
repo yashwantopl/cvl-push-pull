@@ -347,7 +347,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				
 			}
 			officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-			officeAddress.setPincode(applicantDetail.getOfficePincode().toString());
+			officeAddress.setPincode(applicantDetail.getOfficePincode()!=null?applicantDetail.getOfficePincode().toString():null);
 			officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
 			officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
 			profileViewPLResponse.setOfficeAddress(officeAddress);
@@ -396,7 +396,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				
 			}
 			permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-			permanentAddress.setPincode(applicantDetail.getPermanentPincode().toString());
+			permanentAddress.setPincode(applicantDetail.getPermanentPincode()!=null?applicantDetail.getPermanentPincode().toString():null);
 			permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
 			permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
 			profileViewPLResponse.setPermanentAddress(permanentAddress);
