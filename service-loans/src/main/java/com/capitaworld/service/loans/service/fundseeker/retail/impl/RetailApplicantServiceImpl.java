@@ -42,6 +42,7 @@ import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -346,7 +347,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				
 			}
 			officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-			officeAddress.setPincode(applicantDetail.getOfficePincode().toString());
+			officeAddress.setPincode(applicantDetail.getOfficePincode()!=null?applicantDetail.getOfficePincode().toString():null);
 			officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
 			officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
 			profileViewPLResponse.setOfficeAddress(officeAddress);
@@ -395,7 +396,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				
 			}
 			permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-			permanentAddress.setPincode(applicantDetail.getPermanentPincode().toString());
+			permanentAddress.setPincode(applicantDetail.getPermanentPincode()!=null?applicantDetail.getPermanentPincode().toString():null);
 			permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
 			permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
 			profileViewPLResponse.setPermanentAddress(permanentAddress);
@@ -425,6 +426,16 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			
 			
+			profileViewPLResponse.setEntityName(applicantDetail.getEntityName());
+			if(applicantDetail.getIndustryTypeId()!=null&&applicantDetail.getIndustryTypeId()!=16){
+			profileViewPLResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
+			}
+			else{
+				profileViewPLResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
+			}
+			
+			profileViewPLResponse.setPan(applicantDetail.getPan());
+			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 	        DocumentRequest documentRequestPanCard = new DocumentRequest();
@@ -437,6 +448,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	        } catch (DocumentException e) {
 	            e.printStackTrace();
 	        }
+	        
+	        
 
 			//get list of Aadhar Card
 	        DocumentRequest documentRequestAadharCard = new DocumentRequest();

@@ -35,6 +35,8 @@ public class RetailProfileViewResponse {
 	private String relationshipWithApplicant;
 	private String currency;
 	private String loanAmount;
+	private String entityName;
+	private String industryType;
 	
 	
 	
@@ -42,6 +44,18 @@ public class RetailProfileViewResponse {
 	
 	
 	
+	public String getEntityName() {
+		return entityName;
+	}
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+	public String getIndustryType() {
+		return industryType;
+	}
+	public void setIndustryType(String industryType) {
+		this.industryType = industryType;
+	}
 	public String getLoanAmount() {
 		return loanAmount;
 	}
