@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -145,6 +147,32 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		return productMasterRepository.getListByUserId(userId);
 
+	}
+
+	@Override
+	public ProductDetailsResponse getProductDetailsResponse(Long userId) {
+		// TODO Auto-generated method stub
+		
+		List<ProductMaster> productMasterList=productMasterRepository.getUserProductList(userId);
+		ProductMaster productMaster = null;
+		ProductDetailsResponse productDetailsResponse=new ProductDetailsResponse();
+		if(productMasterList.size() > 0)
+		{
+			productMaster=productMasterList.get(0);
+		}
+		if(productMaster!=null)
+		{
+			productDetailsResponse.setProductId(productMaster.getProductId());
+			productDetailsResponse.setProductMappingId(productMaster.getId());
+			productDetailsResponse.setMessage("Proposal Details Sent");
+			productDetailsResponse.setStatus(HttpStatus.OK.value());
+		}
+		else
+		{
+			productDetailsResponse.setMessage("Something went wrong");
+			productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+		}
+		return productDetailsResponse;
 	}
 
 }
