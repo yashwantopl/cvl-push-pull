@@ -12,7 +12,7 @@ public class RetailPrimaryViewResponse {
 	private RetailProfileViewResponse  personalProfileRespoonse;
 	private List<RetailProfileViewResponse> coApplicantResponse = new ArrayList<RetailProfileViewResponse>();
 	private List<RetailProfileViewResponse> garantorResponse = new ArrayList<RetailProfileViewResponse>();
-	
+	private PersonalLoanResponse personalLoanResponse;
 	
 	
 	public RetailProfileViewResponse getPersonalProfileRespoonse() {
@@ -41,13 +41,12 @@ public class RetailPrimaryViewResponse {
 	public void addGarantorResponse(RetailProfileViewResponse garantorResponse){
 		this.getGarantorResponse().add(garantorResponse);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public PersonalLoanResponse getPersonalLoanResponse() {
+		return personalLoanResponse;
+	}
+
+	public void setPersonalLoanResponse(PersonalLoanResponse personalLoanResponse) {
+		this.personalLoanResponse = personalLoanResponse;
+	}
 }

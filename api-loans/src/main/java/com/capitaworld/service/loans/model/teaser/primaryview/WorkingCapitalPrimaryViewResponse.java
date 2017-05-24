@@ -36,6 +36,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+
     private List<?> industrySector;
 
     private List<Object> brochureList;
@@ -49,14 +50,6 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setIndustrySector(List<?> industrySector) {
         this.industrySector = industrySector;
-    }
-
-    public String getCurrencyDenomination() {
-        return currencyDenomination;
-    }
-
-    public void setCurrencyDenomination(String currencyDenomination) {
-        this.currencyDenomination = currencyDenomination;
     }
 
     public String getOrganisationName() {
@@ -163,16 +156,12 @@ public class WorkingCapitalPrimaryViewResponse {
         this.projectBrief = projectBrief;
     }
 
-    public void setLoanType(String loanType) {
-        LoanType = loanType;
+    public String getCurrencyDenomination() {
+        return currencyDenomination;
     }
 
-    public String getDateOfProposal() {
-        return dateOfProposal;
-    }
-
-    public void setDateOfProposal(String dateOfProposal) {
-        this.dateOfProposal = dateOfProposal;
+    public void setCurrencyDenomination(String currencyDenomination) {
+        this.currencyDenomination = currencyDenomination;
     }
 
     public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
@@ -287,11 +276,20 @@ public class WorkingCapitalPrimaryViewResponse {
         this.profilePic = profilePic;
     }
 
+
     public String getLoanType() {
         return LoanType;
     }
 
     public void setLoanType(String loanType) {
         LoanType = loanType;
+    }
+
+    public String getDateOfProposal() {
+        return dateOfProposal;
+    }
+
+    public void setDateOfProposal(String dateOfProposal) {
+        this.dateOfProposal = dateOfProposal;
     }
 }

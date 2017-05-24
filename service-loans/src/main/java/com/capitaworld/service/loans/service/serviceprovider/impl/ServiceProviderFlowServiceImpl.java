@@ -122,6 +122,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					clientListings.add(spClientDetail);
 
 				} else if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
+
 					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
 					List<ProductDetailsForSp> fpProductsDetails = new ArrayList<ProductDetailsForSp>();
 					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
