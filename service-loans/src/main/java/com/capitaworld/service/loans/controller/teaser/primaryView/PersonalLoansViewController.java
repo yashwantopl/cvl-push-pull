@@ -36,7 +36,7 @@ public class PersonalLoansViewController {
 	    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
 	        LoansResponse loansResponse = new LoansResponse();
 	        //get user id from http servlet request
-	        Long userId = (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+	        Long userId = 1758L;//(Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
 
 			if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 				logger.warn("Invalid data or Requested data not found.", toApplicationId);

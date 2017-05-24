@@ -304,7 +304,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					//get list of Pan Card
 					DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 					DocumentRequest documentRequestPanCard = new DocumentRequest();
-					documentRequestPanCard.setApplicationId(applicantId);
+					documentRequestPanCard.setCoApplicantId(coApplicantDetail.getId());
 					documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
 					documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 					try {
@@ -316,7 +316,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 					//get list of Aadhar Card
 					DocumentRequest documentRequestAadharCard = new DocumentRequest();
-					documentRequestAadharCard.setApplicationId(applicantId);
+					documentRequestAadharCard.setCoApplicantId(coApplicantDetail.getId());
 					documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
 					documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 					try {
