@@ -38,6 +38,7 @@ import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
@@ -433,7 +434,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 				profileViewPLResponse.setLoanAmount(guarantorDetail.getApplicationId().getAmount()!=null?guarantorDetail.getApplicationId().getAmount().toString():null);
 				profileViewPLResponse.setCurrency(guarantorDetail.getApplicationId().getCurrencyId()!=null?Currency.getById(guarantorDetail.getApplicationId().getCurrencyId()).getValue():null);
 			}
-			
+			profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+			if(guarantorDetail.getIndustryTypeId()!=null&&guarantorDetail.getIndustryTypeId()!=16){
+			profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+			}
+			else{
+				profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
+			}
 			
 			//get list of Pan Card
 	        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
