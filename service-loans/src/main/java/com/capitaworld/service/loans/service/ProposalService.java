@@ -20,4 +20,6 @@ public interface ProposalService {
 	public ProposalMappingResponse get(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
+	
+	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request);
 }
