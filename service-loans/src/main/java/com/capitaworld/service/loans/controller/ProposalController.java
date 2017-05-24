@@ -67,6 +67,8 @@ public class ProposalController {
 		
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		request.setUserType(userType);
+		request.setUserId(userId);
 		ProposalMappingResponse response = proposalService.get(request);
 		response.setUserType(userType);
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
