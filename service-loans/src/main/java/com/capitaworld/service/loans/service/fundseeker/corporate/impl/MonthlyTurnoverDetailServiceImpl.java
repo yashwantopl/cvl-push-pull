@@ -76,10 +76,11 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(id,userId);
+
 			if(CommonUtils.isListNullOrEmpty(monthlyTurnoverDetails)){
 				return getList();
 			}
-			
+		
 			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequests = new ArrayList<MonthlyTurnoverDetailRequest>();
 
 			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {

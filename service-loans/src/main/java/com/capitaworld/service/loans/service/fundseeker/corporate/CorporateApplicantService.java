@@ -1,9 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
-import java.util.List;
-
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
+
+import java.util.List;
 
 public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest,Long userId) throws Exception;
