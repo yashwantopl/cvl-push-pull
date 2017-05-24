@@ -304,7 +304,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					//get list of Pan Card
 					DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 					DocumentRequest documentRequestPanCard = new DocumentRequest();
-					documentRequestPanCard.setApplicationId(applicantId);
+					documentRequestPanCard.setGuarantorId(guarantorDetail.getId());
 					documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
 					documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_PAN_CARD);
 					try {
@@ -316,7 +316,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 					//get list of Aadhar Card
 					DocumentRequest documentRequestAadharCard = new DocumentRequest();
-					documentRequestAadharCard.setApplicationId(applicantId);
+					documentRequestAadharCard.setGuarantorId(guarantorDetail.getId());
 					documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
 					documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD);
 					try {
