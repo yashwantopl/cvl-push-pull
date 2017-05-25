@@ -30,7 +30,7 @@ import java.util.List;
 public class GuarantorServiceImpl implements GuarantorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GuarantorServiceImpl.class.getName());
-	
+
 	protected static final String DMS_URL = "dmsURL";
 
 	@Autowired
@@ -38,12 +38,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-	
+
 	@Autowired
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
-	
+
 	@Autowired
-	Environment environment; 
+	Environment environment;
 
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {

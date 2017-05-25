@@ -30,21 +30,21 @@ import java.util.List;
 public class CoApplicantServiceImpl implements CoApplicantService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CoApplicantServiceImpl.class.getName());
-	
+
 	protected static final String DMS_URL = "dmsURL";
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
-	
+
 	@Autowired
-	private RetailApplicantDetailRepository retailApplicantDetailRepository; 
-	
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+
 	@Autowired
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
-	
-	
+
+
 	@Autowired
-	Environment environment; 
+	Environment environment;
 
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
@@ -197,7 +197,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if (from.getFirstAddress().getPincode() != null) {
 					to.setOfficePincode(from.getFirstAddress().getPincode().intValue());
 				}
-				
+
 			}
 		} else {
 			if (from.getSecondAddress() != null) {
@@ -207,13 +207,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				if (from.getSecondAddress().getCityId() != null) {
 					to.setOfficeCityId(from.getSecondAddress().getCityId().intValue());
 				}
-				
+
 				to.setOfficeStateId(from.getSecondAddress().getStateId());
 				to.setOfficeCountryId(from.getSecondAddress().getCountryId());
 				if (from.getSecondAddress().getPincode() != null) {
 					to.setOfficePincode(from.getSecondAddress().getPincode().intValue());
 				}
-				
+
 			}
 		}
 
@@ -255,76 +255,76 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	@Override
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
 		try{
-		List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
-		if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
-		List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
+			List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
+			if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
+				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 
-		for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
-			RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-			if (coApplicantDetail.getOccupationId() != null) {
-				if (coApplicantDetail.getOccupationId() == 2) {
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getCompanyName())) {
-						profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
-					}
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())) {
-						if (coApplicantDetail.getEmployedWithId() == 8) {
-							profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
-						} else {
-							profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
+					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
+					if (coApplicantDetail.getOccupationId() != null) {
+						if (coApplicantDetail.getOccupationId() == 2) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getCompanyName())) {
+								profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())) {
+								if (coApplicantDetail.getEmployedWithId() == 8) {
+									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
+								} else {
+									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+								}
+							}
+						} else if (coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEntityName())) {
+								profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())) {
+								if (coApplicantDetail.getIndustryTypeId() == 16) {
+									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
+								} else {
+									profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+								}
+							}
+						} else if (coApplicantDetail.getOccupationId() == 5) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							if (coApplicantDetail.getSelfEmployedOccupationId() == 10) {
+								profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
+							} else {
+								profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+							}
+						} else if (coApplicantDetail.getOccupationId() == 6) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
+								profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())) {
+								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
+							}
+						} else if (coApplicantDetail.getOccupationId() == 7) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 						}
 					}
-				} else if (coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4) {
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEntityName())) {
-						profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
-					}
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())) {
-						if (coApplicantDetail.getIndustryTypeId() == 16) {
-							profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
-						} else {
-							profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
-						}
-					}
-				} else if (coApplicantDetail.getOccupationId() == 5) {
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-					if (coApplicantDetail.getSelfEmployedOccupationId() == 10) {
-						profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
-					} else {
-						profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
-					}
-				} else if (coApplicantDetail.getOccupationId() == 6) {
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
-						profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
-					}
-					if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())) {
-						profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
-					}
-				} else if (coApplicantDetail.getOccupationId() == 7) {
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+
+					//set pan car
+					profileViewPLResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant()!=null ? RelationshipType.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue():null);
+					profileViewPLResponse.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan() : null);
+					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null ? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
+					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
+					profileViewPLResponse.setFirstName(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null ? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
+					profileViewPLResponse.setLastName(coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
+					profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
+					profileViewPLResponse.setMiddleName(coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
+					profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : 0));
+					plResponses.add(profileViewPLResponse);
 				}
+
+				return plResponses;
 			}
-
-			//set pan car
-			profileViewPLResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant()!=null ? RelationshipType.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue():null);
-			profileViewPLResponse.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan() : null);
-			profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null ? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
-			profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
-			profileViewPLResponse.setFirstName(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
-			profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null ? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
-			profileViewPLResponse.setLastName(coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
-			profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
-			profileViewPLResponse.setMiddleName(coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
-			profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : 0));
-			plResponses.add(profileViewPLResponse);
-		}
-
-		return plResponses;
-		}
-		else{
-			throw new Exception("No CoApplicant Found");
-		}
+			else{
+				throw new Exception("No CoApplicant Found");
+			}
 		}
 		catch(Exception e){
 			throw new Exception("Error Occured while fetching CoApplicant Details");
