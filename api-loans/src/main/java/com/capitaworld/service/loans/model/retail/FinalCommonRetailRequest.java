@@ -7,6 +7,12 @@ public class FinalCommonRetailRequest {
 	private Long id;
 	private Long clientId;
 	private Long applicationId;
+	// Based on these two fields we have show some field in final section
+
+	// Primary Field starts
+	private Integer statusId;
+	private Integer occupationId;
+	// Primary Field Ends
 
 	private Integer castId;
 	private String castOther;
@@ -501,4 +507,19 @@ public class FinalCommonRetailRequest {
 		this.websiteAddress = websiteAddress;
 	}
 
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
+	}
+
+	public Integer getOccupationId() {
+		return occupationId;
+	}
+
+	public void setOccupationId(Integer occupationId) {
+		this.occupationId = occupationId;
+	}
 }

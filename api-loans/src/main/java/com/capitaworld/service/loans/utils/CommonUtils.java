@@ -99,11 +99,10 @@ public class CommonUtils {
 	}
 
 	public interface IgnorableCopy {
-		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode" };
+		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode","isActive","applicationId" };
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
-		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "statusId",
-				"occupationId", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
+		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan", "aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress",
 				"addressSameAs", "contactNo", "companyName", "employedWithId", "employedWithOther", "entityName",
 				"industryTypeId", "industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther",
 				"landSize", "alliedActivityId", "userId" };
@@ -146,6 +145,11 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 	
+	public interface UserType {
+		public static final int FUND_SEEKER = 1;
+		public static final int FUND_PROVIDER = 2;
+		public static final int SERVICE_PROVIDER = 3;
+
 	public static String getStringDateFromDate(Date date){
 		if(date!=null ){
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

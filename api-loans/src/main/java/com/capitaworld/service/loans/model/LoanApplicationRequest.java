@@ -14,6 +14,7 @@ public class LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	private Long clientId;
 
 	private Double amount;
 
@@ -87,11 +88,11 @@ public class LoanApplicationRequest implements Serializable {
 	}
 
 	public Double getTenure() {
-		return ((this.tenure != null && this.tenure > 0.00) ? this.tenure / 12 : null);
+		return this.tenure;
 	}
 
 	public void setTenure(Double tenure) {
-		this.tenure = (tenure != null ? tenure * 12 : null);
+		this.tenure = tenure;
 	}
 
 	public Long getUserId() {
@@ -150,4 +151,11 @@ public class LoanApplicationRequest implements Serializable {
 		this.loanTypeSub = loanTypeSub;
 	}
 
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
 }
