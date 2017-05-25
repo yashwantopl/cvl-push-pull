@@ -80,6 +80,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(
 					environment.getRequiredProperty("matchesURL"));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
+			
+			
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++)
 			{
@@ -94,11 +96,36 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 					
-					corporateApplicantDetail.getRegisteredCityId();
-					corporateApplicantDetail.getRegisteredStateId();
-					corporateApplicantDetail.getRegisteredCountryId();
+					// for get address city state country
+					String address="";
+					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+					{
+						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+					{
+						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+					{
+						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+					}
+					else
+					{
+						address+="NA";
+					}
 					
 					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
+					
+					corporateProposalDetails.setAddress(address);
 					
 					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail) ||CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
 						corporateProposalDetails.setName("NA");
@@ -186,7 +213,36 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				{
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 
+					
+					// for get address city state country
+					String address="";
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
+					{
+						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
+					{
+						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
+					{
+						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+					}
+					else
+					{
+						address+="NA";
+					}
+					
 					RetailProposalDetails retailProposalDetails = new RetailProposalDetails();
+					retailProposalDetails.setAddress(address);
 					
 					String name="";
 					
