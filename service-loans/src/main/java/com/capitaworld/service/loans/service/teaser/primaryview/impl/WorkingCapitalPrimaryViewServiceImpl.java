@@ -1,8 +1,9 @@
+package com.capitaworld.service.loans.service.teaser.primaryview.impl;
+
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
@@ -15,12 +16,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRe
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-
 import com.capitaworld.service.oneform.client.*;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
@@ -33,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,80 +100,80 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get details of CorporateApplicantDetail
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, toApplicationId);
         //set value to response
+        if (corporateApplicantDetail != null) {
+            BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
+            workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
+            workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-        BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
-        workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
-        workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
-
-        //set city
-        List<Long> cityList = new ArrayList<>();
-        cityList.add(corporateApplicantDetail.getRegisteredCityId());
-        CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getProperty(ONE_FORM_URL));
-        try {
-            OneFormResponse oneFormResponse = cityByCityListIdClient.send(cityList);
-            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-            if (oneResponseDataList!=null && !oneResponseDataList.isEmpty()) {
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                workingCapitalPrimaryViewResponse.setCity(masterResponse.getValue());
-            }else{
-                workingCapitalPrimaryViewResponse.setCity("NA");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //set state
-        List<Long> stateList = new ArrayList<>();
-        stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-        StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getProperty(ONE_FORM_URL));
-        try {
-            OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
-            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-            if (oneResponseDataList!=null && !oneResponseDataList.isEmpty()) {
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                workingCapitalPrimaryViewResponse.setState(masterResponse.getValue());
-            }else{
-                workingCapitalPrimaryViewResponse.setState("NA");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //set country
-        List<Long> countryList = new ArrayList<>();
-        countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-        CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getProperty(ONE_FORM_URL));
-        try {
-            OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
-            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-            if (oneResponseDataList!=null && !oneResponseDataList.isEmpty()) {
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                workingCapitalPrimaryViewResponse.setCountry(masterResponse.getValue());
-            }else{
-                workingCapitalPrimaryViewResponse.setCountry("NA");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
-        List<Long> keyVerticalFundingId = new ArrayList<>();
-        keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
-        try {
-            OneFormResponse oneFormResponse = industryClient.send(keyVerticalFundingId);
-            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-            if (oneResponseDataList!=null && !oneResponseDataList.isEmpty()) {
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                workingCapitalPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
-            }else{
-                workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
+            //set city
+            List<Long> cityList = new ArrayList<>();
+            cityList.add(corporateApplicantDetail.getRegisteredCityId());
+            CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getProperty(ONE_FORM_URL));
+            try {
+                OneFormResponse oneFormResponse = cityByCityListIdClient.send(cityList);
+                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                    workingCapitalPrimaryViewResponse.setCity(masterResponse.getValue());
+                } else {
+                    workingCapitalPrimaryViewResponse.setCity("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            //set state
+            List<Long> stateList = new ArrayList<>();
+            stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+            StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getProperty(ONE_FORM_URL));
+            try {
+                OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
+                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                    workingCapitalPrimaryViewResponse.setState(masterResponse.getValue());
+                } else {
+                    workingCapitalPrimaryViewResponse.setState("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            //set country
+            List<Long> countryList = new ArrayList<>();
+            countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+            CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getProperty(ONE_FORM_URL));
+            try {
+                OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
+                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                    workingCapitalPrimaryViewResponse.setCountry(masterResponse.getValue());
+                } else {
+                    workingCapitalPrimaryViewResponse.setCountry("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
+            List<Long> keyVerticalFundingId = new ArrayList<>();
+            keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+            try {
+                OneFormResponse oneFormResponse = industryClient.send(keyVerticalFundingId);
+                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                    workingCapitalPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
+                } else {
+                    workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
         List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
         List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
@@ -196,11 +193,14 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
         //get value of working capital data
         PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(toApplicationId, userId);
-        //set value to response
-        BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, workingCapitalPrimaryViewResponse);
-        workingCapitalPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-        workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getName());
-        workingCapitalPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+        if(primaryWorkingCapitalLoanDetail!=null) {
+            //set value to response
+            BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, workingCapitalPrimaryViewResponse);
+            workingCapitalPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
+            workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getName());
+            workingCapitalPrimaryViewResponse.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
+            workingCapitalPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+        }
         //get value of proposed product and set in response
         try {
             workingCapitalPrimaryViewResponse.setProposedProductDetailRequestList(proposedProductDetailsService.getProposedProductDetailList(toApplicationId,userId));
@@ -380,20 +380,5 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         }
 
         return workingCapitalPrimaryViewResponse;
-    }
-
-    @Override
-    public boolean validateWorkingCapitalPrimaryViewRequest(String toApplicationId) {
-        if(!CommonUtil.isObjectNullOrEmpty(toApplicationId)){
-            try {
-                Long.parseLong(toApplicationId);
-                return false;
-            } catch (NumberFormatException e) {
-                return true;
-            }
-        }else{
-            logger.warn("Invalid Request {}", toApplicationId);
-            return true;
-        }
     }
 }
