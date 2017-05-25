@@ -154,7 +154,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

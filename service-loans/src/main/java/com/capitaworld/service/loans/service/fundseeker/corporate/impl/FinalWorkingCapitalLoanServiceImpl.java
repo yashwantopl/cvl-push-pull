@@ -37,13 +37,6 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
 					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId()));
 			if (capitalLoanDetail != null) {
-
-				// throw new NullPointerException("FinalWorkingCapitalLoanDetail
-				// not exist in DB with ID=>"
-				// + capitalLoanRequest.getId() + " applicationId==>" +
-				// capitalLoanRequest.getApplicationId());
-
-				// Inactive Previous Mapping
 				networkRepository.inActiveMappingByApplicationId(capitalLoanRequest.getApplicationId());
 				capitalLoanDetail.setModifiedBy(userId);
 				capitalLoanDetail.setModifiedDate(new Date());
@@ -64,7 +57,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Working Capital Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -81,7 +74,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Capital Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
