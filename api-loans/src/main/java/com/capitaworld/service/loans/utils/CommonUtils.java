@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +18,7 @@ public class CommonUtils {
 	public static final String USER_CLIENT_URL = "userURL";
 	public static final String MATCHES_URL = "matchesURL" ;
 	public static final String DMS_BASE_URL_KEY = "dmsURL";
+	public static final String NOT_APPLICABLE = "NA";
 	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -148,5 +150,31 @@ public class CommonUtils {
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
 
+	public static String getStringDateFromDate(Date date){
+		if(date!=null ){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		return dateFormat.format(date);
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	public static Integer getAgeFromBirthDate(Date date){
+		if(date!=null){
+		Integer years = 0;
+		Calendar birthDay = Calendar.getInstance();
+		birthDay.setTime(date);
+        Calendar now = Calendar.getInstance();
+        now.setTimeInMillis(System.currentTimeMillis());
+        
+        years = now.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
+        System.out.println("Age :==="+years);
+        return years;
+		}
+		else{
+			return null;
+		}
 	}
 }

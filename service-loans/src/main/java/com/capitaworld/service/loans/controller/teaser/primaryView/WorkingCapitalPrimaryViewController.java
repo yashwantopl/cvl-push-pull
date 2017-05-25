@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.teaser.primaryView;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,7 @@ public class WorkingCapitalPrimaryViewController {
     public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") String toApplicationId,HttpServletRequest httpServletRequest) {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId = (Long) 1750l;/*httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
-
+        Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
         boolean isValidateRequest = workingCapitalPrimaryViewService.validateWorkingCapitalPrimaryViewRequest(toApplicationId);
         if(isValidateRequest){
             logger.warn("Invalid Request {}", toApplicationId);

@@ -1,15 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -22,6 +12,16 @@ import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantServic
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -37,6 +37,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private GuarantorService guarantorService;
+
+	@Autowired
+	Environment environment; 
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -228,4 +231,5 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			to.setSecondAddress(address);
 		}
 	}
+
 }

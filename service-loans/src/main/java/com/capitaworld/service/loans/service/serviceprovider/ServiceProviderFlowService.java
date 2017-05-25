@@ -11,4 +11,5 @@ public interface ServiceProviderFlowService {
 	public List<SpClientListing> spClientList(Long spId,String userTypeCode) throws Exception;
 
   public JSONObject spClientCount(Long spId) throws Exception;
+
 }
