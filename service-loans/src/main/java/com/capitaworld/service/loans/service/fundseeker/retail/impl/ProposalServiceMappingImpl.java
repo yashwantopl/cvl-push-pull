@@ -94,6 +94,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 					
+					corporateApplicantDetail.getRegisteredCityId();
+					corporateApplicantDetail.getRegisteredStateId();
+					corporateApplicantDetail.getRegisteredCountryId();
+					
 					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
 					
 					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail) ||CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
@@ -375,6 +379,26 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
 			response = client.listOfFundSeekerProposal(request);	
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	public List<?> getConectionList(Long productId, Long applicationId, Long userType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ProposalMappingResponse sendRequest(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+	ProposalMappingResponse response = new ProposalMappingResponse();
+		
+		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		try {
+			response = client.sendRequest(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}
