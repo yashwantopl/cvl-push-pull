@@ -36,13 +36,21 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
     private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
-
+    private String loanAmount;
     private List<?> industrySector;
 
     private List<Object> brochureList;
     private List<Object> certificateList;
     private List<Object> panCardList;
     private List<Object> profilePic;
+
+    public String getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(String loanAmount) {
+        this.loanAmount = loanAmount;
+    }
 
     public List<?> getIndustrySector() {
         return industrySector;
