@@ -200,7 +200,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					personalLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? applicantDetail.getApplicationId().getTenure().toString() : null);
 					personalLoanResponse.setLoanType(applicantDetail.getApplicationId().getProductId() != null ? LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue() : null);
 					personalLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount().toString() : null);
-					profileViewPLResponse.setCurrency(applicantDetail.getApplicationId().getCurrencyId() != null ? Currency.getById(applicantDetail.getApplicationId().getCurrencyId()).getValue() : null);
+					personalLoanResponse.setCurrency(applicantDetail.getApplicationId().getCurrencyId() != null ? Currency.getById(applicantDetail.getApplicationId().getCurrencyId()).getValue() : null);
 				}
 
 
