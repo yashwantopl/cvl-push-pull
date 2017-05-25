@@ -153,14 +153,14 @@ public class CommonUtils {
 		public static final int SERVICE_PROVIDER = 3;
 	}
 
-	public static String getStringDateFromDate(Date date) {
-		if (date != null) {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			return dateFormat.format(date);
-		} else {
+	public static String getStringDateFromDate(Date date){
+		if(date!=null ){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		return dateFormat.format(date);
+		}
+		else {
 			return null;
 		}
-
 	}
 
 	public static Integer getAgeFromBirthDate(Date date) {
