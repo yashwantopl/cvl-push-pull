@@ -1,19 +1,3 @@
-package com.capitaworld.service.loans.service.teaser.primaryview.impl;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -22,50 +6,37 @@ import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.client.IndustrySectorSubSectorTeaser;
-import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.CreditRatingFund;
-import com.capitaworld.service.oneform.enums.CreditRatingTerm;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.Denomination;
-import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.RatingAgency;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.Title;
+
+import com.capitaworld.service.oneform.client.*;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
+import com.capitaworld.service.oneform.client.IndustryClient;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dhaval on 19-May-17.
@@ -136,7 +107,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
         workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
         workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
-
 
         //set city
         List<Long> cityList = new ArrayList<>();
@@ -223,7 +193,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         //get value of working capital data
         PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(toApplicationId, userId);
@@ -342,6 +311,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             logger.error("Problem to get Data of Security Details {}", e);
         }
 
+
         //get value of Financial Arrangements and set in response
         try {
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
@@ -366,7 +336,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         DocumentRequest documentRequest = new DocumentRequest();
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(1l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
@@ -378,7 +348,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list fo certificate
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(2l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
@@ -390,14 +360,13 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         //get list of pan card
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-        documentRequest.setProductDocumentMappingId(3l);
+        documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
         try {
             DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
             workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
         } catch (DocumentException e) {
             e.printStackTrace();
         }
-
 
         //get profile pic
         documentRequest.setApplicationId(toApplicationId);

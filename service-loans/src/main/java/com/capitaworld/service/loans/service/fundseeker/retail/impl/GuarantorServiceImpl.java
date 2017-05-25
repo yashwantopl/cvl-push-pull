@@ -1,37 +1,53 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
 public class GuarantorServiceImpl implements GuarantorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GuarantorServiceImpl.class.getName());
+	
+	protected static final String DMS_URL = "dmsURL";
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
+	@Autowired
+	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
+	
+	@Autowired
+	Environment environment; 
 
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
@@ -237,6 +253,88 @@ public class GuarantorServiceImpl implements GuarantorService {
 				address.setPincode(from.getOfficePincode().longValue());
 			}
 			to.setSecondAddress(address);
+		}
+	}
+
+	@Override
+	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId) throws Exception {
+		try {
+			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
+			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
+				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
+
+				for (GuarantorDetails guarantorDetail : guarantorDetails) {
+
+					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
+					profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+					try {
+						if (guarantorDetail.getEmployedWithId() != 8) {
+							profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+						} else {
+							profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+						}
+					} catch (Exception e) {
+					}
+					profileViewPLResponse.setFirstName(guarantorDetail.getFirstName());
+					try {
+						profileViewPLResponse.setGender(Gender.getById(guarantorDetail.getGenderId()).getValue());
+					} catch (Exception e) {
+					}
+					profileViewPLResponse.setLastName(guarantorDetail.getLastName());
+					profileViewPLResponse.setMaritalStatus(guarantorDetail.getStatusId() != null ? MaritalStatus.getById(guarantorDetail.getStatusId()).getValue() : null);
+					profileViewPLResponse.setMiddleName(guarantorDetail.getMiddleName());
+					profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null ? guarantorDetail.getMonthlyIncome() : 0));
+					profileViewPLResponse.setNatureOfOccupation(guarantorDetail.getOccupationId() != null ? OccupationNature.getById(guarantorDetail.getOccupationId()).getValue() : null);
+					profileViewPLResponse.setTitle(guarantorDetail.getTitleId() != null ? Title.getById(guarantorDetail.getTitleId()).getValue() : null);
+					profileViewPLResponse.setAge(guarantorDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString() : null);
+
+					if (guarantorDetail.getApplicationId() != null) {
+						profileViewPLResponse.setCurrency(guarantorDetail.getApplicationId().getCurrencyId() != null ? Currency.getById(guarantorDetail.getApplicationId().getCurrencyId()).getValue() : null);
+					}
+					profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+					if (guarantorDetail.getIndustryTypeId() != null && guarantorDetail.getIndustryTypeId() != 16) {
+						profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+					} else {
+						profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
+					}
+
+					//set pan car
+					profileViewPLResponse.setPan(guarantorDetail.getPan());
+
+					//get list of Pan Card
+					DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
+					DocumentRequest documentRequestPanCard = new DocumentRequest();
+					documentRequestPanCard.setApplicationId(applicantId);
+					documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
+					documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_PAN_CARD);
+					try {
+						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
+						profileViewPLResponse.setPanCardList(documentResponse.getDataList());
+					} catch (DocumentException e) {
+						e.printStackTrace();
+					}
+
+					//get list of Aadhar Card
+					DocumentRequest documentRequestAadharCard = new DocumentRequest();
+					documentRequestAadharCard.setApplicationId(applicantId);
+					documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
+					documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD);
+					try {
+						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
+						profileViewPLResponse.setAadharCardList(documentResponse.getDataList());
+					} catch (DocumentException e) {
+						e.printStackTrace();
+					}
+
+					plResponses.add(profileViewPLResponse);
+				}
+
+				return plResponses;
+			} else {
+				throw new Exception("No Data found");
+			}
+		} catch (Exception e) {
+			throw new Exception("Error Fetching Guarantor Details");
 		}
 	}
 }
