@@ -14,21 +14,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PrimaryLasLoanDetailRequest extends LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Long applicationId;
-
 	private Integer loanPurpose;
 
 	private String loanPurposeOther;
 	
 	private Integer month;
-
-	public Long getApplicationId() {
-		return applicationId;
-	}
-
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
 
 	public Integer getLoanPurpose() {
 		return loanPurpose;

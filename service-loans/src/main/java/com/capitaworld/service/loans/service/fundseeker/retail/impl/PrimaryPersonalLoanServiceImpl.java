@@ -50,12 +50,12 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	}
 
 	@Override
-	public PrimaryPersonalLoanRequest get(Long id, Long userId) throws Exception {
+	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
-			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(id, userId);
+			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
 				throw new NullPointerException(
-						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + id + " and User Id ==>" + userId);
+						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + applicationId + " and User Id ==>" + userId);
 			}
 			PrimaryPersonalLoanRequest personalLoanRequest = new PrimaryPersonalLoanRequest();
 			BeanUtils.copyProperties(loanDetail, personalLoanRequest);

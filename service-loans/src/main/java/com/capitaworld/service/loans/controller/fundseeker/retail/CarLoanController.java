@@ -42,7 +42,7 @@ public class CarLoanController {
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody PrimaryCarLoanDetailRequest carLoanDetailRequest,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -58,7 +58,8 @@ public class CarLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
 				carLoanDetailRequest.setClientId(clientId);
 			}
 			primaryCarLoanService.saveOrUpdate(carLoanDetailRequest, userId);
@@ -73,32 +74,28 @@ public class CarLoanController {
 		}
 	}
 
-	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id,HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	@RequestMapping(value = "${primary}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
 				userId = clientId;
-			}else{
-				userId = (Long)request.getAttribute(CommonUtils.USER_ID);
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			if (id == null) {
-				logger.warn("ID Require to get Primary car loan Details ==>" + id);
+			if (applicationId == null) {
+				logger.warn("ID Require to get Primary car loan Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			PrimaryCarLoanDetailRequest response = primaryCarLoanService.get(id,userId);
-			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			PrimaryCarLoanDetailRequest response = primaryCarLoanService.get(applicationId, userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Carloan Details==>", e);
 			return new ResponseEntity<LoansResponse>(
@@ -108,9 +105,16 @@ public class CarLoanController {
 	}
 
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCarLoanDetailRequest finalCarLoanDetailRequest) {
+	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCarLoanDetailRequest finalCarLoanDetailRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			// request must not be null
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+				finalCarLoanDetailRequest.setClientId(clientId);
+			}
+
 			if (finalCarLoanDetailRequest == null) {
 				logger.warn("finalCarLoanDetailRequest Object can not be empty ==>" + finalCarLoanDetailRequest);
 				return new ResponseEntity<LoansResponse>(
@@ -125,15 +129,9 @@ public class CarLoanController {
 						HttpStatus.OK);
 			}
 
-			boolean response = finalCarLoanService.saveOrUpdate(finalCarLoanDetailRequest);
-			if (response) {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			finalCarLoanService.saveOrUpdate(finalCarLoanDetailRequest, userId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving Final Car  Details==>", e);
 			return new ResponseEntity<LoansResponse>(
@@ -142,26 +140,28 @@ public class CarLoanController {
 		}
 	}
 
-	@RequestMapping(value = "${final}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinal(@PathVariable("id") Long id) {
-		// request must not be null
+	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+
 		try {
-			if (id == null) {
-				logger.warn("ID Require to get Final Car Details ==>" + id);
+			Long userId = null;
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (applicationId == null) {
+				logger.warn("ID Require to get Final Car Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			FinalCarLoanDetailRequest response = finalCarLoanService.get(id);
-			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			FinalCarLoanDetailRequest response = finalCarLoanService.get(applicationId, userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Final car Details==>", e);
 			return new ResponseEntity<LoansResponse>(

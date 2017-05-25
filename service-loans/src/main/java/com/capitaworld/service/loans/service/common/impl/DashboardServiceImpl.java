@@ -46,9 +46,14 @@ public class DashboardServiceImpl implements DashboardService {
 		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
+			dashboardProfileResponse.setProductId(productId);
+			
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.getByApplicationAndUserId(userId, applicationId);
-
+			
+			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+				return null;
+			}
 			dashboardProfileResponse.setId(corporateApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
 			// Setting City Value
@@ -76,8 +81,13 @@ public class DashboardServiceImpl implements DashboardService {
 
 		} else {
 			dashboardProfileResponse = new DashboardProfileResponse();
+			dashboardProfileResponse.setProductId(productId);
+			
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 					.getByApplicationAndUserId(userId, applicationId);
+			if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
+				return null;
+			}
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(retailApplicantDetail.getApplicationId().getId());
 			// Setting City Value
@@ -104,7 +114,6 @@ public class DashboardServiceImpl implements DashboardService {
 					? retailApplicantDetail.getLastName() : "NA");
 			dashboardProfileResponse.setName(name);
 		}
-		dashboardProfileResponse.setProductId(productId);
 		dashboardProfileResponse.setAddress();
 		return dashboardProfileResponse;
 	}

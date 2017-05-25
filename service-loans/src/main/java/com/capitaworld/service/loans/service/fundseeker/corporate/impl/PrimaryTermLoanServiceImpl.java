@@ -27,13 +27,15 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	@Override
 	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception {
 		try {
-			PrimaryTermLoanDetail termLoanDetail = primaryTLRepository.findOne(termLoanRequest.getId());
+			PrimaryTermLoanDetail termLoanDetail = primaryTLRepository
+					.getByApplicationAndUserId(termLoanRequest.getId(),  (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId()));
 			if (termLoanDetail == null) {
-				throw new NullPointerException(
-						"PrimaryTermLoanDetail not exist in DB with ID=>" + termLoanRequest.getId());
+				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>"
+						+ termLoanRequest.getId() + " and UserId==>" + userId);
 			}
 			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-			termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null : (termLoanRequest.getTenure() * 12 ));
+			termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null
+					: (termLoanRequest.getTenure() * 12));
 			termLoanDetail.setModifiedBy(userId);
 			termLoanDetail.setModifiedDate(new Date());
 			primaryTLRepository.save(termLoanDetail);
@@ -46,15 +48,17 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	}
 
 	@Override
-	public PrimaryTermLoanRequest get(Long id) throws Exception {
+	public PrimaryTermLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
-			PrimaryTermLoanDetail loanDetail = primaryTLRepository.findOne(id);
+			PrimaryTermLoanDetail loanDetail = primaryTLRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
-				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>" + id);
+				throw new NullPointerException(
+						"PrimaryTermLoanDetail not exist in DB with ID=>" + applicationId + " and UserId==>" + userId);
 			}
 			PrimaryTermLoanRequest termLoanRequest = new PrimaryTermLoanRequest();
 			BeanUtils.copyProperties(loanDetail, termLoanRequest);
-			termLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			termLoanRequest.setTenure(
+					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return termLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-");
