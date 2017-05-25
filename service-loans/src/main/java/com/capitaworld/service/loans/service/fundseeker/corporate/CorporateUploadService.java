@@ -6,12 +6,12 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 
 public interface CorporateUploadService {
-	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName,
+	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName, String userType,
 			MultipartFile multipartFile) throws Exception;
 
-	public DocumentResponse getProfilePic(Long applicantId, Long mappingId) throws Exception;
+	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws Exception;
 
 	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles) throws Exception;
-	
+
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
 }

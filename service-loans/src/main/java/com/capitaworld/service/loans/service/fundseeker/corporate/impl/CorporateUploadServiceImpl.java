@@ -28,14 +28,14 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName,
+	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName,String userType,
 			MultipartFile multipartFile) throws Exception {
 		try {
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("applicationId", applicantId);
 			jsonObj.put("productDocumentMappingId", mappingId);
-			jsonObj.put("userType", DocumentAlias.UERT_TYPE_APPLICANT);
+			jsonObj.put("userType", userType);
 			jsonObj.put("originalFileName", fileName);
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
@@ -48,12 +48,12 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
-	public DocumentResponse getProfilePic(Long applicantId, Long mappingId) throws Exception {
+	public DocumentResponse getProfilePic(Long applicantId, Long mappingId,String userType) throws Exception {
 		try {
 			DocumentRequest docRequest = new DocumentRequest();
 			docRequest.setApplicationId(applicantId);
 			docRequest.setProductDocumentMappingId(mappingId);
-			docRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+			docRequest.setUserType(userType);
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
