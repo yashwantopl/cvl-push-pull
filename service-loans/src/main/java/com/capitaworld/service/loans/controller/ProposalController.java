@@ -101,11 +101,8 @@ public class ProposalController {
 	@RequestMapping(value = "/connections", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> connections(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
 		
-		Long productId=request.getFpProductId();
-		Long applicationId=request.getApplicationId();
 		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
-		request.setLastActionPerformedBy(userType);
-		
-		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
+		request.setUserType(userType);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.getConectionList(request),HttpStatus.OK);
 	}
 }
