@@ -25,6 +25,6 @@ public interface ProposalService {
 	
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request);
 	
-	public List<?> getConectionList(Long productId,Long applicationId,Long userType);
+	public ProposalMappingResponse getConectionList(ProposalMappingRequest proposalMappingRequest);
 	
 }
