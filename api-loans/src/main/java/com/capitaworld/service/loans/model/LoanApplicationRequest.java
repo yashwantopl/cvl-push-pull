@@ -40,6 +40,8 @@ public class LoanApplicationRequest implements Serializable {
 
 	private String loanTypeSub;
 
+	private String currencyValue;
+
 	public LoanApplicationRequest() {
 	}
 
@@ -157,5 +159,13 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
+	}
+
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
 	}
 }

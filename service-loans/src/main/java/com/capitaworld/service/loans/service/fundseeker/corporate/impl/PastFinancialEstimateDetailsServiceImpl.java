@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,10 @@ import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRe
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 
 /**
  * @author Sanket
@@ -38,6 +41,9 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 	private static final Logger logger = LoggerFactory
 			.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
 
+	@Autowired
+	private Environment  environment; 
+	
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
@@ -112,8 +118,12 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		Date establishmentDate = null;
 		CorporateApplicantDetail detail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
 		
-		Integer establishmentYear = detail.getEstablishmentYear();
+		Integer establishmentYear = null;
 		Integer establishmentMonth = detail.getEstablishmentMonth();
+		
+		if(!CommonUtils.isObjectNullOrEmpty(detail.getEstablishmentYear())){
+			establishmentYear = CommonDocumentUtils.getYear(detail.getEstablishmentYear().longValue(), environment);
+		}
 
 		
 		List<PastFinancialEstimatesDetailRequest> yearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
