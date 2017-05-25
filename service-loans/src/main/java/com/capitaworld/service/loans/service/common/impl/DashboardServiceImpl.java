@@ -91,21 +91,21 @@ public class DashboardServiceImpl implements DashboardService {
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(retailApplicantDetail.getApplicationId().getId());
 			// Setting City Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCity())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
 				dashboardProfileResponse
-						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getAddressCity(), environment));
+						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment));
 			}
 
 			// Setting State Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressState())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
 				dashboardProfileResponse.setState(
-						CommonDocumentUtils.getState(retailApplicantDetail.getAddressState().longValue(), environment));
+						CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment));
 			}
 
 			// Country State Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCountry())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
 				dashboardProfileResponse.setCountry(CommonDocumentUtils
-						.getCountry(retailApplicantDetail.getAddressCountry().longValue(), environment));
+						.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment));
 			}
 
 			String name = !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())
