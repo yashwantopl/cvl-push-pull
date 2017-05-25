@@ -1,0 +1,17 @@
+package com.capitaworld.service.loans.service.fundseeker.corporate;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+
+public interface CorporateUploadService {
+	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName,
+			MultipartFile multipartFile) throws Exception;
+
+	public DocumentResponse getProfilePic(Long applicantId, Long mappingId) throws Exception;
+
+	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles) throws Exception;
+	
+	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
+}

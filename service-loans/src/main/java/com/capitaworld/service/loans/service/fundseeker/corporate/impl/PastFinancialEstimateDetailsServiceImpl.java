@@ -119,12 +119,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		CorporateApplicantDetail detail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
 		
 		Integer establishmentYear = null;
-		Integer establishmentMonth = null;
-		EstablishmentMonths establishmentMonths = EstablishmentMonths.getById(detail.getEstablishmentMonth());
-		if(!CommonUtils.isObjectNullOrEmpty(establishmentMonths)){
-			establishmentMonth = Integer.valueOf(establishmentMonths.getValue());
-		}
-		
+		Integer establishmentMonth = detail.getEstablishmentMonth();
 		
 		if(!CommonUtils.isObjectNullOrEmpty(detail.getEstablishmentYear())){
 			establishmentYear = CommonDocumentUtils.getYear(detail.getEstablishmentYear().longValue(), environment);
