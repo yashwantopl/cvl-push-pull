@@ -16,6 +16,7 @@ public class RetailProfileViewResponse {
 	private String pan;
 	private String maritalStatus;
 	private String natureOfOccupation;
+	private String occupation;
 	private String monthlyIncome;
 	private String companyName;
 	private String employeeWith;
@@ -23,9 +24,10 @@ public class RetailProfileViewResponse {
 	private List<Object> aadharCardList;
 	private String age;
 	private String relationshipWithApplicant;
-	private String currency;
 	private String entityName;
 	private String industryType;
+	private String landSize;
+	private String alliedActivity;
 
 	public String getFirstName() {
 		return firstName;
@@ -147,14 +149,6 @@ public class RetailProfileViewResponse {
 		this.relationshipWithApplicant = relationshipWithApplicant;
 	}
 
-	public String getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(String currency) {
-		this.currency = currency;
-	}
-
 	public String getEntityName() {
 		return entityName;
 	}
@@ -169,5 +163,29 @@ public class RetailProfileViewResponse {
 
 	public void setIndustryType(String industryType) {
 		this.industryType = industryType;
+	}
+
+	public String getOccupation() {
+		return occupation;
+	}
+
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
+
+	public String getLandSize() {
+		return landSize;
+	}
+
+	public void setLandSize(String landSize) {
+		this.landSize = landSize;
+	}
+
+	public String getAlliedActivity() {
+		return alliedActivity;
+	}
+
+	public void setAlliedActivity(String alliedActivity) {
+		this.alliedActivity = alliedActivity;
 	}
 }
