@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -60,6 +63,12 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	private Double minTenure;
 
 	private Double minYearlyIncomeRange;
+	
+	private List<DataRequest> countryList = Collections.emptyList();
+
+	private List<DataRequest> stateList = Collections.emptyList();
+
+	private List<DataRequest> cityList = Collections.emptyList();
 
 	public CarLoanParameterRequest() {
 	}
@@ -255,5 +264,31 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	public void setMinYearlyIncomeRange(Double minYearlyIncomeRange) {
 		this.minYearlyIncomeRange = minYearlyIncomeRange;
 	}
+
+	public List<DataRequest> getCountryList() {
+		return countryList;
+	}
+
+	public void setCountryList(List<DataRequest> countryList) {
+		this.countryList = countryList;
+	}
+
+	public List<DataRequest> getStateList() {
+		return stateList;
+	}
+
+	public void setStateList(List<DataRequest> stateList) {
+		this.stateList = stateList;
+	}
+
+	public List<DataRequest> getCityList() {
+		return cityList;
+	}
+
+	public void setCityList(List<DataRequest> cityList) {
+		this.cityList = cityList;
+	}
+	
+	
 
 }
