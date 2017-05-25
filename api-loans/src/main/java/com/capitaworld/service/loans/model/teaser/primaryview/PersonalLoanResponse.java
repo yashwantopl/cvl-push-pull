@@ -15,7 +15,7 @@ public class PersonalLoanResponse implements Serializable{
     private String tenure;
     private String loanType;
     private String loanAmount;
-
+    private String currency;
 
     public String getPurposeOfLoan() {
         return purposeOfLoan;
@@ -71,5 +71,13 @@ public class PersonalLoanResponse implements Serializable{
 
     public void setLoanAmount(String loanAmount) {
         this.loanAmount = loanAmount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

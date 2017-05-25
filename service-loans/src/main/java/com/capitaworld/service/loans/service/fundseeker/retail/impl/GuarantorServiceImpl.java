@@ -1,10 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.model.Address;
@@ -34,7 +30,7 @@ import java.util.List;
 public class GuarantorServiceImpl implements GuarantorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(GuarantorServiceImpl.class.getName());
-	
+
 	protected static final String DMS_URL = "dmsURL";
 
 	@Autowired
@@ -42,12 +38,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-	
+
 	@Autowired
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
-	
+
 	@Autowired
-	Environment environment; 
+	Environment environment;
 
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
@@ -262,73 +258,65 @@ public class GuarantorServiceImpl implements GuarantorService {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
 			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
 				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
-
 				for (GuarantorDetails guarantorDetail : guarantorDetails) {
-
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-					profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
-					try {
-						if (guarantorDetail.getEmployedWithId() != 8) {
-							profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
-						} else {
-							profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+					if (guarantorDetail.getOccupationId() != null) {
+						if (guarantorDetail.getOccupationId() == 2) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getCompanyName())) {
+								profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())) {
+								if (guarantorDetail.getEmployedWithId() == 8) {
+									profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+								} else {
+									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+								}
+							}
+						} else if (guarantorDetail.getOccupationId() == 3 || guarantorDetail.getOccupationId() == 4) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEntityName())) {
+								profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())) {
+								if (guarantorDetail.getIndustryTypeId() == 16) {
+									profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
+								} else {
+									profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+								}
+							}
+						} else if (guarantorDetail.getOccupationId() == 5) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							if (guarantorDetail.getSelfEmployedOccupationId() == 10) {
+								profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
+							} else {
+								profileViewPLResponse.setOccupation(Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+							}
+						} else if (guarantorDetail.getOccupationId() == 6) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getLandSize())) {
+								profileViewPLResponse.setLandSize(LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
+							}
+							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())) {
+								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
+							}
+						} else if (guarantorDetail.getOccupationId() == 7) {
+							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
 						}
-					} catch (Exception e) {
-					}
-					profileViewPLResponse.setFirstName(guarantorDetail.getFirstName());
-					try {
-						profileViewPLResponse.setGender(Gender.getById(guarantorDetail.getGenderId()).getValue());
-					} catch (Exception e) {
-					}
-					profileViewPLResponse.setLastName(guarantorDetail.getLastName());
-					profileViewPLResponse.setMaritalStatus(guarantorDetail.getStatusId() != null ? MaritalStatus.getById(guarantorDetail.getStatusId()).getValue() : null);
-					profileViewPLResponse.setMiddleName(guarantorDetail.getMiddleName());
-					profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null ? guarantorDetail.getMonthlyIncome() : 0));
-					profileViewPLResponse.setNatureOfOccupation(guarantorDetail.getOccupationId() != null ? OccupationNature.getById(guarantorDetail.getOccupationId()).getValue() : null);
-					profileViewPLResponse.setTitle(guarantorDetail.getTitleId() != null ? Title.getById(guarantorDetail.getTitleId()).getValue() : null);
-					profileViewPLResponse.setAge(guarantorDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString() : null);
-
-					if (guarantorDetail.getApplicationId() != null) {
-						profileViewPLResponse.setCurrency(guarantorDetail.getApplicationId().getCurrencyId() != null ? Currency.getById(guarantorDetail.getApplicationId().getCurrencyId()).getValue() : null);
-					}
-					profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
-					if (guarantorDetail.getIndustryTypeId() != null && guarantorDetail.getIndustryTypeId() != 16) {
-						profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
-					} else {
-						profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
 					}
 
 					//set pan car
-					profileViewPLResponse.setPan(guarantorDetail.getPan());
-
-					//get list of Pan Card
-					DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
-					DocumentRequest documentRequestPanCard = new DocumentRequest();
-					documentRequestPanCard.setGuarantorId(guarantorDetail.getId());
-					documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
-					documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_PAN_CARD);
-					try {
-						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
-						profileViewPLResponse.setPanCardList(documentResponse.getDataList());
-					} catch (DocumentException e) {
-						e.printStackTrace();
-					}
-
-					//get list of Aadhar Card
-					DocumentRequest documentRequestAadharCard = new DocumentRequest();
-					documentRequestAadharCard.setGuarantorId(guarantorDetail.getId());
-					documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
-					documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD);
-					try {
-						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
-						profileViewPLResponse.setAadharCardList(documentResponse.getDataList());
-					} catch (DocumentException e) {
-						e.printStackTrace();
-					}
-
+					profileViewPLResponse.setPan(guarantorDetail.getPan() != null ? guarantorDetail.getPan() : null);
+					profileViewPLResponse.setTitle(guarantorDetail.getTitleId() != null ? Title.getById(guarantorDetail.getTitleId()).getValue() : null);
+					profileViewPLResponse.setAge(guarantorDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString() : null);
+					profileViewPLResponse.setFirstName(guarantorDetail.getFirstName() != null ? guarantorDetail.getFirstName() : null);
+					profileViewPLResponse.setGender(guarantorDetail.getGenderId() != null ? Gender.getById(guarantorDetail.getGenderId()).getValue() : null);
+					profileViewPLResponse.setLastName(guarantorDetail.getLastName() != null ? guarantorDetail.getLastName() : null);
+					profileViewPLResponse.setMaritalStatus(guarantorDetail.getStatusId() != null ? MaritalStatus.getById(guarantorDetail.getStatusId()).getValue() : null);
+					profileViewPLResponse.setMiddleName(guarantorDetail.getMiddleName() != null ? guarantorDetail.getMiddleName() : null);
+					profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null ? guarantorDetail.getMonthlyIncome() : 0));
 					plResponses.add(profileViewPLResponse);
 				}
-
 				return plResponses;
 			} else {
 				throw new Exception("No Data found");

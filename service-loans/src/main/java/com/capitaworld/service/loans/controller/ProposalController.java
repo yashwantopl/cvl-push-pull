@@ -83,8 +83,29 @@ public class ProposalController {
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/sendRequest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> sendRequest(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		request.setUserId(userId);
+		request.setUserType(userType);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.sendRequest(request),HttpStatus.OK);
+	}
+	
+	
 	@RequestMapping(value = "/listfundseekerproposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> listOfFundSeekerProposal(@RequestBody ProposalMappingRequest request) {
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.listOfFundSeekerProposal(request),HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/connections", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> connections(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
+		
+		Long productId=request.getFpProductId();
+		Long applicationId=request.getApplicationId();
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		request.setLastActionPerformedBy(userType);
+		
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 }
