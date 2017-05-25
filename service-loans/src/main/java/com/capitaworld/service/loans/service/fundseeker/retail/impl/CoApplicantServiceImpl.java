@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.util.CommonUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,11 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -28,11 +23,13 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDet
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.RelationshipType;
 import com.capitaworld.service.oneform.enums.Title;
@@ -50,9 +47,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-
-	@Autowired
-	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
 
 
 	@Autowired
