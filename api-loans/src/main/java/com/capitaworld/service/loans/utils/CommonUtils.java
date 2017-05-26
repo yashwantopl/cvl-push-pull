@@ -149,6 +149,7 @@ public class CommonUtils {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
+	}
 
 	public static String getStringDateFromDate(Date date){
 		if(date!=null ){
