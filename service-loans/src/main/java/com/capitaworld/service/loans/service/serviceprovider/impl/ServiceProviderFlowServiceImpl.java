@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -138,6 +139,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			e.printStackTrace();
 			throw new Exception("Error while getting client list.");
 		}
+
 	}
 	
 	@Override

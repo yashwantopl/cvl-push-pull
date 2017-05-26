@@ -40,7 +40,7 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	private String propertyAddressStreet;
 
-	private String propertyUsed;
+	private Integer propertyUsed;
 
 	private String sellerName;
 
@@ -164,11 +164,11 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 		this.propertyAddressStreet = propertyAddressStreet;
 	}
 
-	public String getPropertyUsed() {
+	public Integer getPropertyUsed() {
 		return propertyUsed;
 	}
 
-	public void setPropertyUsed(String propertyUsed) {
+	public void setPropertyUsed(Integer propertyUsed) {
 		this.propertyUsed = propertyUsed;
 	}
 

@@ -309,9 +309,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
 				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-				if(creditRatingOrganizationDetailRequest.getCreditRatingFundId()!=null)
-				creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
-						.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
+				if (creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null)
+					creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
+							.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
 
 				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
 						environment.getProperty(ONE_FORM_URL));
@@ -322,15 +322,15 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				if (masterResponse != null) {
 					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
 				} else {
-					termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+					creditRatingOrganizationDetailResponse.setCreditRatingOption(CommonUtils.NOT_APPLICABLE);
 				}
 
-				if(creditRatingOrganizationDetailRequest.getCreditRatingTermId()!=null)
-				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
-						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
-				if(creditRatingOrganizationDetailRequest.getRatingAgencyId()!=null)
-				creditRatingOrganizationDetailResponse.setRatingAgency(
-						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+				if (creditRatingOrganizationDetailRequest.getCreditRatingTermId() != null)
+					creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
+							.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+				if (creditRatingOrganizationDetailRequest.getRatingAgencyId() != null)
+					creditRatingOrganizationDetailResponse.setRatingAgency(
+							RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
 				creditRatingOrganizationDetailResponse
 						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
@@ -350,9 +350,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
 				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
 				BeanUtils.copyProperties(ownershipDetailRequest, ownershipDetailResponse);
-				if(ownershipDetailRequest.getShareHoldingCategoryId()!=null)
-				ownershipDetailResponse.setShareHoldingCategory(
-						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+				if (ownershipDetailRequest.getShareHoldingCategoryId() != null)
+					ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory
+							.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
 				ownershipDetailResponseList.add(ownershipDetailResponse);
 			}
 			termLoanPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
@@ -370,10 +370,11 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetailResponse);
-				if(promotorBackgroundDetailRequest.getSalutationId()!=null)
-				promotorBackgroundDetailResponse
-						.setPromotorsName(Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue()
-								+ " " + promotorBackgroundDetailRequest.getPromotorsName());
+				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+				if (promotorBackgroundDetailRequest.getSalutationId() != null)
+					promotorBackgroundDetailResponse.setPromotorsName(
+							Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() + " "
+									+ promotorBackgroundDetailRequest.getPromotorsName());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
@@ -416,9 +417,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetailResponse);
-				if(financialArrangementsDetailRequest.getFacilityNatureId()!=null)
-				financialArrangementsDetailResponse.setFacilityNature(
-						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
+					financialArrangementsDetailResponse.setFacilityNature(NatureFacility
+							.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			termLoanPrimaryViewResponse
@@ -436,11 +437,11 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
 				FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
 				BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
-				
-				if(financeMeansDetailRequest.getFinanceMeansCategoryId()!=null)
-				detailResponse.setFinanceMeansCategory(FinanceCategory
-						.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
-						.getValue());
+
+				if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+					detailResponse.setFinanceMeansCategory(FinanceCategory
+							.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+							.getValue());
 				financeMeansDetailResponsesList.add(detailResponse);
 			}
 			termLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
@@ -457,9 +458,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
 				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
 				BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
-				if(costOfProjectRequest.getParticularsId()!=null)
-				costOfProjectResponse.setParticulars(Particular
-						.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+				if (costOfProjectRequest.getParticularsId() != null)
+					costOfProjectResponse.setParticulars(Particular
+							.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
 				costOfProjectResponses.add(costOfProjectResponse);
 			}
 			termLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
@@ -511,6 +512,53 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		// set short term rating option
+		try {
+			List<String> shortTermValueList = new ArrayList<String>();
+			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
+					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
+			for (Integer shortTermId : shortTermIdList) {
+				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
+						environment.getProperty(ONE_FORM_URL));
+				OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					shortTermValueList.add(masterResponse.getValue());
+				} else {
+					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+				termLoanPrimaryViewResponse.setShortTermRating(shortTermValueList);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// set long term rating option
+
+		try {
+			List<String> longTermValueList = new ArrayList<String>();
+			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
+					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
+			for (Integer shortTermId : longTermIdList) {
+				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
+						environment.getProperty(ONE_FORM_URL));
+				OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					longTermValueList.add(masterResponse.getValue());
+				} else {
+					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+			}
+			termLoanPrimaryViewResponse.setLongTermRating(longTermValueList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

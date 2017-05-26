@@ -1,9 +1,7 @@
-package com.capitaworld.service.loans.controller.teaser.primaryView;
+package com.capitaworld.service.loans.controller.teaser.finalview;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
-import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalFinalService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +18,21 @@ import javax.servlet.http.HttpServletRequest;
  * Created by dhaval on 18-May-17.
  */
 @RestController
-public class WorkingCapitalPrimaryViewController {
+public class WorkingCapitalFinalViewController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalPrimaryViewController.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalViewController.class);
 
     @Autowired
-    private WorkingCapitalPrimaryViewService workingCapitalPrimaryViewService;
+    private WorkingCapitalFinalService workingCapitalFinalService;
+
+    @GetMapping(value = "/finalViewOfWorkingCapital/{toApplicationId}")
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
 
 
-    @GetMapping(value = "/primaryViewOfWorkingCapital/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
-        LoansResponse loansResponse = new LoansResponse();
+
+        //LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+       /* Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
             logger.warn("Invalid data or Requested data not found.", toApplicationId);
             return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
@@ -42,7 +42,8 @@ public class WorkingCapitalPrimaryViewController {
             loansResponse.setMessage("Working Capital Primary Details");
             loansResponse.setStatus(HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-        }
+        }*/
+        workingCapitalFinalService.getWorkingCapitalFinalViewDetails(toApplicationId,52l);
+        return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
     }
-
 }
