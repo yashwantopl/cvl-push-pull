@@ -101,11 +101,11 @@ public class CommonUtils {
 
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
-				"applicationId" };
+				"applicationId"};
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
-				"aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress", "addressSameAs",
+				"aadharNumber", "monthlyIncome","firstAddress", "secondAddress", "addressSameAs",
 				"contactNo", "companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
 				"alliedActivityId", "userId" };
