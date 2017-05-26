@@ -111,16 +111,20 @@ public class WorkingCapitalLoanController {
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryWorkingCapitalLoanRequest capitalLoanRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+				capitalLoanRequest.setClientId(clientId);
+			}
+			
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + capitalLoanRequest);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			primaryWCService.saveOrUpdate(capitalLoanRequest);
+			primaryWCService.saveOrUpdate(capitalLoanRequest,userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -133,19 +137,26 @@ public class WorkingCapitalLoanController {
 		}
 	}
 
-	@RequestMapping(value = "${primary}/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("id") Long id, HttpServletRequest request) {
+	@RequestMapping(value = "${primary}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (id == null || userId == null) {
-				logger.warn(
-						"ID And UserId Require to get Primary Working Details ==>" + id + " and UserId ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			Long userId = null;
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 
-			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(id);
+			if (applicationId == null || userId == null) {
+				logger.warn(
+						"ID And UserId Require to get Primary Working Details ==>" + applicationId + " and UserId ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(applicationId,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

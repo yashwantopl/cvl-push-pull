@@ -6,8 +6,5 @@ import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrim
  * Created by dhaval on 19-May-17.
  */
 public interface WorkingCapitalPrimaryViewService {
-
     public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId,Long userId);
-
-    public boolean validateWorkingCapitalPrimaryViewRequest(String toApplicationId);
 }

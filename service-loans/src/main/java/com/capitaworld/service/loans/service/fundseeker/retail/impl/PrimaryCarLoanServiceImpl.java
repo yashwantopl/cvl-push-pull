@@ -35,6 +35,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 						+ carLoanDetailRequest.getId() + " and User Id ==>" + userId);
 			}
 			BeanUtils.copyProperties(carLoanDetailRequest, primaryCarLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			primaryCarLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getTenure()) ? null : (carLoanDetailRequest.getTenure() * 12));
 			primaryCarLoanDetail.setModifiedBy(userId);
 			primaryCarLoanDetail.setModifiedDate(new Date());
 			primaryCarLoanDetailRepository.save(primaryCarLoanDetail);
@@ -56,6 +57,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			}
 			PrimaryCarLoanDetailRequest carLoanDetailRequest = new PrimaryCarLoanDetailRequest();
 			BeanUtils.copyProperties(loanDetail, carLoanDetailRequest);
+			carLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return carLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary CarLoan Details");

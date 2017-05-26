@@ -7,6 +7,12 @@ public class FinalCommonRetailRequest {
 	private Long id;
 	private Long clientId;
 	private Long applicationId;
+	// Based on these two fields we have show some field in final section
+
+	// Primary Field starts
+	private Integer statusId;
+	private Integer occupationId;
+	// Primary Field Ends
 
 	private Integer castId;
 	private String castOther;
@@ -52,7 +58,7 @@ public class FinalCommonRetailRequest {
 	private Double residingMonth;
 	private Double residingYear;
 	private String seasonalIrrigated;
-	private String shareholding;
+	private String shareHolding;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
 	private Double totalLandOwned;
@@ -437,12 +443,12 @@ public class FinalCommonRetailRequest {
 		this.seasonalIrrigated = seasonalIrrigated;
 	}
 
-	public String getShareholding() {
-		return shareholding;
+	public String getShareHolding() {
+		return shareHolding;
 	}
 
-	public void setShareholding(String shareholding) {
-		this.shareholding = shareholding;
+	public void setShareHolding(String shareHolding) {
+		this.shareHolding = shareHolding;
 	}
 
 	public Integer getTotalExperienceMonth() {
@@ -501,4 +507,19 @@ public class FinalCommonRetailRequest {
 		this.websiteAddress = websiteAddress;
 	}
 
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
+	}
+
+	public Integer getOccupationId() {
+		return occupationId;
+	}
+
+	public void setOccupationId(Integer occupationId) {
+		this.occupationId = occupationId;
+	}
 }

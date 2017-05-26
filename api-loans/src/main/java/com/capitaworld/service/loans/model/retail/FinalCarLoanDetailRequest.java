@@ -15,6 +15,7 @@ public class FinalCarLoanDetailRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	private Long clientId;
 
 	private Long applicationId;
 
@@ -38,8 +39,6 @@ public class FinalCarLoanDetailRequest implements Serializable {
 
 	private Double vehicleCost;
 	
-	private Long userId;
-
 	public Long getId() {
 		return id;
 	}
@@ -104,15 +103,6 @@ public class FinalCarLoanDetailRequest implements Serializable {
 		this.insuranceCost = insuranceCost;
 	}
 
-	
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
 	public Double getLoanTotalCost() {
 		return loanTotalCost;
 	}
@@ -145,6 +135,13 @@ public class FinalCarLoanDetailRequest implements Serializable {
 		this.vehicleCost = vehicleCost;
 	}
 
-	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+
 
 }

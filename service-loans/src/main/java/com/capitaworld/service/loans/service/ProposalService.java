@@ -21,5 +21,10 @@ public interface ProposalService {
 	
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
 	
+	public ProposalMappingResponse sendRequest(ProposalMappingRequest request);
+	
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request);
+	
+	public ProposalMappingResponse getConectionList(ProposalMappingRequest proposalMappingRequest);
+	
 }

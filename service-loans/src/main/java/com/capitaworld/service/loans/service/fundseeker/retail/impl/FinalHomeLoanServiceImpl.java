@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,46 +20,54 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @Transactional
 public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
+	private static final Logger logger = LoggerFactory.getLogger(FinalHomeLoanServiceImpl.class);
+
 	@Autowired
 	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
 
-
 	@Override
-	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest) {
-		FinalHomeLoanDetail finalHomeLoanDetail= null;
-		if (finalHomeLoanDetailRequest.getId() != null && finalHomeLoanDetailRequest.getApplicationId() != null) {
-			finalHomeLoanDetail = finalHomeLoanDetailRepository.getByApplicationID(finalHomeLoanDetailRequest.getApplicationId(),finalHomeLoanDetailRequest.getId());
+	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws Exception {
+		try {
+			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository
+					.getByApplicationAndUserId(finalHomeLoanDetailRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId()));
 			if (finalHomeLoanDetail == null) {
-				return false;
+				finalHomeLoanDetail = new FinalHomeLoanDetail();
+				finalHomeLoanDetail.setCreatedBy(userId);
+				finalHomeLoanDetail.setCreatedDate(new Date());
+				finalHomeLoanDetail.setIsActive(true);
+				finalHomeLoanDetail
+						.setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
+			} else {
+				finalHomeLoanDetail.setModifiedBy(userId);
+				finalHomeLoanDetail.setModifiedDate(new Date());
 			}
-			
-		} else {
-			finalHomeLoanDetail = new FinalHomeLoanDetail();
-			finalHomeLoanDetail.setCreatedBy(finalHomeLoanDetailRequest.getUserId());
-			finalHomeLoanDetail.setCreatedDate(new Date());
-			finalHomeLoanDetail.setIsActive(true);
-			finalHomeLoanDetail.setApplicationId(new LoanApplicationMaster(finalHomeLoanDetailRequest.getApplicationId()));
-			
+			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetail,
+					CommonUtils.IgnorableCopy.CORPORATE);
+			finalHomeLoanDetail = finalHomeLoanDetailRepository.save(finalHomeLoanDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while Saving Final Home Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		finalHomeLoanDetail.setModifiedBy(finalHomeLoanDetailRequest.getUserId());
-		finalHomeLoanDetail.setModifiedDate(new Date());
-		BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-		finalHomeLoanDetail = finalHomeLoanDetailRepository.save(finalHomeLoanDetail);
-
-		
-		return true;
 	}
 
 	@Override
-	public FinalHomeLoanDetailRequest get(Long id) {
-		FinalHomeLoanDetail loanDetail = finalHomeLoanDetailRepository.findOne(id);
-		if (loanDetail == null) {
-			return null;
+	public FinalHomeLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+		try {
+			FinalHomeLoanDetail loanDetail = finalHomeLoanDetailRepository.getByApplicationAndUserId(applicationId,
+					userId);
+			if (loanDetail == null) {
+				return null;
+			}
+			FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
+			BeanUtils.copyProperties(loanDetail, finalHomeLoanDetailRequest);
+			return finalHomeLoanDetailRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Final Home Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
-		BeanUtils.copyProperties(loanDetail, finalHomeLoanDetailRequest);
-		return finalHomeLoanDetailRequest;
 	}
 
-	
 }

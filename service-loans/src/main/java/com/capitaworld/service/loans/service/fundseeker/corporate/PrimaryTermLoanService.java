@@ -6,5 +6,5 @@ public interface PrimaryTermLoanService {
 
 	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception;
 
-	public PrimaryTermLoanRequest get(Long id) throws Exception;
+	public PrimaryTermLoanRequest get(Long applicationId, Long userId) throws Exception;
 }

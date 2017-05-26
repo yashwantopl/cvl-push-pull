@@ -1,22 +1,17 @@
 package com.capitaworld.service.loans.controller.teaser.primaryView;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
+import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoandsPrimaryViewResponse;
-import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Sanket
@@ -38,31 +33,28 @@ public class PersonalLoansViewController {
 		}
 
 	    @GetMapping(value = "/primaryViewOfPersonalLoans/{toApplicationId}")
-	    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(@PathVariable(value = "toApplicationId") String toApplicationId,HttpServletRequest httpServletRequest) {
+	    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
 	        LoansResponse loansResponse = new LoansResponse();
 	        //get user id from http servlet request
-	        Long userId =  1758L;/*httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
-
-	        boolean isValidateRequest = personalLoansViewService.validatePersonalLoansPrimaryViewRequest(toApplicationId);
-	        if(isValidateRequest){
-	            logger.warn("Invalid Request {}", toApplicationId);
-	            return new ResponseEntity(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-	        }else {
-	            PersonalLoandsPrimaryViewResponse personalLoansPrimaryViewResponse = null;
+	        Long userId = (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
+				logger.warn("Invalid data or Requested data not found.", toApplicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			} else {
+				RetailPrimaryViewResponse personalLoansPrimaryViewResponse = null;
 				try {
-					personalLoansPrimaryViewResponse = personalLoansViewService.getPersonalLoansPrimaryViewDetails(Long.parseLong(toApplicationId),userId);
-					 loansResponse.setData(personalLoansPrimaryViewResponse);
-			            loansResponse.setMessage("Personal Loans Primary Details");
-			            loansResponse.setStatus(HttpStatus.OK.value());
-			            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+					personalLoansPrimaryViewResponse = personalLoansViewService.getPersonalLoansPrimaryViewDetails(toApplicationId, userId);
+					loansResponse.setData(personalLoansPrimaryViewResponse);
+					loansResponse.setMessage("Personal Loans Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				} catch (Exception e) {
-					 loansResponse.setData(personalLoansPrimaryViewResponse);
-			            loansResponse.setMessage(e.getMessage());
-			            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+					loansResponse.setData(personalLoansPrimaryViewResponse);
+					loansResponse.setMessage(e.getMessage());
+					loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
-	           
-	        }
-	    }
+			}
+		}
 
 }
