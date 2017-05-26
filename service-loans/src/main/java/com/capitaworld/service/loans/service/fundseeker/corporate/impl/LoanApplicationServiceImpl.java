@@ -35,6 +35,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoan
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -197,8 +198,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())) {
-					Currency currency = Currency.getById(master.getCurrencyId());
-					request.setCurrencyValue(currency.getValue());
+					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
 				}
 				requests.add(request);
 			}
