@@ -1,36 +1,15 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.util.List;
 
+import com.capitaworld.service.loans.model.teaser.finalview.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalFinalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.BoardOfDirectorsResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.DprUserDataDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.KeyManagementResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.RequirementsAndAvailabilityRawMaterialsDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.RevenueAndOrderBookResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.StrategicAlliancesResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManagementDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysisDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalFinalService;
+import java.util.List;
 
 /**
  * Created by dhaval on 25-May-17.
