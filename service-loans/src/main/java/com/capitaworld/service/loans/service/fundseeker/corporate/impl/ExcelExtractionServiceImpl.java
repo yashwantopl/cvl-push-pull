@@ -1,8 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -178,7 +176,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			 proposalService.readProposalDetails(applicationId,storageDetailsId,proposalSheet, dprUserDataDetail);
 			 feasibilityService.readFeasibilityDetails(applicationId,storageDetailsId,feasibilitySheet, dprUserDataDetail);
 			 scotService.readScotDetails(applicationId,storageDetailsId,scotSheet);
-			 dprUserDataDetailService.save(storageDetailsId,dprUserDataDetail);
+			 dprUserDataDetailService.save(storageDetailsId,dprUserDataDetail,applicationId);
 		}
 		catch (Exception e) {
 			
