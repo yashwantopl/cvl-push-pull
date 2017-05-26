@@ -1,7 +1,7 @@
 package com.capitaworld.service.loans.controller.teaser.finalview;
 
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalFinalService;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
+import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalFinalService;
 
 /**
  * Created by dhaval on 18-May-17.
@@ -30,7 +32,7 @@ public class WorkingCapitalFinalViewController {
 
 
 
-        //LoansResponse loansResponse = new LoansResponse();
+        LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
        /* Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -43,7 +45,8 @@ public class WorkingCapitalFinalViewController {
             loansResponse.setStatus(HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }*/
-        workingCapitalFinalService.getWorkingCapitalFinalViewDetails(toApplicationId,52l);
-        return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+    	WorkingCapitalFinalViewResponse response =  workingCapitalFinalService.getWorkingCapitalFinalViewDetails(toApplicationId,52l);
+    	loansResponse.setData(response);
+        return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
     }
 }

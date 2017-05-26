@@ -43,12 +43,13 @@ public class DprUserDataDetailServiceImpl implements DprUserDataDetailService {
 	}
 
 	@Override
-	public void save(Long storageDetailsId, DprUserDataDetail dprUserDataDetail) {
+	public void save(Long storageDetailsId, DprUserDataDetail dprUserDataDetail, Long applicationId) {
 		
 		dprUserDataDetail.setStorageDetailsId(storageDetailsId);
 		dprUserDataDetail.setIsActive(true);
 		dprUserDataDetail.setCreatedDate(new Date());
 		dprUserDataDetail.setModifiedDate(new Date());
+		dprUserDataDetail.setApplicationId(loanApplicationRepository.findOne(applicationId));
 		dprUserDataDetailRepository.save(dprUserDataDetail);
 		
 	}
