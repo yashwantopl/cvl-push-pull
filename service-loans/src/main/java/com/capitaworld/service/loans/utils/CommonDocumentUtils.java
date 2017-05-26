@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
+import com.capitaworld.service.oneform.client.EstablistmentYearClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -68,11 +69,15 @@ public class CommonDocumentUtils {
 		return data != null ? data.getValue() : "NA";
 	}
 	
-//	public static Integer getYear(Long yearId,Environment environment){
-//		
-//	}
-//	
-//public static Integer getMonth(Long yearId,Environment environment){
-//		
-//	}
+	public static Integer getYear(Long yearId,Environment environment) throws Exception{
+		EstablistmentYearClient client = new EstablistmentYearClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+		OneFormResponse response = client.send(yearId);
+		if(!CommonUtils.isListNullOrEmpty(response.getListData())){
+			MasterResponse data = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+			return data != null ? Integer.valueOf(data.getValue()) : 0;
+		}
+		return 0;
+	}
+
 }

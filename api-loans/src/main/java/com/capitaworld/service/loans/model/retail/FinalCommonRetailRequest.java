@@ -58,7 +58,7 @@ public class FinalCommonRetailRequest {
 	private Double residingMonth;
 	private Double residingYear;
 	private String seasonalIrrigated;
-	private String shareholding;
+	private String shareHolding;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
 	private Double totalLandOwned;
@@ -443,12 +443,12 @@ public class FinalCommonRetailRequest {
 		this.seasonalIrrigated = seasonalIrrigated;
 	}
 
-	public String getShareholding() {
-		return shareholding;
+	public String getShareHolding() {
+		return shareHolding;
 	}
 
-	public void setShareholding(String shareholding) {
-		this.shareholding = shareholding;
+	public void setShareHolding(String shareHolding) {
+		this.shareHolding = shareHolding;
 	}
 
 	public Integer getTotalExperienceMonth() {
