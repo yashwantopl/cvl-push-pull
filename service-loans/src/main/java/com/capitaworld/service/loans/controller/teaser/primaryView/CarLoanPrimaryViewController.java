@@ -37,7 +37,7 @@ public class CarLoanPrimaryViewController {
             return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
         }else {
             //get user id from http servlet request
-            Long userId = 1759l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
+            Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
             CarLoanPrimaryViewResponse carLoanPrimaryViewResponse = carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(toApplicationId, userId);
             loansResponse.setData(carLoanPrimaryViewResponse);
             loansResponse.setMessage("Car Loan Primary Details");
