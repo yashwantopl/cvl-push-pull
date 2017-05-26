@@ -14,8 +14,9 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-
+	private Long clientId;
 	private Long applicationId;
+
 
 	private Double builtUpArea;
 
@@ -39,7 +40,7 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	private String propertyAddressStreet;
 
-	private String propertyUsed;
+	private Integer propertyUsed;
 
 	private String sellerName;
 
@@ -59,8 +60,6 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	private Double superBuiltUpArea;
 	
-	private Long userId;
-
 	public Long getId() {
 		return id;
 	}
@@ -165,11 +164,11 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 		this.propertyAddressStreet = propertyAddressStreet;
 	}
 
-	public String getPropertyUsed() {
+	public Integer getPropertyUsed() {
 		return propertyUsed;
 	}
 
-	public void setPropertyUsed(String propertyUsed) {
+	public void setPropertyUsed(Integer propertyUsed) {
 		this.propertyUsed = propertyUsed;
 	}
 
@@ -245,14 +244,13 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 		this.superBuiltUpArea = superBuiltUpArea;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public Long getClientId() {
+		return clientId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
+	
 
-	
-	
 }

@@ -102,9 +102,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
-				throw new NullPointerException(
-						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-								+ applicationId + "User ID==>" + userId);
+				return null;
 			}
 			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);

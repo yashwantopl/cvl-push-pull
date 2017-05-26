@@ -39,6 +39,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -184,6 +185,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
 				}
 				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
+				if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())) {
+					Currency currency = Currency.getById(master.getCurrencyId());
+					request.setCurrencyValue(currency.getValue());
+				}
 				requests.add(request);
 			}
 			return requests;
@@ -195,8 +200,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {			
-			return loanApplicationRepository.getListByUserId(userId);
+	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {
+		return loanApplicationRepository.getListByUserId(userId);
 	}
 
 	@Override

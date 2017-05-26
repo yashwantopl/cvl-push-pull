@@ -29,16 +29,15 @@ public class WorkingCapitalPrimaryViewController {
 
 
     @GetMapping(value = "/primaryViewOfWorkingCapital/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") String toApplicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-        boolean isValidateRequest = workingCapitalPrimaryViewService.validateWorkingCapitalPrimaryViewRequest(toApplicationId);
-        if(isValidateRequest){
-            logger.warn("Invalid Request {}", toApplicationId);
-            return new ResponseEntity(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+            logger.warn("Invalid data or Requested data not found.", toApplicationId);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
         }else {
-            WorkingCapitalPrimaryViewResponse workingCapitalPrimaryViewResponse = workingCapitalPrimaryViewService.getWorkingCapitalPrimaryViewDetails(Long.parseLong(toApplicationId),userId);
+            WorkingCapitalPrimaryViewResponse workingCapitalPrimaryViewResponse = workingCapitalPrimaryViewService.getWorkingCapitalPrimaryViewDetails(toApplicationId,userId);
             loansResponse.setData(workingCapitalPrimaryViewResponse);
             loansResponse.setMessage("Working Capital Primary Details");
             loansResponse.setStatus(HttpStatus.OK.value());

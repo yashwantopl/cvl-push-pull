@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class HomeLoanParameterController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody HomeLoanParameterRequest  homeLoanParameterRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody HomeLoanParameterRequest  homeLoanParameterRequest,HttpServletRequest request) {
 		// request must not be null
 		if (homeLoanParameterRequest == null) {
 			logger.warn("homeLoanParameterRequest Object can not be empty ==>", homeLoanParameterRequest);
@@ -56,6 +58,16 @@ public class HomeLoanParameterController {
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		//Long userId=1755l;
+		if(userId==null)
+		{
+			logger.warn("userId  id can not be empty ==>", userId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		}
+		homeLoanParameterRequest.setUserId(userId);
 		
 		boolean response = homeLoanParameterService.saveOrUpdate(homeLoanParameterRequest);
 		if (response) {

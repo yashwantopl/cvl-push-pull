@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.ProfileViewPLResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 
 public interface CoApplicantService {
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception;
@@ -17,5 +17,5 @@ public interface CoApplicantService {
 
 	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId,Long id) throws Exception;
 
-	public List<ProfileViewPLResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception;
+	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception;
 }
