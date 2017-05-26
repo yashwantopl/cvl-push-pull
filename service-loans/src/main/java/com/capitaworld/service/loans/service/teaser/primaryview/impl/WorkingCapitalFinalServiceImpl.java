@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.BoardOfDirectorsResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse;
@@ -104,9 +106,18 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
         response.setStrategicAlliancesResponseList(strategicAlliancesResponseList);
         response.setTechnologyPositioningResponseList(technologyPositioningResponseList);
         
-        
-        
-        
+        try {
+		response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
+        response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
+        response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
+        response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
+        response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
+        response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+        response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
+        response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
+        } catch (DocumentException e) {
+			e.printStackTrace();
+		}
         
         return response;
     }
