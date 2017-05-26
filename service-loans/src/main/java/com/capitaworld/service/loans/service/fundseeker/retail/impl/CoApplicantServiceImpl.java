@@ -52,9 +52,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getId());
 			if (coDetails != null) {
-				// throw new NullPointerException("CoApplicant Id Record not
-				// exists in DB : " + applicantRequest.getId()
-				// + " Applicant Id ==>" + applicationId);
 				if (applicantRequest.getIsActive() != null && !applicantRequest.getIsActive().booleanValue()) {
 					coApplicantDetailRepository.inactiveCoApplicant(applicationId, applicantRequest.getId());
 					return true;
@@ -165,7 +162,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
