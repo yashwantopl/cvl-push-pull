@@ -35,22 +35,22 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
     @Autowired
     private RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository;
-    
+
     @Autowired
     private CapacityDetailRepository capacityDetailRepository;
-    
+
     @Autowired
     private AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository;
-    
+
     @Autowired
     private RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository;
-    
+
     @Autowired
     private ScotAnalysisDetailRepository scotAnalysisDetailRepository;
-    
+
     @Autowired
     private DprUserDataDetailRepository dprUserDataDetailRepository;
-    
+
     @Autowired
     private DocumentManagementService documentManagementService;
 
@@ -62,15 +62,15 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
         List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList = employeesCategoryBreaksDetailRepository.listByApplicationId(toApplicationId);
         List<TechnologyPositioningResponse> technologyPositioningResponseList = technologyPositioningDetailRepository.listByApplicationId(toApplicationId);
         List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList = revenueAndOrderBookDetailRepository.listByApplicationId(toApplicationId);
-        
+
         List<CapacityDetailResponse> capacityDetailResponses = capacityDetailRepository.listByApplicationId(toApplicationId);
         List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponses = availabilityProposedPlantDetailRepository.listByApplicationId(toApplicationId);
         List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponses = requirementsAndAvailabilityRawMaterialsDetailRepository.listByApplicationId(toApplicationId);
         List<ScotAnalysisDetailResponse> scotAnalysisDetailResponses = scotAnalysisDetailRepository.listByApplicationId(toApplicationId);
         List<DprUserDataDetailResponse> dprUserDataDetailResponses = dprUserDataDetailRepository.listByApplicationId(toApplicationId);
-        
+
         WorkingCapitalFinalViewResponse response = new WorkingCapitalFinalViewResponse();
-        
+
         response.setAvailabilityProposedPlantDetailResponse(availabilityProposedPlantDetailResponses);
         response.setBoardOfDirectorsResponseList(boardOfDirectorsResponseList);
         response.setCapacityDetailResponses(capacityDetailResponses);
@@ -82,11 +82,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
         response.setScotAnalysisDetailResponses(scotAnalysisDetailResponses);
         response.setStrategicAlliancesResponseList(strategicAlliancesResponseList);
         response.setTechnologyPositioningResponseList(technologyPositioningResponseList);
-        
-        
-        
-        
-        
+
+
+
+
+
         return response;
     }
 }

@@ -13,6 +13,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 	private List<BoardOfDirectorsResponse> boardOfDirectorsResponseList ;
     private List<StrategicAlliancesResponse> strategicAlliancesResponseList; 
     private List<KeyManagementResponse> keyManagementResponseList;
@@ -25,6 +26,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
     private List<ScotAnalysisDetailResponse> scotAnalysisDetailResponses;
     private List<DprUserDataDetailResponse> dprUserDataDetailResponses;
     
+    private List<Object> lastAuditedAnnualReportList;
+    private List<Object> sanctionLetterCopyList;
+    private List<Object> lastITReturnList;
+    private List<Object> netWorthStatementOfdirectorsList;
+    private List<Object> provisionalFinancialsList;
+    private List<Object> panOfDirectorsList;
+    private List<Object> detailedListOfShareholdersList;
+    private List<Object> photoOfDirectorsList;
     
 	public List<BoardOfDirectorsResponse> getBoardOfDirectorsResponseList() {
 		return boardOfDirectorsResponseList;
@@ -95,6 +104,54 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	}
 	public void setDprUserDataDetailResponses(List<DprUserDataDetailResponse> dprUserDataDetailResponses) {
 		this.dprUserDataDetailResponses = dprUserDataDetailResponses;
+	}
+	public List<Object> getLastAuditedAnnualReportList() {
+		return lastAuditedAnnualReportList;
+	}
+	public void setLastAuditedAnnualReportList(List<Object> lastAuditedAnnualReportList) {
+		this.lastAuditedAnnualReportList = lastAuditedAnnualReportList;
+	}
+	public List<Object> getSanctionLetterCopyList() {
+		return sanctionLetterCopyList;
+	}
+	public void setSanctionLetterCopyList(List<Object> sanctionLetterCopyList) {
+		this.sanctionLetterCopyList = sanctionLetterCopyList;
+	}
+	public List<Object> getLastITReturnList() {
+		return lastITReturnList;
+	}
+	public void setLastITReturnList(List<Object> lastITReturnList) {
+		this.lastITReturnList = lastITReturnList;
+	}
+	public List<Object> getNetWorthStatementOfdirectorsList() {
+		return netWorthStatementOfdirectorsList;
+	}
+	public void setNetWorthStatementOfdirectorsList(List<Object> netWorthStatementOfdirectorsList) {
+		this.netWorthStatementOfdirectorsList = netWorthStatementOfdirectorsList;
+	}
+	public List<Object> getProvisionalFinancialsList() {
+		return provisionalFinancialsList;
+	}
+	public void setProvisionalFinancialsList(List<Object> provisionalFinancialsList) {
+		this.provisionalFinancialsList = provisionalFinancialsList;
+	}
+	public List<Object> getPanOfDirectorsList() {
+		return panOfDirectorsList;
+	}
+	public void setPanOfDirectorsList(List<Object> panOfDirectorsList) {
+		this.panOfDirectorsList = panOfDirectorsList;
+	}
+	public List<Object> getDetailedListOfShareholdersList() {
+		return detailedListOfShareholdersList;
+	}
+	public void setDetailedListOfShareholdersList(List<Object> detailedListOfShareholdersList) {
+		this.detailedListOfShareholdersList = detailedListOfShareholdersList;
+	}
+	public List<Object> getPhotoOfDirectorsList() {
+		return photoOfDirectorsList;
+	}
+	public void setPhotoOfDirectorsList(List<Object> photoOfDirectorsList) {
+		this.photoOfDirectorsList = photoOfDirectorsList;
 	}
     
     
