@@ -177,8 +177,8 @@ public class ProductMasterController {
 			else
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			 loansResponse.setData(response[1]);
 			 System.out.println(loansResponse);
+			 loansResponse.setData(response[1]);
 			}
 			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

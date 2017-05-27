@@ -66,7 +66,7 @@ public class ProductMasterClient {
 			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("product masteis not available");
+			throw new LoansException("product master is not available");
 		}
 	}
 }

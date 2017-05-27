@@ -146,7 +146,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
 		// TODO Auto-generated method stub
 		Object[] values = productMasterRepository.getUserDetailsByMappingId(fpMappingId);
-		
+		System.out.println(values);
 		return values;
 	}
 
