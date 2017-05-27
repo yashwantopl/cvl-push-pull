@@ -20,20 +20,23 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapitalLoanService {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrimaryWorkingCapitalLoanServiceImpl.class.getName());
-	
+
 	@Autowired
 	private PrimaryWorkingCapitalLoanDetailRepository primaryWCRepository;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest) throws Exception {
+	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
 		try {
 			// ID must not be null
-			PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository.findOne(capitalLoanRequest.getId());
+			PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository
+					.getByApplicationAndUserId(capitalLoanRequest.getId(), (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId()));
 			if (capitalLoanDetail == null) {
-				throw new NullPointerException(
-						"PrimaryWorkingDetail not exist in DB with ID=>" + capitalLoanRequest.getId());
+				throw new NullPointerException("PrimaryWorkingDetail not exist in DB with ID=>"
+						+ capitalLoanRequest.getId() + " and userId==>" + userId);
 			}
 			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			capitalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getTenure()) ? null
+					: (capitalLoanRequest.getTenure() * 12));
 			capitalLoanDetail.setModifiedBy(capitalLoanRequest.getUserId());
 			capitalLoanDetail.setModifiedDate(new Date());
 			primaryWCRepository.save(capitalLoanDetail);
@@ -46,14 +49,17 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 	}
 
 	@Override
-	public PrimaryWorkingCapitalLoanRequest get(Long id) throws Exception {
+	public PrimaryWorkingCapitalLoanRequest get(Long id, Long userId) throws Exception {
 		try {
-			PrimaryWorkingCapitalLoanDetail loanDetail = primaryWCRepository.findOne(id);
+			PrimaryWorkingCapitalLoanDetail loanDetail = primaryWCRepository.getByApplicationAndUserId(id, userId);
 			if (loanDetail == null) {
-				throw new NullPointerException("PrimaryWorkingDetail not exist in DB with ID=>" + id);
+				throw new NullPointerException(
+						"PrimaryWorkingCapitalLoanDetail not exist in DB with ID=>" + id + " with user Id==>" + userId);
 			}
 			PrimaryWorkingCapitalLoanRequest capitalLoanRequest = new PrimaryWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
+			capitalLoanRequest.setTenure(
+					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Working Details Profile:-");

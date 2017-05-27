@@ -36,6 +36,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			}
 			BeanUtils.copyProperties(personalLoanRequest, primaryPersonalLoanDetail,
 					CommonUtils.IgnorableCopy.CORPORATE);
+			primaryPersonalLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(personalLoanRequest.getTenure()) ? null : (personalLoanRequest.getTenure() * 12));
 			primaryPersonalLoanDetail.setIsActive(true);
 			primaryPersonalLoanDetail.setModifiedBy(userId);
 			primaryPersonalLoanDetail.setModifiedDate(new Date());
@@ -49,15 +50,16 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	}
 
 	@Override
-	public PrimaryPersonalLoanRequest get(Long id, Long userId) throws Exception {
+	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
-			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(id, userId);
+			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
 				throw new NullPointerException(
-						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + id + " and User Id ==>" + userId);
+						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + applicationId + " and User Id ==>" + userId);
 			}
 			PrimaryPersonalLoanRequest personalLoanRequest = new PrimaryPersonalLoanRequest();
 			BeanUtils.copyProperties(loanDetail, personalLoanRequest);
+			personalLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			return personalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details");

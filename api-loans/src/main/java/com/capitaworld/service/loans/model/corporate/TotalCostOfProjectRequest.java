@@ -2,10 +2,13 @@ package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * The persistent class for the fs_corporate_achievement_details database table.
  * 
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TotalCostOfProjectRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 

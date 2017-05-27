@@ -28,6 +28,8 @@ public class PrimaryLasLoanDetail extends LoanApplicationMaster implements Seria
 
 	@Column(name = "loan_purpose_other")
 	private String loanPurposeOther;
+	
+	private Integer month;
 
 	public PrimaryLasLoanDetail() {
 	}
@@ -54,6 +56,14 @@ public class PrimaryLasLoanDetail extends LoanApplicationMaster implements Seria
 
 	public void setLoanPurposeOther(String loanPurposeOther) {
 		this.loanPurposeOther = loanPurposeOther;
+	}
+
+	public Integer getMonth() {
+		return month;
+	}
+
+	public void setMonth(Integer month) {
+		this.month = month;
 	}
 
 }

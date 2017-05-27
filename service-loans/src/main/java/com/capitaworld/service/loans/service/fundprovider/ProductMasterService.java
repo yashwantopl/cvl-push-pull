@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 
 public interface ProductMasterService {
@@ -19,7 +19,10 @@ public interface ProductMasterService {
 	public String getUserNameByApplicationId(Long productId,Long userId);
 	
 	public List<ProductDetailsForSp> getProductDetailsByUserIdList(Long userId);
-	
+
 	public Object[] getUserDetailsByPrductId(Long fpMappingId);
+
+	public ProductDetailsResponse getProductDetailsResponse(Long userId);
+
 	
 }

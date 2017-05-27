@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
+import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -224,5 +225,31 @@ public class ProductMasterController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+
+	@RequestMapping(value = "/productDetails", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProductDetailsResponse> fpProductDetails(HttpServletRequest request ) {
+	
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+	
+			try {
+				
+				if (userId == null) {
+					ProductDetailsResponse productDetailsResponse=new ProductDetailsResponse("User id is null or empty",HttpStatus.BAD_REQUEST.value());
+					logger.error("User id is null or empty");
+					return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse,HttpStatus.OK);
+				}
+				
+				ProductDetailsResponse productDetailsResponse=productMasterService.getProductDetailsResponse(userId);
+				return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse,HttpStatus.OK);
+				
+				} catch (Exception e) {
+					// TODO: handle exception
+					ProductDetailsResponse productDetailsResponse=new ProductDetailsResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value());
+					logger.error("Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse,HttpStatus.OK);
+				}
+		}
 	
 }

@@ -24,7 +24,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
@@ -36,9 +35,11 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoan
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -154,6 +155,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			applicationRequest.setHasAlreadyApplied(hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				applicationRequest.setLoanTypeMain(CommonUtils.CORPORATE);
+			} else {
+				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
+			}
+			applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())) {
+				Currency currency = Currency.getById(applicationMaster.getCurrencyId());
+				applicationRequest.setCurrencyValue(currency.getValue());
+			}
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
@@ -184,6 +197,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
 				}
 				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
+				if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())) {
+					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
+				}
 				requests.add(request);
 			}
 			return requests;
@@ -195,8 +211,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {			
-			return loanApplicationRepository.getListByUserId(userId);
+	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId) {
+		return loanApplicationRepository.getListByUserId(userId);
 	}
 
 	@Override
@@ -300,7 +316,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			logger.error("Error while Locking Final Information");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
-		}
+			
+		} 
 	}
 
 	@Override
@@ -336,6 +353,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	@Override
+	public Object[] getApplicationDetailsById(Long applicationId)
+	{
+	return loanApplicationRepository.getUserDetailsByApplicationId(applicationId);
 	}
 
 }
