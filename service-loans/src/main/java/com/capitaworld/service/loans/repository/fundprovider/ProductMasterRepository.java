@@ -26,7 +26,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
 
 
-	@Query("select userId, fpName from ProductMaster pm where pm.id=:prdMappingId and pm.isActive = true")
+	@Query(value="select user_id, fp_name from fp_product_master pm where pm.fp_product_id=:prdMappingId and pm.is_active = 1", nativeQuery=true)
 	public Object[] getUserDetailsByMappingId(@Param("prdMappingId") Long prdMappingId);
 	
 	@Query("select count(id) from ProductMaster pm where pm.id=:productId and pm.isParameterFilled=1 and pm.isActive = true")
