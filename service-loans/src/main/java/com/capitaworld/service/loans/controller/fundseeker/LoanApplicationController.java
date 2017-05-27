@@ -231,4 +231,59 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/getUserIdByApplicationId", method = RequestMethod.POST)
+	public ResponseEntity<LoansResponse> getUserIdByApplicationId(HttpServletRequest request ,@RequestBody Long applicationId) {
+	
+		
+	
+			try {
+
+				if (applicationId == null) {
+					logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				
+				LoansResponse loansResponse=new LoansResponse();
+				
+				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
+				loansResponse.setData(response[0]);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+				
+				} catch (Exception e) {
+					// TODO: handle exception
+					logger.error("Error while Getting Product Id by Application Id==>", e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		}
+	
+	@RequestMapping(value = "/getUserNameByApplicationId", method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUserNameByApplicationId(HttpServletRequest request ,@RequestBody Long applicationId) {
+	
+		
+	
+			try {
+
+				if (applicationId == null) {
+					logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				
+				LoansResponse loansResponse=new LoansResponse();
+				
+				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
+				loansResponse.setData(response[1]);
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+				
+				} catch (Exception e) {
+					// TODO: handle exception
+					logger.error("Error while Getting Product Id by Application Id==>", e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		}
 }
