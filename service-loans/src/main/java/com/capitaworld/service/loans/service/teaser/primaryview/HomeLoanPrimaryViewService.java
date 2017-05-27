@@ -4,5 +4,5 @@ import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryVie
 
 public interface HomeLoanPrimaryViewService {
 
-	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId, Long userId)throws Exception;
+	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId)throws Exception;
 }
