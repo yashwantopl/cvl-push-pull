@@ -143,11 +143,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 	
 	@Override
-	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
+	public ProductMaster getUserDetailsByPrductId(Long fpMappingId) {
 		// TODO Auto-generated method stub
-		Object[] values = productMasterRepository.getUserDetailsByMappingId(fpMappingId);
-		System.out.println(values);
-		return values;
+		ProductMaster pm = productMasterRepository.findById(fpMappingId);
+		return pm;
 	}
 
 	@Override

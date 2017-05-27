@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
@@ -134,7 +135,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			
-			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
+			ProductMaster response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
 			{
@@ -144,7 +145,7 @@ public class ProductMasterController {
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			 System.out.println(loansResponse);
-			 loansResponse.setData(response[0]);
+			 loansResponse.setData(response.getFpName());
 			}
 			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -168,7 +169,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			
-			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
+			ProductMaster response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
 			{
@@ -178,7 +179,7 @@ public class ProductMasterController {
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			 System.out.println(loansResponse);
-			 loansResponse.setData(response[1]);
+			 loansResponse.setData(response.getUserId());
 			}
 			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
