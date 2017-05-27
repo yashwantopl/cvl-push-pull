@@ -41,9 +41,9 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 				finalCarLoanDetail.setModifiedBy(userId);
 				finalCarLoanDetail.setModifiedDate(new Date());
 			}
-
-			BeanUtils.copyProperties(finalCarLoanDetailRequest, finalCarLoanDetail,
-					CommonUtils.IgnorableCopy.CORPORATE);
+			String[] corporate = new String[CommonUtils.IgnorableCopy.CORPORATE.length + 1];
+			corporate[CommonUtils.IgnorableCopy.CORPORATE.length] = CommonUtils.IgnorableCopy.ID; 
+			BeanUtils.copyProperties(finalCarLoanDetailRequest, finalCarLoanDetail,corporate);
 			finalCarLoanDetail = finalCarLoanDetailRepository.save(finalCarLoanDetail);
 			return true;
 		} catch (Exception e) {

@@ -11,6 +11,7 @@ import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.EstablistmentYearClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
@@ -46,7 +47,7 @@ public class CommonDocumentUtils {
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
-	
+
 	public static String getState(Long stateId, Environment environment) throws Exception {
 		StateListByStateListIdClient stateClient = new StateListByStateListIdClient(
 				environment.getRequiredProperty(CommonUtils.ONE_FORM));
@@ -57,7 +58,7 @@ public class CommonDocumentUtils {
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
-	
+
 	public static String getCountry(Long countryId, Environment environment) throws Exception {
 		CountryByCountryListIdClient countryClient = new CountryByCountryListIdClient(
 				environment.getRequiredProperty(CommonUtils.ONE_FORM));
@@ -68,16 +69,21 @@ public class CommonDocumentUtils {
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
-	
-	public static Integer getYear(Long yearId,Environment environment) throws Exception{
-		EstablistmentYearClient client = new EstablistmentYearClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+
+	public static Integer getYear(Long yearId, Environment environment) throws Exception {
+		EstablistmentYearClient client = new EstablistmentYearClient(
+				environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		OneFormResponse response = client.send(yearId);
-		if(!CommonUtils.isListNullOrEmpty(response.getListData())){
-			MasterResponse data = MultipleJSONObjectHelper
-					.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+		if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
+			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 			return data != null ? Integer.valueOf(data.getValue()) : 0;
 		}
 		return 0;
+	}
+
+	public static String getCurrency(Integer currencyId) {
+		return Currency.getById(currencyId).getValue();
 	}
 
 }
