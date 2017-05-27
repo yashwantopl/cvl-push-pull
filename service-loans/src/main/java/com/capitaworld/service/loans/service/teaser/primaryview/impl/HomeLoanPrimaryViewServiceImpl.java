@@ -18,12 +18,14 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -60,7 +62,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 	@Autowired
 	private PrimaryHomeLoanService primaryHomeLoanService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(PersonalLoansViewServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(HomeLoanPrimaryViewServiceImpl.class);
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
@@ -82,13 +84,17 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 	
 	protected static final String DMS_URL = "dmsURL";
 	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
 	@Override
-	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId, Long userId) throws Exception {
+	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId) throws Exception {
 		HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = new HomeLoanPrimaryViewResponse();
 		HomeLoanResponse homeLoanResponse = new HomeLoanResponse();
 		//applicant
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getOne(applicantId);
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId, applicantId);
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {
 				RetailProfileViewResponse profileViewHLResponse = new RetailProfileViewResponse();
 				homeLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
@@ -353,63 +359,64 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		}
 
 		//set up loan specific details
-		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanRepository.getByApplicationAndUserId(applicantId, userId);
-		homeLoanResponse.setPropertyType(PropertySubType.getById(loanDetail.getPropertyType()).getValue());
-		if(loanDetail.getPropertyType() == 3){
-			homeLoanResponse.setPropertyUsedType(PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue());
-			if(loanDetail.getPropertyUsedType() == 3){
-				homeLoanResponse.setConstructionCompleted(Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue());
-				if(!loanDetail.getIsConstructionCompleted()){
-					homeLoanResponse.setConstructionCompletionTimeInMonth(loanDetail.getConstructionCompletionTimeInMonth().toString());
-					homeLoanResponse.setConstructionCompletionTimeInYear(loanDetail.getConstructionCompletionTimeInYear().toString());
+		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanRepository.getByApplicationAndUserId(applicantId,applicationMaster.getUserId());
+		
+		if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
+			homeLoanResponse.setPropertyType( PropertySubType.getById(loanDetail.getPropertyType()).getValue());
+			if(loanDetail.getPropertyType() == 3){
+				homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "NA");
+				if(loanDetail.getPropertyUsedType() == 3){
+					homeLoanResponse.setConstructionCompleted(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsConstructionCompleted()) ? Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue() : "NA");
+					if(!loanDetail.getIsConstructionCompleted()){
+						homeLoanResponse.setConstructionCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "NA");
+						homeLoanResponse.setConstructionCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "NA");
+					}
 				}
-			}
-			homeLoanResponse.setProjectName(loanDetail.getProjectName());
-			homeLoanResponse.setProjectCity(loanDetail.getProjectCity());
-			homeLoanResponse.setArea(loanDetail.getArea().toString());
-			homeLoanResponse.setPropertyPrice(loanDetail.getPropertyPrice().toString());
-		}else if(loanDetail.getPropertyType() == 4){
-			homeLoanResponse.setBunglowCost(loanDetail.getBunglowCost().toString());
-			homeLoanResponse.setConstructionCost(loanDetail.getConstructionCost().toString());
-			homeLoanResponse.setCompletionTimeInMonth(loanDetail.getCompletionTimeInMonth().toString());
-			homeLoanResponse.setCompletionTimeInYear(loanDetail.getCompletionTimeInYear().toString());
-		}else if(loanDetail.getPropertyType() == 5){
-			homeLoanResponse.setRenovationType(RepairType.getById(loanDetail.getRenovationType()).getValue());
-			if(loanDetail.getRenovationType() == 8){
-				homeLoanResponse.setRenovationTypeOther(loanDetail.getOtherRenovationType());
-			}
-			homeLoanResponse.setRenovationCost(loanDetail.getRenovationCost().toString());
-			homeLoanResponse.setRenovationCompletionTimeInMonth(loanDetail.getRenovationCompletionTimeInMonth().toString());
-			homeLoanResponse.setRenovationCompletionTimeInYear(loanDetail.getRenovationCompletionTimeInYear().toString());	
-			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken())){
-				if(loanDetail.getIsLoanTaken()){
-					homeLoanResponse.setLoanTaken(Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue());
-					homeLoanResponse.setDateOfLoanTaken(CommonUtils.getStringDateFromDate(loanDetail.getDateOfLoanTaken()));	
-				}else{
-					homeLoanResponse.setLoanTaken(Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue());
+				homeLoanResponse.setProjectName(loanDetail.getProjectName());
+				homeLoanResponse.setProjectCity(loanDetail.getProjectCity());
+				homeLoanResponse.setArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getArea()) ? loanDetail.getArea().toString() : "NA");
+				homeLoanResponse.setPropertyPrice(loanDetail.getPropertyPrice().toString());
+			}else if(loanDetail.getPropertyType() == 4){
+				homeLoanResponse.setBunglowCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBunglowCost()) ? loanDetail.getBunglowCost().toString() : "NA");
+				homeLoanResponse.setConstructionCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCost()) ? loanDetail.getConstructionCost().toString() : "NA");
+				homeLoanResponse.setCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInMonth()) ? loanDetail.getCompletionTimeInMonth().toString() : "NA");
+				homeLoanResponse.setCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInYear()) ? loanDetail.getCompletionTimeInYear().toString() : "NA");
+			}else if(loanDetail.getPropertyType() == 5){
+				homeLoanResponse.setRenovationType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) ? RepairType.getById(loanDetail.getRenovationType()).getValue() : "NA");
+				if(loanDetail.getRenovationType() == 8){
+					homeLoanResponse.setRenovationTypeOther(loanDetail.getOtherRenovationType());
+				}
+				homeLoanResponse.setRenovationCost(loanDetail.getRenovationCost().toString());
+				homeLoanResponse.setRenovationCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInMonth()) ? loanDetail.getRenovationCompletionTimeInMonth().toString() : "NA");
+				homeLoanResponse.setRenovationCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInYear()) ? loanDetail.getRenovationCompletionTimeInYear().toString() : "NA");	
+				if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken())){
+					if(loanDetail.getIsLoanTaken()){
+						homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
+						homeLoanResponse.setDateOfLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDateOfLoanTaken()) ? CommonUtils.getStringDateFromDate(loanDetail.getDateOfLoanTaken()) : "NA");	
+					}else{
+						homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
+					}	
 				}	
-			}	
-					
-		}else if(loanDetail.getPropertyType() == 6){
-			homeLoanResponse.setLandPlotCost(loanDetail.getLandPlotCost().toString());
-			homeLoanResponse.setLandArea(loanDetail.getLandArea().toString());
+						
+			}else if(loanDetail.getPropertyType() == 6){
+				homeLoanResponse.setLandPlotCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandPlotCost()) ? loanDetail.getLandPlotCost().toString() : "NA");
+				homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
+			}
 		}
-		homeLoanResponse.setDownPayment(loanDetail.getDownPayment().toString());
-		homeLoanResponse.setAmount(loanDetail.getAmount().toString());
-		homeLoanResponse.setTenure(loanDetail.getTenure().toString());
+		
+		homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ? loanDetail.getDownPayment().toString() : "NA");
+		homeLoanResponse.setAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+		homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
 		
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
 		
 		//setting co-application details
-		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, userId);
+		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId());
 		homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
 
 		//setting guarantor details
-		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId);
+		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId());
 		homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
-
-		//setting Home Loan Specific Data
-		//retailPrimaryViewResponse.setPersonalLoanResponse(homeLoanPrimaryViewResponse);
 
 		return homeLoanPrimaryViewResponse;
 	}
