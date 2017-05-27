@@ -1,5 +1,17 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
@@ -19,29 +31,30 @@ import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+
 import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.RelationshipType;
+import com.capitaworld.service.oneform.enums.Title;
 
 @Service
 @Transactional
@@ -56,10 +69,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-
-	@Autowired
-	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
-
 
 	@Autowired
 	Environment environment;
@@ -91,9 +100,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getId());
 			if (coDetails != null) {
-				// throw new NullPointerException("CoApplicant Id Record not
-				// exists in DB : " + applicantRequest.getId()
-				// + " Applicant Id ==>" + applicationId);
 				if (applicantRequest.getIsActive() != null && !applicantRequest.getIsActive().booleanValue()) {
 					coApplicantDetailRepository.inactiveCoApplicant(applicationId, applicantRequest.getId());
 					return true;
@@ -200,11 +206,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

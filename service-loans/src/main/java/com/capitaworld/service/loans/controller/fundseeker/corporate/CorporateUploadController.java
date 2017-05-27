@@ -198,6 +198,7 @@ public class CorporateUploadController {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/excel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadExcel(@RequestPart("uploadRequest") String documentRequestString,
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
