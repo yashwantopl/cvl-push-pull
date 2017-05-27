@@ -13,7 +13,6 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -33,7 +32,17 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		try {
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("applicationId", applicantId);
+			
+			if(CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)){
+				jsonObj.put("applicationId", applicantId);				
+			}else if(CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)){
+				//here we have set same applicant variable because when requested user is co-applicant then it "coApplicantId" will be considered and same as for "guarantors".
+				jsonObj.put("coApplicantId", applicantId);				
+			}else if(CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)){
+				//here we have set same applicant variable because when requested user is co-applicant then it "coApplicantId" will be considered and same as for "guarantors".
+				jsonObj.put("guarantorId", applicantId);				
+			}
+			
 			jsonObj.put("productDocumentMappingId", mappingId);
 			jsonObj.put("userType", userType);
 			jsonObj.put("originalFileName", fileName);
@@ -51,7 +60,15 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	public DocumentResponse getProfilePic(Long applicantId, Long mappingId,String userType) throws Exception {
 		try {
 			DocumentRequest docRequest = new DocumentRequest();
-			docRequest.setApplicationId(applicantId);
+			if(CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)){
+				docRequest.setApplicationId(applicantId);				
+			}else if(CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)){
+				//here we have set same applicant variable because when requested user is co-applicant then it "coApplicantId" will be considered and same as for "guarantors".
+				docRequest.setCoApplicantId(applicantId);				
+			}else if(CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)){
+				//here we have set same applicant variable because when requested user is co-applicant then it "coApplicantId" will be considered and same as for "guarantors".
+				docRequest.setGuarantorId(applicantId);				
+			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));

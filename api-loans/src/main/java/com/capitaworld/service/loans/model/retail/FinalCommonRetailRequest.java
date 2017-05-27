@@ -12,6 +12,7 @@ public class FinalCommonRetailRequest {
 	// Primary Field starts
 	private Integer statusId;
 	private Integer occupationId;
+	private String currencyValue;
 	// Primary Field Ends
 
 	private Integer castId;
@@ -522,4 +523,14 @@ public class FinalCommonRetailRequest {
 	public void setOccupationId(Integer occupationId) {
 		this.occupationId = occupationId;
 	}
+
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
+	}
+
+	
 }

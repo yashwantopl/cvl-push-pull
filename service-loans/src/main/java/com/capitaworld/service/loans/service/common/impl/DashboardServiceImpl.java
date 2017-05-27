@@ -52,7 +52,7 @@ public class DashboardServiceImpl implements DashboardService {
 					.getByApplicationAndUserId(userId, applicationId);
 			
 			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
-				return null;
+				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(corporateApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
@@ -86,7 +86,7 @@ public class DashboardServiceImpl implements DashboardService {
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 					.getByApplicationAndUserId(userId, applicationId);
 			if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
-				return null;
+				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(retailApplicantDetail.getApplicationId().getId());
