@@ -150,8 +150,10 @@ public class ProductMasterController {
 			else
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			 System.out.println(loansResponse);
+			 loansResponse.setData(response[0]);
 			}
-			loansResponse.setData(response[0]);
+			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -189,8 +191,10 @@ public class ProductMasterController {
 			else
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			 loansResponse.setData(response[1]);
+			 System.out.println(loansResponse);
 			}
-			loansResponse.setData(response[1]);
+			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
