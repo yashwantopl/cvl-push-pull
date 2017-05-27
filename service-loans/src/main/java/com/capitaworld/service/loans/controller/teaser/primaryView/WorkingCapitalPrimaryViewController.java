@@ -32,7 +32,7 @@ public class WorkingCapitalPrimaryViewController {
     public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+        Long userId = 1759l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
             logger.warn("Invalid data or Requested data not found.", toApplicationId);
             return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
