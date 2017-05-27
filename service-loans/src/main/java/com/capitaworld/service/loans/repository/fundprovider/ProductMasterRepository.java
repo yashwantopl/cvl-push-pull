@@ -24,5 +24,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
-	
+
+	@Query("select userId, fpName from ProductMaster pm where pm.id=:prdMappingId and pm.isActive = true")
+	public Object[] getUserDetailsByMappingId(@Param("prdMappingId") Long prdMappingId);
 }

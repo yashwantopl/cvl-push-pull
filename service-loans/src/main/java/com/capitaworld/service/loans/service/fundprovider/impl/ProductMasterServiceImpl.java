@@ -139,6 +139,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		return null;
 	}
+	
+	@Override
+	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
+		// TODO Auto-generated method stub
+		Object[] values = productMasterRepository.getUserDetailsByMappingId(fpMappingId);
+		
+		return values;
+	}
 
 	@Override
 	public List<ProductDetailsForSp> getProductDetailsByUserIdList(Long userId) {
