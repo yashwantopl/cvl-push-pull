@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.controller.teaser.primaryView;
+package com.capitaworld.service.loans.controller.teaser.finalview;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,22 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
-@RequestMapping("/home_loan_primary_view")
-public class HomeLoanPrimaryViewController {
+@RequestMapping("/home_loan_final_view")
+public class HomeLoanFinalViewController {
+private static final Logger logger = LoggerFactory.getLogger(LoanApplicationController.class);
 	
 	@Autowired
 	private HomeLoanPrimaryViewService homeLoanPrimaryViewService;
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeLoanPrimaryViewController.class);
-	
 	@GetMapping(value = "/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
-        LoansResponse loansResponse = new LoansResponse();
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
 
@@ -43,8 +41,8 @@ public class HomeLoanPrimaryViewController {
         }else {
         	HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = null;
 			try {
-				homeLoanPrimaryViewResponse = homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(toApplicationId);
-				 loansResponse.setData(homeLoanPrimaryViewResponse);
+				/*homeLoanPrimaryViewResponse = homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(toApplicationId,userId);
+				 loansResponse.setData(homeLoanPrimaryViewResponse);*/
 		            loansResponse.setMessage("Home Loan Primary Details");
 		            loansResponse.setStatus(HttpStatus.OK.value());
 		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -55,5 +53,5 @@ public class HomeLoanPrimaryViewController {
 			}
            
         }
-    }
+	}
 }
