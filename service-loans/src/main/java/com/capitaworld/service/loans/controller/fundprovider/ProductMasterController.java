@@ -124,8 +124,7 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/getUserNameByProductId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUserNameByProductId(@RequestBody Long productId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getUserNameByProductId(@RequestBody Long productId) {
 		// request must not be null
 		try {
 
@@ -134,13 +133,7 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("UserId Require to get user name ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
-			}
+			
 			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
@@ -165,8 +158,7 @@ public class ProductMasterController {
 	}
 	
 	@RequestMapping(value = "/getUserIdByProductId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUserIdByProductId(@RequestBody Long productId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getUserIdByProductId(@RequestBody Long productId) {
 		// request must not be null
 		try {
 
@@ -175,13 +167,7 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (userId == null) {
-				logger.warn("UserId Require to get user name ==>" + userId);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
-			}
+			
 			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
