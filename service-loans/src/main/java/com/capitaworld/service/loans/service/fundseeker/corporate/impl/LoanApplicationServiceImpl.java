@@ -304,7 +304,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			logger.error("Error while Locking Final Information");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
-		}
+			
+		} 
 	}
 
 	@Override
