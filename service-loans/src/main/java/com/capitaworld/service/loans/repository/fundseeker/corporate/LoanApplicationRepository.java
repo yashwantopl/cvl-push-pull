@@ -86,7 +86,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public Integer getProductIdByApplicationId(@Param("id") Long applicationId, @Param("userId") Long userId);
 	
-	@Query("select lm.id,lm.name from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true")
+	@Query("select lm.userId,lm.name from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true")
 	public Object[] getUserDetailsByApplicationId(@Param("applicationId") Long applicationId);
 	
 	
