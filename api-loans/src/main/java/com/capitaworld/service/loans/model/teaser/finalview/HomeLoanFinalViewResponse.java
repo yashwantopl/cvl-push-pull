@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 
@@ -35,8 +36,7 @@ public class HomeLoanFinalViewResponse implements Serializable{
 	private String sellerCountry;
 	private String propertyUse;
 	private String rentalIncome;
-	
-	
+
 	public String getPropPremiseNo() {
 		return propPremiseNo;
 	}
