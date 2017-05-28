@@ -25,7 +25,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @Transactional
 public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeLoanFinalViewServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(CarLoanFinalViewServiceImpl.class);
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;

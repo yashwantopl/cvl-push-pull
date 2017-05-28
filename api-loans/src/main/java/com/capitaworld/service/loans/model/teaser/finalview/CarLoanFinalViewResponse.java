@@ -21,16 +21,14 @@ public class CarLoanFinalViewResponse implements Serializable{
 	private String otherCost;
 	private String totalCost;
 	
-	private CarLoanPrimaryViewResponse CarLoanPrimaryViewResponse;
-
+	private CarLoanPrimaryViewResponse carLoanPrimaryViewResponse;
 	private RetailFinalViewResponse finalViewResponse;
 	
-	
 	public CarLoanPrimaryViewResponse getCarLoanPrimaryViewResponse() {
-		return CarLoanPrimaryViewResponse;
+		return carLoanPrimaryViewResponse;
 	}
 	public void setCarLoanPrimaryViewResponse(CarLoanPrimaryViewResponse carLoanPrimaryViewResponse) {
-		CarLoanPrimaryViewResponse = carLoanPrimaryViewResponse;
+		this.carLoanPrimaryViewResponse = carLoanPrimaryViewResponse;
 	}
 	public RetailFinalViewResponse getFinalViewResponse() {
 		return finalViewResponse;

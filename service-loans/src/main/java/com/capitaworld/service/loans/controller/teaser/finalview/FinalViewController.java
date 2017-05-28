@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.CarLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoandsPrimaryViewResponse;
 import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -31,6 +34,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	
 	@Autowired
 	private CarLoanFinalViewService clFinalViewService;
+	
+	@Autowired
+	private PersonalLoanFinalViewService plFinalViewService;
 
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
@@ -108,7 +114,23 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
-        	return null;     
+        	PersonalLoanFinalViewResponse plFinalViewResponse = null;
+			try {
+				plFinalViewResponse = plFinalViewService.getPersonalLoanFinalViewDetails(toApplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(plFinalViewResponse)){
+					loansResponse.setData(plFinalViewResponse);
+		            loansResponse.setMessage("Personal Loan Final Details");
+		            loansResponse.setStatus(HttpStatus.OK.value());	
+				}else{
+		            loansResponse.setMessage("No data found for Personal Loan final view");
+		            loansResponse.setStatus(HttpStatus.OK.value());
+				}
+		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}     
         }
 	}
 }
