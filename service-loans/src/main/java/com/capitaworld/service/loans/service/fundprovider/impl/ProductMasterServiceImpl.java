@@ -24,7 +24,13 @@ import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -40,6 +46,24 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
+	
+	@Autowired
+	private TermLoanParameterRepository termLoanParameterRepository;
+	
+	@Autowired
+	private HomeLoanParameterRepository homeLoanParameterRepository;
+	
+	@Autowired
+	private CarLoanParameterRepository carLoanParameterRepository;
+	
+	@Autowired
+	private PersonalLoanParameterRepository personalLoanParameterRepository;
+	
+	@Autowired 
+	private LasParameterRepository lasParameterRepository;
+	
+	@Autowired 
+	private LapParameterRepository lapParameterRepository;
 
 	@Override
 	public List<CommonResponse> saveOrUpdate(MultipleFpPruductRequest productMasters) {
@@ -48,6 +72,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		productMasterRepository.inActive((CommonUtils.isObjectNullOrEmpty(productMasters.getClientId())
 				? productMasters.getUserId() : productMasters.getClientId()));
 		WorkingCapitalParameter capitalParameter = null;
+		TermLoanParameter  termLoanParameter=null;
+		HomeLoanParameter homeLoanParameter=null;
+		CarLoanParameter carLoanParameter=null;
+		PersonalLoanParameter personalLoanParameter=null;
+		LasParameter lasParameter=null;
+		LapParameter lapParameter=null;
 
 		List<CommonResponse> commonResponses = new ArrayList<CommonResponse>();
 		try {
@@ -68,21 +98,45 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case TERM_LOAN:
 					productMaster = new TermLoanParameter();
+					if (productMasterRequest.getId() != null)
+						termLoanParameter = termLoanParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(termLoanParameter, productMaster);
 					break;
 				case HOME_LOAN:
 					productMaster = new HomeLoanParameter();
+					if (productMasterRequest.getId() != null)
+						homeLoanParameter = homeLoanParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(homeLoanParameter, productMaster);
 					break;
 				case CAR_LOAN:
 					productMaster = new CarLoanParameter();
+					if (productMasterRequest.getId() != null)
+						carLoanParameter = carLoanParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(carLoanParameter, productMaster);
 					break;
 				case PERSONAL_LOAN:
 					productMaster = new PersonalLoanParameter();
+					if (productMasterRequest.getId() != null)
+						personalLoanParameter = personalLoanParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(personalLoanParameter, productMaster);
 					break;
 				case LAP_LOAN:
 					productMaster = new LapParameter();
+					if (productMasterRequest.getId() != null)
+						lapParameter = lapParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(lapParameter, productMaster);
 					break;
 				case LAS_LOAN:
 					productMaster = new LasParameter();
+					if (productMasterRequest.getId() != null)
+						lasParameter = lasParameterRepository.findOne(productMasterRequest.getId());
+					if (capitalParameter != null)
+						BeanUtils.copyProperties(lasParameter, productMaster);
 					break;
 
 				default:

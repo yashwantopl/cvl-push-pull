@@ -15,6 +15,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWork
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.*;
 import com.capitaworld.service.oneform.enums.*;
@@ -92,7 +93,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
     protected static final String DMS_URL = "dmsURL";
     protected static final String ONE_FORM_URL = "oneForm";
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId,Long userId) {
@@ -104,6 +105,22 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
             workingCapitalPrimaryViewResponse.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
             workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+
+            //set Establishment year
+            EstablistmentYearClient establistmentYearClient = new EstablistmentYearClient(environment.getProperty(ONE_FORM_URL));
+            OneFormResponse establishmentYearResponse = null;
+            try {
+                establishmentYearResponse = establistmentYearClient.send(Long.valueOf(corporateApplicantDetail.getEstablishmentYear()));
+                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
+                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                    workingCapitalPrimaryViewResponse.setEstablishmentYear(masterResponse.getValue());
+                } else {
+                    workingCapitalPrimaryViewResponse.setEstablishmentYear("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             //set city
             List<Long> cityList = new ArrayList<>();
@@ -124,7 +141,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
             //set state
             List<Long> stateList = new ArrayList<>();
-            stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+            stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
             StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
                 OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
@@ -141,7 +158,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
             //set country
             List<Long> countryList = new ArrayList<>();
-            countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+            countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
             CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
                 OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
@@ -174,11 +191,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 e.printStackTrace();
             }
         }
+
         List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
         List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
         List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
-
-
         IndustrySectorSubSectorTeaser industrySectorSubSectorTeaser = new IndustrySectorSubSectorTeaser (environment.getProperty(ONE_FORM_URL));
         IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest=new IndustrySectorSubSectorTeaserRequest();
         industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
@@ -197,9 +213,9 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             //set value to response
             BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, workingCapitalPrimaryViewResponse);
             workingCapitalPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-            workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getName());
-            workingCapitalPrimaryViewResponse.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
-            workingCapitalPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+            workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getName() != null ? primaryWorkingCapitalLoanDetail.getName() : null);
+            workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
+            workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
         }
         //get value of proposed product and set in response
         try {
@@ -230,7 +246,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
                 creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
                 creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
-	
                 RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
                 OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()));
                 MasterResponse masterResponse= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)oneFormResponse.getData(),MasterResponse.class);
@@ -239,7 +254,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 }else{
                     workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
                 }
-
                 creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
                 creditRatingOrganizationDetailResponse.setRatingAgency(RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
                 creditRatingOrganizationDetailResponse.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
@@ -249,13 +263,48 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         } catch (Exception e) {
             logger.error("Problem to get Data of Credit Rating {}", e);
         }
+        // set short term rating option
+        try {
+            List<String> shortTermValueList = new ArrayList<String>();
+            List<Integer> shortTermIdList = creditRatingOrganizationDetailsService.getShortTermCreditRatingForTeaser(toApplicationId, userId);
+            for (Integer shortTermId : shortTermIdList) {
+                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
+                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+                if (masterResponse != null) {
+                    shortTermValueList.add(masterResponse.getValue());
+                } else {
+                    shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
+                }
+                workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        // set long term rating option
+        try {
+            List<String> longTermValueList = new ArrayList<String>();
+            List<Integer> longTermIdList = creditRatingOrganizationDetailsService.getLongTermCreditRatingForTeaser(toApplicationId, userId);
+            for (Integer shortTermId : longTermIdList) {
+                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
+                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+                if (masterResponse != null) {
+                    longTermValueList.add(masterResponse.getValue());
+                } else {
+                    longTermValueList.add(CommonUtils.NOT_APPLICABLE);
+                }
+            }
+            workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //get value of Ownership Details and set in response
         try {
             List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(toApplicationId, userId);
             List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-
             for (OwnershipDetailRequest ownershipDetailRequest:ownershipDetailRequestsList){
                 OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
                 ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
@@ -264,7 +313,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 ownershipDetailResponseList.add(ownershipDetailResponse);
             }
             workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
-
         } catch (Exception e) {
             logger.error("Problem to get Data of Ownership Details {}", e);
         }
@@ -273,7 +321,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         try {
             List<PromotorBackgroundDetailRequest>  promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
             List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-
             for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest:promotorBackgroundDetailRequestList){
                 PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
                 promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
@@ -316,9 +363,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         try {
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
             List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-
             for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestList){
-
                 FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
                 financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
                 financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
