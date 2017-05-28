@@ -96,7 +96,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
         }
 	}
 	
-	/*@GetMapping(value = "/PersonalLoan/{toApplicationId}")
+	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewPersonalLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
@@ -108,23 +108,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
-        	CarLoanFinalViewResponse clFinalViewResponse = null;
-			try {
-				clFinalViewResponse = clFinalViewService.getHomeLoanFinalViewDetails(toApplicationId);
-				if(!CommonUtils.isObjectNullOrEmpty(clFinalViewResponse)){
-					loansResponse.setData(clFinalViewResponse);
-		            loansResponse.setMessage("Car Loan Final Details");
-		            loansResponse.setStatus(HttpStatus.OK.value());	
-				}else{
-		            loansResponse.setMessage("No data found for Car Loan final view");
-		            loansResponse.setStatus(HttpStatus.OK.value());
-				}
-		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} catch (Exception e) {
-		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
-		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			}      
+        	return null;     
         }
-	}*/
+	}
 }
