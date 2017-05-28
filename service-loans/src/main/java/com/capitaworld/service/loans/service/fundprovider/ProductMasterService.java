@@ -20,7 +20,7 @@ public interface ProductMasterService {
 	
 	public List<ProductDetailsForSp> getProductDetailsByUserIdList(Long userId);
 
-	public ProductMaster getUserDetailsByPrductId(Long fpMappingId);
+	public Object[] getUserDetailsByPrductId(Long fpMappingId);
 
 	public ProductDetailsResponse getProductDetailsResponse(Long userId);
 

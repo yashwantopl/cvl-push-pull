@@ -135,7 +135,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			
-			ProductMaster response = productMasterService.getUserDetailsByPrductId(productId);
+			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
 			{
@@ -145,7 +145,7 @@ public class ProductMasterController {
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			 System.out.println(loansResponse);
-			 loansResponse.setData(response.getFpName());
+			 loansResponse.setData(response[1]);
 			}
 			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -169,7 +169,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			
-			ProductMaster response = productMasterService.getUserDetailsByPrductId(productId);
+			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if(response==null)
 			{
@@ -179,7 +179,7 @@ public class ProductMasterController {
 			{
 			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			 System.out.println(loansResponse);
-			 loansResponse.setData(response.getUserId());
+			 loansResponse.setData(response[0]);
 			}
 			
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
