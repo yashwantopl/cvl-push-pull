@@ -100,42 +100,42 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMaster = new TermLoanParameter();
 					if (productMasterRequest.getId() != null)
 						termLoanParameter = termLoanParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (termLoanParameter != null)
 						BeanUtils.copyProperties(termLoanParameter, productMaster);
 					break;
 				case HOME_LOAN:
 					productMaster = new HomeLoanParameter();
 					if (productMasterRequest.getId() != null)
 						homeLoanParameter = homeLoanParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (homeLoanParameter != null)
 						BeanUtils.copyProperties(homeLoanParameter, productMaster);
 					break;
 				case CAR_LOAN:
 					productMaster = new CarLoanParameter();
 					if (productMasterRequest.getId() != null)
 						carLoanParameter = carLoanParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (carLoanParameter != null)
 						BeanUtils.copyProperties(carLoanParameter, productMaster);
 					break;
 				case PERSONAL_LOAN:
 					productMaster = new PersonalLoanParameter();
 					if (productMasterRequest.getId() != null)
 						personalLoanParameter = personalLoanParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (personalLoanParameter != null)
 						BeanUtils.copyProperties(personalLoanParameter, productMaster);
 					break;
 				case LAP_LOAN:
 					productMaster = new LapParameter();
 					if (productMasterRequest.getId() != null)
 						lapParameter = lapParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (lapParameter != null)
 						BeanUtils.copyProperties(lapParameter, productMaster);
 					break;
 				case LAS_LOAN:
 					productMaster = new LasParameter();
 					if (productMasterRequest.getId() != null)
 						lasParameter = lasParameterRepository.findOne(productMasterRequest.getId());
-					if (capitalParameter != null)
+					if (lasParameter != null)
 						BeanUtils.copyProperties(lasParameter, productMaster);
 					break;
 
