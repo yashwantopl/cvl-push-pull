@@ -16,6 +16,7 @@ public class RetailProfileViewResponse {
 	private String pan;
 	private String maritalStatus;
 	private String natureOfOccupation;
+	private Integer natureOfOccupationId;
 	private String occupation;
 	private String monthlyIncome;
 	private String companyName;
@@ -91,6 +92,14 @@ public class RetailProfileViewResponse {
 
 	public void setNatureOfOccupation(String natureOfOccupation) {
 		this.natureOfOccupation = natureOfOccupation;
+	}
+
+	public Integer getNatureOfOccupationId() {
+		return natureOfOccupationId;
+	}
+
+	public void setNatureOfOccupationId(Integer natureOfOccupationId) {
+		this.natureOfOccupationId = natureOfOccupationId;
 	}
 
 	public String getMonthlyIncome() {
