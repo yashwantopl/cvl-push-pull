@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.CommonUtil;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.model.Address;
@@ -32,6 +33,7 @@ import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommo
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
@@ -100,6 +102,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceService;
+	
+	@Autowired
+	private DocumentManagementService documentManagementService;
 	
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
@@ -476,13 +481,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setNameOfPoaHolder(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPoaHolderName()) ?  guarantorDetail.getPoaHolderName() : "NA");
 						}
 					}
-					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService.getExistingLoanDetailList(applicantId,CommonUtils.ApplicantType.COAPPLICANT);
+					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService.getExistingLoanDetailList(applicantId,CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
 					
-					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 					
-					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for(CreditCardsDetailRequest cardsDetailRequest:creditCardsDetailRequestList){
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
@@ -494,10 +499,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
 					
-					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 					
-					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
 					for(OtherCurrentAssetDetailRequest assetDetailRequest:otherCurrentAssetDetailRequestList){
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
@@ -508,7 +513,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					}
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
 					
-					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					List<OtherIncomeDetailResponse> incomeDetailResponseList = new ArrayList<OtherIncomeDetailResponse>();
 					for(OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList){
 						OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
@@ -520,8 +525,18 @@ public class GuarantorServiceImpl implements GuarantorService {
 					}
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
 										
-					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
+					
+					finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+					finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+					finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+					finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+					finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
+					finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+					finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+					finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+					
 					finalCommonresponseList.add(finalViewResponse);
 				}
 

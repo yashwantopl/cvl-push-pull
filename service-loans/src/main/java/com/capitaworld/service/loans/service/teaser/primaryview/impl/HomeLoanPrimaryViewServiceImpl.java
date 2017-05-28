@@ -99,7 +99,8 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				RetailProfileViewResponse profileViewHLResponse = new RetailProfileViewResponse();
 				homeLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
 				if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getOccupationId())){
-                    if (applicantDetail.getOccupationId() == 2){
+					profileViewHLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
+					if (applicantDetail.getOccupationId() == 2){
                     	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
                         	profileViewHLResponse.setCompanyName(applicantDetail.getCompanyName());
@@ -362,7 +363,8 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanRepository.getByApplicationAndUserId(applicantId,applicationMaster.getUserId());
 		
 		if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
-			homeLoanResponse.setPropertyType( PropertySubType.getById(loanDetail.getPropertyType()).getValue());
+			homeLoanResponse.setPropertyType(PropertySubType.getById(loanDetail.getPropertyType()).getValue());
+			homeLoanResponse.setPropertyUsedTypeId(loanDetail.getPropertyType().toString());
 			if(loanDetail.getPropertyType() == 3){
 				homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "NA");
 				if(loanDetail.getPropertyUsedType() == 3){

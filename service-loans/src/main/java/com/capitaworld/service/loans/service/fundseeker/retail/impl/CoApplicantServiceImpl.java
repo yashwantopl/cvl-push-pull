@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.CommonUtil;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -32,6 +33,7 @@ import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommo
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
@@ -100,6 +102,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceService;
+	
+	@Autowired
+	private DocumentManagementService documentManagementService;
 
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
@@ -524,8 +529,21 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 										
 					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
+		
+					//for uploaded documents
+					finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+					finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+					finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+					finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+					finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
+					finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+					finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+					finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+					
 					finalCommonresponseList.add(finalViewResponse);
 				}
+				
+				
 
 				return finalCommonresponseList;
 			}
