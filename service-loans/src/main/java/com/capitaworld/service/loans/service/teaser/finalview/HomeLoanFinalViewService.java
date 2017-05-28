@@ -4,5 +4,5 @@ import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewRes
 
 public interface HomeLoanFinalViewService {
 
-	public HomeLoanFinalViewResponse getHomeLoanPrimaryViewDetails(Long applicantId, Long userId) throws Exception;
+	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws Exception;
 }

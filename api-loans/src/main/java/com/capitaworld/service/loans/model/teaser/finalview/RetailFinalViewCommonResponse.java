@@ -82,6 +82,175 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private String repaymentCycle;
 	private String interestRateOption;
 	
+	private List<Object> applicant_BankACStatments;
+	private List<Object> applicant_SalaraySlip;
+	private List<Object> applicant_ItReturn;
+	private List<Object> applicant_BalanceSheet;
+	private List<Object> applicant_AddressProof;
+	private List<Object> applicant_IncomeProof;
+	private List<Object> applicant_CropCultivation;
+	private List<Object> applicant_AlliedActivities;
+	private List<Object> coApplicant_BankACStatments;
+	private List<Object> coApplicant_SalaraySlip;
+	private List<Object> coApplicant_ItReturn;
+	private List<Object> coApplicant_BalanceSheet;
+	private List<Object> coApplicant_AddressProof;
+	private List<Object> coApplicant_IncomeProof;
+	private List<Object> coApplicant_CropCultivation;
+	private List<Object> coApplicant_AlliedActivities;
+	private List<Object> guarantor_BankACStatments;
+	private List<Object> guarantor_SalaraySlip;
+	private List<Object> guarantor_ItReturn;
+	private List<Object> guarantor_BalanceSheet;
+	private List<Object> guarantor_AddressProof;
+	private List<Object> guarantor_IncomeProof;
+	private List<Object> guarantor_CropCultivation;
+	private List<Object> guarantor_AlliedActivities;
+	
+	public List<Object> getApplicant_BankACStatments() {
+		return applicant_BankACStatments;
+	}
+	public void setApplicant_BankACStatments(List<Object> applicant_BankACStatments) {
+		this.applicant_BankACStatments = applicant_BankACStatments;
+	}
+	public List<Object> getApplicant_SalaraySlip() {
+		return applicant_SalaraySlip;
+	}
+	public void setApplicant_SalaraySlip(List<Object> applicant_SalaraySlip) {
+		this.applicant_SalaraySlip = applicant_SalaraySlip;
+	}
+	public List<Object> getApplicant_ItReturn() {
+		return applicant_ItReturn;
+	}
+	public void setApplicant_ItReturn(List<Object> applicant_ItReturn) {
+		this.applicant_ItReturn = applicant_ItReturn;
+	}
+	public List<Object> getApplicant_BalanceSheet() {
+		return applicant_BalanceSheet;
+	}
+	public void setApplicant_BalanceSheet(List<Object> applicant_BalanceSheet) {
+		this.applicant_BalanceSheet = applicant_BalanceSheet;
+	}
+	public List<Object> getApplicant_AddressProof() {
+		return applicant_AddressProof;
+	}
+	public void setApplicant_AddressProof(List<Object> applicant_AddressProof) {
+		this.applicant_AddressProof = applicant_AddressProof;
+	}
+	public List<Object> getApplicant_IncomeProof() {
+		return applicant_IncomeProof;
+	}
+	public void setApplicant_IncomeProof(List<Object> applicant_IncomeProof) {
+		this.applicant_IncomeProof = applicant_IncomeProof;
+	}
+	public List<Object> getApplicant_CropCultivation() {
+		return applicant_CropCultivation;
+	}
+	public void setApplicant_CropCultivation(List<Object> applicant_CropCultivation) {
+		this.applicant_CropCultivation = applicant_CropCultivation;
+	}
+	public List<Object> getApplicant_AlliedActivities() {
+		return applicant_AlliedActivities;
+	}
+	public void setApplicant_AlliedActivities(List<Object> applicant_AlliedActivities) {
+		this.applicant_AlliedActivities = applicant_AlliedActivities;
+	}
+	public List<Object> getCoApplicant_BankACStatments() {
+		return coApplicant_BankACStatments;
+	}
+	public void setCoApplicant_BankACStatments(List<Object> coApplicant_BankACStatments) {
+		this.coApplicant_BankACStatments = coApplicant_BankACStatments;
+	}
+	public List<Object> getCoApplicant_SalaraySlip() {
+		return coApplicant_SalaraySlip;
+	}
+	public void setCoApplicant_SalaraySlip(List<Object> coApplicant_SalaraySlip) {
+		this.coApplicant_SalaraySlip = coApplicant_SalaraySlip;
+	}
+	public List<Object> getCoApplicant_ItReturn() {
+		return coApplicant_ItReturn;
+	}
+	public void setCoApplicant_ItReturn(List<Object> coApplicant_ItReturn) {
+		this.coApplicant_ItReturn = coApplicant_ItReturn;
+	}
+	public List<Object> getCoApplicant_BalanceSheet() {
+		return coApplicant_BalanceSheet;
+	}
+	public void setCoApplicant_BalanceSheet(List<Object> coApplicant_BalanceSheet) {
+		this.coApplicant_BalanceSheet = coApplicant_BalanceSheet;
+	}
+	public List<Object> getCoApplicant_AddressProof() {
+		return coApplicant_AddressProof;
+	}
+	public void setCoApplicant_AddressProof(List<Object> coApplicant_AddressProof) {
+		this.coApplicant_AddressProof = coApplicant_AddressProof;
+	}
+	public List<Object> getCoApplicant_IncomeProof() {
+		return coApplicant_IncomeProof;
+	}
+	public void setCoApplicant_IncomeProof(List<Object> coApplicant_IncomeProof) {
+		this.coApplicant_IncomeProof = coApplicant_IncomeProof;
+	}
+	public List<Object> getCoApplicant_CropCultivation() {
+		return coApplicant_CropCultivation;
+	}
+	public void setCoApplicant_CropCultivation(List<Object> coApplicant_CropCultivation) {
+		this.coApplicant_CropCultivation = coApplicant_CropCultivation;
+	}
+	public List<Object> getCoApplicant_AlliedActivities() {
+		return coApplicant_AlliedActivities;
+	}
+	public void setCoApplicant_AlliedActivities(List<Object> coApplicant_AlliedActivities) {
+		this.coApplicant_AlliedActivities = coApplicant_AlliedActivities;
+	}
+	public List<Object> getGuarantor_BankACStatments() {
+		return guarantor_BankACStatments;
+	}
+	public void setGuarantor_BankACStatments(List<Object> guarantor_BankACStatments) {
+		this.guarantor_BankACStatments = guarantor_BankACStatments;
+	}
+	public List<Object> getGuarantor_SalaraySlip() {
+		return guarantor_SalaraySlip;
+	}
+	public void setGuarantor_SalaraySlip(List<Object> guarantor_SalaraySlip) {
+		this.guarantor_SalaraySlip = guarantor_SalaraySlip;
+	}
+	public List<Object> getGuarantor_ItReturn() {
+		return guarantor_ItReturn;
+	}
+	public void setGuarantor_ItReturn(List<Object> guarantor_ItReturn) {
+		this.guarantor_ItReturn = guarantor_ItReturn;
+	}
+	public List<Object> getGuarantor_BalanceSheet() {
+		return guarantor_BalanceSheet;
+	}
+	public void setGuarantor_BalanceSheet(List<Object> guarantor_BalanceSheet) {
+		this.guarantor_BalanceSheet = guarantor_BalanceSheet;
+	}
+	public List<Object> getGuarantor_AddressProof() {
+		return guarantor_AddressProof;
+	}
+	public void setGuarantor_AddressProof(List<Object> guarantor_AddressProof) {
+		this.guarantor_AddressProof = guarantor_AddressProof;
+	}
+	public List<Object> getGuarantor_IncomeProof() {
+		return guarantor_IncomeProof;
+	}
+	public void setGuarantor_IncomeProof(List<Object> guarantor_IncomeProof) {
+		this.guarantor_IncomeProof = guarantor_IncomeProof;
+	}
+	public List<Object> getGuarantor_CropCultivation() {
+		return guarantor_CropCultivation;
+	}
+	public void setGuarantor_CropCultivation(List<Object> guarantor_CropCultivation) {
+		this.guarantor_CropCultivation = guarantor_CropCultivation;
+	}
+	public List<Object> getGuarantor_AlliedActivities() {
+		return guarantor_AlliedActivities;
+	}
+	public void setGuarantor_AlliedActivities(List<Object> guarantor_AlliedActivities) {
+		this.guarantor_AlliedActivities = guarantor_AlliedActivities;
+	}
 	public List<OtherIncomeDetailResponse> getIncomeDetailResponseList() {
 		return incomeDetailResponseList;
 	}
