@@ -141,7 +141,7 @@ public class MatchesController {
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		matchRequest.setUserId(userId);
 		
-		if (matchRequest == null || matchRequest.getApplicationId() == null) {
+		if (matchRequest == null || matchRequest.getProductId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);

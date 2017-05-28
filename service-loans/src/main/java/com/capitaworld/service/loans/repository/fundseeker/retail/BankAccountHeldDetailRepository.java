@@ -18,9 +18,9 @@ public interface BankAccountHeldDetailRepository extends JpaRepository<BankAccou
 	public List<BankAccountHeldDetail> listBankAccountHeldFromAppId(@Param("id")Long id);
 
 	@Query("select o from BankAccountHeldDetail o where o.coApplicantDetailId.id = :id and o.isActive = true")
-	public List<BankAccountHeldDetail> listBankAccountHeldFromCoAppId(Long id);
+	public List<BankAccountHeldDetail> listBankAccountHeldFromCoAppId(@Param("id") Long id);
 
 	@Query("select o from BankAccountHeldDetail o where o.guarantorDetailId.id = :id and o.isActive = true")
-	public List<BankAccountHeldDetail> listBankAccountHeldFromGarrId(Long id);
+	public List<BankAccountHeldDetail> listBankAccountHeldFromGarrId(@Param("id")Long id);
 
 }
