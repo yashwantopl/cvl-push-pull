@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class CommonUtils {
 
@@ -100,11 +101,11 @@ public class CommonUtils {
 
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
-				"applicationId" };
+				"applicationId"};
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
-				"aadharNumber", "monthlyIncome", "currencyId", "firstAddress", "secondAddress", "addressSameAs",
+				"aadharNumber", "monthlyIncome","firstAddress", "secondAddress", "addressSameAs",
 				"contactNo", "companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
 				"alliedActivityId", "userId" };
@@ -153,12 +154,18 @@ public class CommonUtils {
 		public static final int SERVICE_PROVIDER = 3;
 	}
 
-	public static String getStringDateFromDate(Date date){
-		if(date!=null ){
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		return dateFormat.format(date);
-		}
-		else {
+	public interface UploadUserType {
+		public static final String UERT_TYPE_APPLICANT = "applicant";
+		public static final String UERT_TYPE_CO_APPLICANT = "coApplicant";
+		public static final String UERT_TYPE_GUARANTOR = "guarantor";
+		public static final String UERT_TYPE_USER = "user";
+	}
+
+	public static String getStringDateFromDate(Date date) {
+		if (date != null) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			return dateFormat.format(date);
+		} else {
 			return null;
 		}
 	}

@@ -21,6 +21,6 @@ public interface FixedDepositsDetailRepository extends JpaRepository<FixedDeposi
 	public List<FixedDepositsDetail> listFixedDepositsFromCoAppId(@Param("id")Long id);
 
 	@Query("select o from FixedDepositsDetail o where o.guarantorDetailId.id = :id and o.isActive = true")
-	public List<FixedDepositsDetail> listFixedDepositsFromGarrId(Long id);
+	public List<FixedDepositsDetail> listFixedDepositsFromGarrId(@Param("id")Long id);
 
 }

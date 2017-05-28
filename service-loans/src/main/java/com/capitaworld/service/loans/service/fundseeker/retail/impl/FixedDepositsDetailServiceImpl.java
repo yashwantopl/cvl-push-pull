@@ -30,18 +30,18 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(FixedDepositsDetailServiceImpl.class);
-	
+
 	@Autowired
 	private FixedDepositsDetailRepository fixedDepositsDetailRepository;
-	
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
-	
+
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
@@ -57,20 +57,23 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 					fixedDepositsDetail.setCreatedBy(frameRequest.getUserId());
 					fixedDepositsDetail.setCreatedDate(new Date());
 				}
-				switch(frameRequest.getApplicantType()) {
+				switch (frameRequest.getApplicantType()) {
 				case CommonUtils.ApplicantType.APPLICANT:
-					fixedDepositsDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+					fixedDepositsDetail
+							.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.COAPPLICANT:
-					fixedDepositsDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
+					fixedDepositsDetail.setCoApplicantDetailId(
+							coApplicantDetailRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				case CommonUtils.ApplicantType.GARRANTOR:
-					fixedDepositsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
+					fixedDepositsDetail
+							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
-				default :
+				default:
 					throw new Exception();
 				}
-				
+
 				fixedDepositsDetail.setModifiedBy(frameRequest.getUserId());
 				fixedDepositsDetail.setModifiedDate(new Date());
 				fixedDepositsDetailRepository.save(fixedDepositsDetail);
@@ -88,30 +91,38 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 	@Override
 	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws Exception {
+		try {
+			List<FixedDepositsDetail> fixedDepositsDetails = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromAppId(id);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromCoAppId(id);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(id);
+				break;
+			default:
+				throw new Exception();
+			}
 
-		List<FixedDepositsDetail> fixedDepositsDetails = new ArrayList<FixedDepositsDetail>() ;
-		switch (applicationType) {
-		case CommonUtils.ApplicantType.APPLICANT:
-			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromAppId(id);
-			break;
-		case CommonUtils.ApplicantType.COAPPLICANT:
-			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromCoAppId(id);
-			break;
-		case CommonUtils.ApplicantType.GARRANTOR:
-			fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(id);
-			break;
-		default:
-			throw new Exception();
-		}
-		
-		List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>();
+			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());
 
-		for (FixedDepositsDetail detail : fixedDepositsDetails) {
-			FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
-			BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
-			fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
+			for (FixedDepositsDetail detail : fixedDepositsDetails) {
+				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
+				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
+				fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
+			}
+			return fixedDepositsDetailRequests;
 		}
-		return fixedDepositsDetailRequests;
+
+		catch (Exception e) {
+			logger.info("Exception in get fixedDepositsDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
 	}
 
 }
