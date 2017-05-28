@@ -29,7 +29,6 @@ public class WorkingCapitalFinalViewController {
 
     @GetMapping(value = "/finalViewOfWorkingCapital/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
-
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
