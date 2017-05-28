@@ -19,7 +19,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private String state;
     private String constitution;
     private String establishmentMonth;
-    private Integer establishmentYear;
+    private String establishmentYear;
     private String groupName;
     private String keyVericalFunding;
     private String projectBrief;
@@ -38,6 +38,8 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
     private String loanAmount;
     private List<?> industrySector;
+    private List<String> shortTermRating;
+    private List<String> longTermRating;
 
     private List<Object> brochureList;
     private List<Object> certificateList;
@@ -132,11 +134,11 @@ public class WorkingCapitalPrimaryViewResponse {
         this.establishmentMonth = establishmentMonth;
     }
 
-    public Integer getEstablishmentYear() {
+    public String getEstablishmentYear() {
         return establishmentYear;
     }
 
-    public void setEstablishmentYear(Integer establishmentYear) {
+    public void setEstablishmentYear(String establishmentYear) {
         this.establishmentYear = establishmentYear;
     }
 
@@ -299,5 +301,21 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setDateOfProposal(String dateOfProposal) {
         this.dateOfProposal = dateOfProposal;
+    }
+
+    public List<String> getShortTermRating() {
+        return shortTermRating;
+    }
+
+    public void setShortTermRating(List<String> shortTermRating) {
+        this.shortTermRating = shortTermRating;
+    }
+
+    public List<String> getLongTermRating() {
+        return longTermRating;
+    }
+
+    public void setLongTermRating(List<String> longTermRating) {
+        this.longTermRating = longTermRating;
     }
 }
