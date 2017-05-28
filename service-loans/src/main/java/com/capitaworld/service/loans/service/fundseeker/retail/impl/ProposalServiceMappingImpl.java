@@ -32,7 +32,11 @@ import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.MatchResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -81,6 +85,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(
 					environment.getRequiredProperty("matchesURL"));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
+			
+			MatchEngineClient matchEngineClient = new MatchEngineClient(
+					environment.getRequiredProperty("matchesURL"));
 			
 			
 
@@ -215,6 +222,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 				else
 				{
+					Long fpProductId=request.getFpProductId();
+					
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 
 					if(retailApplicantDetail == null)
@@ -286,6 +295,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setApplicationId(applicationId);
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
+					
+					try {
+						MatchRequest matchRequest=new MatchRequest();
+						matchRequest.setApplicationId(applicationId);
+						matchRequest.setProductId(fpProductId);
+						MatchDisplayResponse matchResponse =  matchEngineClient.displayMatchesOfRetail(matchRequest);
+						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
 					proposalDetailsList.add(retailProposalDetails);
 				}
 
