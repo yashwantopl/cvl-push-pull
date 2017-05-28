@@ -5,7 +5,6 @@ import java.util.List;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.users.model.UserResponse;
 
 public interface LoanApplicationService {
@@ -27,4 +26,6 @@ public interface LoanApplicationService {
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws Exception;
+	
+	public Object[] getApplicationDetailsById(Long applicationId) throws Exception;
 }
