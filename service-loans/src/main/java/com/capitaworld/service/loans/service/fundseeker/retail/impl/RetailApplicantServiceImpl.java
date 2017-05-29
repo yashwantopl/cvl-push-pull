@@ -61,7 +61,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail = new RetailApplicantDetail();
 				applicantDetail.setCreatedBy(userId);
 				applicantDetail.setCreatedDate(new Date());
-				applicantDetail.setActive(true);
+				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
@@ -123,7 +123,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
-						+ id + "  ApplicationId==>" + applicationId);
+						+ id + " ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);

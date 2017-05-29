@@ -57,6 +57,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<Long> sectorlist = Collections.emptyList();
 
 	private List<Long> subsectors = Collections.emptyList();
+	
+	private Boolean isApplicantDetailsFilled;
 
 	public CorporateApplicantRequest() {
 	}
@@ -227,6 +229,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setLandlineNo(String landlineNo) {
 		this.landlineNo = landlineNo;
+	}
+
+	public Boolean getIsApplicantDetailsFilled() {
+		return isApplicantDetailsFilled;
+	}
+
+	public void setIsApplicantDetailsFilled(Boolean isApplicantDetailsFilled) {
+		this.isApplicantDetailsFilled = isApplicantDetailsFilled;
 	}
 
 }

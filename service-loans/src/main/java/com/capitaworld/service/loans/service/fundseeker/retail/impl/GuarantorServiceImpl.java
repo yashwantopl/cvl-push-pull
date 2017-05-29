@@ -474,7 +474,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoPartners()) ?  guarantorDetail.getNoPartners().toString() : "NA");
 							finalViewResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPartnersName()) ?  guarantorDetail.getPartnersName() : "NA");
 							finalViewResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ?  guarantorDetail.getBusinessStartDate().getMonth()+"/"+guarantorDetail.getBusinessStartDate().getYear() : "NA");
-							finalViewResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getShareholding()) ?  guarantorDetail.getShareholding() : "NA");
+							finalViewResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getShareHolding()) ?  guarantorDetail.getShareHolding() : "NA");
 							finalViewResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover()) ?  guarantorDetail.getAnnualTurnover().toString() : "NA");
 							finalViewResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseNumber()) ?  guarantorDetail.getTradeLicenseNumber() : "NA");
 							finalViewResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseExpiryDate()) ?  guarantorDetail.getTradeLicenseExpiryDate().getMonth()+"/"+guarantorDetail.getTradeLicenseExpiryDate().getYear() : "NA");
