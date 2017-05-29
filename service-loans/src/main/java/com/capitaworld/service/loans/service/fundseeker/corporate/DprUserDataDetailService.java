@@ -15,6 +15,6 @@ public interface DprUserDataDetailService {
 
 	public void inActiveDprUserDataDetails(Long storageDetailsId);
 
-	public void save(Long storageDetailsId,DprUserDataDetail dprUserDataDetail);
+	public void save(Long storageDetailsId,DprUserDataDetail dprUserDataDetail, Long applicationId);
 
 }

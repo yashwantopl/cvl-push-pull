@@ -19,6 +19,7 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
@@ -36,6 +37,7 @@ import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -133,14 +135,19 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	private FinanceMeansDetailsService financeMeansDetailsService;
 
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository; 
+	
 	protected static final String DMS_URL = "dmsURL";
 	protected static final String ONE_FORM_URL = "oneForm";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
 
 	@Override
-	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Long userId) {
+	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
+		Long userId = applicationMaster.getUserId();
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);

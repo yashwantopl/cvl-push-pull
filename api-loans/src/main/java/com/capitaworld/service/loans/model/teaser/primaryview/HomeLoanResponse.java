@@ -5,6 +5,10 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.AddressResponse;
 
+/**
+ * @author kushal
+ *
+ */
 public class HomeLoanResponse implements Serializable {
 
 	/**
@@ -15,6 +19,7 @@ public class HomeLoanResponse implements Serializable {
 	private String propertyType; 
 	
 	private String propertyUsedType;
+	private String propertyUsedTypeId;
 	private String constructionCompleted;
 	private String constructionCompletionTimeInMonth;
 	private String constructionCompletionTimeInYear;
@@ -57,6 +62,13 @@ public class HomeLoanResponse implements Serializable {
 	}
 	public void setProfileImage(List<Object> profileImage) {
 		this.profileImage = profileImage;
+	}
+	
+	public String getPropertyUsedTypeId() {
+		return propertyUsedTypeId;
+	}
+	public void setPropertyUsedTypeId(String propertyUsedTypeId) {
+		this.propertyUsedTypeId = propertyUsedTypeId;
 	}
 	public String getCurrency() {
 		return currency;

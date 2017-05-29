@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,8 +11,12 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 
 public class ProductMasterClient {
+	
+	private static Logger log = LoggerFactory.getLogger(ProductMasterClient.class);
+			
 	private static final String PING_PRODUCT_MASTER ="/product_master/ping";
 	private static final String USERNAME_BY_PRODUCT_ID="/product_master/getUserNameByProductId";
+	private static final String USER_ID_BY_PRODUCT_ID="/product_master/getUserIdByProductId";
 	private String productMasterBaseUrl;
 	private RestTemplate restTemplate;
 	
@@ -40,8 +46,27 @@ public class ProductMasterClient {
 			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("product masteis not available");
+			throw new LoansException("product master is not available");
 		}
 	}
 	
+	public String getUserIdByProductId(Long productId) throws  LoansException {
+		String url = productMasterBaseUrl.concat(USER_ID_BY_PRODUCT_ID);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(productId, headers);
+		    LoansResponse response = restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		    if(response != null){
+		    	return response.getData().toString();
+		    }else{
+		    	log.error("response is null");
+		    	throw new LoansException("something went wrong");
+		    }
+			/*return restTemplate.postForObject(url, request, LoansResponse.class);*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("product master is not available");
+		}
+	}
 }
