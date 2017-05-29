@@ -5,7 +5,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryVie
 
 public interface TermLoanPrimaryViewService {
 
-    public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId,Long userId);
+    public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId);
 
    
 }

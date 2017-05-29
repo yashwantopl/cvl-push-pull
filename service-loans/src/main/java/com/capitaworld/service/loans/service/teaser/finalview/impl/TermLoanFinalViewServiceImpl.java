@@ -1,7 +1,8 @@
-package com.capitaworld.service.loans.service.teaser.primaryview.impl;
+package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.model.*;
@@ -11,7 +12,7 @@ import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.*;
@@ -19,6 +20,9 @@ import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +31,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -148,14 +153,20 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
     @Autowired
     private FinalTermLoanService finalTermLoanService;
 
+    @Autowired
+    private LoanApplicationRepository loanApplicationRepository;
+
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     protected static final String ONE_FORM_URL = "oneForm";
+    protected static final String USERS_URL = "userURL";
 
     private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
 
     @Override
-    public TermLoanFinalViewResponse getTermLoanFinalViewDetails(Long toApplicationId, Long userId) {
+    public TermLoanFinalViewResponse getTermLoanFinalViewDetails(Long toApplicationId) {
+        LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
+        Long userId = applicationMaster.getUserId();
         //create response object
         TermLoanFinalViewResponse response = new TermLoanFinalViewResponse();
 
@@ -247,6 +258,19 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
                 e.printStackTrace();
             }
 
+        }
+
+        //set registered email address and registered contact number
+        UsersClient usersClient = new UsersClient(environment.getProperty(USERS_URL));
+        UserResponse userResponse = usersClient.getEmailMobile(userId);
+        try {
+            UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+            if (usersRequest!=null) {
+                response.setRegisteredEmailAddress(usersRequest.getEmail());
+                response.setRegisteredContactNumber(usersRequest.getMobile());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         //get details of CorporateApplicantDetail

@@ -7,5 +7,5 @@ import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryView
  */
 
 public interface CarLoanPrimaryViewService {
-    public CarLoanPrimaryViewResponse getCarLoanPrimaryViewDetails(Long toApplicationId,Long userId);
+    public CarLoanPrimaryViewResponse getCarLoanPrimaryViewDetails(Long toApplicationId);
 }
