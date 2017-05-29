@@ -34,6 +34,9 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	private String LoanType;
 	private String dateOfProposal;
 	private String loanAmount;
+	private String landlineNo;
+	private String registeredEmailAddress;
+	private String registeredContactNumber;
 	private List<?> industrySector;
 	private List<Object> profilePic;
 	private List<String> shortTermRating;
@@ -250,6 +253,30 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 
 	public void setLoanAmount(String loanAmount) {
 		this.loanAmount = loanAmount;
+	}
+
+	public String getLandlineNo() {
+		return landlineNo;
+	}
+
+	public void setLandlineNo(String landlineNo) {
+		this.landlineNo = landlineNo;
+	}
+
+	public String getRegisteredEmailAddress() {
+		return registeredEmailAddress;
+	}
+
+	public void setRegisteredEmailAddress(String registeredEmailAddress) {
+		this.registeredEmailAddress = registeredEmailAddress;
+	}
+
+	public String getRegisteredContactNumber() {
+		return registeredContactNumber;
+	}
+
+	public void setRegisteredContactNumber(String registeredContactNumber) {
+		this.registeredContactNumber = registeredContactNumber;
 	}
 
 	public List<?> getIndustrySector() {
