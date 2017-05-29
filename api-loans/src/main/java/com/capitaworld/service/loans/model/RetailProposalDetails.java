@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.Collections;
+import java.util.List;
+
 public class RetailProposalDetails {
 
 	private String name;
@@ -14,6 +17,16 @@ public class RetailProposalDetails {
 	
 	private String address;
 	
+	private List<?> listMatches = Collections.emptyList();
+	
+	public List<?> getListMatches() {
+		return listMatches;
+	}
+
+	public void setListMatches(List<?> listMatches) {
+		this.listMatches = listMatches;
+	}
+
 	public String getAddress() {
 		return address;
 	}

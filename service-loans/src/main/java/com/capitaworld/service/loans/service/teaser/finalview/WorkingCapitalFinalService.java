@@ -1,4 +1,4 @@
-package com.capitaworld.service.loans.service.teaser.primaryview;
+package com.capitaworld.service.loans.service.teaser.finalview;
 
 import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
 
@@ -6,5 +6,5 @@ import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalV
  * Created by dhaval on 25-May-17.
  */
 public interface WorkingCapitalFinalService {
-    public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId,Long userId);
+    public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId);
 }

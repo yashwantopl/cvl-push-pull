@@ -5,12 +5,14 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
@@ -62,14 +64,19 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
 
 	@Autowired
-	Environment environment;
+	private Environment environment;
 
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
 	protected static final String DMS_URL = "dmsURL";
 
 	@Override
-	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId, Long userId) throws Exception {
+	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws Exception {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		RetailPrimaryViewResponse retailPrimaryViewResponse = new RetailPrimaryViewResponse();
 		PersonalLoanResponse personalLoanResponse = new PersonalLoanResponse();
+		Long userId = applicationMaster.getUserId();
 		//applicant
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId, applicantId);

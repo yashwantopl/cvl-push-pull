@@ -38,6 +38,8 @@ public class DashboardServiceImpl implements DashboardService {
 	@Autowired
 	private Environment environment;
 
+	private UsersClient usersClient = null;
+
 	@Override
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId) throws Exception {
 		// TODO Auto-generated method stub
@@ -47,11 +49,11 @@ public class DashboardServiceImpl implements DashboardService {
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-			
+
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.getByApplicationAndUserId(userId, applicationId);
-			
-			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+
+			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(corporateApplicantDetail.getId());
@@ -82,10 +84,10 @@ public class DashboardServiceImpl implements DashboardService {
 		} else {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-			
+
 			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 					.getByApplicationAndUserId(userId, applicationId);
-			if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
+			if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
@@ -98,8 +100,8 @@ public class DashboardServiceImpl implements DashboardService {
 
 			// Setting State Value
 			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
-				dashboardProfileResponse.setState(
-						CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment));
+				dashboardProfileResponse.setState(CommonDocumentUtils
+						.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment));
 			}
 
 			// Country State Value
@@ -122,13 +124,25 @@ public class DashboardServiceImpl implements DashboardService {
 	public Integer getCount(int userType) throws Exception {
 		try {
 			UsersClient client = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
-			UserResponse response = client.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
+			UserResponse response = client.getActiveUserCount(userType);
 			if (response != null) {
-				return (Integer)response.getData();
+				return (Integer) response.getData();
 			}
 			return 0;
 		} catch (Exception e) {
 			logger.error("Error while getting count for Dashbord");
+			e.printStackTrace();
+			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public UserResponse getFPBasicProfileInfo(Long userId) throws Exception {
+		try {
+			usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
+			return usersClient.getFPDashboardDetails(userId);
+		} catch (Exception e) {
+			logger.error("Error while getting FP Details on Dashbord");
 			e.printStackTrace();
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
 		}

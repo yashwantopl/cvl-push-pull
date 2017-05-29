@@ -70,6 +70,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			}
 			FinalWorkingCapitalLoanRequest capitalLoanRequest = new FinalWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetails, capitalLoanRequest);
+			capitalLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Capital Details:-");

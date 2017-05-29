@@ -19,7 +19,10 @@ public interface ProductMasterService {
 	public String getUserNameByApplicationId(Long productId,Long userId);
 	
 	public List<ProductDetailsForSp> getProductDetailsByUserIdList(Long userId);
-	
+
+	public Object[] getUserDetailsByPrductId(Long fpMappingId);
+
 	public ProductDetailsResponse getProductDetailsResponse(Long userId);
+
 	
 }
