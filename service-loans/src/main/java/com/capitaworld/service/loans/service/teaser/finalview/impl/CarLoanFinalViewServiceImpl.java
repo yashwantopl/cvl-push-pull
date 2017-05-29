@@ -1,11 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalCarLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -20,6 +14,11 @@ import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewSe
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -49,8 +48,8 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 	private CarLoanPrimaryViewService carLoanPrimaryViewService;
 	
 	@Override
-	public CarLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws Exception {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getOne(applicantId);
+	public CarLoanFinalViewResponse getCarLoanFinalViewDetails(Long applicantId) throws Exception {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		CarLoanFinalViewResponse clFinalViewResponse = new CarLoanFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
@@ -77,7 +76,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			
 			//Car Loan primary details
 			try { 
-				clFinalViewResponse.setCarLoanPrimaryViewResponse(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId, applicationMaster.getUserId()));
+				clFinalViewResponse.setCarLoanPrimaryViewResponse(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting CL primary details");

@@ -43,7 +43,7 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 	
 	@Override
 	public PersonalLoanFinalViewResponse getPersonalLoanFinalViewDetails(Long applicantId) throws Exception {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getOne(applicantId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		PersonalLoanFinalViewResponse plFinalViewResponse = new PersonalLoanFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
@@ -70,7 +70,7 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 			
 			//Personal Loan primary details
 			try { 
-				plFinalViewResponse.setPersonalLoansPrimaryViewResponse(primaryViewPLService.getPersonalLoansPrimaryViewDetails(applicantId, applicationMaster.getUserId()));
+				plFinalViewResponse.setPersonalLoansPrimaryViewResponse(primaryViewPLService.getPersonalLoansPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting PL primary details");

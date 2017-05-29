@@ -92,7 +92,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = new HomeLoanPrimaryViewResponse();
 		HomeLoanResponse homeLoanResponse = new HomeLoanResponse();
 		//applicant
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getOne(applicantId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {

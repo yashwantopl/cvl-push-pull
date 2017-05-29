@@ -1,16 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -32,6 +21,16 @@ import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.enums.PropertyUsedSubType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Transactional
@@ -65,7 +64,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 	
 	@Override
 	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws Exception {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getOne(applicantId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		HomeLoanFinalViewResponse homeLoanFinalViewResponse = new HomeLoanFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
