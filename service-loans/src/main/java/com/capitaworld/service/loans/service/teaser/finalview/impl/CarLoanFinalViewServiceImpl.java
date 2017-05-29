@@ -77,7 +77,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			
 			//Car Loan primary details
 			try { 
-				clFinalViewResponse.setCarLoanPrimaryViewResponse(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId, applicationMaster.getUserId()));
+				clFinalViewResponse.setCarLoanPrimaryViewResponse(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting CL primary details");
