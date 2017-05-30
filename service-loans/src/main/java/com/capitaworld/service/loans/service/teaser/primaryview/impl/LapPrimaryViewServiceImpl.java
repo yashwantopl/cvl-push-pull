@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
@@ -19,20 +18,18 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.AddressResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.LapResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
-import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
-import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
@@ -44,40 +41,30 @@ import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.IndustryType;
 import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.LoanPurpose;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.Occupation;
 import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.Options;
-import com.capitaworld.service.oneform.enums.PropertySubType;
-import com.capitaworld.service.oneform.enums.PropertyUsedType;
-import com.capitaworld.service.oneform.enums.RepairType;
+import com.capitaworld.service.oneform.enums.OccupationStatus;
+import com.capitaworld.service.oneform.enums.PropertyType;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
 @Transactional
-public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewService{
+public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 
-	@Autowired
-	private PrimaryHomeLoanService primaryHomeLoanService;
-	
-	private static final Logger logger = LoggerFactory.getLogger(HomeLoanPrimaryViewServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(LapPrimaryViewServiceImpl.class);
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
-
-	@Autowired
-	private RetailApplicantService retailApplicantService;
 	
 	@Autowired
 	private CoApplicantService coApplicantService;
 
 	@Autowired
 	private GuarantorService guarantorService;
-
-	@Autowired
-	private PrimaryHomeLoanDetailRepository primaryHomeLoanRepository;
 	
 	@Autowired
 	private Environment environment;
@@ -87,88 +74,92 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 	
+	@Autowired
+	private PrimaryLapLoanDetailRepository primaryLapRepository;
+	
 	@Override
-	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId) throws Exception {
-		HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = new HomeLoanPrimaryViewResponse();
-		HomeLoanResponse homeLoanResponse = new HomeLoanResponse();
+	public LapPrimaryViewResponse getLapPrimaryViewDetails(Long applicantId) throws Exception {
+		
+		LapPrimaryViewResponse lapPrimaryViewResponse = new LapPrimaryViewResponse();
+		LapResponse lapResponse = new LapResponse();
 		//applicant
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {
-				RetailProfileViewResponse profileViewHLResponse = new RetailProfileViewResponse();
-				homeLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
+				RetailProfileViewResponse profileViewLAPResponse = new RetailProfileViewResponse();
+				lapResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
 				if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getOccupationId())){
-					profileViewHLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
+					profileViewLAPResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
 					if (applicantDetail.getOccupationId() == 2){
-                    	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+						profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
-                        	profileViewHLResponse.setCompanyName(applicantDetail.getCompanyName());
+                        	profileViewLAPResponse.setCompanyName(applicantDetail.getCompanyName());
                         }else{
-                        	profileViewHLResponse.setCompanyName("NA");
+                        	profileViewLAPResponse.setCompanyName("NA");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEmployedWithId())){
                             if (applicantDetail.getEmployedWithId() == 8){
-                            	profileViewHLResponse.setEmployeeWith(applicantDetail.getEmployedWithOther());
+                            	profileViewLAPResponse.setEmployeeWith(applicantDetail.getEmployedWithOther());
                             }else{
-                            	profileViewHLResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
+                            	profileViewLAPResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
                             }
                         }else{
-                        	profileViewHLResponse.setEmployeeWith("NA");
+                        	profileViewLAPResponse.setEmployeeWith("NA");
                         }
                     }
                     else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
-                    	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+                    	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEntityName())){
-                        	profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
+                        	profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
                         }else{
-                        	profileViewHLResponse.setEntityName("NA");
+                        	profileViewLAPResponse.setEntityName("NA");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getIndustryTypeId())){
                             if (applicantDetail.getIndustryTypeId()==16){
-                            	profileViewHLResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
+                            	profileViewLAPResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
                             }else{
-                            	profileViewHLResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
+                            	profileViewLAPResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
                             }
                         }else{
-                        	profileViewHLResponse.setIndustryType("NA");
+                        	profileViewLAPResponse.setIndustryType("NA");
                         }
                     }
                     else if(applicantDetail.getOccupationId()==5){
-                    	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+                    	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if(!CommonUtil.isObjectNullOrEmpty(applicantDetail.getSelfEmployedOccupationId())){
                         	if (applicantDetail.getSelfEmployedOccupationId()==10){
-                            	profileViewHLResponse.setOccupation(applicantDetail.getSelfEmployedOccupationOther());
+                        		profileViewLAPResponse.setOccupation(applicantDetail.getSelfEmployedOccupationOther());
                             }else{
-                            	profileViewHLResponse.setOccupation(Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
+                            	profileViewLAPResponse.setOccupation(Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
                             }	
                         }else{
-                        	profileViewHLResponse.setOccupation("NA");
+                        	profileViewLAPResponse.setOccupation("NA");
                         }
                     }else if(applicantDetail.getOccupationId()==6){
-                    	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+                    	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getLandSize())){                          
-                        	profileViewHLResponse.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
+                        	profileViewLAPResponse.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
                         }else{
-                        	profileViewHLResponse.setLandSize("NA");
+                        	profileViewLAPResponse.setLandSize("NA");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getAlliedActivityId())){
-                        	profileViewHLResponse.setAlliedActivity(AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
+                        	profileViewLAPResponse.setAlliedActivity(AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
                         }else{
-                        	profileViewHLResponse.setAlliedActivity("NA");
+                        	profileViewLAPResponse.setAlliedActivity("NA");
                         }
                     }else if(applicantDetail.getOccupationId()==7){
-                    	profileViewHLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+                    	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                     }                   
                 }else{
-                	profileViewHLResponse.setNatureOfOccupation("NA");
+                	profileViewLAPResponse.setNatureOfOccupation("NA");
                 }
-				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : "NA"));
-				profileViewHLResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : "NA"));
-				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : "NA"));
-				profileViewHLResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
-				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
-				profileViewHLResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
+				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : "NA"));
+				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : "NA"));
+				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : "NA"));
+				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
+				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
+				profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
 				
 				
 				//set office address
@@ -217,7 +208,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
                 try {
                     List<Long> officeState = new ArrayList<Long>(1);
                     Long officeStateLong = null;
-                    if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId())) {
+                    if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId())) {
                         officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
 
                         officeState.add(officeStateLong);
@@ -238,7 +229,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
                 officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
                 officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
                 officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
-                homeLoanResponse.setOfficeAddress(officeAddress);
+                lapResponse.setOfficeAddress(officeAddress);
 
                 //set permanent address
                 AddressResponse permanentAddress = new AddressResponse();
@@ -301,18 +292,18 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
                 permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
                 permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
                 permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
-                homeLoanResponse.setPermanentAddress(permanentAddress);
+                lapResponse.setPermanentAddress(permanentAddress);
 
 
-				profileViewHLResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
-				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
+				profileViewLAPResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
-				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA" );
+				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA" );
 
-				profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
+				profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
 
 				//set pan 
-				profileViewHLResponse.setPan(applicantDetail.getPan());
+				profileViewLAPResponse.setPan(applicantDetail.getPan());
 
 				//applicant profile image
 				DMSClient dmsApplicantImageClient = new DMSClient(environment.getProperty(DMS_URL));
@@ -322,7 +313,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				documentRequestProfileImage.setProductDocumentMappingId(DocumentAlias.HOME_LOAN_PROFIEL_PICTURE);
 				try {
 					DocumentResponse documentResponse = dmsApplicantImageClient.listProductDocument(documentRequestProfileImage);
-					homeLoanResponse.setProfileImage(documentResponse.getDataList());
+					lapResponse.setProfileImage(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
@@ -335,7 +326,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
-					profileViewHLResponse.setPanCardList(documentResponse.getDataList());
+					profileViewLAPResponse.setPanCardList(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
@@ -347,11 +338,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
-					profileViewHLResponse.setAadharCardList(documentResponse.getDataList());
+					profileViewLAPResponse.setAadharCardList(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
-				homeLoanPrimaryViewResponse.setPersonalProfileRespoonse(profileViewHLResponse);
+				lapPrimaryViewResponse.setApplicant(profileViewLAPResponse);
 			} else {
 				throw new Exception("No Data found");
 			}
@@ -360,67 +351,122 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		}
 
 		//set up loan specific details
-		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanRepository.getByApplicationAndUserId(applicantId,applicationMaster.getUserId());
+		PrimaryLapLoanDetail loanDetail = primaryLapRepository.getByApplicationAndUserId(applicantId,applicationMaster.getUserId());
 		
 		if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
-			homeLoanResponse.setPropertyType(PropertySubType.getById(loanDetail.getPropertyType()).getValue());
-			homeLoanResponse.setPropertyUsedTypeId(loanDetail.getPropertyType().toString());
-			if(loanDetail.getPropertyType() == 3){
-				homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "NA");
-				if(loanDetail.getPropertyUsedType() == 3){
-					homeLoanResponse.setConstructionCompleted(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsConstructionCompleted()) ? Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue() : "NA");
-					if(!loanDetail.getIsConstructionCompleted()){
-						homeLoanResponse.setConstructionCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "NA");
-						homeLoanResponse.setConstructionCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "NA");
-					}
+			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurpose())){
+				lapResponse.setLoanPurpose(LoanPurpose.getById(loanDetail.getLoanPurpose()).getValue());
+				if(loanDetail.getLoanPurpose() == 5){
+					lapResponse.setLoanPurposeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurposeOther()) ? loanDetail.getLoanPurposeOther() : "NA");		
 				}
-				homeLoanResponse.setProjectName(loanDetail.getProjectName());
-				homeLoanResponse.setProjectCity(loanDetail.getProjectCity());
-				homeLoanResponse.setArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getArea()) ? loanDetail.getArea().toString() : "NA");
-				homeLoanResponse.setPropertyPrice(loanDetail.getPropertyPrice().toString());
-			}else if(loanDetail.getPropertyType() == 4){
-				homeLoanResponse.setBunglowCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBunglowCost()) ? loanDetail.getBunglowCost().toString() : "NA");
-				homeLoanResponse.setConstructionCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCost()) ? loanDetail.getConstructionCost().toString() : "NA");
-				homeLoanResponse.setCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInMonth()) ? loanDetail.getCompletionTimeInMonth().toString() : "NA");
-				homeLoanResponse.setCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInYear()) ? loanDetail.getCompletionTimeInYear().toString() : "NA");
-			}else if(loanDetail.getPropertyType() == 5){
-				homeLoanResponse.setRenovationType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) ? RepairType.getById(loanDetail.getRenovationType()).getValue() : "NA");
-				if(loanDetail.getRenovationType() == 8){
-					homeLoanResponse.setRenovationTypeOther(loanDetail.getOtherRenovationType());
-				}
-				homeLoanResponse.setRenovationCost(loanDetail.getRenovationCost().toString());
-				homeLoanResponse.setRenovationCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInMonth()) ? loanDetail.getRenovationCompletionTimeInMonth().toString() : "NA");
-				homeLoanResponse.setRenovationCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInYear()) ? loanDetail.getRenovationCompletionTimeInYear().toString() : "NA");	
-				if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken())){
-					if(loanDetail.getIsLoanTaken()){
-						homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
-						homeLoanResponse.setDateOfLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDateOfLoanTaken()) ? CommonUtils.getStringDateFromDate(loanDetail.getDateOfLoanTaken()) : "NA");	
-					}else{
-						homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
-					}	
-				}	
-						
-			}else if(loanDetail.getPropertyType() == 6){
-				homeLoanResponse.setLandPlotCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandPlotCost()) ? loanDetail.getLandPlotCost().toString() : "NA");
-				homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
 			}
+			
+			lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
+			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
+				lapResponse.setPropertyType(PropertyType.getById(loanDetail.getPropertyType()).getValue());
+				if(loanDetail.getPropertyType() == 4){
+					lapResponse.setPropertyTypeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyTypeOther()) ? loanDetail.getPropertyTypeOther() : "NA");		
+				}
+			}
+			
+			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatus())){
+				lapResponse.setOccupationStatus(OccupationStatus.getById(loanDetail.getOccupationStatus()).getValue());
+				if(loanDetail.getOccupationStatus() == 5){
+					lapResponse.setOccupationStatusOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatusOther()) ? loanDetail.getOccupationStatusOther() : "NA");		
+				}
+			}
+			
+			lapResponse.setPropertyAgeInMonths(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInMonth()) ? loanDetail.getPropertyAgeInMonth().toString() : "NA");
+			lapResponse.setPropertyAgeInYears(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInYear()) ? loanDetail.getPropertyAgeInYear().toString() : "NA");
+			lapResponse.setTotalArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
+			lapResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBuiltUpArea()) ? loanDetail.getBuiltUpArea().toString() : "NA");
+			lapResponse.setPropertyValue(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyValue()) ? loanDetail.getPropertyValue().toString() : "NA");
+			lapResponse.setPropertyOwnerName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOwnerName()) ? loanDetail.getOwnerName() : "NA");
+			lapResponse.setPropertyPremiseNumber(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressPremise()) ? loanDetail.getAddressPremise() : "NA");
+			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : "NA");
+			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : "NA");
+			
+			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+            try {
+                List<Long> officeCity = new ArrayList<Long>(1);
+                if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCity())){
+                	officeCity.add(Long.valueOf(loanDetail.getAddressCity().toString()));
+                    OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+                    MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
+                    if(!CommonUtils.isObjectNullOrEmpty(data)){
+                    	lapResponse.setPropertyCity(data.getValue());
+                    }else{
+                    	lapResponse.setPropertyCity("NA");
+                    }	
+                }else{
+                	lapResponse.setPropertyCity("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+            try {
+                List<Long> officeCountry = new ArrayList<Long>(1);
+                Long officeCountryLong = null;
+                if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCountry())) {
+                    officeCountryLong = Long.valueOf(loanDetail.getAddressCountry().toString());
+
+                    officeCountry.add(officeCountryLong);
+                    OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+                    MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
+                    if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
+                    	lapResponse.setPropertyCountry(dataCountry.getValue());
+                    }else{
+                    	lapResponse.setPropertyCountry("NA");
+                    }
+                }else{
+                	lapResponse.setPropertyCountry("NA");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+            StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+            try {
+                List<Long> officeState = new ArrayList<Long>(1);
+                Long officeStateLong = null;
+                if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressState())) {
+                    officeStateLong = Long.valueOf(loanDetail.getAddressState().toString());
+
+                    officeState.add(officeStateLong);
+                    OneFormResponse state = stateListByStateListIdClient.send(officeState);
+                    MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
+                    if(!CommonUtil.isObjectNullOrEmpty(dataState)){
+                    	lapResponse.setPropertyState(dataState.getValue());
+                    }else{
+                    	lapResponse.setPropertyState("NA");
+                    }
+                }else{
+                	lapResponse.setPropertyState("NA");
+                }
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
+			
+			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : "NA");
 		}
 		
-		homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ? loanDetail.getDownPayment().toString() : "NA");
-		homeLoanResponse.setAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-		homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
+		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+		lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
 		
-		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
+		lapPrimaryViewResponse.setLapResponse(lapResponse);
 		
 		//setting co-application details
 		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId());
-		homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		lapPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
 		//setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId());
-		homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
-
-		return homeLoanPrimaryViewResponse;
+		lapPrimaryViewResponse.setGuarantorList(garantorResponse);
+		
+		return lapPrimaryViewResponse;
 	}
-
+	
+	
 }
