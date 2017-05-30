@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
@@ -40,6 +42,9 @@ public class PrimaryViewController {
 	
 	@Autowired
     private CarLoanPrimaryViewService carLoanPrimaryViewService;
+	
+	@Autowired
+	private LapPrimaryViewService lapPrimaryService;
 	
 	@Autowired
     private WorkingCapitalPrimaryViewService workingCapitalPrimaryViewService;
@@ -117,6 +122,34 @@ public class PrimaryViewController {
         }
     }
 
+    @GetMapping(value = "/LapLoan/{toApplicationId}")
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfLap(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+        LoansResponse loansResponse = new LoansResponse();
+
+        if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+            logger.warn("Invalid data or Requested data not found.", toApplicationId);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+        }else {
+            //get user id from http servlet request
+            Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+            LapPrimaryViewResponse lapPrimaryViewResponse;
+			try {
+				lapPrimaryViewResponse = lapPrimaryService.getLapPrimaryViewDetails(toApplicationId);
+				loansResponse.setData(lapPrimaryViewResponse);
+	            loansResponse.setMessage("LAP Primary Details");
+	            loansResponse.setStatus(HttpStatus.OK.value());
+	            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				loansResponse.setMessage("Something went wrong..!");
+	            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+            
+        }
+    }
+    
     @GetMapping(value = "/WorkingCapital/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
         LoansResponse loansResponse = new LoansResponse();

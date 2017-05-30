@@ -34,6 +34,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	@Autowired
 	private TermLoanFinalViewService tlFinalViewService;
 
+	@Autowired
+	private LapFinalViewService lapFinalViewService;
+	
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
@@ -119,6 +122,38 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		            loansResponse.setStatus(HttpStatus.OK.value());	
 				}else{
 		            loansResponse.setMessage("No data found for Personal Loan final view");
+		            loansResponse.setStatus(HttpStatus.OK.value());
+				}
+		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}     
+        }
+	}
+	
+	@GetMapping(value = "/LapLoan/{toApplicationId}")
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewLapLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+		LoansResponse loansResponse = new LoansResponse();
+        //get user id from http servlet request
+        Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+
+        if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+        }else {
+        	LapFinalViewResponse lapFinalViewResponse = null;
+			try {
+				lapFinalViewResponse = lapFinalViewService.getLapFinalViewDetails(toApplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(lapFinalViewResponse)){
+					loansResponse.setData(lapFinalViewResponse);
+		            loansResponse.setMessage("Lap Final Details");
+		            loansResponse.setStatus(HttpStatus.OK.value());	
+				}else{
+		            loansResponse.setMessage("No data found for Lap final view");
 		            loansResponse.setStatus(HttpStatus.OK.value());
 				}
 		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
