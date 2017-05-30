@@ -217,7 +217,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
                 try {
                     List<Long> officeState = new ArrayList<Long>(1);
                     Long officeStateLong = null;
-                    if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId())) {
+                    if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId())) {
                         officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
 
                         officeState.add(officeStateLong);
