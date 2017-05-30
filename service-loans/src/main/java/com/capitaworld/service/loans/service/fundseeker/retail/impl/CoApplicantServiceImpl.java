@@ -476,7 +476,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoPartners()) ?  coApplicantDetail.getNoPartners().toString() : "NA");
 							finalViewResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPartnersName()) ?  coApplicantDetail.getPartnersName() : "NA");
 							finalViewResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ?  coApplicantDetail.getBusinessStartDate().getMonth()+"/"+coApplicantDetail.getBusinessStartDate().getYear() : "NA");
-							finalViewResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareholding()) ?  coApplicantDetail.getShareholding() : "NA");
+							finalViewResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareHolding()) ?  coApplicantDetail.getShareHolding() : "NA");
 							finalViewResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover()) ?  coApplicantDetail.getAnnualTurnover().toString() : "NA");
 							finalViewResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber()) ?  coApplicantDetail.getTradeLicenseNumber() : "NA");
 							finalViewResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate()) ?  coApplicantDetail.getTradeLicenseExpiryDate().getMonth()+"/"+coApplicantDetail.getTradeLicenseExpiryDate().getYear() : "NA");

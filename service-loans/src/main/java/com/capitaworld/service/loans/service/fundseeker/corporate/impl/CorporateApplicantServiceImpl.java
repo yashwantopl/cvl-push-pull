@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -44,13 +45,16 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private SubSectorMappingRepository subSectorMappingRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository; 
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
 		try {
 			// application id must not be null
-
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
+            Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
 				// throw new NullPointerException("Applicant ID does not match
@@ -86,6 +90,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			saveSector(applicantDetail.getApplicationId().getId(), applicantRequest.getSectorlist());
 			// sub sector save
 			saveSubSector(applicantDetail.getApplicationId().getId(), applicantRequest.getSubsectors());
+			
+			//Setting Flag to applicantDetailFilled or not 
+			if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsApplicantDetailsFilled())){
+				loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getIsApplicantDetailsFilled());
+			}
 			return true;
 
 		} catch (Exception e) {
