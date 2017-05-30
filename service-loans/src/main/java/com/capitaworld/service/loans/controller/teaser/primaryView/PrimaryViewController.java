@@ -167,11 +167,8 @@ public class PrimaryViewController {
 		LoansResponse loansResponse = new LoansResponse();
 
 		//get user id from http servlet request
-		/*Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);*/
-
-		Long userId = 1778l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
-		Long userType = 2l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);*/
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -203,11 +200,8 @@ public class PrimaryViewController {
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
-		Long userId = 1778l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);*/
-		Long userType = 2l;/*(Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);*/
-
-		/*Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);*/
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
 
 		if (toApplicationId == null) {
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
