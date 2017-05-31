@@ -33,7 +33,7 @@ public class WorkingCapitalLoanController {
 
 	@Autowired
 	private PrimaryWorkingCapitalLoanService primaryWCService;
-
+	
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -166,5 +166,5 @@ public class WorkingCapitalLoanController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	
 }

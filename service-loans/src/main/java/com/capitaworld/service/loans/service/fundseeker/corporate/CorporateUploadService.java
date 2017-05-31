@@ -14,4 +14,6 @@ public interface CorporateUploadService {
 	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles) throws Exception;
 
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
+	
+	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled) throws Exception;
 }

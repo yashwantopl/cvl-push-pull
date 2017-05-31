@@ -21,6 +21,8 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -35,6 +37,9 @@ public class OtherIncomeDetailController {
 
 	@Autowired
 	private OtherIncomeDetailService otherIncomeDetailService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -79,9 +84,16 @@ public class OtherIncomeDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (id == null) {
 				logger.warn("ID Require to get Other Income Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -92,6 +104,8 @@ public class OtherIncomeDetailController {
 					applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			Integer currencyId = retailApplicantService.getCurrency(id, userId);
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Other Income Details==>", e);

@@ -39,11 +39,10 @@ public class CorporateApplicantController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CorporateApplicantRequest applicantRequest,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				applicantRequest.setClientId(clientId);
 			}
@@ -74,16 +73,16 @@ public class CorporateApplicantController {
 
 	@RequestMapping(value = "/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long id = null;
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				id = clientId;
-			}else{
+			} else {
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
+
 			if (applicationId == null) {
 				logger.warn(
 						"ApplicationId Require to get Corporate Profile Details. Application Id ==>" + applicationId);
@@ -145,7 +144,7 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 
-			if (sectorIdList == null) {	
+			if (sectorIdList == null) {
 
 				logger.warn("sectorIdList  Require to get sectors Details ==>" + sectorIdList);
 				return new ResponseEntity<LoansResponse>(
@@ -163,5 +162,36 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	/*@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateFinalInformationFlag(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("flag") Boolean flag, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.error("Application id must not be null.");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			applicantService.updateFinalCommonInformation(applicationId, userId, flag);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}*/
 
 }

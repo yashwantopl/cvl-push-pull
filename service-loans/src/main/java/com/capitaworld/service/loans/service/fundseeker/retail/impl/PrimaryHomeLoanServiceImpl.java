@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -23,6 +25,9 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	
 	@Autowired
 	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws Exception {
@@ -57,6 +62,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		PrimaryHomeLoanDetailRequest primaryHomeLoanDetailRequest= new PrimaryHomeLoanDetailRequest();
 		BeanUtils.copyProperties(loanDetail, primaryHomeLoanDetailRequest);
 		primaryHomeLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+		Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+		primaryHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 		return primaryHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Home Loan Details Profile:-");

@@ -37,6 +37,10 @@ public class GuarantorRequest {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	
+	private Boolean isGuarantor1DetailsFilled;
+	private Boolean isGuarantor2DetailsFilled;
+
 
 	public Long getId() {
 		return id;
@@ -293,6 +297,22 @@ public class GuarantorRequest {
 
 	public void setDate(Integer date) {
 		this.date = date;
+	}
+
+	public Boolean getIsGuarantor1DetailsFilled() {
+		return isGuarantor1DetailsFilled;
+	}
+
+	public void setIsGuarantor1DetailsFilled(Boolean isGuarantor1DetailsFilled) {
+		this.isGuarantor1DetailsFilled = isGuarantor1DetailsFilled;
+	}
+
+	public Boolean getIsGuarantor2DetailsFilled() {
+		return isGuarantor2DetailsFilled;
+	}
+
+	public void setIsGuarantor2DetailsFilled(Boolean isGuarantor2DetailsFilled) {
+		this.isGuarantor2DetailsFilled = isGuarantor2DetailsFilled;
 	}
 
 }

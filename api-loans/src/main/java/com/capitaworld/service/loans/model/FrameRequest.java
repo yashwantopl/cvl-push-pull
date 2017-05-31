@@ -22,7 +22,6 @@ public class FrameRequest implements Serializable{
 	private List<Map<String, Object>> dataList;
 	
 	private int applicantType;
-
 	
 
 	public int getApplicantType() {
@@ -64,10 +63,5 @@ public class FrameRequest implements Serializable{
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
 	}
-
-	
-	
-
-	
 
 }

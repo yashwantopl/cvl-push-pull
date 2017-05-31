@@ -13,4 +13,6 @@ public interface CorporateApplicantService {
 	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception;
 	
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);
+	
+//	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception;
 }

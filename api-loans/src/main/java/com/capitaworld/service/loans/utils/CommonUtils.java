@@ -101,12 +101,12 @@ public class CommonUtils {
 
 	public interface IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
-				"applicationId"};
+				"applicationId" };
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
-				"aadharNumber", "monthlyIncome","firstAddress", "secondAddress", "addressSameAs",
-				"contactNo", "companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
+				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
+				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
 				"alliedActivityId", "userId" };
 
@@ -184,5 +184,29 @@ public class CommonUtils {
 		} else {
 			return null;
 		}
+	}
+
+	public interface TabType {
+		public static final int PROFILE = 1;
+		public static final int PROFILE_CO_APPLICANT = 2;
+		public static final int PROFILE_GUARANTOR = 3;
+		public static final int PRIMARY_INFORMATION = 4;
+		public static final int PRIMARY_UPLOAD = 5;
+		public static final int FINAL_UPLOAD = 6;
+		public static final int FINAL_DPR_UPLOAD = 7;
+	}
+
+	public static boolean isObjectListNull(Object... args) {
+		for (Object object : args) {
+			boolean flag = false;
+			if (object instanceof List) {
+				flag = ((List) object).isEmpty();
+				if(flag) return true;
+				else continue;
+			}
+			flag = isObjectNullOrEmpty(object);
+			if(flag) return true;
+		}
+		return false;
 	}
 }

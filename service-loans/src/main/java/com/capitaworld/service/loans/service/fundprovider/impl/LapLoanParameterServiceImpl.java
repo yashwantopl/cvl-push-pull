@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundprovider.LapParameterReposit
 import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
+import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
@@ -76,6 +77,21 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		if(lapParameter==null)
 			return null;
 		BeanUtils.copyProperties(lapParameter, lapParameterRequest);
+		
+		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(lapParameterRequest.getId());
+		if(!countryList.isEmpty())
+		{
+		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+		try {
+			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			lapParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 		
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(lapParameterRequest.getId());
 		if(!stateList.isEmpty())
