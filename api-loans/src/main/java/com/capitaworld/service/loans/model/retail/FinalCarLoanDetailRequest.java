@@ -39,6 +39,10 @@ public class FinalCarLoanDetailRequest implements Serializable {
 
 	private Double vehicleCost;
 	
+	private String currencyValue;
+	
+	private Boolean isFinalInformationFilled;
+	
 	public Long getId() {
 		return id;
 	}
@@ -143,5 +147,20 @@ public class FinalCarLoanDetailRequest implements Serializable {
 		this.clientId = clientId;
 	}
 
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
+	}
+
+	public Boolean getIsFinalInformationFilled() {
+		return isFinalInformationFilled;
+	}
+
+	public void setIsFinalInformationFilled(Boolean isFinalInformationFilled) {
+		this.isFinalInformationFilled = isFinalInformationFilled;
+	}
 
 }

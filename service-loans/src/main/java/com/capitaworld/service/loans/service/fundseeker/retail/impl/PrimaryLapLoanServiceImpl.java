@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryLapLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLapLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -23,6 +25,9 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 
 	@Autowired
 	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryLapLoanDetailRequest lapLoanDetailRequest, Long userId) throws Exception {
@@ -63,6 +68,8 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			BeanUtils.copyProperties(loanDetail, lapLoanDetailRequest);
 			lapLoanDetailRequest.setTenure(
 					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+			lapLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lapLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Lap laon Details Profile:-");

@@ -12,6 +12,7 @@ import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.EstablistmentYearClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
@@ -83,7 +84,11 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCurrency(Integer currencyId) {
-		return Currency.getById(currencyId).getValue();
+		return !CommonUtils.isObjectNullOrEmpty(currencyId) ? Currency.getById(currencyId).getValue() : null;
+	}
+	
+	public static String getDenomination(Integer denominationId) {
+		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() : null;
 	}
 
 }

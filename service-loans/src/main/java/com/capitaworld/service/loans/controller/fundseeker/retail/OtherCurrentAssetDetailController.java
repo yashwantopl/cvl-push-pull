@@ -21,6 +21,8 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -35,6 +37,9 @@ public class OtherCurrentAssetDetailController {
 
 	@Autowired
 	private OtherCurrentAssetDetailService otherCurrentAssetDetailService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -81,9 +86,16 @@ public class OtherCurrentAssetDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (id == null) {
 				logger.warn("ID Require to get Other Current Asset Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -94,6 +106,8 @@ public class OtherCurrentAssetDetailController {
 					.getOtherCurrentAssetDetailList(id, applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			Integer currencyId = retailApplicantService.getCurrency(id, userId);
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Other Current Asset Details==>", e);

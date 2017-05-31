@@ -15,6 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCap
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalWorkingCapitalLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -25,15 +26,20 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 
 	private static final Logger logger = LoggerFactory.getLogger(FinalWorkingCapitalLoanServiceImpl.class.getName());
 
+	
 	@Autowired
 	private FinalWorkingCapitalLoanDetailRepository finalWCRepository;
 
 	@Autowired
 	private OverseasNetworkRepository networkRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
 		try {
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId());
 			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
 					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId()));
 			if (capitalLoanDetail != null) {
@@ -47,12 +53,15 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 				capitalLoanDetail.setIsActive(true);
 				capitalLoanDetail.setApplicationId(new LoanApplicationMaster(capitalLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID);
+			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID,"currencyId");
 			capitalLoanDetail = finalWCRepository.save(capitalLoanDetail);
 
 			// saving Data
 			saveOverseasNetworkMapping(capitalLoanRequest.getApplicationId(), userId,
 					capitalLoanRequest.getOverseasNetworkIds());
+			
+			//setting flag 
+			loanApplicationRepository.setIsFinalMcqMandatoryFilled(capitalLoanRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getIsFinalMcqFilled())  ? false : capitalLoanRequest.getIsFinalMcqFilled());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Working Capital Details:-");

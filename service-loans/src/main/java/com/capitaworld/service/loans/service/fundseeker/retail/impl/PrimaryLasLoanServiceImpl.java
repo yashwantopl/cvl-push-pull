@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryLasLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLasLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -23,6 +25,9 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 
 	@Autowired
 	private PrimaryLasLoanDetailRepository primaryLasLoanDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryLasLoanDetailRequest lasLoanDetailRequest, Long userId) throws Exception {
@@ -63,6 +68,8 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			BeanUtils.copyProperties(loanDetail, lasLoanDetailRequest);
 			lasLoanDetailRequest.setTenure(
 					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+			lasLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lasLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary LAS Loan Details Profile:-");
