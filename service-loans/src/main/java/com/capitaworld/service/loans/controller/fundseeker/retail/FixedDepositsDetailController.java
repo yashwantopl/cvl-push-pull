@@ -48,12 +48,10 @@ public class FixedDepositsDetailController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-			frameRequest.setClientId(clientId);
-		   }
+
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -92,7 +90,7 @@ public class FixedDepositsDetailController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

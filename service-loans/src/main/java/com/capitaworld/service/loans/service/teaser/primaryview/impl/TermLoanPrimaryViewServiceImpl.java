@@ -109,7 +109,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
 
 	@Override
-	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId,Long userType,Long fundProviderUserId) {
+	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId,Integer userType,Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
 		if(userType!=null) {
