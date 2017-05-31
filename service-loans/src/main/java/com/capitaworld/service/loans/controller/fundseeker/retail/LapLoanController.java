@@ -56,8 +56,7 @@ public class LapLoanController {
 						HttpStatus.OK);
 			}
 
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				lapDetailRequest.setClientId(clientId);
 			}
 			lapLoanService.saveOrUpdate(lapDetailRequest, userId);
@@ -77,8 +76,7 @@ public class LapLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

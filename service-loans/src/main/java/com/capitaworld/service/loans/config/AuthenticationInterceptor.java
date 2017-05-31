@@ -53,7 +53,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return false;
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
-		request.setAttribute("userType", authResponse.getUserType());
+		request.setAttribute("userType", authResponse.getUserType().intValue());
 		return true;
 	}
 

@@ -55,7 +55,7 @@ public class CoApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				applicantRequest.setClientId(clientId);
 			}
 			coApplicantService.save(applicantRequest, applicantRequest.getApplicationId(), userId);
@@ -77,7 +77,7 @@ public class CoApplicantController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -124,7 +124,7 @@ public class CoApplicantController {
 
 			}
 			
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				applicantRequest.setClientId(clientId);
 			}
 			coApplicantService.saveFinal(applicantRequest, userId);
@@ -146,7 +146,7 @@ public class CoApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

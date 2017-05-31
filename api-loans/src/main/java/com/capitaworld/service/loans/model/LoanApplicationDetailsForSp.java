@@ -3,7 +3,7 @@ package com.capitaworld.service.loans.model;
 public class LoanApplicationDetailsForSp {
 
 	private Long id;
-	
+	private Integer applicationType;
 	private Integer productId;
 	private String productName;
 	private Double amount;
@@ -11,6 +11,14 @@ public class LoanApplicationDetailsForSp {
 	private Integer denominationId;
 	private String denominationValue;
 	
+
+	public Integer getApplicationType() {
+		return applicationType;
+	}
+
+	public void setApplicationType(Integer applicationType) {
+		this.applicationType = applicationType;
+	}
 
 	public LoanApplicationDetailsForSp() {
 		super();

@@ -72,10 +72,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
+				coApplicantService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(), userId);
+				guarantorService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
 			}
 
 			// Updating Flag
@@ -125,7 +125,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
-						+ id + " ApplicationId==>" + applicationId);
+						+ id + "  ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
@@ -145,8 +145,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
-			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
-					: applicantRequest.getClientId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
+			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
