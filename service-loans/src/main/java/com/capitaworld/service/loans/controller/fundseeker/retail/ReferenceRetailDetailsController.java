@@ -63,8 +63,7 @@ public class ReferenceRetailDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				frameRequest.setClientId(clientId);
 			}
 			boolean response = referenceRetailDetailsService.saveOrUpdate(frameRequest);

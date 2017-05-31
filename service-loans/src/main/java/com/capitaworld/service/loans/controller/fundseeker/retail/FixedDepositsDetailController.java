@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -42,10 +43,12 @@ public class FixedDepositsDetailController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			frameRequest.setClientId(clientId);
+		   }
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(

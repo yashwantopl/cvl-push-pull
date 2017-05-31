@@ -52,7 +52,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				commonRequest.setClientId(clientId);
 			}
 			loanApplicationService.saveOrUpdate(commonRequest,userId);
@@ -72,7 +72,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -102,7 +102,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -126,10 +126,15 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> inActive(@PathVariable("id") Long id, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> inActive(@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (userId == null) {
 				logger.warn("UserId Require to Inactive Loan Application Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(

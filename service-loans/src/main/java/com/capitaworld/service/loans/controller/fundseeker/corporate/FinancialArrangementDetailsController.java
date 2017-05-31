@@ -61,7 +61,7 @@ public class FinancialArrangementDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				frameRequest.setClientId(clientId);
 			}
 			financialArrangementDetailsService.saveOrUpdate(frameRequest);
@@ -78,9 +78,14 @@ public class FinancialArrangementDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id , HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id , HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get Financial Arrangement Details ==>" + id);

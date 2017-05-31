@@ -75,10 +75,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
+				coApplicantService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(), userId);
+				guarantorService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
 			}
 			return true;
 
@@ -123,7 +123,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
-						+ id + " ApplicationId==>" + applicationId);
+						+ id + "  ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
@@ -144,7 +144,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
 
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
 				throw new NullPointerException(

@@ -44,7 +44,7 @@ public class CorporateApplicantController {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				applicantRequest.setClientId(clientId);
 			}
 
@@ -78,7 +78,7 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			Long id = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				id = clientId;
 			}else{
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);

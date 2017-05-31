@@ -62,7 +62,7 @@ public class OwnershipDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				frameRequest.setClientId(clientId);
 			}
 			ownershipDetailsService.saveOrUpdate(frameRequest);
@@ -79,8 +79,13 @@ public class OwnershipDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request) {
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		Long userId = null;
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
 		// request must not be null
 		try {
 			if (id == null) {
