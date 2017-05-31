@@ -1,19 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -22,61 +8,36 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
-import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
-import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.client.IndustrySectorSubSectorTeaser;
-import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.CreditRatingFund;
-import com.capitaworld.service.oneform.enums.CreditRatingTerm;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.Denomination;
-import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.FinanceCategory;
-import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.Particular;
-import com.capitaworld.service.oneform.enums.RatingAgency;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.oneform.client.*;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -136,16 +97,43 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private FinanceMeansDetailsService financeMeansDetailsService;
 
 	@Autowired
-	private LoanApplicationRepository loanApplicationRepository; 
-	
+	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private ProductMasterService productMasterService;
+
 	protected static final String DMS_URL = "dmsURL";
 	protected static final String ONE_FORM_URL = "oneForm";
+	protected static final String MATCHES_URL = "matchesURL";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
 
 	@Override
-	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId) {
+	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId,Long userType,Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
+
+		if(userType!=null) {
+			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser view viwed by fund provider
+				Long fpProductMappingId = null;
+				try {
+					fpProductMappingId = productMasterService.getList(fundProviderUserId).get(0).getId();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getProperty(MATCHES_URL));
+				try {
+					MatchRequest matchRequest = new MatchRequest();
+					matchRequest.setApplicationId(toApplicationId);
+					matchRequest.setProductId(fpProductMappingId);
+					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
+					termLoanPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = applicationMaster.getUserId();
 		// get details of CorporateApplicantDetail
