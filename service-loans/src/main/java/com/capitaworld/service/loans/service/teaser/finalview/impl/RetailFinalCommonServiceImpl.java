@@ -100,7 +100,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())){
 				if(applicantDetail.getStatusId() == 2){
 					finalViewCommonResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSpouseName()) ? applicantDetail.getSpouseName() :"NA");
-					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.isSpouseEmployed()) ? Options.getById((applicantDetail.isSpouseEmployed() ? 1 : 0)).getValue() :"NA");
+					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? Options.getById((applicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue() :"NA");
 					finalViewCommonResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoChildren()) ? applicantDetail.getNoChildren().toString() : "NA");
 				}
 			}

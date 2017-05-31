@@ -15,6 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDe
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalTermLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -30,10 +31,14 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 
 	@Autowired
 	private OverseasNetworkRepository networkRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest, Long userId) throws Exception {
 		try {
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId());
 			FinalTermLoanDetail termLoanDetail = termLoanDetailRepository
 					.getByApplicationAndUserId(termLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId()));
 			if (termLoanDetail != null) {
@@ -54,6 +59,9 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			// saving Data
 			saveOverseasNetworkMapping(termLoanRequest.getApplicationId(), userId,
 					termLoanRequest.getOverseasNetworkIds());
+			
+			//setting flag 
+			loanApplicationRepository.setIsFinalMcqMandatoryFilled(termLoanRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(termLoanRequest.getIsFinalMcqFilled()) ? false : termLoanRequest.getIsFinalMcqFilled());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Term Loan Details:-");
@@ -72,6 +80,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			}
 			FinalTermLoanRequest termLoanRequest = new FinalTermLoanRequest();
 			BeanUtils.copyProperties(loanDetail, termLoanRequest);
+			termLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return termLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Term Loan Details:-");

@@ -67,6 +67,13 @@ public class FinalCommonRetailRequest {
 	private String tradeLicenseNumber;
 	private String unattended;
 	private String websiteAddress;
+	
+	private Boolean isApplicantFinalFilled;
+	private Boolean isCoApp1FinalFilled;
+	private Boolean isCoApp2FinalFilled;
+	
+	private Boolean isGuarantor1FinalFilled;
+	private Boolean isGuarantor2FinalFilled;
 
 	public Long getId() {
 		return id;
@@ -532,5 +539,44 @@ public class FinalCommonRetailRequest {
 		this.currencyValue = currencyValue;
 	}
 
-	
+	public Boolean getIsApplicantFinalFilled() {
+		return isApplicantFinalFilled;
+	}
+
+	public void setIsApplicantFinalFilled(Boolean isApplicantFinalFilled) {
+		this.isApplicantFinalFilled = isApplicantFinalFilled;
+	}
+
+	public Boolean getIsCoApp1FinalFilled() {
+		return isCoApp1FinalFilled;
+	}
+
+	public void setIsCoApp1FinalFilled(Boolean isCoApp1FinalFilled) {
+		this.isCoApp1FinalFilled = isCoApp1FinalFilled;
+	}
+
+	public Boolean getIsCoApp2FinalFilled() {
+		return isCoApp2FinalFilled;
+	}
+
+	public void setIsCoApp2FinalFilled(Boolean isCoApp2FinalFilled) {
+		this.isCoApp2FinalFilled = isCoApp2FinalFilled;
+	}
+
+	public Boolean getIsGuarantor1FinalFilled() {
+		return isGuarantor1FinalFilled;
+	}
+
+	public void setIsGuarantor1FinalFilled(Boolean isGuarantor1FinalFilled) {
+		this.isGuarantor1FinalFilled = isGuarantor1FinalFilled;
+	}
+
+	public Boolean getIsGuarantor2FinalFilled() {
+		return isGuarantor2FinalFilled;
+	}
+
+	public void setIsGuarantor2FinalFilled(Boolean isGuarantor2FinalFilled) {
+		this.isGuarantor2FinalFilled = isGuarantor2FinalFilled;
+	}
+
 }

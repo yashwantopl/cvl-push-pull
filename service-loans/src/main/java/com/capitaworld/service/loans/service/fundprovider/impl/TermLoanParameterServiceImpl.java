@@ -61,7 +61,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			return false;
 		}
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
-		termLoanParameter.setModifiedBy(termLoanParameterRequest.getId());
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameterRepository.save(termLoanParameter);

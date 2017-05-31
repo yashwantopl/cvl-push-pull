@@ -38,6 +38,8 @@ public class FinalTermLoanRequest implements Serializable {
 	private Boolean whetherTechnologyIsTied;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
+	private Boolean isFinalMcqFilled;
+	
 	public FinalTermLoanRequest() {
 	}
 
@@ -224,6 +226,14 @@ public class FinalTermLoanRequest implements Serializable {
 
 	public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
 		this.overseasNetworkIds = overseasNetworkIds;
+	}
+
+	public Boolean getIsFinalMcqFilled() {
+		return isFinalMcqFilled;
+	}
+
+	public void setIsFinalMcqFilled(Boolean isFinalMcqFilled) {
+		this.isFinalMcqFilled = isFinalMcqFilled;
 	}
 
 }

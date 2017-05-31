@@ -60,6 +60,10 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 
 	private Double superBuiltUpArea;
 	
+	private String currencyValue;
+	
+	private Boolean isFinalInformationFilled;
+	
 	public Long getId() {
 		return id;
 	}
@@ -251,6 +255,21 @@ public class FinalHomeLoanDetailRequest implements Serializable {
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
 	}
-	
+
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
+	}
+
+	public Boolean getIsFinalInformationFilled() {
+		return isFinalInformationFilled;
+	}
+
+	public void setIsFinalInformationFilled(Boolean isFinalInformationFilled) {
+		this.isFinalInformationFilled = isFinalInformationFilled;
+	}
 
 }

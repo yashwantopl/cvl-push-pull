@@ -47,8 +47,7 @@ public class HomeLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				primaryHomeLoanDetailRequest.setClientId(clientId);
 			}
 
@@ -89,8 +88,7 @@ public class HomeLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -126,8 +124,7 @@ public class HomeLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				finalHomeLoanDetailRequest.setClientId(clientId);
 			}
 
@@ -167,8 +164,7 @@ public class HomeLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

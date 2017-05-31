@@ -153,10 +153,10 @@ public class RetailApplicantDetail implements Serializable {
 	private Integer interestRate;
 
 	@Column(name = "is_active")
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Column(name = "is_spouse_employed")
-	private boolean isSpouseEmployed;
+	private Boolean isSpouseEmployed;
 
 	@Column(name = "land_size")
 	private Double landSize;
@@ -669,21 +669,6 @@ public class RetailApplicantDetail implements Serializable {
 		this.interestRate = interestRate;
 	}
 
-	public boolean isActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
-
-	public boolean isSpouseEmployed() {
-		return isSpouseEmployed;
-	}
-
-	public void setSpouseEmployed(boolean isSpouseEmployed) {
-		this.isSpouseEmployed = isSpouseEmployed;
-	}
 
 	public Double getLandSize() {
 		return this.landSize;
@@ -1164,5 +1149,22 @@ public class RetailApplicantDetail implements Serializable {
 	public void setGenderId(Integer genderId) {
 		this.genderId = genderId;
 	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public Boolean getIsSpouseEmployed() {
+		return isSpouseEmployed;
+	}
+
+	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
+		this.isSpouseEmployed = isSpouseEmployed;
+	}
+	
 	
 }

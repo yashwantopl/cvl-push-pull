@@ -115,8 +115,13 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
 					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
-						applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
-						applicationDetailsForSp.setDenominationValue(Denomination.getById(applicationDetailsForSp.getDenominationId()).getValue());
+						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
+							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
+							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());							
+						}else{
+							applicationDetailsForSp.setProductName("NA");
+						}
+						applicationDetailsForSp.setDenominationValue(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getDenominationId()) ?  Denomination.getById(applicationDetailsForSp.getDenominationId()).getValue() : "NA");
 						fsApplicationDetails.add(applicationDetailsForSp);
 					}
 					spClientDetail.setListData(fsApplicationDetails);
@@ -127,6 +132,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
 					List<ProductDetailsForSp> fpProductsDetails = new ArrayList<ProductDetailsForSp>();
 					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
+						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
+							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
+						}
 						fpProductsDetails.add(productDetailsForSp);
 					}
 					spClientDetail.setListData(fpProductsDetails);

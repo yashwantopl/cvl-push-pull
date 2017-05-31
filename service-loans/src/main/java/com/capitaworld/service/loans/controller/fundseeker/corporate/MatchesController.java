@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -39,9 +40,14 @@ public class MatchesController {
 
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		    userId = clientId;
+		   } else {
+		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		   }
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
@@ -72,9 +78,14 @@ public class MatchesController {
 
 	@RequestMapping(value = "/${retail}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSRetail(@RequestBody MatchRequest matchRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		    userId = clientId;
+		   } else {
+		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		   }
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
@@ -104,9 +115,14 @@ public class MatchesController {
 
 	@RequestMapping(value = "/${corporate}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPCorporate(@RequestBody MatchRequest matchRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		    userId = clientId;
+		   } else {
+		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		   }
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
@@ -136,9 +152,14 @@ public class MatchesController {
 
 	@RequestMapping(value = "/${retail}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPRetail(@RequestBody MatchRequest matchRequest,
-			HttpServletRequest request) {
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		    userId = clientId;
+		   } else {
+		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		   }
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {

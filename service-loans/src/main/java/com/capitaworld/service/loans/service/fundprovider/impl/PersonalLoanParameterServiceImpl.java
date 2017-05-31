@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
+import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
@@ -76,6 +77,21 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		if(personalLoanParameter==null)
 			return null;
 		BeanUtils.copyProperties(personalLoanParameter, personalLoanParameterRequest);
+		
+		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(personalLoanParameterRequest.getId());
+		if(!countryList.isEmpty())
+		{
+		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
+		try {
+			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			personalLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 		
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(personalLoanParameterRequest.getId());
 		if(!stateList.isEmpty())

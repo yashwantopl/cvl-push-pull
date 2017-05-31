@@ -169,7 +169,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getTenure())) {
 			tenure = 0;
 		} else {
-			tenure = (int) Math.ceil(applicationMaster.getTenure());
+			tenure = (int) Math.ceil(applicationMaster.getTenure() / 12);
 		}
 		if (futureFinancialYears.size() <= 0) {
 			List<FutureFinancialEstimatesDetailRequest> yearList = new ArrayList<FutureFinancialEstimatesDetailRequest>();
