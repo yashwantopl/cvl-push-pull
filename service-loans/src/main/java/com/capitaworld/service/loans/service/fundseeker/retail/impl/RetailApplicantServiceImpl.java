@@ -72,10 +72,14 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
+				coApplicantService.save(request, applicantRequest.getApplicationId(),
+						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+								: applicantRequest.getClientId()));
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()));
+				guarantorService.save(request, applicantRequest.getApplicationId(),
+						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+								: applicantRequest.getClientId()));
 			}
 
 			// Updating Flag
@@ -145,7 +149,6 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
 			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
 					applicantRequest.getApplicationId());
@@ -173,9 +176,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public Integer getCurrency(Long applicationId,Long userId) throws Exception{
-		try{
-		return loanApplicationRepository.getCurrencyId(applicationId, userId);
+	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
+		try {
+			return loanApplicationRepository.getCurrencyId(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while Getting Currency:-");
 			e.printStackTrace();

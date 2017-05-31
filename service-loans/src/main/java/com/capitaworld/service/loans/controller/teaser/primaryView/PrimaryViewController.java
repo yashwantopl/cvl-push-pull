@@ -168,7 +168,7 @@ public class PrimaryViewController {
 
 		//get user id from http servlet request
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -201,7 +201,7 @@ public class PrimaryViewController {
 
 		// get user id from http servlet request
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		if (toApplicationId == null) {
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);

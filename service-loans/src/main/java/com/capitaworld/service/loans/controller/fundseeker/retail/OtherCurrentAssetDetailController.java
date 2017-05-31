@@ -68,7 +68,8 @@ public class OtherCurrentAssetDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (request.getAttribute(CommonUtils.USER_TYPE)
+					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
 				frameRequest.setClientId(clientId);
 			}
 			otherCurrentAssetDetailService.saveOrUpdate(frameRequest);
@@ -90,7 +91,7 @@ public class OtherCurrentAssetDetailController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
