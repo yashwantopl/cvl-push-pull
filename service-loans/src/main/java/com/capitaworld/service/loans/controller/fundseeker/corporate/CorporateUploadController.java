@@ -412,7 +412,7 @@ public class CorporateUploadController {
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == (Long) request.getAttribute(CommonUtils.USER_TYPE)) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

@@ -123,7 +123,6 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		if(!CommonUtils.isObjectNullOrEmpty(detail.getEstablishmentYear())){
 			establishmentYear = CommonDocumentUtils.getYear(detail.getEstablishmentYear().longValue(), environment);
 		}
-
 		
 		List<PastFinancialEstimatesDetailRequest> yearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		if (pastFinancialEstimateDetails != null && pastFinancialEstimateDetails.size() <= 0) {
