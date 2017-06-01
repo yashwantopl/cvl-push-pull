@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -243,4 +244,36 @@ public class ProductMasterController {
 				}
 		}
 	
+	@RequestMapping(value = "/getProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpDetails(@RequestBody Long productMappingId) {
+		// request must not be null
+		try {
+
+			if (productMappingId == null) {
+				logger.warn("productMappingId  Require to get product Details ==>" + productMappingId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			FpProductDetails response = productMasterService.getProductDetails(productMappingId);
+			LoansResponse loansResponse;
+			if(response==null)
+			{
+				 loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+			}
+			else
+			{
+			 loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			 loansResponse.setData(response);
+			}
+			
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting fp  product details ==>", e);	
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
