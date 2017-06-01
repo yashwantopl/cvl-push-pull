@@ -311,6 +311,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		this.longTermRating = longTermRating;
 	}
 
+
 	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
 	}

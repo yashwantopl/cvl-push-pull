@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
@@ -81,35 +82,40 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	Environment environment;
-	
+
 	@Autowired
-	private CreditCardsDetailService creditCardDetailsService; 
-	
+	private CreditCardsDetailService creditCardDetailsService;
+
 	@Autowired
 	private ExistingLoanDetailsService existingLoanService;
-	
+
 	@Autowired
 	private BankAccountHeldDetailService bankAccountsHeldService;
-	
+
 	@Autowired
 	private FixedDepositsDetailService fixedDepositService;
-	
+
 	@Autowired
 	private OtherCurrentAssetDetailService otherCurrentAssetService;
-	
+
 	@Autowired
 	private OtherIncomeDetailService otherIncomeService;
-	
+
 	@Autowired
 	private ReferenceRetailDetailsService referenceService;
-	
+
 	@Autowired
 	private DocumentManagementService documentManagementService;
+
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
+			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId();
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicationId, finalUserId,
 					applicantRequest.getId());
 			if (coDetails != null) {
 				if (applicantRequest.getIsActive() != null && !applicantRequest.getIsActive().booleanValue()) {
@@ -134,12 +140,22 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				coDetails.setBirthDate(birthDate);
 			}
 			coApplicantDetailRepository.save(coDetails);
+
+			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId, finalUserId);
+			int index = coAppIds.indexOf(coDetails.getId());
+			if (index == 0) {
+				loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
+						applicantRequest.getIsCoApp1DetailsFilled());
+			} else if (index == 1) {
+				loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
+						applicantRequest.getIsCoApp2DetailsFilled());
+			}
 			return true;
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -163,7 +179,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -182,15 +198,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while getting List of CoApplicant Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
 		try {
-			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
-					applicantRequest.getId());
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId());
+			CoApplicantDetail coDetails = coApplicantDetailRepository.get(applicantRequest.getApplicationId(),
+					finalUserId, applicantRequest.getId());
 			if (coDetails == null) {
 				throw new NullPointerException("CoApplicant Id Record not exists in DB ID: " + applicantRequest.getId()
 						+ " and Application Id==>" + applicantRequest.getApplicationId());
@@ -199,6 +217,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			coDetails.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			coApplicantDetailRepository.save(coDetails);
+
+			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicantRequest.getApplicationId(), finalUserId);
+			int index = coAppIds.indexOf(coDetails.getId());
+			if (index == 0) {
+				loanApplicationRepository.setIsCoAppOneFinalMandatoryFilled(applicantRequest.getApplicationId(), finalUserId,
+						applicantRequest.getIsCoApp1FinalFilled());
+			} else if (index == 1) {
+				loanApplicationRepository.setIsCoAppTwoFinalMandatoryFilled(applicantRequest.getApplicationId(), finalUserId,
+						applicantRequest.getIsCoApp2FinalFilled());
+			}
+
 			return true;
 
 		} catch (Exception e) {
@@ -313,16 +342,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
-		try{
-			List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
-			if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
+		try {
+			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
+			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
 				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 
 				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 					if (coApplicantDetail.getOccupationId() != null) {
 						if (coApplicantDetail.getOccupationId() == 2) {
-							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							profileViewPLResponse.setNatureOfOccupation(
+									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getCompanyName())) {
 								profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
 							}
@@ -330,11 +360,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								if (coApplicantDetail.getEmployedWithId() == 8) {
 									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
 								} else {
-									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+									profileViewPLResponse.setEmployeeWith(
+											EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
 								}
 							}
-						} else if (coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4) {
-							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+						} else if (coApplicantDetail.getOccupationId() == 3
+								|| coApplicantDetail.getOccupationId() == 4) {
+							profileViewPLResponse.setNatureOfOccupation(
+									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEntityName())) {
 								profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
 							}
@@ -342,50 +375,66 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								if (coApplicantDetail.getIndustryTypeId() == 16) {
 									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
 								} else {
-									profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+									profileViewPLResponse.setIndustryType(
+											IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
 								}
 							}
 						} else if (coApplicantDetail.getOccupationId() == 5) {
-							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							profileViewPLResponse.setNatureOfOccupation(
+									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 							if (coApplicantDetail.getSelfEmployedOccupationId() == 10) {
 								profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
 							} else {
-								profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+								profileViewPLResponse.setOccupation(
+										Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
 							}
 						} else if (coApplicantDetail.getOccupationId() == 6) {
-							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							profileViewPLResponse.setNatureOfOccupation(
+									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
-								profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
+								profileViewPLResponse.setLandSize(
+										LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
 							}
 							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())) {
-								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
+								profileViewPLResponse.setAlliedActivity(
+										AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
 							}
 						} else if (coApplicantDetail.getOccupationId() == 7) {
-							profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							profileViewPLResponse.setNatureOfOccupation(
+									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 						}
 					}
 
-					//set pan car
-					profileViewPLResponse.setRelationshipWithApplicant(coApplicantDetail.getRelationshipWithApplicant()!=null ? RelationshipType.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue():null);
-					profileViewPLResponse.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan() : null);
-					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null ? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
-					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
-					profileViewPLResponse.setFirstName(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
-					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null ? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
-					profileViewPLResponse.setLastName(coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
-					profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null ? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
-					profileViewPLResponse.setMiddleName(coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
-					profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : 0));
+					// set pan car
+					profileViewPLResponse.setRelationshipWithApplicant(
+							coApplicantDetail.getRelationshipWithApplicant() != null ? RelationshipType
+									.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : null);
+					profileViewPLResponse
+							.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan() : null);
+					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null
+							? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
+					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null
+							? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
+					profileViewPLResponse.setFirstName(
+							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null
+							? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
+					profileViewPLResponse.setLastName(
+							coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
+					profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null
+							? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
+					profileViewPLResponse.setMiddleName(
+							coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
+					profileViewPLResponse.setMonthlyIncome(String.valueOf(
+							coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : 0));
 					plResponses.add(profileViewPLResponse);
 				}
 
 				return plResponses;
-			}
-			else{
+			} else {
 				throw new Exception("No CoApplicant Found");
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw new Exception("Error Occured while fetching CoApplicant Details");
 		}
 	}
@@ -393,165 +442,309 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	@Override
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId)
 			throws Exception {
-		try{
-			List<CoApplicantDetail> coApplicantDetails =  coApplicantDetailRepository.getList(applicantId,userId);
-			if(coApplicantDetails!=null && !coApplicantDetails.isEmpty()){
+		try {
+			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
+			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
 				List<RetailFinalViewCommonResponse> finalCommonresponseList = new ArrayList<RetailFinalViewCommonResponse>();
 
 				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 					RetailFinalViewCommonResponse finalViewResponse = new RetailFinalViewCommonResponse();
-					
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCastId())){
-						finalViewResponse.setCaste(CastCategory.getById(coApplicantDetail.getCastId()).getValue());	
-						if(coApplicantDetail.getCastId() == 6){
+
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCastId())) {
+						finalViewResponse.setCaste(CastCategory.getById(coApplicantDetail.getCastId()).getValue());
+						if (coApplicantDetail.getCastId() == 6) {
 							finalViewResponse.setCasteOther(coApplicantDetail.getCastOther());
 						}
-					}else{
+					} else {
 						finalViewResponse.setCaste("NA");
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getReligion())){
-						finalViewResponse.setReligion(ReligionRetailMst.getById(coApplicantDetail.getReligion()).getValue());	
-						if(coApplicantDetail.getReligion() == 8){
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getReligion())) {
+						finalViewResponse
+								.setReligion(ReligionRetailMst.getById(coApplicantDetail.getReligion()).getValue());
+						if (coApplicantDetail.getReligion() == 8) {
 							finalViewResponse.setReligionOther(coApplicantDetail.getReligionOther());
 						}
-					}else{
+					} else {
 						finalViewResponse.setReligion("NA");
 					}
-					finalViewResponse.setBirthPlace(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthPlace()) ? coApplicantDetail.getBirthPlace() : "NA");
-					finalViewResponse.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFatherName()) ? coApplicantDetail.getFatherName() : "NA");
-					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMotherName()) ? coApplicantDetail.getMotherName() : "NA");
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId())){
-						if(coApplicantDetail.getStatusId() == 2){
-							finalViewResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName()) ? coApplicantDetail.getSpouseName() :"NA");
-							finalViewResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ? Options.getById((coApplicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue() :"NA");
-							finalViewResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren()) ? coApplicantDetail.getNoChildren().toString() : "NA");
+					finalViewResponse.setBirthPlace(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthPlace())
+							? coApplicantDetail.getBirthPlace() : "NA");
+					finalViewResponse
+							.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFatherName())
+									? coApplicantDetail.getFatherName() : "NA");
+					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMotherName())
+							? coApplicantDetail.getMotherName() : "NA");
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId())) {
+						if (coApplicantDetail.getStatusId() == 2) {
+							finalViewResponse
+									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
+											? coApplicantDetail.getSpouseName() : "NA");
+							finalViewResponse.setSpouseEmployed(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ? Options
+											.getById((coApplicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue()
+											: "NA");
+							finalViewResponse
+									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())
+											? coApplicantDetail.getNoChildren().toString() : "NA");
 						}
 					}
-					finalViewResponse.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoDependent()) ? coApplicantDetail.getNoDependent().toString() : "NA");
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getHighestQualification())){
-						finalViewResponse.setHighestQualification(EducationStatusRetailMst.getById(coApplicantDetail.getHighestQualification()).getValue());
-						if(coApplicantDetail.getHighestQualification() == 6){
-							finalViewResponse.setHighestQualificationOther(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getHighestQualificationOther()) ? coApplicantDetail.getHighestQualificationOther() : "NA");
+					finalViewResponse
+							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoDependent())
+									? coApplicantDetail.getNoDependent().toString() : "NA");
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getHighestQualification())) {
+						finalViewResponse.setHighestQualification(EducationStatusRetailMst
+								.getById(coApplicantDetail.getHighestQualification()).getValue());
+						if (coApplicantDetail.getHighestQualification() == 6) {
+							finalViewResponse.setHighestQualificationOther(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getHighestQualificationOther())
+											? coApplicantDetail.getHighestQualificationOther() : "NA");
 						}
-					}else{
-						finalViewResponse.setHighestQualification("NA");	
+					} else {
+						finalViewResponse.setHighestQualification("NA");
 					}
-					finalViewResponse.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getQualifyingYear()) ? coApplicantDetail.getQualifyingYear().getMonth() +"/"+ coApplicantDetail.getQualifyingYear().getYear() : "NA");
-					finalViewResponse.setInstituteName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getInstitute()) ? coApplicantDetail.getInstitute() : "NA");
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType())){
-						finalViewResponse.setResidenceType(ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue());
-						if(coApplicantDetail.getResidenceType() == 2){
-							finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent()) ? coApplicantDetail.getAnnualRent().toString() : "NA");
+					finalViewResponse
+							.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getQualifyingYear())
+									? coApplicantDetail.getQualifyingYear().getMonth() + "/"
+											+ coApplicantDetail.getQualifyingYear().getYear()
+									: "NA");
+					finalViewResponse
+							.setInstituteName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getInstitute())
+									? coApplicantDetail.getInstitute() : "NA");
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidenceType())) {
+						finalViewResponse.setResidenceType(
+								ResidenceStatusRetailMst.getById(coApplicantDetail.getResidenceType()).getValue());
+						if (coApplicantDetail.getResidenceType() == 2) {
+							finalViewResponse
+									.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
+											? coApplicantDetail.getAnnualRent().toString() : "NA");
 						}
-					}else{
+					} else {
 						finalViewResponse.setResidenceType("NA");
 					}
-					finalViewResponse.setYearAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingYear()) ? coApplicantDetail.getResidingYear().toString() : "NA");
-					finalViewResponse.setMonthsAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingMonth()) ? coApplicantDetail.getResidingMonth().toString() : "NA");
-					finalViewResponse.setWebsite(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getWebsiteAddress()) ? coApplicantDetail.getWebsiteAddress() : "NA");
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())){
-						if(coApplicantDetail.getOccupationId() == 2){//salaried
-							finalViewResponse.setEmploymentStatus(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(coApplicantDetail.getEmploymentStatus()).getValue() : "NA");
-							finalViewResponse.setCurrentIndustry(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentIndustry()) ?  coApplicantDetail.getCurrentIndustry() : "NA");
-							finalViewResponse.setCurrentDepartment(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentDepartment()) ?  coApplicantDetail.getCurrentDepartment() : "NA");
-							finalViewResponse.setCurrentDesignation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentDesignation()) ?  coApplicantDetail.getCurrentDesignation() : "NA");
-							finalViewResponse.setYearsInCurrentJob(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ?  coApplicantDetail.getCurrentJobYear().toString() : "NA");
-							finalViewResponse.setMonthsInCurrentJob(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ?  coApplicantDetail.getCurrentJobMonth().toString() : "NA");
-							finalViewResponse.setTotalExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()) ?  coApplicantDetail.getTotalExperienceMonth().toString() : "NA");
-							finalViewResponse.setTotalExperienceInYears(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()) ?  coApplicantDetail.getTotalExperienceYear().toString() : "NA");
-							finalViewResponse.setPreviousExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobMonth()) ?  coApplicantDetail.getPreviousJobMonth().toString() : "NA");
-							finalViewResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobYear()) ?  coApplicantDetail.getPreviousJobYear().toString() : "NA");
-							finalViewResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersName()) ?  coApplicantDetail.getPreviousEmployersName() : "NA");
-							finalViewResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersAddress()) ?  coApplicantDetail.getPreviousEmployersAddress() : "NA");
-						}else if(coApplicantDetail.getOccupationId() == 6){//agriculturist
-							finalViewResponse.setTotalLandOwned(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalLandOwned()) ?  coApplicantDetail.getTotalLandOwned().toString() : "NA");
-							finalViewResponse.setPresentlyIrrigated(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPresentlyIrrigated()) ?  coApplicantDetail.getPresentlyIrrigated() : "NA");
-							finalViewResponse.setSeasonalIrrigated(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSeasonalIrrigated()) ?  coApplicantDetail.getSeasonalIrrigated() : "NA");
-							finalViewResponse.setRainFed(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRainFed()) ?  coApplicantDetail.getRainFed() : "NA");
-							finalViewResponse.setUnAttended(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getUnattended()) ?  coApplicantDetail.getUnattended() : "NA");
-						}else if(coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4 || coApplicantDetail.getOccupationId() == 5){//business/self employed prof/self employed
-							finalViewResponse.setEntityName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEntity()) ?  coApplicantDetail.getNameOfEntity() : "NA");
-							finalViewResponse.setOwnershipType(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOwnershipType()) ?  OwnershipTypeRetailMst.getById(coApplicantDetail.getOwnershipType()).getValue() : "NA");
-							finalViewResponse.setOfficeType(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeType()) ?  OfficeTypeRetailMst.getById(coApplicantDetail.getOfficeType()).getValue() : "NA");
-							finalViewResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoPartners()) ?  coApplicantDetail.getNoPartners().toString() : "NA");
-							finalViewResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPartnersName()) ?  coApplicantDetail.getPartnersName() : "NA");
-							finalViewResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ?  coApplicantDetail.getBusinessStartDate().getMonth()+"/"+coApplicantDetail.getBusinessStartDate().getYear() : "NA");
-							finalViewResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareholding()) ?  coApplicantDetail.getShareholding() : "NA");
-							finalViewResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover()) ?  coApplicantDetail.getAnnualTurnover().toString() : "NA");
-							finalViewResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber()) ?  coApplicantDetail.getTradeLicenseNumber() : "NA");
-							finalViewResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate()) ?  coApplicantDetail.getTradeLicenseExpiryDate().getMonth()+"/"+coApplicantDetail.getTradeLicenseExpiryDate().getYear() : "NA");
-							finalViewResponse.setNameOfPoaHolder(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPoaHolderName()) ?  coApplicantDetail.getPoaHolderName() : "NA");
+					finalViewResponse.setYearAtCurrentResident(
+							!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingYear())
+									? coApplicantDetail.getResidingYear().toString() : "NA");
+					finalViewResponse.setMonthsAtCurrentResident(
+							!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingMonth())
+									? coApplicantDetail.getResidingMonth().toString() : "NA");
+					finalViewResponse.setWebsite(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getWebsiteAddress())
+							? coApplicantDetail.getWebsiteAddress() : "NA");
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())) {
+						if (coApplicantDetail.getOccupationId() == 2) {// salaried
+							finalViewResponse
+									.setEmploymentStatus(
+											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus())
+													? EmploymentStatusRetailMst
+															.getById(coApplicantDetail.getEmploymentStatus()).getValue()
+													: "NA");
+							finalViewResponse.setCurrentIndustry(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentIndustry())
+											? coApplicantDetail.getCurrentIndustry() : "NA");
+							finalViewResponse.setCurrentDepartment(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentDepartment())
+											? coApplicantDetail.getCurrentDepartment() : "NA");
+							finalViewResponse.setCurrentDesignation(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentDesignation())
+											? coApplicantDetail.getCurrentDesignation() : "NA");
+							finalViewResponse.setYearsInCurrentJob(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear())
+											? coApplicantDetail.getCurrentJobYear().toString() : "NA");
+							finalViewResponse.setMonthsInCurrentJob(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth())
+											? coApplicantDetail.getCurrentJobMonth().toString() : "NA");
+							finalViewResponse.setTotalExperienceInMonths(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth())
+											? coApplicantDetail.getTotalExperienceMonth().toString() : "NA");
+							finalViewResponse.setTotalExperienceInYears(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear())
+											? coApplicantDetail.getTotalExperienceYear().toString() : "NA");
+							finalViewResponse.setPreviousExperienceInMonths(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobMonth())
+											? coApplicantDetail.getPreviousJobMonth().toString() : "NA");
+							finalViewResponse.setPreviousExperienceInYears(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobYear())
+											? coApplicantDetail.getPreviousJobYear().toString() : "NA");
+							finalViewResponse.setPreviousEmployerName(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersName())
+											? coApplicantDetail.getPreviousEmployersName() : "NA");
+							finalViewResponse.setPreviousEmployerAddress(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersAddress())
+											? coApplicantDetail.getPreviousEmployersAddress() : "NA");
+						} else if (coApplicantDetail.getOccupationId() == 6) {// agriculturist
+							finalViewResponse.setTotalLandOwned(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalLandOwned())
+											? coApplicantDetail.getTotalLandOwned().toString() : "NA");
+							finalViewResponse.setPresentlyIrrigated(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPresentlyIrrigated())
+											? coApplicantDetail.getPresentlyIrrigated() : "NA");
+							finalViewResponse.setSeasonalIrrigated(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSeasonalIrrigated())
+											? coApplicantDetail.getSeasonalIrrigated() : "NA");
+							finalViewResponse
+									.setRainFed(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRainFed())
+											? coApplicantDetail.getRainFed() : "NA");
+							finalViewResponse
+									.setUnAttended(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getUnattended())
+											? coApplicantDetail.getUnattended() : "NA");
+						} else if (coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4
+								|| coApplicantDetail.getOccupationId() == 5) {// business/self
+																				// employed
+																				// prof/self
+																				// employed
+							finalViewResponse
+									.setEntityName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEntity())
+											? coApplicantDetail.getNameOfEntity() : "NA");
+							finalViewResponse
+									.setOwnershipType(
+											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOwnershipType())
+													? OwnershipTypeRetailMst
+															.getById(coApplicantDetail.getOwnershipType()).getValue()
+													: "NA");
+							finalViewResponse
+									.setOfficeType(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeType())
+											? OfficeTypeRetailMst.getById(coApplicantDetail.getOfficeType()).getValue()
+											: "NA");
+							finalViewResponse
+									.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoPartners())
+											? coApplicantDetail.getNoPartners().toString() : "NA");
+							finalViewResponse.setNameOfPartners(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPartnersName())
+											? coApplicantDetail.getPartnersName() : "NA");
+							finalViewResponse
+									.setBusinessEstablishmentYear(
+											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())
+													? coApplicantDetail.getBusinessStartDate().getMonth() + "/"
+															+ coApplicantDetail.getBusinessStartDate().getYear()
+													: "NA");
+							finalViewResponse.setShareHolding(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareHolding())
+											? coApplicantDetail.getShareHolding() : "NA");
+							finalViewResponse.setAnnualTurnover(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover())
+											? coApplicantDetail.getAnnualTurnover().toString() : "NA");
+							finalViewResponse.setTradeLicenseNo(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber())
+											? coApplicantDetail.getTradeLicenseNumber() : "NA");
+							finalViewResponse.setTradeExpiryDate(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate())
+											? coApplicantDetail.getTradeLicenseExpiryDate().getMonth() + "/"
+													+ coApplicantDetail.getTradeLicenseExpiryDate().getYear()
+											: "NA");
+							finalViewResponse.setNameOfPoaHolder(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPoaHolderName())
+											? coApplicantDetail.getPoaHolderName() : "NA");
 						}
 					}
-					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService.getExistingLoanDetailList(applicantId,CommonUtils.ApplicantType.COAPPLICANT);
+					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService
+							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
-					
-					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService
+							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
-					
-					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
+							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
-					for(CreditCardsDetailRequest cardsDetailRequest:creditCardsDetailRequestList){
+					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
-						cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber()  : "NA");
-						cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName()  : "NA");
-						/*cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? C  cardsDetailRequest.getIssuerName()  : "NA");*/
-						cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : "NA");
+						cardsDetailResponse
+								.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber())
+										? cardsDetailRequest.getCardNumber() : "NA");
+						cardsDetailResponse
+								.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName())
+										? cardsDetailRequest.getIssuerName() : "NA");
+						/*
+						 * cardsDetailResponse.setCreditCardTypes(!CommonUtils.
+						 * isObjectNullOrEmpty(cardsDetailRequest.
+						 * getCreditCardTypesId()) ? C
+						 * cardsDetailRequest.getIssuerName() : "NA");
+						 */
+						cardsDetailResponse.setOutstandingBalance(
+								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
+										? cardsDetailRequest.getOutstandingBalance().toString() : "NA");
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
-					
-					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService
+							.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
-					
-					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService
+							.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
-					for(OtherCurrentAssetDetailRequest assetDetailRequest:otherCurrentAssetDetailRequestList){
+					for (OtherCurrentAssetDetailRequest assetDetailRequest : otherCurrentAssetDetailRequestList) {
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
-						assetDetailResponse.setAssetType(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetTypesId()) ? Assets.getById(assetDetailRequest.getAssetTypesId()).getValue() : "NA");
-						assetDetailResponse.setAssetDescription(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetDescription()) ? assetDetailRequest.getAssetDescription() : "NA");
-						assetDetailResponse.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue()) ? assetDetailRequest.getAssetValue().toString() : "NA");
+						assetDetailResponse
+								.setAssetType(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetTypesId())
+										? Assets.getById(assetDetailRequest.getAssetTypesId()).getValue() : "NA");
+						assetDetailResponse.setAssetDescription(
+								!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetDescription())
+										? assetDetailRequest.getAssetDescription() : "NA");
+						assetDetailResponse
+								.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue())
+										? assetDetailRequest.getAssetValue().toString() : "NA");
 						assetDetailResponseList.add(assetDetailResponse);
 					}
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
-					
-					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService
+							.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					List<OtherIncomeDetailResponse> incomeDetailResponseList = new ArrayList<OtherIncomeDetailResponse>();
-					for(OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList){
+					for (OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList) {
 						OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
-						detailResponse.setIncomeDetails(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeDetailsId()) ? IncomeDetails.getById(detailRequest.getIncomeDetailsId()).getValue() : "NA");
-						detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead()) ? detailRequest.getIncomeHead() : "NA");
-						detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome()) ? detailRequest.getGrossIncome().toString() : "NA");
-						detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome()) ? detailRequest.getNetIncome().toString() : "NA");
+						detailResponse
+								.setIncomeDetails(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeDetailsId())
+										? IncomeDetails.getById(detailRequest.getIncomeDetailsId()).getValue() : "NA");
+						detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead())
+								? detailRequest.getIncomeHead() : "NA");
+						detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome())
+								? detailRequest.getGrossIncome().toString() : "NA");
+						detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome())
+								? detailRequest.getNetIncome().toString() : "NA");
 						incomeDetailResponseList.add(detailResponse);
 					}
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
-										
-					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+
+					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService
+							.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
-		
-					//for uploaded documents
-					finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-					finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-					finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-					finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-					finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
-					finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-					finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-					finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
-					
+
+					// for uploaded documents
+					finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+					finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+					finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId,
+							DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+					finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+					finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
+					finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+					finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+					finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+
 					finalCommonresponseList.add(finalViewResponse);
 				}
-				
-				
 
 				return finalCommonresponseList;
-			}
-			else{
+			} else {
 				throw new Exception("No CoApplicant Found");
 			}
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			throw new Exception("Error Occured while fetching CoApplicant Final Details");
 		}
 	}

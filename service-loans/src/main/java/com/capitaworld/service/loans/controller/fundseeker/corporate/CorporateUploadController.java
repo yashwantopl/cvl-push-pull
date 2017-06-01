@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,9 +51,10 @@ public class CorporateUploadController {
 	}
 
 	@RequestMapping(value = "/profile/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,@RequestPart("userType") String userType,
-			@RequestPart("productDocMapId") String productDocMapId, @RequestPart("file") MultipartFile multipartFiles,
-			@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,
+			@RequestPart("userType") String userType, @RequestPart("productDocMapId") String productDocMapId,
+			@RequestPart("file") MultipartFile multipartFiles, @PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(fileName) || CommonUtils.isObjectNullOrEmpty(productDocMapId)) {
 				return new ResponseEntity<LoansResponse>(
@@ -61,7 +63,7 @@ public class CorporateUploadController {
 			}
 
 			DocumentResponse documentResponse = corporateUploadService.uploadProfile(applicationId,
-					Long.valueOf(productDocMapId), fileName,userType,multipartFiles);
+					Long.valueOf(productDocMapId), fileName, userType, multipartFiles);
 			if (documentResponse != null && documentResponse.getStatus() == 200) {
 				logger.info("Profile picture uploaded successfully-->");
 				return new ResponseEntity<LoansResponse>(
@@ -83,14 +85,15 @@ public class CorporateUploadController {
 
 	@RequestMapping(value = "/profile/get/{applicationId}/{mappingId}/{userType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProfileImage(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("mappingId") Long mappingId,@PathVariable("userType") String userType, HttpServletRequest request) {
+			@PathVariable("mappingId") Long mappingId, @PathVariable("userType") String userType,
+			HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(mappingId)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DocumentResponse profilePic = corporateUploadService.getProfilePic(applicationId, mappingId,userType);
+			DocumentResponse profilePic = corporateUploadService.getProfilePic(applicationId, mappingId, userType);
 			LoansResponse loansResponse = new LoansResponse(profilePic.getMessage(), HttpStatus.OK.value());
 			loansResponse.setData(profilePic);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -393,6 +396,35 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/update_flag/{isFilled}/{applicationId}/{tabType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> uploadFlag(@PathVariable("isFilled") Boolean isFilled, @PathVariable("applicationId") Long applicationId,
+			@PathVariable("tabType") Integer tabType, 
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(tabType)) {
+				logger.warn("applicationId or tabType Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			corporateUploadService.updateLoanApplicationFlag(applicationId, userId, tabType, isFilled);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
+					HttpStatus.OK);
 
 		} catch (Exception e) {
 			e.printStackTrace();

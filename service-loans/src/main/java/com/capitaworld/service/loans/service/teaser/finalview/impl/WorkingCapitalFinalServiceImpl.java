@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequ
 import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -147,10 +148,14 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
 
+    @Autowired
+    private ProductMasterService productMasterService;
+
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     protected static final String ONE_FORM_URL = "oneForm";
     protected static final String USERS_URL = "userURL";
+    protected static final String MATCHES_URL = "matchesURL";
 
     private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
 
@@ -158,6 +163,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
     public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId) {
         LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = applicationMaster.getUserId();
+
         //create response object
         WorkingCapitalFinalViewResponse response = new WorkingCapitalFinalViewResponse();
 
@@ -511,12 +517,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
             logger.error("Problem to get Data of Promotor Background {}", e);
         }
 
-        //get value of Past Financial and set in response
+       /* //get value of Past Financial and set in response
         try {
             response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
         } catch (Exception e) {
             logger.error("Problem to get Data of Past Financial {}", e);
-        }
+        }*/
 
         //get value of Future Projection and set in response
         try {

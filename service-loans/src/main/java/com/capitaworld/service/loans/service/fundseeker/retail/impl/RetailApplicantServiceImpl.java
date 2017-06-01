@@ -1,5 +1,15 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -7,22 +17,13 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 @Transactional
@@ -40,28 +41,24 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private GuarantorService guarantorService;
 
 	@Autowired
-	Environment environment; 
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
 
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId((CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId()),
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
-				// throw new NullPointerException(
-				// "Applicant ID and ID(Primary Key) does not match with the
-				// database==> Applicant ID==>"
-				// + applicantRequest.getApplicationId() + "ID==>" +
-				// applicantRequest.getId());
-
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
 			} else {
 				applicantDetail = new RetailApplicantDetail();
 				applicantDetail.setCreatedBy(userId);
 				applicantDetail.setCreatedDate(new Date());
-				applicantDetail.setActive(true);
+				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
@@ -75,11 +72,20 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
+				coApplicantService.save(request, applicantRequest.getApplicationId(),
+						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+								: applicantRequest.getClientId()));
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(), userId);
+				guarantorService.save(request, applicantRequest.getApplicationId(),
+						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+								: applicantRequest.getClientId()));
 			}
+
+			// Updating Flag
+			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
+					finalUserId, applicantRequest.getIsApplicantDetailsFilled());
+
 			return true;
 
 		} catch (Exception e) {
@@ -143,8 +149,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
-
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
 				throw new NullPointerException(
@@ -167,6 +173,17 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
+	}
+
+	@Override
+	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
+		try {
+			return loanApplicationRepository.getCurrencyId(applicationId, userId);
+		} catch (Exception e) {
+			logger.error("Error while Getting Currency:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	@Override

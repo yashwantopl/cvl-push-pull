@@ -26,6 +26,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private String currencyDenomination;
     private String LoanType;
     private String dateOfProposal;
+    private List<?> matchesList;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<AchievementDetailRequest> AchievementDetailList;
     private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
@@ -317,5 +318,13 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setLongTermRating(List<String> longTermRating) {
         this.longTermRating = longTermRating;
+    }
+
+    public List<?> getMatchesList() {
+        return matchesList;
+    }
+
+    public void setMatchesList(List<?> matchesList) {
+        this.matchesList = matchesList;
     }
 }

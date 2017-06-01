@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -23,6 +25,9 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	
 	@Autowired
 	private PrimaryCarLoanDetailRepository primaryCarLoanDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws Exception {
@@ -58,6 +63,8 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			PrimaryCarLoanDetailRequest carLoanDetailRequest = new PrimaryCarLoanDetailRequest();
 			BeanUtils.copyProperties(loanDetail, carLoanDetailRequest);
 			carLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, id);
+			carLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return carLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary CarLoan Details");

@@ -66,19 +66,19 @@ public class ProposalController {
 	public ResponseEntity<ProposalMappingResponse> get(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
 		
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
-		request.setUserType(userType);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		request.setUserType(userType.longValue());
 		request.setUserId(userId);
 		ProposalMappingResponse response = proposalService.get(request);
-		response.setUserType(userType);
+		response.setUserType(userType.longValue());
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> changeStatus(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
-		request.setLastActionPerformedBy(userType);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		request.setLastActionPerformedBy(userType.longValue());
 		request.setUserId(userId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
@@ -86,9 +86,9 @@ public class ProposalController {
 	@RequestMapping(value = "/sendRequest", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> sendRequest(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		request.setUserId(userId);
-		request.setUserType(userType);
+		request.setUserType(userType.longValue());
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.sendRequest(request),HttpStatus.OK);
 	}
 	
@@ -101,8 +101,8 @@ public class ProposalController {
 	@RequestMapping(value = "/connections", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ProposalMappingResponse> connections(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest) {
 		
-		Long userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
-		request.setUserType(userType);
+		Integer userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		request.setUserType(userType.longValue());
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.getConectionList(request),HttpStatus.OK);
 	}
 }

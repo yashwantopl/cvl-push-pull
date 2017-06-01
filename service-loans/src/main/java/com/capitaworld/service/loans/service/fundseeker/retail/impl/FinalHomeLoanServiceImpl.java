@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -24,12 +27,19 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 
 	@Autowired
 	private FinalHomeLoanDetailRepository finalHomeLoanDetailRepository;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws Exception {
 		try {
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId());
 			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository
-					.getByApplicationAndUserId(finalHomeLoanDetailRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId()));
+					.getByApplicationAndUserId(finalHomeLoanDetailRequest.getApplicationId(), finalUserId);
 			if (finalHomeLoanDetail == null) {
 				finalHomeLoanDetail = new FinalHomeLoanDetail();
 				finalHomeLoanDetail.setCreatedBy(userId);
@@ -45,6 +55,12 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			corporate[CommonUtils.IgnorableCopy.CORPORATE.length] = CommonUtils.IgnorableCopy.ID;
 			BeanUtils.copyProperties(finalHomeLoanDetailRequest, finalHomeLoanDetail,corporate);
 			finalHomeLoanDetail = finalHomeLoanDetailRepository.save(finalHomeLoanDetail);
+			
+			//setting Flag to DB
+			if(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getIsFinalInformationFilled())){
+//				we are reusing this method and also same column in loanApplication master. it is actually using Corporate. 
+				loanApplicationRepository.setIsFinalMcqMandatoryFilled(finalHomeLoanDetailRequest.getApplicationId(), finalUserId, finalHomeLoanDetailRequest.getIsFinalInformationFilled());
+			}
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Home Loan Details:-");
@@ -63,6 +79,8 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			}
 			FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
 			BeanUtils.copyProperties(loanDetail, finalHomeLoanDetailRequest);
+			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Home Loan Details:-");

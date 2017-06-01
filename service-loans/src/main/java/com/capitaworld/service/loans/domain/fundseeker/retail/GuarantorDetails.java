@@ -292,7 +292,8 @@ public class GuarantorDetails implements Serializable {
 	@Column(name = "self_employed_occupation_other")
 	private String selfEmployedOccupationOther;
 
-	private String shareholding;
+	@Column(name = "share_holding")
+	private String shareHolding;
 
 	@Column(name = "spouse_name")
 	private String spouseName;
@@ -1017,13 +1018,13 @@ public class GuarantorDetails implements Serializable {
 	public void setSelfEmployedOccupationOther(String selfEmployedOccupationOther) {
 		this.selfEmployedOccupationOther = selfEmployedOccupationOther;
 	}
-
-	public String getShareholding() {
-		return shareholding;
+	
+	public String getShareHolding() {
+		return shareHolding;
 	}
 
-	public void setShareholding(String shareholding) {
-		this.shareholding = shareholding;
+	public void setShareHolding(String shareHolding) {
+		this.shareHolding = shareHolding;
 	}
 
 	public String getSpouseName() {

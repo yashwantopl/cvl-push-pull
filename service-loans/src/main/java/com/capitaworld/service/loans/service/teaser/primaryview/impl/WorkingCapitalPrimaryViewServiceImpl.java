@@ -36,6 +36,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
@@ -49,6 +50,9 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorpor
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.EstablistmentYearClient;
@@ -126,16 +130,43 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private ProductMasterService productMasterService;
+
     protected static final String DMS_URL = "dmsURL";
     protected static final String ONE_FORM_URL = "oneForm";
+    protected static final String MATCHES_URL = "matchesURL";
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
-    public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId) {
+    public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId,Integer userType,Long fundProviderUserId) {
         WorkingCapitalPrimaryViewResponse workingCapitalPrimaryViewResponse = new WorkingCapitalPrimaryViewResponse();
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
+
+        if(userType!=null) {
+            if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser view viwed by fund provider
+                Long fpProductMappingId = null;
+                try {
+                    fpProductMappingId = productMasterService.getList(fundProviderUserId).get(0).getId();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getProperty(MATCHES_URL));
+                try {
+                    MatchRequest matchRequest = new MatchRequest();
+                    matchRequest.setApplicationId(toApplicationId);
+                    matchRequest.setProductId(fpProductMappingId);
+                    MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
+                    workingCapitalPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         //get details of CorporateApplicantDetail
         CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, toApplicationId);
         //set value to response

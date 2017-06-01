@@ -33,7 +33,7 @@ public class WorkingCapitalLoanController {
 
 	@Autowired
 	private PrimaryWorkingCapitalLoanService primaryWCService;
-
+	
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -46,7 +46,7 @@ public class WorkingCapitalLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				capitalLoanRequest.setClientId(clientId);
 			}
 			if (userId == null) {
@@ -79,7 +79,7 @@ public class WorkingCapitalLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -115,7 +115,7 @@ public class WorkingCapitalLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				capitalLoanRequest.setClientId(clientId);
 			}
 			
@@ -142,8 +142,7 @@ public class WorkingCapitalLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -167,5 +166,5 @@ public class WorkingCapitalLoanController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	
 }

@@ -28,7 +28,6 @@ public class RetailApplicantRequest implements Serializable {
 	private String pan;
 	private String aadharNumber;
 	private Double monthlyIncome;
-	private Integer currencyId;
 	private Address firstAddress;
 	private Address secondAddress;
 	private boolean addressSameAs;
@@ -45,11 +44,13 @@ public class RetailApplicantRequest implements Serializable {
 	private String selfEmployedOccupationOther;
 	private Double landSize;
 	private Integer alliedActivityId;
-
+	private Integer currencyId;
 	private Integer genderId;
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	
+	private Boolean isApplicantDetailsFilled;
 
 	public RetailApplicantRequest() {
 	}
@@ -156,13 +157,6 @@ public class RetailApplicantRequest implements Serializable {
 		this.monthlyIncome = monthlyIncome;
 	}
 
-	public Integer getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
-	}
 
 	public Address getFirstAddress() {
 		return firstAddress;
@@ -325,4 +319,21 @@ public class RetailApplicantRequest implements Serializable {
 		this.year = year;
 	}
 
+	public Boolean getIsApplicantDetailsFilled() {
+		return isApplicantDetailsFilled;
+	}
+
+	public void setIsApplicantDetailsFilled(Boolean isApplicantDetailsFilled) {
+		this.isApplicantDetailsFilled = isApplicantDetailsFilled;
+	}
+
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
+	
+	
 }

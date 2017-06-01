@@ -59,8 +59,7 @@ public class TermLoanController {
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				termLoanRequest.setClientId(clientId);
 			}
 			finalTLService.saveOrUpdate(termLoanRequest, userId);
@@ -81,8 +80,7 @@ public class TermLoanController {
 		try {
 			try {
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				if (request.getAttribute(CommonUtils.USER_TYPE)
-						.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+				if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 					userId = clientId;
 				} else {
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -118,8 +116,7 @@ public class TermLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				termLoanRequest.setClientId(clientId);
 			}
 
@@ -152,8 +149,7 @@ public class TermLoanController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
