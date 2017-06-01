@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 import com.capitaworld.service.loans.model.AddressResponse;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by dhaval on 24-May-17.
@@ -16,6 +17,7 @@ public class PersonalLoanResponse implements Serializable{
     private String loanType;
     private String loanAmount;
     private String currency;
+    private List<Object> applicantProfilePicture;
 
     public String getPurposeOfLoan() {
         return purposeOfLoan;
@@ -79,5 +81,13 @@ public class PersonalLoanResponse implements Serializable{
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public List<Object> getApplicantProfilePicture() {
+        return applicantProfilePicture;
+    }
+
+    public void setApplicantProfilePicture(List<Object> applicantProfilePicture) {
+        this.applicantProfilePicture = applicantProfilePicture;
     }
 }

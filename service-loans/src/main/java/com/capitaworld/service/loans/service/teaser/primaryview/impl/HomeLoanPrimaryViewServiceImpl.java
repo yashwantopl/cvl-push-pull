@@ -1,21 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
-import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -28,6 +13,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
@@ -38,22 +24,19 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.Options;
-import com.capitaworld.service.oneform.enums.PropertySubType;
-import com.capitaworld.service.oneform.enums.PropertyUsedType;
-import com.capitaworld.service.oneform.enums.RepairType;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Transactional
@@ -82,11 +65,14 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 	@Autowired
 	private Environment environment;
 	
-	protected static final String DMS_URL = "dmsURL";
-	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
+	@Autowired
+	private DocumentManagementService documentManagementService;
+
+	protected static final String DMS_URL = "dmsURL";
+
 	@Override
 	public HomeLoanPrimaryViewResponse getHomeLoanPrimaryViewDetails(Long applicantId) throws Exception {
 		HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = new HomeLoanPrimaryViewResponse();
@@ -307,7 +293,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
 				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
-				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA" );
+				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");
 
 				profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
 
@@ -315,39 +301,22 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setPan(applicantDetail.getPan());
 
 				//applicant profile image
-				DMSClient dmsApplicantImageClient = new DMSClient(environment.getProperty(DMS_URL));
-				DocumentRequest documentRequestProfileImage = new DocumentRequest();
-				documentRequestProfileImage.setApplicationId(applicantId);
-				documentRequestProfileImage.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequestProfileImage.setProductDocumentMappingId(DocumentAlias.HOME_LOAN_PROFIEL_PICTURE);
 				try {
-					DocumentResponse documentResponse = dmsApplicantImageClient.listProductDocument(documentRequestProfileImage);
-					homeLoanResponse.setProfileImage(documentResponse.getDataList());
+					homeLoanResponse.setProfileImage(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.HOME_LOAN_PROFIEL_PICTURE));
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
 				
 				//get list of Pan Card
-				DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
-				DocumentRequest documentRequestPanCard = new DocumentRequest();
-				documentRequestPanCard.setApplicationId(applicantId);
-				documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
-					profileViewHLResponse.setPanCardList(documentResponse.getDataList());
+					profileViewHLResponse.setPanCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
 
 				//get list of Aadhar Card
-				DocumentRequest documentRequestAadharCard = new DocumentRequest();
-				documentRequestAadharCard.setApplicationId(applicantId);
-				documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
-					profileViewHLResponse.setAadharCardList(documentResponse.getDataList());
+					profileViewHLResponse.setAadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
@@ -413,11 +382,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
 		
 		//setting co-application details
-		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId());
+		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
 		homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
 
 		//setting guarantor details
-		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId());
+		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
 		homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
 
 		return homeLoanPrimaryViewResponse;
