@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
@@ -23,6 +24,8 @@ public interface ProductMasterService {
 	public Object[] getUserDetailsByPrductId(Long fpMappingId);
 
 	public ProductDetailsResponse getProductDetailsResponse(Long userId);
+	
+	public FpProductDetails getProductDetails(Long productMappingId) throws Exception;
 
 	
 }
