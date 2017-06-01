@@ -1,9 +1,21 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.capitaworld.service.dms.util.CommonUtil;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.*;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.*;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -12,59 +24,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
-import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Assets;
-import com.capitaworld.service.oneform.enums.CastCategory;
-import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IncomeDetails;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
-import com.capitaworld.service.oneform.enums.Options;
-import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
-import com.capitaworld.service.oneform.enums.RelationshipType;
-import com.capitaworld.service.oneform.enums.ReligionRetailMst;
-import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Title;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -341,7 +303,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId) throws Exception {
+	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId,int productId) throws Exception {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -350,6 +312,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 					if (coApplicantDetail.getOccupationId() != null) {
+						profileViewPLResponse.setNatureOfOccupationId(coApplicantDetail.getOccupationId());
 						if (coApplicantDetail.getOccupationId() == 2) {
 							profileViewPLResponse.setNatureOfOccupation(
 									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
@@ -427,6 +390,29 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
 					profileViewPLResponse.setMonthlyIncome(String.valueOf(
 							coApplicantDetail.getMonthlyIncome() != null ? coApplicantDetail.getMonthlyIncome() : 0));
+					//set uploads
+					switch (productId){
+						case 3://HOME LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT,DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 7://PERSONAL LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT,DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 12://CAR_LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT,DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 13://LOAN_AGAINST_PROPERTY
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT,DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 14://LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT,DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+					}
 					plResponses.add(profileViewPLResponse);
 				}
 
@@ -598,7 +584,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setOwnershipType(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOwnershipType())
 													? OwnershipTypeRetailMst
-															.getById(coApplicantDetail.getOwnershipType()).getValue()
+													.getById(coApplicantDetail.getOwnershipType()).getValue()
 													: "NA");
 							finalViewResponse
 									.setOfficeType(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeType())
@@ -614,7 +600,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setBusinessEstablishmentYear(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())
 													? coApplicantDetail.getBusinessStartDate().getMonth() + "/"
-															+ coApplicantDetail.getBusinessStartDate().getYear()
+													+ coApplicantDetail.getBusinessStartDate().getYear()
 													: "NA");
 							finalViewResponse.setShareHolding(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareHolding())

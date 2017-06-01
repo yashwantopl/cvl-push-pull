@@ -1,9 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
@@ -15,6 +12,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
@@ -52,13 +50,13 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	private RetailApplicantDetailRepository applicantRepository;
 
 	@Autowired
-	RetailApplicantService retailApplicantService;
+	private RetailApplicantService retailApplicantService;
 	
 	@Autowired
-	CoApplicantService coApplicantService;
+	private CoApplicantService coApplicantService;
 
 	@Autowired
-	GuarantorService guarantorService;
+	private GuarantorService guarantorService;
 
 	@Autowired
 	private PrimaryPersonalLoanDetailRepository personalLoanDetailRepository;
@@ -68,6 +66,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private DocumentManagementService documentManagementService;
 	
 	protected static final String DMS_URL = "dmsURL";
 
@@ -222,29 +223,26 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setPan(applicantDetail.getPan());
 
 				//get list of Pan Card
-				DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
-				DocumentRequest documentRequestPanCard = new DocumentRequest();
-				documentRequestPanCard.setApplicationId(applicantId);
-				documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
-					profileViewPLResponse.setPanCardList(documentResponse.getDataList());
+					profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
 
 				//get list of Aadhar Card
-				DocumentRequest documentRequestAadharCard = new DocumentRequest();
-				documentRequestAadharCard.setApplicationId(applicantId);
-				documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 				try {
-					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
-					profileViewPLResponse.setAadharCardList(documentResponse.getDataList());
+					profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+
+				//profile picture
+				try {
+					personalLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_PROFIEL_PICTURE));
+				}catch (DocumentException e){
+					e.printStackTrace();
+				}
+
 				retailPrimaryViewResponse.setPersonalProfileRespoonse(profileViewPLResponse);
 			} else {
 				throw new Exception("No Data found");
@@ -262,11 +260,11 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 		}
 
 		//setting co-application details
-		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, userId);
+		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, userId,applicationMaster.getProductId());
 		retailPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
 
 		//setting guarantor details
-		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId);
+		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId,applicationMaster.getProductId());
 		retailPrimaryViewResponse.setGarantorResponse(garantorResponse);
 
 		//setting Personal Loan Specific Data
