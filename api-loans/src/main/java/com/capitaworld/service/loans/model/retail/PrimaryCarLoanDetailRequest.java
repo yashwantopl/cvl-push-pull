@@ -21,7 +21,7 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 
 	private String carVarient;
 
-	private Integer certifiedDealer;
+	private Boolean certifiedDealer;
 
 	private String dealerName;
 
@@ -74,11 +74,11 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 		this.carVarient = carVarient;
 	}
 
-	public Integer getCertifiedDealer() {
+	public Boolean getCertifiedDealer() {
 		return certifiedDealer;
 	}
 
-	public void setCertifiedDealer(Integer certifiedDealer) {
+	public void setCertifiedDealer(Boolean certifiedDealer) {
 		this.certifiedDealer = certifiedDealer;
 	}
 
