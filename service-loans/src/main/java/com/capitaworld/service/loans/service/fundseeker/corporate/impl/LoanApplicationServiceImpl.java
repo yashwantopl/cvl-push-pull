@@ -207,13 +207,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
+					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
+					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				} else {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
-				}
-				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
-				if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())) {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
 				}
+				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				requests.add(request);
 			}
 			return requests;
@@ -400,14 +400,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						&& applicationMaster.getIsApplicantPrimaryFilled()
 						&& applicationMaster.getIsPrimaryUploadFilled());
 			} else {
-				boolean result = true;
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue())
 					return false;
 
 				Long coApps = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationId, userId);
-				if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
-					return false;
 
 				if (coApps == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
@@ -416,7 +413,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue())
 						return false;
-				} else {
+				} else if(coApps == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())
 						return false;
@@ -424,8 +421,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				Long guarantors = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(applicationId,
 						userId);
-				if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
-					return false;
 
 				if (guarantors == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
@@ -434,7 +429,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue())
 						return false;
-				} else {
+				} else if(guarantors == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())
 						return false;
@@ -448,7 +443,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue())
 					return false;
 
-				return result;
+				return true;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isProfileAndPrimaryDetailFilled ?");
@@ -488,7 +483,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return (applicationMaster.getIsFinalMcqFilled() && applicationMaster.getIsApplicantFinalFilled()
 						&& applicationMaster.getIsFinalDprUploadFilled() && applicationMaster.getIsFinalUploadFilled());
 			} else {
-				boolean result = true;
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue())
 					return false;
@@ -504,7 +498,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2FinalFilled())
 							|| !applicationMaster.getIsCoApp2FinalFilled().booleanValue())
 						return false;
-				} else {
+				} else if (coApps == 1){
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 							|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue())
 						return false;
@@ -522,7 +516,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2FinalFilled())
 							|| !applicationMaster.getIsGuarantor2FinalFilled().booleanValue())
 						return false;
-				} else {
+				} else if (guarantors == 1){
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
 							|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue())
 						return false;
@@ -537,7 +531,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalUploadFilled())
 						|| !applicationMaster.getIsFinalUploadFilled().booleanValue())
 					return false;
-				return result;
+				return true;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalDetailFilled ?");
