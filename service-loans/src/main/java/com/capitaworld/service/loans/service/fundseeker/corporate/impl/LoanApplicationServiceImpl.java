@@ -207,11 +207,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
-					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
-					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
 				} else {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
-					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
+					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
+					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				}
 				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				requests.add(request);
