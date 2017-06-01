@@ -1,11 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
@@ -18,6 +12,11 @@ import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewServic
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -68,7 +67,7 @@ public class LapFinalViewServiceImpl implements LapFinalViewService{
 				// TODO: handle exception
 				logger.error("error while getting Guarantor final details");
 			}
-			
+			lapFinalViewResponse.setFinalViewResponse(finalViewResponse);
 			//LAP Loan primary details
 			try { 
 				lapFinalViewResponse.setLapPrimaryViewResponse(lapPrimaryService.getLapPrimaryViewDetails(applicantId));

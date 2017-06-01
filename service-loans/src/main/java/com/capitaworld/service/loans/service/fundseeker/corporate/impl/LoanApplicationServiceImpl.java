@@ -371,7 +371,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Object[] getApplicationDetailsById(Long applicationId) {
-		return loanApplicationRepository.getUserDetailsByApplicationId(applicationId);
+		List<Object[]> data = loanApplicationRepository.getUserDetailsByApplicationId(applicationId);
+		return (!CommonUtils.isListNullOrEmpty(data)) ? data.get(0) : null ;
 	}
 
 	@Override

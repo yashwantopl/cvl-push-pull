@@ -247,7 +247,9 @@ public class LoanApplicationController {
 				LoansResponse loansResponse=new LoansResponse();
 				
 				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
-				loansResponse.setData(response[0]);
+				if(!CommonUtils.isObjectListNull(response)){
+					loansResponse.setData(response[0]);	
+				}
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 				
 				} catch (Exception e) {
