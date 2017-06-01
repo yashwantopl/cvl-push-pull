@@ -72,14 +72,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(),
-						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
-								: applicantRequest.getClientId()));
+				coApplicantService.save(request, applicantRequest.getApplicationId(),finalUserId);
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(),
-						(CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
-								: applicantRequest.getClientId()));
+				guarantorService.save(request, applicantRequest.getApplicationId(),finalUserId);
 			}
 
 			// Updating Flag
@@ -91,7 +87,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
