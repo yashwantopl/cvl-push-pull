@@ -84,7 +84,7 @@ public class ProposalController {
 			userType = clientUserType;
 		} else {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
 		request.setUserType(userType);
 		request.setUserId(userId);
@@ -103,7 +103,7 @@ public class ProposalController {
 			userType = clientUserType;
 		} else {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
@@ -120,7 +120,7 @@ public class ProposalController {
 			userType = clientUserType;
 		} else {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
 		request.setUserId(userId);
 		request.setUserType(userType.longValue());
@@ -141,7 +141,7 @@ public class ProposalController {
 				.intValue()) {
 			userType = clientUserType;
 		} else {
-			userType = (Long) httpServletRequest.getAttribute(CommonUtils.USER_TYPE);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
 		request.setUserType(userType);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.getConectionList(request),HttpStatus.OK);
