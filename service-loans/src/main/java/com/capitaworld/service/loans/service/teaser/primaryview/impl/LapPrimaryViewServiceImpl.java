@@ -431,11 +431,21 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		lapPrimaryViewResponse.setLapResponse(lapResponse);
 		
 		//setting co-application details
-		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+		List<RetailProfileViewResponse> coApplicantResponse = null;
+		try {
+			coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		lapPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
 		//setting guarantor details
-		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+		List<RetailProfileViewResponse> garantorResponse = null;
+		try {
+			garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		lapPrimaryViewResponse.setGuarantorList(garantorResponse);
 		
 		return lapPrimaryViewResponse;
