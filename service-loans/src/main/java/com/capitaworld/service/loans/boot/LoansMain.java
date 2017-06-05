@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.boot;
 
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.notification.client.NotificationClient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -33,6 +35,9 @@ public class LoansMain {
 
 	@Value("${dmsURL}")
 	String dmsUrl;
+	
+	@Value("${notificationURL}")
+	String notificationURL;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -44,5 +49,13 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(dmsClient);
 		return dmsClient;
 	}
+	
+	@Bean
+	public NotificationClient notificationMasterClient() {
+		NotificationClient notificationClient = new NotificationClient(notificationURL);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
+		return notificationClient;
+	}
+
 
 }
