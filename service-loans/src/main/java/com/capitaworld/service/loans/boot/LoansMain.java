@@ -35,6 +35,9 @@ public class LoansMain {
 
 	@Value("${dmsURL}")
 	String dmsUrl;
+	
+	@Value("${notificationURL}")
+	String notificationURL;
 
 	@Value("${notificationURL}")
 	String notificationURL;
