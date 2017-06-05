@@ -116,6 +116,9 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		Date todayDate = null;
 		Date establishmentDate = null;
 		CorporateApplicantDetail detail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+		if(detail == null){
+			return java.util.Collections.emptyList();
+		}
 		
 		Integer establishmentYear = null;
 		Integer establishmentMonth = detail.getEstablishmentMonth();
