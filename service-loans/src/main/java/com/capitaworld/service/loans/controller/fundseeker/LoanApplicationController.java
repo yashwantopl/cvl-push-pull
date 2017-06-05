@@ -52,7 +52,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				commonRequest.setClientId(clientId);
 			}
 			loanApplicationService.saveOrUpdate(commonRequest,userId);
@@ -72,7 +72,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -102,7 +102,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -247,7 +247,9 @@ public class LoanApplicationController {
 				LoansResponse loansResponse=new LoansResponse();
 				
 				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
-				loansResponse.setData(response[0]);
+				if(!CommonUtils.isObjectListNull(response)){
+					loansResponse.setData(response[0]);	
+				}
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 				
 				} catch (Exception e) {

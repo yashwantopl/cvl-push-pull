@@ -37,7 +37,7 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	private String carVarient;
 
 	@Column(name="certified_dealer")
-	private Integer certifiedDealer;
+	private Boolean certifiedDealer;
 
 	@Column(name="dealer_name")
 	private String dealerName;
@@ -101,11 +101,11 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 		this.carVarient = carVarient;
 	}
 
-	public Integer getCertifiedDealer() {
+	public Boolean getCertifiedDealer() {
 		return certifiedDealer;
 	}
 
-	public void setCertifiedDealer(Integer certifiedDealer) {
+	public void setCertifiedDealer(Boolean certifiedDealer) {
 		this.certifiedDealer = certifiedDealer;
 	}
 

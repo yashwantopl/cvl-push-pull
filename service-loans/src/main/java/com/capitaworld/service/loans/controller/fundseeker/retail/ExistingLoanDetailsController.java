@@ -67,7 +67,7 @@ public class ExistingLoanDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(request.getAttribute(CommonUtils.USER_TYPE).equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				frameRequest.setClientId(clientId);
 			}
 			existingLoanDetailsService.saveOrUpdate(frameRequest);

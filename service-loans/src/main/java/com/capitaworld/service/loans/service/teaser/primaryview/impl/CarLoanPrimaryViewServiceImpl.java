@@ -1,22 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentRequest;
-import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -28,6 +12,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
@@ -38,19 +23,21 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Transactional
@@ -81,6 +68,10 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private DocumentManagementService documentManagementService;
+
 
     protected static final String DMS_URL = "dmsURL";
 
@@ -256,38 +247,22 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 carLoanResponse.setPermanentAddress(permanentAddress);
 
                 //get list of Pan Card
-                DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
-                DocumentRequest documentRequestPanCard = new DocumentRequest();
-                documentRequestPanCard.setApplicationId(toApplicationId);
-                documentRequestPanCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-                documentRequestPanCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_PAN_CARD);
                 try {
-                    DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestPanCard);
-                    profileViewPLResponse.setPanCardList(documentResponse.getDataList());
+                    profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
                 } catch (DocumentException e) {
                     e.printStackTrace();
                 }
 
                 //get list of Aadhar Card
-                DocumentRequest documentRequestAadharCard = new DocumentRequest();
-                documentRequestAadharCard.setApplicationId(toApplicationId);
-                documentRequestAadharCard.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-                documentRequestAadharCard.setProductDocumentMappingId(DocumentAlias.APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
                 try {
-                    DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestAadharCard);
-                    profileViewPLResponse.setAadharCardList(documentResponse.getDataList());
+                    profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
                 } catch (DocumentException e) {
                     e.printStackTrace();
                 }
 
                 //get profile picture
-                DocumentRequest applicantProfilePicture = new DocumentRequest();
-                applicantProfilePicture.setApplicationId(toApplicationId);
-                applicantProfilePicture.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-                applicantProfilePicture.setProductDocumentMappingId(DocumentAlias.CAR_LOAN_PROFIEL_PICTURE);
                 try {
-                    DocumentResponse documentResponse = dmsClient.listProductDocument(applicantProfilePicture);
-                    carLoanResponse.setApplicantProfilePicture(documentResponse.getDataList());
+                    carLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_PROFIEL_PICTURE));
                 } catch (DocumentException e) {
                     e.printStackTrace();
                 }
@@ -303,7 +278,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         //setting co-application details
         List<RetailProfileViewResponse> coApplicantResponse = null;
         try {
-            coApplicantResponse = coApplicantService.getCoApplicantPLResponse(toApplicationId, userId);
+            coApplicantResponse = coApplicantService.getCoApplicantPLResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -312,7 +287,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         //setting guarantor details
         List<RetailProfileViewResponse> guarantorResponse = null;
         try {
-            guarantorResponse = guarantorService.getGuarantorServiceResponse(toApplicationId, userId);
+            guarantorResponse = guarantorService.getGuarantorServiceResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
             e.printStackTrace();
         }
