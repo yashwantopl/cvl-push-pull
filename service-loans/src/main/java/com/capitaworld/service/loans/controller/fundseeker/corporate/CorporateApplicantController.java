@@ -44,8 +44,8 @@ public class CorporateApplicantController {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == 
+					((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				applicantRequest.setClientId(clientId);
 			}
 
@@ -79,8 +79,8 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			Long id = null;
-			if (request.getAttribute(CommonUtils.USER_TYPE)
-					.equals(String.valueOf(CommonUtils.USER_TYPE_SERVICEPROVIDER))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == 
+					((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				id = clientId;
 			} else {
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -165,36 +165,5 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-	/*@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> updateFinalInformationFlag(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("flag") Boolean flag, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
-		// request must not be null
-		try {
-			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
-
-			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-				logger.error("Application id must not be null.");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
-			}
-			applicantService.updateFinalCommonInformation(applicationId, userId, flag);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
-		} catch (Exception e) {
-			logger.error("Error while getting Loan Application Details==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}*/
 
 }
