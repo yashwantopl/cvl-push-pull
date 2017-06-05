@@ -46,4 +46,6 @@ public interface LoanApplicationService {
 	public Integer getCurrencyId(Long applicationId, Long userId) throws Exception;
 
 	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws Exception;
+	
+	public JSONObject isAllowToMoveAhead(Long applicationId, Long userId, Integer nextTabType,Long coAppllicantOrGuarantorId) throws Exception;
 }

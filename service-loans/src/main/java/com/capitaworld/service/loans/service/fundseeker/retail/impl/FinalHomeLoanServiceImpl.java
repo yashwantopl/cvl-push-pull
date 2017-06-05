@@ -74,10 +74,12 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 		try {
 			FinalHomeLoanDetail loanDetail = finalHomeLoanDetailRepository.getByApplicationAndUserId(applicationId,
 					userId);
-			if (loanDetail == null) {
-				return null;
-			}
 			FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
+			if (loanDetail == null) {
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				return finalHomeLoanDetailRequest;
+			}
 			BeanUtils.copyProperties(loanDetail, finalHomeLoanDetailRequest);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));

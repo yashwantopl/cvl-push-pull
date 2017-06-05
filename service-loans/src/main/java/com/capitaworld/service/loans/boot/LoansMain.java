@@ -39,6 +39,9 @@ public class LoansMain {
 	@Value("${notificationURL}")
 	String notificationURL;
 
+	@Value("${notificationURL}")
+	String notificationURL;
+
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
