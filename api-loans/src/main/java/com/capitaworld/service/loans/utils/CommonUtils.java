@@ -199,6 +199,7 @@ public class CommonUtils {
 		public static final int FINAL_MCQ = 10;
 		public static final int FINAL_INFORMATION = 11;
 		public static final int CONNECTIONS = 12;
+		public static final int MATCHES = 13;
 		
 	}
 

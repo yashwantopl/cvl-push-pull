@@ -57,7 +57,10 @@ public class LoanApplicationMaster implements Serializable {
 	private Date modifiedDate;
 	
 	private String name;
-
+	
+	@Column(name = "application_code")
+	private String applicationCode;
+	
 	@Column(name = "product_id")
 	private Integer productId;
 
@@ -470,28 +473,38 @@ public class LoanApplicationMaster implements Serializable {
 	public void setFinalFilledCount(Boolean finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
+	
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
+	}
 
 	@Override
 	public String toString() {
 		return "LoanApplicationMaster [id=" + id + ", amount=" + amount + ", categoryCode=" + categoryCode
 				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", isActive=" + isActive
-				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name + ", productId="
-				+ productId + ", tenure=" + tenure + ", userId=" + userId + ", currencyId=" + currencyId
-				+ ", denominationId=" + denominationId + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
-				+ ", isApplicantPrimaryFilled=" + isApplicantPrimaryFilled + ", isApplicantFinalFilled="
-				+ isApplicantFinalFilled + ", isCoApp1DetailsFilled=" + isCoApp1DetailsFilled + ", isCoApp1FinalFilled="
-				+ isCoApp1FinalFilled + ", isCoApp2DetailsFilled=" + isCoApp2DetailsFilled + ", isCoApp2FinalFilled="
-				+ isCoApp2FinalFilled + ", isGuarantor1DetailsFilled=" + isGuarantor1DetailsFilled
-				+ ", isGuarantor1FinalFilled=" + isGuarantor1FinalFilled + ", isGuarantor2DetailsFilled="
-				+ isGuarantor2DetailsFilled + ", isGuarantor2FinalFilled=" + isGuarantor2FinalFilled
-				+ ", isPrimaryUploadFilled=" + isPrimaryUploadFilled + ", isFinalDprUploadFilled="
-				+ isFinalDprUploadFilled + ", isFinalUploadFilled=" + isFinalUploadFilled + ", isFinalMcqFilled="
-				+ isFinalMcqFilled + ", isPrimaryLocked=" + isPrimaryLocked + ", isFinalLocked=" + isFinalLocked
-				+ ", detailsFilledTime=" + detailsFilledTime + ", primaryFilledTime=" + primaryFilledTime
-				+ ", finalFilledTime=" + finalFilledTime + ", detailsFilledCount=" + detailsFilledCount
-				+ ", primaryFilledCount=" + primaryFilledCount + ", finalFilledCount=" + finalFilledCount
-				+ ", applicationStatusMaster=" + applicationStatusMaster + "]";
+				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name
+				+ ", applicationCode=" + applicationCode + ", productId=" + productId + ", tenure=" + tenure
+				+ ", userId=" + userId + ", currencyId=" + currencyId + ", denominationId=" + denominationId
+				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", isApplicantPrimaryFilled="
+				+ isApplicantPrimaryFilled + ", isApplicantFinalFilled=" + isApplicantFinalFilled
+				+ ", isCoApp1DetailsFilled=" + isCoApp1DetailsFilled + ", isCoApp1FinalFilled=" + isCoApp1FinalFilled
+				+ ", isCoApp2DetailsFilled=" + isCoApp2DetailsFilled + ", isCoApp2FinalFilled=" + isCoApp2FinalFilled
+				+ ", isGuarantor1DetailsFilled=" + isGuarantor1DetailsFilled + ", isGuarantor1FinalFilled="
+				+ isGuarantor1FinalFilled + ", isGuarantor2DetailsFilled=" + isGuarantor2DetailsFilled
+				+ ", isGuarantor2FinalFilled=" + isGuarantor2FinalFilled + ", isPrimaryUploadFilled="
+				+ isPrimaryUploadFilled + ", isFinalDprUploadFilled=" + isFinalDprUploadFilled
+				+ ", isFinalUploadFilled=" + isFinalUploadFilled + ", isFinalMcqFilled=" + isFinalMcqFilled
+				+ ", isPrimaryLocked=" + isPrimaryLocked + ", isFinalLocked=" + isFinalLocked + ", detailsFilledTime="
+				+ detailsFilledTime + ", primaryFilledTime=" + primaryFilledTime + ", finalFilledTime="
+				+ finalFilledTime + ", detailsFilledCount=" + detailsFilledCount + ", primaryFilledCount="
+				+ primaryFilledCount + ", finalFilledCount=" + finalFilledCount + ", applicationStatusMaster="
+				+ applicationStatusMaster + "]";
 	}
-	
+
 
 }

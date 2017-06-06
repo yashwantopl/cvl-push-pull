@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -220,11 +220,16 @@ public class ProductMasterController {
 	
 
 	@RequestMapping(value = "/productDetails", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProductDetailsResponse> fpProductDetails(HttpServletRequest request ) {
-	
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+	public ResponseEntity<ProductDetailsResponse> fpProductDetails(@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request ) {
 	
 			try {
+				Long userId = null;
+				if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
+					userId = clientId;
+				} else {
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				}
 				
 				if (userId == null) {
 					ProductDetailsResponse productDetailsResponse=new ProductDetailsResponse("User id is null or empty",HttpStatus.BAD_REQUEST.value());
@@ -271,6 +276,34 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting fp  product details ==>", e);	
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/is_self_view/{fpMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isSelfView(@RequestParam(value = "clientId", required = false) Long clientId,@PathVariable("fpMappingId") Long fpMappingId,HttpServletRequest request) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (fpMappingId == null) {
+				logger.warn("fpMappingId  Require to get product Details ==>" + fpMappingId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(productMasterService.isSelfView(fpMappingId,userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while checking self view ==>", e);	
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

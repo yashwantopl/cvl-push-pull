@@ -91,7 +91,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int setIsFinalMcqMandatoryFilled(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("isFinalMcqFilled") Boolean isFinalMcqFilled);
 
-	@Query("from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
+	@Query("from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true order by lm.id desc")
 	public List<LoanApplicationMaster> getUserLoans(@Param("userId") Long userId);
 
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")

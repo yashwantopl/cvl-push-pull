@@ -43,6 +43,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String currencyValue;
 	
 	private Boolean isApplicantPrimaryFilled;
+	
+	private String applicationCode;
 
 	public LoanApplicationRequest() {
 	}
@@ -177,6 +179,14 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setIsApplicantPrimaryFilled(Boolean isApplicantPrimaryFilled) {
 		this.isApplicantPrimaryFilled = isApplicantPrimaryFilled;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
 	}
 	
 
