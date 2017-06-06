@@ -84,11 +84,11 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCurrency(Integer currencyId) {
-		return !CommonUtils.isObjectNullOrEmpty(currencyId) ? Currency.getById(currencyId).getValue() : null;
+		return !CommonUtils.isObjectNullOrEmpty(currencyId) ? Currency.getById(currencyId).getValue() : "NA";
 	}
 	
 	public static String getDenomination(Integer denominationId) {
-		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() : null;
+		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() :  "NA";
 	}
 
 }

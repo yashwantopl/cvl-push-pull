@@ -38,7 +38,7 @@ public class ProposalController {
 				.intValue()) {
 			userId = clientId;
 		} else {
-			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
 		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
@@ -56,7 +56,7 @@ public class ProposalController {
 				.intValue()) {
 			userId = clientId;
 		} else {
-			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
 		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);
 		return new ResponseEntity<List<FundProviderProposalDetails>>(proposalDetailsList,HttpStatus.OK);

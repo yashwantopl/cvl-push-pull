@@ -91,7 +91,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int setIsFinalMcqMandatoryFilled(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("isFinalMcqFilled") Boolean isFinalMcqFilled);
 
-	@Query("from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
+	@Query("from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true order by lm.id desc")
 	public List<LoanApplicationMaster> getUserLoans(@Param("userId") Long userId);
 
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
@@ -103,7 +103,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public Integer getProductIdByApplicationId(@Param("id") Long applicationId, @Param("userId") Long userId);
 
-	@Query("select lm.userId,lm.name from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true")
+	@Query("select lm.userId,lm.name from LoanApplicationMaster lm where lm.id =:applicationId")
 	public List<Object[]> getUserDetailsByApplicationId(@Param("applicationId") Long applicationId);
 
 	@Query("select count(id) from LoanApplicationMaster lm where lm.id =:id and lm.isPrimaryLocked=1 and lm.isActive = true")
