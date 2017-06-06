@@ -16,15 +16,16 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @author win7
  *
  */
-/*@SpringBootApplication
-@ComponentScan(basePackages = {"com.capitaworld"})
-public class LoansMain {
-	
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(LoansMain.class, args);
-	}
-
-}*/
+/*
+ * @SpringBootApplication
+ * 
+ * @ComponentScan(basePackages = {"com.capitaworld"}) public class LoansMain {
+ * 
+ * public static void main(String[] args) throws Exception {
+ * SpringApplication.run(LoansMain.class, args); }
+ * 
+ * }
+ */
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.capitaworld" })
 @EnableAsync
@@ -35,7 +36,7 @@ public class LoansMain {
 
 	@Value("${dmsURL}")
 	String dmsUrl;
-	
+
 	@Value("${notificationURL}")
 	String notificationURL;
 
@@ -49,13 +50,12 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(dmsClient);
 		return dmsClient;
 	}
-	
+
 	@Bean
 	public NotificationClient notificationMasterClient() {
 		NotificationClient notificationClient = new NotificationClient(notificationURL);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
-
 
 }

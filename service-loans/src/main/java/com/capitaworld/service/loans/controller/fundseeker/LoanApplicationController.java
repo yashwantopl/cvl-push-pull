@@ -41,7 +41,8 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -55,7 +56,7 @@ public class LoanApplicationController {
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				commonRequest.setClientId(clientId);
 			}
-			loanApplicationService.saveOrUpdate(commonRequest,userId);
+			loanApplicationService.saveOrUpdate(commonRequest, userId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -68,13 +69,14 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (id == null || userId == null) {
@@ -98,13 +100,14 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> getList(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
@@ -149,12 +152,11 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getListByUserIdList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId, HttpServletRequest request) {
 		// request must not be null
 		try {
 
-			if (userId== null) {
+			if (userId == null) {
 				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -201,7 +203,7 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/get_product_by_application/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProductByApplication(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
@@ -232,69 +234,68 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getUserIdByApplicationId", method = RequestMethod.POST)
-	public ResponseEntity<LoansResponse> getUserIdByApplicationId(HttpServletRequest request ,@RequestBody Long applicationId) {
-	
-		
-	
-			try {
+	public ResponseEntity<LoansResponse> getUserIdByApplicationId(HttpServletRequest request,
+			@RequestBody Long applicationId) {
 
-				if (applicationId == null) {
-					logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}
-				
-				LoansResponse loansResponse=new LoansResponse();
-				
-				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
-				if(!CommonUtils.isObjectListNull(response)){
-					loansResponse.setData(response[0]);	
-				}
-				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
-				
-				} catch (Exception e) {
-					// TODO: handle exception
-					logger.error("Error while Getting Product Id by Application Id==>", e);
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-		}
-	
-	@RequestMapping(value = "/getUserNameByApplicationId", method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUserNameByApplicationId(HttpServletRequest request ,@RequestBody Long applicationId) {
-	
-		
-	
-			try {
+		try {
 
-				if (applicationId == null) {
-					logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}
-				
-				LoansResponse loansResponse=new LoansResponse();
-				
-				Object[] response=loanApplicationService.getApplicationDetailsById(applicationId);
-				loansResponse.setData(response[1]);
-				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
-				
-				} catch (Exception e) {
-					// TODO: handle exception
-					logger.error("Error while Getting Product Id by Application Id==>", e);
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse();
+
+			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
+			if (!CommonUtils.isObjectListNull(response)) {
+				loansResponse.setData(response[0]);
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error while Getting Product Id by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	
+	}
+
+	@RequestMapping(value = "/getUserNameByApplicationId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUserNameByApplicationId(HttpServletRequest request,
+			@RequestBody Long applicationId) {
+
+		try {
+
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse();
+
+			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
+			loansResponse.setData(response[1]);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("Error while Getting Product Id by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/lock_primary/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> lockPrimary(@PathVariable("applicationId") Long applicationId, 
+	public ResponseEntity<LoansResponse> lockPrimary(@PathVariable("applicationId") Long applicationId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -304,7 +305,7 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			Integer productId = loanApplicationService.getProductIdByApplicationId(applicationId, userId);
 			loanApplicationService.lockPrimary(applicationId, userId, productId, true);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
@@ -318,13 +319,14 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/lock_final/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> lockFinal(@PathVariable("applicationId") Long applicationId, 
+	public ResponseEntity<LoansResponse> lockFinal(@PathVariable("applicationId") Long applicationId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -347,7 +349,7 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateFinalInformationFlag(@PathVariable("applicationId") Long applicationId,
 			@PathVariable("flag") Boolean flag, HttpServletRequest request,
@@ -355,7 +357,8 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -378,14 +381,15 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/primary_profile_filled/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isProfileAndPrimaryFilled(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> isProfileAndPrimaryFilled(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -408,14 +412,15 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/primary_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isPrimaryLocked(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> isPrimaryLocked(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -438,14 +443,15 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/final_filled/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isFinalFilled(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> isFinalFilled(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -468,14 +474,15 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/final_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isFinalLocked(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> isFinalLocked(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -500,12 +507,13 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/get_selfview_primary_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getSelfViewAndPrimaryLocked(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> getSelfViewAndPrimaryLocked(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -530,25 +538,59 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/currency_denomination/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getCurrencyAndDenomination(@PathVariable("applicationId") Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> getCurrencyAndDenomination(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 
 			if (applicationId == null || userId == null) {
-				logger.warn(
-						"ID And UserId Require to get Primary Working Details ==>" + applicationId + " and UserId ==>" + userId);
+				logger.warn("ID And UserId Require to get Primary Working Details ==>" + applicationId
+						+ " and UserId ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.getCurrencyAndDenomination(applicationId, userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Primary Working Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/is_allow_to_move_ahead/{applicationId}/{tabType}/{coAppllicantOrGuarantorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isAllowToMoveAhead(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("tabType") Integer tabType,@PathVariable("coAppllicantOrGuarantorId") Long coAppllicantOrGuarantorId, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (applicationId == null || userId == null) {
+				logger.warn("ID And UserId Require to get Primary Working Details ==>" + applicationId
+						+ " and UserId ==>" + userId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.isAllowToMoveAhead(applicationId, userId, tabType,coAppllicantOrGuarantorId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);

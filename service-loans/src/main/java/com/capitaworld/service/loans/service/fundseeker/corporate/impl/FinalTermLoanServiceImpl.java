@@ -85,7 +85,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 		} catch (Exception e) {
 			logger.error("Error while getting Final Term Loan Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
