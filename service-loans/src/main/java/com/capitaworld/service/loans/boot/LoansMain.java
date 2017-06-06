@@ -1,8 +1,5 @@
 package com.capitaworld.service.loans.boot;
 
-import com.capitaworld.service.dms.client.DMSClient;
-import com.capitaworld.service.notification.client.NotificationClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +8,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
+
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.users.client.UsersClient;
 
 /**
  * @author win7
@@ -39,6 +40,9 @@ public class LoansMain {
 
 	@Value("${notificationURL}")
 	String notificationURL;
+	
+	@Value("${userURL}")
+	String userURL;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -57,5 +61,13 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
+	
+	@Bean
+	public UsersClient userMasterClient(){
+		UsersClient usersClient = new UsersClient(userURL);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
+		return usersClient;
+	}
+
 
 }
