@@ -21,9 +21,9 @@ public interface LoanApplicationService {
 
 	public List<LoanApplicationDetailsForSp> getLoanDetailsByUserIdList(Long userId);
 
-	public boolean lockPrimary(Long applicationId, Long userId, Integer productId,boolean flag) throws Exception;
+	public boolean lockPrimary(Long applicationId, Long userId,boolean flag) throws Exception;
 
-	public boolean lockFinal(Long applicationId, Long userId,  Integer productId,boolean flag) throws Exception;
+	public boolean lockFinal(Long applicationId, Long userId,boolean flag) throws Exception;
 	
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	

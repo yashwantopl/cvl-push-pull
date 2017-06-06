@@ -27,16 +27,10 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLasLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -60,27 +54,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
-
-	@Autowired
-	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
-
-	@Autowired
-	private PrimaryLasLoanDetailRepository primaryLasLoanDetailRepository;
-
-	@Autowired
-	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
-
-	@Autowired
-	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
-
-	@Autowired
-	private PrimaryPersonalLoanDetailRepository primaryPersonalLoanDetailRepository;
-
-	@Autowired
-	private PrimaryCarLoanDetailRepository primaryCarLoanDetailRepository;
-
-	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
@@ -91,7 +64,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
-	
+
+	@Autowired
+	private ApplicationSequenceService applicationSequenceService;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -131,6 +106,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				default:
 					continue;
 				}
+
 				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 						: commonRequest.getClientId()));
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
@@ -140,17 +116,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
-				// For Demo now we have put it static,
-//				applicationMaster.setIsApplicantPrimaryFilled(true);
-				// later on we will validate and change it.
+				applicationMaster
+						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
-				/*
-				 * lockPrimary(applicationMaster.getId(),
-				 * (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId())
-				 * ? userId : commonRequest.getClientId()),
-				 * applicationMaster.getProductId());
-				 */
-				logger.info("applicationMaster==>" + applicationMaster.toString());
 			}
 			return true;
 		} catch (Exception e) {
@@ -193,8 +161,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean inActive(Long id, Long userId) throws Exception {
 		loanApplicationRepository.inActive(id, userId);
+		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
-		usersRequest.setLastAccessApplicantId(null);
+		if (!CommonUtils.isListNullOrEmpty(userLoans)) {
+			usersRequest.setLastAccessApplicantId(userLoans.get(0).getId());
+		} else {
+			usersRequest.setLastAccessApplicantId(null);
+		}
 		usersRequest.setId(userId);
 		UsersClient usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
 		usersClient.setLastAccessApplicant(usersRequest);
@@ -213,13 +186,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
-					request.setCurrencyValue(CommonDocumentUtils.getCurrency(master.getCurrencyId()));
+					String currencyAndDenomination = "NA";
+					if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())
+							&& !CommonUtils.isObjectNullOrEmpty(master.getDenominationId())) {
+						currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination
+								.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+					}
+					request.setCurrencyValue(currencyAndDenomination);
+					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				} else {
 					request.setLoanTypeMain(CommonUtils.RETAIL);
 					Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, master.getId());
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+					request.setLoanTypeSub("DEBT");
 				}
-				request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
 				requests.add(request);
 			}
 			return requests;
@@ -236,41 +217,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean lockPrimary(Long applicationId, Long userId, Integer productId, boolean flag) throws Exception {
+	public boolean lockPrimary(Long applicationId, Long userId, boolean flag) throws Exception {
 		try {
-			LoanApplicationMaster applicationMaster = null;
-			LoanType type = CommonUtils.LoanType.getType(productId);
-			if (type == null) {
-				throw new Exception("Invalid Product Id==>" + productId);
-			}
-			switch (type) {
-			case WORKING_CAPITAL:
-				applicationMaster = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(applicationId,
-						userId);
-				break;
-			case TERM_LOAN:
-				applicationMaster = primaryTermLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case LAS_LOAN:
-				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case PERSONAL_LOAN:
-				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
-						userId);
-				break;
-			case HOME_LOAN:
-				applicationMaster = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case CAR_LOAN:
-				applicationMaster = primaryCarLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			default:
-				throw new Exception("Invalid Product Id==>" + productId);
-			}
-
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
 				throw new Exception(
 						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
@@ -288,47 +237,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean lockFinal(Long applicationId, Long userId, Integer productId, boolean flag) throws Exception {
+	public boolean lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
 		try {
-			LoanApplicationMaster applicationMaster = null;
-			LoanType type = CommonUtils.LoanType.getType(productId);
-			if (type == null) {
-				throw new Exception("Invalid Product Id==>" + productId);
-			}
-			switch (type) {
-			case WORKING_CAPITAL:
-				applicationMaster = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(applicationId,
-						userId);
-				break;
-			case TERM_LOAN:
-				applicationMaster = primaryTermLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case LAS_LOAN:
-				applicationMaster = primaryLasLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case LAP_LOAN:
-				applicationMaster = primaryLapLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case PERSONAL_LOAN:
-				applicationMaster = primaryPersonalLoanDetailRepository.getByApplicationAndUserId(applicationId,
-						userId);
-				break;
-			case HOME_LOAN:
-				applicationMaster = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			case CAR_LOAN:
-				applicationMaster = primaryCarLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
-				break;
-			default:
-				throw new Exception("Invalid Product Id==>" + productId);
-			}
-
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
 				throw new Exception(
 						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
 								+ applicationMaster);
 			}
-
 			applicationMaster.setIsFinalLocked(flag);
 			loanApplicationRepository.save(applicationMaster);
 			return true;
@@ -610,12 +526,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType) {
+	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType)
+			throws Exception {
 		JSONObject response = new JSONObject();
 		response.put("message", "NA");
 		response.put("result", true);
 
 		switch (toTabType) {
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put("result", false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put("result", false);
+				return response;
+			}
+			break;
 		case CommonUtils.TabType.PRIMARY_INFORMATION:
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
@@ -639,6 +572,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_MCQ:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -653,12 +592,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY UPLOADS details to Move Next !");
+				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
 			}
 			break;
 		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -673,7 +618,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY UPLOADS details to Move Next !");
+				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
 			}
@@ -685,6 +630,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -699,7 +650,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY UPLOADS details to Move Next !");
+				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
 			}
@@ -717,6 +668,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -731,7 +689,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY UPLOADS details to Move Next !");
+				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
 			}
@@ -762,7 +720,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	private JSONObject retailValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
-			Long coAppllicantOrGuarantorId) {
+			Long coAppllicantOrGuarantorId) throws Exception {
 		List<Long> coAppIds = null;
 		List<Long> guaIds = null;
 		Long coAppCount = null;
@@ -774,6 +732,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		response.put("message", "NA");
 		response.put("result", true);
 		switch (toTabType) {
+		case CommonUtils.TabType.MATCHES:
+			boolean isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
+				response.put("result", false);
+				return response;
+			}
+			break;
+		case CommonUtils.TabType.CONNECTIONS:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
+				response.put("result", false);
+				return response;
+			}
+			break;
 		case CommonUtils.TabType.PROFILE_CO_APPLICANT:
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
@@ -1009,6 +983,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_INFORMATION:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -1091,6 +1072,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_CO_APPLICANT:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -1184,6 +1172,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			break;
 		case CommonUtils.TabType.FINAL_GUARANTOR:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -1299,6 +1294,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		// for Final HomeLoan and CarLoan
 		case CommonUtils.TabType.FINAL_MCQ:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -1406,10 +1408,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			}
-			
+
 			break;
 
 		case CommonUtils.TabType.FINAL_UPLOAD:
+			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+			if (!isPrimaryLocked) {
+				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put("result", false);
+				return response;
+			}
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
@@ -1517,7 +1526,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			}
-			
+
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationMaster.getProductId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanType)

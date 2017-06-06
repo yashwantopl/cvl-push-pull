@@ -269,7 +269,7 @@ public class PrimaryViewController {
 		// request must not be null
 	
 			Long fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			Long fromUserTypeId = (Long) httpRequest.getAttribute(CommonUtils.USER_TYPE);
+			Long fromUserTypeId = ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).longValue();
 		
 			Long applicationId=request.getApplicationId();
 			Long fpProductId=request.getFpProductId();
@@ -304,7 +304,7 @@ public class PrimaryViewController {
 		// request must not be null
 	
 			Long fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			Long fromUserTypeId = (Long) httpRequest.getAttribute(CommonUtils.USER_TYPE);
+			Long fromUserTypeId = ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).longValue();
 		
 			Long applicationId=request.getApplicationId();
 			Long fpProductId=request.getFpProductId();
