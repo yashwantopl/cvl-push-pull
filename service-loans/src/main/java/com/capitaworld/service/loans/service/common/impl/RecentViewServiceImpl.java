@@ -129,6 +129,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisWeekResp.setProfilePic(imagePath);
 			thisWeekResp.setName(fundProviderDetailsRequest.getOrganizationName());
 			thisWeekResp.setAddress(fundProviderDetailsRequest.getAddress());
+			thisWeekResp.setApplicationId(response.getApplicationId());
+			thisWeekResp.setProductId(response.getProductId());
+			thisWeekResp.setUserId(response.getUserId());
 			listThisWeek.add(thisWeekResp);
 			
 		}
@@ -172,6 +175,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisMonthResp.setProfilePic(imagePath);
 			thisMonthResp.setName(fundProviderDetailsRequest.getOrganizationName());
 			thisMonthResp.setAddress(fundProviderDetailsRequest.getAddress());
+			thisMonthResp.setApplicationId(response.getApplicationId());
+			thisMonthResp.setProductId(response.getProductId());
+			thisMonthResp.setUserId(response.getUserId());
 			listThisMonth.add(thisMonthResp);
 			
 		}
@@ -215,6 +221,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 			earlierResp.setProfilePic(imagePath);
 			earlierResp.setName(fundProviderDetailsRequest.getOrganizationName());
 			earlierResp.setAddress(fundProviderDetailsRequest.getAddress());
+			earlierResp.setApplicationId(response.getApplicationId());
+			earlierResp.setProductId(response.getProductId());
+			earlierResp.setUserId(response.getUserId());
 			listEarlier.add(earlierResp);
 			
 		}
@@ -331,6 +340,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisWeekResp.setProfilePic(imagePath);
 				
 				thisWeekResp.setAddress(address);
+				thisWeekResp.setApplicationId(response.getApplicationId());
+				thisWeekResp.setProductId(response.getProductId());
+				thisWeekResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisWeekResp);
 				
 			}	
@@ -406,6 +418,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisWeekResp.setProfilePic(imagePath);
 				thisWeekResp.setName(name);
 				thisWeekResp.setAddress(address);
+				thisWeekResp.setApplicationId(response.getApplicationId());
+				thisWeekResp.setProductId(response.getProductId());
+				thisWeekResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisWeekResp);
 			}
 			
@@ -496,6 +511,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setProfilePic(imagePath);
 				
 				thisMonthResp.setAddress(address);
+				thisMonthResp.setApplicationId(response.getApplicationId());
+				thisMonthResp.setProductId(response.getProductId());
+				thisMonthResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisMonthResp);
 				
 			}	
@@ -571,6 +589,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setProfilePic(imagePath);
 				thisMonthResp.setName(name);
 				thisMonthResp.setAddress(address);
+				thisMonthResp.setApplicationId(response.getApplicationId());
+				thisMonthResp.setProductId(response.getProductId());
+				thisMonthResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisMonthResp);
 			}
 			
@@ -661,6 +682,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				earlierResp.setProfilePic(imagePath);
 				
 				earlierResp.setAddress(address);
+				earlierResp.setApplicationId(response.getApplicationId());
+				earlierResp.setProductId(response.getProductId());
+				earlierResp.setUserId(response.getUserId());
 				listEarlier.add(earlierResp);
 				
 			}	
@@ -736,6 +760,10 @@ public class RecentViewServiceImpl implements RecentViewService{
 				earlierResp.setProfilePic(imagePath);
 				earlierResp.setName(name);
 				earlierResp.setAddress(address);
+				
+				earlierResp.setApplicationId(response.getApplicationId());
+				earlierResp.setProductId(response.getProductId());
+				earlierResp.setUserId(response.getUserId());
 				listEarlier.add(earlierResp);
 			}
 			
@@ -805,6 +833,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisWeekResp.setProfilePic(imagePath);
 			thisWeekResp.setName(fundProviderDetailsRequest.getOrganizationName());
 			thisWeekResp.setAddress(fundProviderDetailsRequest.getAddress());
+			thisWeekResp.setApplicationId(response.getApplicationId());
+			thisWeekResp.setProductId(response.getProductId());
+			thisWeekResp.setUserId(response.getUserId());
 			}
 			listRecentView.add(thisWeekResp);
 			
@@ -917,6 +948,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisWeekResp.setProfilePic(imagePath);
 				
 				thisWeekResp.setAddress(address);
+				thisWeekResp.setApplicationId(response.getApplicationId());
+				thisWeekResp.setProductId(response.getProductId());
+				thisWeekResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisWeekResp);
 				
 			}	
@@ -992,6 +1026,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisWeekResp.setProfilePic(imagePath);
 				thisWeekResp.setName(name);
 				thisWeekResp.setAddress(address);
+				thisWeekResp.setApplicationId(response.getApplicationId());
+				thisWeekResp.setProductId(response.getProductId());
+				thisWeekResp.setUserId(response.getUserId());
 				listMonthWeek.add(thisWeekResp);
 			}
 			

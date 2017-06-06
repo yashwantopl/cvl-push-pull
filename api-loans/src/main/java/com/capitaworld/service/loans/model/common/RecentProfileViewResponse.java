@@ -17,8 +17,31 @@ public class RecentProfileViewResponse implements Serializable {
 	private String address;
 	private String profilePic;
 	private String proPicFileName;
+	private Long userId;
+	private Long applicationId;
+	private Long productId;
 	
 	
+	
+	
+	public Long getUserId() {
+		return userId;
+	}
+	public Long getApplicationId() {
+		return applicationId;
+	}
+	public Long getProductId() {
+		return productId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
 	public String getName() {
 		return name;
 	}
