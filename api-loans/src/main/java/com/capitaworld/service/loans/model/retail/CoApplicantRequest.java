@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.model.Address;
 public class CoApplicantRequest {
 
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 	private String firstName;
 	private Integer relationshipWithApplicant;
@@ -37,6 +38,9 @@ public class CoApplicantRequest {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	
+	private Boolean isCoApp1DetailsFilled;
+	private Boolean isCoApp2DetailsFilled;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -52,6 +56,15 @@ public class CoApplicantRequest {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public String getFirstName() {
@@ -293,5 +306,22 @@ public class CoApplicantRequest {
 	public void setYear(Integer year) {
 		this.year = year;
 	}
+
+	public Boolean getIsCoApp1DetailsFilled() {
+		return isCoApp1DetailsFilled;
+	}
+
+	public void setIsCoApp1DetailsFilled(Boolean isCoApp1DetailsFilled) {
+		this.isCoApp1DetailsFilled = isCoApp1DetailsFilled;
+	}
+
+	public Boolean getIsCoApp2DetailsFilled() {
+		return isCoApp2DetailsFilled;
+	}
+
+	public void setIsCoApp2DetailsFilled(Boolean isCoApp2DetailsFilled) {
+		this.isCoApp2DetailsFilled = isCoApp2DetailsFilled;
+	}
+
 
 }

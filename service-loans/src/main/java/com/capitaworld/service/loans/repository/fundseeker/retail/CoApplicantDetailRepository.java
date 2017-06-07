@@ -25,7 +25,14 @@ public interface CoApplicantDetailRepository extends JpaRepository<CoApplicantDe
 	public int inactiveCoApplicant(@Param("applicationId") Long applicationId,
 			@Param("id") Long id);
 
-	@Query("from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId")
+	@Query("from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
 	public List<CoApplicantDetail> getList(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select count(cd.id) from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
+	public Long getCoAppCountByApplicationAndUserId(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select cd.id from CoApplicantDetail cd where cd.applicationId.id =:applicationId and cd.isActive = true and cd.applicationId.userId =:userId ORDER BY cd.id")
+	public List<Long> getCoAppIds(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+
 
 }

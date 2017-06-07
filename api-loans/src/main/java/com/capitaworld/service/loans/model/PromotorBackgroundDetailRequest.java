@@ -1,8 +1,8 @@
 package com.capitaworld.service.loans.model;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serializable;
 
 
 /**
@@ -27,7 +27,7 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 
 	private Long applicationId;
 
-	private Boolean mrOrMrs;
+	private Integer salutationId;
 
 	private String panNo;
 
@@ -92,14 +92,13 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
-
-
-	public Boolean getMrOrMrs() {
-		return this.mrOrMrs;
+	
+	public Integer getSalutationId() {
+		return salutationId;
 	}
 
-	public void setMrOrMrs(Boolean mrOrMrs) {
-		this.mrOrMrs = mrOrMrs;
+	public void setSalutationId(Integer salutationId) {
+		this.salutationId = salutationId;
 	}
 
 	public String getPanNo() {

@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -34,6 +37,9 @@ public class FixedDepositsDetailController {
 
 	@Autowired
 	private FixedDepositsDetailService fixedDepositsDetailService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -42,15 +48,14 @@ public class FixedDepositsDetailController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
 		// request must not be null
-		Long userId = (Long)request.getAttribute(CommonUtils.USER_ID);
-		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-					HttpStatus.OK);
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
 		if (frameRequest.getApplicationId() == null || frameRequest.getApplicantType() == 0) {
@@ -80,9 +85,17 @@ public class FixedDepositsDetailController {
 	}
 
 	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
 			if (id == null) {
 				logger.warn("ID Require to get Fixed Deposits Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -91,15 +104,11 @@ public class FixedDepositsDetailController {
 
 			List<FixedDepositsDetailsRequest> response = fixedDepositsDetailService.getFixedDepositsDetailList(id,
 					applicationType);
-			if (response != null && !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
-			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			Integer currencyId = retailApplicantService.getCurrency(id, userId);
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Fixed Deposits Details==>", e);
 			return new ResponseEntity<LoansResponse>(

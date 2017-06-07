@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.GuarantorsCorporateDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.GuarantorsCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -33,23 +33,24 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 	@Autowired
 	private GuarantorsCorporateDetailRepository guarantorsCorporateDetailRepository;
 
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = (GuarantorsCorporateDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, GuarantorsCorporateDetailRequest.class);
-				GuarantorsCorporateDetail guarantorsCorporateDetail = new GuarantorsCorporateDetail();
-				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetail);
-				if (guarantorsCorporateDetailRequest.getId() == null) {
+				GuarantorsCorporateDetail guarantorsCorporateDetail = null;
+
+				if (guarantorsCorporateDetailRequest.getId() != null) {
+					guarantorsCorporateDetail = guarantorsCorporateDetailRepository
+							.findOne(guarantorsCorporateDetailRequest.getId());
+				} else {
+					guarantorsCorporateDetail = new GuarantorsCorporateDetail();
 					guarantorsCorporateDetail.setCreatedBy(frameRequest.getUserId());
 					guarantorsCorporateDetail.setCreatedDate(new Date());
 				}
-				guarantorsCorporateDetail
-						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetail);
+				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				guarantorsCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				guarantorsCorporateDetail.setModifiedDate(new Date());
 				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);
@@ -58,7 +59,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save monthlyTurnoverDetail  :-");
+			logger.info("Exception  in save GuarantorDetails  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -66,18 +67,26 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 	}
 
 	@Override
-	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id) {
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws Exception {
+		try {
+			List<GuarantorsCorporateDetail> guarantorsCorporateDetail = guarantorsCorporateDetailRepository
+					.listGuarantorsCorporateFromAppId(id,userId);
+			List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequests = new ArrayList<GuarantorsCorporateDetailRequest>();
 
-		List<GuarantorsCorporateDetail> guarantorsCorporateDetail = guarantorsCorporateDetailRepository
-				.listGuarantorsCorporateFromAppId(id);
-		List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequests = new ArrayList<GuarantorsCorporateDetailRequest>();
-
-		for (GuarantorsCorporateDetail detail : guarantorsCorporateDetail) {
-			GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = new GuarantorsCorporateDetailRequest();
-			BeanUtils.copyProperties(detail, guarantorsCorporateDetailRequest);
-			guarantorsCorporateDetailRequests.add(guarantorsCorporateDetailRequest);
+			for (GuarantorsCorporateDetail detail : guarantorsCorporateDetail) {
+				GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = new GuarantorsCorporateDetailRequest();
+				BeanUtils.copyProperties(detail, guarantorsCorporateDetailRequest);
+				guarantorsCorporateDetailRequests.add(guarantorsCorporateDetailRequest);
+			}
+			return guarantorsCorporateDetailRequests;
 		}
-		return guarantorsCorporateDetailRequests;
+
+		catch (Exception e) {
+			logger.info("Exception  in get Guarantor Details :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
 	}
 
 }

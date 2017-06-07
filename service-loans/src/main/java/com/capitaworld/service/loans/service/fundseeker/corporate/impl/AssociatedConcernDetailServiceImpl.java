@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -28,27 +28,28 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Service
 @Transactional
 public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDetailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(AssociatedConcernDetailServiceImpl.class.getName());
 	@Autowired
-	private  AssociatedConcernDetailRepository  associatedConcernDetailRepository;
-
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = (AssociatedConcernDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, AssociatedConcernDetailRequest.class);
-				AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
-				BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
-				if (associatedConcernDetailRequest.getId() == null) {
+				AssociatedConcernDetail associatedConcernDetail = null;
+				if (associatedConcernDetailRequest.getId() != null) {
+					associatedConcernDetail = associatedConcernDetailRepository
+							.findOne(associatedConcernDetailRequest.getId());
+				} else {
+					associatedConcernDetail = new AssociatedConcernDetail();
 					associatedConcernDetail.setCreatedBy(frameRequest.getUserId());
 					associatedConcernDetail.setCreatedDate(new Date());
+					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				}
-				associatedConcernDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
 				associatedConcernDetail.setModifiedBy(frameRequest.getUserId());
 				associatedConcernDetail.setModifiedDate(new Date());
 				associatedConcernDetailRepository.save(associatedConcernDetail);
@@ -57,7 +58,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save monthlyTurnoverDetail  :-");
+			logger.info("Exception  in save Associated Concern :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -65,18 +66,26 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	}
 
 	@Override
-	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id) {
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
+		try {
 
-		List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
-				.listAssociatedConcernFromAppId(id);
-		List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
+			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
+					.listAssociatedConcernFromAppId(id,userId);
+			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
 
-		for (AssociatedConcernDetail detail : associatedConcernDetail) {
-			AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
-			BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
-			associatedConcernDetailRequests.add(associatedConcernDetailRequest);
+			for (AssociatedConcernDetail detail : associatedConcernDetail) {
+				AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
+				BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
+				associatedConcernDetailRequests.add(associatedConcernDetailRequest);
+			}
+			return associatedConcernDetailRequests;
 		}
-		return associatedConcernDetailRequests;
+
+		catch (Exception e) {
+			logger.info("Exception  in get monthlyTurnoverDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 }

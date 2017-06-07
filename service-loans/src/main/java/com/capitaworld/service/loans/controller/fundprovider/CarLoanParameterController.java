@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class CarLoanParameterController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CarLoanParameterController.class.getName());
+	
 	@Autowired
 	private CarLoanParameterService carLoanParameterService;
 
@@ -32,7 +35,7 @@ public class CarLoanParameterController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody CarLoanParameterRequest  carLoanParameterRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody CarLoanParameterRequest  carLoanParameterRequest,HttpServletRequest request) {
 		// request must not be null
 		if (carLoanParameterRequest == null) {
 			logger.warn("carLoanParameterRequest Object can not be empty ==>", carLoanParameterRequest);
@@ -49,14 +52,17 @@ public class CarLoanParameterController {
 					HttpStatus.OK);
 		}
 		
-		if(carLoanParameterRequest.getId()==null)
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		//Long userId=1755l;
+		if(userId==null)
 		{
-			logger.warn("user id can not be empty ==>", carLoanParameterRequest);
+			logger.warn("userId  id can not be empty ==>", userId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
-		
+		carLoanParameterRequest.setUserId(userId);
 		boolean response = carLoanParameterService.saveOrUpdate(carLoanParameterRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

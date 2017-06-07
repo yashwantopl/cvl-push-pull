@@ -9,6 +9,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDeta
 public interface PrimaryCarLoanDetailRepository
 		extends JpaRepository<PrimaryCarLoanDetail, Long> {
 
-	@Query("from PrimaryCarLoanDetail car where car.applicationId.id =:applicationId and isActive=true")
-	public PrimaryCarLoanDetail getByApplicationID(@Param("applicationId") Long applicationId);
+	@Query("from PrimaryCarLoanDetail car where car.applicationId.id =:applicationId and car.applicationId.userId =:userId and isActive=true")
+	public PrimaryCarLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 }

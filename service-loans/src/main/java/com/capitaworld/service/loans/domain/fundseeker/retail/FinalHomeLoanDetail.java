@@ -85,7 +85,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	private String propertyAddressStreet;
 
 	@Column(name="property_used")
-	private String propertyUsed;
+	private Integer propertyUsed;
 
 	@Column(name="seller_name")
 	private String sellerName;
@@ -258,11 +258,12 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.propertyAddressStreet = propertyAddressStreet;
 	}
 
-	public String getPropertyUsed() {
+
+	public Integer getPropertyUsed() {
 		return propertyUsed;
 	}
 
-	public void setPropertyUsed(String propertyUsed) {
+	public void setPropertyUsed(Integer propertyUsed) {
 		this.propertyUsed = propertyUsed;
 	}
 

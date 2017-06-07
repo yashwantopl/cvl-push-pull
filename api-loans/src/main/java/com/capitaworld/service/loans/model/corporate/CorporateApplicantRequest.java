@@ -18,6 +18,8 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Long id;
 
+	private Long clientId;
+	
 	private Long applicationId;
 
 	private String aboutUs;
@@ -44,7 +46,7 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Address secondAddress;
 
-	private boolean sameAs;
+	private Boolean sameAs;
 
 	private String websiteAddress;
 
@@ -55,6 +57,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private List<Long> sectorlist = Collections.emptyList();
 
 	private List<Long> subsectors = Collections.emptyList();
+	
+	private Boolean isApplicantDetailsFilled;
 
 	public CorporateApplicantRequest() {
 	}
@@ -65,6 +69,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public Long getApplicationId() {
@@ -147,11 +159,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.organisationName = organisationName;
 	}
 
-	public boolean isSameAs() {
+	public Boolean getSameAs() {
 		return sameAs;
 	}
 
-	public void setSameAs(boolean sameAs) {
+	public void setSameAs(Boolean sameAs) {
 		this.sameAs = sameAs;
 	}
 
@@ -217,6 +229,14 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setLandlineNo(String landlineNo) {
 		this.landlineNo = landlineNo;
+	}
+
+	public Boolean getIsApplicantDetailsFilled() {
+		return isApplicantDetailsFilled;
+	}
+
+	public void setIsApplicantDetailsFilled(Boolean isApplicantDetailsFilled) {
+		this.isApplicantDetailsFilled = isApplicantDetailsFilled;
 	}
 
 }

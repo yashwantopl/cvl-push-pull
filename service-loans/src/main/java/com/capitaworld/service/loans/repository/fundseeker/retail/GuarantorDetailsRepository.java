@@ -20,9 +20,15 @@ public interface GuarantorDetailsRepository extends JpaRepository<GuarantorDetai
 			@Param("id") Long id);
 
 	@Modifying
-	@Query("update GuarantorDetails gua set gua.isActive = false,gua.modifiedDate = NOW() where gua.applicationId.id =:applicationId and gua.applicationId.userId =:userId and gua.id =:id and gua.isActive = true")
-	public int inactiveGuarantor(@Param("applicationId") Long applicationId, @Param("userId") Long userId, @Param("id") Long id);
+	@Query("update GuarantorDetails gua set gua.isActive = false,gua.modifiedDate = NOW() where gua.applicationId.id =:applicationId and gua.id =:id and gua.isActive = true")
+	public int inactiveGuarantor(@Param("applicationId") Long applicationId, @Param("id") Long id);
 
-	@Query("from GuarantorDetails gua where gua.applicationId.id =:applicationId and gua.isActive = true and gua.applicationId.userId =:userId")
+	@Query("from GuarantorDetails gua where gua.applicationId.id =:applicationId and gua.isActive = true and gua.applicationId.userId =:userId ORDER BY gua.id")
 	public List<GuarantorDetails> getList(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select count(gua.id) from GuarantorDetails gua where gua.applicationId.id =:applicationId and gua.isActive = true and gua.applicationId.userId =:userId ORDER BY gua.id")
+	public Long getGuarantorCountByApplicationAndUserId(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select gua.id from GuarantorDetails gua where gua.applicationId.id =:applicationId and gua.isActive = true and gua.applicationId.userId =:userId ORDER BY gua.id")
+	public List<Long> getGuarantorIds(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
 }

@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -98,13 +101,18 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer shortTermCreditRating;
 	
+	private List<DataRequest> industrylist = Collections.emptyList();
 
-	private Long uninterestedIndustry;
-	public TermLoanParameterRequest() {
-	}
+	private List<DataRequest> sectorlist = Collections.emptyList();
+
+	private List<DataRequest> countryList = Collections.emptyList();
+
+	private List<DataRequest> stateList = Collections.emptyList();
+
+	private List<DataRequest> cityList = Collections.emptyList();
 
 	public Integer getCurrency() {
-		return this.currency;
+		return currency;
 	}
 
 	public void setCurrency(Integer currency) {
@@ -112,7 +120,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getDenomination() {
-		return this.denomination;
+		return denomination;
 	}
 
 	public void setDenomination(Integer denomination) {
@@ -120,7 +128,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCollateralDisplay() {
-		return this.isCollateralDisplay;
+		return isCollateralDisplay;
 	}
 
 	public void setIsCollateralDisplay(Boolean isCollateralDisplay) {
@@ -128,7 +136,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCollateralMandatory() {
-		return this.isCollateralMandatory;
+		return isCollateralMandatory;
 	}
 
 	public void setIsCollateralMandatory(Boolean isCollateralMandatory) {
@@ -136,7 +144,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCreditRatingDisplay() {
-		return this.isCreditRatingDisplay;
+		return isCreditRatingDisplay;
 	}
 
 	public void setIsCreditRatingDisplay(Boolean isCreditRatingDisplay) {
@@ -144,7 +152,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCreditRatingMandatory() {
-		return this.isCreditRatingMandatory;
+		return isCreditRatingMandatory;
 	}
 
 	public void setIsCreditRatingMandatory(Boolean isCreditRatingMandatory) {
@@ -152,7 +160,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsDebtEquityDisplay() {
-		return this.isDebtEquityDisplay;
+		return isDebtEquityDisplay;
 	}
 
 	public void setIsDebtEquityDisplay(Boolean isDebtEquityDisplay) {
@@ -160,7 +168,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsDebtEquityMandatory() {
-		return this.isDebtEquityMandatory;
+		return isDebtEquityMandatory;
 	}
 
 	public void setIsDebtEquityMandatory(Boolean isDebtEquityMandatory) {
@@ -168,7 +176,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsEstablishmentDisplay() {
-		return this.isEstablishmentDisplay;
+		return isEstablishmentDisplay;
 	}
 
 	public void setIsEstablishmentDisplay(Boolean isEstablishmentDisplay) {
@@ -176,7 +184,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsEstablishmentMandatory() {
-		return this.isEstablishmentMandatory;
+		return isEstablishmentMandatory;
 	}
 
 	public void setIsEstablishmentMandatory(Boolean isEstablishmentMandatory) {
@@ -184,7 +192,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalDisplay() {
-		return this.isGeographicalDisplay;
+		return isGeographicalDisplay;
 	}
 
 	public void setIsGeographicalDisplay(Boolean isGeographicalDisplay) {
@@ -192,7 +200,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalMandatory() {
-		return this.isGeographicalMandatory;
+		return isGeographicalMandatory;
 	}
 
 	public void setIsGeographicalMandatory(Boolean isGeographicalMandatory) {
@@ -200,7 +208,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsIndustrySectorDisplay() {
-		return this.isIndustrySectorDisplay;
+		return isIndustrySectorDisplay;
 	}
 
 	public void setIsIndustrySectorDisplay(Boolean isIndustrySectorDisplay) {
@@ -208,7 +216,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsIndustrySectorMandatory() {
-		return this.isIndustrySectorMandatory;
+		return isIndustrySectorMandatory;
 	}
 
 	public void setIsIndustrySectorMandatory(Boolean isIndustrySectorMandatory) {
@@ -216,7 +224,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsInvestmentSizeDisplay() {
-		return this.isInvestmentSizeDisplay;
+		return isInvestmentSizeDisplay;
 	}
 
 	public void setIsInvestmentSizeDisplay(Boolean isInvestmentSizeDisplay) {
@@ -224,7 +232,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsInvestmentSizeMandatory() {
-		return this.isInvestmentSizeMandatory;
+		return isInvestmentSizeMandatory;
 	}
 
 	public void setIsInvestmentSizeMandatory(Boolean isInvestmentSizeMandatory) {
@@ -232,7 +240,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsNetworthDisplay() {
-		return this.isNetworthDisplay;
+		return isNetworthDisplay;
 	}
 
 	public void setIsNetworthDisplay(Boolean isNetworthDisplay) {
@@ -240,7 +248,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsNetworthMandatory() {
-		return this.isNetworthMandatory;
+		return isNetworthMandatory;
 	}
 
 	public void setIsNetworthMandatory(Boolean isNetworthMandatory) {
@@ -248,7 +256,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsPastYearTurnoverDisplay() {
-		return this.isPastYearTurnoverDisplay;
+		return isPastYearTurnoverDisplay;
 	}
 
 	public void setIsPastYearTurnoverDisplay(Boolean isPastYearTurnoverDisplay) {
@@ -256,7 +264,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsPastYearTurnoverMandatory() {
-		return this.isPastYearTurnoverMandatory;
+		return isPastYearTurnoverMandatory;
 	}
 
 	public void setIsPastYearTurnoverMandatory(Boolean isPastYearTurnoverMandatory) {
@@ -264,7 +272,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsProfitabilityHistoryDisplay() {
-		return this.isProfitabilityHistoryDisplay;
+		return isProfitabilityHistoryDisplay;
 	}
 
 	public void setIsProfitabilityHistoryDisplay(Boolean isProfitabilityHistoryDisplay) {
@@ -272,7 +280,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsProfitabilityHistoryMandatory() {
-		return this.isProfitabilityHistoryMandatory;
+		return isProfitabilityHistoryMandatory;
 	}
 
 	public void setIsProfitabilityHistoryMandatory(Boolean isProfitabilityHistoryMandatory) {
@@ -280,7 +288,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureDisplay() {
-		return this.isTenureDisplay;
+		return isTenureDisplay;
 	}
 
 	public void setIsTenureDisplay(Boolean isTenureDisplay) {
@@ -288,7 +296,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureMandatory() {
-		return this.isTenureMandatory;
+		return isTenureMandatory;
 	}
 
 	public void setIsTenureMandatory(Boolean isTenureMandatory) {
@@ -296,15 +304,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getLongTermCreditRating() {
-		return this.LongTermCreditRating;
+		return LongTermCreditRating;
 	}
 
-	public void setLongTermCreditRating(Integer LongTermCreditRating) {
-		this.LongTermCreditRating = LongTermCreditRating;
+	public void setLongTermCreditRating(Integer longTermCreditRating) {
+		LongTermCreditRating = longTermCreditRating;
 	}
 
 	public Integer getMaxAgeEstablishment() {
-		return this.maxAgeEstablishment;
+		return maxAgeEstablishment;
 	}
 
 	public void setMaxAgeEstablishment(Integer maxAgeEstablishment) {
@@ -312,7 +320,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getMaxCollateral() {
-		return this.maxCollateral;
+		return maxCollateral;
 	}
 
 	public void setMaxCollateral(Integer maxCollateral) {
@@ -320,7 +328,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getMaxDebtEquity() {
-		return this.maxDebtEquity;
+		return maxDebtEquity;
 	}
 
 	public void setMaxDebtEquity(Integer maxDebtEquity) {
@@ -328,7 +336,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxInvestSize() {
-		return this.maxInvestSize;
+		return maxInvestSize;
 	}
 
 	public void setMaxInvestSize(Double maxInvestSize) {
@@ -336,7 +344,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxNetworth() {
-		return this.maxNetworth;
+		return maxNetworth;
 	}
 
 	public void setMaxNetworth(Double maxNetworth) {
@@ -344,7 +352,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxPastTurnover() {
-		return this.maxPastTurnover;
+		return maxPastTurnover;
 	}
 
 	public void setMaxPastTurnover(Double maxPastTurnover) {
@@ -352,15 +360,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxTenure() {
-		return this.maxTenure;
+		return ((this.maxTenure != null && this.maxTenure > 0) ? this.maxTenure / 12 : null);
 	}
 
 	public void setMaxTenure(Double maxTenure) {
-		this.maxTenure = maxTenure;
+		 this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
 	}
 
 	public Integer getMinAgeEstablishment() {
-		return this.minAgeEstablishment;
+		return minAgeEstablishment;
 	}
 
 	public void setMinAgeEstablishment(Integer minAgeEstablishment) {
@@ -368,7 +376,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getMinCollateral() {
-		return this.minCollateral;
+		return minCollateral;
 	}
 
 	public void setMinCollateral(Integer minCollateral) {
@@ -376,7 +384,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getMinDebtEquity() {
-		return this.minDebtEquity;
+		return minDebtEquity;
 	}
 
 	public void setMinDebtEquity(Integer minDebtEquity) {
@@ -384,7 +392,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinInvestSize() {
-		return this.minInvestSize;
+		return minInvestSize;
 	}
 
 	public void setMinInvestSize(Double minInvestSize) {
@@ -392,7 +400,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinNetworth() {
-		return this.minNetworth;
+		return minNetworth;
 	}
 
 	public void setMinNetworth(Double minNetworth) {
@@ -400,7 +408,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinPastTurnover() {
-		return this.minPastTurnover;
+		return minPastTurnover;
 	}
 
 	public void setMinPastTurnover(Double minPastTurnover) {
@@ -408,15 +416,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinTenure() {
-		return this.minTenure;
+		return ((this.minTenure != null && this.minTenure > 0) ? this.minTenure / 12 : null);
 	}
 
 	public void setMinTenure(Double minTenure) {
-		this.minTenure = minTenure;
+		this.minTenure = (minTenure != null ? minTenure * 12 : null);
 	}
 
 	public Integer getProfitabilityHistory() {
-		return this.profitabilityHistory;
+		return profitabilityHistory;
 	}
 
 	public void setProfitabilityHistory(Integer profitabilityHistory) {
@@ -424,21 +432,55 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getShortTermCreditRating() {
-		return this.shortTermCreditRating;
+		return shortTermCreditRating;
 	}
 
 	public void setShortTermCreditRating(Integer shortTermCreditRating) {
 		this.shortTermCreditRating = shortTermCreditRating;
 	}
 
-	public Long getUninterestedIndustry() {
-		return this.uninterestedIndustry;
+	public List<DataRequest> getIndustrylist() {
+		return industrylist;
 	}
 
-	public void setUninterestedIndustry(Long uninterestedIndustry) {
-		this.uninterestedIndustry = uninterestedIndustry;
+	public void setIndustrylist(List<DataRequest> industrylist) {
+		this.industrylist = industrylist;
 	}
 
+	public List<DataRequest> getSectorlist() {
+		return sectorlist;
+	}
+
+	public void setSectorlist(List<DataRequest> sectorlist) {
+		this.sectorlist = sectorlist;
+	}
+
+	public List<DataRequest> getCountryList() {
+		return countryList;
+	}
+
+	public void setCountryList(List<DataRequest> countryList) {
+		this.countryList = countryList;
+	}
+
+	public List<DataRequest> getStateList() {
+		return stateList;
+	}
+
+	public void setStateList(List<DataRequest> stateList) {
+		this.stateList = stateList;
+	}
+
+	public List<DataRequest> getCityList() {
+		return cityList;
+	}
+
+	public void setCityList(List<DataRequest> cityList) {
+		this.cityList = cityList;
+	}
+	
+
+	
 	
 
 }

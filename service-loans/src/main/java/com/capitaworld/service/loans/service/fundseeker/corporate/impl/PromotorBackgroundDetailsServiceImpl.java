@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgroundDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -34,23 +34,23 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 	@Autowired
 	private PromotorBackgroundDetailsRepository promotorBackgroundDetailsRepository;
 
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = (PromotorBackgroundDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, PromotorBackgroundDetailRequest.class);
-				PromotorBackgroundDetail promotorBackgroundDetail = new PromotorBackgroundDetail();
-				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetail);
-				if (promotorBackgroundDetailRequest.getId() == null) {
+				PromotorBackgroundDetail promotorBackgroundDetail = null;
+				if (promotorBackgroundDetailRequest.getId() != null) {
+					promotorBackgroundDetail = promotorBackgroundDetailsRepository
+							.findOne(promotorBackgroundDetailRequest.getId());
+				} else {
+					promotorBackgroundDetail = new PromotorBackgroundDetail();
 					promotorBackgroundDetail.setCreatedBy(frameRequest.getUserId());
 					promotorBackgroundDetail.setCreatedDate(new Date());
 				}
-				promotorBackgroundDetail
-						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetail, "applicationId");
+				promotorBackgroundDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				promotorBackgroundDetail.setModifiedBy(frameRequest.getUserId());
 				promotorBackgroundDetail.setModifiedDate(new Date());
 				promotorBackgroundDetailsRepository.save(promotorBackgroundDetail);
@@ -66,17 +66,23 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 	}
 
 	@Override
-	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId) {
-		List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
-				.listPromotorBackgroundFromAppId(applicationId);
-		List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws Exception {
+		try {
+			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId,userId);
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequests = new ArrayList<PromotorBackgroundDetailRequest>();
 
-		for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {
-			PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = new PromotorBackgroundDetailRequest();
-			BeanUtils.copyProperties(detail, promotorBackgroundDetailRequest);
-			promotorBackgroundDetailRequests.add(promotorBackgroundDetailRequest);
+			for (PromotorBackgroundDetail detail : promotorBackgroundDetails) {
+				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = new PromotorBackgroundDetailRequest();
+				BeanUtils.copyProperties(detail, promotorBackgroundDetailRequest);
+				promotorBackgroundDetailRequests.add(promotorBackgroundDetailRequest);
+			}
+			return promotorBackgroundDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception  in getpromoterBackgroundDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return promotorBackgroundDetailRequests;
 	}
 
 }

@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OwnershipDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -33,9 +33,6 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 	@Autowired
 	public OwnershipDetailsRepository ownershipDetailsRepository;
 
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 
@@ -43,13 +40,16 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				OwnershipDetailRequest ownershipDetailRequest = (OwnershipDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, OwnershipDetailRequest.class);
-				OwnershipDetail ownershipDetail = new OwnershipDetail();
-				BeanUtils.copyProperties(ownershipDetailRequest, ownershipDetail);
-				if (ownershipDetailRequest.getId() == null) {
+				OwnershipDetail ownershipDetail = null;
+				if (ownershipDetailRequest.getId() != null) {
+					ownershipDetail = ownershipDetailsRepository.findOne(ownershipDetailRequest.getId());
+				} else {
+					ownershipDetail = new OwnershipDetail();
 					ownershipDetail.setCreatedBy(frameRequest.getUserId());
 					ownershipDetail.setCreatedDate(new Date());
 				}
-				ownershipDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				BeanUtils.copyProperties(ownershipDetailRequest, ownershipDetail);
+				ownershipDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				ownershipDetail.setModifiedBy(frameRequest.getUserId());
 				ownershipDetail.setModifiedDate(new Date());
 				ownershipDetailsRepository.save(ownershipDetail);
@@ -65,15 +65,23 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 	}
 
 	@Override
-	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId) {
-		List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
-		List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
+	public List<OwnershipDetailRequest> getOwnershipDetailList(Long applicationId,Long userId) throws Exception {
+		try {
+			List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId,userId);
+			List<OwnershipDetailRequest> ownershipDetailRequests = new ArrayList<OwnershipDetailRequest>();
 
-		for (OwnershipDetail detail : ownershipDetails) {
-			OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
-			BeanUtils.copyProperties(detail, ownershipDetailRequest);
-			ownershipDetailRequests.add(ownershipDetailRequest);
+			for (OwnershipDetail detail : ownershipDetails) {
+				OwnershipDetailRequest ownershipDetailRequest = new OwnershipDetailRequest();
+				BeanUtils.copyProperties(detail, ownershipDetailRequest);
+				ownershipDetailRequests.add(ownershipDetailRequest);
+			}
+			return ownershipDetailRequests;
 		}
-		return ownershipDetailRequests;
+
+		catch (Exception e) {
+			logger.info("Exception  in get ownershipDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 }

@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrang
  */
 public interface FinancialArrangementDetailsRepository extends JpaRepository<FinancialArrangementsDetail, Long> {
 
-	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true")
-	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppId(@Param("id")Long id);
+	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id  and o.applicationId.userId =:userId and o.isActive = true")
+	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppId(@Param("id")Long id, @Param("userId") Long userId);
 
 }

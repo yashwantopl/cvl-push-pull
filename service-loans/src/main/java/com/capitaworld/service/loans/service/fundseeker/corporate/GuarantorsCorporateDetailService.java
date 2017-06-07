@@ -13,6 +13,6 @@ public interface GuarantorsCorporateDetailService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id);
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws Exception;
 
 }

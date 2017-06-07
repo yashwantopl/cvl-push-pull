@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class TermLoanParameterController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanParameterRequest  termLoanParameterRequest) {
+	public ResponseEntity<LoansResponse> save(@RequestBody TermLoanParameterRequest  termLoanParameterRequest,HttpServletRequest request) {
 		// request must not be null
 		if (termLoanParameterRequest == null) {
 			logger.warn("termLoanParameterRequest Object can not be empty ==>", termLoanParameterRequest);
@@ -49,14 +51,16 @@ public class TermLoanParameterController {
 					HttpStatus.OK);
 		}
 		
-		if(termLoanParameterRequest.getId()==null)
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		//Long userId=1755l;
+		if(userId==null)
 		{
-			logger.warn("user id can not be empty ==>", termLoanParameterRequest);
+			logger.warn("userId  id can not be empty ==>", userId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
-		
+		termLoanParameterRequest.setUserId(userId);
 		boolean response = termLoanParameterService.saveOrUpdate(termLoanParameterRequest);
 		if (response) {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
@@ -90,7 +94,7 @@ public class TermLoanParameterController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Term Loan Details==>", e);
+			logger.error("Error while getting  Term Loan Parameter==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

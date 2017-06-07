@@ -3,21 +3,49 @@ package com.capitaworld.service.loans.model;
 public class LoanApplicationDetailsForSp {
 
 	private Long id;
-	
-	private Long productId;
-	
+	private Integer applicationType;
+	private Integer productId;
+	private String productName;
 	private Double amount;
 	
 	private Integer denominationId;
-	
+	private String denominationValue;
 	
 
-	public LoanApplicationDetailsForSp(Long id, Long productId, Double amount, Integer denominationId) {
+	public Integer getApplicationType() {
+		return applicationType;
+	}
+
+	public void setApplicationType(Integer applicationType) {
+		this.applicationType = applicationType;
+	}
+
+	public LoanApplicationDetailsForSp() {
+		super();
+	}
+
+	public LoanApplicationDetailsForSp(Long id, Integer productId, Double amount, Integer denominationId) {
 		super();
 		this.id = id;
 		this.productId = productId;
 		this.amount = amount;
 		this.denominationId = denominationId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getDenominationValue() {
+		return denominationValue;
+	}
+
+	public void setDenominationValue(String denominationValue) {
+		this.denominationValue = denominationValue;
 	}
 
 	public Long getId() {
@@ -28,11 +56,11 @@ public class LoanApplicationDetailsForSp {
 		this.id = id;
 	}
 
-	public Long getProductId() {
+	public Integer getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 

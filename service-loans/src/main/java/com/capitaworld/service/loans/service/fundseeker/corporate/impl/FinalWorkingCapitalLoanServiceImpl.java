@@ -15,6 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCap
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalWorkingCapitalLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -25,25 +26,23 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 
 	private static final Logger logger = LoggerFactory.getLogger(FinalWorkingCapitalLoanServiceImpl.class.getName());
 
+	
 	@Autowired
 	private FinalWorkingCapitalLoanDetailRepository finalWCRepository;
 
 	@Autowired
 	private OverseasNetworkRepository networkRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
 		try {
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId());
 			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
-					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), userId);
+					.getByApplicationAndUserId(capitalLoanRequest.getApplicationId(), (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId()));
 			if (capitalLoanDetail != null) {
-
-				// throw new NullPointerException("FinalWorkingCapitalLoanDetail
-				// not exist in DB with ID=>"
-				// + capitalLoanRequest.getId() + " applicationId==>" +
-				// capitalLoanRequest.getApplicationId());
-
-				// Inactive Previous Mapping
 				networkRepository.inActiveMappingByApplicationId(capitalLoanRequest.getApplicationId());
 				capitalLoanDetail.setModifiedBy(userId);
 				capitalLoanDetail.setModifiedDate(new Date());
@@ -54,17 +53,20 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 				capitalLoanDetail.setIsActive(true);
 				capitalLoanDetail.setApplicationId(new LoanApplicationMaster(capitalLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID);
+			BeanUtils.copyProperties(capitalLoanRequest, capitalLoanDetail, CommonUtils.IgnorableCopy.ID,"currencyId");
 			capitalLoanDetail = finalWCRepository.save(capitalLoanDetail);
 
 			// saving Data
 			saveOverseasNetworkMapping(capitalLoanRequest.getApplicationId(), userId,
 					capitalLoanRequest.getOverseasNetworkIds());
+			
+			//setting flag 
+			loanApplicationRepository.setIsFinalMcqMandatoryFilled(capitalLoanRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getIsFinalMcqFilled())  ? false : capitalLoanRequest.getIsFinalMcqFilled());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Working Capital Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -73,16 +75,16 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 		try {
 			FinalWorkingCapitalLoanDetail loanDetails = finalWCRepository.getByApplicationAndUserId(applicationId, id);
 			if (loanDetails == null) {
-				throw new NullPointerException("FinalWorkingCapitalLoanDetail not exist in DB with ID=>" + id
-						+ " applicationId==>" + applicationId);
+				return null;
 			}
 			FinalWorkingCapitalLoanRequest capitalLoanRequest = new FinalWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetails, capitalLoanRequest);
+			capitalLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Capital Details:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

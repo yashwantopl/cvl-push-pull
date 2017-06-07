@@ -15,7 +15,15 @@ public class PrimaryPersonalLoanRequest extends LoanApplicationRequest implement
 	private static final long serialVersionUID = 1L;
 
 	
-	
+	private Long clientId;
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+
 	private Long loanPurpose;
 
 	private String loanPurposeOther;

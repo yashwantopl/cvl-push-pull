@@ -92,30 +92,37 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 	@Override
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType)
 			throws Exception {
+		try {
+			List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>();
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromCoAppId(id);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromGarrId(id);
+				break;
+			default:
+				throw new Exception();
+			}
 
-		List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>();
-		switch (applicationType) {
-		case CommonUtils.ApplicantType.APPLICANT:
-			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);
-			break;
-		case CommonUtils.ApplicantType.COAPPLICANT:
-			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromCoAppId(id);
-			break;
-		case CommonUtils.ApplicantType.GARRANTOR:
-			existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromGarrId(id);
-			break;
-		default:
-			throw new Exception();
+			List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
+
+			for (BankAccountHeldDetail detail : existingLoanDetails) {
+				BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
+				BeanUtils.copyProperties(detail, existingLoanDetailRequest);
+				existingLoanDetailRequests.add(existingLoanDetailRequest);
+			}
+			return existingLoanDetailRequests;
 		}
 
-		List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
-
-		for (BankAccountHeldDetail detail : existingLoanDetails) {
-			BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
-			BeanUtils.copyProperties(detail, existingLoanDetailRequest);
-			existingLoanDetailRequests.add(existingLoanDetailRequest);
+		catch (Exception e) {
+			logger.info("Exception in getting bankAccountHeldDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return existingLoanDetailRequests;
 	}
 
 }

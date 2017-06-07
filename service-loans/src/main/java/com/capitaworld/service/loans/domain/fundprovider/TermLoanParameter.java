@@ -40,7 +40,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	private Integer denomination;
 
 	@Column(name="is_active")
-	private Boolean isActive=true;
+	private Boolean isActive;
 
 	@Column(name="is_collateral_display")
 	private Boolean isCollateralDisplay=false;

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
@@ -31,6 +32,8 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer technologyTypeId;
 	private Boolean whetherTechnologyIsTied;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
+	
+	private Boolean isFinalMcqFilled;
 
 	public FinalWorkingCapitalLoanRequest() {
 	}
@@ -41,6 +44,16 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public Long getApplicationId() {
@@ -210,5 +223,14 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
 		this.overseasNetworkIds = overseasNetworkIds;
 	}
+
+	public Boolean getIsFinalMcqFilled() {
+		return isFinalMcqFilled;
+	}
+
+	public void setIsFinalMcqFilled(Boolean isFinalMcqFilled) {
+		this.isFinalMcqFilled = isFinalMcqFilled;
+	}
+	
 
 }

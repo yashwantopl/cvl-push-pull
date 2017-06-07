@@ -23,9 +23,12 @@ public abstract class ProductMaster implements Serializable {
 
 	@Column(name = "fp_name")
 	private String fpName;
+	
+	@Column(name = "product_code")
+	private String productCode;
 
 	@Column(name = "product_id")
-	private Long productId;
+	private Integer productId;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "start_date")
@@ -51,6 +54,9 @@ public abstract class ProductMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_date")
 	private Date modifiedDate;
+	
+	@Column(name = "is_parameter_filled")
+	private Boolean isParameterFilled = false;
 
 	@Column(name = "is_active")
 	private Boolean isActive = true;
@@ -130,11 +136,11 @@ public abstract class ProductMaster implements Serializable {
 		this.name = name;
 	}
 
-	public Long getProductId() {
+	public Integer getProductId() {
 		return this.productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 
@@ -152,6 +158,22 @@ public abstract class ProductMaster implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public Boolean getIsParameterFilled() {
+		return isParameterFilled;
+	}
+
+	public void setIsParameterFilled(Boolean isParameterFilled) {
+		this.isParameterFilled = isParameterFilled;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
 }

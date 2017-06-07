@@ -1,13 +1,16 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -36,6 +39,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.TechnologyPosi
 @Transactional
 public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 
+	private final Logger log = LoggerFactory.getLogger(ExcelExtractionService.class);
 	
 	@Autowired
 	OperatingStatementDetailsService OperatingStatementDetailsService;
@@ -97,25 +101,30 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	@Autowired
 	ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
 	
+	@Autowired
+	OperatingStatementDetailsService operatingStatementDetailsService; 
 	
-	public Boolean readCMA(Long applicationId,Long storageDetailsId,String filePath) {
+	
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
 		
-		FileInputStream file;
+		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
 		
+		
+		
 		try{
-			 file = new FileInputStream(new File(filePath));
+			 file = new ByteArrayInputStream(multipartFile.getBytes());
 			 workbook = new XSSFWorkbook(file);
 			 
 	         operatingStatementSheet  = workbook.getSheetAt(0);//pass DPR sheet to function
 	         liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
 	         assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
 	         
-	         OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,file,operatingStatementSheet);
-	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId,file, liabilitiesSheet);
-	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId,file, assetsSheet);
+	         OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
+	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId, liabilitiesSheet);
+	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId, assetsSheet);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -123,7 +132,8 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
-			
+			log.error("Error while reading CMA");
+			e.printStackTrace();
 			return false;
 		}
 		
@@ -131,15 +141,16 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	}
 
 	@Override
-	public Boolean readDPR(Long applicationId, Long storageDetailsId, String filePath) {
+	public Boolean readDPR(Long applicationId, Long storageDetailsId, MultipartFile multipartFile) {
 		
-		FileInputStream file;
+		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet entityInfoSheet,keyManagementSheet,productsSheet,technologySheet,marketScenerioSheet,
 						marketPositioningSheet,resourcesSheet, proposalSheet,feasibilitySheet, scotSheet;
 		
 		try{
-			 file = new FileInputStream(new File(filePath));
+			
+			 file = new ByteArrayInputStream(multipartFile.getBytes());
 			 workbook = new XSSFWorkbook(file);
 			 
 			 entityInfoSheet  = workbook.getSheetAt(0);//pass DPR sheet to function
@@ -155,17 +166,17 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         
 	         DprUserDataDetail dprUserDataDetail = new DprUserDataDetail(); 
 	         
-			 entityInformationDetailService.readEntityInformationDetails(applicationId,storageDetailsId,file,entityInfoSheet);
-			 managementDetailService.readManagementDetails(applicationId,storageDetailsId,file,keyManagementSheet);
-			 dprUserDataDetailService.readDprUserDataDetails(applicationId,storageDetailsId,file,productsSheet, dprUserDataDetail);
-			 technologyPositioningDetailService.readtechnologyPositioningDetail(applicationId,storageDetailsId,file,technologySheet, dprUserDataDetail);
-			 marketScenerioService.readMarketScenerioDetails(applicationId,storageDetailsId,file,marketScenerioSheet, dprUserDataDetail);
-			 marketPositioningService.readMarketPositioningDetails(applicationId,storageDetailsId,file,marketPositioningSheet, dprUserDataDetail);
-			 resourcesService.readResourcesDetails(applicationId,storageDetailsId,file,resourcesSheet, dprUserDataDetail);
-			 proposalService.readProposalDetails(applicationId,storageDetailsId,file,proposalSheet, dprUserDataDetail);
-			 feasibilityService.readFeasibilityDetails(applicationId,storageDetailsId,file,feasibilitySheet, dprUserDataDetail);
-			 scotService.readScotDetails(applicationId,storageDetailsId,file,scotSheet);
-			 dprUserDataDetailService.save(storageDetailsId,dprUserDataDetail);
+			 entityInformationDetailService.readEntityInformationDetails(applicationId,storageDetailsId,entityInfoSheet);
+			 managementDetailService.readManagementDetails(applicationId,storageDetailsId,keyManagementSheet);
+			 dprUserDataDetailService.readDprUserDataDetails(applicationId,storageDetailsId,productsSheet, dprUserDataDetail);
+			 technologyPositioningDetailService.readtechnologyPositioningDetail(applicationId,storageDetailsId,technologySheet, dprUserDataDetail);
+			 marketScenerioService.readMarketScenerioDetails(applicationId,storageDetailsId,marketScenerioSheet, dprUserDataDetail);
+			 marketPositioningService.readMarketPositioningDetails(applicationId,storageDetailsId,marketPositioningSheet, dprUserDataDetail);
+			 resourcesService.readResourcesDetails(applicationId,storageDetailsId,resourcesSheet, dprUserDataDetail);
+			 proposalService.readProposalDetails(applicationId,storageDetailsId,proposalSheet, dprUserDataDetail);
+			 feasibilityService.readFeasibilityDetails(applicationId,storageDetailsId,feasibilitySheet, dprUserDataDetail);
+			 scotService.readScotDetails(applicationId,storageDetailsId,scotSheet);
+			 dprUserDataDetailService.save(storageDetailsId,dprUserDataDetail,applicationId);
 		}
 		catch (Exception e) {
 			
@@ -177,6 +188,9 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			feasibilityService.inActiveFeasibilityDetails(storageDetailsId);
 			scotService.inActiveScotDetails(storageDetailsId);
 			dprUserDataDetailService.inActiveDprUserDataDetails(storageDetailsId);
+			log.error("Error while reading DPR");
+			e.printStackTrace();
+			
 			return false;
 		}
 		
@@ -185,31 +199,79 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	
 	
 	@Override
-	public Boolean readBS(Long applicationId, Long storageDetailsId, String filePath) {
+	public Boolean readBS(Long applicationId, Long storageDetailsId, MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
-		FileInputStream file;
+		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet balanceSheet,profitibilityStatementSheet;
 		
 		try{
-			 file = new FileInputStream(new File(filePath));
+			 file = new ByteArrayInputStream(multipartFile.getBytes());
 			 workbook = new XSSFWorkbook(file);
 			 
 			 balanceSheet  = workbook.getSheetAt(0);//pass BS sheet to function
 			 profitibilityStatementSheet  = workbook.getSheetAt(1);//pass BS sheet to function
 	         
-			 balanceSheetDetailService.readBalanceSheetDetails(applicationId, storageDetailsId, file, balanceSheet);
-			 profitibilityStatementDetailService.readProfitibilityStatementDetail(applicationId, storageDetailsId, file, profitibilityStatementSheet);
+			 balanceSheetDetailService.readBalanceSheetDetails(applicationId, storageDetailsId, balanceSheet);
+			 profitibilityStatementDetailService.readProfitibilityStatementDetail(applicationId, storageDetailsId, profitibilityStatementSheet);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
 			
 			balanceSheetDetailRepository.inActiveBalanceSheetDetail(storageDetailsId);
 			profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetail(storageDetailsId);
+			log.error("Error while reading BS");
+			e.printStackTrace();
 			
 			return false;
 		}
 		
+		return true;
+	}
+
+	@Override
+	public Boolean inActiveCMA(Long storageDetailsId) {
+		// TODO Auto-generated method stub
+		try {
+			assetsDetailsService.inActiveAssetsDetails(storageDetailsId);
+			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
+			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("Error while inactive CMA");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public Boolean inActiveDPR(Long storageDetailsId) {
+		// TODO Auto-generated method stub
+		try {
+			entityInformationDetailService.inActiveEntityInformationDetails(storageDetailsId);
+			managementDetailService.inActiveManagementDetails(storageDetailsId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("Error while inactive DPR");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public Boolean inActiveBS(Long storageDetailsId) {
+		// TODO Auto-generated method stub
+		try {
+			balanceSheetDetailService.inActiveBalanceSheetDetail(storageDetailsId);
+			profitibilityStatementDetailService.inActiveProfitibilityStatementDetail(storageDetailsId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			log.error("Error while inactive BS");
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 

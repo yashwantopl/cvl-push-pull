@@ -54,7 +54,7 @@ public class GuarantorDetails implements Serializable {
 	private String addressPremiseName;
 
 	@Column(name = "address_same_as")
-	private boolean addressSameAs;
+	private Boolean addressSameAs;
 
 	@Column(name = "address_state")
 	private Integer addressState;
@@ -292,7 +292,8 @@ public class GuarantorDetails implements Serializable {
 	@Column(name = "self_employed_occupation_other")
 	private String selfEmployedOccupationOther;
 
-	private String shareholding;
+	@Column(name = "share_holding")
+	private String shareHolding;
 
 	@Column(name = "spouse_name")
 	private String spouseName;
@@ -386,11 +387,11 @@ public class GuarantorDetails implements Serializable {
 		this.addressPremiseName = addressPremiseName;
 	}
 
-	public boolean getAddressSameAs() {
+	public Boolean getAddressSameAs() {
 		return addressSameAs;
 	}
 
-	public void setAddressSameAs(boolean addressSameAs) {
+	public void setAddressSameAs(Boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 
@@ -1017,13 +1018,13 @@ public class GuarantorDetails implements Serializable {
 	public void setSelfEmployedOccupationOther(String selfEmployedOccupationOther) {
 		this.selfEmployedOccupationOther = selfEmployedOccupationOther;
 	}
-
-	public String getShareholding() {
-		return shareholding;
+	
+	public String getShareHolding() {
+		return shareHolding;
 	}
 
-	public void setShareholding(String shareholding) {
-		this.shareholding = shareholding;
+	public void setShareHolding(String shareHolding) {
+		this.shareHolding = shareHolding;
 	}
 
 	public String getSpouseName() {

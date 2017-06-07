@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingOrganizationDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -34,9 +34,6 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
 
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
@@ -44,13 +41,17 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationsDetailRequest = (CreditRatingOrganizationDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, CreditRatingOrganizationDetailRequest.class);
 				CreditRatingOrganizationDetail creditRatingOrganizationDetail = new CreditRatingOrganizationDetail();
-				BeanUtils.copyProperties(creditRatingOrganizationsDetailRequest, creditRatingOrganizationDetail);
-				if (creditRatingOrganizationsDetailRequest.getId() == null) {
+				if (creditRatingOrganizationsDetailRequest.getId() != null) {
+					creditRatingOrganizationDetail = creditRatingOrganizationDetailsRepository
+							.findOne(creditRatingOrganizationsDetailRequest.getId());
+				} else {
+					creditRatingOrganizationDetail = new CreditRatingOrganizationDetail();
 					creditRatingOrganizationDetail.setCreatedBy(frameRequest.getUserId());
 					creditRatingOrganizationDetail.setCreatedDate(new Date());
 				}
+				BeanUtils.copyProperties(creditRatingOrganizationsDetailRequest, creditRatingOrganizationDetail);
 				creditRatingOrganizationDetail
-						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+						.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				creditRatingOrganizationDetail.setModifiedBy(frameRequest.getUserId());
 				creditRatingOrganizationDetail.setModifiedDate(new Date());
 				creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);
@@ -66,16 +67,36 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	}
 
 	@Override
-	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id) {
-		List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
-				.listCreditRatingOrganizationDetailsFromAppId(id);
-		List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
+	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id,Long userId) throws Exception {
+		try {
+			List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
+					.listCreditRatingOrganizationDetailsFromAppId(id,userId);
+			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
 
-		for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {
-			CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
-			BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
-			creditRatingOrganizationDetailRequests.add(creditRatingOrganizationDetailsRequest);
+			for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {
+				CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
+				BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
+				creditRatingOrganizationDetailRequests.add(creditRatingOrganizationDetailsRequest);
+			}
+			return creditRatingOrganizationDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return creditRatingOrganizationDetailRequests;
+	}
+
+	@Override
+	public List<Integer> getShortTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
+		// TODO Auto-generated method stub
+		return creditRatingOrganizationDetailsRepository
+				.listShortCreditRatingOptionDetailsFromAppId(id,userId);
+	}
+
+	@Override
+	public List<Integer> getLongTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
+		// TODO Auto-generated method stub
+		return creditRatingOrganizationDetailsRepository
+				.listLongCreditRatingOptionDetailsFromAppId(id,userId);
 	}
 }

@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OwnershipDetail
  */
 public interface OwnershipDetailsRepository extends JpaRepository<OwnershipDetail, Long> {
 
-	@Query("select o from OwnershipDetail o where o.applicationId.id = :id and o.isActive = true")
-	public List<OwnershipDetail> listOwnershipFromAppId(@Param("id") Long id);
+	@Query("from OwnershipDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
+	public List<OwnershipDetail> listOwnershipFromAppId(@Param("id") Long id, @Param("userId") Long userId);
 
 }

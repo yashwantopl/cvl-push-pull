@@ -18,7 +18,7 @@ public class ProductMasterRequest implements Serializable {
 
 	private String name;
 
-	private Long productId;
+	private Integer productId;
 
 	private Date startDate;
 	
@@ -26,6 +26,7 @@ public class ProductMasterRequest implements Serializable {
 
 	private Long userId;
 
+	private String productCode;
 
 	
 	public ProductMasterRequest() {
@@ -55,11 +56,11 @@ public class ProductMasterRequest implements Serializable {
 		this.name = name;
 	}
 
-	public Long getProductId() {
+	public Integer getProductId() {
 		return this.productId;
 	}
 
-	public void setProductId(Long productId) {
+	public void setProductId(Integer productId) {
 		this.productId = productId;
 	}
 
@@ -77,6 +78,14 @@ public class ProductMasterRequest implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -13,6 +14,7 @@ public class LoanApplicationRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	private Long clientId;
 
 	private Double amount;
 
@@ -22,13 +24,27 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Integer productId;
 
-	private Integer tenure;
+	private Double tenure;
 
 	private Long userId;
 
 	private Integer currencyId;
 
 	private Integer denominationId;
+
+	private Date createdDate;
+
+	private boolean hasAlreadyApplied;
+
+	private String loanTypeMain;
+
+	private String loanTypeSub;
+
+	private String currencyValue;
+	
+	private Boolean isApplicantPrimaryFilled;
+	
+	private String applicationCode;
 
 	public LoanApplicationRequest() {
 	}
@@ -69,7 +85,6 @@ public class LoanApplicationRequest implements Serializable {
 		this.name = name;
 	}
 
-	
 	public Integer getProductId() {
 		return productId;
 	}
@@ -78,11 +93,11 @@ public class LoanApplicationRequest implements Serializable {
 		this.productId = productId;
 	}
 
-	public Integer getTenure() {
-		return tenure;
+	public Double getTenure() {
+		return this.tenure;
 	}
 
-	public void setTenure(Integer tenure) {
+	public void setTenure(Double tenure) {
 		this.tenure = tenure;
 	}
 
@@ -109,5 +124,70 @@ public class LoanApplicationRequest implements Serializable {
 	public void setDenominationId(Integer denominationId) {
 		this.denominationId = denominationId;
 	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public boolean isHasAlreadyApplied() {
+		return hasAlreadyApplied;
+	}
+
+	public void setHasAlreadyApplied(boolean hasAlreadyApplied) {
+		this.hasAlreadyApplied = hasAlreadyApplied;
+	}
+
+	public String getLoanTypeMain() {
+		return loanTypeMain;
+	}
+
+	public void setLoanTypeMain(String loanTypeMain) {
+		this.loanTypeMain = loanTypeMain;
+	}
+
+	public String getLoanTypeSub() {
+		return loanTypeSub;
+	}
+
+	public void setLoanTypeSub(String loanTypeSub) {
+		this.loanTypeSub = loanTypeSub;
+	}
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
+	}
+
+	public Boolean getIsApplicantPrimaryFilled() {
+		return isApplicantPrimaryFilled;
+	}
+
+	public void setIsApplicantPrimaryFilled(Boolean isApplicantPrimaryFilled) {
+		this.isApplicantPrimaryFilled = isApplicantPrimaryFilled;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
+	}
+	
 
 }

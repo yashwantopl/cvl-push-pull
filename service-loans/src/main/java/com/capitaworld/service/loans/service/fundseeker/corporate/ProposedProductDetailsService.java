@@ -13,6 +13,6 @@ public interface ProposedProductDetailsService {
 
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
-	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id);
+	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id,Long userId) throws Exception;
 
 }

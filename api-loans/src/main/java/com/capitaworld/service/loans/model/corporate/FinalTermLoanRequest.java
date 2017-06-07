@@ -15,6 +15,7 @@ public class FinalTermLoanRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
+	private Long clientId;
 	private Long applicationId;
 	private Integer accountingSystemsId;
 	private Integer brandAmbassadorId;
@@ -37,6 +38,8 @@ public class FinalTermLoanRequest implements Serializable {
 	private Boolean whetherTechnologyIsTied;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
+	private Boolean isFinalMcqFilled;
+	
 	public FinalTermLoanRequest() {
 	}
 
@@ -46,6 +49,15 @@ public class FinalTermLoanRequest implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
 	}
 
 	public Long getApplicationId() {
@@ -214,6 +226,14 @@ public class FinalTermLoanRequest implements Serializable {
 
 	public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
 		this.overseasNetworkIds = overseasNetworkIds;
+	}
+
+	public Boolean getIsFinalMcqFilled() {
+		return isFinalMcqFilled;
+	}
+
+	public void setIsFinalMcqFilled(Boolean isFinalMcqFilled) {
+		this.isFinalMcqFilled = isFinalMcqFilled;
 	}
 
 }

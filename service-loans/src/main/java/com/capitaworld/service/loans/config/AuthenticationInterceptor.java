@@ -25,9 +25,17 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+		
+		//for only client call
+		  String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
+		  if(reqAuth !=null && reqAuth != ""){
+		   if("true".equals(reqAuth)){
+		    return true;
+		   }
+		  }
 
 		String accessToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
-		String refreshToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
+		String refreshToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_REFRESH_TOKEN);
 		String username = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_USERNAME);
 		String loginToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_LOGIN_TOKEN);
 
@@ -45,6 +53,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return false;
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
+		request.setAttribute("userType", authResponse.getUserType().intValue());
 		return true;
 	}
 

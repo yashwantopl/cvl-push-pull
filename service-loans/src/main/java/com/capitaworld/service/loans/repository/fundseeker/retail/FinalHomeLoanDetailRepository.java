@@ -9,6 +9,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetai
 public interface FinalHomeLoanDetailRepository
 		extends JpaRepository<FinalHomeLoanDetail, Long> {
 
-	@Query("from FinalHomeLoanDetail hm where hm.applicationId.id =:applicationId and hm.id=:id and isActive=true")
-	public FinalHomeLoanDetail getByApplicationID(@Param("applicationId") Long applicationId,@Param("id") Long id);
+	@Query("from FinalHomeLoanDetail hm where hm.applicationId.id =:applicationId and hm.applicationId.userId=:userId and hm.isActive=true")
+	public FinalHomeLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 }

@@ -17,10 +17,12 @@ import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -38,48 +40,54 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Autowired
 	private GuarantorService guarantorService;
 
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
 
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
-				// throw new NullPointerException(
-				// "Applicant ID and ID(Primary Key) does not match with the
-				// database==> Applicant ID==>"
-				// + applicantRequest.getApplicationId() + "ID==>" +
-				// applicantRequest.getId());
-
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
 			} else {
 				applicantDetail = new RetailApplicantDetail();
 				applicantDetail.setCreatedBy(userId);
 				applicantDetail.setCreatedDate(new Date());
-				applicantDetail.setActive(true);
+				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
-			Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(), applicantRequest.getMonth(),
-					applicantRequest.getYear());
-			applicantDetail.setBirthDate(birthDate);
+			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
+					&& applicantRequest.getYear() != null) {
+				Date birthDate = CommonUtils.getDateByDateMonthYear(applicantRequest.getDate(),
+						applicantRequest.getMonth(), applicantRequest.getYear());
+				applicantDetail.setBirthDate(birthDate);
+			}
 			applicantDetail = applicantRepository.save(applicantDetail);
-
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(), userId);
+				coApplicantService.save(request, applicantRequest.getApplicationId(),finalUserId);
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(), userId);
+				guarantorService.save(request, applicantRequest.getApplicationId(),finalUserId);
 			}
+
+			// Updating Flag
+			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
+					finalUserId, applicantRequest.getIsApplicantDetailsFilled());
+
 			return true;
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -89,8 +97,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
-				throw new NullPointerException("RetailApplicantDetail Record not exists in DB of Application ID : "
-						+ applicationId + " and User Id==>" + userId);
+				// throw new NullPointerException("RetailApplicantDetail Record
+				// not exists in DB of Application ID : "
+				// + applicationId + " and User Id==>" + userId);
+				return null;
 			}
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
@@ -105,7 +115,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -119,6 +129,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -134,23 +145,26 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
-
-			RetailApplicantDetail applicantDetail = applicantRepository
-					.getByApplicationAndUserId(applicantRequest.getId(), applicantRequest.getApplicationId());
+			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
+					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
 				throw new NullPointerException(
 						"Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
-								+ applicantRequest.getApplicationId() + "ID==>" + applicantRequest.getId());
+								+ applicantRequest.getApplicationId() + "User ID==>" + userId);
 			}
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRepository.save(applicantDetail);
+			// Updating Final Flag
+			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
+								finaluserId, applicantRequest.getIsApplicantFinalFilled());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -158,6 +172,17 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
+	}
+
+	@Override
+	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
+		try {
+			return applicantRepository.getCurrency(userId,applicationId);
+		} catch (Exception e) {
+			logger.error("Error while Getting Currency:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	@Override
@@ -224,4 +249,5 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			to.setSecondAddress(address);
 		}
 	}
+
 }
