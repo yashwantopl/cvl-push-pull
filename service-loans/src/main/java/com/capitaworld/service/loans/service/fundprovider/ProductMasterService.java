@@ -26,6 +26,7 @@ public interface ProductMasterService {
 	public ProductDetailsResponse getProductDetailsResponse(Long userId);
 	
 	public FpProductDetails getProductDetails(Long productMappingId) throws Exception;
-
+	
+	public boolean isSelfView(Long fpProductId,Long userId);
 	
 }

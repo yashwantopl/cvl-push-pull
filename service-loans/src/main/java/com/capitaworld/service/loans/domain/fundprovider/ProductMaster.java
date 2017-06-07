@@ -23,6 +23,9 @@ public abstract class ProductMaster implements Serializable {
 
 	@Column(name = "fp_name")
 	private String fpName;
+	
+	@Column(name = "product_code")
+	private String productCode;
 
 	@Column(name = "product_id")
 	private Integer productId;
@@ -164,7 +167,13 @@ public abstract class ProductMaster implements Serializable {
 	public void setIsParameterFilled(Boolean isParameterFilled) {
 		this.isParameterFilled = isParameterFilled;
 	}
-	
-	
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
 
 }

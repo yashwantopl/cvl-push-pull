@@ -26,6 +26,7 @@ public class ProductMasterRequest implements Serializable {
 
 	private Long userId;
 
+	private String productCode;
 
 	
 	public ProductMasterRequest() {
@@ -77,6 +78,14 @@ public class ProductMasterRequest implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
 }
