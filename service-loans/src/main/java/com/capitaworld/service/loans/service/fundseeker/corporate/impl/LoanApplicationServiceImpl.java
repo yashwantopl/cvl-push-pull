@@ -356,7 +356,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	}
 
-	private boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId) {
+	@Override
+	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId) {
 		if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
 			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		} else {
