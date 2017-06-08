@@ -11,6 +11,8 @@ public class LoanApplicationDetailsForSp {
 	private Integer denominationId;
 	private String denominationValue;
 	
+	private boolean hasAlreadyApplied;
+	
 
 	public Integer getApplicationType() {
 		return applicationType;
@@ -79,8 +81,14 @@ public class LoanApplicationDetailsForSp {
 	public void setDenominationId(Integer denominationId) {
 		this.denominationId = denominationId;
 	}
-	
-	
+
+	public boolean isHasAlreadyApplied() {
+		return hasAlreadyApplied;
+	}
+
+	public void setHasAlreadyApplied(boolean hasAlreadyApplied) {
+		this.hasAlreadyApplied = hasAlreadyApplied;
+	}
 	
 	
 }
