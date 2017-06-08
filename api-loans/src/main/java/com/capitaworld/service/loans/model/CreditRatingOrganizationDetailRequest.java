@@ -31,6 +31,8 @@ public class CreditRatingOrganizationDetailRequest implements Serializable {
 	
 	private Boolean isActive = true;
 	
+	private String ratingValue;
+	
 	
 	
 
@@ -109,6 +111,14 @@ public class CreditRatingOrganizationDetailRequest implements Serializable {
 
 	public void setRatingAgencyId(Integer ratingAgencyId) {
 		this.ratingAgencyId = ratingAgencyId;
+	}
+
+	public String getRatingValue() {
+		return ratingValue;
+	}
+
+	public void setRatingValue(String ratingValue) {
+		this.ratingValue = ratingValue;
 	}
 
 }
