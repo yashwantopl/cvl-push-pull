@@ -20,6 +20,9 @@ public class CommonUtils {
 	public static final String MATCHES_URL = "matchesURL";
 	public static final String DMS_BASE_URL_KEY = "dmsURL";
 	public static final String NOT_APPLICABLE = "NA";
+	public static final String WC_PRIMARY_EXCEL = "Teaser Download-Working Capital.xlsx";
+	public static final String EXCEL_TEASER_BASE_URL= "excelTeaserBaseUrl";
+	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
