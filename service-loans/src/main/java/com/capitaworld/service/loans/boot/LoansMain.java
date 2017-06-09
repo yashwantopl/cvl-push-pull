@@ -11,6 +11,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
+import com.capitaworld.service.oneform.client.RatingOptionClient;
 import com.capitaworld.service.users.client.UsersClient;
 
 /**
@@ -43,6 +45,10 @@ public class LoansMain {
 	
 	@Value("${userURL}")
 	String userURL;
+	
+	@Value("${oneForm}")
+	private String oneFormUrl;
+	
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -67,6 +73,14 @@ public class LoansMain {
 		UsersClient usersClient = new UsersClient(userURL);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
 		return usersClient;
+	}
+	
+	
+	@Bean
+	public RatingByRatingIdClient ratingByRatingIdClient(){
+		RatingByRatingIdClient ratingByRatingIdClient = new RatingByRatingIdClient(oneFormUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingByRatingIdClient);
+		return ratingByRatingIdClient;
 	}
 
 

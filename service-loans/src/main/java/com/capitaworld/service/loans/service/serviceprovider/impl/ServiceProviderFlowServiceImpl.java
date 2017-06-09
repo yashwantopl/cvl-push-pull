@@ -116,6 +116,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
+							boolean applied = loanApplicationService.hasAlreadyApplied(clientResponse.getClientId(), applicationDetailsForSp.getId(),applicationDetailsForSp.getProductId());
+							applicationDetailsForSp.setHasAlreadyApplied(applied);
 							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
 							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());							
 						}else{
