@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatin
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 
 /**
  * @author Sanket
@@ -33,6 +37,9 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
+
+	@Autowired
+	private RatingByRatingIdClient ratingByRatingIdClient;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -67,15 +74,22 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	}
 
 	@Override
-	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id,Long userId) throws Exception {
+	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id, Long userId)
+			throws Exception {
 		try {
 			List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
-					.listCreditRatingOrganizationDetailsFromAppId(id,userId);
+					.listCreditRatingOrganizationDetailsFromAppId(id, userId);
 			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
 
 			for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
 				BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getCreditRatingOptionId())) {
+					OneFormResponse ratings = ratingByRatingIdClient.send(detail.getCreditRatingOptionId().longValue());
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) ratings.getData(), MasterResponse.class);
+					creditRatingOrganizationDetailsRequest.setRatingValue(masterResponse.getValue());
+				}
 				creditRatingOrganizationDetailRequests.add(creditRatingOrganizationDetailsRequest);
 			}
 			return creditRatingOrganizationDetailRequests;
@@ -89,14 +103,12 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	@Override
 	public List<Integer> getShortTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
 		// TODO Auto-generated method stub
-		return creditRatingOrganizationDetailsRepository
-				.listShortCreditRatingOptionDetailsFromAppId(id,userId);
+		return creditRatingOrganizationDetailsRepository.listShortCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 
 	@Override
 	public List<Integer> getLongTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
 		// TODO Auto-generated method stub
-		return creditRatingOrganizationDetailsRepository
-				.listLongCreditRatingOptionDetailsFromAppId(id,userId);
+		return creditRatingOrganizationDetailsRepository.listLongCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 }

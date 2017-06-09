@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryTermLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -23,6 +25,9 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 
 	@Autowired
 	private PrimaryTermLoanDetailRepository primaryTLRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception {
@@ -59,6 +64,10 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			BeanUtils.copyProperties(loanDetail, termLoanRequest);
 			termLoanRequest.setTenure(
 					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			termLoanRequest.setCurrencyValue(data);
 			return termLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-");

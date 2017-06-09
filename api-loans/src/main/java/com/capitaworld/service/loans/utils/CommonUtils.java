@@ -197,6 +197,13 @@ public class CommonUtils {
 		public static final int PRIMARY_UPLOAD = 5;
 		public static final int FINAL_UPLOAD = 6;
 		public static final int FINAL_DPR_UPLOAD = 7;
+		public static final int FINAL_CO_APPLICANT = 8;
+		public static final int FINAL_GUARANTOR = 9;
+		public static final int FINAL_MCQ = 10;
+		public static final int FINAL_INFORMATION = 11;
+		public static final int CONNECTIONS = 12;
+		public static final int MATCHES = 13;
+		
 	}
 
 	public static boolean isObjectListNull(Object... args) {

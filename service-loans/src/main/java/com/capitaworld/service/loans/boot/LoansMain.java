@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.boot;
 
-import com.capitaworld.service.dms.client.DMSClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -10,19 +9,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
+import com.capitaworld.service.oneform.client.RatingOptionClient;
+import com.capitaworld.service.users.client.UsersClient;
+
 /**
  * @author win7
  *
  */
-/*@SpringBootApplication
-@ComponentScan(basePackages = {"com.capitaworld"})
-public class LoansMain {
-	
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(LoansMain.class, args);
-	}
-
-}*/
+/*
+ * @SpringBootApplication
+ * 
+ * @ComponentScan(basePackages = {"com.capitaworld"}) public class LoansMain {
+ * 
+ * public static void main(String[] args) throws Exception {
+ * SpringApplication.run(LoansMain.class, args); }
+ * 
+ * }
+ */
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.capitaworld" })
 @EnableAsync
@@ -34,6 +40,16 @@ public class LoansMain {
 	@Value("${dmsURL}")
 	String dmsUrl;
 
+	@Value("${notificationURL}")
+	String notificationURL;
+	
+	@Value("${userURL}")
+	String userURL;
+	
+	@Value("${oneForm}")
+	private String oneFormUrl;
+	
+
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -44,5 +60,28 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(dmsClient);
 		return dmsClient;
 	}
+
+	@Bean
+	public NotificationClient notificationMasterClient() {
+		NotificationClient notificationClient = new NotificationClient(notificationURL);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
+		return notificationClient;
+	}
+	
+	@Bean
+	public UsersClient userMasterClient(){
+		UsersClient usersClient = new UsersClient(userURL);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
+		return usersClient;
+	}
+	
+	
+	@Bean
+	public RatingByRatingIdClient ratingByRatingIdClient(){
+		RatingByRatingIdClient ratingByRatingIdClient = new RatingByRatingIdClient(oneFormUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingByRatingIdClient);
+		return ratingByRatingIdClient;
+	}
+
 
 }

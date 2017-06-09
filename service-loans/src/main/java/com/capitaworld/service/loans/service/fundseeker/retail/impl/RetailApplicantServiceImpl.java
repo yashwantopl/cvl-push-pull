@@ -157,6 +157,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantDetail.setModifiedDate(new Date());
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRepository.save(applicantDetail);
+			// Updating Final Flag
+			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
+								finaluserId, applicantRequest.getIsApplicantFinalFilled());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -174,7 +177,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
 		try {
-			return loanApplicationRepository.getCurrencyId(applicationId, userId);
+			return applicantRepository.getCurrency(userId,applicationId);
 		} catch (Exception e) {
 			logger.error("Error while Getting Currency:-");
 			e.printStackTrace();

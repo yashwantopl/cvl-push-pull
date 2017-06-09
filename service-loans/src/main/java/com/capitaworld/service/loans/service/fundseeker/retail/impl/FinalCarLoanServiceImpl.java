@@ -74,10 +74,12 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 	public FinalCarLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
 		try {
 			FinalCarLoanDetail loanDetail = finalCarLoanDetailRepository.getByApplicationID(applicationId, userId);
-			if (loanDetail == null) {
-				return null;
-			}
 			FinalCarLoanDetailRequest finalCarLoanDetailRequest = new FinalCarLoanDetailRequest();
+			if (loanDetail == null) {
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+				finalCarLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				return finalCarLoanDetailRequest;
+			}
 			BeanUtils.copyProperties(loanDetail, finalCarLoanDetailRequest);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalCarLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));

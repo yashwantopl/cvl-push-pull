@@ -35,6 +35,8 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -78,7 +80,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LapParameterRepository lapParameterRepository;
 
 	@Autowired
-	private WorkingCapitalParameterService workingCapitalParameterService;
+	private FundProviderSequenceService fundProviderSequenceService;  
 
 	@Autowired
 	private GeographicalCountryRepository geoCountry;
@@ -170,6 +172,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setIsParameterFilled(true);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
+				productMaster.setProductCode(fundProviderSequenceService.getFundProviderSequenceNumber(productMasterRequest.getProductId()));
 				ProductMaster master = productMasterRepository.save(productMaster);
 				CommonResponse commonResponse = new CommonResponse();
 				commonResponse.setId(master.getId());
@@ -308,5 +311,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 		return fpProductDetails;
 	}
+
+	@Override
+	public boolean isSelfView(Long fpProductId,Long userId){
+		return productMasterRepository.getUserProduct(fpProductId, userId) != null;
+	}
+
 
 }
