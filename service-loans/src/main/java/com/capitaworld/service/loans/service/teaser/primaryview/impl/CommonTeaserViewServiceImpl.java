@@ -8,7 +8,10 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
+import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CommonTeaserViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -28,7 +31,10 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	private TermLoanPrimaryViewService termLoanPrimaryViewService; 
 	
 	@Autowired
-	private PersonalLoanParameterService personalLoanParameterService;
+	private PersonalLoansViewService personalLoansViewService;
+	
+	@Autowired
+	private CarLoanPrimaryViewService carLoanPrimaryViewService; 
 	@Override
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
 			throws Exception {
@@ -50,8 +56,12 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			loansResponse.setMessage(LoanType.TERM_LOAN.getId().toString());
 			break;
 		case PERSONAL_LOAN:
-			loansResponse.setData(personalLoanParameterService.getPersonalLoanParameterRequest(applicantId));
+			loansResponse.setData(personalLoansViewService.getPersonalLoansPrimaryViewDetails(applicantId));
 			loansResponse.setMessage(LoanType.PERSONAL_LOAN.getId().toString());
+			break;
+		case CAR_LOAN:
+			loansResponse.setData(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
+			loansResponse.setMessage(LoanType.CAR_LOAN.getId().toString());
 			break;
 		/*case HOME_LOAN:
 			productMaster = new HomeLoanParameter();

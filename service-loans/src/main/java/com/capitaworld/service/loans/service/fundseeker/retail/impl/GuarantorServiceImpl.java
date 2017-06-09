@@ -491,7 +491,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Fetching Guarantor Details");
+			return null;
 		}
 	}
 
