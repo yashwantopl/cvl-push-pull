@@ -265,6 +265,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						name+="NA";
 					else name+=retailApplicantDetail.getFirstName();
 					
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
+						name+=" NA";
+					else name+=" "+retailApplicantDetail.getLastName();
+					
 					retailProposalDetails.setName(name);
 
 					// calling DMS for getting fp profile image path
