@@ -486,7 +486,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				return plResponses;
 			} else {
-				throw new Exception("No CoApplicant Found");
+				return null;
 			}
 		} catch (Exception e) {
 			throw new Exception("Error Occured while fetching CoApplicant Details");

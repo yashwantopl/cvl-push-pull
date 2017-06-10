@@ -25,47 +25,50 @@ import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
 import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+
 @Transactional
 @Service
 public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 	@Autowired
 	private CarLoanParameterRepository carLoanParameterRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryRepository geographicalCountryRepository;
-	
+
 	@Autowired
 	private GeographicalStateRepository geographicalStateRepository;
-	
+
 	@Autowired
 	private GeographicalCityRepository geographicalCityRepository;
-	
+
 	@Autowired
 	private Environment environment;
-	
-	
+
 	@Override
 	public boolean saveOrUpdate(CarLoanParameterRequest carLoanParameterRequest) {
 		// TODO Auto-generated method stub
-		CarLoanParameter carLoanParameter= null;
+		CarLoanParameter carLoanParameter = null;
 
 		carLoanParameter = carLoanParameterRepository.findOne(carLoanParameterRequest.getId());
 		if (carLoanParameter == null) {
 			return false;
 		}
+		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMaxTenure()))
+			carLoanParameterRequest.setMaxTenure(carLoanParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMinTenure()))
+			carLoanParameterRequest.setMinTenure(carLoanParameterRequest.getMinTenure() * 12);
 		BeanUtils.copyProperties(carLoanParameterRequest, carLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		carLoanParameter.setModifiedBy(carLoanParameterRequest.getUserId());
 		carLoanParameter.setModifiedDate(new Date());
 		carLoanParameterRepository.save(carLoanParameter);
-		
-		
+
 		geographicalCountryRepository.inActiveMappingByFpProductId(carLoanParameterRequest.getId());
-		//country data save
+		// country data save
 		saveCountry(carLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateRepository.inActiveMappingByFpProductId(carLoanParameterRequest.getId());
 		saveState(carLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(carLoanParameterRequest.getId());
 		saveCity(carLoanParameterRequest);
 		return true;
@@ -73,64 +76,63 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 	@Override
 	public CarLoanParameterRequest getCarLoanParameterRequest(Long id) {
-		CarLoanParameterRequest carLoanParameterRequest= new CarLoanParameterRequest();
+		CarLoanParameterRequest carLoanParameterRequest = new CarLoanParameterRequest();
 		CarLoanParameter carLoanParameter = carLoanParameterRepository.getByID(id);
-		if(carLoanParameter==null)
+		if (carLoanParameter == null)
 			return null;
 		BeanUtils.copyProperties(carLoanParameter, carLoanParameterRequest);
-		
-		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(carLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
-			carLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		List<Long> countryList = geographicalCountryRepository.getCountryByFpProductId(carLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+				carLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMaxTenure()))
+			carLoanParameterRequest.setMaxTenure(carLoanParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMinTenure()))
+			carLoanParameterRequest.setMinTenure(carLoanParameterRequest.getMinTenure() / 12);
+
+		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(carLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+				carLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(carLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
-			carLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(carLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
-			carLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(carLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+				carLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return carLoanParameterRequest;
 	}
-	
-private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
-		
-		GeographicalCountryDetail geographicalCountryDetail= null;
+
+	private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
+
+		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -144,9 +146,9 @@ private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
 	}
-	
+
 	private void saveState(CarLoanParameterRequest carLoanParameterRequest) {
-		GeographicalStateDetail geographicalStateDetail= null;
+		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -160,10 +162,10 @@ private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
 	}
-	
+
 	private void saveCity(CarLoanParameterRequest carLoanParameterRequest) {
-		
-		GeographicalCityDetail geographicalCityDetail= null;
+
+		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -177,8 +179,5 @@ private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
 	}
-	
-	
-	
 
 }
