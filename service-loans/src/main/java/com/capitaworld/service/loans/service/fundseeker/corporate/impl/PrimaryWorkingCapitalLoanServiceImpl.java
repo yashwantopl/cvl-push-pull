@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryWorkingCapitalLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -23,6 +25,9 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 
 	@Autowired
 	private PrimaryWorkingCapitalLoanDetailRepository primaryWCRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
@@ -60,6 +65,10 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			BeanUtils.copyProperties(loanDetail, capitalLoanRequest);
 			capitalLoanRequest.setTenure(
 					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			capitalLoanRequest.setCurrencyValue(data);
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Working Details Profile:-");

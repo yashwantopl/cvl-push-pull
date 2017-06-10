@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -264,13 +265,20 @@ public class PrimaryViewController {
 	
 	
 	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest) throws Exception {
+	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
 		
 		// request must not be null
 	
-			Long fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			Long fromUserTypeId = ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).longValue();
-		
+			Long fromUserId = null;
+			Long fromUserTypeId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				fromUserId = clientId;
+				fromUserTypeId = clientUserType;
+			} else {
+				fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+				fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+			}
 			Long applicationId=request.getApplicationId();
 			Long fpProductId=request.getFpProductId();
 			String toUserId = null;
@@ -299,12 +307,20 @@ public class PrimaryViewController {
 	}
 	
 	@RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void finalTeaserViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest) throws Exception {
+	public void finalTeaserViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
 		
 		// request must not be null
 	
-			Long fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			Long fromUserTypeId = ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).longValue();
+		Long fromUserId = null;
+		Long fromUserTypeId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) {
+			fromUserId = clientId;
+			fromUserTypeId = clientUserType;
+		} else {
+			fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
 		
 			Long applicationId=request.getApplicationId();
 			Long fpProductId=request.getFpProductId();
