@@ -11,6 +11,8 @@ import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterS
 import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CommonTeaserViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
@@ -35,6 +37,12 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	
 	@Autowired
 	private CarLoanPrimaryViewService carLoanPrimaryViewService; 
+	
+	@Autowired
+	private HomeLoanPrimaryViewService homeLoanPrimaryViewService;
+	
+	@Autowired
+	private LapPrimaryViewService lapPrimaryViewService;
 	@Override
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
 			throws Exception {
@@ -63,36 +71,16 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			loansResponse.setData(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
 			loansResponse.setMessage(LoanType.CAR_LOAN.getId().toString());
 			break;
-		/*case HOME_LOAN:
-			productMaster = new HomeLoanParameter();
-			if (productMasterRequest.getId() != null)
-				homeLoanParameter = homeLoanParameterRepository.findOne(productMasterRequest.getId());
-			if (homeLoanParameter != null)
-				BeanUtils.copyProperties(homeLoanParameter, productMaster);
+		case HOME_LOAN:
+			loansResponse.setData(homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(applicantId));
+			loansResponse.setMessage(LoanType.HOME_LOAN.getId().toString());
 			break;
-		case CAR_LOAN:
-			productMaster = new CarLoanParameter();
-			if (productMasterRequest.getId() != null)
-				carLoanParameter = carLoanParameterRepository.findOne(productMasterRequest.getId());
-			if (carLoanParameter != null)
-				BeanUtils.copyProperties(carLoanParameter, productMaster);
+		case LOAN_AGAINST_PROPERTY:
+			loansResponse.setData(lapPrimaryViewService.getLapPrimaryViewDetails(applicantId));
+			loansResponse.setMessage(LoanType.LOAN_AGAINST_PROPERTY.getId().toString());
 			break;
 		
-		case LOAN_AGAINST_PROPERTY:
-			productMaster = new LapParameter();
-			if (productMasterRequest.getId() != null)
-				lapParameter = lapParameterRepository.findOne(productMasterRequest.getId());
-			if (lapParameter != null)
-				BeanUtils.copyProperties(lapParameter, productMaster);
-			break;
-		case LOAN_AGAINST_SHARES_AND_SECUIRITIES:
-			productMaster = new LasParameter();
-			if (productMasterRequest.getId() != null)
-				lasParameter = lasParameterRepository.findOne(productMasterRequest.getId());
-			if (lasParameter != null)
-				BeanUtils.copyProperties(lasParameter, productMaster);
-			break;
-*/
+
 		default:
 			break;
 		}

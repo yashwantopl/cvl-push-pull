@@ -52,10 +52,18 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		if (personalLoanParameter == null) {
 			return false;
 		}
+		
+		if (!CommonUtils.isObjectListNull(personalLoanParameterRequest.getMaxTenure()))
+			personalLoanParameterRequest.setMaxTenure(personalLoanParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(personalLoanParameterRequest.getMinTenure()))
+			personalLoanParameter.setMinTenure(personalLoanParameterRequest.getMinTenure() * 12);
+		
 		BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		personalLoanParameter.setModifiedBy(personalLoanParameterRequest.getUserId());
 		personalLoanParameter.setModifiedDate(new Date());
 		personalLoanParameterRepository.save(personalLoanParameter);
+		
+		
 		
 		geographicalCountryRepository.inActiveMappingByFpProductId(personalLoanParameterRequest.getId());
 		//country data save
@@ -78,6 +86,11 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			return null;
 		BeanUtils.copyProperties(personalLoanParameter, personalLoanParameterRequest);
 		
+		if (!CommonUtils.isObjectListNull(personalLoanParameterRequest.getMaxTenure()))
+			personalLoanParameterRequest.setMaxTenure(personalLoanParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(personalLoanParameterRequest.getMinTenure()))
+			personalLoanParameterRequest.setMinTenure(personalLoanParameterRequest.getMinTenure() / 12);
+		
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(personalLoanParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
@@ -92,6 +105,9 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			e.printStackTrace();
 		}
 		}
+		
+		
+		
 		
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(personalLoanParameterRequest.getId());
 		if(!stateList.isEmpty())
