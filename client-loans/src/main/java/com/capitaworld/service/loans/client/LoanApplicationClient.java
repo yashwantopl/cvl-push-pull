@@ -15,7 +15,8 @@ public class LoanApplicationClient {
 	private static final String LOAN_APPLICATION_DETAILS_BY_USER_ID = "/loan_application/getListByUserIdList";
 	private static final String USERNAME_BY_APPLICATON_ID = "/loan_application/getUserNameByApplicationId";
 	private static final String USER_ID_BY_APPLICATON_ID = "/loan_application/getUserIdByApplicationId";
-	private static final String PRIMARY_VIEW_BY_APPLICATON_ID = "/PrimaryViewByApplicationId";
+	private static final String PRIMARY_VIEW_BY_APPLICATON_ID = "/primaryViewByApplicationId";
+	private static final String FINAL_VIEW_BY_APPLICATON_ID = "/finalViewByApplicationId";
 	private String loanApplicationBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -71,6 +72,24 @@ public class LoanApplicationClient {
 	
 	public LoansResponse getPrimaryViewByApplicationId(Long request) throws LoansException {
 		String url = loanApplicationBaseUrl.concat(PRIMARY_VIEW_BY_APPLICATON_ID).concat("/"+request);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			/*
+			 * return restTemplate.postForObject(url, request,
+			 * LoansResponse.class);
+			 */
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getFinalViewByApplicationId(Long request) throws LoansException {
+		String url = loanApplicationBaseUrl.concat(FINAL_VIEW_BY_APPLICATON_ID).concat("/"+request);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
