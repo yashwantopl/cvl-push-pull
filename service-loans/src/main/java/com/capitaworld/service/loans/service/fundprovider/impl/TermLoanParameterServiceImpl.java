@@ -60,6 +60,12 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (termLoanParameter == null) {
 			return false;
 		}
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure() * 12);
+		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
@@ -92,6 +98,12 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if(loanParameter==null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure() / 12);
+		
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {

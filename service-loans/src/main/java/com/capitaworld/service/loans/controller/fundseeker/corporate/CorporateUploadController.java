@@ -177,7 +177,7 @@ public class CorporateUploadController {
 				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				if (!(response.getDataList().size() > 0)) {
 					try {
-						Thread.sleep(3000); // 3000 milliseconds is three
+						Thread.sleep(5000); // 5000 milliseconds is three
 											// second.
 						response = dmsClient.listProductDocument(documentRequest);
 					} catch (InterruptedException ex) {

@@ -23,7 +23,7 @@ public class CommonTeaserController {
 	
 	@Autowired
 	private CommonTeaserViewService  commonTeaserViewService;
-	@GetMapping(value = "/PrimaryViewByApplicationId/{applicationId}")
+	@GetMapping(value = "/primaryViewByApplicationId/{applicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> PrimaryViewByApplicationId(@PathVariable(value = "applicationId") Long applicationId,HttpServletRequest httpServletRequest) {
 		 LoansResponse loansResponse = new LoansResponse();
 	        //get user id from http servlet request
@@ -36,6 +36,29 @@ public class CommonTeaserController {
 	        
 				try {
 					commonTeaserViewService.getPrimaryViewDetails(applicationId,loansResponse);
+					
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				} catch (Exception e) {
+			            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+			            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}
+	        }
+	}
+	
+	@GetMapping(value = "/finalViewByApplicationId/{applicationId}")
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewByApplicationId(@PathVariable(value = "applicationId") Long applicationId,HttpServletRequest httpServletRequest) {
+		 LoansResponse loansResponse = new LoansResponse();
+	        //get user id from http servlet request
+	      
+
+	        if(CommonUtils.isObjectNullOrEmpty(applicationId)){
+				logger.warn("Invalid data or Requested data not found.", applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+	        }else {
+	        
+				try {
+					commonTeaserViewService.getFinalViewDetails(applicationId,loansResponse);
 					
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				} catch (Exception e) {
