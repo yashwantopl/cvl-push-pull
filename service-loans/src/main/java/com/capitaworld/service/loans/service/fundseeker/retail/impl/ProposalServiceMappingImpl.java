@@ -109,7 +109,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					// for get address city state country
 					String address="";
-					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 					{
 						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
 					}
@@ -117,7 +117,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					{
 						address+="NA ,";
 					}
-					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 					{
 						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
 					}
@@ -125,7 +125,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					{
 						address+="NA ,";
 					}
-					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 					{
 						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
 					}
@@ -231,7 +231,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					// for get address city state country
 					String address="";
-					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 					{
 						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
 					}
@@ -239,7 +239,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					{
 						address+="NA ,";
 					}
-					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 					{
 						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
 					}
@@ -247,7 +247,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					{
 						address+="NA ,";
 					}
-					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 					{
 						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
 					}
@@ -264,6 +264,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
 						name+="NA";
 					else name+=retailApplicantDetail.getFirstName();
+					
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
+						name+=" NA";
+					else name+=" "+retailApplicantDetail.getLastName();
 					
 					retailProposalDetails.setName(name);
 
