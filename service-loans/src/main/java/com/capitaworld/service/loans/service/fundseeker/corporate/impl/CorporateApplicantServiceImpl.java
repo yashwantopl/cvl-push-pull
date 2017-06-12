@@ -296,6 +296,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
         DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
         
 		List<FutureFinancialEstimatesDetail> finEstimates = futureFinancialEstimateDetailsRepository.listFutureFinancialEstimateDetailsFromAppId(applicationId, userId);
+		if(CommonUtils.isListNullOrEmpty(finEstimates)){
+			graphResponse.setGraphAvailable(false);
+			return graphResponse;
+		}
 		
 		List<Double> pats = new ArrayList<>(finEstimates.size());
         List<Double> sales = new ArrayList<>(finEstimates.size());
@@ -380,17 +384,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
              }
              rocePercentage.add(Double.valueOf(decimalFormat.format(val)));
          }
-         //calculate current Ration (Current Assets/Current Liabilities)
-         List<Double> currentRatio = new ArrayList<>(currentAsset.size());
-         for (int i = 0; i <= (currentAsset.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (currentAsset.get(i) / (currentLiabilities.get(i)));
-                 /*if(Double.isNaN(val)){
-                     val=0;
-                 }*/
-             currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
-         }
-         //calculate Debt Equity(%) (Debt/Net Worth)
+
          List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
          for (int i = 0; i <= (debt.size() - 1); i++) {
              //System.out.println(sales.get(i+1)+"-"+sales.get(i));
@@ -400,6 +394,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
              }
              debtEquityPercentage.add(Double.valueOf(decimalFormat1.format(val)));
          }
+         
+       //calculate current Ration (Current Assets/Current Liabilities)
+         List<Double> currentRatio = new ArrayList<>(currentAsset.size());
+         for (int i = 0; i <= (currentAsset.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (currentAsset.get(i) / (currentLiabilities.get(i)));
+                 /*if(Double.isNaN(val)){
+                     val=0;
+                 }*/
+             currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
+         }
+
    graphResponse.setxAxisOfPat(financialYears);      
    graphResponse.setPats(pats);
    graphResponse.setSales(sales);

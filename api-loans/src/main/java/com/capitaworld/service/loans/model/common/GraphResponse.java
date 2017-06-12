@@ -29,6 +29,8 @@ public class GraphResponse implements Serializable {
     
     private List<String> xAxisOfPat = null;
     
+    private boolean graphAvailable;
+    
     public GraphResponse() {
 		super();
 		pats = Collections.emptyList();
@@ -178,6 +180,14 @@ public class GraphResponse implements Serializable {
 
 	public void setxAxisOfPat(List<String> xAxisOfPat) {
 		this.xAxisOfPat = xAxisOfPat;
+	}
+
+	public boolean isGraphAvailable() {
+		return graphAvailable;
+	}
+
+	public void setGraphAvailable(boolean graphAvailable) {
+		this.graphAvailable = graphAvailable;
 	}
 
 }
