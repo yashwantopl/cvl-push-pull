@@ -20,6 +20,9 @@ public class CommonUtils {
 	public static final String MATCHES_URL = "matchesURL";
 	public static final String DMS_BASE_URL_KEY = "dmsURL";
 	public static final String NOT_APPLICABLE = "NA";
+	public static final String WC_PRIMARY_EXCEL = "Teaser Download-Working Capital.xlsx";
+	public static final String EXCEL_TEASER_BASE_URL= "excelTeaserBaseUrl";
+	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -32,9 +35,6 @@ public class CommonUtils {
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
 
-		System.out.println("date=>" + date);
-		System.out.println("Month=>" + month);
-		System.out.println("Year=>" + year);
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.setTime(new Date());
@@ -48,9 +48,6 @@ public class CommonUtils {
 	public static Integer[] saperateDayMonthYearFromDate(Date date) {
 		Integer result[] = new Integer[3];
 		if (date == null) {
-			result[0] = null;
-			result[1] = null;
-			result[2] = null;
 			return result;
 		}
 		Calendar calendar = Calendar.getInstance();
@@ -59,9 +56,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH);
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0]=>" + result[0]);
-		System.out.println("result[1]=>" + result[1]);
-		System.out.println("result[2]=>" + result[2]);
 		return result;
 	}
 
@@ -207,7 +201,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = ((List) object).isEmpty();
+				flag = isListNullOrEmpty((List)object);
 				if(flag) return true;
 				else continue;
 			}
