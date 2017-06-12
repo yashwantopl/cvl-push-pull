@@ -296,9 +296,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
         DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
         
 		List<FutureFinancialEstimatesDetail> finEstimates = futureFinancialEstimateDetailsRepository.listFutureFinancialEstimateDetailsFromAppId(applicationId, userId);
-		if(CommonUtils.isListNullOrEmpty(finEstimates)){
-			graphResponse.setGraphAvailable(false);
-			return graphResponse;
+		if(!CommonUtils.isListNullOrEmpty(finEstimates)){
+			graphResponse.setGraphAvailable(true);
+		}else{
+			return graphResponse; 
 		}
 		
 		List<Double> pats = new ArrayList<>(finEstimates.size());
