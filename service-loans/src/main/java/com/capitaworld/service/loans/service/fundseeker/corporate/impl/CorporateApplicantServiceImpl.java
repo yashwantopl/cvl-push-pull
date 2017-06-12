@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FutureFinancialEstimatesDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.GraphResponse;
@@ -25,6 +26,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FutureFinancialEstimatesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -54,7 +56,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private LoanApplicationRepository loanApplicationRepository;
 	
 	@Autowired
-	private FutureFinancialEstimatesDetailsRepository futureFinancialEstimateDetailsRepository;
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -295,25 +297,25 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		DecimalFormat decimalFormat = new DecimalFormat("#");
         DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
         
-		List<FutureFinancialEstimatesDetail> finEstimates = futureFinancialEstimateDetailsRepository.listFutureFinancialEstimateDetailsFromAppId(applicationId, userId);
-		if(!CommonUtils.isListNullOrEmpty(finEstimates)){
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if(!CommonUtils.isListNullOrEmpty(pastEstimates)){
 			graphResponse.setGraphAvailable(true);
 		}else{
 			return graphResponse; 
 		}
 		
-		List<Double> pats = new ArrayList<>(finEstimates.size());
-        List<Double> sales = new ArrayList<>(finEstimates.size());
-        List<Double> ebidta = new ArrayList<>(finEstimates.size());
-        List<Double> netWorth = new ArrayList<>(finEstimates.size());
-        List<Double> currentAsset = new ArrayList<>(finEstimates.size());
-        List<Double> currentLiabilities = new ArrayList<>(finEstimates.size());
-        List<Double> fixedAsset = new ArrayList<>(finEstimates.size());
-        List<Double> debt = new ArrayList<>(finEstimates.size());
+		List<Double> pats = new ArrayList<>(pastEstimates.size());
+        List<Double> sales = new ArrayList<>(pastEstimates.size());
+        List<Double> ebidta = new ArrayList<>(pastEstimates.size());
+        List<Double> netWorth = new ArrayList<>(pastEstimates.size());
+        List<Double> currentAsset = new ArrayList<>(pastEstimates.size());
+        List<Double> currentLiabilities = new ArrayList<>(pastEstimates.size());
+        List<Double> fixedAsset = new ArrayList<>(pastEstimates.size());
+        List<Double> debt = new ArrayList<>(pastEstimates.size());
         
-        List<String> financialYears = new ArrayList<>(finEstimates.size());
+        List<String> financialYears = new ArrayList<>(pastEstimates.size());
         
-		for (FutureFinancialEstimatesDetail finEst : finEstimates) {
+		for (PastFinancialEstimatesDetail finEst : pastEstimates) {
 			financialYears.add(finEst.getFinancialYear());
 			
 			pats.add(finEst.getPat());
@@ -323,7 +325,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			currentAsset.add(finEst.getCurrentAssets());
 			currentLiabilities.add(finEst.getCurrentLiabilities());
 			fixedAsset.add(finEst.getFixedAssets());
-			debt.add(finEst.getLongTermDebt());
+			debt.add(finEst.getDebt());
 		}
 		
 		 Double val;
