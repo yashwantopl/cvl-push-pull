@@ -248,6 +248,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				throw new Exception("No Data found");
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new Exception("Problem Occured while Fetching Retail Details");
 		}
 

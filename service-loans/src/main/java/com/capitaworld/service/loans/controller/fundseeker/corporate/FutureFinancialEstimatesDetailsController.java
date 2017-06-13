@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -35,6 +37,9 @@ public class FutureFinancialEstimatesDetailsController {
 
 	@Autowired
 	private FutureFinancialEstimatesDetailsService futureFinancialEstiamateDetailsService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -98,6 +103,10 @@ public class FutureFinancialEstimatesDetailsController {
 					.getFutureEstimateDetailsList(userId, applicationId);
 			if (response != null && !response.isEmpty()) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
+				String data = result.get("currency").toString();
+				data = data.concat(" In "+ result.get("denomination").toString());
+				loansResponse.setData(data);
 				loansResponse.setListData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {

@@ -1165,7 +1165,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (index == 1) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 						|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
-					response.put("message", "Please Fill CO-APPLICANT-2 Final Details to Move Next !");
+					response.put("message", "Please Fill CO-APPLICANT-1 Final Details to Move Next !");
 					response.put("result", false);
 					return response;
 				}
@@ -1286,7 +1286,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (index == 1) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
 						|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue()) {
-					response.put("message", "Please Fill CO-APPLICANT-2 Final Details to Move Next !");
+					response.put("message", "Please Fill GUARANTOR-1 Final Details to Move Next !");
 					response.put("result", false);
 					return response;
 				}

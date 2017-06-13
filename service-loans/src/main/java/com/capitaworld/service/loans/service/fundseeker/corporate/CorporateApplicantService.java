@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 
@@ -14,5 +15,5 @@ public interface CorporateApplicantService {
 	
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);
 	
-//	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception;
+	public GraphResponse getGraphs(Long applicationId,Long userId);
 }
