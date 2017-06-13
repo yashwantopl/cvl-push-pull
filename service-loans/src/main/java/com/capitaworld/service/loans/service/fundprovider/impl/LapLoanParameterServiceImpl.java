@@ -52,6 +52,12 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		if (lapParameter == null) {
 			return false;
 		}
+		
+		if (!CommonUtils.isObjectListNull(lapParameterRequest.getMaxTenure()))
+			lapParameterRequest.setMaxTenure(lapParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(lapParameterRequest.getMinTenure()))
+			lapParameterRequest.setMinTenure(lapParameterRequest.getMinTenure() * 12);
+		
 		BeanUtils.copyProperties(lapParameterRequest, lapParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		lapParameter.setModifiedBy(lapParameterRequest.getUserId());
 		lapParameter.setModifiedDate(new Date());
@@ -78,6 +84,11 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			return null;
 		BeanUtils.copyProperties(lapParameter, lapParameterRequest);
 		
+		if (!CommonUtils.isObjectListNull(lapParameterRequest.getMaxTenure()))
+			lapParameterRequest.setMaxTenure(lapParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(lapParameterRequest.getMinTenure()))
+			lapParameterRequest.setMinTenure(lapParameterRequest.getMinTenure() / 12);
+		
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(lapParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
@@ -92,6 +103,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			e.printStackTrace();
 		}
 		}
+		
+	
 		
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(lapParameterRequest.getId());
 		if(!stateList.isEmpty())

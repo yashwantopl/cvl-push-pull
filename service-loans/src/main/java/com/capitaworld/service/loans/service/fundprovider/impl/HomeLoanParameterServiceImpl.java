@@ -31,40 +31,46 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 	@Autowired
 	private HomeLoanParameterRepository homeLoanParameterRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryRepository geographicalCountryRepository;
-	
+
 	@Autowired
 	private GeographicalStateRepository geographicalStateRepository;
-	
+
 	@Autowired
 	private GeographicalCityRepository geographicalCityRepository;
- 	
+
 	@Autowired
 	private Environment environment;
-	
+
 	@Override
 	public boolean saveOrUpdate(HomeLoanParameterRequest homeLoanParameterRequest) {
 		// TODO Auto-generated method stub
-		HomeLoanParameter homeLoanParameter= null;
+		HomeLoanParameter homeLoanParameter = null;
 
 		homeLoanParameter = homeLoanParameterRepository.findOne(homeLoanParameterRequest.getId());
 		if (homeLoanParameter == null) {
 			return false;
 		}
+
+		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMaxTenure()))
+			homeLoanParameterRequest.setMaxTenure(homeLoanParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
+			homeLoanParameterRequest.setMinTenure(homeLoanParameterRequest.getMinTenure() * 12);
+
 		BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		homeLoanParameter.setModifiedBy(homeLoanParameterRequest.getUserId());
 		homeLoanParameter.setModifiedDate(new Date());
 		homeLoanParameterRepository.save(homeLoanParameter);
-		
+
 		geographicalCountryRepository.inActiveMappingByFpProductId(homeLoanParameterRequest.getId());
-		//country data save
+		// country data save
 		saveCountry(homeLoanParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateRepository.inActiveMappingByFpProductId(homeLoanParameterRequest.getId());
 		saveState(homeLoanParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(homeLoanParameterRequest.getId());
 		saveCity(homeLoanParameterRequest);
 		return true;
@@ -73,65 +79,65 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 	@Override
 	public HomeLoanParameterRequest getHomeLoanParameterRequest(Long id) {
 		// TODO Auto-generated method stub
-		HomeLoanParameterRequest homeLoanParameterRequest= new HomeLoanParameterRequest();
+		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);
-		if(homeLoanParameter==null)
+		if (homeLoanParameter == null)
 			return null;
 		BeanUtils.copyProperties(homeLoanParameter, homeLoanParameterRequest);
 		
-		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(homeLoanParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
-			homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMaxTenure()))
+			homeLoanParameterRequest.setMaxTenure(homeLoanParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
+			homeLoanParameterRequest.setMinTenure(homeLoanParameterRequest.getMinTenure() / 12);
+
+		List<Long> countryList = geographicalCountryRepository
+				.getCountryByFpProductId(homeLoanParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+
+		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(homeLoanParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(homeLoanParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
-			homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(homeLoanParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
-			homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(homeLoanParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(
+					environment.getRequiredProperty(CommonUtils.ONE_FORM));
+			try {
+				OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return homeLoanParameterRequest;
 	}
-	
-	
-private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
-		
-		GeographicalCountryDetail geographicalCountryDetail= null;
+
+	private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
+
+		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -145,9 +151,9 @@ private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
 	}
-	
+
 	private void saveState(HomeLoanParameterRequest homeLoanParameterRequest) {
-		GeographicalStateDetail geographicalStateDetail= null;
+		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -161,10 +167,10 @@ private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
 	}
-	
+
 	private void saveCity(HomeLoanParameterRequest homeLoanParameterRequest) {
-		
-		GeographicalCityDetail geographicalCityDetail= null;
+
+		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -178,6 +184,5 @@ private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
 	}
-	
 
 }

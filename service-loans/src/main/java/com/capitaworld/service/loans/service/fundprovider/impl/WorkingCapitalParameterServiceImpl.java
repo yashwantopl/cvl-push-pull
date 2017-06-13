@@ -60,6 +60,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (workingCapitalParameter == null) {
 			return false;
 		}
+		
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
+			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
+			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
+		
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
 				CommonUtils.IgnorableCopy.FP_PRODUCT);
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
@@ -90,6 +96,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, workingCapitalParameterRequest);
+		
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
+			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() / 12);
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
+			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() / 12);
 		
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(workingCapitalParameterRequest.getId());

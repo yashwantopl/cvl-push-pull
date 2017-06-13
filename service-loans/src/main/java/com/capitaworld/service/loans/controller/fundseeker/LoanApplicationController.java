@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -499,6 +500,41 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/primary_final_locked/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isPrimaryAndFinalLocked(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.error("Application id must not be null.");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			JSONObject json = new JSONObject();
+			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
+			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
+			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
+			loansResponse.setData(json);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
