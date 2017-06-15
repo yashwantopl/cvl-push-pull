@@ -690,15 +690,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						}
 					}
 					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
 
 					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
 					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
@@ -722,11 +722,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
 
 					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService
-							.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getFixedDepositsDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 
 					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService
-							.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getOtherCurrentAssetDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
 					for (OtherCurrentAssetDetailRequest assetDetailRequest : otherCurrentAssetDetailRequestList) {
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
@@ -744,7 +744,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
 
 					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService
-							.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getOtherIncomeDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					List<OtherIncomeDetailResponse> incomeDetailResponseList = new ArrayList<OtherIncomeDetailResponse>();
 					for (OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList) {
 						OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
@@ -762,7 +762,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
 
 					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService
-							.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.COAPPLICANT);
+							.getReferenceRetailDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
 					// for uploaded documents
