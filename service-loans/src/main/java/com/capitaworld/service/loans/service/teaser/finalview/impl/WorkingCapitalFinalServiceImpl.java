@@ -219,45 +219,46 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
             response.setDriverForFutureGrowthResponse(driverForFutureGrowthResponse);
 
             //set final working capital information
-            try {
-                FinalWorkingCapitalLoanRequest finalWorkingCapitalLoanRequest = finalWorkingCapitalLoanService.get(userId, toApplicationId);
-                response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue() : null);
-                response.setTechnologyPatented(finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
-                response.setTechnologyRequiresUpgradation(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
-                response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
-                response.setMarketPositioningTop(MarketPositioningTop.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
-                response.setMarketShareTurnover(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
-                response.setIndiaDistributionNetwork(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null ? IndiaDistributionNetwork.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId()).getValue() : null);
-                response.setEnvironmentCertification(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null ? EnvironmentCertification.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId()).getValue() : null);
-                response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null ? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue() : null);
-                response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
-                response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
-                if (finalWorkingCapitalLoanRequest.getIsIsoCertified()){
-                    response.setIsIsoCertified("Yes");
-                }else{
-                    response.setIsIsoCertified("No");
-                }
-                if (finalWorkingCapitalLoanRequest.getWhetherTechnologyIsTied()){
-                    response.setWhetherTechnologyIsTied("Yes");
-                }else{
-                    response.setWhetherTechnologyIsTied("No");
-                }
-                //set overseas
-                List<Integer> overseasIds = finalWorkingCapitalLoanRequest.getOverseasNetworkIds();
-                String overseasString ="";
-                for (int id:overseasIds){
-                   overseasString+=OverseasNetwork.getById(id).getValue()+",";
-                }
-                response.setOverseasNetwork(overseasString);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+           
 
         }else{
             response.setIsDprUploaded(false);
         }
+        //final information
+        try {
+            FinalWorkingCapitalLoanRequest finalWorkingCapitalLoanRequest = finalWorkingCapitalLoanService.get(userId, toApplicationId);
+            response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue() : null);
+            response.setTechnologyPatented(finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
+            response.setTechnologyRequiresUpgradation(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
+            response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
+            response.setMarketPositioningTop(MarketPositioningTop.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
+            response.setMarketShareTurnover(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
+            response.setIndiaDistributionNetwork(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null ? IndiaDistributionNetwork.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId()).getValue() : null);
+            response.setEnvironmentCertification(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null ? EnvironmentCertification.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId()).getValue() : null);
+            response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null ? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue() : null);
+            response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
+            response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
+            if (finalWorkingCapitalLoanRequest.getIsIsoCertified()){
+                response.setIsIsoCertified("Yes");
+            }else{
+                response.setIsIsoCertified("No");
+            }
+            if (finalWorkingCapitalLoanRequest.getWhetherTechnologyIsTied()){
+                response.setWhetherTechnologyIsTied("Yes");
+            }else{
+                response.setWhetherTechnologyIsTied("No");
+            }
+            //set overseas
+            List<Integer> overseasIds = finalWorkingCapitalLoanRequest.getOverseasNetworkIds();
+            String overseasString ="";
+            for (int id:overseasIds){
+               overseasString+=OverseasNetwork.getById(id).getValue()+",";
+            }
+            response.setOverseasNetwork(overseasString);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //set registered email address and registered contact number
         UsersClient usersClient = new UsersClient(environment.getProperty(USERS_URL));
