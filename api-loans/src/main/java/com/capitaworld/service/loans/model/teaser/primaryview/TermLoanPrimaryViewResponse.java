@@ -23,6 +23,7 @@ public class TermLoanPrimaryViewResponse {
 	private String currencyDenomination;
 	private String LoanType;
 	private String dateOfProposal;
+	private String isCreditRatingAvailable;
 	private Double tenure;
 	private Double amount;
 	private List<?> matchesList;
@@ -185,6 +186,14 @@ public class TermLoanPrimaryViewResponse {
 
 	public void setDateOfProposal(String dateOfProposal) {
 		this.dateOfProposal = dateOfProposal;
+	}
+
+	public String getIsCreditRatingAvailable() {
+		return isCreditRatingAvailable;
+	}
+
+	public void setIsCreditRatingAvailable(String isCreditRatingAvailable) {
+		this.isCreditRatingAvailable = isCreditRatingAvailable;
 	}
 
 	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {

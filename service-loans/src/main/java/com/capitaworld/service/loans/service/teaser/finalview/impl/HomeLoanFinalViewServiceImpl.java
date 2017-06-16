@@ -88,6 +88,9 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				logger.error("error while getting Guarantor final details");
 			}
 			
+			homeLoanFinalViewResponse.setFinalViewResponse(finalViewResponse);
+			
+			
 			//Home Loan primary details
 			try { 
 				homeLoanFinalViewResponse.setHomeLoanPrimaryViewResponse(homeLoanPrimaryViewService.getHomeLoanPrimaryViewDetails(applicantId));
