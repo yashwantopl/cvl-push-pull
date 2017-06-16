@@ -36,7 +36,6 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -109,7 +108,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 						: commonRequest.getClientId()));
-				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster);
+				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster,"name");
 				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 						: commonRequest.getClientId()));
 				applicationMaster.setCreatedBy(userId);
@@ -136,20 +135,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (applicationMaster == null) {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
 			}
-			BeanUtils.copyProperties(applicationMaster, applicationRequest);
-			applicationRequest.setHasAlreadyApplied(
-					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+			BeanUtils.copyProperties(applicationMaster, applicationRequest,"name");
+			applicationRequest.setHasAlreadyApplied(hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				applicationRequest.setLoanTypeMain(CommonUtils.CORPORATE);
+				String currencyAndDenomination = "NA";
+				if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
+					currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+					currencyAndDenomination = currencyAndDenomination
+							.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+				}
+				applicationRequest.setCurrencyValue(currencyAndDenomination);
+				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 			} else {
 				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationMaster.getId());
+				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				applicationRequest.setLoanTypeSub("DEBT");
 			}
-			applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
-			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())) {
-				Currency currency = Currency.getById(applicationMaster.getCurrencyId());
-				applicationRequest.setCurrencyValue(currency.getValue());
-			}
+			
+			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+					.getById(applicationMaster.getProductId());
+			applicationRequest.setName(loanType.getValue());
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
@@ -181,7 +190,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
-				BeanUtils.copyProperties(master, request);
+				BeanUtils.copyProperties(master, request,"name");
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
@@ -201,6 +210,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
+				
+				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+						.getById(master.getProductId());
+				request.setName(loanType.getValue());
 				requests.add(request);
 			}
 			return requests;
@@ -1165,7 +1178,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (index == 1) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 						|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
-					response.put("message", "Please Fill CO-APPLICANT-2 Final Details to Move Next !");
+					response.put("message", "Please Fill CO-APPLICANT-1 Final Details to Move Next !");
 					response.put("result", false);
 					return response;
 				}
@@ -1286,7 +1299,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (index == 1) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
 						|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue()) {
-					response.put("message", "Please Fill CO-APPLICANT-2 Final Details to Move Next !");
+					response.put("message", "Please Fill GUARANTOR-1 Final Details to Move Next !");
 					response.put("result", false);
 					return response;
 				}

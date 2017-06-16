@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.List;
+
+import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
+
 public class ProductDetailsForSp {
 
 	private Long id;
@@ -8,7 +12,15 @@ public class ProductDetailsForSp {
 	
 	private String name;
 
+	private List<RecentProfileViewResponse> recentProfileViewList;
 	
+	public List<RecentProfileViewResponse> getRecentProfileViewList() {
+		return recentProfileViewList;
+	}
+
+	public void setRecentProfileViewList(List<RecentProfileViewResponse> recentProfileViewList) {
+		this.recentProfileViewList = recentProfileViewList;
+	}
 	
 	public ProductDetailsForSp(Long id, Integer productId, String name) {
 		super();

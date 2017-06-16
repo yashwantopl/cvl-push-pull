@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.List;
+
+import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
+
 public class LoanApplicationDetailsForSp {
 
 	private Long id;
@@ -13,6 +17,15 @@ public class LoanApplicationDetailsForSp {
 	
 	private boolean hasAlreadyApplied;
 	
+	private List<RecentProfileViewResponse> recentProfileViewList;
+	
+	public List<RecentProfileViewResponse> getRecentProfileViewList() {
+		return recentProfileViewList;
+	}
+
+	public void setRecentProfileViewList(List<RecentProfileViewResponse> recentProfileViewList) {
+		this.recentProfileViewList = recentProfileViewList;
+	}
 
 	public Integer getApplicationType() {
 		return applicationType;

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -48,6 +52,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -278,4 +285,149 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 		return subSectorListRequests;
 	}
+
+	@Override
+	public GraphResponse getGraphs(Long applicationId, Long userId) {
+		//For now code has been written as it was in spring old last release. will improve later once i(Akshay) understands how graph data should be.
+		
+		GraphResponse graphResponse = new GraphResponse();
+		
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+        DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
+        
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if(!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1){
+			graphResponse.setGraphAvailable(true);
+		}else{
+			return graphResponse; 
+		}
+		
+		List<Double> pats = new ArrayList<>(pastEstimates.size());
+        List<Double> sales = new ArrayList<>(pastEstimates.size());
+        List<Double> ebidta = new ArrayList<>(pastEstimates.size());
+        List<Double> netWorth = new ArrayList<>(pastEstimates.size());
+        List<Double> currentAsset = new ArrayList<>(pastEstimates.size());
+        List<Double> currentLiabilities = new ArrayList<>(pastEstimates.size());
+        List<Double> fixedAsset = new ArrayList<>(pastEstimates.size());
+        List<Double> debt = new ArrayList<>(pastEstimates.size());
+        
+        List<String> financialYears = new ArrayList<>(pastEstimates.size());
+        
+		for (PastFinancialEstimatesDetail finEst : pastEstimates) {
+			financialYears.add(finEst.getFinancialYear());
+			
+			pats.add(finEst.getPat());
+			sales.add(finEst.getSales());
+			ebidta.add(finEst.getEbitda());
+			netWorth.add(finEst.getNetWorth());
+			currentAsset.add(finEst.getCurrentAssets());
+			currentLiabilities.add(finEst.getCurrentLiabilities());
+			fixedAsset.add(finEst.getFixedAssets());
+			debt.add(finEst.getDebt());
+		}
+		
+		 Double val;
+         //calculate pat%
+		
+	     List<Double> patsPercentage = new ArrayList<>(pats.size());
+		 for (int i = 0; i <= pats.size() - 1; i++) {
+             //System.out.println(pats.get(i)+"-"+sales.get(i));
+             val = (pats.get(i) / sales.get(i));
+             val = val * 100;
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             patsPercentage.add(Double.valueOf(decimalFormat.format(val)));
+         }
+		 
+		 List<Double> salesPercentage = new ArrayList<>(sales.size());
+		 salesPercentage.add(null);
+         //calculate revenue % (Previous sales/sales)%
+         for (int i = 0; i <= (sales.size() - 2); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (sales.get(i + 1) - sales.get(i));
+             val = val / sales.get(i);
+             val = val * 100;
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             salesPercentage.add(Double.valueOf(decimalFormat.format(val)));
+         }
+         //calculate Ebidta Percentage (Ebidta/sales)%
+         List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
+         for (int i = 0; i <= (sales.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (ebidta.get(i) / sales.get(i));
+             val = val * 100;
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             ebidtaPercentage.add(Double.valueOf(decimalFormat.format(val)));
+         }
+         //calculate ROE(%) (pat/netWorth)%
+         List<Double> roePercentage = new ArrayList<>(pats.size());
+         for (int i = 0; i <= (pats.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (pats.get(i) / netWorth.get(i));
+             val = val * 100;
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             roePercentage.add(Double.valueOf(decimalFormat.format(val)));
+         }
+         //calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
+         List<Double> rocePercentage = new ArrayList<>(ebidta.size());
+         for (int i = 0; i <= (ebidta.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
+             val = val * 100;
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             rocePercentage.add(Double.valueOf(decimalFormat.format(val)));
+         }
+
+         List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
+         for (int i = 0; i <= (debt.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (debt.get(i) / netWorth.get(i));
+             if (Double.isNaN(val)) {
+                 val = 0d;
+             }
+             debtEquityPercentage.add(Double.valueOf(decimalFormat1.format(val)));
+         }
+         
+       //calculate current Ration (Current Assets/Current Liabilities)
+         List<Double> currentRatio = new ArrayList<>(currentAsset.size());
+         for (int i = 0; i <= (currentAsset.size() - 1); i++) {
+             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
+             val = (currentAsset.get(i) / (currentLiabilities.get(i)));
+                 /*if(Double.isNaN(val)){
+                     val=0;
+                 }*/
+             currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
+         }
+
+   graphResponse.setxAxisOfPat(financialYears);      
+   graphResponse.setPats(pats);
+   graphResponse.setSales(sales);
+   graphResponse.setEbidta(ebidta);
+   graphResponse.setNetWorth(netWorth);
+   graphResponse.setCurrentAsset(currentAsset);
+   graphResponse.setCurrentLiabilities(currentLiabilities);
+   graphResponse.setFixedAsset(fixedAsset);
+   graphResponse.setDebt(debt);
+   
+   graphResponse.setPatsPercentage(patsPercentage);
+   graphResponse.setSalesPercentage(salesPercentage);
+   graphResponse.setEbidtaPercentage(ebidtaPercentage);
+   graphResponse.setRoePercentage(roePercentage);
+   graphResponse.setRocePercentage(rocePercentage);
+   graphResponse.setCurrentRatio(currentRatio);
+   graphResponse.setDebtEquityPercentage(debtEquityPercentage);
+   
+   return graphResponse;
+		
+	}
+	
 }
