@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FutureFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -23,7 +22,6 @@ import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FutureFinancialEstimatesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
@@ -298,7 +296,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
         DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
         
 		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
-		if(!CommonUtils.isListNullOrEmpty(pastEstimates)){
+		if(!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1){
 			graphResponse.setGraphAvailable(true);
 		}else{
 			return graphResponse; 
@@ -343,6 +341,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
          }
 		 
 		 List<Double> salesPercentage = new ArrayList<>(sales.size());
+		 salesPercentage.add(null);
          //calculate revenue % (Previous sales/sales)%
          for (int i = 0; i <= (sales.size() - 2); i++) {
              //System.out.println(sales.get(i+1)+"-"+sales.get(i));
