@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.common.DashboardService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.model.UserResponse;
 
@@ -38,9 +39,10 @@ public class DashboardController {
 	}
 
 	@RequestMapping(value = "/profile_detail/{userType}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody DataRequest data, HttpServletRequest request,@PathVariable("userType")Integer userType,
+	public ResponseEntity<LoansResponse> profileDetails(@RequestBody DataRequest data, HttpServletRequest request,@PathVariable("userType")Integer userType,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
+			CommonDocumentUtils.startHook(logger, "profileDetails");
 			Long userId = null;
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
@@ -74,9 +76,11 @@ public class DashboardController {
 					loansResponse.setData(fpBasicProfileInfo.getData());					
 				}
 			}
+			CommonDocumentUtils.endHook(logger, "profileDetails");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -87,6 +91,7 @@ public class DashboardController {
 	public ResponseEntity<LoansResponse> getFsOrFpCount(@RequestBody DataRequest data, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
+			CommonDocumentUtils.startHook(logger, "getFsOrFpCount");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
@@ -105,9 +110,11 @@ public class DashboardController {
 			LoansResponse loansResponse = new LoansResponse("Data Found",
 					HttpStatus.OK.value());
 			loansResponse.setData(count);
+			CommonDocumentUtils.endHook(logger, "getFsOrFpCount");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting count of Users==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
