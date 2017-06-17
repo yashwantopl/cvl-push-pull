@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -50,6 +51,7 @@ public class CreditRatingOrganizationDetailsController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 
+		CommonDocumentUtils.startHook(logger, "save");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		// request must not be null
 		if (frameRequest == null) {
@@ -59,7 +61,7 @@ public class CreditRatingOrganizationDetailsController {
 		}
 		// application id and user id must not be null
 		if (frameRequest.getApplicationId() == null) {
-			logger.warn("application id and user id must not be null ==>" + frameRequest);
+			logger.warn("application id and user id must not be null ==>" + frameRequest.getApplicationId());
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -71,11 +73,13 @@ public class CreditRatingOrganizationDetailsController {
 				frameRequest.setClientId(clientId);
 			}
 			creditRatingOrganizationDetailsService.saveOrUpdate(frameRequest);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Credit Rating Organization Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -86,6 +90,7 @@ public class CreditRatingOrganizationDetailsController {
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
 		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 			userId = clientId;
@@ -107,6 +112,7 @@ public class CreditRatingOrganizationDetailsController {
 			data = data.concat(" In "+ result.get("denomination").toString());
 			loansResponse.setListData(response);
 			loansResponse.setData(data);
+			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
