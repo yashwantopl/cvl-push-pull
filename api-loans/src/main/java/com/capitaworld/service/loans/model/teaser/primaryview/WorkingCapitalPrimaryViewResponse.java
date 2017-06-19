@@ -26,6 +26,7 @@ public class WorkingCapitalPrimaryViewResponse {
     private String currencyDenomination;
     private String LoanType;
     private String dateOfProposal;
+    private String isCreditRatingAvailable;
     private List<?> matchesList;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<AchievementDetailRequest> AchievementDetailList;
@@ -302,6 +303,14 @@ public class WorkingCapitalPrimaryViewResponse {
 
     public void setDateOfProposal(String dateOfProposal) {
         this.dateOfProposal = dateOfProposal;
+    }
+
+    public String getIsCreditRatingAvailable() {
+        return isCreditRatingAvailable;
+    }
+
+    public void setIsCreditRatingAvailable(String isCreditRatingAvailable) {
+        this.isCreditRatingAvailable = isCreditRatingAvailable;
     }
 
     public List<String> getShortTermRating() {
