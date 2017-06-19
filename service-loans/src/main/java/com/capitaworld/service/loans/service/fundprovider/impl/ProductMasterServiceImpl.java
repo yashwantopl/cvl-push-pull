@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -37,6 +39,7 @@ import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -48,7 +51,7 @@ import com.capitaworld.service.users.client.UsersClient;
 @Service
 @Transactional
 public class ProductMasterServiceImpl implements ProductMasterService {
-
+	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class);
 	@Autowired
 	private Environment environment;
 
@@ -84,6 +87,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<CommonResponse> saveOrUpdate(MultipleFpPruductRequest productMasters) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		// inactive old record before saving new record
 		productMasterRepository.inActive((CommonUtils.isObjectNullOrEmpty(productMasters.getClientId())
@@ -175,11 +179,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				commonResponse.setId(master.getId());
 				commonResponses.add(commonResponse);
 			}
+			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 			return commonResponses;
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
+			logger.error("error while saveOrUpdate",e);
 			return null;
 		}
 	}
@@ -193,6 +199,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public List<ProductMasterRequest> getList(Long userId) {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getList");
 		List<ProductMaster> results = productMasterRepository.getUserProductList(userId);
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
 		for (ProductMaster master : results) {
@@ -200,24 +207,29 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			BeanUtils.copyProperties(master, request);
 			requests.add(request);
 		}
+		CommonDocumentUtils.endHook(logger, "getList");
 		return requests;
 	}
 
 	@Override
 	public String getUserNameByApplicationId(Long productId, Long userId) {
 		// TODO Auto-generated method stub
-
+		CommonDocumentUtils.startHook(logger, "getUserNameByApplicationId");
 		ProductMaster productMaster = productMasterRepository.getUserProduct(productId, userId);
 		if (productMaster != null) {
+			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 			return productMaster.getFpName();
 		}
+		CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 		return null;
 	}
 
 	@Override
 	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getUserDetailsByPrductId");
 		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
+		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
 		return (pm != null && !pm.isEmpty()) ? pm.get(0) : null;
 	}
 
@@ -231,7 +243,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public ProductDetailsResponse getProductDetailsResponse(Long userId) {
 		// TODO Auto-generated method stub
-
+		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		List<ProductMaster> productMasterList = productMasterRepository.getUserProductList(userId);
 		ProductMaster productMaster = null;
 		ProductDetailsResponse productDetailsResponse = new ProductDetailsResponse();
@@ -247,13 +259,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			productDetailsResponse.setMessage("Something went wrong");
 			productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 		}
+		CommonDocumentUtils.endHook(logger, "getProductDetailsResponse");
 		return productDetailsResponse;
 	}
 
 	@Override
 	public FpProductDetails getProductDetails(Long productMappingId) throws Exception {
 		// TODO Auto-generated method stub
-
+		CommonDocumentUtils.startHook(logger, "getProductDetails");
 		ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
 		LoanType loanType = LoanType.getById(productMaster.getProductId());
 		FpProductDetails fpProductDetails = new FpProductDetails();
@@ -305,7 +318,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
 				
 		
-	
+		CommonDocumentUtils.endHook(logger, "getProductDetails");
 		return fpProductDetails;
 	}
 

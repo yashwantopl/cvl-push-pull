@@ -3,12 +3,15 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.controller.fundseeker.corporate.SecurityCorporateDetailsController;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
@@ -20,6 +23,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRep
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -29,6 +33,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class CarLoanParameterServiceImpl implements CarLoanParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(CarLoanParameterServiceImpl.class);
 	@Autowired
 	private CarLoanParameterRepository carLoanParameterRepository;
 
@@ -46,6 +51,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdate(CarLoanParameterRequest carLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		CarLoanParameter carLoanParameter = null;
 
@@ -71,11 +77,13 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(carLoanParameterRequest.getId());
 		saveCity(carLoanParameterRequest);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 	}
 
 	@Override
 	public CarLoanParameterRequest getCarLoanParameterRequest(Long id) {
+		CommonDocumentUtils.startHook(logger, "getCarLoanParameterRequest");
 		CarLoanParameterRequest carLoanParameterRequest = new CarLoanParameterRequest();
 		CarLoanParameter carLoanParameter = carLoanParameterRepository.getByID(id);
 		if (carLoanParameter == null)
@@ -92,6 +100,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while get",e);
 				e.printStackTrace();
 			}
 		}
@@ -110,6 +119,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while get",e);
 				e.printStackTrace();
 			}
 		}
@@ -124,14 +134,17 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while get",e);
 				e.printStackTrace();
 			}
 		}
+		CommonDocumentUtils.endHook(logger, "getCarLoanParameterRequest");
 		return carLoanParameterRequest;
 	}
 
 	private void saveCountry(CarLoanParameterRequest carLoanParameterRequest) {
 
+		CommonDocumentUtils.startHook(logger, "saveCountry");
 		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
@@ -145,9 +158,11 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCountry");
 	}
 
 	private void saveState(CarLoanParameterRequest carLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveState");
 		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -161,10 +176,11 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 
 	private void saveCity(CarLoanParameterRequest carLoanParameterRequest) {
-
+		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : carLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
@@ -178,6 +194,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 
 }

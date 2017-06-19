@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountry
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -28,6 +31,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(PersonalLoanParameterServiceImpl.class);
 	@Autowired
 	private PersonalLoanParameterRepository personalLoanParameterRepository;
 	
@@ -45,6 +49,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	
 	@Override
 	public boolean saveOrUpdate(PersonalLoanParameterRequest personalLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		PersonalLoanParameter personalLoanParameter= null;
 
@@ -74,12 +79,14 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(personalLoanParameterRequest.getId());
 		saveCity(personalLoanParameterRequest);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 	}
 
 	@Override
 	public PersonalLoanParameterRequest getPersonalLoanParameterRequest(Long id) {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getPersonalLoanParameterRequest");
 		PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
 		PersonalLoanParameter personalLoanParameter = personalLoanParameterRepository.getByID(id);
 		if(personalLoanParameter==null)
@@ -102,6 +109,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getPersonalLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -120,6 +128,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getPersonalLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -136,14 +145,17 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getPersonalLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
+		CommonDocumentUtils.endHook(logger, "getPersonalLoanParameterRequest");
 		return personalLoanParameterRequest;
 	}
 	
 	
 private void saveCountry(PersonalLoanParameterRequest personalLoanParameterRequest) {
+	CommonDocumentUtils.startHook(logger, "saveCountry");
 		
 		GeographicalCountryDetail geographicalCountryDetail= null;
 		for (DataRequest dataRequest : personalLoanParameterRequest.getCountryList()) {
@@ -158,9 +170,11 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCountry");
 	}
 	
 	private void saveState(PersonalLoanParameterRequest personalLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveState");
 		GeographicalStateDetail geographicalStateDetail= null;
 		for (DataRequest dataRequest : personalLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -174,10 +188,11 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 	
 	private void saveCity(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		
+		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail= null;
 		for (DataRequest dataRequest : personalLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
@@ -191,6 +206,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 
 }

@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountry
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -29,6 +32,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(HomeLoanParameterServiceImpl.class);
 	@Autowired
 	private HomeLoanParameterRepository homeLoanParameterRepository;
 
@@ -47,6 +51,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(HomeLoanParameterRequest homeLoanParameterRequest) {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		HomeLoanParameter homeLoanParameter = null;
 
 		homeLoanParameter = homeLoanParameterRepository.findOne(homeLoanParameterRequest.getId());
@@ -73,12 +78,14 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(homeLoanParameterRequest.getId());
 		saveCity(homeLoanParameterRequest);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 	}
 
 	@Override
 	public HomeLoanParameterRequest getHomeLoanParameterRequest(Long id) {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getHomeLoanParameterRequest");
 		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);
 		if (homeLoanParameter == null)
@@ -101,6 +108,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while getHomeLoanParameterRequest",e);
 				e.printStackTrace();
 			}
 		}
@@ -115,6 +123,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while getHomeLoanParameterRequest",e);
 				e.printStackTrace();
 			}
 		}
@@ -129,13 +138,16 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while getHomeLoanParameterRequest",e);
 				e.printStackTrace();
 			}
 		}
+		CommonDocumentUtils.endHook(logger, "getHomeLoanParameterRequest");
 		return homeLoanParameterRequest;
 	}
 
 	private void saveCountry(HomeLoanParameterRequest homeLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveCountry");
 
 		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getCountryList()) {
@@ -149,10 +161,12 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 			geographicalCountryDetail.setIsActive(true);
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
+			CommonDocumentUtils.endHook(logger, "saveCountry");
 		}
 	}
 
 	private void saveState(HomeLoanParameterRequest homeLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveState");
 		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -166,10 +180,11 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 
 	private void saveCity(HomeLoanParameterRequest homeLoanParameterRequest) {
-
+		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : homeLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
@@ -183,6 +198,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 
 }

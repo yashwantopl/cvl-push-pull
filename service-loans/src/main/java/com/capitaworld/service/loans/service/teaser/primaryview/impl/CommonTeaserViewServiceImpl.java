@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +11,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.impl.WorkingCapitalParameterServiceImpl;
 import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
@@ -29,6 +32,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 @Service
 @Transactional
 public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
+	private static final Logger logger = LoggerFactory.getLogger(CommonTeaserViewServiceImpl.class);
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationMasterRepo;
@@ -72,6 +76,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	@Override
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
 			throws Exception {
+		logger.info("start getPrimaryViewDetails ");
 		// TODO Auto-generated method stub
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
@@ -110,12 +115,14 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		default:
 			break;
 		}
+		logger.info("end getPrimaryViewDetails ");
 		return null;
 		
 	}
 	@Override
 	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws Exception {
 		// TODO Auto-generated method stub
+		logger.info("start getFinalViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
 		return false;
@@ -153,6 +160,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		default:
 			break;
 		}
+		logger.info("end getFinalViewDetails ");
 		return null;
 	}
 

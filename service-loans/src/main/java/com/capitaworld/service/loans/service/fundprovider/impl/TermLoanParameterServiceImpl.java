@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -22,6 +24,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -33,6 +36,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Service
 @Transactional
 public class TermLoanParameterServiceImpl implements TermLoanParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(TermLoanParameterServiceImpl.class);
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
 	
@@ -53,7 +57,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
+		
 		TermLoanParameter termLoanParameter = null;
 
 		termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
@@ -86,12 +92,15 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveCity(termLoanParameterRequest);
+		
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
 	}
 
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
+		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
 		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getByID(id);
@@ -113,6 +122,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				termLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error("error while getTermLoanParameterRequest",e);
 				e.printStackTrace();
 			}
 		}
@@ -129,6 +139,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -144,6 +155,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -160,6 +172,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -176,15 +189,17 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
+		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return termLoanParameterRequest;
 	}
 	
 	private void saveIndustry(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
-		System.out.println(termLoanParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : termLoanParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setFpProductId(termLoanParameterRequest.getId());
@@ -197,9 +212,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveIndustry");
 	}
 
 	private void saveSector(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveSector");
 		IndustrySectorDetail industrySectorDetail = null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getSectorlist()) {
 			industrySectorDetail = new IndustrySectorDetail();
@@ -213,9 +230,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveSector");
 	}
 	
 	private void saveCountry(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveCountry");
 		
 		GeographicalCountryDetail geographicalCountryDetail= null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getCountryList()) {
@@ -230,9 +249,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCountry");
 	}
 	
 	private void saveState(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveState");
 		GeographicalStateDetail geographicalStateDetail= null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -246,10 +267,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 	
 	private void saveCity(TermLoanParameterRequest termLoanParameterRequest) {
-		
+		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail= null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
@@ -263,6 +285,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 		
 	
