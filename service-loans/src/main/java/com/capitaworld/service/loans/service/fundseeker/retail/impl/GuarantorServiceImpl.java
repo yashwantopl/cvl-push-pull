@@ -536,8 +536,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : "NA");
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ? Options
-											.getById((guarantorDetail.getIsSpouseEmployed() ? 1 : 0)).getValue()
+									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?guarantorDetail.getIsSpouseEmployed().toString()
 											: "NA");
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
@@ -688,15 +687,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 						}
 					}
 					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getExistingLoanDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
 
 					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getExistingLoanDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
 					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
-							.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getExistingLoanDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
@@ -720,11 +719,11 @@ public class GuarantorServiceImpl implements GuarantorService {
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
 
 					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService
-							.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getFixedDepositsDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 
 					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService
-							.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getOtherCurrentAssetDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
 					for (OtherCurrentAssetDetailRequest assetDetailRequest : otherCurrentAssetDetailRequestList) {
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
@@ -742,7 +741,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
 
 					List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService
-							.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getOtherIncomeDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					List<OtherIncomeDetailResponse> incomeDetailResponseList = new ArrayList<OtherIncomeDetailResponse>();
 					for (OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList) {
 						OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
@@ -760,7 +759,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
 
 					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService
-							.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.GARRANTOR);
+							.getReferenceRetailDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
 					finalViewResponse.setGuarantor_BankACStatments(
