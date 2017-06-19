@@ -534,8 +534,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
 											? coApplicantDetail.getSpouseName() : "NA");
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ? Options
-											.getById((coApplicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue()
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ?coApplicantDetail.getIsSpouseEmployed().toString() 
 											: "NA");
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())

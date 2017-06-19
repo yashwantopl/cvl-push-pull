@@ -261,17 +261,19 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
 				.getByApplicationAndUserId(toApplicationId, userId);
 		// set value to response
-		if (primaryTermLoanDetail != null)
+		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
-		if (primaryTermLoanDetail.getCurrencyId() != null && primaryTermLoanDetail.getDenominationId() != null)
-			termLoanPrimaryViewResponse
-					.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in "
-							+ Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
-		if (primaryTermLoanDetail.getProductId() != null)
-			termLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
+			if (primaryTermLoanDetail.getCurrencyId() != null && primaryTermLoanDetail.getDenominationId() != null)
+				termLoanPrimaryViewResponse
+						.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in "
+								+ Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
+			if (primaryTermLoanDetail.getProductId() != null)
+				termLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 
-		if (primaryTermLoanDetail.getModifiedDate() != null)
-			termLoanPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+			if (primaryTermLoanDetail.getModifiedDate() != null)
+				termLoanPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+			termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
+		}
 		// get value of proposed product and set in response
 		try {
 			termLoanPrimaryViewResponse.setProposedProductDetailRequestList(

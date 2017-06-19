@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalTermLoanService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryTermLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -45,6 +46,7 @@ public class TermLoanController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
 			throws Exception {
 		try {
+			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (userId == null) {
@@ -63,10 +65,12 @@ public class TermLoanController {
 				termLoanRequest.setClientId(clientId);
 			}
 			finalTLService.saveOrUpdate(termLoanRequest, userId);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving final information of Term Loan");
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -79,6 +83,7 @@ public class TermLoanController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			try {
+				CommonDocumentUtils.startHook(logger, "getFinal");
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 					userId = clientId;
@@ -94,15 +99,18 @@ public class TermLoanController {
 				FinalTermLoanRequest response = finalTLService.get(userId, applicationId);
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
+				CommonDocumentUtils.endHook(logger, "getFinal");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				logger.error("Error while getting Final Term Loan Details==>", e);
+				e.printStackTrace();
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting  final information of Term Loan");
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -114,6 +122,7 @@ public class TermLoanController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
 			throws Exception {
 		try {
+			CommonDocumentUtils.startHook(logger, "savePrimary");
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
@@ -133,11 +142,13 @@ public class TermLoanController {
 			}
 
 			primaryTLService.saveOrUpdate(termLoanRequest, userId);
+			CommonDocumentUtils.endHook(logger, "savePrimary");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -148,6 +159,7 @@ public class TermLoanController {
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
+			CommonDocumentUtils.startHook(logger, "getPrimary");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				userId = clientId;
@@ -164,9 +176,11 @@ public class TermLoanController {
 			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "getPrimary");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

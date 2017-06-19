@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -41,6 +42,7 @@ public class AchievmentDetailsController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
+		CommonDocumentUtils.startHook(logger, "save");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 		if (frameRequest == null) {
@@ -61,11 +63,13 @@ public class AchievmentDetailsController {
 				frameRequest.setClientId(clientId);
 			}
 			achievmentDetailsService.saveOrUpdate(frameRequest);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Achievement Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -78,6 +82,7 @@ public class AchievmentDetailsController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
@@ -94,10 +99,12 @@ public class AchievmentDetailsController {
 					userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Achievement Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

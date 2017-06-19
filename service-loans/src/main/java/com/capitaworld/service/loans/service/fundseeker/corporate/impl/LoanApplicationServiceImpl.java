@@ -425,8 +425,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 
 				Long coApps = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationId, userId);
-				if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
-					return false;
+				/*if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
+					return false;*/
 
 				if (coApps == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
@@ -443,8 +443,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				Long guarantors = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(applicationId,
 						userId);
-				if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
-					return false;
+				/*if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
+					return false;*/
 
 				if (guarantors == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
@@ -461,13 +461,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				// Here we are using MCQ column for Final Home loan and Final
 				// Car Loan
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue())
+				
+				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+						.getById(applicationMaster.getProductId());
+				if(CommonUtils.isObjectNullOrEmpty(loanType)){
+					logger.warn("Invalid Product Id==>" + applicationMaster.getProductId());
 					return false;
-
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalUploadFilled())
-						|| !applicationMaster.getIsFinalUploadFilled().booleanValue())
-					return false;
+				}
+				
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+								|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+							|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+						return false;	
+					}
+				}
 				return true;
 			}
 		} catch (Exception e) {

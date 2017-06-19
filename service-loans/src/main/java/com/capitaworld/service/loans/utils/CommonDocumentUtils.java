@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.aspectj.weaver.tools.Trace;
+import org.slf4j.Logger;
 import org.springframework.core.env.Environment;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -89,6 +91,14 @@ public class CommonDocumentUtils {
 	
 	public static String getDenomination(Integer denominationId) {
 		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() :  "NA";
+	}
+	
+	public static void startHook(Logger logger,String methodName){
+		logger.info("Start " + methodName + "() Method");
+	}
+	
+	public static void endHook(Logger logger,String methodName){
+        logger.info("End " + methodName + "() Method");
 	}
 
 }

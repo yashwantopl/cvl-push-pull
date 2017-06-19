@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -50,6 +51,7 @@ public class FutureFinancialEstimatesDetailsController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
+		CommonDocumentUtils.startHook(logger, "save");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
@@ -70,11 +72,13 @@ public class FutureFinancialEstimatesDetailsController {
 				frameRequest.setClientId(clientId);
 			}
 			futureFinancialEstiamateDetailsService.saveOrUpdate(frameRequest);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Future Financial Estimate Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -87,6 +91,7 @@ public class FutureFinancialEstimatesDetailsController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = null;
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				userId = clientId;
@@ -108,14 +113,17 @@ public class FutureFinancialEstimatesDetailsController {
 				data = data.concat(" In "+ result.get("denomination").toString());
 				loansResponse.setData(data);
 				loansResponse.setListData(response);
+				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
+				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Future Financial Estimate Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
