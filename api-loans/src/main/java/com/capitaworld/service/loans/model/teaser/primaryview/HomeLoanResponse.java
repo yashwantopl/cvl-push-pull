@@ -1,9 +1,9 @@
 package com.capitaworld.service.loans.model.teaser.primaryview;
 
+import com.capitaworld.service.loans.model.AddressResponse;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.capitaworld.service.loans.model.AddressResponse;
 
 /**
  * @author kushal
@@ -45,7 +45,6 @@ public class HomeLoanResponse implements Serializable {
 	private String landArea;
 	
 	private String downPayment;
-	private String amount;
 	private String currency;
 	private String tenure;
 	
@@ -243,12 +242,6 @@ public class HomeLoanResponse implements Serializable {
 	}
 	public void setDownPayment(String downPayment) {
 		this.downPayment = downPayment;
-	}
-	public String getAmount() {
-		return amount;
-	}
-	public void setAmount(String amount) {
-		this.amount = amount;
 	}
 	public String getTenure() {
 		return tenure;
