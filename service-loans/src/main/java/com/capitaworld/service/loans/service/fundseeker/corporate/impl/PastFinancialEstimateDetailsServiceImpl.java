@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialE
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
 
 /**
  * @author Sanket
@@ -41,7 +41,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 			.getLogger(PastFinancialEstimateDetailsServiceImpl.class.getName());
 
 	@Autowired
-	private Environment  environment; 
+	private OneFormClient oneFormClient; 
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -124,7 +124,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		Integer establishmentMonth = detail.getEstablishmentMonth();
 		
 		if(!CommonUtils.isObjectNullOrEmpty(detail.getEstablishmentYear())){
-			establishmentYear = CommonDocumentUtils.getYear(detail.getEstablishmentYear().longValue(), environment);
+			establishmentYear = CommonDocumentUtils.getYear(detail.getEstablishmentYear().longValue(), oneFormClient);
 		}
 		
 		List<PastFinancialEstimatesDetailRequest> yearList = new ArrayList<PastFinancialEstimatesDetailRequest>();

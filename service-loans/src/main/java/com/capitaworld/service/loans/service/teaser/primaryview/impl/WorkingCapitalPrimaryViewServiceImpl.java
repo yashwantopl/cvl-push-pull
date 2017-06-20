@@ -1,5 +1,18 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -8,35 +21,52 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.oneform.client.*;
-import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
+import com.capitaworld.service.oneform.enums.CreditRatingFund;
+import com.capitaworld.service.oneform.enums.CreditRatingTerm;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.NatureFacility;
+import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by dhaval on 19-May-17.
@@ -84,9 +114,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
     @Autowired
-    private Environment environment;
-
-    @Autowired
     private IndustrySectorRepository industrySectorRepository;
 
     @Autowired
@@ -97,10 +124,15 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
     @Autowired
     private ProductMasterService productMasterService;
-
-    protected static final String DMS_URL = "dmsURL";
-    protected static final String ONE_FORM_URL = "oneForm";
-    protected static final String MATCHES_URL = "matchesURL";
+    
+    @Autowired
+    private OneFormClient oneFormClient;
+    
+    @Autowired
+    private DMSClient dmsClient;
+    
+    @Autowired
+    private MatchEngineClient matchEngineClient;
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -118,8 +150,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getProperty(MATCHES_URL));
                 try {
                     MatchRequest matchRequest = new MatchRequest();
                     matchRequest.setApplicationId(toApplicationId);
@@ -140,10 +170,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             workingCapitalPrimaryViewResponse.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
             //set Establishment year
-            EstablistmentYearClient establistmentYearClient = new EstablistmentYearClient(environment.getProperty(ONE_FORM_URL));
-            OneFormResponse establishmentYearResponse = null;
             try {
-                establishmentYearResponse = establistmentYearClient.send(Long.valueOf(corporateApplicantDetail.getEstablishmentYear()));
+            	OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) ? null : corporateApplicantDetail.getEstablishmentYear().longValue());
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -158,9 +186,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             //set city
             List<Long> cityList = new ArrayList<>();
             cityList.add(corporateApplicantDetail.getRegisteredCityId());
-            CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = cityByCityListIdClient.send(cityList);
+                OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -175,9 +202,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             //set state
             List<Long> stateList = new ArrayList<>();
             stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-            StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
+                OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -192,9 +218,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             //set country
             List<Long> countryList = new ArrayList<>();
             countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-            CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
+                OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -207,11 +232,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             }
 
 
-            IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
             List<Long> keyVerticalFundingId = new ArrayList<>();
             keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
             try {
-                OneFormResponse oneFormResponse = industryClient.send(keyVerticalFundingId);
+                OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -228,13 +252,12 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
         List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
         List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
-        IndustrySectorSubSectorTeaser industrySectorSubSectorTeaser = new IndustrySectorSubSectorTeaser (environment.getProperty(ONE_FORM_URL));
         IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest=new IndustrySectorSubSectorTeaserRequest();
         industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
         industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
         industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
         try {
-            OneFormResponse oneFormResponse=industrySectorSubSectorTeaser.send(industrySectorSubSectorTeaserRequest);
+            OneFormResponse oneFormResponse= oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
             workingCapitalPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
         } catch (Exception e) {
             e.printStackTrace();
@@ -280,8 +303,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
                 CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
                 creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
                 creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()));
+                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()) ? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
                 MasterResponse masterResponse= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)oneFormResponse.getData(),MasterResponse.class);
                 if (masterResponse!=null ) {
                     creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
@@ -302,8 +324,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             List<String> shortTermValueList = new ArrayList<String>();
             List<Integer> shortTermIdList = creditRatingOrganizationDetailsService.getShortTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : shortTermIdList) {
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
                 MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
                 if (masterResponse != null) {
                     shortTermValueList.add(masterResponse.getValue());
@@ -321,8 +342,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
             List<String> longTermValueList = new ArrayList<String>();
             List<Integer> longTermIdList = creditRatingOrganizationDetailsService.getLongTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : longTermIdList) {
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
                 MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
                 if (masterResponse != null) {
                     longTermValueList.add(masterResponse.getValue());
@@ -411,7 +431,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
         }
 
         //get list of Brochure
-        DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
         DocumentRequest documentRequest = new DocumentRequest();
         documentRequest.setApplicationId(toApplicationId);
         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
