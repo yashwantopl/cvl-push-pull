@@ -21,7 +21,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatin
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
@@ -39,7 +39,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
 
 	@Autowired
-	private RatingByRatingIdClient ratingByRatingIdClient;
+	private OneFormClient oneFormClient;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -85,7 +85,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
 				BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
 				if (!CommonUtils.isObjectNullOrEmpty(detail.getCreditRatingOptionId())) {
-					OneFormResponse ratings = ratingByRatingIdClient.send(detail.getCreditRatingOptionId().longValue());
+					OneFormResponse ratings = oneFormClient.getRatingById(detail.getCreditRatingOptionId().longValue());
 					MasterResponse masterResponse = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) ratings.getData(), MasterResponse.class);
 					creditRatingOrganizationDetailsRequest.setRatingValue(masterResponse.getValue());

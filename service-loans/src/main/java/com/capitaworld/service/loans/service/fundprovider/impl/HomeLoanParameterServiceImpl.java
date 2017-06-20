@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,7 @@ import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRe
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Transactional
@@ -46,7 +43,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 	private GeographicalCityRepository geographicalCityRepository;
 
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
 
 	@Override
 	public boolean saveOrUpdate(HomeLoanParameterRequest homeLoanParameterRequest) {
@@ -100,10 +97,8 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		List<Long> countryList = geographicalCountryRepository
 				.getCountryByFpProductId(homeLoanParameterRequest.getId());
 		if (!countryList.isEmpty()) {
-			CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
@@ -115,10 +110,8 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(homeLoanParameterRequest.getId());
 		if (!stateList.isEmpty()) {
-			StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
@@ -130,10 +123,8 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(homeLoanParameterRequest.getId());
 		if (!cityList.isEmpty()) {
-			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {

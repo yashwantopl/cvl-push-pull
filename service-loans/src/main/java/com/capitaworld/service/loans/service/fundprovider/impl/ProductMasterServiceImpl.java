@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -53,7 +52,10 @@ import com.capitaworld.service.users.client.UsersClient;
 public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class);
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
@@ -299,9 +301,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		fpProductDetails.setTypeOfInvestment(LoanType.getById(productMaster.getProductId()).getValue());
 		List<String> countryname = new ArrayList<String>();
 		List<Long> countryList = geoCountry.getCountryByFpProductId(productMappingId);
-		CountryByCountryListIdClient byCountryListIdClient = new CountryByCountryListIdClient(
-				environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		OneFormResponse oneFormResponse = (OneFormResponse) byCountryListIdClient.send(countryList);
+		OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
 		List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
 		if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 
@@ -314,7 +314,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		fpProductDetails.setGeographicalFocus(countryname);
 		//fp profile details
-		UsersClient usersClient=new UsersClient(environment.getProperty(CommonUtils.USER_CLIENT_URL));
 		fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
 				
 		

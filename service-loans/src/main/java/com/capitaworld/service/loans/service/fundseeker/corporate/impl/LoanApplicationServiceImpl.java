@@ -168,19 +168,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean inActive(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception {
 		loanApplicationRepository.inActive(id, userId);
 		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
 		if (!CommonUtils.isListNullOrEmpty(userLoans)) {
 			usersRequest.setLastAccessApplicantId(userLoans.get(0).getId());
+			LoanApplicationMaster loan = userLoans.get(0);
+			return new LoanApplicationRequest(loan.getId(),loan.getProductId());
 		} else {
 			usersRequest.setLastAccessApplicantId(null);
 		}
 		usersRequest.setId(userId);
 		UsersClient usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
 		usersClient.setLastAccessApplicant(usersRequest);
-		return true;
+		return null; 
 	}
 
 	@Override

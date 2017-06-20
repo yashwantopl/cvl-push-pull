@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +24,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.client.SectorClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
@@ -52,7 +47,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	private GeographicalCityRepository geographicalCityRepository;
  	
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
@@ -111,9 +106,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(workingCapitalParameterRequest.getId());
 		if (!industryList.isEmpty()) {
-			IndustryClient client = new IndustryClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = client.send(industryList);
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -126,9 +120,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				.getSectorByProductId(workingCapitalParameterRequest.getId());
 		if(!sectorList.isEmpty())
 		{
-		SectorClient sectorClient = new SectorClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = sectorClient.send(sectorList);
+			OneFormResponse formResponse =oneFormClient.getSectorById(sectorList);
 			workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -143,9 +136,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(workingCapitalParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 			workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -160,9 +152,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(workingCapitalParameterRequest.getId());
 		if(!stateList.isEmpty())
 		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 			workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -177,9 +168,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(workingCapitalParameterRequest.getId());
 		if(!cityList.isEmpty())
 		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 			workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 			 
 			

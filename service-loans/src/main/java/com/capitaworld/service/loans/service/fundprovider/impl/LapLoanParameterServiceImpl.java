@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,7 @@ import com.capitaworld.service.loans.repository.fundprovider.LapParameterReposit
 import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Transactional
@@ -46,7 +43,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 	private GeographicalCityRepository geographicalCityRepository;
  	
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
+	
 	@Override
 	public boolean saveOrUpdate(LapParameterRequest lapParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -99,9 +97,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(lapParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 			lapParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -117,9 +114,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(lapParameterRequest.getId());
 		if(!stateList.isEmpty())
 		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 			lapParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -134,9 +130,8 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(lapParameterRequest.getId());
 		if(!cityList.isEmpty())
 		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 			lapParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 			 
 			
