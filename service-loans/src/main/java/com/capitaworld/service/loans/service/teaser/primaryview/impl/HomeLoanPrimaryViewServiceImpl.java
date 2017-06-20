@@ -149,12 +149,12 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
                 }else{
                 	profileViewHLResponse.setNatureOfOccupation("NA");
                 }
-				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : "NA"));
-				profileViewHLResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : "NA"));
-				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : "NA"));
+				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : null));
+				profileViewHLResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : null));
+				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : null));
 				profileViewHLResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
 				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
-				profileViewHLResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
+				profileViewHLResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.format("%.2f",applicantDetail.getMonthlyIncome()) : "0"));
 				
 				
 				//set office address
@@ -298,7 +298,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
 
 				//set pan 
-				profileViewHLResponse.setPan(applicantDetail.getPan());
+				profileViewHLResponse.setPan(applicantDetail.getPan().toUpperCase());
 
 				//applicant profile image
 				try {
@@ -376,9 +376,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		}
 		
 		homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ? loanDetail.getDownPayment().toString() : "NA");
-		homeLoanResponse.setAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-		homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
-		
+		homeLoanResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+		homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "NA");
+		homeLoanResponse.setLoanType(LoanType.getById(applicationMaster.getProductId()).getValue());
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
 		
 		//setting co-application details
