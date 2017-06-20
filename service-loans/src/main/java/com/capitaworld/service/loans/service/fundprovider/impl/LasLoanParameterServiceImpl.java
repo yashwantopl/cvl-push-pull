@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountry
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.LasLoanParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.CityByCityListIdClient;
 import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
@@ -28,6 +31,7 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class LasLoanParameterServiceImpl implements LasLoanParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(LasLoanParameterServiceImpl.class);
 	@Autowired
 	private LasParameterRepository lasParameterRepository;
 	
@@ -45,6 +49,8 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 	
 	@Override
 	public boolean saveOrUpdate(LasParameterRequest lasParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
+		
 		// TODO Auto-generated method stub
 		LasParameter lasParameter= null;
 
@@ -66,11 +72,13 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(lasParameterRequest.getId());
 		saveCity(lasParameterRequest);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 	}
 
 	@Override
 	public LasParameterRequest getLasParameterRequest(Long id) {
+		CommonDocumentUtils.startHook(logger, "getLasParameterRequest");
 		// TODO Auto-generated method stub
 		LasParameterRequest lasParameterRequest= new LasParameterRequest();
 		LasParameter lasParameter = lasParameterRepository.getByID(id);
@@ -89,6 +97,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getLasParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -105,6 +114,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getLasParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
@@ -121,13 +131,15 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error("error while getLasParameterRequest",e);
 			e.printStackTrace();
 		}
 		}
+		CommonDocumentUtils.endHook(logger, "getLasParameterRequest");
 		return lasParameterRequest;
 	}
 private void saveCountry(LasParameterRequest lasParameterRequest) {
-		
+	CommonDocumentUtils.startHook(logger, "saveCountry");
 		GeographicalCountryDetail geographicalCountryDetail= null;
 		for (DataRequest dataRequest : lasParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
@@ -141,9 +153,11 @@ private void saveCountry(LasParameterRequest lasParameterRequest) {
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCountry");
 	}
 	
 	private void saveState(LasParameterRequest lasParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveState");
 		GeographicalStateDetail geographicalStateDetail= null;
 		for (DataRequest dataRequest : lasParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -157,9 +171,11 @@ private void saveCountry(LasParameterRequest lasParameterRequest) {
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 	
 	private void saveCity(LasParameterRequest lasParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveCity");
 		
 		GeographicalCityDetail geographicalCityDetail= null;
 		for (DataRequest dataRequest : lasParameterRequest.getCityList()) {
@@ -174,6 +190,7 @@ private void saveCountry(LasParameterRequest lasParameterRequest) {
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 	
 	
