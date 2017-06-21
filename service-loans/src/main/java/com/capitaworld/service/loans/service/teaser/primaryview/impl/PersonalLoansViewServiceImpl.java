@@ -1,5 +1,17 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -15,26 +27,21 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
-import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 /**
  * @author Sanket
@@ -50,9 +57,6 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	private RetailApplicantDetailRepository applicantRepository;
 
 	@Autowired
-	private RetailApplicantService retailApplicantService;
-	
-	@Autowired
 	private CoApplicantService coApplicantService;
 
 	@Autowired
@@ -63,6 +67,12 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -70,8 +80,6 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	@Autowired
 	private DocumentManagementService documentManagementService;
 	
-	protected static final String DMS_URL = "dmsURL";
-
 	@Override
 	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws Exception {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
@@ -106,18 +114,16 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
 				AddressResponse officeAddress = new AddressResponse();
 
-				CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 				try {
 					List<Long> officeCity = new ArrayList<Long>(1);
 					officeCity.add(applicantDetail.getOfficeCityId());
-					OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+					OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
 
 					MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
 					officeAddress.setCity(data.getValue());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 				try {
 					List<Long> officeCountry = new ArrayList<Long>(1);
 					Long officeCountryLong = null;
@@ -125,7 +131,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
 
 						officeCountry.add(officeCountryLong);
-						OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+						OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
 						MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
 						officeAddress.setCountry(dataCountry.getValue());
 					}
@@ -133,7 +139,6 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					e.printStackTrace();
 
 				}
-				StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 				try {
 					List<Long> officeState = new ArrayList<Long>(1);
 					Long officeStateLong = null;
@@ -141,7 +146,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
 
 						officeState.add(officeStateLong);
-						OneFormResponse state = stateListByStateListIdClient.send(officeState);
+						OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
 						MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
 						officeAddress.setState(dataState.getValue());
 					}
@@ -158,7 +163,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				try {
 					List<Long> permanentCity = new ArrayList<Long>(1);
 					permanentCity.add(applicantDetail.getPermanentCityId());
-					OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+					OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
 					MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
 					permanentAddress.setCity(dataCity.getValue());
 				} catch (Exception e) {
@@ -171,7 +176,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						permanentCountryLong = Long.valueOf(applicantDetail.getPermanentCountryId().toString());
 
 						permanentCountry.add(permanentCountryLong);
-						OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+						OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
 						MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
 						officeAddress.setCountry(dataCountry.getValue());
 					}
@@ -186,7 +191,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						permanentStateLong = Long.valueOf(applicantDetail.getPermanentStateId().toString());
 
 						permanentState.add(permanentStateLong);
-						OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+						OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
 						MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
 						officeAddress.setState(dataState.getValue());
 

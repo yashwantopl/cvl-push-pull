@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.common.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +16,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 
@@ -36,9 +36,10 @@ public class DashboardServiceImpl implements DashboardService {
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Autowired
-	private Environment environment;
-
-	private UsersClient usersClient = null;
+	private OneFormClient  oneFormClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	@Override
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId) throws Exception {
@@ -61,19 +62,19 @@ public class DashboardServiceImpl implements DashboardService {
 			// Setting City Value
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
 				dashboardProfileResponse.setCity(
-						CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment));
+						CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
 			}
 
 			// Setting State Value
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())) {
 				dashboardProfileResponse.setState(CommonDocumentUtils
-						.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment));
+						.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 			}
 
 			// Country State Value
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())) {
 				dashboardProfileResponse.setCountry(CommonDocumentUtils
-						.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment));
+						.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 			}
 
 			dashboardProfileResponse
@@ -95,19 +96,19 @@ public class DashboardServiceImpl implements DashboardService {
 			// Setting City Value
 			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
 				dashboardProfileResponse
-						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment));
+						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient));
 			}
 
 			// Setting State Value
 			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
 				dashboardProfileResponse.setState(CommonDocumentUtils
-						.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment));
+						.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient));
 			}
 
 			// Country State Value
 			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
 				dashboardProfileResponse.setCountry(CommonDocumentUtils
-						.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment));
+						.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient));
 			}
 
 			String name = !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())
@@ -123,8 +124,7 @@ public class DashboardServiceImpl implements DashboardService {
 	@Override
 	public Integer getCount(int userType) throws Exception {
 		try {
-			UsersClient client = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
-			UserResponse response = client.getActiveUserCount(userType);
+			UserResponse response = usersClient.getActiveUserCount(userType);
 			if (response != null) {
 				return (Integer) response.getData();
 			}
@@ -139,7 +139,6 @@ public class DashboardServiceImpl implements DashboardService {
 	@Override
 	public UserResponse getFPBasicProfileInfo(Long userId) throws Exception {
 		try {
-			usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
 			return usersClient.getFPDashboardDetails(userId);
 		} catch (Exception e) {
 			logger.error("Error while getting FP Details on Dashbord");

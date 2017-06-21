@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.springframework.core.env.Environment;
+import org.slf4j.Logger;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.EstablistmentYearClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -38,43 +35,35 @@ public class CommonDocumentUtils {
 		return null;
 	}
 
-	public static String getCity(Long cityId, Environment environment) throws Exception {
-		CityByCityListIdClient cityClient = new CityByCityListIdClient(
-				environment.getRequiredProperty(CommonUtils.ONE_FORM));
+	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
 		List<Long> cityIdRequest = new ArrayList<>();
 		cityIdRequest.add(cityId);
-		OneFormResponse response = cityClient.send(cityIdRequest);
+		OneFormResponse response  = oneFormClient.getCityByCityListId(cityIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
 
-	public static String getState(Long stateId, Environment environment) throws Exception {
-		StateListByStateListIdClient stateClient = new StateListByStateListIdClient(
-				environment.getRequiredProperty(CommonUtils.ONE_FORM));
+	public static String getState(Long stateId, OneFormClient oneFormClient) throws Exception {
 		List<Long> stateIdRequest = new ArrayList<>();
 		stateIdRequest.add(stateId);
-		OneFormResponse response = stateClient.send(stateIdRequest);
+		OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
 
-	public static String getCountry(Long countryId, Environment environment) throws Exception {
-		CountryByCountryListIdClient countryClient = new CountryByCountryListIdClient(
-				environment.getRequiredProperty(CommonUtils.ONE_FORM));
+	public static String getCountry(Long countryId,OneFormClient oneFormClient) throws Exception {
 		List<Long> countryIdRequest = new ArrayList<>();
 		countryIdRequest.add(countryId);
-		OneFormResponse response = countryClient.send(countryIdRequest);
+		OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : "NA";
 	}
 
-	public static Integer getYear(Long yearId, Environment environment) throws Exception {
-		EstablistmentYearClient client = new EstablistmentYearClient(
-				environment.getRequiredProperty(CommonUtils.ONE_FORM));
-		OneFormResponse response = client.send(yearId);
+	public static Integer getYear(Long yearId,OneFormClient oneFormClient) throws Exception {
+		OneFormResponse response = oneFormClient.getYearByYearId(yearId);
 		if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
 			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
@@ -89,6 +78,14 @@ public class CommonDocumentUtils {
 	
 	public static String getDenomination(Integer denominationId) {
 		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() :  "NA";
+	}
+	
+	public static void startHook(Logger logger,String methodName){
+		logger.info("Start " + methodName + "() Method");
+	}
+	
+	public static void endHook(Logger logger,String methodName){
+        logger.info("End " + methodName + "() Method");
 	}
 
 }

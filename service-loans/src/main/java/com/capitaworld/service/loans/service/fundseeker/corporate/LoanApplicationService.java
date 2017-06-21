@@ -15,7 +15,7 @@ public interface LoanApplicationService {
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
 
-	public boolean inActive(Long id, Long userId) throws Exception;
+	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception;
 
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception;
 

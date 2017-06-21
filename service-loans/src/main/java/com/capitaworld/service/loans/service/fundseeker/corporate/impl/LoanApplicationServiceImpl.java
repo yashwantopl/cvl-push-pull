@@ -168,19 +168,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean inActive(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception {
 		loanApplicationRepository.inActive(id, userId);
 		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
 		if (!CommonUtils.isListNullOrEmpty(userLoans)) {
 			usersRequest.setLastAccessApplicantId(userLoans.get(0).getId());
+			LoanApplicationMaster loan = userLoans.get(0);
+			return new LoanApplicationRequest(loan.getId(),loan.getProductId());
 		} else {
 			usersRequest.setLastAccessApplicantId(null);
 		}
 		usersRequest.setId(userId);
 		UsersClient usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
 		usersClient.setLastAccessApplicant(usersRequest);
-		return true;
+		return null; 
 	}
 
 	@Override
@@ -425,8 +427,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 
 				Long coApps = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationId, userId);
-				if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
-					return false;
+				/*if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
+					return false;*/
 
 				if (coApps == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
@@ -443,8 +445,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				Long guarantors = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(applicationId,
 						userId);
-				if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
-					return false;
+				/*if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
+					return false;*/
 
 				if (guarantors == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
@@ -461,13 +463,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				// Here we are using MCQ column for Final Home loan and Final
 				// Car Loan
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue())
+				
+				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+						.getById(applicationMaster.getProductId());
+				if(CommonUtils.isObjectNullOrEmpty(loanType)){
+					logger.warn("Invalid Product Id==>" + applicationMaster.getProductId());
 					return false;
-
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalUploadFilled())
-						|| !applicationMaster.getIsFinalUploadFilled().booleanValue())
-					return false;
+				}
+				
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
+								|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+							|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+						return false;	
+					}
+				}
 				return true;
 			}
 		} catch (Exception e) {

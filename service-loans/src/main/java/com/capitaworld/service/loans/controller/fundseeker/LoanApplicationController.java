@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.model.UserResponse;
 
@@ -46,6 +47,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			// request must not be null
+			CommonDocumentUtils.startHook(logger, "save");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 			if (userId == null) {
@@ -58,11 +60,13 @@ public class LoanApplicationController {
 				commonRequest.setClientId(clientId);
 			}
 			loanApplicationService.saveOrUpdate(commonRequest, userId);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -74,6 +78,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "get");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
@@ -90,10 +95,12 @@ public class LoanApplicationController {
 			LoanApplicationRequest response = loanApplicationService.get(id, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -105,6 +112,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
@@ -119,10 +127,12 @@ public class LoanApplicationController {
 			List<LoanApplicationRequest> response = loanApplicationService.getList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -134,6 +144,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "inActive");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
@@ -147,11 +158,13 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			loanApplicationService.inActive(id, userId);
+			CommonDocumentUtils.endHook(logger, "inActive");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Inactivated", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -162,7 +175,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getListByUseIdList(@RequestBody Long userId, HttpServletRequest request) {
 		// request must not be null
 		try {
-
+			CommonDocumentUtils.startHook(logger, "getListByUseIdList");
 			if (userId == null) {
 				logger.warn("UserId Require to get Loan Applications Details ==>" + userId);
 				return new ResponseEntity<LoansResponse>(
@@ -172,10 +185,12 @@ public class LoanApplicationController {
 			List<LoanApplicationDetailsForSp> response = loanApplicationService.getLoanDetailsByUserIdList(userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getListByUseIdList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -187,6 +202,7 @@ public class LoanApplicationController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "setLastApplicationAccess");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (applicationId == null) {
 				logger.warn("applicationId Require to Set last Access Profile ==>" + applicationId);
@@ -198,13 +214,16 @@ public class LoanApplicationController {
 			if (userResponse != null && userResponse.getStatus() == 200) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setData(userResponse);
+				CommonDocumentUtils.endHook(logger, "setLastApplicationAccess");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
+				CommonDocumentUtils.endHook(logger, "setLastApplicationAccess");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while Setting Last Access profile==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -216,6 +235,7 @@ public class LoanApplicationController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getProductByApplication");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (applicationId == null) {
 				logger.warn("applicationId Require to get Product Id ==>" + applicationId);
@@ -227,13 +247,16 @@ public class LoanApplicationController {
 			if (!CommonUtils.isObjectNullOrEmpty(productId)) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setId(productId.longValue());
+				logger.info("End getProductByApplication() method");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
+				logger.info("End getProductByApplication() method");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while Getting Product Id by Application Id==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -245,7 +268,7 @@ public class LoanApplicationController {
 			@RequestBody Long applicationId) {
 
 		try {
-
+			CommonDocumentUtils.startHook(logger, "getUserIdByApplicationId");
 			if (applicationId == null) {
 				logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -255,14 +278,16 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse();
 
 			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
-			if (!CommonUtils.isObjectListNull(response)) {
+			if (!CommonUtils.isObjectNullOrEmpty(response[0])) {
 				loansResponse.setData(response[0]);
 			}
+			CommonDocumentUtils.endHook(logger, "getUserIdByApplicationId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("Error while Getting Product Id by Application Id==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -274,7 +299,7 @@ public class LoanApplicationController {
 			@RequestBody Long applicationId) {
 
 		try {
-
+			CommonDocumentUtils.startHook(logger, "getUserNameByApplicationId");
 			if (applicationId == null) {
 				logger.warn("applicationId Require to get Loan Applications Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -285,11 +310,13 @@ public class LoanApplicationController {
 
 			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
 			loansResponse.setData(response[1]);
+			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("Error while Getting Product Id by Application Id==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -300,6 +327,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> lockPrimary(@PathVariable("applicationId") Long applicationId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
+			CommonDocumentUtils.startHook(logger, "lockPrimary");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -313,6 +341,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			loanApplicationService.lockPrimary(applicationId, userId,true);
+			CommonDocumentUtils.endHook(logger, "lockPrimary");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -329,6 +358,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> lockFinal(@PathVariable("applicationId") Long applicationId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
+			CommonDocumentUtils.startHook(logger, "lockFinal");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -342,6 +372,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			loanApplicationService.lockFinal(applicationId, userId, true);
+			CommonDocumentUtils.endHook(logger, "lockFinal");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
@@ -360,6 +391,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "updateFinalInformationFlag");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -375,11 +407,13 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			loanApplicationService.updateFinalCommonInformation(applicationId, userId, flag);
+			CommonDocumentUtils.endHook(logger, "updateFinalInformationFlag");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -391,6 +425,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isProfileAndPrimaryFilled");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -407,10 +442,12 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.isProfileAndPrimaryDetailFilled(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "isProfileAndPrimaryFilled");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -422,6 +459,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isPrimaryLocked");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -438,10 +476,12 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.isPrimaryLocked(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -453,6 +493,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isFinalFilled");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -469,10 +510,12 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.isFinalDetailFilled(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "isFinalFilled");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -484,6 +527,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isFinalLocked");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -500,10 +544,12 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "isFinalLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -516,6 +562,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isPrimaryAndFinalLocked");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -535,10 +582,12 @@ public class LoanApplicationController {
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(json);
+			CommonDocumentUtils.endHook(logger, "isPrimaryAndFinalLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -550,6 +599,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getSelfViewAndPrimaryLocked");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -566,10 +616,12 @@ public class LoanApplicationController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.getSelfViewAndPrimaryLocked(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "getSelfViewAndPrimaryLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -581,6 +633,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getCurrencyAndDenomination");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -592,6 +645,7 @@ public class LoanApplicationController {
 			if (applicationId == null || userId == null) {
 				logger.warn("ID And UserId Require to get Primary Working Details ==>" + applicationId
 						+ " and UserId ==>" + userId);
+				CommonDocumentUtils.endHook(logger, "getCurrencyAndDenomination");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -601,6 +655,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -614,6 +669,7 @@ public class LoanApplicationController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "isAllowToMoveAhead");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -625,6 +681,7 @@ public class LoanApplicationController {
 			if (applicationId == null || userId == null) {
 				logger.warn("ID And UserId Require to get Primary Working Details ==>" + applicationId
 						+ " and UserId ==>" + userId);
+				CommonDocumentUtils.endHook(logger, "isAllowToMoveAhead");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
