@@ -30,5 +30,12 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("select count(id) from ProductMaster pm where pm.id=:productId and pm.isParameterFilled=1 and pm.isActive = true")
 	public Long checkParameterIsFilled(@Param("productId") Long productId);
+	
+	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true and pm.isMatched=true")
+	public List<ProductDetailsForSp> getMatchedAndActiveProduct(@Param("userId") Long userId);
 
+	
+	@Modifying
+	@Query("update ProductMaster pm set pm.isMatched=true,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.userId =:userId and pm.isActive = true")
+	public int setIsMatchProduct(@Param("id") Long id, @Param("userId") Long userId);
 }

@@ -27,6 +27,8 @@ public class ProductMasterRequest implements Serializable {
 	private Long userId;
 
 	private String productCode;
+	
+	private Boolean isMatched;
 
 	
 	public ProductMasterRequest() {
@@ -88,4 +90,13 @@ public class ProductMasterRequest implements Serializable {
 		this.productCode = productCode;
 	}
 
+	public Boolean getIsMatched() {
+		return isMatched;
+	}
+
+	public void setIsMatched(Boolean isMatched) {
+		this.isMatched = isMatched;
+	}
+
+	
 }
