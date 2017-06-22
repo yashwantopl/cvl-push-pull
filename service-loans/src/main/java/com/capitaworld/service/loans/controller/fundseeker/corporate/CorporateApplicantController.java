@@ -205,5 +205,70 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/save_lat_lon", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLatLon(@RequestBody CorporateApplicantRequest applicantRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "saveLatLon");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("applicationId Require to Save Lat Lon Details ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Successfull updated", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.updateLatLong(applicantRequest, userId));
+			CommonDocumentUtils.endHook(logger, "saveLatLon");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			logger.error("Error while Saving LatLon Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@RequestMapping(value = "/get_lat_lon/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLatLon(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getLatLon");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get LatLon Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Successfull updated", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.getLatLonByApplicationAndUserId(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "getLatLon");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			logger.error("Error while Getting LatLon Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }
