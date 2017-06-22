@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchRequest;
@@ -45,7 +46,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		
+		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
 		Long userId = null;
 		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 		    userId = clientId;
@@ -64,15 +65,18 @@ public class MatchesController {
 			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}
+			CommonDocumentUtils.endHook(logger, "matchFSCorporate");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -83,7 +87,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${retail}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSRetail(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		
+		CommonDocumentUtils.startHook(logger, "matchFSRetail");
 		Long userId = null;
 		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 		    userId = clientId;
@@ -100,6 +104,7 @@ public class MatchesController {
 		try {
 			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundSeeker(matchRequest);
+			CommonDocumentUtils.endHook(logger, "matchFSRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
@@ -110,6 +115,7 @@ public class MatchesController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -120,7 +126,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		
+		CommonDocumentUtils.startHook(logger, "matchFPCorporate");
 		Long userId = null;
 		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 		    userId = clientId;
@@ -137,6 +143,7 @@ public class MatchesController {
 		try {
 			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundProvider(matchRequest);
+			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				
 				// update is match field in parameter table
@@ -151,6 +158,7 @@ public class MatchesController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -161,7 +169,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${retail}/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFPRetail(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		
+		CommonDocumentUtils.startHook(logger, "matchFPRetail");
 		Long userId = null;
 		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 		    userId = clientId;
@@ -178,6 +186,7 @@ public class MatchesController {
 		try {
 			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundProvider(matchRequest);
+			CommonDocumentUtils.endHook(logger, "matchFPRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				
 				// update is match field in parameter table
@@ -192,6 +201,7 @@ public class MatchesController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
+			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

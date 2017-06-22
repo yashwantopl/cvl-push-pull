@@ -11,7 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.controller.fundseeker.corporate.SecurityCorporateDetailsController;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
@@ -25,9 +24,7 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Transactional
@@ -48,6 +45,9 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private OneFormClient oneFormClient; 
 
 	@Override
 	public boolean saveOrUpdate(CarLoanParameterRequest carLoanParameterRequest) {
@@ -92,10 +92,8 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 		List<Long> countryList = geographicalCountryRepository.getCountryByFpProductId(carLoanParameterRequest.getId());
 		if (!countryList.isEmpty()) {
-			CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 				carLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
@@ -111,10 +109,8 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 		List<Long> stateList = geographicalStateRepository.getStateByFpProductId(carLoanParameterRequest.getId());
 		if (!stateList.isEmpty()) {
-			StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 				carLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
@@ -126,10 +122,8 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 
 		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(carLoanParameterRequest.getId());
 		if (!cityList.isEmpty()) {
-			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(
-					environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 				carLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {

@@ -10,9 +10,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
-import com.capitaworld.service.oneform.client.RatingByRatingIdClient;
-import com.capitaworld.service.oneform.client.RatingOptionClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 
 /**
@@ -49,6 +50,9 @@ public class LoansMain {
 	@Value("${oneForm}")
 	private String oneFormUrl;
 	
+	@Value("${matchesURL}")
+	private String matchEngineUrl;
+	
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -77,10 +81,24 @@ public class LoansMain {
 	
 	
 	@Bean
-	public RatingByRatingIdClient ratingByRatingIdClient(){
-		RatingByRatingIdClient ratingByRatingIdClient = new RatingByRatingIdClient(oneFormUrl);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingByRatingIdClient);
-		return ratingByRatingIdClient;
+	public OneFormClient oneFormClient(){
+		OneFormClient oneFormClient = new OneFormClient(oneFormUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(oneFormClient);
+		return oneFormClient;
+	}
+	
+	@Bean
+	public MatchEngineClient matchEngineClient(){
+		MatchEngineClient matchEngineClient = new MatchEngineClient(matchEngineUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
+		return matchEngineClient;
+	}
+	
+	@Bean
+	public ProposalDetailsClient proposalDetailsClient(){
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
+		return proposalDetailsClient;
 	}
 
 

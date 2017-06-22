@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -41,6 +42,7 @@ public class CorporateApplicantController {
 	public ResponseEntity<LoansResponse> save(@RequestBody CorporateApplicantRequest applicantRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
+			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
@@ -62,6 +64,7 @@ public class CorporateApplicantController {
 			}
 
 			applicantService.save(applicantRequest, userId);
+			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
@@ -78,6 +81,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "get");
 			Long id = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -96,6 +100,7 @@ public class CorporateApplicantController {
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(id, applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
@@ -110,6 +115,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getSectorListByIndustryList");
 			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
 			// Long id=1l;
 			if (id == null) {
@@ -131,6 +137,7 @@ public class CorporateApplicantController {
 				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 				loansResponse.setListData(response);
 			}
+			CommonDocumentUtils.endHook(logger, "getSectorListByIndustryList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -146,7 +153,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request) {
 		// request must not be null
 		try {
-
+			CommonDocumentUtils.startHook(logger, "getSubSectorListBySectorList");
 			if (sectorIdList == null) {
 
 				logger.warn("sectorIdList  Require to get sectors Details ==>" + sectorIdList);
@@ -156,6 +163,7 @@ public class CorporateApplicantController {
 			List<SubSectorListRequest> response = applicantService.getSubSectorList(sectorIdList);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getSubSectorListBySectorList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -171,6 +179,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
+			CommonDocumentUtils.startHook(logger, "getGraphs");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -186,10 +195,76 @@ public class CorporateApplicantController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(applicantService.getGraphs(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "getGraphs");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Graphs Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/save_lat_lon", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLatLon(@RequestBody CorporateApplicantRequest applicantRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "saveLatLon");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("applicationId Require to Save Lat Lon Details ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Successfull updated", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.updateLatLong(applicantRequest, userId));
+			CommonDocumentUtils.endHook(logger, "saveLatLon");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			logger.error("Error while Saving LatLon Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@RequestMapping(value = "/get_lat_lon/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLatLon(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getLatLon");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get LatLon Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Successfull updated", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.getLatLonByApplicationAndUserId(applicationId, userId));
+			CommonDocumentUtils.endHook(logger, "getLatLon");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			logger.error("Error while Getting LatLon Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

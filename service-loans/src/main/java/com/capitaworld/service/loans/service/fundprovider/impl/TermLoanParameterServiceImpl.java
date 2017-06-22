@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +25,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.client.SectorClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
@@ -53,7 +48,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private GeographicalCityRepository geographicalCityRepository;
  	
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient; 
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
@@ -116,9 +111,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());
 		if (!industryList.isEmpty()) {
-			IndustryClient client = new IndustryClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = client.send(industryList);
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				termLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -131,9 +125,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				.getSectorByProductId(termLoanParameterRequest.getId());
 		if(!sectorList.isEmpty())
 		{
-		SectorClient sectorClient = new SectorClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = sectorClient.send(sectorList);
+			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
 			termLoanParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -147,9 +140,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 			termLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -164,9 +156,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(termLoanParameterRequest.getId());
 		if(!stateList.isEmpty())
 		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 			termLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 			 
 			
@@ -181,9 +172,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(termLoanParameterRequest.getId());
 		if(!cityList.isEmpty())
 		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 			termLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 			 
 			

@@ -36,11 +36,10 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.matchengine.model.MatchResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.oneform.client.IndustryClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -56,6 +55,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -111,7 +116,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					String address="";
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 					{
-						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 					}
 					else
 					{
@@ -119,7 +124,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 					{
-						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 					}
 					else
 					{
@@ -127,7 +132,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 					{
-						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 					}
 					else
 					{
@@ -149,9 +154,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					List<Long> listIndustryIds=industrySectorRepository.getIndustryByApplicationId(applicationId);
 					if(listIndustryIds.size()>0)
 					{
-						IndustryClient industryClient=new  IndustryClient(environment.getProperty(CommonUtils.ONE_FORM));
-						OneFormResponse formResponse=industryClient.send(listIndustryIds);
-						
+						OneFormResponse formResponse= oneFormClient.getIndustryById(listIndustryIds);
 						List<Map<String, Object>> loanResponseDatalist = (List<Map<String, Object>>) formResponse.getListData();
 						String industry = "";
 						if(loanResponseDatalist.size()>0)
@@ -189,8 +192,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setAmount(amount);
 
 					// calling DMS for getting fp profile image path
-					
-					DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 					
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setApplicationId(applicationId);
@@ -233,7 +234,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					String address="";
 					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 					{
-						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 					}
 					else
 					{
@@ -241,7 +242,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 					{
-						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 					}
 					else
 					{
@@ -249,7 +250,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 					{
-						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 					}
 					else
 					{
@@ -273,7 +274,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					// calling DMS for getting fp profile image path
 					
-					DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setApplicationId(applicationId);
 					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -363,8 +363,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					fundProviderProposalDetails.setFpType("DEBT");
 
 					// calling DMS for getting fp profile image path
-					
-					DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 					
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setUserId(master.getUserId());
@@ -501,7 +499,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							String address="";
 							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 							{
-								address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+								address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 							}
 							else
 							{
@@ -509,7 +507,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 							{
-								address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+								address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 							}
 							else
 							{
@@ -517,7 +515,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 							{
-								address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+								address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 							}
 							else
 							{
@@ -550,8 +548,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setAmount(amount);
 
 							// calling DMS for getting fp profile image path
-							
-							DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 							
 							DocumentRequest documentRequest = new DocumentRequest();
 							documentRequest.setApplicationId(applicationId.longValue());
@@ -591,7 +587,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							String address="";
 							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 							{
-								address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+								address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 							}
 							else
 							{
@@ -599,7 +595,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 							{
-								address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+								address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 							}
 							else
 							{
@@ -607,7 +603,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 							{
-								address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+								address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 							}
 							else
 							{
@@ -627,7 +623,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							// calling DMS for getting fp profile image path
 							
-							DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 							DocumentRequest documentRequest = new DocumentRequest();
 							documentRequest.setApplicationId(applicationId.longValue());
 							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -682,8 +677,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setFpType("DEBT");
 
 						// calling DMS for getting fp profile image path
-						
-						DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 						
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setUserId(master.getUserId());
