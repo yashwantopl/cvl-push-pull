@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -32,6 +33,9 @@ public class MatchesController {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private ProductMasterService productMasterService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -141,6 +145,10 @@ public class MatchesController {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundProvider(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				
+				// update is match field in parameter table
+				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
+				
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}
@@ -180,6 +188,10 @@ public class MatchesController {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundProvider(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFPRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				
+				// update is match field in parameter table
+				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
+				
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}

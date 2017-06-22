@@ -205,7 +205,10 @@ public class LoansClient {
 	public LoansResponse getProductDetailsByUserIdList(List<Long> request) throws  LoansException {
 		String url = loansBaseUrl.concat(LOAN_PRODUCT_DETAILS_BY_USER_ID);
 		try {
-			return restTemplate.postForObject(url, request, LoansResponse.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<List<Long>> entity = new HttpEntity<List<Long>>(request, headers);
+			return restTemplate.exchange(url,  HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
@@ -214,7 +217,10 @@ public class LoansClient {
 	public LoansResponse getUserNameByProductMappingId(Long request) throws  LoansException {
 		String url = loansBaseUrl.concat(USERNAME_BY_PRODUCT_ID);
 		try {
-			return restTemplate.postForObject(url, request, LoansResponse.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

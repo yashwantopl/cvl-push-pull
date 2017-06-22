@@ -60,6 +60,9 @@ public abstract class ProductMaster implements Serializable {
 
 	@Column(name = "is_active")
 	private Boolean isActive = true;
+	
+	@Column(name = "is_matched")
+	private Boolean isMatched = false;
 
 	public ProductMaster() {
 	}
@@ -175,5 +178,15 @@ public abstract class ProductMaster implements Serializable {
 	public void setProductCode(String productCode) {
 		this.productCode = productCode;
 	}
+
+	public Boolean getIsMatched() {
+		return isMatched;
+	}
+
+	public void setIsMatched(Boolean isMatched) {
+		this.isMatched = isMatched;
+	}
+	
+	
 
 }
