@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,6 +53,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private CorporateApplicantDetailRepository applicantDetailRepository;
 	
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
@@ -428,6 +432,40 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
    
    return graphResponse;
 		
+	}
+	
+
+	@Override
+	public int updateLatLong(CorporateApplicantRequest request,Long userId) throws Exception {
+		try{
+			return applicantDetailRepository.updateLatLong(request.getLatitude(), request.getLongitude(), request.getApplicationId());
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Erro While Updating Lat and Lon");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
+		try{
+			List<Object[]> latLons = applicantDetailRepository.getLatLonByApplicationAndUserId(applicationId, userId);
+			if(CommonUtils.isListNullOrEmpty(latLons)){
+				return null;
+			}else{
+				JSONObject jsonObject = new JSONObject();
+				Object[] objects = latLons.get(0);
+				jsonObject.put("latitude", objects[0]);
+				jsonObject.put("longitude", objects[1]);
+				return jsonObject;
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Erro While Updating Lat and Lon");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 	
 }

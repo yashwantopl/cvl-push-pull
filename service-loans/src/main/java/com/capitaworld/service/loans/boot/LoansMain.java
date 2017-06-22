@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
@@ -91,6 +92,13 @@ public class LoansMain {
 		MatchEngineClient matchEngineClient = new MatchEngineClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
+	}
+	
+	@Bean
+	public ProposalDetailsClient proposalDetailsClient(){
+		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
+		return proposalDetailsClient;
 	}
 
 

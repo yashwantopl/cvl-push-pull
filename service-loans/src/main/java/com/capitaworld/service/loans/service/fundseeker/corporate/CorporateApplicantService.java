@@ -6,6 +6,8 @@ import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest,Long userId) throws Exception;
 
@@ -16,4 +18,8 @@ public interface CorporateApplicantService {
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);
 	
 	public GraphResponse getGraphs(Long applicationId,Long userId);
+	
+	public int updateLatLong(CorporateApplicantRequest request,Long userId) throws Exception;
+	
+	public JSONObject getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
 }
