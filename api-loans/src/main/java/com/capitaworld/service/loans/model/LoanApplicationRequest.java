@@ -45,12 +45,20 @@ public class LoanApplicationRequest implements Serializable {
 	private Boolean isApplicantPrimaryFilled;
 	
 	private String applicationCode;
+	
+	private Integer status;
 
 	public LoanApplicationRequest() {
 	}
 
 	public LoanApplicationRequest(Long id) {
 		this.id = id;
+	}
+
+	public LoanApplicationRequest(Long id, Integer productId) {
+		super();
+		this.id = id;
+		this.productId = productId;
 	}
 
 	public Long getId() {
@@ -187,6 +195,14 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setApplicationCode(String applicationCode) {
 		this.applicationCode = applicationCode;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 	
 

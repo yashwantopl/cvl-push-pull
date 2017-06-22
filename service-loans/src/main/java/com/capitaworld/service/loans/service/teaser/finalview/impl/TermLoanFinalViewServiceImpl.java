@@ -156,9 +156,12 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
-
+    
     @Autowired
-    private ProductMasterService productMasterService;
+    private OneFormClient oneFormClient;
+    
+    @Autowired
+    private UsersClient usersClient;
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -267,7 +270,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
         }
 
         //set registered email address and registered contact number
-        UsersClient usersClient = new UsersClient(environment.getProperty(USERS_URL));
         UserResponse userResponse = usersClient.getEmailMobile(userId);
         try {
             UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
@@ -290,9 +292,8 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             //set city
             List<Long> cityList = new ArrayList<>();
             cityList.add(corporateApplicantDetail.getRegisteredCityId());
-            CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = cityByCityListIdClient.send(cityList);
+                OneFormResponse oneFormResponse =  oneFormClient.getCityByCityListId(cityList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -307,9 +308,8 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             //set state
             List<Long> stateList = new ArrayList<>();
             stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-            StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
+                OneFormResponse oneFormResponse =  oneFormClient.getStateByStateListId(stateList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -324,9 +324,8 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             //set country
             List<Long> countryList = new ArrayList<>();
             countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-            CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getProperty(ONE_FORM_URL));
             try {
-                OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
+                OneFormResponse oneFormResponse =  oneFormClient.getCountryByCountryListId(countryList);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -340,11 +339,10 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
 
             //set key vertical funding
-            IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
             List<Long> keyVerticalFundingId = new ArrayList<>();
             keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
             try {
-                OneFormResponse oneFormResponse = industryClient.send(keyVerticalFundingId);
+                OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -359,10 +357,8 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
         }
 
         //set Establishment year
-        EstablistmentYearClient establistmentYearClient = new EstablistmentYearClient(environment.getProperty(ONE_FORM_URL));
-        OneFormResponse establishmentYearResponse = null;
         try {
-            establishmentYearResponse = establistmentYearClient.send(Long.valueOf(corporateApplicantDetail.getEstablishmentYear()));
+        	OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(Long.valueOf(corporateApplicantDetail.getEstablishmentYear()));
             List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
             if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                 MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
@@ -379,13 +375,12 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
         List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
         List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
         List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
-        IndustrySectorSubSectorTeaser industrySectorSubSectorTeaser = new IndustrySectorSubSectorTeaser (environment.getProperty(ONE_FORM_URL));
         IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest=new IndustrySectorSubSectorTeaserRequest();
         industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
         industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
         industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
         try {
-            OneFormResponse oneFormResponse=industrySectorSubSectorTeaser.send(industrySectorSubSectorTeaserRequest);
+            OneFormResponse oneFormResponse = oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
             response.setIndustrySector(oneFormResponse.getListData());
         } catch (Exception e) {
             e.printStackTrace();
@@ -444,8 +439,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
                 creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
                 creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
                 //calling client for credit rating options
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()));
+                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()) ? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
                 MasterResponse masterResponse= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)oneFormResponse.getData(),MasterResponse.class);
                 if (masterResponse!=null ) {
                     creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
@@ -467,8 +461,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             List<String> shortTermValueList = new ArrayList<String>();
             List<Integer> shortTermIdList = creditRatingOrganizationDetailsService.getShortTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : shortTermIdList) {
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
                 MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
                 if (masterResponse != null) {
                     shortTermValueList.add(masterResponse.getValue());
@@ -486,8 +479,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             List<String> longTermValueList = new ArrayList<String>();
             List<Integer> longTermIdList = creditRatingOrganizationDetailsService.getLongTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : longTermIdList) {
-                RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(environment.getProperty(ONE_FORM_URL));
-                OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+                OneFormResponse oneFormResponse =  oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
                 MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
                 if (masterResponse != null) {
                     longTermValueList.add(masterResponse.getValue());

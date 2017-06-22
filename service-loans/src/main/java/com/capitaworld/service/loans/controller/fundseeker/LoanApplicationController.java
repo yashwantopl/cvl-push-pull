@@ -278,7 +278,7 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse();
 
 			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
-			if (!CommonUtils.isObjectListNull(response)) {
+			if (!CommonUtils.isObjectNullOrEmpty(response[0])) {
 				loansResponse.setData(response[0]);
 			}
 			CommonDocumentUtils.endHook(logger, "getUserIdByApplicationId");

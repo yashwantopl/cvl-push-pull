@@ -3,9 +3,10 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,16 +24,13 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.IndustryClient;
-import com.capitaworld.service.oneform.client.SectorClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
 @Transactional
 public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParameterService {
+	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalParameterServiceImpl.class);
 	@Autowired
 	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
 
@@ -49,10 +47,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	private GeographicalCityRepository geographicalCityRepository;
  	
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveOrUpdate");
 		// TODO Auto-generated method stub
 		WorkingCapitalParameter workingCapitalParameter = null;
 
@@ -86,11 +85,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		saveCity(workingCapitalParameterRequest);
+		logger.info("end saveOrUpdate");
 		return true;
 	}
 
 	@Override
 	public WorkingCapitalParameterRequest getWorkingCapitalParameter(Long id) {
+		logger.info("start getWorkingCapitalParameter");
 		WorkingCapitalParameterRequest workingCapitalParameterRequest = new WorkingCapitalParameterRequest();
 		WorkingCapitalParameter loanParameter = workingCapitalParameterRepository.getByID(id);
 		if (loanParameter == null)
@@ -105,12 +106,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(workingCapitalParameterRequest.getId());
 		if (!industryList.isEmpty()) {
-			IndustryClient client = new IndustryClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 			try {
-				OneFormResponse formResponse = client.send(industryList);
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				logger.error(e.toString());
 				e.printStackTrace();
 			}
 		}
@@ -119,14 +120,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				.getSectorByProductId(workingCapitalParameterRequest.getId());
 		if(!sectorList.isEmpty())
 		{
-		SectorClient sectorClient = new SectorClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = sectorClient.send(sectorList);
+			OneFormResponse formResponse =oneFormClient.getSectorById(sectorList);
 			workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
 			 
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error(e.toString());
 			e.printStackTrace();
 		}
 		}
@@ -135,14 +136,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(workingCapitalParameterRequest.getId());
 		if(!countryList.isEmpty())
 		{
-		CountryByCountryListIdClient countryByCountryListIdClient=new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = countryByCountryListIdClient.send(countryList);
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
 			workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 			 
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error(e.toString());
 			e.printStackTrace();
 		}
 		}
@@ -151,14 +152,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(workingCapitalParameterRequest.getId());
 		if(!stateList.isEmpty())
 		{
-		StateListByStateListIdClient stateListByStateListIdClient=new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = stateListByStateListIdClient.send(stateList);
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
 			workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 			 
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error(e.toString());
 			e.printStackTrace();
 		}
 		}
@@ -167,22 +168,23 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(workingCapitalParameterRequest.getId());
 		if(!cityList.isEmpty())
 		{
-		CityByCityListIdClient cityByCityListIdClient=new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
 		try {
-			OneFormResponse formResponse = cityByCityListIdClient.send(cityList);
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
 			workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 			 
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			logger.error(e.toString());
 			e.printStackTrace();
 		}
 		}
-		System.out.println("data is"+workingCapitalParameterRequest);
+		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
 
 	private void saveIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
 		System.out.println(workingCapitalParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
@@ -197,9 +199,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
+		logger.info("end saveIndustry");
 	}
 
 	private void saveSector(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveSector");
 		IndustrySectorDetail industrySectorDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getSectorlist()) {
 			industrySectorDetail = new IndustrySectorDetail();
@@ -213,10 +217,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
+		logger.info("end saveSector");
 	}
 	
 	private void saveCountry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
-		
+		logger.info("save saveCountry");
 		GeographicalCountryDetail geographicalCountryDetail= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
@@ -230,9 +235,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			// create by and update
 			geographicalCountryRepository.save(geographicalCountryDetail);
 		}
+		logger.info("end saveCountry");
 	}
 	
 	private void saveState(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveState");
 		GeographicalStateDetail geographicalStateDetail= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
@@ -246,10 +253,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			// create by and update
 			geographicalStateRepository.save(geographicalStateDetail);
 		}
+		logger.info("end saveState");
 	}
 	
 	private void saveCity(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
-		
+		logger.info("start saveCity");
 		GeographicalCityDetail geographicalCityDetail= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
@@ -263,6 +271,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			// create by and update
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
+		logger.info("end saveCity");
 	}
 	
 
