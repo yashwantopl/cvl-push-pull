@@ -271,6 +271,8 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
         //set registered email address and registered contact number
         UserResponse userResponse = usersClient.getEmailMobile(userId);
+        if(!CommonUtils.isObjectNullOrEmpty(userResponse))
+        {
         try {
             UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
             if (usersRequest!=null) {
@@ -279,6 +281,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
         }
 
         //get details of CorporateApplicantDetail
