@@ -30,4 +30,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select cr.latitude,cr.longitude from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public List<Object[]> getLatLonByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 
+	@Query("select count(cr.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	public Long getApplicantCount(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
 }
