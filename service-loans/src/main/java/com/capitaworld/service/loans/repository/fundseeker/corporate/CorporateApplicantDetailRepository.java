@@ -31,6 +31,6 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	public List<Object[]> getLatLonByApplicationAndUserId(@Param("applicationId") Long applicationId,@Param("userId") Long userId);
 
 	@Query("select count(cr.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
-	public Long getApplicantCount(@Param("userId") Long userId,
+	public long getApplicantCount(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 }
