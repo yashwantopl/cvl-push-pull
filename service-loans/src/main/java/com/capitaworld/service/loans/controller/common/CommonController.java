@@ -37,16 +37,31 @@ public class CommonController {
 	
 	
 	@RequestMapping(value = "/save_lat_long", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> saveLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		CommonDocumentUtils.startHook(logger, "save_lat_long");
+		
+		if(CommonUtils.isObjectNullOrEmpty(longLatrequest.getLatitude()) || CommonUtils.isObjectNullOrEmpty(longLatrequest.getLongitude()) 
+				|| CommonUtils.isObjectNullOrEmpty(longLatrequest.getUserType())){
+			logger.warn("Latitude and longitude and usertype Require to Save Lat Lon Details");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		
-		if(userType == CommonUtils.UserType.FUND_SEEKER) {
+		Long finalUserId = userId; 
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			finalUserId = clientId;
+			longLatrequest.setClientId(clientId);
+		}
+		
+		if(longLatrequest.getUserType() == CommonUtils.UserType.FUND_SEEKER) {
 			try{
 				if(CommonUtils.isObjectNullOrEmpty(longLatrequest.getId())){
-					logger.warn("applicationId Require to Save Lat Lon Details ==>" + longLatrequest.getId());
+					logger.warn("applicationId Require to Save Lat Lon Details");
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
@@ -61,12 +76,12 @@ public class CommonController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 		} else {
-			if(userType == CommonUtils.UserType.SERVICE_PROVIDER || userType == CommonUtils.UserType.FUND_PROVIDER) {
+			if(longLatrequest.getUserType() == CommonUtils.UserType.SERVICE_PROVIDER || longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER) {
 				UserLongitudeLatitudeRequest userRequest = new UserLongitudeLatitudeRequest();
 				userRequest.setLongitude(longLatrequest.getLongitude());
 				userRequest.setLatitude(longLatrequest.getLatitude());
-				userRequest.setUserId(userId);
-				userRequest.setUserType(userType);
+				userRequest.setUserId(finalUserId);
+				userRequest.setUserType(longLatrequest.getUserType());
 				try {
 					usersClient.saveLongLatValue(userRequest);
 					return new ResponseEntity<LoansResponse>(
@@ -88,21 +103,35 @@ public class CommonController {
 	}
 	
 	@RequestMapping(value = "/get_lat_long", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> getLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		CommonDocumentUtils.startHook(logger, "get_lat_long");
+		
+		if(CommonUtils.isObjectNullOrEmpty(longLatrequest.getUserType())){
+			logger.warn("Usertype Require to Get Lat Lon Details");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		
-		if(userType == CommonUtils.UserType.FUND_SEEKER) {
+		Long finalUserId = userId; 
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			finalUserId = clientId;
+			longLatrequest.setClientId(clientId);
+		}
+		
+		if(longLatrequest.getUserType() == CommonUtils.UserType.FUND_SEEKER) {
 			try {
 				if(CommonUtils.isObjectNullOrEmpty(longLatrequest.getId())){
-					logger.warn("applicationId Require to get Lat Lon Details ==>" + longLatrequest.getId());
+					logger.warn("applicationId Require to get Lat Lon Details ==>");
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				LoansResponse response = new LoansResponse("Successfully get data",HttpStatus.OK.value());
-				response.setData(corporateApplicantService.getLatLonByApplicationAndUserId(longLatrequest.getId(), userId));
+				response.setData(corporateApplicantService.getLatLonByApplicationAndUserId(longLatrequest.getId(), finalUserId));
 				logger.warn("successfully get fs long and lat value");
 				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 			} catch (Exception e ){
@@ -112,10 +141,10 @@ public class CommonController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			}
 		} else {
-			if(userType == CommonUtils.UserType.SERVICE_PROVIDER || userType == CommonUtils.UserType.FUND_PROVIDER) {
+			if(longLatrequest.getUserType() == CommonUtils.UserType.SERVICE_PROVIDER || longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER) {
 				UserLongitudeLatitudeRequest userRequest = new UserLongitudeLatitudeRequest();
-				userRequest.setUserId(userId);
-				userRequest.setUserType(userType);
+				userRequest.setUserId(finalUserId);
+				userRequest.setUserType(longLatrequest.getUserType());
 				try {
 					UserResponse userResponse = usersClient.getLongLatValue(userRequest);
 					LoansResponse response = new LoansResponse("Successfully get data",HttpStatus.OK.value());
