@@ -440,14 +440,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
 		try {
+			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId; 
+			
 			int latLong = 1;
-			long applicantCount = applicantDetailRepository.getApplicantCount(userId, request.getId());
+			long applicantCount = applicantDetailRepository.getApplicantCount(finalUserId, request.getId());
 			if (applicantCount == 0) {
 				CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
 				applicantDetail.setApplicationId(new LoanApplicationMaster(request.getId()));
 				applicantDetail.setLongitude(request.getLongitude());
 				applicantDetail.setLatitude(request.getLatitude());
 				applicantDetail.setIsActive(true);
+				applicantDetail.setCreatedBy(userId);
+				applicantDetail.setModifiedBy(userId);
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setModifiedDate(new Date());
 				applicantDetailRepository.save(applicantDetail);
 				// One is Static Because First time only One Record will be
 				// effect.even every time One record will affect.
