@@ -291,7 +291,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 lapResponse.setPermanentAddress(permanentAddress);
 
 
-				profileViewLAPResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+				profileViewLAPResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");

@@ -8,8 +8,10 @@ public class LongitudeLatitudeRequest implements Serializable {
 	
 	
 	private Long id;
+	private Integer userType;
 	private Double longitude;
 	private Double latitude;
+	private Long clientId;
 	public Long getId() {
 		return id;
 	}
@@ -28,6 +30,19 @@ public class LongitudeLatitudeRequest implements Serializable {
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
+	public Long getClientId() {
+		return clientId;
+	}
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
+	public Integer getUserType() {
+		return userType;
+	}
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+	
 	
 	
 }

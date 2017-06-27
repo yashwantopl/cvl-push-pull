@@ -206,7 +206,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				personalLoanResponse.setPermanentAddress(permanentAddress);
 
 
-				profileViewPLResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+				profileViewPLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewPLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				if (applicantDetail.getApplicationId() != null) {
