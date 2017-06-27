@@ -337,9 +337,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
 			homeLoanResponse.setPropertyType(PropertySubType.getById(loanDetail.getPropertyType()).getValue());
 			homeLoanResponse.setPropertyUsedTypeId(loanDetail.getPropertyType().toString());
-			if(loanDetail.getPropertyType() == 3){
+			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 3){
 				homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "NA");
-				if(loanDetail.getPropertyUsedType() == 3){
+				if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) && loanDetail.getPropertyUsedType() == 3){
 					homeLoanResponse.setConstructionCompleted(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsConstructionCompleted()) ? Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue() : "NA");
 					if(!loanDetail.getIsConstructionCompleted()){
 						homeLoanResponse.setConstructionCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "NA");
@@ -350,14 +350,14 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				homeLoanResponse.setProjectCity(loanDetail.getProjectCity());
 				homeLoanResponse.setArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getArea()) ? loanDetail.getArea().toString() : "NA");
 				homeLoanResponse.setPropertyPrice(loanDetail.getPropertyPrice().toString());
-			}else if(loanDetail.getPropertyType() == 4){
+			}else if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 4){
 				homeLoanResponse.setBunglowCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBunglowCost()) ? loanDetail.getBunglowCost().toString() : "NA");
 				homeLoanResponse.setConstructionCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCost()) ? loanDetail.getConstructionCost().toString() : "NA");
 				homeLoanResponse.setCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInMonth()) ? loanDetail.getCompletionTimeInMonth().toString() : "NA");
 				homeLoanResponse.setCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getCompletionTimeInYear()) ? loanDetail.getCompletionTimeInYear().toString() : "NA");
-			}else if(loanDetail.getPropertyType() == 5){
+			}else if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 5){
 				homeLoanResponse.setRenovationType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) ? RepairType.getById(loanDetail.getRenovationType()).getValue() : "NA");
-				if(loanDetail.getRenovationType() == 8){
+				if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) && loanDetail.getRenovationType() == 8){
 					homeLoanResponse.setRenovationTypeOther(loanDetail.getOtherRenovationType());
 				}
 				homeLoanResponse.setRenovationCost(loanDetail.getRenovationCost().toString());
@@ -372,7 +372,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					}	
 				}	
 						
-			}else if(loanDetail.getPropertyType() == 6){
+			}else if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 6){
 				homeLoanResponse.setLandPlotCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandPlotCost()) ? loanDetail.getLandPlotCost().toString() : "NA");
 				homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
 			}

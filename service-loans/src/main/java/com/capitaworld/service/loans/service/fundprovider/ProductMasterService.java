@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import java.io.IOException;
 import java.util.List;
+
+import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.CommonResponse;
@@ -29,4 +32,7 @@ public interface ProductMasterService {
 	
 	public boolean isSelfView(Long fpProductId,Long userId);
 	
+	public boolean isProductMatched(Long userId,MultipleFpPruductRequest multipleFpPruductRequest) throws IOException;
+	
+	public int setIsMatchProduct(Long id,  Long userId);
 }

@@ -36,6 +36,8 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -48,6 +50,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient; 
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -155,7 +160,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
-			
+			ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
+			applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationMaster.getProductId());
 			applicationRequest.setName(loanType.getValue());
@@ -213,6 +219,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setLoanTypeSub("DEBT");
 				}
 				
+				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
+				request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
 				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 						.getById(master.getProductId());
 				request.setName(loanType.getValue());

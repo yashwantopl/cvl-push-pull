@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -82,7 +83,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LapParameterRepository lapParameterRepository;
 
 	@Autowired
-	private FundProviderSequenceService fundProviderSequenceService;  
+	private FundProviderSequenceService fundProviderSequenceService;
 
 	@Autowired
 	private GeographicalCountryRepository geoCountry;
@@ -165,7 +166,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				default:
 					break;
 				}
-				BeanUtils.copyProperties(productMasterRequest, productMaster);
+				BeanUtils.copyProperties(productMasterRequest, productMaster,"isMatched");
 				productMaster.setFpName(productMasters.getFpName());
 				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(productMasters.getClientId())
 						? productMasters.getUserId() : productMasters.getClientId()));
@@ -175,7 +176,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setIsParameterFilled(true);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
-				productMaster.setProductCode(fundProviderSequenceService.getFundProviderSequenceNumber(productMasterRequest.getProductId()));
+				productMaster.setProductCode(
+						fundProviderSequenceService.getFundProviderSequenceNumber(productMasterRequest.getProductId()));
 				ProductMaster master = productMasterRepository.save(productMaster);
 				CommonResponse commonResponse = new CommonResponse();
 				commonResponse.setId(master.getId());
@@ -187,7 +189,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		catch (Exception e) {
 			e.printStackTrace();
-			logger.error("error while saveOrUpdate",e);
+			logger.error("error while saveOrUpdate", e);
 			return null;
 		}
 	}
@@ -207,6 +209,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
 			BeanUtils.copyProperties(master, request);
+			request.setIsMatched(productMasterRepository.getMatchedAndActiveProduct(userId).size()>0?true:false);
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getList");
@@ -315,16 +318,49 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		fpProductDetails.setGeographicalFocus(countryname);
 		//fp profile details
 		fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
-				
-		
+
 		CommonDocumentUtils.endHook(logger, "getProductDetails");
 		return fpProductDetails;
 	}
 
 	@Override
-	public boolean isSelfView(Long fpProductId,Long userId){
+	public boolean isSelfView(Long fpProductId, Long userId) {
 		return productMasterRepository.getUserProduct(fpProductId, userId) != null;
 	}
 
+	@Override
+	public boolean isProductMatched(Long userId, MultipleFpPruductRequest multipleFpPruductRequest) throws IOException {
+		// TODO Auto-generated method stub
+		List<ProductDetailsForSp> productDetailsForSps=productMasterRepository.getMatchedAndActiveProduct(userId);
+		if(CommonUtils.isListNullOrEmpty(productDetailsForSps))
+		{
+			return false;
+		}
+		if (!CommonUtils.isObjectNullOrEmpty(multipleFpPruductRequest)) {
+			for (Map<String, Object> obj : multipleFpPruductRequest.getDataList()) {
+				ProductMasterRequest productMasterRequest = (ProductMasterRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, ProductMasterRequest.class);
+				
+				ProductMaster master=productMasterRepository.findOne(productMasterRequest.getId());
+				if(!CommonUtils.isObjectNullOrEmpty(master))
+				{
+					//if(master.getId())
+					if(!productMasterRequest.getProductId().toString().equals(productDetailsForSps.get(0).getProductId().toString()))
+					{
+						return true;
+					}
+				}
+			}
+				
+			
+		}
+		return false;
+	}
+
+	@Override
+	public int setIsMatchProduct(Long id, Long userId) {
+		// TODO Auto-generated method stub
+		return productMasterRepository.setIsMatchProduct(id, userId);
+	}
 
 }

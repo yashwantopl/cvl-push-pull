@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEs
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.GraphResponse;
+import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -52,7 +54,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
+	@Autowired
+	private CorporateApplicantDetailRepository applicantDetailRepository;
+
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
@@ -135,16 +140,15 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 	}
 
-	/*@Override
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception {
-		try {
-			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
-		} catch (Exception e) {
-			logger.error("Error while updating final information flag");
-			e.printStackTrace();
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
-		}
-	}*/
+	/*
+	 * @Override public void updateFinalCommonInformation(Long applicationId,
+	 * Long userId, Boolean flag) throws Exception { try {
+	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled(
+	 * applicationId, userId, flag); } catch (Exception e) {
+	 * logger.error("Error while updating final information flag");
+	 * e.printStackTrace(); throw new
+	 * Exception(CommonUtils.SOMETHING_WENT_WRONG); } }
+	 */
 
 	private void saveIndustry(Long applicationId, List<Long> industrylist) {
 		IndustrySectorDetail industrySectorDetail = null;
@@ -288,34 +292,37 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public GraphResponse getGraphs(Long applicationId, Long userId) {
-		//For now code has been written as it was in spring old last release. will improve later once i(Akshay) understands how graph data should be.
-		
+		// For now code has been written as it was in spring old last release.
+		// will improve later once i(Akshay) understands how graph data should
+		// be.
+
 		GraphResponse graphResponse = new GraphResponse();
-		
+
 		DecimalFormat decimalFormat = new DecimalFormat("#");
-        DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
-        
-		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
-		if(!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1){
+		DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
+
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository
+				.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if (!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1) {
 			graphResponse.setGraphAvailable(true);
-		}else{
-			return graphResponse; 
+		} else {
+			return graphResponse;
 		}
-		
+
 		List<Double> pats = new ArrayList<>(pastEstimates.size());
-        List<Double> sales = new ArrayList<>(pastEstimates.size());
-        List<Double> ebidta = new ArrayList<>(pastEstimates.size());
-        List<Double> netWorth = new ArrayList<>(pastEstimates.size());
-        List<Double> currentAsset = new ArrayList<>(pastEstimates.size());
-        List<Double> currentLiabilities = new ArrayList<>(pastEstimates.size());
-        List<Double> fixedAsset = new ArrayList<>(pastEstimates.size());
-        List<Double> debt = new ArrayList<>(pastEstimates.size());
-        
-        List<String> financialYears = new ArrayList<>(pastEstimates.size());
-        
+		List<Double> sales = new ArrayList<>(pastEstimates.size());
+		List<Double> ebidta = new ArrayList<>(pastEstimates.size());
+		List<Double> netWorth = new ArrayList<>(pastEstimates.size());
+		List<Double> currentAsset = new ArrayList<>(pastEstimates.size());
+		List<Double> currentLiabilities = new ArrayList<>(pastEstimates.size());
+		List<Double> fixedAsset = new ArrayList<>(pastEstimates.size());
+		List<Double> debt = new ArrayList<>(pastEstimates.size());
+
+		List<String> financialYears = new ArrayList<>(pastEstimates.size());
+
 		for (PastFinancialEstimatesDetail finEst : pastEstimates) {
 			financialYears.add(finEst.getFinancialYear());
-			
+
 			pats.add(finEst.getPat());
 			sales.add(finEst.getSales());
 			ebidta.add(finEst.getEbitda());
@@ -325,109 +332,157 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			fixedAsset.add(finEst.getFixedAssets());
 			debt.add(finEst.getDebt());
 		}
-		
-		 Double val;
-         //calculate pat%
-		
-	     List<Double> patsPercentage = new ArrayList<>(pats.size());
-		 for (int i = 0; i <= pats.size() - 1; i++) {
-             //System.out.println(pats.get(i)+"-"+sales.get(i));
-             val = (pats.get(i) / sales.get(i));
-             val = val * 100;
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             patsPercentage.add(Double.valueOf(decimalFormat.format(val)));
-         }
-		 
-		 List<Double> salesPercentage = new ArrayList<>(sales.size());
-		 salesPercentage.add(null);
-         //calculate revenue % (Previous sales/sales)%
-         for (int i = 0; i <= (sales.size() - 2); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (sales.get(i + 1) - sales.get(i));
-             val = val / sales.get(i);
-             val = val * 100;
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             salesPercentage.add(Double.valueOf(decimalFormat.format(val)));
-         }
-         //calculate Ebidta Percentage (Ebidta/sales)%
-         List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
-         for (int i = 0; i <= (sales.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (ebidta.get(i) / sales.get(i));
-             val = val * 100;
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             ebidtaPercentage.add(Double.valueOf(decimalFormat.format(val)));
-         }
-         //calculate ROE(%) (pat/netWorth)%
-         List<Double> roePercentage = new ArrayList<>(pats.size());
-         for (int i = 0; i <= (pats.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (pats.get(i) / netWorth.get(i));
-             val = val * 100;
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             roePercentage.add(Double.valueOf(decimalFormat.format(val)));
-         }
-         //calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
-         List<Double> rocePercentage = new ArrayList<>(ebidta.size());
-         for (int i = 0; i <= (ebidta.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
-             val = val * 100;
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             rocePercentage.add(Double.valueOf(decimalFormat.format(val)));
-         }
 
-         List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
-         for (int i = 0; i <= (debt.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (debt.get(i) / netWorth.get(i));
-             if (Double.isNaN(val)) {
-                 val = 0d;
-             }
-             debtEquityPercentage.add(Double.valueOf(decimalFormat1.format(val)));
-         }
-         
-       //calculate current Ration (Current Assets/Current Liabilities)
-         List<Double> currentRatio = new ArrayList<>(currentAsset.size());
-         for (int i = 0; i <= (currentAsset.size() - 1); i++) {
-             //System.out.println(sales.get(i+1)+"-"+sales.get(i));
-             val = (currentAsset.get(i) / (currentLiabilities.get(i)));
-                 /*if(Double.isNaN(val)){
-                     val=0;
-                 }*/
-             currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
-         }
+		Double val;
+		// calculate pat%
 
-   graphResponse.setxAxisOfPat(financialYears);      
-   graphResponse.setPats(pats);
-   graphResponse.setSales(sales);
-   graphResponse.setEbidta(ebidta);
-   graphResponse.setNetWorth(netWorth);
-   graphResponse.setCurrentAsset(currentAsset);
-   graphResponse.setCurrentLiabilities(currentLiabilities);
-   graphResponse.setFixedAsset(fixedAsset);
-   graphResponse.setDebt(debt);
-   
-   graphResponse.setPatsPercentage(patsPercentage);
-   graphResponse.setSalesPercentage(salesPercentage);
-   graphResponse.setEbidtaPercentage(ebidtaPercentage);
-   graphResponse.setRoePercentage(roePercentage);
-   graphResponse.setRocePercentage(rocePercentage);
-   graphResponse.setCurrentRatio(currentRatio);
-   graphResponse.setDebtEquityPercentage(debtEquityPercentage);
-   
-   return graphResponse;
-		
+		List<Double> patsPercentage = new ArrayList<>(pats.size());
+		for (int i = 0; i <= pats.size() - 1; i++) {
+			// System.out.println(pats.get(i)+"-"+sales.get(i));
+			val = (pats.get(i) / sales.get(i));
+			val = val * 100;
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			patsPercentage.add(Double.valueOf(decimalFormat.format(val)));
+		}
+
+		List<Double> salesPercentage = new ArrayList<>(sales.size());
+		salesPercentage.add(null);
+		// calculate revenue % (Previous sales/sales)%
+		for (int i = 0; i <= (sales.size() - 2); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (sales.get(i + 1) - sales.get(i));
+			val = val / sales.get(i);
+			val = val * 100;
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			salesPercentage.add(Double.valueOf(decimalFormat.format(val)));
+		}
+		// calculate Ebidta Percentage (Ebidta/sales)%
+		List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
+		for (int i = 0; i <= (sales.size() - 1); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (ebidta.get(i) / sales.get(i));
+			val = val * 100;
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			ebidtaPercentage.add(Double.valueOf(decimalFormat.format(val)));
+		}
+		// calculate ROE(%) (pat/netWorth)%
+		List<Double> roePercentage = new ArrayList<>(pats.size());
+		for (int i = 0; i <= (pats.size() - 1); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (pats.get(i) / netWorth.get(i));
+			val = val * 100;
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			roePercentage.add(Double.valueOf(decimalFormat.format(val)));
+		}
+		// calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
+		List<Double> rocePercentage = new ArrayList<>(ebidta.size());
+		for (int i = 0; i <= (ebidta.size() - 1); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
+			val = val * 100;
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			rocePercentage.add(Double.valueOf(decimalFormat.format(val)));
+		}
+
+		List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
+		for (int i = 0; i <= (debt.size() - 1); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (debt.get(i) / netWorth.get(i));
+			if (Double.isNaN(val)) {
+				val = 0d;
+			}
+			debtEquityPercentage.add(Double.valueOf(decimalFormat1.format(val)));
+		}
+
+		// calculate current Ration (Current Assets/Current Liabilities)
+		List<Double> currentRatio = new ArrayList<>(currentAsset.size());
+		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
+			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
+			/*
+			 * if(Double.isNaN(val)){ val=0; }
+			 */
+			currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
+		}
+
+		graphResponse.setxAxisOfPat(financialYears);
+		graphResponse.setPats(pats);
+		graphResponse.setSales(sales);
+		graphResponse.setEbidta(ebidta);
+		graphResponse.setNetWorth(netWorth);
+		graphResponse.setCurrentAsset(currentAsset);
+		graphResponse.setCurrentLiabilities(currentLiabilities);
+		graphResponse.setFixedAsset(fixedAsset);
+		graphResponse.setDebt(debt);
+
+		graphResponse.setPatsPercentage(patsPercentage);
+		graphResponse.setSalesPercentage(salesPercentage);
+		graphResponse.setEbidtaPercentage(ebidtaPercentage);
+		graphResponse.setRoePercentage(roePercentage);
+		graphResponse.setRocePercentage(rocePercentage);
+		graphResponse.setCurrentRatio(currentRatio);
+		graphResponse.setDebtEquityPercentage(debtEquityPercentage);
+
+		return graphResponse;
+
 	}
-	
+
+	@Override
+	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
+		try {
+			int latLong = 1;
+			long applicantCount = applicantDetailRepository.getApplicantCount(userId, request.getId());
+			if (applicantCount == 0) {
+				CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
+				applicantDetail.setApplicationId(new LoanApplicationMaster(request.getId()));
+				applicantDetail.setLongitude(request.getLongitude());
+				applicantDetail.setLatitude(request.getLatitude());
+				applicantDetail.setIsActive(true);
+				applicantDetailRepository.save(applicantDetail);
+				// One is Static Because First time only One Record will be
+				// effect.even every time One record will affect.
+				return latLong;
+			} else {
+				latLong = applicantDetailRepository.updateLatLong(request.getLatitude(), request.getLongitude(),
+						request.getId());
+			}
+			return latLong;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Erro While Updating Lat and Lon");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
+		try {
+			List<Object[]> latLons = applicantDetailRepository.getLatLonByApplicationAndUserId(applicationId, userId);
+			if (CommonUtils.isListNullOrEmpty(latLons)) {
+				return null;
+			} else {
+				LongitudeLatitudeRequest request = new LongitudeLatitudeRequest();
+				Object[] objects = latLons.get(0);
+				request.setLatitude(!CommonUtils.isObjectNullOrEmpty(objects[0]) ? Double.valueOf(objects[0].toString()) : null);
+				request.setLongitude(!CommonUtils.isObjectNullOrEmpty(objects[1]) ? Double.valueOf(objects[1].toString()) : null);
+				return request;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Erro While Updating Lat and Lon");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 }

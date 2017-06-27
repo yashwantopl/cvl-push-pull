@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ProductDetailsResponse;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -31,7 +30,10 @@ public class MatchesController {
 	private static final Logger logger = LoggerFactory.getLogger(MatchesController.class);
 
 	@Autowired
-	private Environment environment;
+	private MatchEngineClient engineClient;
+	
+	@Autowired
+	private ProductMasterService productMasterService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -57,8 +59,6 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			logger.info("MATCHES_URL==>" + environment.getRequiredProperty(CommonUtils.MATCHES_URL));
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
@@ -98,7 +98,6 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundSeeker(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFSRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
@@ -137,10 +136,13 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundProvider(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFPCorporate");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				
+				// update is match field in parameter table
+				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
+				
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}
@@ -176,10 +178,13 @@ public class MatchesController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			MatchEngineClient engineClient = new MatchEngineClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundProvider(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFPRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				
+				// update is match field in parameter table
+				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
+				
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}
