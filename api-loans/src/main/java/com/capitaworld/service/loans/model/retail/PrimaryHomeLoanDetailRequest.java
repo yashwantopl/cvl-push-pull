@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -29,6 +30,7 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 
 	private Double constructionCost;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dateOfLoanTaken;
 
 	private Double downPayment;

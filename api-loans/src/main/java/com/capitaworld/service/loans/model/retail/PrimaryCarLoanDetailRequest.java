@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -25,6 +26,7 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 
 	private String dealerName;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date deliveryDate;
 
 	private Double downPayment;
@@ -35,8 +37,10 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 
 	private Double onRoadCarPrice;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date purchasePreownedDate;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date purchaseReimbursmentDate;
 
 	private Long clientId;
