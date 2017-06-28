@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEs
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.GraphResponse;
+import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -437,21 +438,29 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public int updateLatLong(CorporateApplicantRequest request, Long userId) throws Exception {
+	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
 		try {
+			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId; 
+			
 			int latLong = 1;
-			Long applicantCount = applicantDetailRepository.getApplicantCount(userId, request.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(applicantCount) && applicantCount.intValue() == 0) {
+			long applicantCount = applicantDetailRepository.getApplicantCount(finalUserId, request.getId());
+			if (applicantCount == 0) {
 				CorporateApplicantDetail applicantDetail = new CorporateApplicantDetail();
-				applicantDetail.setApplicationId(new LoanApplicationMaster(request.getApplicationId()));
-				BeanUtils.copyProperties(request, applicantDetail, CommonUtils.IgnorableCopy.ID);
+				applicantDetail.setApplicationId(new LoanApplicationMaster(request.getId()));
+				applicantDetail.setLongitude(request.getLongitude());
+				applicantDetail.setLatitude(request.getLatitude());
+				applicantDetail.setIsActive(true);
+				applicantDetail.setCreatedBy(userId);
+				applicantDetail.setModifiedBy(userId);
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setModifiedDate(new Date());
 				applicantDetailRepository.save(applicantDetail);
 				// One is Static Because First time only One Record will be
 				// effect.even every time One record will affect.
 				return latLong;
 			} else {
 				latLong = applicantDetailRepository.updateLatLong(request.getLatitude(), request.getLongitude(),
-						request.getApplicationId());
+						request.getId());
 			}
 			return latLong;
 		} catch (Exception e) {
@@ -461,19 +470,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
+	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
 		try {
 			List<Object[]> latLons = applicantDetailRepository.getLatLonByApplicationAndUserId(applicationId, userId);
 			if (CommonUtils.isListNullOrEmpty(latLons)) {
 				return null;
 			} else {
-				JSONObject jsonObject = new JSONObject();
+				LongitudeLatitudeRequest request = new LongitudeLatitudeRequest();
 				Object[] objects = latLons.get(0);
-				jsonObject.put("latitude", objects[0]);
-				jsonObject.put("longitude", objects[1]);
-				return jsonObject;
+				request.setLatitude(!CommonUtils.isObjectNullOrEmpty(objects[0]) ? Double.valueOf(objects[0].toString()) : null);
+				request.setLongitude(!CommonUtils.isObjectNullOrEmpty(objects[1]) ? Double.valueOf(objects[1].toString()) : null);
+				return request;
 			}
 
 		} catch (Exception e) {

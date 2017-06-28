@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -207,7 +208,7 @@ public class CorporateApplicantController {
 	}
 	
 	@RequestMapping(value = "/save_lat_lon", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveLatLon(@RequestBody CorporateApplicantRequest applicantRequest,
+	public ResponseEntity<LoansResponse> saveLatLon(@RequestBody LongitudeLatitudeRequest applicantRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -220,8 +221,8 @@ public class CorporateApplicantController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
-			if (applicantRequest.getApplicationId() == null) {
-				logger.warn("applicationId Require to Save Lat Lon Details ==>" + applicantRequest.getApplicationId());
+			if (applicantRequest.getId() == null) {
+				logger.warn("applicationId Require to Save Lat Lon Details ==>" + applicantRequest.getId());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}

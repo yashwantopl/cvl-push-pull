@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import com.capitaworld.service.loans.model.common.GraphResponse;
+import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 
@@ -19,7 +20,7 @@ public interface CorporateApplicantService {
 	
 	public GraphResponse getGraphs(Long applicationId,Long userId);
 	
-	public int updateLatLong(CorporateApplicantRequest request,Long userId) throws Exception;
+	public int updateLatLong(LongitudeLatitudeRequest request,Long userId) throws Exception;
 	
-	public JSONObject getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
+	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
 }
