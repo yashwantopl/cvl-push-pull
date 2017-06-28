@@ -1,7 +1,11 @@
 package com.capitaworld.service.loans.controller.common;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +19,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserLongitudeLatitudeRequest;
 import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UserTypeRequest;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @RestController
 @RequestMapping("/common")
@@ -34,6 +43,9 @@ public class CommonController {
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private ProductMasterService productMasterService;
 	
 	
 	@RequestMapping(value = "/save_lat_long", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -163,9 +175,66 @@ public class CommonController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		}
-			
-		
 	}
 	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/user_verification", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserResponse> userVerification(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId){
+		
+		CommonDocumentUtils.startHook(logger, "user_verification");
+		Long userId = Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString());
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		
+		if (CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(userType)) {
+			logger.warn("Invalid Request... UserId or UserType is not found ");
+			return new ResponseEntity<UserResponse>(new UserResponse("UserId or UserType is not found",
+					HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				userId = clientId;
+			}
+			
+			try {
+				UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+				if(response != null && response.getData() != null){
+					UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+					userType = req.getId().intValue();
+				} else {
+					logger.warn("user_verification, Invalid Request... Client Id is not valid");
+					return new ResponseEntity<UserResponse>(new UserResponse("Client Id is not valid",
+							HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}	
+			} catch(Exception e) {
+				logger.warn("user_verification, Invalid Request... Something went wrong");
+				e.printStackTrace();
+				return new ResponseEntity<UserResponse>(new UserResponse("Something went wrong",
+						HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+			
+		}
+		
+		JSONObject obj = new JSONObject();
+		obj.put("userType", userType);
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setId(userId);
+		if(userType == CommonUtils.UserType.FUND_SEEKER){
+			try {
+				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
+				obj.put("lastAccessAppId", response.getId());	
+			} catch (Exception e){
+				logger.warn("Error While Get Last access application id");
+				return new ResponseEntity<UserResponse>(new UserResponse("Something went wrong",
+						HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			}
+		} else if(userType == CommonUtils.UserType.FUND_PROVIDER){
+			List<ProductMasterRequest> productMasterlist = productMasterService.getList(userId);
+			obj.put("productId", !CommonUtils.isListNullOrEmpty(productMasterlist) ? productMasterlist.get(0).getId() : null);
+		}
+		CommonDocumentUtils.endHook(logger, "user_verification");
+		return new ResponseEntity<UserResponse>(new UserResponse(obj,"Successfully get data",
+				HttpStatus.OK.value()), HttpStatus.OK);
+	}
 	
 }
