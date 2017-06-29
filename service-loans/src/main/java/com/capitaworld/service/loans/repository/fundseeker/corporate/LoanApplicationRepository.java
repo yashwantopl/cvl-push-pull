@@ -105,6 +105,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	@Query("select lm.userId,lm.name from LoanApplicationMaster lm where lm.id =:applicationId")
 	public List<Object[]> getUserDetailsByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Query("select count(applicationId) from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true")
+	public Long checkApplicationIdActive(@Param("id") Long id);
 
 	@Query("select count(id) from LoanApplicationMaster lm where lm.id =:id and lm.isPrimaryLocked=1 and lm.isActive = true")
 	public Long checkPrimaryDetailIsLocked(@Param("id") Long applicationId);
