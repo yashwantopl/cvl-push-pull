@@ -1,17 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -32,19 +20,20 @@ import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryVi
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Transactional
@@ -94,12 +83,13 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
                 carLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
                 if (applicantDetail.getApplicationId() != null) {
-                    carLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? applicantDetail.getApplicationId().getTenure().toString() : null);
+                    carLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? String.valueOf(applicantDetail.getApplicationId().getTenure()/12) : null);
                     carLoanResponse.setLoanType(applicantDetail.getApplicationId().getProductId() != null ? LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue() : null);
-                    carLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount().toString() : null);
+                    carLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount() : null);
                     carLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : null);
                 }
                 if (applicantDetail.getOccupationId()!=null){
+                    profileViewPLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
                     if (applicantDetail.getOccupationId()==2){
                         profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
@@ -147,7 +137,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 }
 
                 //set pan car
-                profileViewPLResponse.setPan(applicantDetail.getPan() != null ? applicantDetail.getPan() : null);
+                profileViewPLResponse.setPan(applicantDetail.getPan() != null ? applicantDetail.getPan().toUpperCase() : null);
                 profileViewPLResponse.setTitle(applicantDetail.getTitleId() != null ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
                 profileViewPLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
                 profileViewPLResponse.setFirstName(applicantDetail.getFirstName() != null ? applicantDetail.getFirstName() : null);
@@ -299,8 +289,10 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             PrimaryCarLoanDetailRequest primaryCarLoanDetailRequest = primaryCarLoanService.get(toApplicationId, userId);
             BeanUtils.copyProperties(primaryCarLoanDetailRequest, carLoanResponse);
             carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
-            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate()!=null?DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()):null);
-            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()!=null?DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()):null);
+            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
+            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
+            carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
+            carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {
             e.printStackTrace();
         }

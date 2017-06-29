@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +87,11 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			}else{
 				finalViewCommonResponse.setHighestQualification("-");
 			}
-			finalViewCommonResponse.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getQualifyingYear()) ? applicantDetail.getQualifyingYear().getMonth() +"/"+ applicantDetail.getQualifyingYear().getYear() : "-");
+			SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+			finalViewCommonResponse.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getQualifyingYear())
+					? monthFormat.format(applicantDetail.getQualifyingYear()) +"/"+ yearFormat.format(applicantDetail.getQualifyingYear())
+					: "-");
 			finalViewCommonResponse.setInstituteName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getInstitute()) ? applicantDetail.getInstitute() : "-");
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidenceType())){
 				finalViewCommonResponse.setResidenceType(ResidenceStatusRetailMst.getById(applicantDetail.getResidenceType()).getValue());
