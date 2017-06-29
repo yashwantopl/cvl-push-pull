@@ -190,33 +190,39 @@ public class CommonController {
 			return new ResponseEntity<UserResponse>(new UserResponse("UserId or UserType is not found",
 					HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
-			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
-				userId = clientId;
-			}
-			
-			try {
-				UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
-				if(response != null && response.getData() != null){
-					UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
-					userType = req.getId().intValue();
-				} else {
-					logger.warn("user_verification, Invalid Request... Client Id is not valid");
-					return new ResponseEntity<UserResponse>(new UserResponse("Client Id is not valid",
-							HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}	
-			} catch(Exception e) {
-				logger.warn("user_verification, Invalid Request... Something went wrong");
-				e.printStackTrace();
-				return new ResponseEntity<UserResponse>(new UserResponse("Something went wrong",
-						HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-			}
-			
-		}
-		
 		JSONObject obj = new JSONObject();
 		obj.put("userType", userType);
+		
+		Integer spUserId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			//SP LOGIN
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						spUserId = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<UserResponse>(new UserResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<UserResponse>(new UserResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				spUserId = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			userType = spUserId; 
+		}
+		
+		
+		
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setId(userId);
 		if(userType == CommonUtils.UserType.FUND_SEEKER){
@@ -231,6 +237,9 @@ public class CommonController {
 		} else if(userType == CommonUtils.UserType.FUND_PROVIDER){
 			List<ProductMasterRequest> productMasterlist = productMasterService.getList(userId);
 			obj.put("productId", !CommonUtils.isListNullOrEmpty(productMasterlist) ? productMasterlist.get(0).getId() : null);
+		} else if(userType == CommonUtils.UserType.SERVICE_PROVIDER){
+			obj.put("productId",null);
+			obj.put("lastAccessAppId",null);
 		}
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj,"Successfully get data",
