@@ -25,7 +25,7 @@ public class CarLoanResponse implements Serializable{
 
     private String loanType;
 
-    private String loanAmount;
+    private Double loanAmount;
 
     private String carModelName;
 
@@ -103,11 +103,11 @@ public class CarLoanResponse implements Serializable{
         this.loanType = loanType;
     }
 
-    public String getLoanAmount() {
+    public Double getLoanAmount() {
         return loanAmount;
     }
 
-    public void setLoanAmount(String loanAmount) {
+    public void setLoanAmount(Double loanAmount) {
         this.loanAmount = loanAmount;
     }
 
