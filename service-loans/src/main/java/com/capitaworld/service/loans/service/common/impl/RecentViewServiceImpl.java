@@ -71,6 +71,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -237,6 +238,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -510,7 +512,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setApplicationId(response.getApplicationId());
 				thisMonthResp.setProductId(response.getProductId());
 				thisMonthResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisMonthResp);
+				listThisMonth.add(thisMonthResp);
 				
 			}	
 			else{
@@ -587,7 +589,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setApplicationId(response.getApplicationId());
 				thisMonthResp.setProductId(response.getProductId());
 				thisMonthResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisMonthResp);
+				listThisMonth.add(thisMonthResp);
 			}
 			
 			
@@ -774,6 +776,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException {
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -845,6 +848,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws Exception {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -1030,7 +1034,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		map.put("recentView",listMonthWeek );
 		detailResponse.setRecentProfileMap(map);
 		
-		return null;
+		return detailResponse;
 	}
 
 }

@@ -129,7 +129,7 @@ public class RecentViewController {
 	}
 	
 	@RequestMapping(value = "/getLatestListByProdId/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getLatestListByProdId(@PathVariable("applicationId") Long applicationId,
+	public ResponseEntity<LoansResponse> getLatestListByProdId(@PathVariable("productId") Long applicationId,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
