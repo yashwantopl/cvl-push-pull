@@ -410,6 +410,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception {
+		try {
+			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isApplicationIdActive ?");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 
 	@Override
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception {
