@@ -82,7 +82,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		LapResponse lapResponse = new LapResponse();
 		//applicant
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
-        System.out.println("User Id"+applicationMaster.getUserId());
         try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {
