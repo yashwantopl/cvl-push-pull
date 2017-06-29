@@ -38,6 +38,8 @@ public interface LoanApplicationService {
 	
 	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws Exception;
 	
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception;
+	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
 	
 	public Boolean isFinalLocked(Long applicationId, Long userId) throws Exception;

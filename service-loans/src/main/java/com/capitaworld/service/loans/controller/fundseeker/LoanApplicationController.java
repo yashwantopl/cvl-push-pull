@@ -475,7 +475,24 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.isPrimaryLocked(applicationId, userId));
+			
+			loansResponse.setData(true);
+			
+			if(!loanApplicationService.isApplicationIdActive(applicationId))
+			{
+				loansResponse.setData(false);
+				loansResponse.setMessage("Requested User In Active");	
+				CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+			if(!loanApplicationService.isPrimaryLocked(applicationId, userId))
+			{
+				loansResponse.setData(false);
+				loansResponse.setMessage("Requested User has not filled Primary Details");
+				CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+			
 			CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -543,7 +560,19 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
+			loansResponse.setData(true);
+			if(!loanApplicationService.isApplicationIdActive(applicationId)) {
+				loansResponse.setData(false);
+				loansResponse.setMessage("Requested User In Active");
+				CommonDocumentUtils.endHook(logger, "isFinalLocked");
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+			if(!loanApplicationService.isFinalLocked(applicationId, userId)) {
+				loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
+				loansResponse.setMessage("Requested User has not filled Final Details");
+				CommonDocumentUtils.endHook(logger, "isFinalLocked");
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
 			CommonDocumentUtils.endHook(logger, "isFinalLocked");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
