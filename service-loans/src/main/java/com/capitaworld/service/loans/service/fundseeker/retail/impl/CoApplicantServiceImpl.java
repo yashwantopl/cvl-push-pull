@@ -125,6 +125,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
+		try{
+			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
+		} catch(Exception e) {
+			logger.error("Error while getCoAppIds:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 	@Override
 	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
@@ -322,60 +333,50 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-					if (coApplicantDetail.getOccupationId() != null) {
-						profileViewPLResponse.setNatureOfOccupationId(coApplicantDetail.getOccupationId());
-						if (coApplicantDetail.getOccupationId() == 2) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getCompanyName())) {
-								profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())) {
-								if (coApplicantDetail.getEmployedWithId() == 8) {
+					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+					profileViewPLResponse.setNatureOfOccupationId(coApplicantDetail.getOccupationId());
+					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())){
+						switch (coApplicantDetail.getOccupationId().intValue()) {
+						case 2 : //Salaried
+							profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
+							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())){
+								if(coApplicantDetail.getEmployedWithId() != 8){
+									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+								}else{
 									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
-								} else {
-									profileViewPLResponse.setEmployeeWith(
-											EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
 								}
 							}
-						} else if (coApplicantDetail.getOccupationId() == 3
-								|| coApplicantDetail.getOccupationId() == 4) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getEntityName())) {
-								profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())) {
-								if (coApplicantDetail.getIndustryTypeId() == 16) {
+							break;
+						case 3 : //Business
+						case 4 : //Self Employed
+							profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
+							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())){
+								if(coApplicantDetail.getIndustryTypeId() != 16){
+									profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+								}else{
 									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
-								} else {
-									profileViewPLResponse.setIndustryType(
-											IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
 								}
 							}
-						} else if (coApplicantDetail.getOccupationId() == 5) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-							if (coApplicantDetail.getSelfEmployedOccupationId() == 10) {
-								profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
-							} else {
-								profileViewPLResponse.setOccupation(
-										Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+							break;
+						case 5 ://Self Employed Professional
+							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())){
+								if(coApplicantDetail.getSelfEmployedOccupationId().intValue() != 10){
+									profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+								}else{
+									profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
+								}
 							}
-						} else if (coApplicantDetail.getOccupationId() == 6) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
-								profileViewPLResponse.setLandSize(
-										LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
+							break;
+						case 6://Agriculturist
+							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())){
+								profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
 							}
-							if (!CommonUtil.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())) {
-								profileViewPLResponse.setAlliedActivity(
-										AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
+							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())){
+								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
 							}
-						} else if (coApplicantDetail.getOccupationId() == 7) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+							break;
+						default:
+							break;
 						}
 					}
 
@@ -383,14 +384,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					profileViewPLResponse.setRelationshipWithApplicant(
 							coApplicantDetail.getRelationshipWithApplicant() != null ? RelationshipType
 									.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : null);
-					profileViewPLResponse
-							.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
+					profileViewPLResponse.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
 					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null
 							? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
 					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null
 							? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
-					profileViewPLResponse.setFirstName(
-							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+					profileViewPLResponse.setFirstName(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
 					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null
 							? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
 					profileViewPLResponse.setLastName(
