@@ -79,21 +79,26 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AccountingSystems;
+import com.capitaworld.service.oneform.enums.BrandAmbassador;
 import com.capitaworld.service.oneform.enums.Competence;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
 import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DistributionMarketingTieUps;
 import com.capitaworld.service.oneform.enums.EnvironmentCertification;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.ExistingShareholders;
 import com.capitaworld.service.oneform.enums.IndiaDistributionNetwork;
 import com.capitaworld.service.oneform.enums.InternalAudit;
 import com.capitaworld.service.oneform.enums.MarketPosition;
 import com.capitaworld.service.oneform.enums.MarketPositioningTop;
 import com.capitaworld.service.oneform.enums.MarketShareTurnover;
+import com.capitaworld.service.oneform.enums.MarketingPositioningNew;
 import com.capitaworld.service.oneform.enums.NatureFacility;
 import com.capitaworld.service.oneform.enums.OverseasNetwork;
+import com.capitaworld.service.oneform.enums.ProductServicesPerse;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.TechnologyPatented;
@@ -334,8 +339,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
 						? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue()
 						: null);
-				response.setMarketPositioningTop(MarketPositioningTop
-						.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
+				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
+						? MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
 				response.setMarketShareTurnover(
 						finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover
 								.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
@@ -345,6 +350,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 										.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId())
 										.getValue()
 								: null);
+				response.setDistributionAndTieUps(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()!=null?DistributionMarketingTieUps.getById(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()).getValue():null);
+				response.setBrandAmbassador(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()!=null?BrandAmbassador.getById(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()).getValue():null);
+				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId()!=null?MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue():null);
+				response.setProductServicesPerse(finalWorkingCapitalLoanRequest.getProductServicesPerseId() != null
+						? ProductServicesPerse.getById(finalWorkingCapitalLoanRequest.getProductServicesPerseId()).getValue() : null);
 				response.setEnvironmentCertification(
 						finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null
 								? EnvironmentCertification
@@ -358,6 +368,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
 				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null
 						? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
+				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null
+						? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
 				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
 					response.setIsIsoCertified("Yes");
 				} else {
