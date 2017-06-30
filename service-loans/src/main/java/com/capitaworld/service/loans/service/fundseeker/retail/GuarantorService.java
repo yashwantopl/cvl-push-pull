@@ -22,4 +22,6 @@ public interface GuarantorService {
 	
 	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId,int productId) throws Exception;
 	
+	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception;
+	
 }

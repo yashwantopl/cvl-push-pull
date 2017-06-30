@@ -168,7 +168,17 @@ public class GuarantorServiceImpl implements GuarantorService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
+	
+	@Override
+	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception {
+		try {
+			return guarantorDetailsRepository.getGuarantorIds(applicationId,userId);
+		} catch(Exception e){
+			logger.error("Error while Saving Guarantor Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 	@Override
 	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws Exception {
 		try {
