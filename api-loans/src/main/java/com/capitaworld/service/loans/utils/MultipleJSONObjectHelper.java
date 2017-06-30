@@ -35,8 +35,8 @@ public class MultipleJSONObjectHelper implements Serializable {
 	}
 
 	public static <T> T getObjectFromMap(Map map, Class<?> clazz) throws IOException {
-		final ObjectMapper mapper = new ObjectMapper(); // jackson's
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper(); // jackson's
+		mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return (T) mapper.convertValue(map, clazz);
 	}
 

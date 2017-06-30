@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -76,7 +78,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 
+	DecimalFormat df = new DecimalFormat("#");
+	
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
@@ -87,8 +94,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			
 			// calling MATCHENGINE for getting proposal list
 			
-			ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(
-					environment.getRequiredProperty("matchesURL"));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 			
 			MatchEngineClient matchEngineClient = new MatchEngineClient(
@@ -116,7 +121,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					String address="";
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 					{
-						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
+						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient) + ",";
 					}
 					else
 					{
@@ -124,7 +129,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 					{
-						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
+						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient) +",";
 					}
 					else
 					{
@@ -182,7 +187,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
 						amount += "NA";
 					else
-						amount +=loanApplicationMaster.getAmount().toString();
+						amount += df.format(loanApplicationMaster.getAmount());
 					
 					if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
 						amount += " NA";
@@ -234,7 +239,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					String address="";
 					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 					{
-						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
+						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient) + ",";
 					}
 					else
 					{
@@ -242,7 +247,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 					{
-						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
+						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient) + ",";
 					}
 					else
 					{
@@ -300,6 +305,29 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
 					
+					// get retail loan amount
+					
+					String loanAmount="";
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
+					{
+						loanAmount+=df.format(loanApplicationMaster.getAmount());
+					}
+					else
+					{
+						loanAmount+="NA";
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrencyId()))
+					{
+						loanAmount+=" " +Currency.getById(retailApplicantDetail.getCurrencyId());
+					}
+					else
+					{
+						loanAmount+=" NA";
+					}
+					
+					retailProposalDetails.setAmount(loanAmount);
+					
 					try {
 						MatchRequest matchRequest=new MatchRequest();
 						matchRequest.setApplicationId(applicationId);
@@ -332,8 +360,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		{
 			// calling MATCHENGINE for getting proposal list
 			
-			ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(
-						environment.getRequiredProperty("matchesURL"));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 			
 			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
@@ -403,9 +429,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request) {
 		ProposalCountResponse response = new ProposalCountResponse();
 		
-		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
+		
 		try {
-			response = client.proposalCountOfFundProvider(request);	
+			response = proposalDetailsClient.proposalCountOfFundProvider(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -415,10 +441,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public ProposalCountResponse fundSeekerProposalCount(ProposalMappingRequest request) {
 		ProposalCountResponse response = new ProposalCountResponse();
-		
-		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.proposalCountOfFundSeeker(request);	
+			response = proposalDetailsClient.proposalCountOfFundSeeker(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -429,10 +453,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalMappingResponse get(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
-		
-		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.getProposal(request);	
+			response = proposalDetailsClient.getProposal(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -457,9 +479,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
-		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.listOfFundSeekerProposal(request);	
+			response = proposalDetailsClient.listOfFundSeekerProposal(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -476,9 +497,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		
 		try {
 				List proposalDetailsList = new ArrayList();
-			
-				ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(
-					environment.getRequiredProperty("matchesURL"));
 				ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
 			
 				if(!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType()))
@@ -497,25 +515,25 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							
 							// for get address city state country
 							String address="";
-							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+							if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 							{
-								address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
+								address += CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient) + ",";
 							}
 							else
 							{
 								address+="NA ,";
 							}
-							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+							if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 							{
-								address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
+								address += CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient) + ",";
 							}
 							else
 							{
 								address+="NA ,";
 							}
-							if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+							if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 							{
-								address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+								address += CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 							}
 							else
 							{
@@ -532,13 +550,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 							
 							corporateProposalDetails.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
-							
-							
+
 							String amount="";
 							if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
 								amount += "NA";
 							else
-								amount +=loanApplicationMaster.getAmount().toString();
+								amount += df.format(loanApplicationMaster.getAmount());
 							
 							if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
 								amount += " NA";
@@ -721,10 +738,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
 	ProposalMappingResponse response = new ProposalMappingResponse();
-		
-		ProposalDetailsClient client = new ProposalDetailsClient(environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
-			response = client.sendRequest(request);	
+			response = proposalDetailsClient.sendRequest(request);	
 		} catch(Exception e){
 			e.printStackTrace();
 		}

@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
@@ -21,4 +23,6 @@ public interface RetailApplicantService {
 	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception;
 	
 	public Integer getCurrency(Long applicationId,Long userId) throws Exception;
+	
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 }
