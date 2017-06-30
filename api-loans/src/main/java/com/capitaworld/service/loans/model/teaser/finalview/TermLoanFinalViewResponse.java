@@ -36,6 +36,7 @@ public class TermLoanFinalViewResponse implements Serializable{
     private String landlineNo;
     private String registeredEmailAddress;
     private String registeredContactNumber;
+    private Double totalCostOfEstimate;
     private List<?> industrySector;
     private List<Object> profilePic;
     private List<String> shortTermRating;
@@ -809,5 +810,16 @@ public class TermLoanFinalViewResponse implements Serializable{
 		this.productServicesPerse = productServicesPerse;
 	}
 
+	public Double getTotalCostOfEstimate() {
+		return totalCostOfEstimate;
+	}
+
+	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+		this.totalCostOfEstimate = totalCostOfEstimate;
+	}
+
+	
+
+	
 	
 }
