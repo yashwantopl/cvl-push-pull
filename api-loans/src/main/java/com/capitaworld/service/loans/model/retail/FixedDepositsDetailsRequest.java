@@ -3,10 +3,14 @@ package com.capitaworld.service.loans.model.retail;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author Sanket
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FixedDepositsDetailsRequest implements Serializable {
 
 	/**
@@ -24,6 +28,7 @@ public class FixedDepositsDetailsRequest implements Serializable {
 
 	private Boolean isActive = true;
 
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date maturityDate;
 
 	private Double rate;

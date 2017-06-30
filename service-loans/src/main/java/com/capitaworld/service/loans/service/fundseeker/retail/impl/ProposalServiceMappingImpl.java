@@ -326,7 +326,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						loanAmount+=" NA";
 					}
 					
-					retailProposalDetails.setLoanAmount(loanAmount);
+					retailProposalDetails.setAmount(loanAmount);
 					
 					try {
 						MatchRequest matchRequest=new MatchRequest();
