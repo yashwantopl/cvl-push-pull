@@ -1,21 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.*;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,10 +13,56 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.Assets;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IncomeDetails;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
+import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Title;
 
 @Service
 @Transactional
@@ -329,59 +364,50 @@ public class GuarantorServiceImpl implements GuarantorService {
 				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 				for (GuarantorDetails guarantorDetail : guarantorDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-					if (guarantorDetail.getOccupationId() != null) {
-						profileViewPLResponse.setNatureOfOccupationId(guarantorDetail.getOccupationId());
-						if (guarantorDetail.getOccupationId() == 2) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getCompanyName())) {
-								profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())) {
-								if (guarantorDetail.getEmployedWithId() == 8) {
+					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+					profileViewPLResponse.setNatureOfOccupationId(guarantorDetail.getOccupationId());
+					if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOccupationId())){
+						switch (guarantorDetail.getOccupationId().intValue()) {
+						case 2 : //Salaried
+							profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())){
+								if(guarantorDetail.getEmployedWithId() != 8){
+									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+								}else{
 									profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
-								} else {
-									profileViewPLResponse.setEmployeeWith(
-											EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
 								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 3 || guarantorDetail.getOccupationId() == 4) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEntityName())) {
-								profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())) {
-								if (guarantorDetail.getIndustryTypeId() == 16) {
+							break;
+						case 3 : //Business
+						case 4 : //Self Employed
+							profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())){
+								if(guarantorDetail.getIndustryTypeId() != 16){
+									profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+								}else{
 									profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
-								} else {
-									profileViewPLResponse.setIndustryType(
-											IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
 								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 5) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (guarantorDetail.getSelfEmployedOccupationId() == 10) {
-								profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
-							} else {
-								profileViewPLResponse.setOccupation(
-										Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+							break;
+						case 5 ://Self Employed Professional
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())){
+								if(guarantorDetail.getSelfEmployedOccupationId().intValue() != 10){
+									profileViewPLResponse.setOccupation(Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+								}else{
+									profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
+								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 6) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getLandSize())) {
-								profileViewPLResponse.setLandSize(
-										LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
+							break;
+						case 6://Agriculturist
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())){
+								profileViewPLResponse.setLandSize(LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
 							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())) {
-								profileViewPLResponse.setAlliedActivity(
-										AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())){
+								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
 							}
-						} else if (guarantorDetail.getOccupationId() == 7) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							break;
+						default:
+							break;
 						}
 					}
 
@@ -667,19 +693,19 @@ public class GuarantorServiceImpl implements GuarantorService {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
 						cardsDetailResponse
 								.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber())
-										? cardsDetailRequest.getCardNumber() : null);
+										? cardsDetailRequest.getCardNumber() : "NA");
 						cardsDetailResponse
 								.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName())
-										? cardsDetailRequest.getIssuerName() : null);
+										? cardsDetailRequest.getIssuerName() : "NA");
 						/*
 						 * cardsDetailResponse.setCreditCardTypes(!CommonUtils.
 						 * isObjectNullOrEmpty(cardsDetailRequest.
 						 * getCreditCardTypesId()) ? C
-						 * cardsDetailRequest.getIssuerName() : null);
+						 * cardsDetailRequest.getIssuerName() : "NA");
 						 */
 						cardsDetailResponse.setOutstandingBalance(
 								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
-										? cardsDetailRequest.getOutstandingBalance().toString() : null);
+										? cardsDetailRequest.getOutstandingBalance().toString() : "NA");
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
