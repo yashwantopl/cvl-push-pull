@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -86,6 +87,23 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception{
+		try{
+			List<Long> coAppIds = coApplicantService.getCoAppIds(userId, applicationId);
+			List<Long> guarantorIds = guarantorService.getGuarantorIds(userId, applicationId);
+			JSONObject obj = new JSONObject();
+			obj.put("coAppIds", coAppIds);
+			obj.put("guarantorIds", guarantorIds);
+			return obj;
+		} catch(Exception e){
+			logger.error("Error while getCoapAndGuarIds:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
