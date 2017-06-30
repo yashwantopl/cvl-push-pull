@@ -41,6 +41,7 @@ import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -303,6 +304,29 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setApplicationId(applicationId);
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
+					
+					// get retail loan amount
+					
+					String loanAmount="";
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
+					{
+						loanAmount+=df.format(loanApplicationMaster.getAmount());
+					}
+					else
+					{
+						loanAmount+="NA";
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrencyId()))
+					{
+						loanAmount+=" " +Currency.getById(retailApplicantDetail.getCurrencyId());
+					}
+					else
+					{
+						loanAmount+=" NA";
+					}
+					
+					retailProposalDetails.setLoanAmount(loanAmount);
 					
 					try {
 						MatchRequest matchRequest=new MatchRequest();
