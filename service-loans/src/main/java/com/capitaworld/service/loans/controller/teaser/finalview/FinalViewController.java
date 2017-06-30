@@ -1,17 +1,40 @@
 package com.capitaworld.service.loans.controller.teaser.finalview;
 
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.*;
-import com.capitaworld.service.loans.service.teaser.finalview.*;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import java.util.LinkedHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.CarLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.TermLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
+import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UserTypeRequest;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @RestController
 @RequestMapping("/FinalView")
@@ -37,11 +60,44 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	@Autowired
 	private LapFinalViewService lapFinalViewService;
 	
+	@Autowired
+	private UsersClient usersClient;
+	
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -70,10 +126,40 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/CarLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -102,10 +188,40 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewPersonalLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewPersonalLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -134,10 +250,40 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/LapLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewLapLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewLapLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
-        Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -166,10 +312,40 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 
 	@GetMapping(value = "/WorkingCapital/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> finalViewWrokingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewWrokingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
 		//get user id from http servlet request
-		Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
@@ -198,10 +374,40 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 
 	@GetMapping(value = "/TermLoan/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> finalViewTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
 		LoansResponse loansResponse = new LoansResponse();
 		//get user id from http servlet request
-		Long userId =  (Long)httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 			logger.warn("Invalid data or Requested data not found.", toApplicationId);
