@@ -17,6 +17,16 @@ public class RetailProposalDetails {
 	
 	private String address;
 	
+	private String loanAmount;
+
+	public String getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(String loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+
 	private List<?> listMatches = Collections.emptyList();
 	
 	public List<?> getListMatches() {
