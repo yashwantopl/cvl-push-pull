@@ -17,14 +17,15 @@ public class RetailProposalDetails {
 	
 	private String address;
 	
-	private String loanAmount;
+	private String amount;
 
-	public String getLoanAmount() {
-		return loanAmount;
+
+	public String getAmount() {
+		return amount;
 	}
 
-	public void setLoanAmount(String loanAmount) {
-		this.loanAmount = loanAmount;
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 
 	private List<?> listMatches = Collections.emptyList();
