@@ -76,6 +76,7 @@ public class RetailApplicantController {
 	@RequestMapping(value = "${profile}/getCoapAndGuarIds/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoapAndGuarIds(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
 		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
 			userId = clientId;
@@ -90,6 +91,7 @@ public class RetailApplicantController {
 		try {
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(applicantService.getCoapAndGuarIds(userId, applicationId));
+			logger.info("Successfully get Coap And Guar Ids for retail profile");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting CoapAndGuarIds==>");
