@@ -36,12 +36,12 @@ public class RecentViewController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-//				userId = clientId;
-//			}else{
-//				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			}
+			Long userId = null;
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null) {
 				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -69,12 +69,12 @@ public class RecentViewController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-//				userId = clientId;
-//			}else{
-//				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			}
+			Long userId = null;
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (productId == null) {
 				logger.warn("ID Require to get Recent Profile View Details ==>" + productId);
 				return new ResponseEntity<LoansResponse>(
@@ -101,12 +101,12 @@ public class RecentViewController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-//				userId = clientId;
-//			}else{
-//				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			}
+			Long userId = null;
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null) {
 				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -129,16 +129,16 @@ public class RecentViewController {
 	}
 	
 	@RequestMapping(value = "/getLatestListByProdId/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getLatestListByProdId(@PathVariable("applicationId") Long applicationId,
+	public ResponseEntity<LoansResponse> getLatestListByProdId(@PathVariable("productId") Long applicationId,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-//				userId = clientId;
-//			}else{
-//				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-//			}
+			Long userId = null;
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+				userId = clientId;
+			}else{
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null) {
 				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(

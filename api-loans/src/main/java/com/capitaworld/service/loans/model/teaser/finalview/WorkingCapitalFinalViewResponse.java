@@ -10,7 +10,7 @@ import java.util.List;
  * @author Sanket
  *
  */
-public class WorkingCapitalFinalViewResponse implements Serializable{
+public class WorkingCapitalFinalViewResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	private List<Object> profilePic;
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
-
+	private String isCreditRatingAvailable;
 	/**
 	 * Working Capital Primary Frame Data Fields
 	 */
@@ -60,17 +60,17 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	 * DPR Data Fields
 	 */
 	private Boolean isDprUploaded;
-	private List<BoardOfDirectorsResponse> boardOfDirectorsResponseList ;
-    private List<StrategicAlliancesResponse> strategicAlliancesResponseList; 
-    private List<KeyManagementResponse> keyManagementResponseList;
-    private List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList;
-    private List<TechnologyPositioningResponse> technologyPositioningResponseList;
-    private List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList;
-    private List<CapacityDetailResponse> capacityDetailResponses;
-    private List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponse;
-    private List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponse;
-    private ScotAnalysisDetailResponse scotAnalysisDetailResponses;
-    private DprUserDataDetailResponse dprUserDataDetailResponses;
+	private List<BoardOfDirectorsResponse> boardOfDirectorsResponseList;
+	private List<StrategicAlliancesResponse> strategicAlliancesResponseList;
+	private List<KeyManagementResponse> keyManagementResponseList;
+	private List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList;
+	private List<TechnologyPositioningResponse> technologyPositioningResponseList;
+	private List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList;
+	private List<CapacityDetailResponse> capacityDetailResponses;
+	private List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponse;
+	private List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponse;
+	private ScotAnalysisDetailResponse scotAnalysisDetailResponses;
+	private DprUserDataDetailResponse dprUserDataDetailResponses;
 	private DriverForFutureGrowthResponse driverForFutureGrowthResponse;
 	private List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList;
 
@@ -84,17 +84,17 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	/**
 	 * Working Capital Final Uploads Data Fields
 	 */
-    private List<Object> lastAuditedAnnualReportList;
-    private List<Object> sanctionLetterCopyList;
-    private List<Object> lastITReturnList;
-    private List<Object> netWorthStatementOfdirectorsList;
-    private List<Object> provisionalFinancialsList;
-    private List<Object> panOfDirectorsList;
-    private List<Object> detailedListOfShareholdersList;
-    private List<Object> photoOfDirectorsList;
+	private List<Object> lastAuditedAnnualReportList;
+	private List<Object> sanctionLetterCopyList;
+	private List<Object> lastITReturnList;
+	private List<Object> netWorthStatementOfdirectorsList;
+	private List<Object> provisionalFinancialsList;
+	private List<Object> panOfDirectorsList;
+	private List<Object> detailedListOfShareholdersList;
+	private List<Object> photoOfDirectorsList;
 
 	/**
-	 *Final Working Capital Information
+	 * Final Working Capital Information
 	 */
 	private String technologyType;
 	private String whetherTechnologyIsTied;
@@ -110,14 +110,20 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	private String accountingSystems;
 	private String internalAudit;
 	private String competence;
+	private String majorlyOnGovernment;
+	private String brandAmbassador;
+	private String distributionAndTieUps;
+	private String marketPositioningProduct;
+	private String marketingPositioning;
+	private String existingShareHolder;
+	private String productServicesPerse;
 
 	/**
-	 *Working Capital DPR, CMA, BS Formate
+	 * Working Capital DPR, CMA, BS Formate
 	 */
 	private List<Object> dprList;
 	private List<Object> cmaList;
 	private List<Object> bsFormatList;
-
 
 	public String getOrganisationName() {
 		return organisationName;
@@ -303,6 +309,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		this.shortTermRating = shortTermRating;
 	}
 
+	public String getIsCreditRatingAvailable() {
+		return isCreditRatingAvailable;
+	}
+
+	public void setIsCreditRatingAvailable(String isCreditRatingAvailable) {
+		this.isCreditRatingAvailable = isCreditRatingAvailable;
+	}
+
 	public List<String> getLongTermRating() {
 		return longTermRating;
 	}
@@ -311,12 +325,12 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		this.longTermRating = longTermRating;
 	}
 
-
 	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
 	}
 
-	public void setProposedProductDetailRequestList(List<ProposedProductDetailRequest> proposedProductDetailRequestList) {
+	public void setProposedProductDetailRequestList(
+			List<ProposedProductDetailRequest> proposedProductDetailRequestList) {
 		this.proposedProductDetailRequestList = proposedProductDetailRequestList;
 	}
 
@@ -332,7 +346,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return CreditRatingOrganizationDetailResponse;
 	}
 
-	public void setCreditRatingOrganizationDetailResponse(List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
+	public void setCreditRatingOrganizationDetailResponse(
+			List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
 		CreditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
 	}
 
@@ -348,7 +363,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return promotorBackgroundDetailResponseList;
 	}
 
-	public void setPromotorBackgroundDetailResponseList(List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList) {
+	public void setPromotorBackgroundDetailResponseList(
+			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList) {
 		this.promotorBackgroundDetailResponseList = promotorBackgroundDetailResponseList;
 	}
 
@@ -356,7 +372,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return pastFinancialEstimatesDetailRequestList;
 	}
 
-	public void setPastFinancialEstimatesDetailRequestList(List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList) {
+	public void setPastFinancialEstimatesDetailRequestList(
+			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList) {
 		this.pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList;
 	}
 
@@ -364,7 +381,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return futureFinancialEstimatesDetailRequestList;
 	}
 
-	public void setFutureFinancialEstimatesDetailRequestList(List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimatesDetailRequestList) {
+	public void setFutureFinancialEstimatesDetailRequestList(
+			List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimatesDetailRequestList) {
 		this.futureFinancialEstimatesDetailRequestList = futureFinancialEstimatesDetailRequestList;
 	}
 
@@ -372,7 +390,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return existingProductDetailRequestList;
 	}
 
-	public void setExistingProductDetailRequestList(List<ExistingProductDetailRequest> existingProductDetailRequestList) {
+	public void setExistingProductDetailRequestList(
+			List<ExistingProductDetailRequest> existingProductDetailRequestList) {
 		this.existingProductDetailRequestList = existingProductDetailRequestList;
 	}
 
@@ -380,7 +399,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return securityCorporateDetailRequestList;
 	}
 
-	public void setSecurityCorporateDetailRequestList(List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList) {
+	public void setSecurityCorporateDetailRequestList(
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList) {
 		this.securityCorporateDetailRequestList = securityCorporateDetailRequestList;
 	}
 
@@ -388,7 +408,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return financialArrangementsDetailResponseList;
 	}
 
-	public void setFinancialArrangementsDetailResponseList(List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList) {
+	public void setFinancialArrangementsDetailResponseList(
+			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList) {
 		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
 	}
 
@@ -428,7 +449,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return employeesCategoryBreaksResponseList;
 	}
 
-	public void setEmployeesCategoryBreaksResponseList(List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList) {
+	public void setEmployeesCategoryBreaksResponseList(
+			List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList) {
 		this.employeesCategoryBreaksResponseList = employeesCategoryBreaksResponseList;
 	}
 
@@ -436,7 +458,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return technologyPositioningResponseList;
 	}
 
-	public void setTechnologyPositioningResponseList(List<TechnologyPositioningResponse> technologyPositioningResponseList) {
+	public void setTechnologyPositioningResponseList(
+			List<TechnologyPositioningResponse> technologyPositioningResponseList) {
 		this.technologyPositioningResponseList = technologyPositioningResponseList;
 	}
 
@@ -460,7 +483,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return availabilityProposedPlantDetailResponse;
 	}
 
-	public void setAvailabilityProposedPlantDetailResponse(List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponse) {
+	public void setAvailabilityProposedPlantDetailResponse(
+			List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponse) {
 		this.availabilityProposedPlantDetailResponse = availabilityProposedPlantDetailResponse;
 	}
 
@@ -468,7 +492,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return requirementsAndAvailabilityRawMaterialsDetailResponse;
 	}
 
-	public void setRequirementsAndAvailabilityRawMaterialsDetailResponse(List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponse) {
+	public void setRequirementsAndAvailabilityRawMaterialsDetailResponse(
+			List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponse) {
 		this.requirementsAndAvailabilityRawMaterialsDetailResponse = requirementsAndAvailabilityRawMaterialsDetailResponse;
 	}
 
@@ -500,7 +525,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return projectImplementationScheduleResponseList;
 	}
 
-	public void setProjectImplementationScheduleResponseList(List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList) {
+	public void setProjectImplementationScheduleResponseList(
+			List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList) {
 		this.projectImplementationScheduleResponseList = projectImplementationScheduleResponseList;
 	}
 
@@ -508,7 +534,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return associatedConcernDetailRequests;
 	}
 
-	public void setAssociatedConcernDetailRequests(List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
+	public void setAssociatedConcernDetailRequests(
+			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
 		this.associatedConcernDetailRequests = associatedConcernDetailRequests;
 	}
 
@@ -516,7 +543,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return guarantorsCorporateDetailRequestList;
 	}
 
-	public void setGuarantorsCorporateDetailRequestList(List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList) {
+	public void setGuarantorsCorporateDetailRequestList(
+			List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList) {
 		this.guarantorsCorporateDetailRequestList = guarantorsCorporateDetailRequestList;
 	}
 
@@ -524,7 +552,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 		return monthlyTurnoverDetailRequestList;
 	}
 
-	public void setMonthlyTurnoverDetailRequestList(List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList) {
+	public void setMonthlyTurnoverDetailRequestList(
+			List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList) {
 		this.monthlyTurnoverDetailRequestList = monthlyTurnoverDetailRequestList;
 	}
 
@@ -727,4 +756,62 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	public void setBsFormatList(List<Object> bsFormatList) {
 		this.bsFormatList = bsFormatList;
 	}
+
+	public String getMajorlyOnGovernment() {
+		return majorlyOnGovernment;
+	}
+
+	public void setMajorlyOnGovernment(String majorlyOnGovernment) {
+		this.majorlyOnGovernment = majorlyOnGovernment;
+	}
+
+	public String getBrandAmbassador() {
+		return brandAmbassador;
+	}
+
+	public void setBrandAmbassador(String brandAmbassador) {
+		this.brandAmbassador = brandAmbassador;
+	}
+
+	public String getDistributionAndTieUps() {
+		return distributionAndTieUps;
+	}
+
+	public void setDistributionAndTieUps(String distributionAndTieUps) {
+		this.distributionAndTieUps = distributionAndTieUps;
+	}
+
+	public String getMarketPositioningProduct() {
+		return marketPositioningProduct;
+	}
+
+	public void setMarketPositioningProduct(String marketPositioningProduct) {
+		this.marketPositioningProduct = marketPositioningProduct;
+	}
+
+	public String getMarketingPositioning() {
+		return marketingPositioning;
+	}
+
+	public void setMarketingPositioning(String marketingPositioning) {
+		this.marketingPositioning = marketingPositioning;
+	}
+
+	public String getExistingShareHolder() {
+		return existingShareHolder;
+	}
+
+	public void setExistingShareHolder(String existingShareHolder) {
+		this.existingShareHolder = existingShareHolder;
+	}
+
+	public String getProductServicesPerse() {
+		return productServicesPerse;
+	}
+
+	public void setProductServicesPerse(String productServicesPerse) {
+		this.productServicesPerse = productServicesPerse;
+	}
+
+	
 }

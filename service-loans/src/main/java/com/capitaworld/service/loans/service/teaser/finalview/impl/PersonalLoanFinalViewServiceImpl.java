@@ -1,11 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
@@ -18,6 +12,11 @@ import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalV
 import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -49,11 +48,11 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			RetailFinalViewResponse finalViewResponse = new RetailFinalViewResponse();
 			//applicant final common details
-			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail));
+			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail,applicationMaster.getProductId()));
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting CoApplicant final details");
@@ -61,7 +60,7 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 			
 			//guarantor final common details
 			try {
-				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting Guarantor final details");

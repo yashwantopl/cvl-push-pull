@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.dms.client.DMSClient;
@@ -20,7 +19,6 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.model.common.RecentProfileViewDetailResponse;
 import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -30,13 +28,12 @@ import com.capitaworld.service.loans.service.common.RecentViewService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
-import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -58,7 +55,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	private DMSClient dmsClient;
 	
 	@Autowired
-	private Environment environment; 
+	private OneFormClient oneFormClient; 
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -74,6 +71,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -96,7 +94,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		for(SysNotifyResponse response  : thisWeek){
 			
 			RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
+//			Long fpProductId = response.getProductId();
 			// calling DMS for getting fp profile image path
 			
 			
@@ -240,6 +238,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -278,7 +277,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 				}
 				else
 				{
@@ -286,7 +285,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 				{
-					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -294,7 +293,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -359,7 +358,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 				}
 				else
 				{
@@ -367,7 +366,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 				{
-					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -375,7 +374,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -392,7 +391,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 				// calling DMS for getting fp profile image path
 				
-				DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(applicationId);
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -449,7 +447,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 				}
 				else
 				{
@@ -457,7 +455,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 				{
-					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -465,7 +463,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -514,7 +512,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setApplicationId(response.getApplicationId());
 				thisMonthResp.setProductId(response.getProductId());
 				thisMonthResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisMonthResp);
+				listThisMonth.add(thisMonthResp);
 				
 			}	
 			else{
@@ -530,7 +528,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 				}
 				else
 				{
@@ -538,7 +536,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 				{
-					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -546,7 +544,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -563,7 +561,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 				// calling DMS for getting fp profile image path
 				
-				DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(applicationId);
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -592,7 +589,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				thisMonthResp.setApplicationId(response.getApplicationId());
 				thisMonthResp.setProductId(response.getProductId());
 				thisMonthResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisMonthResp);
+				listThisMonth.add(thisMonthResp);
 			}
 			
 			
@@ -620,7 +617,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 				}
 				else
 				{
@@ -628,7 +625,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 				{
-					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -636,7 +633,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -701,7 +698,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 				}
 				else
 				{
@@ -709,7 +706,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 				{
-					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -717,7 +714,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -734,7 +731,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 				// calling DMS for getting fp profile image path
 				
-				DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(applicationId);
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -780,6 +776,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException {
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -851,6 +848,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws Exception {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
+		request.setClientRefId(userId.toString());
 		NotificationResponse notificationResponse = null;
 		
 		try {
@@ -886,7 +884,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), environment);
+					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient);
 				}
 				else
 				{
@@ -894,7 +892,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
 				{
-					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -902,7 +900,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -967,7 +965,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				String address="";
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 				{
-					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), environment);
+					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
 				}
 				else
 				{
@@ -975,7 +973,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 				{
-					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), environment);
+					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -983,7 +981,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}
 				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 				{
-					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), environment);
+					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 				}
 				else
 				{
@@ -1000,7 +998,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 				// calling DMS for getting fp profile image path
 				
-				DMSClient dmsClient = new DMSClient(environment.getRequiredProperty("dmsURL"));
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(applicationId);
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -1037,7 +1034,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		map.put("recentView",listMonthWeek );
 		detailResponse.setRecentProfileMap(map);
 		
-		return null;
+		return detailResponse;
 	}
 
 }

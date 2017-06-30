@@ -20,7 +20,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.oneform.client.*;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,7 +81,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
 
 	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
@@ -102,26 +101,31 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	private ProductMasterService productMasterService;
 
-	protected static final String DMS_URL = "dmsURL";
-	protected static final String ONE_FORM_URL = "oneForm";
-	protected static final String MATCHES_URL = "matchesURL";
+	@Autowired
+	private DMSClient dmsClient;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
+	@Autowired
+	MatchEngineClient matchEngineClient;
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
-	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId,Integer userType,Long fundProviderUserId) {
+	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
+			Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
-		if(userType!=null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser view viwed by fund provider
+		if (userType != null) {
+			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+																	// view
+																	// viwed by
+																	// fund
+																	// provider
 				Long fpProductMappingId = null;
 				try {
 					fpProductMappingId = productMasterService.getList(fundProviderUserId).get(0).getId();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
-				MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getProperty(MATCHES_URL));
 				try {
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
@@ -139,119 +143,115 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);
-		// set value to response
-		if (corporateApplicantDetail != null)
-			BeanUtils.copyProperties(corporateApplicantDetail, termLoanPrimaryViewResponse);
-		if (corporateApplicantDetail.getConstitutionId() != null)
-			termLoanPrimaryViewResponse
-					.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
-		if (corporateApplicantDetail.getEstablishmentMonth() != null)
-			termLoanPrimaryViewResponse.setEstablishmentMonth(
-					EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			// set value to response
+			if (corporateApplicantDetail != null)
+				BeanUtils.copyProperties(corporateApplicantDetail, termLoanPrimaryViewResponse);
+			if (corporateApplicantDetail.getConstitutionId() != null)
+				termLoanPrimaryViewResponse
+						.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
+			if (corporateApplicantDetail.getEstablishmentMonth() != null)
+				termLoanPrimaryViewResponse.setEstablishmentMonth(
+						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-		// set city
-		List<Long> cityList = new ArrayList<>();
-		cityList.add(corporateApplicantDetail.getRegisteredCityId());
-		CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(
-				environment.getProperty(ONE_FORM_URL));
-		if (cityList != null && !cityList.isEmpty()) {
-			try {
-				OneFormResponse oneFormResponse = cityByCityListIdClient.send(cityList);
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-						.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper
-							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
-				} else {
-					termLoanPrimaryViewResponse.setCity(CommonUtils.NOT_APPLICABLE);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		// set state
-		List<Long> stateList = new ArrayList<>();
-
-		stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-		StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(
-				environment.getProperty(ONE_FORM_URL));
-		if (stateList != null && !stateList.isEmpty()) {
-			try {
-				OneFormResponse oneFormResponse = stateListByStateListIdClient.send(stateList);
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-						.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper
-							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					termLoanPrimaryViewResponse.setState(masterResponse.getValue());
-				} else {
-					termLoanPrimaryViewResponse.setState(CommonUtils.NOT_APPLICABLE);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			// set city
+			List<Long> cityList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityList.add(corporateApplicantDetail.getRegisteredCityId());
+			if (!CommonUtils.isListNullOrEmpty(cityList)) {
+				
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
+						} else {
+							termLoanPrimaryViewResponse.setCity(CommonUtils.NOT_APPLICABLE);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 			}
 
-		}
-		// set country
-		List<Long> countryList = new ArrayList<>();
-
-		countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-		CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(
-				environment.getProperty(ONE_FORM_URL));
-		if (countryList != null && !countryList.isEmpty()) {
-			try {
-				OneFormResponse oneFormResponse = countryByCountryListIdClient.send(countryList);
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-						.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper
-							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
-				} else {
-					termLoanPrimaryViewResponse.setCountry(CommonUtils.NOT_APPLICABLE);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		IndustryClient industryClient = new IndustryClient(environment.getProperty(ONE_FORM_URL));
-		List<Long> keyVerticalFundingId = new ArrayList<>();
-		keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
-		if (keyVerticalFundingId != null && !keyVerticalFundingId.isEmpty()) {
-			try {
-				OneFormResponse oneFormResponse = industryClient.send(keyVerticalFundingId);
-				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-						.getListData();
-				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-					MasterResponse masterResponse = MultipleJSONObjectHelper
-							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-					termLoanPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
-				} else {
-					termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+			// set state
+			List<Long> stateList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+			if (!CommonUtils.isListNullOrEmpty(stateList)){
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setState(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setState(CommonUtils.NOT_APPLICABLE);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 
-			} catch (Exception e) {
-				e.printStackTrace();
+			}
+			// set country
+			List<Long> countryList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+			if (!CommonUtils.isListNullOrEmpty(countryList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setCountry(CommonUtils.NOT_APPLICABLE);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
+			List<Long> keyVerticalFundingId = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+			if (!CommonUtils.isListNullOrEmpty(countryList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
 		}
 		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
 		List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
 		List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
 
-		IndustrySectorSubSectorTeaser industrySectorSubSectorTeaser = new IndustrySectorSubSectorTeaser(
-				environment.getProperty(ONE_FORM_URL));
 		IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
 		industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
 		industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
 		industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
 		if (industryList != null && !industryList.isEmpty()) {
 			try {
-				OneFormResponse oneFormResponse = industrySectorSubSectorTeaser
-						.send(industrySectorSubSectorTeaserRequest);
+				OneFormResponse oneFormResponse = oneFormClient
+						.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 				termLoanPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -263,16 +263,17 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		// set value to response
 		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
-			if (primaryTermLoanDetail.getCurrencyId() != null && primaryTermLoanDetail.getDenominationId() != null)
-				termLoanPrimaryViewResponse
-						.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in "
-								+ Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
+			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
+				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
 			if (primaryTermLoanDetail.getProductId() != null)
-				termLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
+				termLoanPrimaryViewResponse
+						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 
 			if (primaryTermLoanDetail.getModifiedDate() != null)
-				termLoanPrimaryViewResponse.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
-			termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
+				termLoanPrimaryViewResponse
+						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+			termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
+					? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 		// get value of proposed product and set in response
 		try {
@@ -310,10 +311,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
 							.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
 
-				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
-						environment.getProperty(ONE_FORM_URL));
-				OneFormResponse oneFormResponse = ratingOptionClient
-						.send(Long.valueOf(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()));
+				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
+						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
+								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
 				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
 				if (masterResponse != null) {
@@ -467,7 +467,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		}
 
 		// get list of Brochure
-		DMSClient dmsClient = new DMSClient(environment.getProperty(DMS_URL));
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -518,9 +517,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
 					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
 			for (Integer shortTermId : shortTermIdList) {
-				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
-						environment.getProperty(ONE_FORM_URL));
-				OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
 				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
 				if (masterResponse != null) {
@@ -542,9 +540,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
 					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
 			for (Integer shortTermId : longTermIdList) {
-				RatingByRatingIdClient ratingOptionClient = new RatingByRatingIdClient(
-						environment.getProperty(ONE_FORM_URL));
-				OneFormResponse oneFormResponse = ratingOptionClient.send(Long.valueOf(shortTermId.toString()));
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
 				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
 				if (masterResponse != null) {

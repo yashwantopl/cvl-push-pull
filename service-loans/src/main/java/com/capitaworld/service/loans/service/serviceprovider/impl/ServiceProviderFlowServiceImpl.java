@@ -1,14 +1,11 @@
 package com.capitaworld.service.loans.service.serviceprovider.impl;
 
 import java.util.ArrayList;
-
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.SpClientListing;
@@ -29,16 +25,13 @@ import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.serviceprovider.ServiceProviderFlowService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -69,6 +62,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	private DMSClient dmsClient;
 	
 	@Autowired
+	private OneFormClient oneFormClient;
+	
+	@Autowired
 	private DashboardService dashboardService;
 	
 	private static final String USERS_BASE_URL_KEY = "userURL";
@@ -89,10 +85,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				spClientDetail.setClientEmail(clientResponse.getClientEmail());
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity())
 						&& clientResponse.getClientCity() != 0) {
-					CityByCityListIdClient cityListIdClient = new CityByCityListIdClient(environmment.getRequiredProperty(ONEFORM_BASE_URL_KEY));
 					List<Long> cityList = new ArrayList<>();
 					cityList.add((long) clientResponse.getClientCity());
-					OneFormResponse cityResponse = cityListIdClient.send(cityList);
+					OneFormResponse cityResponse = oneFormClient.getCityByCityListId(cityList);
 					List<Map<String, Object>> cityResponseDatalist = (List<Map<String, Object>>) cityResponse.getListData();
 					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(cityResponseDatalist.get(0), MasterResponse.class);
 					if (!CommonUtils.isObjectNullOrEmpty(masterResponse)) {
@@ -105,10 +100,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientState())
 						&& clientResponse.getClientState() != 0) {
-					StateListByStateListIdClient stateListIdClient = new StateListByStateListIdClient(environmment.getRequiredProperty(ONEFORM_BASE_URL_KEY));
 					List<Long> stateList = new ArrayList<>();
 					stateList.add((long) clientResponse.getClientState());
-					OneFormResponse stateResponse = stateListIdClient.send(stateList);
+					OneFormResponse stateResponse = oneFormClient.getStateByStateListId(stateList);
 					List<Map<String, Object>> stateResponseDatalist = (List<Map<String, Object>>) stateResponse.getListData();
 					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(stateResponseDatalist.get(0), MasterResponse.class);
 					if (!CommonUtils.isObjectNullOrEmpty(masterResponse)) {
@@ -121,10 +115,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCountry())
 						&& clientResponse.getClientCountry() != 0) {
-					CountryByCountryListIdClient countryListIdClient = new CountryByCountryListIdClient(environmment.getRequiredProperty(ONEFORM_BASE_URL_KEY));
 					List<Long> countryList = new ArrayList<>();
 					countryList.add((long) clientResponse.getClientCountry());
-					OneFormResponse countryResponse = countryListIdClient.send(countryList);
+					OneFormResponse countryResponse = oneFormClient.getCountryByCountryListId(countryList);
 					List<Map<String, Object>> countryResponseDatalist = (List<Map<String, Object>>) countryResponse.getListData();
 					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(countryResponseDatalist.get(0), MasterResponse.class);
 					if (!CommonUtils.isObjectNullOrEmpty(masterResponse)) {

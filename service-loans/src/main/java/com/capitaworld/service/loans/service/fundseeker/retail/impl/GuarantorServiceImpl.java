@@ -1,21 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.*;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,9 +13,56 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.GuarantorRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.Assets;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IncomeDetails;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
+import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Title;
 
 @Service
 @Transactional
@@ -132,7 +168,17 @@ public class GuarantorServiceImpl implements GuarantorService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
+	
+	@Override
+	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception {
+		try {
+			return guarantorDetailsRepository.getGuarantorIds(applicationId,userId);
+		} catch(Exception e){
+			logger.error("Error while Saving Guarantor Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 	@Override
 	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws Exception {
 		try {
@@ -328,59 +374,50 @@ public class GuarantorServiceImpl implements GuarantorService {
 				List<RetailProfileViewResponse> plResponses = new ArrayList<RetailProfileViewResponse>();
 				for (GuarantorDetails guarantorDetail : guarantorDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-					if (guarantorDetail.getOccupationId() != null) {
-						profileViewPLResponse.setNatureOfOccupationId(guarantorDetail.getOccupationId());
-						if (guarantorDetail.getOccupationId() == 2) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getCompanyName())) {
-								profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())) {
-								if (guarantorDetail.getEmployedWithId() == 8) {
+					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+					profileViewPLResponse.setNatureOfOccupationId(guarantorDetail.getOccupationId());
+					if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOccupationId())){
+						switch (guarantorDetail.getOccupationId().intValue()) {
+						case 2 : //Salaried
+							profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())){
+								if(guarantorDetail.getEmployedWithId() != 8){
+									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+								}else{
 									profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
-								} else {
-									profileViewPLResponse.setEmployeeWith(
-											EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
 								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 3 || guarantorDetail.getOccupationId() == 4) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getEntityName())) {
-								profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
-							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())) {
-								if (guarantorDetail.getIndustryTypeId() == 16) {
+							break;
+						case 3 : //Business
+						case 4 : //Self Employed
+							profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())){
+								if(guarantorDetail.getIndustryTypeId() != 16){
+									profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+								}else{
 									profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
-								} else {
-									profileViewPLResponse.setIndustryType(
-											IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
 								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 5) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (guarantorDetail.getSelfEmployedOccupationId() == 10) {
-								profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
-							} else {
-								profileViewPLResponse.setOccupation(
-										Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+							break;
+						case 5 ://Self Employed Professional
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())){
+								if(guarantorDetail.getSelfEmployedOccupationId().intValue() != 10){
+									profileViewPLResponse.setOccupation(Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+								}else{
+									profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
+								}
 							}
-						} else if (guarantorDetail.getOccupationId() == 6) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getLandSize())) {
-								profileViewPLResponse.setLandSize(
-										LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
+							break;
+						case 6://Agriculturist
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())){
+								profileViewPLResponse.setLandSize(LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
 							}
-							if (!CommonUtil.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())) {
-								profileViewPLResponse.setAlliedActivity(
-										AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
+							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())){
+								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
 							}
-						} else if (guarantorDetail.getOccupationId() == 7) {
-							profileViewPLResponse.setNatureOfOccupation(
-									OccupationNature.getById(guarantorDetail.getOccupationId()).getValue());
+							break;
+						default:
+							break;
 						}
 					}
 
@@ -459,7 +496,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId)
+	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId, int productId)
 			throws Exception {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
@@ -475,7 +512,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setCasteOther(guarantorDetail.getCastOther());
 						}
 					} else {
-						finalViewResponse.setCaste("NA");
+						finalViewResponse.setCaste(null);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getReligion())) {
 						finalViewResponse
@@ -484,68 +521,70 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setReligionOther(guarantorDetail.getReligionOther());
 						}
 					} else {
-						finalViewResponse.setReligion("NA");
+						finalViewResponse.setReligion(null);
 					}
 					finalViewResponse.setBirthPlace(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBirthPlace())
-							? guarantorDetail.getBirthPlace() : "NA");
+							? guarantorDetail.getBirthPlace() : null);
 					finalViewResponse
 							.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getFatherName())
-									? guarantorDetail.getFatherName() : "NA");
+									? guarantorDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMotherName())
-							? guarantorDetail.getMotherName() : "NA");
+							? guarantorDetail.getMotherName() : null);
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId())) {
 						if (guarantorDetail.getStatusId() == 2) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
-											? guarantorDetail.getSpouseName() : "NA");
+											? guarantorDetail.getSpouseName() : null);
 							finalViewResponse.setSpouseEmployed(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?guarantorDetail.getIsSpouseEmployed().toString()
-											: "NA");
+											: null);
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
-											? guarantorDetail.getNoChildren().toString() : "NA");
+											? guarantorDetail.getNoChildren().toString() : null);
 						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoDependent())
-									? guarantorDetail.getNoDependent().toString() : "NA");
+									? guarantorDetail.getNoDependent().toString() : null);
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getHighestQualification())) {
 						finalViewResponse.setHighestQualification(
 								EducationStatusRetailMst.getById(guarantorDetail.getHighestQualification()).getValue());
 						if (guarantorDetail.getHighestQualification() == 6) {
 							finalViewResponse.setHighestQualificationOther(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getHighestQualificationOther())
-											? guarantorDetail.getHighestQualificationOther() : "NA");
+											? guarantorDetail.getHighestQualificationOther() : null);
 						}
 					} else {
-						finalViewResponse.setHighestQualification("NA");
+						finalViewResponse.setHighestQualification(null);
 					}
+
+					SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+					SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
 					finalViewResponse
 							.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getQualifyingYear())
-									? guarantorDetail.getQualifyingYear().getMonth() + "/"
-											+ guarantorDetail.getQualifyingYear().getYear()
-									: "NA");
+									? monthFormat.format(guarantorDetail.getQualifyingYear()) + "/" + yearFormat.format(guarantorDetail.getQualifyingYear())
+							: null);
 					finalViewResponse.setInstituteName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getInstitute())
-							? guarantorDetail.getInstitute() : "NA");
+							? guarantorDetail.getInstitute() : null);
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidenceType())) {
 						finalViewResponse.setResidenceType(
 								ResidenceStatusRetailMst.getById(guarantorDetail.getResidenceType()).getValue());
 						if (guarantorDetail.getResidenceType() == 2) {
 							finalViewResponse
 									.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualRent())
-											? guarantorDetail.getAnnualRent().toString() : "NA");
+											? guarantorDetail.getAnnualRent().toString() : null);
 						}
 					} else {
-						finalViewResponse.setResidenceType("NA");
+						finalViewResponse.setResidenceType(null);
 					}
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidingYear())
-									? guarantorDetail.getResidingYear().toString() : "NA");
+									? guarantorDetail.getResidingYear().toString() : null);
 					finalViewResponse.setMonthsAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidingMonth())
-									? guarantorDetail.getResidingMonth().toString() : "NA");
+									? guarantorDetail.getResidingMonth().toString() : null);
 					finalViewResponse.setWebsite(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getWebsiteAddress())
-							? guarantorDetail.getWebsiteAddress() : "NA");
+							? guarantorDetail.getWebsiteAddress() : null);
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOccupationId())) {
 						if (guarantorDetail.getOccupationId() == 2) {// salaried
 							finalViewResponse
@@ -553,55 +592,55 @@ public class GuarantorServiceImpl implements GuarantorService {
 											!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmploymentStatus())
 													? EmploymentStatusRetailMst
 															.getById(guarantorDetail.getEmploymentStatus()).getValue()
-													: "NA");
+													: null);
 							finalViewResponse.setCurrentIndustry(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentIndustry())
-											? guarantorDetail.getCurrentIndustry() : "NA");
+											? guarantorDetail.getCurrentIndustry() : null);
 							finalViewResponse.setCurrentDepartment(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentDepartment())
-											? guarantorDetail.getCurrentDepartment() : "NA");
+											? guarantorDetail.getCurrentDepartment() : null);
 							finalViewResponse.setCurrentDesignation(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentDesignation())
-											? guarantorDetail.getCurrentDesignation() : "NA");
+											? guarantorDetail.getCurrentDesignation() : null);
 							finalViewResponse.setYearsInCurrentJob(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentJobYear())
-											? guarantorDetail.getCurrentJobYear().toString() : "NA");
+											? guarantorDetail.getCurrentJobYear().toString() : null);
 							finalViewResponse.setMonthsInCurrentJob(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentJobMonth())
-											? guarantorDetail.getCurrentJobMonth().toString() : "NA");
+											? guarantorDetail.getCurrentJobMonth().toString() : null);
 							finalViewResponse.setTotalExperienceInMonths(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTotalExperienceMonth())
-											? guarantorDetail.getTotalExperienceMonth().toString() : "NA");
+											? guarantorDetail.getTotalExperienceMonth().toString() : null);
 							finalViewResponse.setTotalExperienceInYears(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTotalExperienceYear())
-											? guarantorDetail.getTotalExperienceYear().toString() : "NA");
+											? guarantorDetail.getTotalExperienceYear().toString() : null);
 							finalViewResponse.setPreviousExperienceInMonths(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousJobMonth())
-											? guarantorDetail.getPreviousJobMonth().toString() : "NA");
+											? guarantorDetail.getPreviousJobMonth().toString() : null);
 							finalViewResponse.setPreviousExperienceInYears(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousJobYear())
-											? guarantorDetail.getPreviousJobYear().toString() : "NA");
+											? guarantorDetail.getPreviousJobYear().toString() : null);
 							finalViewResponse.setPreviousEmployerName(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersName())
-											? guarantorDetail.getPreviousEmployersName() : "NA");
+											? guarantorDetail.getPreviousEmployersName() : null);
 							finalViewResponse.setPreviousEmployerAddress(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersAddress())
-											? guarantorDetail.getPreviousEmployersAddress() : "NA");
+											? guarantorDetail.getPreviousEmployersAddress() : null);
 						} else if (guarantorDetail.getOccupationId() == 6) {// agriculturist
 							finalViewResponse.setTotalLandOwned(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTotalLandOwned())
-											? guarantorDetail.getTotalLandOwned().toString() : "NA");
+											? guarantorDetail.getTotalLandOwned().toString() : null);
 							finalViewResponse.setPresentlyIrrigated(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPresentlyIrrigated())
-											? guarantorDetail.getPresentlyIrrigated() : "NA");
+											? guarantorDetail.getPresentlyIrrigated() : null);
 							finalViewResponse.setSeasonalIrrigated(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSeasonalIrrigated())
-											? guarantorDetail.getSeasonalIrrigated() : "NA");
+											? guarantorDetail.getSeasonalIrrigated() : null);
 							finalViewResponse.setRainFed(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRainFed())
-									? guarantorDetail.getRainFed() : "NA");
+									? guarantorDetail.getRainFed() : null);
 							finalViewResponse
 									.setUnAttended(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getUnattended())
-											? guarantorDetail.getUnattended() : "NA");
+											? guarantorDetail.getUnattended() : null);
 						} else if (guarantorDetail.getOccupationId() == 3 || guarantorDetail.getOccupationId() == 4
 								|| guarantorDetail.getOccupationId() == 5) {// business/self
 																			// employed
@@ -609,44 +648,44 @@ public class GuarantorServiceImpl implements GuarantorService {
 																			// employed
 							finalViewResponse
 									.setEntityName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNameOfEntity())
-											? guarantorDetail.getNameOfEntity() : "NA");
+											? guarantorDetail.getNameOfEntity() : null);
 							finalViewResponse.setOwnershipType(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOwnershipType())
 											? OwnershipTypeRetailMst.getById(guarantorDetail.getOwnershipType())
 													.getValue()
-											: "NA");
+											: null);
 							finalViewResponse
 									.setOfficeType(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOfficeType())
 											? OfficeTypeRetailMst.getById(guarantorDetail.getOfficeType()).getValue()
-											: "NA");
+											: null);
 							finalViewResponse
 									.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoPartners())
-											? guarantorDetail.getNoPartners().toString() : "NA");
+											? guarantorDetail.getNoPartners().toString() : null);
 							finalViewResponse.setNameOfPartners(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPartnersName())
-											? guarantorDetail.getPartnersName() : "NA");
+											? guarantorDetail.getPartnersName() : null);
 							finalViewResponse.setBusinessEstablishmentYear(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate())
 											? guarantorDetail.getBusinessStartDate().getMonth() + "/"
 													+ guarantorDetail.getBusinessStartDate().getYear()
-											: "NA");
+											: null);
 							finalViewResponse
 									.setShareHolding(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getShareHolding())
-											? guarantorDetail.getShareHolding() : "NA");
+											? guarantorDetail.getShareHolding() : null);
 							finalViewResponse.setAnnualTurnover(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover())
-											? guarantorDetail.getAnnualTurnover().toString() : "NA");
+											? guarantorDetail.getAnnualTurnover().toString() : null);
 							finalViewResponse.setTradeLicenseNo(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseNumber())
-											? guarantorDetail.getTradeLicenseNumber() : "NA");
+											? guarantorDetail.getTradeLicenseNumber() : null);
 							finalViewResponse.setTradeExpiryDate(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseExpiryDate())
 											? guarantorDetail.getTradeLicenseExpiryDate().getMonth() + "/"
 													+ guarantorDetail.getTradeLicenseExpiryDate().getYear()
-											: "NA");
+											: null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPoaHolderName())
-											? guarantorDetail.getPoaHolderName() : "NA");
+											? guarantorDetail.getPoaHolderName() : null);
 						}
 					}
 					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService
@@ -692,13 +731,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
 						assetDetailResponse
 								.setAssetType(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetTypesId())
-										? Assets.getById(assetDetailRequest.getAssetTypesId()).getValue() : "NA");
+										? Assets.getById(assetDetailRequest.getAssetTypesId()).getValue() : null);
 						assetDetailResponse.setAssetDescription(
 								!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetDescription())
-										? assetDetailRequest.getAssetDescription() : "NA");
+										? assetDetailRequest.getAssetDescription() : null);
 						assetDetailResponse
 								.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue())
-										? assetDetailRequest.getAssetValue().toString() : "NA");
+										? assetDetailRequest.getAssetValue().toString() : null);
 						assetDetailResponseList.add(assetDetailResponse);
 					}
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
@@ -710,13 +749,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 						OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
 						detailResponse
 								.setIncomeDetails(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeDetailsId())
-										? IncomeDetails.getById(detailRequest.getIncomeDetailsId()).getValue() : "NA");
+										? IncomeDetails.getById(detailRequest.getIncomeDetailsId()).getValue() : null);
 						detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead())
-								? detailRequest.getIncomeHead() : "NA");
+								? detailRequest.getIncomeHead() : null);
 						detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome())
-								? detailRequest.getGrossIncome().toString() : "NA");
+								? detailRequest.getGrossIncome().toString() : null);
 						detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome())
-								? detailRequest.getNetIncome().toString() : "NA");
+								? detailRequest.getNetIncome().toString() : null);
 						incomeDetailResponseList.add(detailResponse);
 					}
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
@@ -725,31 +764,59 @@ public class GuarantorServiceImpl implements GuarantorService {
 							.getReferenceRetailDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
-					finalViewResponse.setGuarantor_BankACStatments(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-					finalViewResponse.setGuarantor_SalaraySlip(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-					finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(applicantId,
-							DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-					finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-					finalViewResponse.setGuarantor_AddressProof(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
-					finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(applicantId,
-							DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-					finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-					finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
-
+					// set uploads
+					switch (productId) {
+						case 3:// HOME LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_ADDRESS_PROOF));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 7:// PERSONAL LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 12:// CAR_LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_ADDRESS_PROOF));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 13:// LOAN_AGAINST_PROPERTY
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+							break;
+					}
 					finalCommonresponseList.add(finalViewResponse);
 				}
 

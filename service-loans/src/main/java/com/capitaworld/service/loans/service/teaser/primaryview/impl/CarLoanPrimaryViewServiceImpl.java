@@ -16,13 +16,10 @@ import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -30,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,9 +48,6 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     private RetailApplicantDetailRepository applicantRepository;
 
     @Autowired
-    private RetailApplicantService retailApplicantService;
-
-    @Autowired
     private CoApplicantService coApplicantService;
 
     @Autowired
@@ -64,7 +57,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     private PrimaryCarLoanService primaryCarLoanService;
 
     @Autowired
-    private Environment environment;
+    private OneFormClient oneFormClient;
     
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
@@ -90,12 +83,13 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
                 carLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
                 if (applicantDetail.getApplicationId() != null) {
-                    carLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? applicantDetail.getApplicationId().getTenure().toString() : null);
+                    carLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? String.valueOf(applicantDetail.getApplicationId().getTenure()/12) : null);
                     carLoanResponse.setLoanType(applicantDetail.getApplicationId().getProductId() != null ? LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue() : null);
-                    carLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount().toString() : null);
+                    carLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount() : null);
                     carLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : null);
                 }
                 if (applicantDetail.getOccupationId()!=null){
+                    profileViewPLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
                     if (applicantDetail.getOccupationId()==2){
                         profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
@@ -143,7 +137,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 }
 
                 //set pan car
-                profileViewPLResponse.setPan(applicantDetail.getPan() != null ? applicantDetail.getPan() : null);
+                profileViewPLResponse.setPan(applicantDetail.getPan() != null ? applicantDetail.getPan().toUpperCase() : null);
                 profileViewPLResponse.setTitle(applicantDetail.getTitleId() != null ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
                 profileViewPLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
                 profileViewPLResponse.setFirstName(applicantDetail.getFirstName() != null ? applicantDetail.getFirstName() : null);
@@ -155,18 +149,16 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
                 //set office address
                 AddressResponse officeAddress = new AddressResponse();
-                CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeCity = new ArrayList<Long>(1);
                     officeCity.add(applicantDetail.getOfficeCityId());
-                    OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+                    OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
 
                     MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
                     officeAddress.setCity(data.getValue());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeCountry = new ArrayList<Long>(1);
                     Long officeCountryLong = null;
@@ -174,7 +166,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
 
                         officeCountry.add(officeCountryLong);
-                        OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+                        OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
                         officeAddress.setCountry(dataCountry.getValue());
                     }
@@ -182,7 +174,6 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     e.printStackTrace();
 
                 }
-                StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeState = new ArrayList<Long>(1);
                     Long officeStateLong = null;
@@ -190,7 +181,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
 
                         officeState.add(officeStateLong);
-                        OneFormResponse state = stateListByStateListIdClient.send(officeState);
+                        OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
                         officeAddress.setState(dataState.getValue());
                     }
@@ -208,7 +199,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     permanentCity.add(applicantDetail.getPermanentCityId());
-                    OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+                    OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
                     MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                     permanentAddress.setCity(dataCity.getValue());
                 } catch (Exception e) {
@@ -220,7 +211,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     if (applicantDetail.getPermanentCountryId() != null) {
                         permanentCountryLong = Long.valueOf(applicantDetail.getPermanentCountryId().toString());
                         permanentCountry.add(permanentCountryLong);
-                        OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+                        OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
                         permanentAddress.setCountry(dataCountry.getValue());
                     }
@@ -233,7 +224,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     if (applicantDetail.getPermanentStateId() != null) {
                         permanentStateLong = Long.valueOf(applicantDetail.getPermanentStateId().toString());
                         permanentState.add(permanentStateLong);
-                        OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+                        OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
                         permanentAddress.setState(dataState.getValue());
                     }
@@ -298,8 +289,10 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             PrimaryCarLoanDetailRequest primaryCarLoanDetailRequest = primaryCarLoanService.get(toApplicationId, userId);
             BeanUtils.copyProperties(primaryCarLoanDetailRequest, carLoanResponse);
             carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
-            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate()!=null?DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()):null);
-            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()!=null?DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()):null);
+            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
+            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
+            carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
+            carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {
             e.printStackTrace();
         }

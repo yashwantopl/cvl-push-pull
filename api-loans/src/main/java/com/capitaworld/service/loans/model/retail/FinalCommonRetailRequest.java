@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.model.retail;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class FinalCommonRetailRequest {
 
 	private Long id;
@@ -28,6 +30,8 @@ public class FinalCommonRetailRequest {
 	private Integer noDependent;
 	private Integer highestQualification;
 	private String highestQualificationOther;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date qualifyingYear;
 	private String institute;
 	private Integer residenceType;
@@ -35,6 +39,8 @@ public class FinalCommonRetailRequest {
 	private Double annualTurnover;
 	private Integer noPartners;
 	private Date birthDate;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date businessStartDate;
 	private String currentDepartment;
 	private String currentDesignation;
@@ -63,6 +69,8 @@ public class FinalCommonRetailRequest {
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
 	private Double totalLandOwned;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date tradeLicenseExpiryDate;
 	private String tradeLicenseNumber;
 	private String unattended;

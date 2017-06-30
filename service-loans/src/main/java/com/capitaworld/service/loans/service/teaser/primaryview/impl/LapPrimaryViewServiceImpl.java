@@ -19,16 +19,13 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +49,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 	private GuarantorService guarantorService;
 	
 	@Autowired
-	private Environment environment;
+	private OneFormClient oneFormClient;
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -72,7 +69,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		LapResponse lapResponse = new LapResponse();
 		//applicant
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
-        System.out.println("User Id"+applicationMaster.getUserId());
         try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {
@@ -153,12 +149,11 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				
 				//set office address
                 AddressResponse officeAddress = new AddressResponse();
-                CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeCity = new ArrayList<Long>(1);
                     if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCityId())){
                     	officeCity.add(applicantDetail.getOfficeCityId());
-                        OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+                        OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
                         MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(data)){
                         	officeAddress.setCity(data.getValue());	
@@ -171,7 +166,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeCountry = new ArrayList<Long>(1);
                     Long officeCountryLong = null;
@@ -179,7 +173,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
 
                         officeCountry.add(officeCountryLong);
-                        OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+                        OneFormResponse country = oneFormClient.getCityByCityListId(officeCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                         	officeAddress.setCountry(dataCountry.getValue());
@@ -193,7 +187,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     e.printStackTrace();
 
                 }
-                StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> officeState = new ArrayList<Long>(1);
                     Long officeStateLong = null;
@@ -201,7 +194,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
 
                         officeState.add(officeStateLong);
-                        OneFormResponse state = stateListByStateListIdClient.send(officeState);
+                        OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
                         if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                         	officeAddress.setState(dataState.getValue());	
@@ -226,7 +219,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCityId())) {
                     	permanentCity.add(applicantDetail.getPermanentCityId());
-                        OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+                        OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
                         MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	permanentAddress.setCity(dataCity.getValue());	
@@ -245,7 +238,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId())) {
                         permanentCountryLong = Long.valueOf(applicantDetail.getPermanentCountryId().toString());
                         permanentCountry.add(permanentCountryLong);
-                        OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+                        OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	permanentAddress.setCountry(dataCountry.getValue());	
@@ -264,7 +257,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
                         permanentStateLong = Long.valueOf(applicantDetail.getPermanentStateId().toString());
                         permanentState.add(permanentStateLong);
-                        OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+                        OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	permanentAddress.setState(dataState.getValue());	
@@ -284,9 +277,9 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 lapResponse.setPermanentAddress(permanentAddress);
 
 
-				profileViewLAPResponse.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+				profileViewLAPResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
-
+                lapResponse.setLoanType(applicationMaster.getProductId()!=null?LoanType.getById(applicationMaster.getProductId()).getValue():null);
 				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");
 
 				profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
@@ -360,12 +353,11 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : "NA");
 			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : "NA");
 			
-			CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
             try {
                 List<Long> officeCity = new ArrayList<Long>(1);
                 if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressCity())){
                 	officeCity.add(Long.valueOf(loanDetail.getAddressCity().toString()));
-                    OneFormResponse formResponse = cityByCityListIdClient.send(officeCity);
+                    OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
                     MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
                     if(!CommonUtils.isObjectNullOrEmpty(data)){
                     	lapResponse.setPropertyCity(data.getValue());
@@ -378,7 +370,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
             try {
                 List<Long> officeCountry = new ArrayList<Long>(1);
                 Long officeCountryLong = null;
@@ -386,7 +377,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     officeCountryLong = Long.valueOf(loanDetail.getAddressCountry().toString());
 
                     officeCountry.add(officeCountryLong);
-                    OneFormResponse country = countryByCountryListIdClient.send(officeCountry);
+                    OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
                     MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
                     if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                     	lapResponse.setPropertyCountry(dataCountry.getValue());
@@ -400,7 +391,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 e.printStackTrace();
 
             }
-            StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
             try {
                 List<Long> officeState = new ArrayList<Long>(1);
                 Long officeStateLong = null;
@@ -408,7 +398,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     officeStateLong = Long.valueOf(loanDetail.getAddressState().toString());
 
                     officeState.add(officeStateLong);
-                    OneFormResponse state = stateListByStateListIdClient.send(officeState);
+                    OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
                     MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
                     if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                     	lapResponse.setPropertyState(dataState.getValue());

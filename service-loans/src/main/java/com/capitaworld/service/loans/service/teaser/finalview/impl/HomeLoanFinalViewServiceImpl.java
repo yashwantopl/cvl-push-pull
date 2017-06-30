@@ -15,9 +15,7 @@ import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonA
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.CityByCityListIdClient;
-import com.capitaworld.service.oneform.client.CountryByCountryListIdClient;
-import com.capitaworld.service.oneform.client.StateListByStateListIdClient;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.PropertyUsedSubType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -60,6 +58,9 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 	private Environment environment;
 	
 	@Autowired
+	private OneFormClient oneFormClient;
+	
+	@Autowired
 	private RetailFinalCommonApplicantService finalCommonService;
 	
 	@Override
@@ -70,11 +71,11 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			RetailFinalViewResponse finalViewResponse = new RetailFinalViewResponse();
 			//applicant final common details
-			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail));
+			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail,applicationMaster.getProductId()));
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting CoApplicant final details");
@@ -82,7 +83,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 			
 			//guarantor final common details
 			try {
-				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting Guarantor final details");
@@ -107,12 +108,11 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 				homeLoanFinalViewResponse.setPropStreetName(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressStreet()) ? finalHomeLoanDetails.getPropertyAddressStreet() : "NA");
 				homeLoanFinalViewResponse.setPropPinCode(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPincode()) ? finalHomeLoanDetails.getPropertyAddressPincode().toString() : "NA");
 				
-                CityByCityListIdClient cityByCityListIdClient = new CityByCityListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressCity())) {
                     	permanentCity.add(Long.valueOf(finalHomeLoanDetails.getPropertyAddressCity()));
-                        OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+                        OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
                         MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	homeLoanFinalViewResponse.setPropCity(dataCity.getValue());
@@ -125,14 +125,13 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                 } catch (Exception e) {
 
                 }
-                CountryByCountryListIdClient countryByCountryListIdClient = new CountryByCountryListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> permanentCountry = new ArrayList<Long>(1);
                     Long permanentCountryLong = null;
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressCountry())) {
                         permanentCountryLong = Long.valueOf(finalHomeLoanDetails.getPropertyAddressCountry());
                         permanentCountry.add(permanentCountryLong);
-                        OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+                        OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	homeLoanFinalViewResponse.setPropCountry(dataCountry.getValue());
@@ -145,14 +144,13 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                 } catch (Exception e) {
 
                 }
-                StateListByStateListIdClient stateListByStateListIdClient = new StateListByStateListIdClient(environment.getRequiredProperty(CommonUtils.ONE_FORM));
                 try {
                     List<Long> permanentState = new ArrayList<Long>(1);
                     Long permanentStateLong = null;
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressState())) {
                         permanentStateLong = Long.valueOf(finalHomeLoanDetails.getPropertyAddressState());
                         permanentState.add(permanentStateLong);
-                        OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+                        OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	homeLoanFinalViewResponse.setPropState(dataState.getValue());
@@ -178,7 +176,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     List<Long> permanentCity = new ArrayList<Long>(1);
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressCity())) {
                     	permanentCity.add(Long.valueOf(finalHomeLoanDetails.getSellersAddressCity()));
-                        OneFormResponse formResponsePermanentCity = cityByCityListIdClient.send(permanentCity);
+                        OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
                         MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	homeLoanFinalViewResponse.setSellerCity(dataCity.getValue());
@@ -197,7 +195,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressState())) {
                         permanentStateLong = Long.valueOf(finalHomeLoanDetails.getSellersAddressState());
                         permanentState.add(permanentStateLong);
-                        OneFormResponse statePermanent = stateListByStateListIdClient.send(permanentState);
+                        OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
                         MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	homeLoanFinalViewResponse.setSellerState(dataState.getValue());
@@ -217,7 +215,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                     if (!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getSellersAddressCountry())) {
                         permanentCountryLong = Long.valueOf(finalHomeLoanDetails.getSellersAddressCountry());
                         permanentCountry.add(permanentCountryLong);
-                        OneFormResponse countryPermanent = countryByCountryListIdClient.send(permanentCountry);
+                        OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	homeLoanFinalViewResponse.setSellerCountry(dataCountry.getValue());
