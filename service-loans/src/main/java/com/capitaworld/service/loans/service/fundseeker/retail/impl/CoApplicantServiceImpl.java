@@ -457,7 +457,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId)
+	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId,int productId)
 			throws Exception {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
@@ -728,30 +728,60 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
 					// for uploaded documents
-					finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-					finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-					finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId,
-							DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-					finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-					finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
-					finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-					finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-					finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_CO_APPLICANT,
-							DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+
+					// set uploads
+					switch (productId) {
+						case 3:// HOME LOAN
+							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_ADDRESS_PROOF));
+							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 7:// PERSONAL LOAN
+							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARDANY_1));
+							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 12:// CAR_LOAN
+							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_ADDRESS_PROOF));
+							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 13:// LOAN_AGAINST_PROPERTY
+							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+							break;
+					}
 
 					finalCommonresponseList.add(finalViewResponse);
 				}
