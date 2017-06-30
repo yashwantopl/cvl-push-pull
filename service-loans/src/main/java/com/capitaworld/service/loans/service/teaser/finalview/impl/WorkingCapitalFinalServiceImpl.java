@@ -1,5 +1,33 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -8,106 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.BoardOfDirectorsResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.DprUserDataDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.KeyManagementResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.ProjectImplementationScheduleResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.RequirementsAndAvailabilityRawMaterialsDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.RevenueAndOrderBookResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.StrategicAlliancesResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManagementDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImplementationScheduleDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysisDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinalWorkingCapitalLoanService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
-import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.AccountingSystems;
-import com.capitaworld.service.oneform.enums.Competence;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.CreditRatingFund;
-import com.capitaworld.service.oneform.enums.CreditRatingTerm;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.Denomination;
-import com.capitaworld.service.oneform.enums.EnvironmentCertification;
-import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.IndiaDistributionNetwork;
-import com.capitaworld.service.oneform.enums.InternalAudit;
-import com.capitaworld.service.oneform.enums.MarketPosition;
-import com.capitaworld.service.oneform.enums.MarketPositioningTop;
-import com.capitaworld.service.oneform.enums.MarketShareTurnover;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.OverseasNetwork;
-import com.capitaworld.service.oneform.enums.RatingAgency;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.TechnologyPatented;
-import com.capitaworld.service.oneform.enums.TechnologyRequiresUpgradation;
-import com.capitaworld.service.oneform.enums.Title;
-import com.capitaworld.service.oneform.enums.TypeTechnology;
-import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
-
 /**
  * Created by dhaval on 25-May-17.
  */
@@ -115,516 +43,643 @@ import com.capitaworld.service.users.model.UsersRequest;
 @Transactional
 public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalService {
 
-    @Autowired
-    private BoardOfDirectorsDetailRepository boardOfDirectorsDetailRepository;
+	@Autowired
+	private BoardOfDirectorsDetailRepository boardOfDirectorsDetailRepository;
 
-    @Autowired
-    private StrategicAlliancesDetailRepository strategicAlliancesDetailRepository;
+	@Autowired
+	private StrategicAlliancesDetailRepository strategicAlliancesDetailRepository;
 
-    @Autowired
-    private KeyManagementDetailRepository keyManagementDetailRepository;
+	@Autowired
+	private KeyManagementDetailRepository keyManagementDetailRepository;
 
-    @Autowired
-    private EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository;
+	@Autowired
+	private EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository;
 
-    @Autowired
-    private TechnologyPositioningDetailRepository technologyPositioningDetailRepository;
+	@Autowired
+	private TechnologyPositioningDetailRepository technologyPositioningDetailRepository;
 
-    @Autowired
-    private RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository;
+	@Autowired
+	private RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository;
 
-    @Autowired
-    private CapacityDetailRepository capacityDetailRepository;
+	@Autowired
+	private CapacityDetailRepository capacityDetailRepository;
 
-    @Autowired
-    private AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository;
+	@Autowired
+	private AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository;
 
-    @Autowired
-    private RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository;
+	@Autowired
+	private RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository;
 
-    @Autowired
-    private ScotAnalysisDetailRepository scotAnalysisDetailRepository;
+	@Autowired
+	private ScotAnalysisDetailRepository scotAnalysisDetailRepository;
 
-    @Autowired
-    private DprUserDataDetailRepository dprUserDataDetailRepository;
+	@Autowired
+	private DprUserDataDetailRepository dprUserDataDetailRepository;
 
-    @Autowired
-    private DocumentManagementService documentManagementService;
+	@Autowired
+	private DocumentManagementService documentManagementService;
 
-    @Autowired
-    private DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository;
+	@Autowired
+	private DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository;
 
-    @Autowired
-    private ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository;
+	@Autowired
+	private ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository;
 
-    @Autowired
-    private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
-    @Autowired
-    private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
+	@Autowired
+	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
 
-    @Autowired
-    private ProposedProductDetailsService proposedProductDetailsService;
+	@Autowired
+	private ProposedProductDetailsService proposedProductDetailsService;
 
-    @Autowired
-    private AchievmentDetailsService achievmentDetailsService;
+	@Autowired
+	private AchievmentDetailsService achievmentDetailsService;
 
-    @Autowired
-    private CreditRatingOrganizationDetailsService creditRatingOrganizationDetailsService;
+	@Autowired
+	private CreditRatingOrganizationDetailsService creditRatingOrganizationDetailsService;
 
-    @Autowired
-    private OwnershipDetailsService ownershipDetailsService;
+	@Autowired
+	private OwnershipDetailsService ownershipDetailsService;
 
-    @Autowired
-    private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
+	@Autowired
+	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
 
-    @Autowired
-    private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
+	@Autowired
+	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
 
-    @Autowired
-    private ExistingProductDetailsService existingProductDetailsService;
+	@Autowired
+	private ExistingProductDetailsService existingProductDetailsService;
 
-    @Autowired
-    private SecurityCorporateDetailsService securityCorporateDetailsService;
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
 
-    @Autowired
-    private FinancialArrangementDetailsService financialArrangementDetailsService;
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
-    @Autowired
-    private IndustrySectorRepository industrySectorRepository;
+	@Autowired
+	private IndustrySectorRepository industrySectorRepository;
 
-    @Autowired
-    private SubSectorRepository subSectorRepository;
+	@Autowired
+	private SubSectorRepository subSectorRepository;
 
-    @Autowired
-    private AssociatedConcernDetailService associatedConcernDetailService;
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService;
 
-    @Autowired
-    private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
 
-    @Autowired
-    private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
 
-    @Autowired
-    private FinalWorkingCapitalLoanService finalWorkingCapitalLoanService;
+	@Autowired
+	private FinalWorkingCapitalLoanService finalWorkingCapitalLoanService;
 
-    @Autowired
-    private LoanApplicationRepository loanApplicationRepository;
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
-    @Autowired
-    private OneFormClient oneFormClient;
-    
-    @Autowired
-    private UsersClient usersClient;
+	@Autowired
+	private OneFormClient oneFormClient;
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-    private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
+	@Autowired
+	private UsersClient usersClient;
 
-    @Override
-    public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId) {
-        LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
-        Long userId = applicationMaster.getUserId();
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
 
-        //create response object
-        WorkingCapitalFinalViewResponse response = new WorkingCapitalFinalViewResponse();
+	@Override
+	public WorkingCapitalFinalViewResponse getWorkingCapitalFinalViewDetails(Long toApplicationId) {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
+		Long userId = applicationMaster.getUserId();
 
-        List<Object> dprList = new ArrayList<Object>();
-        //get list of uploads of final and profile picture
+		// create response object
+		WorkingCapitalFinalViewResponse response = new WorkingCapitalFinalViewResponse();
+
+		List<Object> dprList = new ArrayList<Object>();
+		// get list of uploads of final and profile picture
+		try {
+			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
+			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
+			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
+			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
+			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
+			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
+			response.setPanOfDirectorsList(
+					documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,
+							DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
+			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
+			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,
+					Long.valueOf(DocumentAlias.WC_DPR_OUR_FORMAT));
+			response.setDprList(dprList);
+			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
+			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,
+					DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		// if DPR our format not upload no need get data of DPR
+		if (dprList.size() > 0) {
+			response.setIsDprUploaded(true);
+			List<BoardOfDirectorsResponse> boardOfDirectorsResponseList = boardOfDirectorsDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<StrategicAlliancesResponse> strategicAlliancesResponseList = strategicAlliancesDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<KeyManagementResponse> keyManagementResponseList = keyManagementDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList = employeesCategoryBreaksDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<TechnologyPositioningResponse> technologyPositioningResponseList = technologyPositioningDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList = revenueAndOrderBookDetailRepository
+					.listByApplicationId(toApplicationId);
+			DriverForFutureGrowthResponse driverForFutureGrowthResponse = driverForFutureGrowthDetailRepository
+					.listByApplicationId(toApplicationId).size() > 0
+							? driverForFutureGrowthDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
+			List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList = projectImplementationScheduleDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<CapacityDetailResponse> capacityDetailResponses = capacityDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponses = availabilityProposedPlantDetailRepository
+					.listByApplicationId(toApplicationId);
+			List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponses = requirementsAndAvailabilityRawMaterialsDetailRepository
+					.listByApplicationId(toApplicationId);
+			ScotAnalysisDetailResponse scotAnalysisDetailResponses = scotAnalysisDetailRepository
+					.listByApplicationId(toApplicationId).size() > 0
+							? scotAnalysisDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
+			DprUserDataDetailResponse dprUserDataDetailResponses = dprUserDataDetailRepository
+					.listByApplicationId(toApplicationId).size() > 0
+							? dprUserDataDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
+
+			response.setAvailabilityProposedPlantDetailResponse(availabilityProposedPlantDetailResponses);
+			response.setBoardOfDirectorsResponseList(boardOfDirectorsResponseList);
+			response.setCapacityDetailResponses(capacityDetailResponses);
+			response.setDprUserDataDetailResponses(dprUserDataDetailResponses);
+			response.setEmployeesCategoryBreaksResponseList(employeesCategoryBreaksResponseList);
+			response.setKeyManagementResponseList(keyManagementResponseList);
+			response.setRequirementsAndAvailabilityRawMaterialsDetailResponse(
+					requirementsAndAvailabilityRawMaterialsDetailResponses);
+			response.setRevenueAndOrderBookResponseList(revenueAndOrderBookResponseList);
+			response.setScotAnalysisDetailResponses(scotAnalysisDetailResponses);
+			response.setStrategicAlliancesResponseList(strategicAlliancesResponseList);
+			response.setTechnologyPositioningResponseList(technologyPositioningResponseList);
+			response.setProjectImplementationScheduleResponseList(projectImplementationScheduleResponseList);
+			response.setDriverForFutureGrowthResponse(driverForFutureGrowthResponse);
+
+			// set final working capital information
+
+		} else {
+			response.setIsDprUploaded(false);
+		}
+		// final information
+		try {
+			FinalWorkingCapitalLoanRequest finalWorkingCapitalLoanRequest = finalWorkingCapitalLoanService.get(userId,
+					toApplicationId);
+
+			if (!CommonUtils.isObjectNullOrEmpty(finalWorkingCapitalLoanRequest)) {
+				response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null
+						? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue()
+						: null);
+				response.setTechnologyPatented(
+						finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented
+								.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
+				response.setTechnologyRequiresUpgradation(
+						finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null
+								? TechnologyRequiresUpgradation
+										.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId())
+										.getValue()
+								: null);
+				response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
+						? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue()
+						: null);
+				response.setMarketPositioningTop(MarketPositioningTop
+						.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
+				response.setMarketShareTurnover(
+						finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover
+								.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
+				response.setIndiaDistributionNetwork(
+						finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null
+								? IndiaDistributionNetwork
+										.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId())
+										.getValue()
+								: null);
+				response.setEnvironmentCertification(
+						finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null
+								? EnvironmentCertification
+										.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId())
+										.getValue()
+								: null);
+				response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null
+						? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue()
+						: null);
+				response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null
+						? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
+				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null
+						? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
+				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
+					response.setIsIsoCertified("Yes");
+				} else {
+					response.setIsIsoCertified("No");
+				}
+				if (finalWorkingCapitalLoanRequest.getWhetherTechnologyIsTied()) {
+					response.setWhetherTechnologyIsTied("Yes");
+				} else {
+					response.setWhetherTechnologyIsTied("No");
+				}
+				// set overseas
+				List<Integer> overseasIds = finalWorkingCapitalLoanRequest.getOverseasNetworkIds();
+				String overseasString = "";
+				for (int id : overseasIds) {
+					overseasString += OverseasNetwork.getById(id).getValue() + ",";
+				}
+				response.setOverseasNetwork(overseasString);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// set registered email address and registered contact number
+		UserResponse userResponse = usersClient.getEmailMobile(userId);
+		try {
+			UsersRequest usersRequest = MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+			if (usersRequest != null) {
+				response.setRegisteredEmailAddress(usersRequest.getEmail());
+				response.setRegisteredContactNumber(usersRequest.getMobile());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// get details of CorporateApplicantDetail
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.getByApplicationAndUserId(userId, toApplicationId);
+		// set value to response
+		if (corporateApplicantDetail != null) {
+			BeanUtils.copyProperties(corporateApplicantDetail, response);
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()))
+				response.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentMonth()))
+				response.setEstablishmentMonth(
+						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
+
+			// set Establishment year
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear())) {
+				try {
+					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(
+							CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) ? null
+									: corporateApplicantDetail.getEstablishmentYear().longValue());
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						response.setEstablishmentYear(masterResponse.getValue());
+					} else {
+						response.setEstablishmentYear("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			// set city
+			List<Long> cityList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+			cityList.add(corporateApplicantDetail.getRegisteredCityId());
+			if(!CommonUtils.isListNullOrEmpty(cityList))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					response.setCity(masterResponse.getValue());
+				} else {
+					response.setCity("NA");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+
+			// set state
+			List<Long> stateList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+			stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					response.setState(masterResponse.getValue());
+				} else {
+					response.setState("NA");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+			// set country
+			List<Long> countryList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+			countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					response.setCountry(masterResponse.getValue());
+				} else {
+					response.setCountry("NA");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+			List<Long> keyVerticalFundingId = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+			if(!CommonUtils.isListNullOrEmpty(keyVerticalFundingId))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					response.setKeyVericalFunding(masterResponse.getValue());
+				} else {
+					response.setKeyVericalFunding("NA");
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+		}
+		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
+		List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
+		List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
+
+		IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
+		industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
+		industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
+		industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
+		try {
+			OneFormResponse oneFormResponse = oneFormClient
+					.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
+			response.setIndustrySector(oneFormResponse.getListData());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// get value of working capital data
+		PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository
+				.getByApplicationAndUserId(toApplicationId, userId);
+		if (primaryWorkingCapitalLoanDetail != null) {
+			// set value to response
+			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
+			response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
+							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
+			response.setLoanType(primaryWorkingCapitalLoanDetail.getName());
+			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
+			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
+			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
+            response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
+		}
+
+		// get value of proposed product and set in response
+		try {
+			response.setProposedProductDetailRequestList(
+					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Proposed Product {}", e);
+		}
+
+		// get value of Existing product and set in response
+		try {
+			response.setExistingProductDetailRequestList(
+					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Existing Product {}", e);
+		}
+
+		// get value of achievement details and set in response
+		try {
+			response.setAchievementDetailList(
+					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Achievement Details {}", e);
+		}
+
+		// get value of Credit Rating and set in response
         try {
-            response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
-            response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
-            response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
-            response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
-            response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
-            response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
-            response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
-            response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
-            response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
-            dprList = documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_DPR_OUR_FORMAT));
-            response.setDprList(dprList);
-            response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
-            response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)));
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-
-        //if DPR our format not upload no need get data of DPR
-        if (dprList.size()>0) {
-            response.setIsDprUploaded(true);
-            List<BoardOfDirectorsResponse> boardOfDirectorsResponseList = boardOfDirectorsDetailRepository.listByApplicationId(toApplicationId);
-            List<StrategicAlliancesResponse> strategicAlliancesResponseList = strategicAlliancesDetailRepository.listByApplicationId(toApplicationId);
-            List<KeyManagementResponse> keyManagementResponseList = keyManagementDetailRepository.listByApplicationId(toApplicationId);
-            List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList = employeesCategoryBreaksDetailRepository.listByApplicationId(toApplicationId);
-            List<TechnologyPositioningResponse> technologyPositioningResponseList = technologyPositioningDetailRepository.listByApplicationId(toApplicationId);
-            List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList = revenueAndOrderBookDetailRepository.listByApplicationId(toApplicationId);
-            DriverForFutureGrowthResponse driverForFutureGrowthResponse = driverForFutureGrowthDetailRepository.listByApplicationId(toApplicationId).size() > 0 ? driverForFutureGrowthDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-            List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList = projectImplementationScheduleDetailRepository.listByApplicationId(toApplicationId);
-            List<CapacityDetailResponse> capacityDetailResponses = capacityDetailRepository.listByApplicationId(toApplicationId);
-            List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponses = availabilityProposedPlantDetailRepository.listByApplicationId(toApplicationId);
-            List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponses = requirementsAndAvailabilityRawMaterialsDetailRepository.listByApplicationId(toApplicationId);
-            ScotAnalysisDetailResponse scotAnalysisDetailResponses = scotAnalysisDetailRepository.listByApplicationId(toApplicationId).size() > 0 ? scotAnalysisDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-            DprUserDataDetailResponse dprUserDataDetailResponses = dprUserDataDetailRepository.listByApplicationId(toApplicationId).size() > 0 ? dprUserDataDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-
-            response.setAvailabilityProposedPlantDetailResponse(availabilityProposedPlantDetailResponses);
-            response.setBoardOfDirectorsResponseList(boardOfDirectorsResponseList);
-            response.setCapacityDetailResponses(capacityDetailResponses);
-            response.setDprUserDataDetailResponses(dprUserDataDetailResponses);
-            response.setEmployeesCategoryBreaksResponseList(employeesCategoryBreaksResponseList);
-            response.setKeyManagementResponseList(keyManagementResponseList);
-            response.setRequirementsAndAvailabilityRawMaterialsDetailResponse(requirementsAndAvailabilityRawMaterialsDetailResponses);
-            response.setRevenueAndOrderBookResponseList(revenueAndOrderBookResponseList);
-            response.setScotAnalysisDetailResponses(scotAnalysisDetailResponses);
-            response.setStrategicAlliancesResponseList(strategicAlliancesResponseList);
-            response.setTechnologyPositioningResponseList(technologyPositioningResponseList);
-            response.setProjectImplementationScheduleResponseList(projectImplementationScheduleResponseList);
-            response.setDriverForFutureGrowthResponse(driverForFutureGrowthResponse);
-
-            //set final working capital information
-           
-
-        }else{
-            response.setIsDprUploaded(false);
-        }
-        //final information
-        try {
-            FinalWorkingCapitalLoanRequest finalWorkingCapitalLoanRequest = finalWorkingCapitalLoanService.get(userId, toApplicationId);
-            response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue() : null);
-            response.setTechnologyPatented(finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
-            response.setTechnologyRequiresUpgradation(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
-            response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
-            response.setMarketPositioningTop(MarketPositioningTop.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
-            response.setMarketShareTurnover(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
-            response.setIndiaDistributionNetwork(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null ? IndiaDistributionNetwork.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId()).getValue() : null);
-            response.setEnvironmentCertification(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null ? EnvironmentCertification.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId()).getValue() : null);
-            response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null ? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue() : null);
-            response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
-            response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
-            if (finalWorkingCapitalLoanRequest.getIsIsoCertified()){
-                response.setIsIsoCertified("Yes");
-            }else{
-                response.setIsIsoCertified("No");
-            }
-            if (finalWorkingCapitalLoanRequest.getWhetherTechnologyIsTied()){
-                response.setWhetherTechnologyIsTied("Yes");
-            }else{
-                response.setWhetherTechnologyIsTied("No");
-            }
-            //set overseas
-            List<Integer> overseasIds = finalWorkingCapitalLoanRequest.getOverseasNetworkIds();
-            String overseasString ="";
-            for (int id:overseasIds){
-               overseasString+=OverseasNetwork.getById(id).getValue()+",";
-            }
-            response.setOverseasNetwork(overseasString);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //set registered email address and registered contact number
-        UserResponse userResponse = usersClient.getEmailMobile(userId);
-        try {
-            UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
-            if (usersRequest!=null) {
-                response.setRegisteredEmailAddress(usersRequest.getEmail());
-                response.setRegisteredContactNumber(usersRequest.getMobile());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        //get details of CorporateApplicantDetail
-        CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, toApplicationId);
-        //set value to response
-        if (corporateApplicantDetail != null) {
-            BeanUtils.copyProperties(corporateApplicantDetail, response);
-            response.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
-            response.setEstablishmentMonth(EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
-
-            //set Establishment year
-            try {
-            	OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getEstablishmentYear()) ? null : corporateApplicantDetail.getEstablishmentYear().longValue());
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    response.setEstablishmentYear(masterResponse.getValue());
-                } else {
-                    response.setEstablishmentYear("NA");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //set city
-            List<Long> cityList = new ArrayList<>();
-            cityList.add(corporateApplicantDetail.getRegisteredCityId());
-            try {
-                OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    response.setCity(masterResponse.getValue());
-                } else {
-                    response.setCity("NA");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //set state
-            List<Long> stateList = new ArrayList<>();
-            stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-            try {
-                OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    response.setState(masterResponse.getValue());
-                } else {
-                    response.setState("NA");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            //set country
-            List<Long> countryList = new ArrayList<>();
-            countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-            try {
-                OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    response.setCountry(masterResponse.getValue());
-                } else {
-                    response.setCountry("NA");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            List<Long> keyVerticalFundingId = new ArrayList<>();
-            keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
-            try {
-                OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    response.setKeyVericalFunding(masterResponse.getValue());
-                } else {
-                    response.setKeyVericalFunding("NA");
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
-        List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
-        List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(toApplicationId);
-
-
-        IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest=new IndustrySectorSubSectorTeaserRequest();
-        industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
-        industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
-        industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
-        try {
-            OneFormResponse oneFormResponse = oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
-            response.setIndustrySector(oneFormResponse.getListData());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //get value of working capital data
-        PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(toApplicationId, userId);
-        if(primaryWorkingCapitalLoanDetail!=null) {
-            //set value to response
-            BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
-            response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-            response.setLoanType(primaryWorkingCapitalLoanDetail.getName());
-            response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
-            response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
-            response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
-        }
-
-        //get value of proposed product and set in response
-        try {
-            response.setProposedProductDetailRequestList(proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Proposed Product {}", e);
-        }
-
-        //get value of Existing product and set in response
-        try {
-            response.setExistingProductDetailRequestList(existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Existing Product {}", e);
-        }
-
-        //get value of achievement details and set in response
-        try {
-            response.setAchievementDetailList(achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Achievement Details {}", e);
-        }
-
-        //get value of Credit Rating and set in response
-        try {
-            List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
-            List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
-            for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest:creditRatingOrganizationDetailRequestList){
-                CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
+            List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
+			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
+			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
+				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
                 creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-                creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
-                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()) ? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
-                MasterResponse masterResponse= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)oneFormResponse.getData(),MasterResponse.class);
-                if (masterResponse!=null ) {
-                    creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
-                }else{
+				creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
+						.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
+				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
+						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
+								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
+                } else {
                     response.setKeyVericalFunding("NA");
-                }
-                creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
-                creditRatingOrganizationDetailResponse.setRatingAgency(RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
-                creditRatingOrganizationDetailResponse.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
-                creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
-            }
-            response.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Credit Rating {}", e);
-        }
+				}
+				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
+						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+				creditRatingOrganizationDetailResponse.setRatingAgency(
+                        RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+				creditRatingOrganizationDetailResponse
+						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
+				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+			}
+			response.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Credit Rating {}", e);
+		}
 
-        // set short term rating option
+		// set short term rating option
         try {
             List<String> shortTermValueList = new ArrayList<String>();
-            List<Integer> shortTermIdList = creditRatingOrganizationDetailsService.getShortTermCreditRatingForTeaser(toApplicationId, userId);
+			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
+                    .getShortTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : shortTermIdList) {
-                OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-                if (masterResponse != null) {
-                    shortTermValueList.add(masterResponse.getValue());
-                } else {
-                    shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
-                }
-                response.setShortTermRating(shortTermValueList);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					shortTermValueList.add(masterResponse.getValue());
+				} else {
+					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+				response.setShortTermRating(shortTermValueList);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-        // set long term rating option
+		// set long term rating option
         try {
-            List<String> longTermValueList = new ArrayList<String>();
-            List<Integer> longTermIdList = creditRatingOrganizationDetailsService.getLongTermCreditRatingForTeaser(toApplicationId, userId);
+			List<String> longTermValueList = new ArrayList<String>();
+			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
+                    .getLongTermCreditRatingForTeaser(toApplicationId, userId);
             for (Integer shortTermId : longTermIdList) {
-            	OneFormResponse oneFormResponse = oneFormClient.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-                if (masterResponse != null) {
-                    longTermValueList.add(masterResponse.getValue());
-                } else {
-                    longTermValueList.add(CommonUtils.NOT_APPLICABLE);
-                }
-            }
-            response.setLongTermRating(longTermValueList);
-        } catch (Exception e) {
-            e.printStackTrace();
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					longTermValueList.add(masterResponse.getValue());
+				} else {
+					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+			}
+			response.setLongTermRating(longTermValueList);
+		} catch (Exception e) {
+			e.printStackTrace();
         }
 
-        //get value of Ownership Details and set in response
-        try {
-            List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(toApplicationId, userId);
-            List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-            for (OwnershipDetailRequest ownershipDetailRequest:ownershipDetailRequestsList){
-                OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-                ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-                ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-                ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-                ownershipDetailResponseList.add(ownershipDetailResponse);
-            }
-            response.setOwnershipDetailResponseList(ownershipDetailResponseList);
+        // get value of Ownership Details and set in response
+		try {
+			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
+					.getOwnershipDetailList(toApplicationId, userId);
+			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+				ownershipDetailResponse.setShareHoldingCategory(
+						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+				ownershipDetailResponseList.add(ownershipDetailResponse);
+			}
+			response.setOwnershipDetailResponseList(ownershipDetailResponseList);
 
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Ownership Details {}", e);
-        }
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Ownership Details {}", e);
+		}
 
-        //get value of Promotor Background and set in response
-        try {
-            List<PromotorBackgroundDetailRequest>  promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
-            List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-            for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest:promotorBackgroundDetailRequestList){
-                PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-                promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-                promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-                promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+		// get value of Promotor Background and set in response
+		try {
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
+					.getPromotorBackgroundDetailList(toApplicationId, userId);
+			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
                 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-                promotorBackgroundDetailResponse.setPromotorsName(Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() + " " + promotorBackgroundDetailRequest.getPromotorsName());
+                promotorBackgroundDetailResponse
+						.setPromotorsName(Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue()
+								+ " " + promotorBackgroundDetailRequest.getPromotorsName());
                 promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-                promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-                promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
-            }
-            response.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Promotor Background {}", e);
-        }
+				promotorBackgroundDetailResponse
+						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+			}
+			response.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Promotor Background {}", e);
+		}
 
-       /* //get value of Past Financial and set in response
-        try {
-            response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Past Financial {}", e);
-        }*/
+		/*
+		 * //get value of Past Financial and set in response try {
+		 * response.setPastFinancialEstimatesDetailRequestList(
+		 * pastFinancialEstiamateDetailsService.getFinancialListData(userId,
+		 * toApplicationId)); } catch (Exception e) {
+		 * logger.error("Problem to get Data of Past Financial {}", e); }
+		 */
 
-        //get value of Future Projection and set in response
-        try {
-            response.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Future Projection {}", e);
-        }
+		// get value of Future Projection and set in response
+		try {
+			response.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
+					.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Future Projection {}", e);
+		}
 
-        //get value of Security and set in response
-        try {
-            response.setSecurityCorporateDetailRequestList(securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Security Details {}", e);
-        }
+		// get value of Security and set in response
+		try {
+			response.setSecurityCorporateDetailRequestList(
+					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Security Details {}", e);
+		}
 
-        //get value of Financial Arrangements and set in response
-        try {
-            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(toApplicationId, userId);
-            List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestList){
-                FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+		// get value of Financial Arrangements and set in response
+		try {
+			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
+					.getFinancialArrangementDetailsList(toApplicationId, userId);
+			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
+			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
                 financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-                financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-            }
-            response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-        }
+				financialArrangementsDetailResponse
+						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setFacilityNature(
+						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+			}
+			response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+		}
 
-        //get data of Associated Concern
-        try {
-            response.setAssociatedConcernDetailRequests(associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Associated Concerns {}",e);
-        }
+		// get data of Associated Concern
+		try {
+			response.setAssociatedConcernDetailRequests(
+					associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Associated Concerns {}", e);
+		}
 
-        //get data of Details of Guarantors
-        try {
-            response.setGuarantorsCorporateDetailRequestList(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Details of Guarantor {}",e);
-        }
+		// get data of Details of Guarantors
+		try {
+			response.setGuarantorsCorporateDetailRequestList(
+					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Details of Guarantor {}", e);
+		}
 
-        //get data of Monthly Turnover
-        try {
-            response.setMonthlyTurnoverDetailRequestList(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId,userId));
-        } catch (Exception e) {
-            logger.error("Problem to get Data of Monthly Turnover {}", e);
-        }
-        return response;
-    }
+		// get data of Monthly Turnover
+		try {
+			response.setMonthlyTurnoverDetailRequestList(
+					monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Monthly Turnover {}", e);
+		}
+		return response;
+	}
 }

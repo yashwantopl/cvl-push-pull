@@ -5,5 +5,5 @@ import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommo
 
 public interface RetailFinalCommonApplicantService {
 
-	public RetailFinalViewCommonResponse getApplicantCommonInfo(Long applicantId,RetailApplicantDetail applicantDetail);
+	public RetailFinalViewCommonResponse getApplicantCommonInfo(Long applicantId,RetailApplicantDetail applicantDetail,int productId);
 }

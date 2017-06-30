@@ -470,7 +470,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId)
+	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId, int productId)
 			throws Exception {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
@@ -738,31 +738,59 @@ public class GuarantorServiceImpl implements GuarantorService {
 							.getReferenceRetailDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
-					finalViewResponse.setGuarantor_BankACStatments(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-					finalViewResponse.setGuarantor_SalaraySlip(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-					finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(applicantId,
-							DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-					finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-					finalViewResponse.setGuarantor_AddressProof(
-							documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-									DocumentAlias.HOME_LOAN_APPLICANT_ADDRESS_PROOF));
-					finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(applicantId,
-							DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-					finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-					finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
-							applicantId, DocumentAlias.UERT_TYPE_GUARANTOR,
-							DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
-
+					// set uploads
+					switch (productId) {
+						case 3:// HOME LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_ADDRESS_PROOF));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.HOME_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 7:// PERSONAL LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 12:// CAR_LOAN
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_ADDRESS_PROOF));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.CAR_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+							break;
+						case 13:// LOAN_AGAINST_PROPERTY
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+							break;
+						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+							finalViewResponse.setGuarantor_SalaraySlip(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_PROOF_LATEST_SALARY_SLIP));
+							finalViewResponse.setGuarantor_ItReturn(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+							finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+							finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+							finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+							finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR, DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+							break;
+					}
 					finalCommonresponseList.add(finalViewResponse);
 				}
 

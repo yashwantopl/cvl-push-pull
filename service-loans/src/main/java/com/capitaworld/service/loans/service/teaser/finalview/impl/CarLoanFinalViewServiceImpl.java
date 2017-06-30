@@ -55,11 +55,11 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			RetailFinalViewResponse finalViewResponse = new RetailFinalViewResponse();
 			//applicant final common details
-			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail));
+			finalViewResponse.setApplicantCommonDetails(finalCommonService.getApplicantCommonInfo(applicantId, applicantDetail,applicationMaster.getProductId()));
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting CoApplicant final details");
@@ -67,7 +67,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			
 			//guarantor final common details
 			try {
-				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId()));
+				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting Guarantor final details");

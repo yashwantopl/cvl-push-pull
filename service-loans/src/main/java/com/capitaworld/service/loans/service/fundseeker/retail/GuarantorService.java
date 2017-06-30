@@ -20,7 +20,7 @@ public interface GuarantorService {
 
 	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId,int productId) throws Exception;
 	
-	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId) throws Exception;
+	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId,int productId) throws Exception;
 	
 	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception;
 	
