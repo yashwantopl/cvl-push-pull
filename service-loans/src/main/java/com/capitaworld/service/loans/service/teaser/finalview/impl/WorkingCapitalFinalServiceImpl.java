@@ -82,6 +82,7 @@ import com.capitaworld.service.oneform.enums.AccountingSystems;
 import com.capitaworld.service.oneform.enums.BrandAmbassador;
 import com.capitaworld.service.oneform.enums.Competence;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
 import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
@@ -93,7 +94,6 @@ import com.capitaworld.service.oneform.enums.ExistingShareholders;
 import com.capitaworld.service.oneform.enums.IndiaDistributionNetwork;
 import com.capitaworld.service.oneform.enums.InternalAudit;
 import com.capitaworld.service.oneform.enums.MarketPosition;
-import com.capitaworld.service.oneform.enums.MarketPositioningTop;
 import com.capitaworld.service.oneform.enums.MarketShareTurnover;
 import com.capitaworld.service.oneform.enums.MarketingPositioningNew;
 import com.capitaworld.service.oneform.enums.NatureFacility;
@@ -552,6 +552,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
+            response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 
 		// get value of proposed product and set in response
@@ -579,13 +580,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		}
 
 		// get value of Credit Rating and set in response
-		try {
-			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+        try {
+            List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
 					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
 			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
-				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
+                creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
 				creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
 						.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
 				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
@@ -595,13 +596,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
 				if (masterResponse != null) {
 					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
-				} else {
-					response.setKeyVericalFunding("NA");
+                } else {
+                    response.setKeyVericalFunding("NA");
 				}
 				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
 						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
 				creditRatingOrganizationDetailResponse.setRatingAgency(
-						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+                        RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
 				creditRatingOrganizationDetailResponse
 						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
@@ -612,11 +613,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		}
 
 		// set short term rating option
-		try {
-			List<String> shortTermValueList = new ArrayList<String>();
+        try {
+            List<String> shortTermValueList = new ArrayList<String>();
 			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
-					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
-			for (Integer shortTermId : shortTermIdList) {
+                    .getShortTermCreditRatingForTeaser(toApplicationId, userId);
+            for (Integer shortTermId : shortTermIdList) {
 				OneFormResponse oneFormResponse = oneFormClient
 						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
 				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
@@ -633,11 +634,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		}
 
 		// set long term rating option
-		try {
+        try {
 			List<String> longTermValueList = new ArrayList<String>();
 			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
-					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
-			for (Integer shortTermId : longTermIdList) {
+                    .getLongTermCreditRatingForTeaser(toApplicationId, userId);
+            for (Integer shortTermId : longTermIdList) {
 				OneFormResponse oneFormResponse = oneFormClient
 						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
 				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
@@ -651,9 +652,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setLongTermRating(longTermValueList);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+        }
 
-		// get value of Ownership Details and set in response
+        // get value of Ownership Details and set in response
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
 					.getOwnershipDetailList(toApplicationId, userId);
@@ -682,11 +683,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-				promotorBackgroundDetailResponse
+                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
+                promotorBackgroundDetailResponse
 						.setPromotorsName(Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue()
 								+ " " + promotorBackgroundDetailRequest.getPromotorsName());
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+                promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
 				promotorBackgroundDetailResponse
 						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
@@ -727,7 +728,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
 				financialArrangementsDetailResponse
 						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setFacilityNature(
