@@ -41,7 +41,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 	private List<Object> profilePic;
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
-
+	private String isCreditRatingAvailable;
 	/**
 	 * Working Capital Primary Frame Data Fields
 	 */
@@ -301,6 +301,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable{
 
 	public void setShortTermRating(List<String> shortTermRating) {
 		this.shortTermRating = shortTermRating;
+	}
+
+	public String getIsCreditRatingAvailable() {
+		return isCreditRatingAvailable;
+	}
+
+	public void setIsCreditRatingAvailable(String isCreditRatingAvailable) {
+		this.isCreditRatingAvailable = isCreditRatingAvailable;
 	}
 
 	public List<String> getLongTermRating() {
