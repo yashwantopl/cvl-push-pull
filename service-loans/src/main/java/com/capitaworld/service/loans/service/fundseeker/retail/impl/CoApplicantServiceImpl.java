@@ -125,6 +125,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
+		try{
+			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
+		} catch(Exception e) {
+			logger.error("Error while getCoAppIds:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 	@Override
 	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {

@@ -21,4 +21,6 @@ public interface CoApplicantService {
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId,int productId) throws Exception;
 	
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId) throws Exception;
+	
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception;
 }
