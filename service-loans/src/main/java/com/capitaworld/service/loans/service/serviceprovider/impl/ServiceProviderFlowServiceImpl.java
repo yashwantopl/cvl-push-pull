@@ -215,7 +215,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 								SysNotifyResponse sysNotifyResponse = sysNotification.get(j);
 								RecentProfileViewResponse profileViewResponse = new RecentProfileViewResponse();
 								
-								DashboardProfileResponse dashboardProfileResponse = dashboardService.getBasicProfileInfo(sysNotifyResponse.getApplicationId(), sysNotifyResponse.getUserId());
+								DashboardProfileResponse dashboardProfileResponse = dashboardService.getBasicProfileInfo(sysNotifyResponse.getApplicationId(), sysNotifyResponse.getUserId(),true);
 								profileViewResponse.setName(dashboardProfileResponse.getName());
 								profileViewResponse.setApplicationId(sysNotifyResponse.getApplicationId());
 								profileViewResponse.setUserId(clientResponse.getClientId());

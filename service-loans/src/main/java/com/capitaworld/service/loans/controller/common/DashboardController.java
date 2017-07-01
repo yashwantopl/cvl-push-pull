@@ -68,7 +68,8 @@ public class DashboardController {
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value());			
 			if(userType == CommonUtils.UserType.FUND_SEEKER){
-				DashboardProfileResponse basicProfileInfo = dashboardService.getBasicProfileInfo(data.getId(), userId);
+				//false : Because this method used twice. once from SP also
+				DashboardProfileResponse basicProfileInfo = dashboardService.getBasicProfileInfo(data.getId(), userId,false);
 				loansResponse.setData(basicProfileInfo);				
 			}else{
 				UserResponse fpBasicProfileInfo = dashboardService.getFPBasicProfileInfo(userId);
