@@ -36,6 +36,7 @@ public class TermLoanFinalViewResponse implements Serializable{
     private String landlineNo;
     private String registeredEmailAddress;
     private String registeredContactNumber;
+    private Double totalCostOfEstimate;
     private List<?> industrySector;
     private List<Object> profilePic;
     private List<String> shortTermRating;
@@ -106,13 +107,60 @@ public class TermLoanFinalViewResponse implements Serializable{
     private String marketPosition;
     private String marketPositioningTop;
     private String marketShareTurnover;
-    private String overseasNetwork;
+    public String getMajorlyOnGovernment() {
+		return majorlyOnGovernment;
+	}
+
+	public void setMajorlyOnGovernment(String majorlyOnGovernment) {
+		this.majorlyOnGovernment = majorlyOnGovernment;
+	}
+
+	public String getBrandAmbassador() {
+		return brandAmbassador;
+	}
+
+	public void setBrandAmbassador(String brandAmbassador) {
+		this.brandAmbassador = brandAmbassador;
+	}
+
+	public String getDistributionAndTieUps() {
+		return distributionAndTieUps;
+	}
+
+	public void setDistributionAndTieUps(String distributionAndTieUps) {
+		this.distributionAndTieUps = distributionAndTieUps;
+	}
+
+	public String getMarketPositioningProduct() {
+		return marketPositioningProduct;
+	}
+
+	public void setMarketPositioningProduct(String marketPositioningProduct) {
+		this.marketPositioningProduct = marketPositioningProduct;
+	}
+
+	public String getMarketingPositioning() {
+		return marketingPositioning;
+	}
+
+	public void setMarketingPositioning(String marketingPositioning) {
+		this.marketingPositioning = marketingPositioning;
+	}
+
+	private String overseasNetwork;
     private String indiaDistributionNetwork;
     private String environmentCertification;
     private String isIsoCertified;
     private String accountingSystems;
     private String internalAudit;
     private String competence;
+    private String majorlyOnGovernment;
+    private String brandAmbassador;
+    private String distributionAndTieUps;
+    private String marketPositioningProduct;
+    private String marketingPositioning;
+    private String existingShareHolder;
+    private String productServicesPerse;
 
     /**
      *Working Capital DPR, CMA, BS Formate
@@ -745,4 +793,33 @@ public class TermLoanFinalViewResponse implements Serializable{
     public void setBsFormatList(List<Object> bsFormatList) {
         this.bsFormatList = bsFormatList;
     }
+
+	public String getExistingShareHolder() {
+		return existingShareHolder;
+	}
+
+	public void setExistingShareHolder(String existingShareHolder) {
+		this.existingShareHolder = existingShareHolder;
+	}
+
+	public String getProductServicesPerse() {
+		return productServicesPerse;
+	}
+
+	public void setProductServicesPerse(String productServicesPerse) {
+		this.productServicesPerse = productServicesPerse;
+	}
+
+	public Double getTotalCostOfEstimate() {
+		return totalCostOfEstimate;
+	}
+
+	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+		this.totalCostOfEstimate = totalCostOfEstimate;
+	}
+
+	
+
+	
+	
 }

@@ -31,12 +31,15 @@ import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansVie
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.EmployeeWith;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
 import com.capitaworld.service.oneform.enums.Title;
@@ -93,15 +96,6 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 				profileViewPLResponse.setCompanyName(applicantDetail.getCompanyName());
 				personalLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
-				try {
-					if (applicantDetail.getEmployedWithId() != 8) {
-						profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
-					} else {
-						profileViewPLResponse.setEmployeeWith(applicantDetail.getEmployedWithOther());
-					}
-				} catch (Exception e) {
-
-				}
 				profileViewPLResponse.setFirstName(applicantDetail.getFirstName());
 				try {
 					profileViewPLResponse.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
@@ -112,6 +106,8 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setMiddleName(applicantDetail.getMiddleName());
 				profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome() : 0));
 				profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+				
+				//Office Address Data
 				AddressResponse officeAddress = new AddressResponse();
 
 				try {
@@ -125,12 +121,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					e.printStackTrace();
 				}
 				try {
-					List<Long> officeCountry = new ArrayList<Long>(1);
-					Long officeCountryLong = null;
-					if (applicantDetail.getOfficeCountryId() != null) {
-						officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
-
-						officeCountry.add(officeCountryLong);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId())) {
+						List<Long> officeCountry = new ArrayList<Long>(1);
+						officeCountry.add(applicantDetail.getOfficeCountryId().longValue());
 						OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
 						MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
 						officeAddress.setCountry(dataCountry.getValue());
@@ -140,12 +133,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 				}
 				try {
-					List<Long> officeState = new ArrayList<Long>(1);
-					Long officeStateLong = null;
-					if (applicantDetail.getOfficeCountryId() != null) {
-						officeStateLong = Long.valueOf(applicantDetail.getOfficeStateId().toString());
-
-						officeState.add(officeStateLong);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId())) {
+						List<Long> officeState = new ArrayList<Long>(1);
+						officeState.add(applicantDetail.getOfficeStateId().longValue());
 						OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
 						MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
 						officeAddress.setState(dataState.getValue());
@@ -159,6 +149,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
 				personalLoanResponse.setOfficeAddress(officeAddress);
 
+				//Permanent Address Data
 				AddressResponse permanentAddress = new AddressResponse();
 				try {
 					List<Long> permanentCity = new ArrayList<Long>(1);
@@ -170,30 +161,23 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 				}
 				try {
-					List<Long> permanentCountry = new ArrayList<Long>(1);
-					Long permanentCountryLong = null;
-					if (applicantDetail.getOfficeCountryId() != null) {
-						permanentCountryLong = Long.valueOf(applicantDetail.getPermanentCountryId().toString());
-
-						permanentCountry.add(permanentCountryLong);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId())) {
+						List<Long> permanentCountry = new ArrayList<Long>(1);
+						permanentCountry.add(applicantDetail.getPermanentCountryId().longValue());
 						OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
 						MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) countryPermanent.getListData().get(0), MasterResponse.class);
-						officeAddress.setCountry(dataCountry.getValue());
+						permanentAddress.setCountry(dataCountry.getValue());
 					}
 				} catch (Exception e) {
 
 				}
 				try {
-					List<Long> permanentState = new ArrayList<Long>(1);
-
-					Long permanentStateLong = null;
-					if (applicantDetail.getOfficeCountryId() != null) {
-						permanentStateLong = Long.valueOf(applicantDetail.getPermanentStateId().toString());
-
-						permanentState.add(permanentStateLong);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
+						List<Long> permanentState = new ArrayList<Long>(1);
+						permanentState.add(applicantDetail.getPermanentStateId().longValue());
 						OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
 						MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) statePermanent.getListData().get(0), MasterResponse.class);
-						officeAddress.setState(dataState.getValue());
+						permanentAddress.setState(dataState.getValue());
 
 					}
 				} catch (Exception e) {
@@ -210,18 +194,56 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				if (applicantDetail.getApplicationId() != null) {
-					personalLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? applicantDetail.getApplicationId().getTenure().toString() : null);
+					personalLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? String.valueOf((applicantDetail.getApplicationId().getTenure()/12)) : null);
 					personalLoanResponse.setLoanType(applicantDetail.getApplicationId().getProductId() != null ? LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue() : null);
 					personalLoanResponse.setLoanAmount(applicantDetail.getApplicationId().getAmount() != null ? applicantDetail.getApplicationId().getAmount().toString() : null);
-					personalLoanResponse.setCurrency(applicantDetail.getApplicationId().getCurrencyId() != null ? Currency.getById(applicantDetail.getApplicationId().getCurrencyId()).getValue() : null);
+					personalLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : null);
 				}
 
-
-				profileViewPLResponse.setEntityName(applicantDetail.getEntityName());
-				if (applicantDetail.getIndustryTypeId() != null && applicantDetail.getIndustryTypeId() != 16) {
-					profileViewPLResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
-				} else {
-					profileViewPLResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
+				profileViewPLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
+				if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOccupationId())){
+					switch (applicantDetail.getOccupationId().intValue()) {
+					case 2 : //Salaried
+						profileViewPLResponse.setCompanyName(applicantDetail.getCompanyName());
+						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getEmployedWithId())){
+							if(applicantDetail.getEmployedWithId() != 8){
+								profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
+							}else{
+								profileViewPLResponse.setEmployeeWith(applicantDetail.getEmployedWithOther());
+							}
+						}
+						break;
+					case 3 : //Business
+					case 4 : //Self Employed
+						profileViewPLResponse.setEntityName(applicantDetail.getEntityName());
+						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIndustryTypeId())){
+							if(applicantDetail.getIndustryTypeId() != 16){
+								profileViewPLResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
+							}else{
+								profileViewPLResponse.setIndustryType(applicantDetail.getIndustryTypeOther());
+							}
+						}
+						break;
+					case 5 ://Self Employed Professional
+						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSelfEmployedOccupationId())){
+							if(applicantDetail.getSelfEmployedOccupationId().intValue() != 10){
+								profileViewPLResponse.setOccupation(Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
+							}else{
+								profileViewPLResponse.setOccupation(applicantDetail.getSelfEmployedOccupationOther());
+							}
+						}
+						break;
+					case 6://Agriculturist
+						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLandSize())){
+							profileViewPLResponse.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAlliedActivityId())){
+							profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
+						}
+						break;
+					default:
+						break;
+					}
 				}
 
 				//set pan car

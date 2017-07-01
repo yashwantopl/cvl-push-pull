@@ -304,18 +304,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		fpProductDetails.setTypeOfInvestment(LoanType.getById(productMaster.getProductId()).getValue());
 		List<String> countryname = new ArrayList<String>();
 		List<Long> countryList = geoCountry.getCountryByFpProductId(productMappingId);
-		OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-		List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-		if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		if(!CommonUtils.isListNullOrEmpty(countryList)){
+			OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 
-			for (int i = 0; i < oneResponseDataList.size(); i++) {
-				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0),
-						MasterResponse.class);
-				countryname.add(masterResponse.getValue());
+				for (int i = 0; i < oneResponseDataList.size(); i++) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0),
+							MasterResponse.class);
+					countryname.add(masterResponse.getValue());
+				}
 			}
+			fpProductDetails.setGeographicalFocus(countryname);			
 		}
 
-		fpProductDetails.setGeographicalFocus(countryname);
 		//fp profile details
 		fpProductDetails.setFpDashboard(usersClient.getFPDashboardDetails(productMaster.getUserId()));
 

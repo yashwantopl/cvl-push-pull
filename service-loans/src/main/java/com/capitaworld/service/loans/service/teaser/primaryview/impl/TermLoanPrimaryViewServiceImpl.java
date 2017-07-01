@@ -107,7 +107,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	MatchEngineClient matchEngineClient;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/mm/yyyy");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,

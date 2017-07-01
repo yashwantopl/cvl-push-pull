@@ -1,27 +1,12 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.teaser.finalview.*;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.*;
-import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
-import com.capitaworld.service.oneform.model.MasterResponse;
-import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -29,12 +14,104 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.BoardOfDirectorsResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.DprUserDataDetailResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.KeyManagementResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.ProjectImplementationScheduleResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.RequirementsAndAvailabilityRawMaterialsDetailResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.RevenueAndOrderBookResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.StrategicAlliancesResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManagementDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImplementationScheduleDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysisDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinalWorkingCapitalLoanService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AccountingSystems;
+import com.capitaworld.service.oneform.enums.BrandAmbassador;
+import com.capitaworld.service.oneform.enums.Competence;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
+import com.capitaworld.service.oneform.enums.CreditRatingFund;
+import com.capitaworld.service.oneform.enums.CreditRatingTerm;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DistributionMarketingTieUps;
+import com.capitaworld.service.oneform.enums.EnvironmentCertification;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.ExistingShareholders;
+import com.capitaworld.service.oneform.enums.IndiaDistributionNetwork;
+import com.capitaworld.service.oneform.enums.InternalAudit;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MarketPosition;
+import com.capitaworld.service.oneform.enums.MarketShareTurnover;
+import com.capitaworld.service.oneform.enums.MarketingPositioningNew;
+import com.capitaworld.service.oneform.enums.NatureFacility;
+import com.capitaworld.service.oneform.enums.OverseasNetwork;
+import com.capitaworld.service.oneform.enums.ProductServicesPerse;
+import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.TechnologyPatented;
+import com.capitaworld.service.oneform.enums.TechnologyRequiresUpgradation;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.TypeTechnology;
+import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 /**
  * Created by dhaval on 25-May-17.
@@ -263,8 +340,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
 						? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue()
 						: null);
-				response.setMarketPositioningTop(MarketPositioningTop
-						.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue());
+				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
+						? MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
 				response.setMarketShareTurnover(
 						finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover
 								.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
@@ -274,6 +351,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 										.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId())
 										.getValue()
 								: null);
+				response.setDistributionAndTieUps(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()!=null?DistributionMarketingTieUps.getById(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()).getValue():null);
+				response.setBrandAmbassador(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()!=null?BrandAmbassador.getById(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()).getValue():null);
+				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId()!=null?MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue():null);
+				response.setProductServicesPerse(finalWorkingCapitalLoanRequest.getProductServicesPerseId() != null
+						? ProductServicesPerse.getById(finalWorkingCapitalLoanRequest.getProductServicesPerseId()).getValue() : null);
 				response.setEnvironmentCertification(
 						finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null
 								? EnvironmentCertification
@@ -287,6 +369,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 						? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
 				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null
 						? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
+				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null
+						? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
 				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
 					response.setIsIsoCertified("Yes");
 				} else {
@@ -461,10 +545,10 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		if (primaryWorkingCapitalLoanDetail != null) {
 			// set value to response
 			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
+			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
 			response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
 							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-			response.setLoanType(primaryWorkingCapitalLoanDetail.getName());
+			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));

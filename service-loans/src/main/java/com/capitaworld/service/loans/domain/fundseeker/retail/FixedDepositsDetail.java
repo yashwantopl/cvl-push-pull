@@ -15,6 +15,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 /**
@@ -62,6 +63,7 @@ public class FixedDepositsDetail implements Serializable {
 
 	@Temporal(TemporalType.DATE)
 	@Column(name="maturity_date")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date maturityDate;
 
 	@Column(name="modified_by")
