@@ -277,7 +277,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						+ " in "
 						+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
 			}
-				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getName() != null ? primaryWorkingCapitalLoanDetail.getName() : null);
+				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 				workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
 				if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 					workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);

@@ -93,6 +93,7 @@ import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.ExistingShareholders;
 import com.capitaworld.service.oneform.enums.IndiaDistributionNetwork;
 import com.capitaworld.service.oneform.enums.InternalAudit;
+import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MarketPosition;
 import com.capitaworld.service.oneform.enums.MarketShareTurnover;
 import com.capitaworld.service.oneform.enums.MarketingPositioningNew;
@@ -544,10 +545,10 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		if (primaryWorkingCapitalLoanDetail != null) {
 			// set value to response
 			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
+			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
 			response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
 							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
-			response.setLoanType(primaryWorkingCapitalLoanDetail.getName());
+			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));

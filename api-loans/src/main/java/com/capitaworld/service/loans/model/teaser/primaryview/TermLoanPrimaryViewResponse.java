@@ -26,6 +26,7 @@ public class TermLoanPrimaryViewResponse {
 	private String isCreditRatingAvailable;
 	private Double tenure;
 	private Double amount;
+	private Double totalCostOfEstimate;
 	private List<?> matchesList;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
@@ -371,4 +372,15 @@ public class TermLoanPrimaryViewResponse {
 	public void setMatchesList(List<?> matchesList) {
 		this.matchesList = matchesList;
 	}
+
+	public Double getTotalCostOfEstimate() {
+		return totalCostOfEstimate;
+	}
+
+	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+		this.totalCostOfEstimate = totalCostOfEstimate;
+	}
+
+	
+	
 }
