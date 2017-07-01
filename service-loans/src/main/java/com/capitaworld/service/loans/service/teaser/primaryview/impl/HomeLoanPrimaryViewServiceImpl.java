@@ -74,7 +74,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 			if (applicantDetail != null) {
 				RetailProfileViewResponse profileViewHLResponse = new RetailProfileViewResponse();
 				homeLoanResponse
-						.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
+						.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getCreatedDate()));
 				if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getOccupationId())) {
 					profileViewHLResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
 					if (applicantDetail.getOccupationId() == 2) {
