@@ -42,17 +42,28 @@ public class DashboardServiceImpl implements DashboardService {
 	private UsersClient usersClient;
 
 	@Override
-	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId) throws Exception {
+	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
 		// TODO Auto-generated method stub
-		Integer productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+		Integer productId = null;
+		if(isSP){
+			productId = loanApplicationRepository.getProductIdByApplicationIdForSP(applicationId, userId);
+		}else{
+			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
+		}
 		DashboardProfileResponse dashboardProfileResponse = null;
 		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.getByApplicationAndUserId(userId, applicationId);
+			CorporateApplicantDetail corporateApplicantDetail = null;
+			if(isSP){
+				corporateApplicantDetail = corporateApplicantDetailRepository
+						.getByApplicationAndUserIdForSP(userId, applicationId);
+			}else{
+				corporateApplicantDetail = corporateApplicantDetailRepository
+						.getByApplicationAndUserId(userId, applicationId);	
+			}
+			
 
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				return dashboardProfileResponse;
@@ -85,9 +96,15 @@ public class DashboardServiceImpl implements DashboardService {
 		} else {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-
-			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-					.getByApplicationAndUserId(userId, applicationId);
+			RetailApplicantDetail retailApplicantDetail = null;
+			if(isSP){
+				retailApplicantDetail = retailApplicantDetailRepository
+						.getByApplicationAndUserIdForSP(userId, applicationId);
+			}else{
+				retailApplicantDetail = retailApplicantDetailRepository
+						.getByApplicationAndUserId(userId, applicationId);	
+			}
+			
 			if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 				return dashboardProfileResponse;
 			}
