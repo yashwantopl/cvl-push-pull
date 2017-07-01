@@ -1,16 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -31,20 +20,19 @@ import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansVie
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author Sanket
@@ -95,7 +83,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 			if (applicantDetail != null) {
 				RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
 				profileViewPLResponse.setCompanyName(applicantDetail.getCompanyName());
-				personalLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
+				personalLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getCreatedDate()));
 				profileViewPLResponse.setFirstName(applicantDetail.getFirstName());
 				try {
 					profileViewPLResponse.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
