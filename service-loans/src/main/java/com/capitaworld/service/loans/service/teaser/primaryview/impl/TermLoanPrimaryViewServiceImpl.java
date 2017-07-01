@@ -263,6 +263,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		// set value to response
 		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
+			termLoanPrimaryViewResponse.setTenure(primaryTermLoanDetail.getTenure() != null ? primaryTermLoanDetail.getTenure() / 12 : null);
 			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
 				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
 			if (primaryTermLoanDetail.getProductId() != null)
@@ -307,9 +308,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
 				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
 				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-				if (creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null)
-					creditRatingOrganizationDetailResponse.setCreditRatingFund(CreditRatingFund
-							.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue());
+				creditRatingOrganizationDetailResponse.setCreditRatingFund(creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null ? CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue() : null);
 
 				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
 						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
@@ -360,18 +359,13 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 		// get value of Promotor Background and set in response
 		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
-					.getPromotorBackgroundDetailList(toApplicationId, userId);
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetailResponse);
 				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-				if (promotorBackgroundDetailRequest.getSalutationId() != null)
-					promotorBackgroundDetailResponse.setPromotorsName(
-							Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() + " "
-									+ promotorBackgroundDetailRequest.getPromotorsName());
+				promotorBackgroundDetailResponse.setPromotorsName(promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null + " " + promotorBackgroundDetailRequest.getPromotorsName());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
