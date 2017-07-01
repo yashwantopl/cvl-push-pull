@@ -73,7 +73,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);
 			if (applicantDetail != null) {
 				RetailProfileViewResponse profileViewLAPResponse = new RetailProfileViewResponse();
-				lapResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
+				lapResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getCreatedDate()));
 				if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getOccupationId())){
 					profileViewLAPResponse.setNatureOfOccupationId(applicantDetail.getOccupationId());
 					if (applicantDetail.getOccupationId() == 2){

@@ -81,7 +81,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId, toApplicationId);
             if (applicantDetail != null) {
                 RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-                carLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getModifiedDate()));
+                carLoanResponse.setDateOfProposal(CommonUtils.getStringDateFromDate(applicantDetail.getCreatedDate()));
                 if (applicantDetail.getApplicationId() != null) {
                     carLoanResponse.setTenure(applicantDetail.getApplicationId().getTenure() != null ? String.valueOf(applicantDetail.getApplicationId().getTenure()/12) : null);
                     carLoanResponse.setLoanType(applicantDetail.getApplicationId().getProductId() != null ? LoanType.getById(applicantDetail.getApplicationId().getProductId()).getValue() : null);
