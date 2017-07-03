@@ -160,12 +160,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
-			ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
-			applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
-			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
-					.getById(applicationMaster.getProductId());
-			applicationRequest.setName(loanType.getValue());
-			return applicationRequest;
+			try{
+				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
+				applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
+				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+						.getById(applicationMaster.getProductId());
+				applicationRequest.setName(loanType.getValue());
+				return applicationRequest;
+			}catch (Exception e) {
+				logger.error("Error while getting Status From Proposal Client");
+				e.printStackTrace();
+				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			}
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
 			e.printStackTrace();
@@ -218,13 +224,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
-				
-				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
-				request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
-				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
-						.getById(master.getProductId());
-				request.setName(loanType.getValue());
-				requests.add(request);
+				try{
+					ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
+					request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
+					com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
+							.getById(master.getProductId());
+					request.setName(loanType.getValue());
+					requests.add(request);
+				}catch (Exception e) {
+					logger.error("Error while Getting Loan Status from Proposal Client:-");
+					e.printStackTrace();
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				}
 			}
 			return requests;
 		} catch (Exception e) {
