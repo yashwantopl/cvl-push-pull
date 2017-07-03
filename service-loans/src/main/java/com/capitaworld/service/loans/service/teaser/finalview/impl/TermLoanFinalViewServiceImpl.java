@@ -244,6 +244,11 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		}catch(DocumentException e){
 			e.printStackTrace();
 		}
+		try{
+			response.setFinancialModelList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TL_FINANCIAL_MODEL));
+		}catch(DocumentException e){
+			e.printStackTrace();
+		}
 		
 
 		// if DPR our format not upload no need get data of DPR
