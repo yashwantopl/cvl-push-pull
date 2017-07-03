@@ -45,6 +45,7 @@ public class TermLoanFinalViewResponse implements Serializable{
     /**
      * Term Loan Primary Frame Data Fields
      */
+    private Boolean isDprUploaded;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<AchievementDetailRequest> AchievementDetailList;
     private List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
@@ -168,6 +169,8 @@ public class TermLoanFinalViewResponse implements Serializable{
     private List<Object> dprList;
     private List<Object> cmaList;
     private List<Object> bsFormatList;
+    private List<Object> financialModelList;
+    private List<Object> dprYourFormatList;
 
     public String getOrganisationName() {
         return organisationName;
@@ -474,7 +477,17 @@ public class TermLoanFinalViewResponse implements Serializable{
         this.projectImplementationScheduleResponseList = projectImplementationScheduleResponseList;
     }
 
-    public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
+    
+    
+    public Boolean getIsDprUploaded() {
+		return isDprUploaded;
+	}
+
+	public void setIsDprUploaded(Boolean isDprUploaded) {
+		this.isDprUploaded = isDprUploaded;
+	}
+
+	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
         return proposedProductDetailRequestList;
     }
 
@@ -818,8 +831,21 @@ public class TermLoanFinalViewResponse implements Serializable{
 		this.totalCostOfEstimate = totalCostOfEstimate;
 	}
 
+	public List<Object> getFinancialModelList() {
+		return financialModelList;
+	}
+
+	public void setFinancialModelList(List<Object> financialModelList) {
+		this.financialModelList = financialModelList;
+	}
+
+	public List<Object> getDprYourFormatList() {
+		return dprYourFormatList;
+	}
+
+	public void setDprYourFormatList(List<Object> dprYourFormatList) {
+		this.dprYourFormatList = dprYourFormatList;
+	}
 	
 
-	
-	
 }

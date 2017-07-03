@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
@@ -36,6 +37,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
+			CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = (AssociatedConcernDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, AssociatedConcernDetailRequest.class);
@@ -54,11 +56,12 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 				associatedConcernDetail.setModifiedDate(new Date());
 				associatedConcernDetailRepository.save(associatedConcernDetail);
 			}
+			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 			return true;
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save Associated Concern :-");
+			logger.error("Exception  in save Associated Concern :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -68,7 +71,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	@Override
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
 		try {
-
+			CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
 			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
 					.listAssociatedConcernFromAppId(id,userId);
 			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
@@ -78,11 +81,12 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 				BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
 				associatedConcernDetailRequests.add(associatedConcernDetailRequest);
 			}
+			CommonDocumentUtils.endHook(logger, "getAssociatedConcernsDetailList");
 			return associatedConcernDetailRequests;
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get monthlyTurnoverDetail  :-");
+			logger.error("Exception  in get monthlyTurnoverDetail  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
