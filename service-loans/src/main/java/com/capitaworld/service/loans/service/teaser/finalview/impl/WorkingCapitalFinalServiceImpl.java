@@ -159,35 +159,67 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		List<Object> dprList = new ArrayList<Object>();
 		// get list of uploads of final and profile picture
 		try {
-			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
-			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
-			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
-			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
-			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
-			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
-			response.setPanOfDirectorsList(
-					documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,
-							DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
-			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
-			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
-			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,
-					Long.valueOf(DocumentAlias.WC_DPR_OUR_FORMAT));
-			response.setDprList(dprList);
-			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
-			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,
-					DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)));
+			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
+		try{
+			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_DETAILED_LIST_OF_SHAREHOLDERS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.WC_DPR_OUR_FORMAT));
+			response.setDprList(dprList);
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		
 
 		// if DPR our format not upload no need get data of DPR
 		if (dprList.size() > 0) {
