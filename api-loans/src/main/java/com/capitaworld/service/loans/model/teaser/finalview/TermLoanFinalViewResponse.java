@@ -168,6 +168,7 @@ public class TermLoanFinalViewResponse implements Serializable{
     private List<Object> dprList;
     private List<Object> cmaList;
     private List<Object> bsFormatList;
+    private List<Object> financialModelList;
 
     public String getOrganisationName() {
         return organisationName;
@@ -818,8 +819,12 @@ public class TermLoanFinalViewResponse implements Serializable{
 		this.totalCostOfEstimate = totalCostOfEstimate;
 	}
 
-	
+	public List<Object> getFinancialModelList() {
+		return financialModelList;
+	}
 
-	
+	public void setFinancialModelList(List<Object> financialModelList) {
+		this.financialModelList = financialModelList;
+	}
 	
 }
