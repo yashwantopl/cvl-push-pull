@@ -125,6 +125,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private List<Object> cmaList;
 	private List<Object> bsFormatList;
 	private List<Object> financialModelList;
+	private List<Object> dprYourFormatList;
 
 	public String getOrganisationName() {
 		return organisationName;
@@ -820,6 +821,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 
 	public void setFinancialModelList(List<Object> financialModelList) {
 		this.financialModelList = financialModelList;
+	}
+
+	public List<Object> getDprYourFormatList() {
+		return dprYourFormatList;
+	}
+
+	public void setDprYourFormatList(List<Object> dprYourFormatList) {
+		this.dprYourFormatList = dprYourFormatList;
 	}
 
 	
