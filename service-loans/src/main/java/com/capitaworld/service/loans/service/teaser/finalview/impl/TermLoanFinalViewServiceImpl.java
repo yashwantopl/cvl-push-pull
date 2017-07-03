@@ -249,10 +249,16 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		}catch(DocumentException e){
 			e.printStackTrace();
 		}
+		try{
+			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DPR_YOUR_FORMAT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 		
 
 		// if DPR our format not upload no need get data of DPR
 		if (dprList.size() > 0) {
+			response.setIsDprUploaded(true);
 			// getting data of DPR
 			List<BoardOfDirectorsResponse> boardOfDirectorsResponseList = boardOfDirectorsDetailRepository
 					.listByApplicationId(toApplicationId);
@@ -299,7 +305,10 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setProjectImplementationScheduleResponseList(projectImplementationScheduleResponseList);
 			response.setDriverForFutureGrowthResponse(driverForFutureGrowthResponse);
 
+		}else{
+			response.setIsDprUploaded(false);
 		}
+	
 
 		// set final working capital information
 		try {
