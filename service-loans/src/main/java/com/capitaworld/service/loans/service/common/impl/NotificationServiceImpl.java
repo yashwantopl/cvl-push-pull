@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.common.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -22,20 +25,22 @@ import com.capitaworld.service.notification.utils.NotificationType;
 @Transactional
 public class NotificationServiceImpl implements NotificationService{
 	
-	@Autowired
-	LoanApplicationService loanApplicationService;
+	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 	
 	@Autowired
-	ProductMasterService productMasterService;
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private ProductMasterService productMasterService;
 	
 	@Autowired
 	private NotificationClient notificationClient;
 	
 	private static Notification createNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
-
+        CommonDocumentUtils.startHook(logger, "createNotification");
+        
  		Notification notification = new Notification();
-
 		notification.setTo(toIds);
 		notification.setType(NotificationType.SYSTEM);
 		notification.setTemplateId(templateId);
@@ -44,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setFrom(fromId.toString());
 		notification.setProductId(fpProductId);
 		notification.setApplicationId(applicationId);
-
+		CommonDocumentUtils.endHook(logger, "createNotification");
 		return notification;
 
 	}
@@ -53,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService{
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
 			Long applicationId, Long fpProductId) {
 		// TODO Auto-generated method stub
-		
+		CommonDocumentUtils.startHook(logger, "sendViewNotification");
 		
 		if (toUserId != null && fromUserId != null) {
 			String[] a = { toUserId.toString() };
@@ -96,6 +101,7 @@ public class NotificationServiceImpl implements NotificationService{
 			} catch (NotificationException e) {
 				e.printStackTrace();
 			}
+			CommonDocumentUtils.endHook(logger, "sendViewNotification");
 		}
 		
 	}
