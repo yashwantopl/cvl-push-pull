@@ -14,6 +14,18 @@ public class ProductDetailsForSp {
 
 	private List<RecentProfileViewResponse> recentProfileViewList;
 	
+	private Integer notificationCount;
+	
+	
+	
+	public Integer getNotificationCount() {
+		return notificationCount;
+	}
+
+	public void setNotificationCount(Integer notificationCount) {
+		this.notificationCount = notificationCount;
+	}
+
 	public List<RecentProfileViewResponse> getRecentProfileViewList() {
 		return recentProfileViewList;
 	}

@@ -17,6 +17,18 @@ public class LoanApplicationDetailsForSp {
 	
 	private boolean hasAlreadyApplied;
 	
+	private Integer notificationCount;
+	
+	
+	
+	public Integer getNotificationCount() {
+		return notificationCount;
+	}
+
+	public void setNotificationCount(Integer notificationCount) {
+		this.notificationCount = notificationCount;
+	}
+
 	private List<RecentProfileViewResponse> recentProfileViewList;
 	
 	public List<RecentProfileViewResponse> getRecentProfileViewList() {
