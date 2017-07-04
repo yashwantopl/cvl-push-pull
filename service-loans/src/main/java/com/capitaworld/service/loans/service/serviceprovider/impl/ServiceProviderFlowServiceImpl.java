@@ -139,8 +139,16 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							applicationDetailsForSp.setHasAlreadyApplied(applied);
 							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
 							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
+							//code for sp fs notification
+							NotificationRequest notificationRequestSpFS = new NotificationRequest();
+							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
+							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
+							NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByAppId(notificationRequestSpFS);
+							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 							
-							//code for getting recent viewer
+							applicationDetailsForSp.setNotificationCount(sysNotificationSpFs.size());
+							
+							//code for getting recent viewer						
 							NotificationRequest notificationRequest = new NotificationRequest();
 							notificationRequest.setApplicationId(applicationDetailsForSp.getId());
 							notificationRequest.setClientRefId(clientResponse.getClientId().toString());
@@ -231,6 +239,16 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
 							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
 						}
+						//code for sp fp notification
+						NotificationRequest notificationRequestSpFp = new NotificationRequest();
+						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
+						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
+						NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByProdId(notificationRequestSpFp);
+						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
+						
+						productDetailsForSp.setNotificationCount(sysNotificationSpFs.size());
+						
+						
 						//code for getting recent viewer
 						NotificationRequest notificationRequest = new NotificationRequest();
 						notificationRequest.setProductId(productDetailsForSp.getId());
