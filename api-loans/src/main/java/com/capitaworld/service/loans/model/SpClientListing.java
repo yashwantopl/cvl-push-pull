@@ -12,6 +12,14 @@ public class SpClientListing implements Serializable {
 	private String clientCountry;
 	private String clientState;
 	private String clientCity;
+	private String clientImagePath;
+	
+	public String getClientImagePath() {
+		return clientImagePath;
+	}
+	public void setClientImagePath(String clientImagePath) {
+		this.clientImagePath = clientImagePath;
+	}
 	private List<?> listData = Collections.emptyList();
 	public Long getClientId() {
 		return clientId;

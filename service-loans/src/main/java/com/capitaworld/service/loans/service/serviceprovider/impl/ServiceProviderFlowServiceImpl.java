@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.serviceprovider.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
@@ -197,6 +199,32 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 
 				} else if (userTypeCode.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
 
+					String fpImagePath = "";
+					DocumentRequest documentRequestFP = new DocumentRequest();
+					documentRequestFP.setUserId(clientResponse.getClientId());
+					documentRequestFP.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
+					documentRequestFP.setUserType(DocumentAlias.UERT_TYPE_USER);				
+					try {
+						DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequestFP);
+						if(documentResponse != null && documentResponse.getStatus() == 200){
+							List<Map<String,Object>> list =  documentResponse.getDataList();
+							if(!CommonUtils.isListNullOrEmpty(list)){
+								StorageDetailsResponse response = null;
+								try {
+									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								fpImagePath = response.getFilePath();	
+							}
+						}
+					} catch (DocumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					spClientDetail.setClientImagePath(fpImagePath);
+					
 					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
 					List<ProductDetailsForSp> fpProductsDetails = new ArrayList<ProductDetailsForSp>();
 					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
