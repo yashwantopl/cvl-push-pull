@@ -17,6 +17,37 @@ public class LoanApplicationDetailsForSp {
 	
 	private boolean hasAlreadyApplied;
 	
+	private Integer notificationCount;
+	
+	private List<SpSysNotifyResponse> sysNotifyResponse;
+	
+	
+	
+	
+	
+	public List<SpSysNotifyResponse> getSysNotifyResponse() {
+		return sysNotifyResponse;
+	}
+
+	public void setSysNotifyResponse(List<SpSysNotifyResponse> sysNotifyResponse) {
+		this.sysNotifyResponse = sysNotifyResponse;
+	}
+	
+	public SpSysNotifyResponse addCompanyHistoryAssociateEntitiesOther(SpSysNotifyResponse sysNotifyResponse) {
+		getSysNotifyResponse().add(sysNotifyResponse);
+		return sysNotifyResponse;
+	}
+
+	
+
+	public Integer getNotificationCount() {
+		return notificationCount;
+	}
+
+	public void setNotificationCount(Integer notificationCount) {
+		this.notificationCount = notificationCount;
+	}
+
 	private List<RecentProfileViewResponse> recentProfileViewList;
 	
 	public List<RecentProfileViewResponse> getRecentProfileViewList() {

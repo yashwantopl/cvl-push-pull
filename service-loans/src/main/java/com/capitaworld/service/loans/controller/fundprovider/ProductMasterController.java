@@ -348,4 +348,30 @@ public class ProductMasterController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/checkParameterIsFilled/{fpMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkParameterIsFilled(@PathVariable("fpMappingId") Long fpMappingId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "checkParameterIsFilled");
+		try {
+			
+			if (fpMappingId == null) {
+				CommonDocumentUtils.endHook(logger, "checkParameterIsFilled");
+				logger.warn("fpMappingId  Require to check parameter filled or not==>" + fpMappingId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(productMasterService.checkParameterIsFilled(fpMappingId));
+			CommonDocumentUtils.endHook(logger, "checkParameterIsFilled");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while checking fp parameter filled or not ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

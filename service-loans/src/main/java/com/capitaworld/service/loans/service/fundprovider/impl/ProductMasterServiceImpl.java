@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -198,6 +199,33 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public ProductMaster getProductMaster(Long id) {
 		// TODO Auto-generated method stub
 		return productMasterRepository.findOne(id);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject checkParameterIsFilled(Long productId) {
+		// TODO Auto-generated method stub
+		ProductMaster productMaster = productMasterRepository.findOne(productId);
+		JSONObject obj = new JSONObject();
+		if(CommonUtils.isObjectNullOrEmpty(productMaster)){
+			obj.put("status", false);
+			obj.put("message", "Product id is not valid");
+			return obj;
+		}
+		if(!productMaster.getIsActive()){
+			obj.put("status", false);
+			obj.put("message", "Requested User is In Active");
+			return obj; 
+		}
+		if(!productMaster.getIsParameterFilled()){
+			obj.put("status", false);
+			obj.put("message", "Requested user has not filled parameter yet");
+			return obj; 
+		}
+		obj.put("status", true);
+		obj.put("message", "Show teaser view");
+		return obj;
 	}
 
 	@Override
