@@ -66,7 +66,9 @@ public class CommonController {
 		
 		Long finalUserId = userId; 
 		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
-			finalUserId = clientId;
+			if (!CommonUtils.isObjectNullOrEmpty(clientId)){
+				finalUserId = clientId;	
+			}
 			longLatrequest.setClientId(clientId);
 		}
 		
@@ -131,7 +133,9 @@ public class CommonController {
 		
 		Long finalUserId = userId; 
 		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
-			finalUserId = clientId;
+			if (!CommonUtils.isObjectNullOrEmpty(clientId)){
+				finalUserId = clientId;	
+			}
 			longLatrequest.setClientId(clientId);
 		}
 		
