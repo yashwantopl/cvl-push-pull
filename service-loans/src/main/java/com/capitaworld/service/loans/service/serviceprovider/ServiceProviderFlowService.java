@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 
 
 import com.capitaworld.service.loans.model.SpClientListing;
+import com.capitaworld.service.loans.model.SpSysNotifyResponse;
 
 public interface ServiceProviderFlowService {
 
@@ -14,5 +15,8 @@ public interface ServiceProviderFlowService {
 
 
   public JSONObject spClientCount(Long spId) throws Exception;
+
+
+  public List<SpSysNotifyResponse> spClientNotifications(Long valueOf) throws Exception;
 
 }
