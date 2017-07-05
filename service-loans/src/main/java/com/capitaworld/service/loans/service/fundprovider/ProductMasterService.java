@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider;
 import java.io.IOException;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -35,4 +36,6 @@ public interface ProductMasterService {
 	public boolean isProductMatched(Long userId,MultipleFpPruductRequest multipleFpPruductRequest) throws IOException;
 	
 	public int setIsMatchProduct(Long id,  Long userId);
+	
+	public JSONObject checkParameterIsFilled(Long productId);
 }
