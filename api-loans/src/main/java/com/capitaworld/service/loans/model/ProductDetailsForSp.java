@@ -17,6 +17,24 @@ public class ProductDetailsForSp {
 	private Integer notificationCount;
 	
 	
+	private List<SpSysNotifyResponse> sysNotifyResponse;
+	
+	
+	
+	
+	
+	public List<SpSysNotifyResponse> getSysNotifyResponse() {
+		return sysNotifyResponse;
+	}
+
+	public void setSysNotifyResponse(List<SpSysNotifyResponse> sysNotifyResponse) {
+		this.sysNotifyResponse = sysNotifyResponse;
+	}
+	
+	public SpSysNotifyResponse addCompanyHistoryAssociateEntitiesOther(SpSysNotifyResponse sysNotifyResponse) {
+		getSysNotifyResponse().add(sysNotifyResponse);
+		return sysNotifyResponse;
+	}
 	
 	public Integer getNotificationCount() {
 		return notificationCount;
