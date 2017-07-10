@@ -42,19 +42,33 @@ public class DashboardServiceImpl implements DashboardService {
 	private UsersClient usersClient;
 
 	@Override
-	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId) throws Exception {
+	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
 		// TODO Auto-generated method stub
-		Integer productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+		CommonDocumentUtils.startHook(logger, "getBasicProfileInfo");
+		
+		Integer productId = null;
+		if(isSP){
+			productId = loanApplicationRepository.getProductIdByApplicationIdForSP(applicationId, userId);
+		}else{
+			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
+		}
 		DashboardProfileResponse dashboardProfileResponse = null;
 		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.getByApplicationAndUserId(userId, applicationId);
+			CorporateApplicantDetail corporateApplicantDetail = null;
+			if(isSP){
+				corporateApplicantDetail = corporateApplicantDetailRepository
+						.getByApplicationAndUserIdForSP(userId, applicationId);
+			}else{
+				corporateApplicantDetail = corporateApplicantDetailRepository
+						.getByApplicationAndUserId(userId, applicationId);	
+			}
+			
 
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(corporateApplicantDetail.getId());
@@ -85,10 +99,17 @@ public class DashboardServiceImpl implements DashboardService {
 		} else {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
-
-			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-					.getByApplicationAndUserId(userId, applicationId);
+			RetailApplicantDetail retailApplicantDetail = null;
+			if(isSP){
+				retailApplicantDetail = retailApplicantDetailRepository
+						.getByApplicationAndUserIdForSP(userId, applicationId);
+			}else{
+				retailApplicantDetail = retailApplicantDetailRepository
+						.getByApplicationAndUserId(userId, applicationId);	
+			}
+			
 			if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
@@ -118,16 +139,19 @@ public class DashboardServiceImpl implements DashboardService {
 			dashboardProfileResponse.setName(name);
 		}
 		dashboardProfileResponse.setAddress();
+		CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
 		return dashboardProfileResponse;
 	}
 
 	@Override
 	public Integer getCount(int userType) throws Exception {
+		CommonDocumentUtils.startHook(logger, "getCount");
 		try {
 			UserResponse response = usersClient.getActiveUserCount(userType);
 			if (response != null) {
 				return (Integer) response.getData();
 			}
+			CommonDocumentUtils.endHook(logger, "getCount");
 			return 0;
 		} catch (Exception e) {
 			logger.error("Error while getting count for Dashbord");
@@ -138,7 +162,9 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public UserResponse getFPBasicProfileInfo(Long userId) throws Exception {
+		CommonDocumentUtils.startHook(logger, "getFPBasicProfileInfo");
 		try {
+			CommonDocumentUtils.endHook(logger, "getFPBasicProfileInfo");
 			return usersClient.getFPDashboardDetails(userId);
 		} catch (Exception e) {
 			logger.error("Error while getting FP Details on Dashbord");

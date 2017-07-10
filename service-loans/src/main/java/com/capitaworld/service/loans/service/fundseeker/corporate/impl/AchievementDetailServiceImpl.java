@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
@@ -31,6 +32,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				AchievementDetailRequest achievementDetailRequest = (AchievementDetailRequest) MultipleJSONObjectHelper
@@ -46,11 +48,12 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 				achievementDetail.setModifiedDate(new Date());
 				achievementDetailsRepository.save(achievementDetail);
 			}
+			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 			return true;
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save achievementDetail  :-");
+			logger.error("Exception  in save achievementDetail  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -60,6 +63,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	@Override
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId, Long userId) throws Exception {
 		try {
+			CommonDocumentUtils.startHook(logger, "getAchievementDetailList");
 			List<AchievementDetail> achievementDetails = achievementDetailsRepository
 					.listAchievementFromAppId(applicationId,userId);
 			List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>(
@@ -70,9 +74,10 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 				BeanUtils.copyProperties(detail, achievementDetailRequest);
 				achievementDetailRequests.add(achievementDetailRequest);
 			}
+			CommonDocumentUtils.endHook(logger, "getAchievementDetailList");
 			return achievementDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception getting achievementDetail  :-");
+			logger.error("Exception getting achievementDetail  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
