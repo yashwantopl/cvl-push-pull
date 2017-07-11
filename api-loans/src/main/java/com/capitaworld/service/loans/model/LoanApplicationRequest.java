@@ -47,6 +47,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String applicationCode;
 	
 	private Integer status;
+	
+	private Double primaryFilledCount;
 
 	public LoanApplicationRequest() {
 	}
@@ -204,6 +206,13 @@ public class LoanApplicationRequest implements Serializable {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
+
+	public Double getPrimaryFilledCount() {
+		return primaryFilledCount;
+	}
+
+	public void setPrimaryFilledCount(Double primaryFilledCount) {
+		this.primaryFilledCount = primaryFilledCount;
+	}
 
 }

@@ -105,9 +105,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			saveSubSector(applicantDetail.getApplicationId().getId(), applicantRequest.getSubsectors());
 
 			// Setting Flag to applicantDetailFilled or not
-			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
+			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantDetail.getApplicationId().getId(),
 					finalUserId, CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsApplicantDetailsFilled()) ? false
 							: applicantRequest.getIsApplicantDetailsFilled());
+
+			// Updating Profile Filled Count
+			loanApplicationRepository.setProfileFilledCount(applicantDetail.getApplicationId().getId(), finalUserId,
+					applicantRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -132,6 +136,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(applicationId));
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());				
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -440,8 +445,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
 		try {
-			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId; 
-			
+			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId;
+
 			int latLong = 1;
 			long applicantCount = applicantDetailRepository.getApplicantCount(finalUserId, request.getId());
 			if (applicantCount == 0) {
@@ -479,8 +484,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			} else {
 				LongitudeLatitudeRequest request = new LongitudeLatitudeRequest();
 				Object[] objects = latLons.get(0);
-				request.setLatitude(!CommonUtils.isObjectNullOrEmpty(objects[0]) ? Double.valueOf(objects[0].toString()) : null);
-				request.setLongitude(!CommonUtils.isObjectNullOrEmpty(objects[1]) ? Double.valueOf(objects[1].toString()) : null);
+				request.setLatitude(
+						!CommonUtils.isObjectNullOrEmpty(objects[0]) ? Double.valueOf(objects[0].toString()) : null);
+				request.setLongitude(
+						!CommonUtils.isObjectNullOrEmpty(objects[1]) ? Double.valueOf(objects[1].toString()) : null);
 				return request;
 			}
 

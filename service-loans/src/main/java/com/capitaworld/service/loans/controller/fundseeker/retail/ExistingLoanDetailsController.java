@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -39,7 +40,10 @@ public class ExistingLoanDetailsController {
 	private ExistingLoanDetailsService existingLoanDetailsService;
 	
 	@Autowired
-	private RetailApplicantService retailApplicantService; 
+	private RetailApplicantService retailApplicantService;
+	
+	@Autowired
+	private CoApplicantService coApplicantService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -104,7 +108,22 @@ public class ExistingLoanDetailsController {
 					applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			Integer currencyId = retailApplicantService.getCurrency(id,userId);
+			Integer currencyId = null;
+			Long applicantIdById = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				currencyId = retailApplicantService.getCurrency(id,userId);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				applicantIdById = coApplicantService.getApplicantIdById(id);				
+				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				applicantIdById = coApplicantService.getApplicantIdById(id);				
+				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				break;
+			}
+			
 			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
