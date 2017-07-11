@@ -157,9 +157,10 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			loanApplicationService.inActive(id, userId);
+			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.inActive(id, userId));
 			CommonDocumentUtils.endHook(logger, "inActive");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Inactivated", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(loansResponse,
 					HttpStatus.OK);
 
 		} catch (Exception e) {
