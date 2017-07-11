@@ -31,4 +31,7 @@ public interface GuarantorDetailsRepository extends JpaRepository<GuarantorDetai
 	
 	@Query("select gua.id from GuarantorDetails gua where gua.applicationId.id =:applicationId and gua.isActive = true and gua.applicationId.userId =:userId ORDER BY gua.id")
 	public List<Long> getGuarantorIds(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select gua.applicationId.id from GuarantorDetails gua where gua.id =:id and gua.isActive = true")
+	public Long getApplicantIdById(@Param("id") Long id);
 }

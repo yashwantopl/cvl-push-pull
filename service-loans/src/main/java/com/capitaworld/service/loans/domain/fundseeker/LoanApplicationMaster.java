@@ -150,13 +150,13 @@ public class LoanApplicationMaster implements Serializable {
 	//Filled Count
 	
 	@Column(name = "details_filled_count")
-	private Boolean detailsFilledCount;
+	private Double detailsFilledCount;
 	
 	@Column(name = "primary_filled_count")
-	private Boolean primaryFilledCount;
+	private Double primaryFilledCount;
 	
 	@Column(name = "final_filled_count")
-	private Boolean finalFilledCount;
+	private Double finalFilledCount;
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
@@ -450,30 +450,29 @@ public class LoanApplicationMaster implements Serializable {
 		this.finalFilledTime = finalFilledTime;
 	}
 
-	public Boolean getDetailsFilledCount() {
+	public Double getDetailsFilledCount() {
 		return detailsFilledCount;
 	}
 
-	public void setDetailsFilledCount(Boolean detailsFilledCount) {
+	public void setDetailsFilledCount(Double detailsFilledCount) {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public Boolean getPrimaryFilledCount() {
+	public Double getPrimaryFilledCount() {
 		return primaryFilledCount;
 	}
 
-	public void setPrimaryFilledCount(Boolean primaryFilledCount) {
+	public void setPrimaryFilledCount(Double primaryFilledCount) {
 		this.primaryFilledCount = primaryFilledCount;
 	}
 
-	public Boolean getFinalFilledCount() {
+	public Double getFinalFilledCount() {
 		return finalFilledCount;
 	}
 
-	public void setFinalFilledCount(Boolean finalFilledCount) {
+	public void setFinalFilledCount(Double finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
-	
 
 	public String getApplicationCode() {
 		return applicationCode;
@@ -485,26 +484,7 @@ public class LoanApplicationMaster implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LoanApplicationMaster [id=" + id + ", amount=" + amount + ", categoryCode=" + categoryCode
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", isActive=" + isActive
-				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name
-				+ ", applicationCode=" + applicationCode + ", productId=" + productId + ", tenure=" + tenure
-				+ ", userId=" + userId + ", currencyId=" + currencyId + ", denominationId=" + denominationId
-				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", isApplicantPrimaryFilled="
-				+ isApplicantPrimaryFilled + ", isApplicantFinalFilled=" + isApplicantFinalFilled
-				+ ", isCoApp1DetailsFilled=" + isCoApp1DetailsFilled + ", isCoApp1FinalFilled=" + isCoApp1FinalFilled
-				+ ", isCoApp2DetailsFilled=" + isCoApp2DetailsFilled + ", isCoApp2FinalFilled=" + isCoApp2FinalFilled
-				+ ", isGuarantor1DetailsFilled=" + isGuarantor1DetailsFilled + ", isGuarantor1FinalFilled="
-				+ isGuarantor1FinalFilled + ", isGuarantor2DetailsFilled=" + isGuarantor2DetailsFilled
-				+ ", isGuarantor2FinalFilled=" + isGuarantor2FinalFilled + ", isPrimaryUploadFilled="
-				+ isPrimaryUploadFilled + ", isFinalDprUploadFilled=" + isFinalDprUploadFilled
-				+ ", isFinalUploadFilled=" + isFinalUploadFilled + ", isFinalMcqFilled=" + isFinalMcqFilled
-				+ ", isPrimaryLocked=" + isPrimaryLocked + ", isFinalLocked=" + isFinalLocked + ", detailsFilledTime="
-				+ detailsFilledTime + ", primaryFilledTime=" + primaryFilledTime + ", finalFilledTime="
-				+ finalFilledTime + ", detailsFilledCount=" + detailsFilledCount + ", primaryFilledCount="
-				+ primaryFilledCount + ", finalFilledCount=" + finalFilledCount + ", applicationStatusMaster="
-				+ applicationStatusMaster + "]";
+		return "LoanApplicationMaster [id=" + id + "]";
 	}
-
 
 }

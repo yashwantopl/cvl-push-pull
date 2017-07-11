@@ -314,40 +314,22 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		try {
 			FinalTermLoanRequest finalTermLoanRequest = finalTermLoanService.get(userId, toApplicationId);
 
-			response.setTechnologyType(finalTermLoanRequest.getTechnologyTypeId() != null
-					? TypeTechnology.getById(finalTermLoanRequest.getTechnologyTypeId()).getValue() : null);
-			response.setTechnologyPatented(finalTermLoanRequest.getTechnologyPatentedId() != null
-					? TechnologyPatented.getById(finalTermLoanRequest.getTechnologyPatentedId()).getValue() : null);
-			response.setTechnologyRequiresUpgradation(
-					finalTermLoanRequest.getTechnologyRequiresUpgradationId() != null
-							? TechnologyRequiresUpgradation
-									.getById(finalTermLoanRequest.getTechnologyRequiresUpgradationId()).getValue()
-							: null);
-			response.setMarketPosition(finalTermLoanRequest.getMarketingPositioningId() != null
-					? MarketPosition.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
-			response.setMarketingPositioning(finalTermLoanRequest.getMarketingPositioningId() != null
-					? MarketingPositioningNew.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
-			response.setMarketShareTurnover(finalTermLoanRequest.getMarketShareTurnoverId() != null
-					? MarketShareTurnover.getById(finalTermLoanRequest.getMarketShareTurnoverId()).getValue() : null);
-			response.setIndiaDistributionNetwork(finalTermLoanRequest.getIndiaDistributionNetworkId() != null
-					? IndiaDistributionNetwork.getById(finalTermLoanRequest.getIndiaDistributionNetworkId()).getValue()
-					: null);
-			response.setDistributionAndTieUps(finalTermLoanRequest.getDistributionAndMarketingTieUpsId()!=null?DistributionMarketingTieUps.getById(finalTermLoanRequest.getDistributionAndMarketingTieUpsId()).getValue():null);
-			response.setBrandAmbassador(finalTermLoanRequest.getBrandAmbassadorId()!=null?BrandAmbassador.getById(finalTermLoanRequest.getBrandAmbassadorId()).getValue():null);
-			response.setMarketingPositioning(finalTermLoanRequest.getMarketingPositioningId()!=null?MarketingPositioningNew.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue():null);
-			response.setProductServicesPerse(finalTermLoanRequest.getProductServicesPerseId() != null
-					? ProductServicesPerse.getById(finalTermLoanRequest.getProductServicesPerseId()).getValue() : null);
-			response.setEnvironmentCertification(finalTermLoanRequest.getEnvironmentCertificationId() != null
-					? EnvironmentCertification.getById(finalTermLoanRequest.getEnvironmentCertificationId()).getValue()
-					: null);
-			response.setAccountingSystems(finalTermLoanRequest.getAccountingSystemsId() != null
-					? AccountingSystems.getById(finalTermLoanRequest.getAccountingSystemsId()).getValue() : null);
-			response.setInternalAudit(finalTermLoanRequest.getInternalAuditId() != null
-					? InternalAudit.getById(finalTermLoanRequest.getInternalAuditId()).getValue() : null);
-			response.setCompetence(finalTermLoanRequest.getCompetenceId() != null
-					? Competence.getById(finalTermLoanRequest.getCompetenceId()).getValue() : null);
-			response.setExistingShareHolder(finalTermLoanRequest.getExistingShareHoldersId() != null
-					? ExistingShareholders.getById(finalTermLoanRequest.getExistingShareHoldersId()).getValue() : null);
+			response.setTechnologyType(finalTermLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalTermLoanRequest.getTechnologyTypeId()).getValue() : null);
+			response.setTechnologyPatented(finalTermLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalTermLoanRequest.getTechnologyPatentedId()).getValue() : null);
+			response.setTechnologyRequiresUpgradation(finalTermLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalTermLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
+			response.setMarketPosition(finalTermLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
+			response.setMarketingPositioning(finalTermLoanRequest.getMarketingPositioningId() != null ? MarketingPositioningNew.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
+			response.setMarketPositioningTop(finalTermLoanRequest.getMarketPositioningTopId() != null ? MarketPositioningTop.getById(finalTermLoanRequest.getMarketPositioningTopId()).getValue() : null);
+			response.setMarketShareTurnover(finalTermLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalTermLoanRequest.getMarketShareTurnoverId()).getValue() : null);
+			response.setIndiaDistributionNetwork(finalTermLoanRequest.getIndiaDistributionNetworkId() != null ? IndiaDistributionNetwork.getById(finalTermLoanRequest.getIndiaDistributionNetworkId()).getValue() : null);
+			response.setDistributionAndTieUps(finalTermLoanRequest.getDistributionAndMarketingTieUpsId() != null ? DistributionMarketingTieUps.getById(finalTermLoanRequest.getDistributionAndMarketingTieUpsId()).getValue() : null);
+			response.setBrandAmbassador(finalTermLoanRequest.getBrandAmbassadorId() != null ? BrandAmbassador.getById(finalTermLoanRequest.getBrandAmbassadorId()).getValue() : null);
+			response.setProductServicesPerse(finalTermLoanRequest.getProductServicesPerseId() != null ? ProductServicesPerse.getById(finalTermLoanRequest.getProductServicesPerseId()).getValue() : null);
+			response.setEnvironmentCertification(finalTermLoanRequest.getEnvironmentCertificationId() != null ? EnvironmentCertification.getById(finalTermLoanRequest.getEnvironmentCertificationId()).getValue() : null);
+			response.setAccountingSystems(finalTermLoanRequest.getAccountingSystemsId() != null ? AccountingSystems.getById(finalTermLoanRequest.getAccountingSystemsId()).getValue() : null);
+			response.setInternalAudit(finalTermLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalTermLoanRequest.getInternalAuditId()).getValue() : null);
+			response.setCompetence(finalTermLoanRequest.getCompetenceId() != null ? Competence.getById(finalTermLoanRequest.getCompetenceId()).getValue() : null);
+			response.setExistingShareHolder(finalTermLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalTermLoanRequest.getExistingShareHoldersId()).getValue() : null);
 
 			if (finalTermLoanRequest.getIsDependsMajorlyOnGovernment()) {
 				response.setMajorlyOnGovernment("Yes");

@@ -780,4 +780,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			throw new Exception("Error Occured while fetching CoApplicant Final Details");
 		}
 	}
+
+	@Override
+	public Long getApplicantIdById(Long id) throws Exception {
+		try{
+			return coApplicantDetailRepository.getApplicantIdById(id);			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Error While getting Applicant Id by CoApplicant ID");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	
 }

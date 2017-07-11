@@ -24,4 +24,6 @@ public interface GuarantorService {
 	
 	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception;
 	
+	public Long getApplicantIdById(Long id) throws Exception;
+	
 }
