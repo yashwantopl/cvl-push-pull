@@ -1,10 +1,20 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.*;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.*;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -13,56 +23,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
-import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
-import com.capitaworld.service.loans.model.retail.GuarantorRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
-import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
-import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Assets;
-import com.capitaworld.service.oneform.enums.CastCategory;
-import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IncomeDetails;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
-import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
-import com.capitaworld.service.oneform.enums.ReligionRetailMst;
-import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Title;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -168,7 +132,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
 	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception {
 		try {
@@ -378,46 +342,46 @@ public class GuarantorServiceImpl implements GuarantorService {
 					profileViewPLResponse.setNatureOfOccupationId(guarantorDetail.getOccupationId());
 					if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOccupationId())){
 						switch (guarantorDetail.getOccupationId().intValue()) {
-						case 2 : //Salaried
-							profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
-							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())){
-								if(guarantorDetail.getEmployedWithId() != 8){
-									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
-								}else{
-									profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+							case 2 : //Salaried
+								profileViewPLResponse.setCompanyName(guarantorDetail.getCompanyName());
+								if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmployedWithId())){
+									if(guarantorDetail.getEmployedWithId() != 8){
+										profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(guarantorDetail.getEmployedWithId()).getValue());
+									}else{
+										profileViewPLResponse.setEmployeeWith(guarantorDetail.getEmployedWithOther());
+									}
 								}
-							}
-							break;
-						case 3 : //Business
-						case 4 : //Self Employed
-							profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
-							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())){
-								if(guarantorDetail.getIndustryTypeId() != 16){
-									profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
-								}else{
-									profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
+								break;
+							case 3 : //Business
+							case 4 : //Self Employed
+								profileViewPLResponse.setEntityName(guarantorDetail.getEntityName());
+								if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIndustryTypeId())){
+									if(guarantorDetail.getIndustryTypeId() != 16){
+										profileViewPLResponse.setIndustryType(IndustryType.getById(guarantorDetail.getIndustryTypeId()).getValue());
+									}else{
+										profileViewPLResponse.setIndustryType(guarantorDetail.getIndustryTypeOther());
+									}
 								}
-							}
-							break;
-						case 5 ://Self Employed Professional
-							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())){
-								if(guarantorDetail.getSelfEmployedOccupationId().intValue() != 10){
-									profileViewPLResponse.setOccupation(Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
-								}else{
-									profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
+								break;
+							case 5 ://Self Employed Professional
+								if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())){
+									if(guarantorDetail.getSelfEmployedOccupationId().intValue() != 10){
+										profileViewPLResponse.setOccupation(Occupation.getById(guarantorDetail.getSelfEmployedOccupationId()).getValue());
+									}else{
+										profileViewPLResponse.setOccupation(guarantorDetail.getSelfEmployedOccupationOther());
+									}
 								}
-							}
-							break;
-						case 6://Agriculturist
-							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())){
-								profileViewPLResponse.setLandSize(LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
-							}
-							if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())){
-								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
-							}
-							break;
-						default:
-							break;
+								break;
+							case 6://Agriculturist
+								if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())){
+									profileViewPLResponse.setLandSize(LandSize.getById(guarantorDetail.getLandSize().intValue()).getValue());
+								}
+								if(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAlliedActivityId())){
+									profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
+								}
+								break;
+							default:
+								break;
 						}
 					}
 
@@ -442,46 +406,46 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 					// set uploads
 					switch (productId) {
-					case 3:// HOME LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 7:// PERSONAL LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 12:// CAR_LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 13:// LOAN_AGAINST_PROPERTY
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
+						case 3:// HOME LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 7:// PERSONAL LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 12:// CAR_LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 13:// LOAN_AGAINST_PROPERTY
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+									DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
 					}
 
 					plResponses.add(profileViewPLResponse);
@@ -536,7 +500,8 @@ public class GuarantorServiceImpl implements GuarantorService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : null);
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?(guarantorDetail.getIsSpouseEmployed()==true ? "Yes" : "No") :"-");
+									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?guarantorDetail.getIsSpouseEmployed().toString()
+											: null);
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
 											? guarantorDetail.getNoChildren().toString() : null);
@@ -562,7 +527,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					finalViewResponse
 							.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getQualifyingYear())
 									? monthFormat.format(guarantorDetail.getQualifyingYear()) + "/" + yearFormat.format(guarantorDetail.getQualifyingYear())
-							: null);
+									: null);
 					finalViewResponse.setInstituteName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getInstitute())
 							? guarantorDetail.getInstitute() : null);
 					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidenceType())) {
@@ -590,7 +555,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									.setEmploymentStatus(
 											!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getEmploymentStatus())
 													? EmploymentStatusRetailMst
-															.getById(guarantorDetail.getEmploymentStatus()).getValue()
+													.getById(guarantorDetail.getEmploymentStatus()).getValue()
 													: null);
 							finalViewResponse.setCurrentIndustry(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentIndustry())
@@ -642,16 +607,16 @@ public class GuarantorServiceImpl implements GuarantorService {
 											? guarantorDetail.getUnattended() : null);
 						} else if (guarantorDetail.getOccupationId() == 3 || guarantorDetail.getOccupationId() == 4
 								|| guarantorDetail.getOccupationId() == 5) {// business/self
-																			// employed
-																			// prof/self
-																			// employed
+							// employed
+							// prof/self
+							// employed
 							finalViewResponse
 									.setEntityName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNameOfEntity())
 											? guarantorDetail.getNameOfEntity() : null);
 							finalViewResponse.setOwnershipType(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOwnershipType())
 											? OwnershipTypeRetailMst.getById(guarantorDetail.getOwnershipType())
-													.getValue()
+											.getValue()
 											: null);
 							finalViewResponse
 									.setOfficeType(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOfficeType())
@@ -663,11 +628,8 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setNameOfPartners(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPartnersName())
 											? guarantorDetail.getPartnersName() : null);
-							finalViewResponse.setBusinessEstablishmentYear(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate())
-											? guarantorDetail.getBusinessStartDate().getMonth() + "/"
-													+ guarantorDetail.getBusinessStartDate().getYear()
-											: null);
+							SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
+							finalViewResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? format.format(guarantorDetail.getBusinessStartDate()) : null);
 							finalViewResponse
 									.setShareHolding(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getShareHolding())
 											? guarantorDetail.getShareHolding() : null);
@@ -677,11 +639,8 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse.setTradeLicenseNo(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseNumber())
 											? guarantorDetail.getTradeLicenseNumber() : null);
-							finalViewResponse.setTradeExpiryDate(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseExpiryDate())
-											? guarantorDetail.getTradeLicenseExpiryDate().getMonth() + "/"
-													+ guarantorDetail.getTradeLicenseExpiryDate().getYear()
-											: null);
+
+							finalViewResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTradeLicenseExpiryDate()) ? format.format(guarantorDetail.getTradeLicenseExpiryDate()) : null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPoaHolderName())
 											? guarantorDetail.getPoaHolderName() : null);
@@ -700,21 +659,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
-						cardsDetailResponse
-								.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber())
-										? cardsDetailRequest.getCardNumber() : "NA");
-						cardsDetailResponse
-								.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName())
-										? cardsDetailRequest.getIssuerName() : "NA");
-						/*
-						 * cardsDetailResponse.setCreditCardTypes(!CommonUtils.
-						 * isObjectNullOrEmpty(cardsDetailRequest.
-						 * getCreditCardTypesId()) ? C
-						 * cardsDetailRequest.getIssuerName() : "NA");
-						 */
-						cardsDetailResponse.setOutstandingBalance(
-								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
-										? cardsDetailRequest.getOutstandingBalance().toString() : "NA");
+						cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : null);
+						cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName() : null);
+						cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue():null);
+						cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : null);
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
