@@ -328,7 +328,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			}
 			
 			lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
+			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure()/12) : "NA");
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
 				lapResponse.setPropertyType(PropertyType.getById(loanDetail.getPropertyType()).getValue());
 				if(loanDetail.getPropertyType() == 4){
@@ -416,8 +416,6 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		}
 		
 		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-		lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? loanDetail.getTenure().toString() : "NA");
-		
 		lapPrimaryViewResponse.setLapResponse(lapResponse);
 		
 		//setting co-application details
