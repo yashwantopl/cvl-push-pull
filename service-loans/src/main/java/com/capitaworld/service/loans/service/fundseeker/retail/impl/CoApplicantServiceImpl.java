@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
@@ -125,7 +124,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
 	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
 		try{
@@ -337,46 +336,46 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					profileViewPLResponse.setNatureOfOccupationId(coApplicantDetail.getOccupationId());
 					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())){
 						switch (coApplicantDetail.getOccupationId().intValue()) {
-						case 2 : //Salaried
-							profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
-							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())){
-								if(coApplicantDetail.getEmployedWithId() != 8){
-									profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
-								}else{
-									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
+							case 2 : //Salaried
+								profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
+								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())){
+									if(coApplicantDetail.getEmployedWithId() != 8){
+										profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+									}else{
+										profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
+									}
 								}
-							}
-							break;
-						case 3 : //Business
-						case 4 : //Self Employed
-							profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
-							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())){
-								if(coApplicantDetail.getIndustryTypeId() != 16){
-									profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
-								}else{
-									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
+								break;
+							case 3 : //Business
+							case 4 : //Self Employed
+								profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
+								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())){
+									if(coApplicantDetail.getIndustryTypeId() != 16){
+										profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+									}else{
+										profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
+									}
 								}
-							}
-							break;
-						case 5 ://Self Employed Professional
-							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())){
-								if(coApplicantDetail.getSelfEmployedOccupationId().intValue() != 10){
-									profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
-								}else{
-									profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
+								break;
+							case 5 ://Self Employed Professional
+								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())){
+									if(coApplicantDetail.getSelfEmployedOccupationId().intValue() != 10){
+										profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+									}else{
+										profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
+									}
 								}
-							}
-							break;
-						case 6://Agriculturist
-							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())){
-								profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
-							}
-							if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())){
-								profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
-							}
-							break;
-						default:
-							break;
+								break;
+							case 6://Agriculturist
+								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())){
+									profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
+								}
+								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())){
+									profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
+								}
+								break;
+							default:
+								break;
 						}
 					}
 
@@ -402,46 +401,46 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							coApplicantDetail.getMonthlyIncome() != null ? String.format("%.2f",coApplicantDetail.getMonthlyIncome()) : 0));
 					// set uploads
 					switch (productId) {
-					case 3:// HOME LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 7:// PERSONAL LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 12:// CAR_LOAN
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 13:// LOAN_AGAINST_PROPERTY
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
-					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
-						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-						break;
+						case 3:// HOME LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 7:// PERSONAL LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 12:// CAR_LOAN
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 13:// LOAN_AGAINST_PROPERTY
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
+						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+									DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+							break;
 					}
 					plResponses.add(profileViewPLResponse);
 				}
@@ -496,7 +495,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
 											? coApplicantDetail.getSpouseName() : null);
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ?coApplicantDetail.getIsSpouseEmployed().toString() 
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ?coApplicantDetail.getIsSpouseEmployed().toString()
 											: null);
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())
@@ -550,7 +549,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setEmploymentStatus(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus())
 													? EmploymentStatusRetailMst
-															.getById(coApplicantDetail.getEmploymentStatus()).getValue()
+													.getById(coApplicantDetail.getEmploymentStatus()).getValue()
 													: null);
 							finalViewResponse.setCurrentIndustry(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentIndustry())
@@ -603,9 +602,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 											? coApplicantDetail.getUnattended() : null);
 						} else if (coApplicantDetail.getOccupationId() == 3 || coApplicantDetail.getOccupationId() == 4
 								|| coApplicantDetail.getOccupationId() == 5) {// business/self
-																				// employed
-																				// prof/self
-																				// employed
+							// employed
+							// prof/self
+							// employed
 							finalViewResponse
 									.setEntityName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNameOfEntity())
 											? coApplicantDetail.getNameOfEntity() : null);
@@ -625,11 +624,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse.setNameOfPartners(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPartnersName())
 											? coApplicantDetail.getPartnersName() : null);
+							SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
 							finalViewResponse
 									.setBusinessEstablishmentYear(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())
-													? coApplicantDetail.getBusinessStartDate().getMonth() + "/"
-													+ coApplicantDetail.getBusinessStartDate().getYear()
+													? format.format(coApplicantDetail.getBusinessStartDate())
 													: null);
 							finalViewResponse.setShareHolding(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareHolding())
@@ -642,8 +641,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 											? coApplicantDetail.getTradeLicenseNumber() : null);
 							finalViewResponse.setTradeExpiryDate(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate())
-											? coApplicantDetail.getTradeLicenseExpiryDate().getMonth() + "/"
-											+ coApplicantDetail.getTradeLicenseExpiryDate().getYear()
+											? format.format(coApplicantDetail.getTradeLicenseExpiryDate())
 											: null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPoaHolderName())
@@ -663,21 +661,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
-						cardsDetailResponse
-								.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber())
-										? cardsDetailRequest.getCardNumber() : null);
-						cardsDetailResponse
-								.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName())
-										? cardsDetailRequest.getIssuerName() : null);
-						/*
-						 * cardsDetailResponse.setCreditCardTypes(!CommonUtils.
-						 * isObjectNullOrEmpty(cardsDetailRequest.
-						 * getCreditCardTypesId()) ? C
-						 * cardsDetailRequest.getIssuerName() : "NA");
-						 */
-						cardsDetailResponse.setOutstandingBalance(
-								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
-										? cardsDetailRequest.getOutstandingBalance().toString() : null);
+						cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : null);
+						cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName() : null);
+						cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId())? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue() : null);
+						cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : null);
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);

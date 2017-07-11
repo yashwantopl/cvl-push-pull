@@ -23,37 +23,37 @@ import java.util.List;
 @Transactional
 public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantService{
 	private static final Logger logger = LoggerFactory.getLogger(RetailFinalCommonServiceImpl.class);
-	
+
 	@Autowired
-	private CreditCardsDetailService creditCardDetailsService; 
-	
+	private CreditCardsDetailService creditCardDetailsService;
+
 	@Autowired
 	private ExistingLoanDetailsService existingLoanService;
-	
+
 	@Autowired
 	private BankAccountHeldDetailService bankAccountsHeldService;
-	
+
 	@Autowired
 	private FixedDepositsDetailService fixedDepositService;
-	
+
 	@Autowired
 	private OtherCurrentAssetDetailService otherCurrentAssetService;
-	
+
 	@Autowired
 	private OtherIncomeDetailService otherIncomeService;
-	
+
 	@Autowired
 	private ReferenceRetailDetailsService referenceService;
-	
+
 	@Autowired
 	private DocumentManagementService documentManagementService;
-	
+
 	@Override
 	public RetailFinalViewCommonResponse getApplicantCommonInfo(Long applicantId,RetailApplicantDetail applicantDetail,int productId) {
 		RetailFinalViewCommonResponse finalViewCommonResponse = new RetailFinalViewCommonResponse();
 		try {
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getCastId())){
-				finalViewCommonResponse.setCaste(CastCategory.getById(applicantDetail.getCastId()).getValue());	
+				finalViewCommonResponse.setCaste(CastCategory.getById(applicantDetail.getCastId()).getValue());
 				if(applicantDetail.getCastId() == 6){
 					finalViewCommonResponse.setCasteOther(applicantDetail.getCastOther());
 				}
@@ -61,7 +61,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				finalViewCommonResponse.setCaste("-");
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getReligion())){
-				finalViewCommonResponse.setReligion(ReligionRetailMst.getById(applicantDetail.getReligion()).getValue());	
+				finalViewCommonResponse.setReligion(ReligionRetailMst.getById(applicantDetail.getReligion()).getValue());
 				if(applicantDetail.getReligion() == 8){
 					finalViewCommonResponse.setReligionOther(applicantDetail.getReligionOther());
 				}
@@ -125,40 +125,41 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setRainFed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRainFed()) ?  applicantDetail.getRainFed() : "-");
 					finalViewCommonResponse.setUnAttended(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getUnattended()) ?  applicantDetail.getUnattended() : "-");
 				}else if(applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4 || applicantDetail.getOccupationId() == 5){//business/self employed prof/self employed
-					finalViewCommonResponse.setEntityName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNameOfEntity()) ?  applicantDetail.getNameOfEntity() : "-");
-					finalViewCommonResponse.setOwnershipType(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOwnershipType()) ?  OwnershipTypeRetailMst.getById(applicantDetail.getOwnershipType()).getValue() : "-");
-					finalViewCommonResponse.setOfficeType(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeType()) ?  OfficeTypeRetailMst.getById(applicantDetail.getOfficeType()).getValue() : "-");
-					finalViewCommonResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoPartners()) ?  applicantDetail.getNoPartners().toString() : "-");
-					finalViewCommonResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPartnersName()) ?  applicantDetail.getPartnersName() : "-");
-					finalViewCommonResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ?  applicantDetail.getBusinessStartDate().getMonth()+"/"+applicantDetail.getBusinessStartDate().getYear() : "-");
-					finalViewCommonResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getShareHolding()) ?  applicantDetail.getShareHolding() : "-");
-					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ?  applicantDetail.getAnnualTurnover().toString() : "-");
-					finalViewCommonResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseNumber()) ?  applicantDetail.getTradeLicenseNumber() : "-");
-					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  applicantDetail.getTradeLicenseExpiryDate().getMonth()+"/"+applicantDetail.getTradeLicenseExpiryDate().getYear() : "-");
+					finalViewCommonResponse.setEntityName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNameOfEntity()) ? applicantDetail.getNameOfEntity() : "-");
+					finalViewCommonResponse.setOwnershipType(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOwnershipType()) ? OwnershipTypeRetailMst.getById(applicantDetail.getOwnershipType()).getValue() : "-");
+					finalViewCommonResponse.setOfficeType(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeType()) ? OfficeTypeRetailMst.getById(applicantDetail.getOfficeType()).getValue() : "-");
+					finalViewCommonResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoPartners()) ? applicantDetail.getNoPartners().toString() : "-");
+					finalViewCommonResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPartnersName()) ? applicantDetail.getPartnersName() : "-");
+					SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
+					finalViewCommonResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? format.format(applicantDetail.getBusinessStartDate()) : "-");
+					finalViewCommonResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getShareHolding()) ? applicantDetail.getShareHolding() : "-");
+					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ? applicantDetail.getAnnualTurnover().toString() : "-");
+					finalViewCommonResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseNumber()) ? applicantDetail.getTradeLicenseNumber() : "-");
+					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  format.format(applicantDetail.getTradeLicenseExpiryDate()) : "-");
 					finalViewCommonResponse.setNameOfPoaHolder(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPoaHolderName()) ?  applicantDetail.getPoaHolderName() : "-");
 				}
 			}
 			List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService.getExistingLoanDetailList(applicantId,CommonUtils.ApplicantType.APPLICANT);
 			finalViewCommonResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
-			
+
 			List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			finalViewCommonResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
-			
+
 			List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 			for(CreditCardsDetailRequest cardsDetailRequest:creditCardsDetailRequestList){
 				CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
-				cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber()  : "-");
-				cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName()  : "-");
-				/*cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? C  cardsDetailRequest.getIssuerName()  : "-");*/
+				cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : "-");
+				cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName() : "-");
+				cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue() : "-");
 				cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : "-");
 				creditCardsDetailResponseList.add(cardsDetailResponse);
 			}
 			finalViewCommonResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
-			
+
 			List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			finalViewCommonResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
-			
+
 			List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
 			for(OtherCurrentAssetDetailRequest assetDetailRequest:otherCurrentAssetDetailRequestList){
@@ -169,7 +170,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				assetDetailResponseList.add(assetDetailResponse);
 			}
 			finalViewCommonResponse.setAssetDetailResponseList(assetDetailResponseList);
-			
+
 			List<OtherIncomeDetailRequest> otherIncomeDetailRequestsList = otherIncomeService.getOtherIncomeDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			List<OtherIncomeDetailResponse> incomeDetailResponseList = new ArrayList<OtherIncomeDetailResponse>();
 			for(OtherIncomeDetailRequest detailRequest : otherIncomeDetailRequestsList){
@@ -181,11 +182,11 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				incomeDetailResponseList.add(detailResponse);
 			}
 			finalViewCommonResponse.setIncomeDetailResponseList(incomeDetailResponseList);
-			
-			finalViewCommonResponse.setRepaymentMode(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRepaymentMode()) ? RepaymentModeRetailMst.getById(applicantDetail.getRepaymentMode()).getValue() :  "-");
-			finalViewCommonResponse.setRepaymentCycle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRepaymentCycle()) ? RepaymentModeRetailMst.getById(applicantDetail.getRepaymentCycle()).getValue() :  "-");
+
+			finalViewCommonResponse.setRepaymentMode(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRepaymentMode()) ? RepaymentModeRetailMst.getById(applicantDetail.getRepaymentMode()).getValue() : "-");
+			finalViewCommonResponse.setRepaymentCycle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRepaymentCycle()) ? RepaymentCycleRetailMst.getById(applicantDetail.getRepaymentCycle()).getValue() :  "-");
 			finalViewCommonResponse.setInterestRateOption(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getInterestRate()) ? InterestRateRetailMst.getById(applicantDetail.getInterestRate()).getValue() :  "-");
-			
+
 			List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService.getReferenceRetailDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			finalViewCommonResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
@@ -242,11 +243,11 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAS_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
 					break;
 			}
-			
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		}		
+		}
 		return finalViewCommonResponse;
 	}
 

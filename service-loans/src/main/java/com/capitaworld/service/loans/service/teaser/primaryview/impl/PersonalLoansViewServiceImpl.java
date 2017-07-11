@@ -235,7 +235,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				}
 
 				//set pan car
-				profileViewPLResponse.setPan(applicantDetail.getPan());
+				profileViewPLResponse.setPan(applicantDetail.getPan().toUpperCase());
 
 				//get list of Pan Card
 				try {
