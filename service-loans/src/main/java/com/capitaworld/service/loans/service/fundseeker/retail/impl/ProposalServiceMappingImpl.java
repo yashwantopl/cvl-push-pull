@@ -602,23 +602,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							
 							// for get address city state country
 							String address="";
-							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
+							if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
 							{
-								address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient);
+								address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient) +",";
 							}
 							else
 							{
 								address+="NA ,";
 							}
-							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
+							if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
 							{
-								address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient);
+								address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient) +",";
 							}
 							else
 							{
 								address+="NA ,";
 							}
-							if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
+							if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
 							{
 								address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
 							}
