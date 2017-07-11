@@ -74,7 +74,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())){
 				if(applicantDetail.getStatusId() == 2){
 					finalViewCommonResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSpouseName()) ? applicantDetail.getSpouseName() :"-");
-					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? Options.getById((applicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue() :"-");
+					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? (applicantDetail.getIsSpouseEmployed()==true ? "Yes" : "No") :"-");
 					finalViewCommonResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoChildren()) ? applicantDetail.getNoChildren().toString() : "-");
 				}
 			}
@@ -150,7 +150,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
 				cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber()  : "-");
 				cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName()  : "-");
-				/*cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? C  cardsDetailRequest.getIssuerName()  : "-");*/
+				cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue(): "-");
 				cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : "-");
 				creditCardsDetailResponseList.add(cardsDetailResponse);
 			}

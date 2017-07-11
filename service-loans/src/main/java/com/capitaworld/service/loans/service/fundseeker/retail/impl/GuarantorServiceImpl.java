@@ -536,8 +536,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : null);
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?guarantorDetail.getIsSpouseEmployed().toString()
-											: null);
+									!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIsSpouseEmployed()) ?(guarantorDetail.getIsSpouseEmployed()==true ? "Yes" : "No") :"-");
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
 											? guarantorDetail.getNoChildren().toString() : null);
