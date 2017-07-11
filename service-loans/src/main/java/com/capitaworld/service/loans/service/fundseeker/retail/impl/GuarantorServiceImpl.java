@@ -775,4 +775,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 			throw new Exception("Error Fetching Guarantor Details");
 		}
 	}
+	
+	@Override
+	public Long getApplicantIdById(Long id) throws Exception {
+		try{
+			return guarantorDetailsRepository.getApplicantIdById(id);			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Error While getting Applicant Id by Guarantor ID");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }

@@ -783,7 +783,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public Long getApplicantIdById(Long id) throws Exception {
-		return coApplicantDetailRepository.getApplicantIdById(id);
+		try{
+			return coApplicantDetailRepository.getApplicantIdById(id);			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Error While getting Applicant Id by CoApplicant ID");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 	
 	

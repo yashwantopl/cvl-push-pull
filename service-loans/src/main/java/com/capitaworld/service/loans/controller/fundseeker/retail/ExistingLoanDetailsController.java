@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -43,7 +44,10 @@ public class ExistingLoanDetailsController {
 	private RetailApplicantService retailApplicantService;
 	
 	@Autowired
-	private CoApplicantService coApplicantService; 
+	private CoApplicantService coApplicantService;
+	
+	@Autowired
+	private GuarantorService guarantorService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -119,7 +123,7 @@ public class ExistingLoanDetailsController {
 				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
 				break;
 			case CommonUtils.ApplicantType.GARRANTOR:
-				applicantIdById = coApplicantService.getApplicantIdById(id);				
+				applicantIdById = guarantorService.getApplicantIdById(id);				
 				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
 				break;
 			}
