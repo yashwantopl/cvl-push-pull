@@ -83,7 +83,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
 					finalUserId, applicantRequest.getIsApplicantDetailsFilled());
 			
-			// Updating Flag
+			// Updating Bowl Count
 			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
 
 			return true;

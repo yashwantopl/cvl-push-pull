@@ -116,6 +116,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							applicantRequest.getIsCoApp2DetailsFilled());
 				}
 			}
+			
+			// Updating Bowl Count
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -152,6 +155,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
 			applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
