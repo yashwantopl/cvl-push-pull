@@ -410,7 +410,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
 				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-				promotorBackgroundDetailResponse.setPromotorsName(promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null + " " + promotorBackgroundDetailRequest.getPromotorsName());
+				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + promotorBackgroundDetailRequest.getPromotorsName());
 				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
 				promotorBackgroundDetailResponse
 						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());

@@ -30,6 +30,7 @@ public class ProfileViewPLResponse {
 	private List<Object> panCardList;
 	private List<Object> aadharCardList;
 	private String age;
+	private String relationShipWithApplicant;
 	
 	
 	
@@ -141,6 +142,12 @@ public class ProfileViewPLResponse {
 	}
 	public void setEmployeeWith(String employeeWith) {
 		this.employeeWith = employeeWith;
+	}
+	public String getRelationShipWithApplicant() {
+		return relationShipWithApplicant;
+	}
+	public void setRelationShipWithApplicant(String relationShipWithApplicant) {
+		this.relationShipWithApplicant = relationShipWithApplicant;
 	}
 	
 	
