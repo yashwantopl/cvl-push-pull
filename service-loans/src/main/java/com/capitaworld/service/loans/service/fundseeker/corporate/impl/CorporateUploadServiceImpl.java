@@ -120,18 +120,21 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
-	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled)
+	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,String filledCount)
 			throws Exception {
 		try {
 			switch (tabType) {
 			case CommonUtils.TabType.PRIMARY_UPLOAD:
 				loanApplicationRepository.setIsPrimaryUploadMandatoryFilled(applicantId, userId, isFilled);
+				loanApplicationRepository.setPrimaryFilledCount(applicantId, userId, filledCount);
 				break;
 			case CommonUtils.TabType.FINAL_UPLOAD:
 				loanApplicationRepository.setIsFinalUploadMandatoryFilled(applicantId, userId, isFilled);
+				loanApplicationRepository.setFinalFilledCount(applicantId, userId, filledCount);
 				break;
 			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 				loanApplicationRepository.setIsFinalDprMandatoryFilled(applicantId, userId, isFilled);
+				loanApplicationRepository.setFinalFilledCount(applicantId, userId, filledCount);
 				break;
 			default:
 				break;

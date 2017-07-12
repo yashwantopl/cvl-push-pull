@@ -153,7 +153,7 @@ public class LoanApplicationMaster implements Serializable {
 	private Double detailsFilledCount;
 	
 	@Column(name = "primary_filled_count")
-	private Double primaryFilledCount;
+	private String primaryFilledCount;
 	
 	@Column(name = "final_filled_count")
 	private Double finalFilledCount;
@@ -458,11 +458,11 @@ public class LoanApplicationMaster implements Serializable {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public Double getPrimaryFilledCount() {
+	public String getPrimaryFilledCount() {
 		return primaryFilledCount;
 	}
 
-	public void setPrimaryFilledCount(Double primaryFilledCount) {
+	public void setPrimaryFilledCount(String primaryFilledCount) {
 		this.primaryFilledCount = primaryFilledCount;
 	}
 
