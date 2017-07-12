@@ -51,6 +51,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer year;
 	
 	private Boolean isApplicantDetailsFilled;
+	private String detailsFilledCount;
 
 	public RetailApplicantRequest() {
 	}
@@ -334,6 +335,12 @@ public class RetailApplicantRequest implements Serializable {
 	public void setCurrencyId(Integer currencyId) {
 		this.currencyId = currencyId;
 	}
-	
-	
+
+	public String getDetailsFilledCount() {
+		return detailsFilledCount;
+	}
+
+	public void setDetailsFilledCount(String detailsFilledCount) {
+		this.detailsFilledCount = detailsFilledCount;
+	}
 }

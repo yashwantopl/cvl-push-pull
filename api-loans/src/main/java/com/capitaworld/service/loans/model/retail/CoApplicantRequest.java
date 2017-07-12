@@ -41,6 +41,8 @@ public class CoApplicantRequest {
 	
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
+	
+	private String detailsFilledCount;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -323,5 +325,12 @@ public class CoApplicantRequest {
 		this.isCoApp2DetailsFilled = isCoApp2DetailsFilled;
 	}
 
+	public String getDetailsFilledCount() {
+		return detailsFilledCount;
+	}
+
+	public void setDetailsFilledCount(String detailsFilledCount) {
+		this.detailsFilledCount = detailsFilledCount;
+	}
 
 }

@@ -116,6 +116,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							applicantRequest.getIsCoApp2DetailsFilled());
 				}
 			}
+			
+			// Updating Bowl Count
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -152,6 +155,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
 			applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
@@ -889,4 +893,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			throw new Exception("Error Occured while fetching CoApplicant Final Details");
 		}
 	}
+
+	@Override
+	public Long getApplicantIdById(Long id) throws Exception {
+		try{
+			return coApplicantDetailRepository.getApplicantIdById(id);			
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("Error While getting Applicant Id by CoApplicant ID");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	
 }

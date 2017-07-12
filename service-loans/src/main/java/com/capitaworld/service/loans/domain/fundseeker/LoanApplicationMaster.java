@@ -150,13 +150,13 @@ public class LoanApplicationMaster implements Serializable {
 	//Filled Count
 	
 	@Column(name = "details_filled_count")
-	private Boolean detailsFilledCount;
+	private String detailsFilledCount;
 	
 	@Column(name = "primary_filled_count")
-	private Boolean primaryFilledCount;
+	private String primaryFilledCount;
 	
 	@Column(name = "final_filled_count")
-	private Boolean finalFilledCount;
+	private String finalFilledCount;
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
@@ -450,30 +450,13 @@ public class LoanApplicationMaster implements Serializable {
 		this.finalFilledTime = finalFilledTime;
 	}
 
-	public Boolean getDetailsFilledCount() {
-		return detailsFilledCount;
-	}
-
-	public void setDetailsFilledCount(Boolean detailsFilledCount) {
-		this.detailsFilledCount = detailsFilledCount;
-	}
-
-	public Boolean getPrimaryFilledCount() {
+	public String getPrimaryFilledCount() {
 		return primaryFilledCount;
 	}
 
-	public void setPrimaryFilledCount(Boolean primaryFilledCount) {
+	public void setPrimaryFilledCount(String primaryFilledCount) {
 		this.primaryFilledCount = primaryFilledCount;
 	}
-
-	public Boolean getFinalFilledCount() {
-		return finalFilledCount;
-	}
-
-	public void setFinalFilledCount(Boolean finalFilledCount) {
-		this.finalFilledCount = finalFilledCount;
-	}
-	
 
 	public String getApplicationCode() {
 		return applicationCode;
@@ -483,28 +466,25 @@ public class LoanApplicationMaster implements Serializable {
 		this.applicationCode = applicationCode;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanApplicationMaster [id=" + id + ", amount=" + amount + ", categoryCode=" + categoryCode
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", isActive=" + isActive
-				+ ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate + ", name=" + name
-				+ ", applicationCode=" + applicationCode + ", productId=" + productId + ", tenure=" + tenure
-				+ ", userId=" + userId + ", currencyId=" + currencyId + ", denominationId=" + denominationId
-				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", isApplicantPrimaryFilled="
-				+ isApplicantPrimaryFilled + ", isApplicantFinalFilled=" + isApplicantFinalFilled
-				+ ", isCoApp1DetailsFilled=" + isCoApp1DetailsFilled + ", isCoApp1FinalFilled=" + isCoApp1FinalFilled
-				+ ", isCoApp2DetailsFilled=" + isCoApp2DetailsFilled + ", isCoApp2FinalFilled=" + isCoApp2FinalFilled
-				+ ", isGuarantor1DetailsFilled=" + isGuarantor1DetailsFilled + ", isGuarantor1FinalFilled="
-				+ isGuarantor1FinalFilled + ", isGuarantor2DetailsFilled=" + isGuarantor2DetailsFilled
-				+ ", isGuarantor2FinalFilled=" + isGuarantor2FinalFilled + ", isPrimaryUploadFilled="
-				+ isPrimaryUploadFilled + ", isFinalDprUploadFilled=" + isFinalDprUploadFilled
-				+ ", isFinalUploadFilled=" + isFinalUploadFilled + ", isFinalMcqFilled=" + isFinalMcqFilled
-				+ ", isPrimaryLocked=" + isPrimaryLocked + ", isFinalLocked=" + isFinalLocked + ", detailsFilledTime="
-				+ detailsFilledTime + ", primaryFilledTime=" + primaryFilledTime + ", finalFilledTime="
-				+ finalFilledTime + ", detailsFilledCount=" + detailsFilledCount + ", primaryFilledCount="
-				+ primaryFilledCount + ", finalFilledCount=" + finalFilledCount + ", applicationStatusMaster="
-				+ applicationStatusMaster + "]";
+	public String getDetailsFilledCount() {
+		return detailsFilledCount;
 	}
 
+	public void setDetailsFilledCount(String detailsFilledCount) {
+		this.detailsFilledCount = detailsFilledCount;
+	}
+
+	public String getFinalFilledCount() {
+		return finalFilledCount;
+	}
+
+	public void setFinalFilledCount(String finalFilledCount) {
+		this.finalFilledCount = finalFilledCount;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanApplicationMaster [id=" + id + "]";
+	}
 
 }
