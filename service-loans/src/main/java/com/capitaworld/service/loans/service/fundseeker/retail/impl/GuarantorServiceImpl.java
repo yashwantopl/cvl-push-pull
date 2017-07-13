@@ -124,6 +124,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 							guarantorRequest.getIsGuarantor2DetailsFilled());
 				}
 			}
+			
+			// Updating Bowl Count
+			loanApplicationRepository.setProfileFilledCount(guarantorRequest.getApplicationId(), finalUserId, guarantorRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -160,6 +163,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			guaRequest.setDate(saperatedTime[0]);
 			guaRequest.setMonth(saperatedTime[1]);
 			guaRequest.setYear(saperatedTime[2]);
+			guaRequest.setDetailsFilledCount(guarantorDetail.getApplicationId().getDetailsFilledCount());
 			return guaRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Guarantor Retail Profile:-");
