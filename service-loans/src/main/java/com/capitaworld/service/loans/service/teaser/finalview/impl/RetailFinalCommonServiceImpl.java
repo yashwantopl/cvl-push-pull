@@ -1,23 +1,52 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.*;
-import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
+import com.capitaworld.service.loans.service.teaser.finalview.RetailFinalCommonApplicantService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.Assets;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.IncomeDetails;
+import com.capitaworld.service.oneform.enums.InterestRateRetailMst;
+import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
+import com.capitaworld.service.oneform.enums.Options;
+import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.RepaymentCycleRetailMst;
+import com.capitaworld.service.oneform.enums.RepaymentModeRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 
 @Service
 @Transactional
@@ -74,7 +103,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())){
 				if(applicantDetail.getStatusId() == 2){
 					finalViewCommonResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSpouseName()) ? applicantDetail.getSpouseName() :"-");
-					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? Options.getById((applicantDetail.getIsSpouseEmployed() ? 1 : 0)).getValue() :"-");
+					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? (applicantDetail.getIsSpouseEmployed()==true ? "Yes" : "No") :"-");
 					finalViewCommonResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoChildren()) ? applicantDetail.getNoChildren().toString() : "-");
 				}
 			}
@@ -101,6 +130,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			}else{
 				finalViewCommonResponse.setResidenceType("-");
 			}
+			finalViewCommonResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualRent()) ? applicantDetail.getAnnualRent().toString() : "-");
 			finalViewCommonResponse.setYearAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidingYear()) ? applicantDetail.getResidingYear().toString() : "-");
 			finalViewCommonResponse.setMonthsAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidingMonth()) ? applicantDetail.getResidingMonth().toString() : "-");
 			finalViewCommonResponse.setWebsite(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getWebsiteAddress()) ? applicantDetail.getWebsiteAddress() : "-");
@@ -130,12 +160,14 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setOfficeType(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeType()) ? OfficeTypeRetailMst.getById(applicantDetail.getOfficeType()).getValue() : "-");
 					finalViewCommonResponse.setNoOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoPartners()) ? applicantDetail.getNoPartners().toString() : "-");
 					finalViewCommonResponse.setNameOfPartners(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPartnersName()) ? applicantDetail.getPartnersName() : "-");
-					SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-					finalViewCommonResponse.setBusinessEstablishmentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? format.format(applicantDetail.getBusinessStartDate()) : "-");
+					SimpleDateFormat format = new SimpleDateFormat("yyyy");
+					finalViewCommonResponse.setBusinessEstablishmentYear(
+							!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? format.format(applicantDetail.getBusinessStartDate()) : "-");
 					finalViewCommonResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getShareHolding()) ? applicantDetail.getShareHolding() : "-");
 					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ? applicantDetail.getAnnualTurnover().toString() : "-");
 					finalViewCommonResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseNumber()) ? applicantDetail.getTradeLicenseNumber() : "-");
-					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  format.format(applicantDetail.getTradeLicenseExpiryDate()) : "-");
+					SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
+					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  format1.format(applicantDetail.getTradeLicenseExpiryDate()) : "-");
 					finalViewCommonResponse.setNameOfPoaHolder(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPoaHolderName()) ?  applicantDetail.getPoaHolderName() : "-");
 				}
 			}

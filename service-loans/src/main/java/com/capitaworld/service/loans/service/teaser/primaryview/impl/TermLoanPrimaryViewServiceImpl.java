@@ -365,7 +365,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promotorBackgroundDetailRequest, promotorBackgroundDetailResponse);
 				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-				promotorBackgroundDetailResponse.setPromotorsName(promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null + " " + promotorBackgroundDetailRequest.getPromotorsName());
+				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null + " ") + promotorBackgroundDetailRequest.getPromotorsName());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);

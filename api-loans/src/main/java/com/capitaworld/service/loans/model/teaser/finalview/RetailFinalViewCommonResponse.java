@@ -69,6 +69,7 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private String tradeLicenseNo;
 	private String tradeExpiryDate;
 	private String nameOfPoaHolder;
+	private String relationShipWithApplicant;
 	
 	private List<ExistingLoanDetailRequest> existingLoanDetailRequest;
 	private List<BankAccountHeldDetailsRequest> bankAccountHeldDetailsRequest;
@@ -600,6 +601,12 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	}
 	public void setPreviousExperienceInMonths(String previousExperienceInMonths) {
 		this.previousExperienceInMonths = previousExperienceInMonths;
+	}
+	public String getRelationShipWithApplicant() {
+		return relationShipWithApplicant;
+	}
+	public void setRelationShipWithApplicant(String relationShipWithApplicant) {
+		this.relationShipWithApplicant = relationShipWithApplicant;
 	}
 	
 	
