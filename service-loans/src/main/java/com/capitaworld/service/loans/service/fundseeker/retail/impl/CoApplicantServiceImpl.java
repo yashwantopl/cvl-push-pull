@@ -116,9 +116,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							applicantRequest.getIsCoApp2DetailsFilled());
 				}
 			}
-			
+
 			// Updating Bowl Count
-			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -213,6 +214,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
 				}
 			}
+			// Updating Final Count
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getFinalFilledCount());
 
 			return true;
 
@@ -235,6 +239,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile:-");
@@ -550,9 +555,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					} else {
 						finalViewResponse.setResidenceType(null);
 					}
-					finalViewResponse
-							.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
-									? coApplicantDetail.getAnnualRent().toString() : "-");
+					finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
+							? coApplicantDetail.getAnnualRent().toString() : "-");
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingYear())
 									? coApplicantDetail.getResidingYear().toString() : null);
@@ -896,14 +900,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public Long getApplicantIdById(Long id) throws Exception {
-		try{
-			return coApplicantDetailRepository.getApplicantIdById(id);			
-		}catch(Exception e){
+		try {
+			return coApplicantDetailRepository.getApplicantIdById(id);
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error While getting Applicant Id by CoApplicant ID");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
-	
+
 }

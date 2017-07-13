@@ -152,6 +152,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
+			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -182,6 +183,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
 								finaluserId, applicantRequest.getIsApplicantFinalFilled());
+			// Updating Final Count
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(),
+											finaluserId, applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");

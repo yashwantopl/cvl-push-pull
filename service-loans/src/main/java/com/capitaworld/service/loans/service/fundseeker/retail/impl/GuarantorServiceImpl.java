@@ -124,9 +124,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 							guarantorRequest.getIsGuarantor2DetailsFilled());
 				}
 			}
-			
+
 			// Updating Bowl Count
-			loanApplicationRepository.setProfileFilledCount(guarantorRequest.getApplicationId(), finalUserId, guarantorRequest.getDetailsFilledCount());
+			loanApplicationRepository.setProfileFilledCount(guarantorRequest.getApplicationId(), finalUserId,
+					guarantorRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -221,6 +222,11 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalUserId, applicantRequest.getIsGuarantor2FinalFilled());
 				}
 			}
+
+			// Updating Final Count
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getFinalFilledCount());
+
 			return true;
 
 		} catch (Exception e) {
@@ -242,6 +248,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+			applicantRequest.setFinalFilledCount(guaDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting final Guarantor Retail Profile:-");
@@ -555,8 +562,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					} else {
 						finalViewResponse.setResidenceType(null);
 					}
-					finalViewResponse
-					.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualRent())
+					finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualRent())
 							? guarantorDetail.getAnnualRent().toString() : "-");
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidingYear())
@@ -889,12 +895,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 			throw new Exception("Error Fetching Guarantor Details");
 		}
 	}
-	
+
 	@Override
 	public Long getApplicantIdById(Long id) throws Exception {
-		try{
-			return guarantorDetailsRepository.getApplicantIdById(id);			
-		}catch(Exception e){
+		try {
+			return guarantorDetailsRepository.getApplicantIdById(id);
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error While getting Applicant Id by Guarantor ID");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
