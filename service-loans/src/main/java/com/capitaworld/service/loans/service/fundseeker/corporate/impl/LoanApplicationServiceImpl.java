@@ -333,9 +333,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception {
+	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
+			loanApplicationRepository.setFinalFilledCount(applicationId, userId,finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag");
 			e.printStackTrace();
