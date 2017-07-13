@@ -32,7 +32,7 @@ public interface LoanApplicationService {
 	
 	public Object[] getApplicationDetailsById(Long applicationId) throws Exception;
 	
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception;
+	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception;
 	
 	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId,Long userId) throws Exception;
 	

@@ -386,9 +386,9 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}/{finalFilledCount}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateFinalInformationFlag(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("flag") Boolean flag, HttpServletRequest request,
+			@PathVariable("flag") Boolean flag,@PathVariable("finalFilledCount") String finalFilledCount, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -407,7 +407,7 @@ public class LoanApplicationController {
 						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			loanApplicationService.updateFinalCommonInformation(applicationId, userId, flag);
+			loanApplicationService.updateFinalCommonInformation(applicationId, userId, flag,finalFilledCount);
 			CommonDocumentUtils.endHook(logger, "updateFinalInformationFlag");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
