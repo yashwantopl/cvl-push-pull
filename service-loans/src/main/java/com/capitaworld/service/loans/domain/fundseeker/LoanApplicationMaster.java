@@ -150,13 +150,13 @@ public class LoanApplicationMaster implements Serializable {
 	//Filled Count
 	
 	@Column(name = "details_filled_count")
-	private Double detailsFilledCount;
+	private String detailsFilledCount;
 	
 	@Column(name = "primary_filled_count")
-	private Double primaryFilledCount;
+	private String primaryFilledCount;
 	
 	@Column(name = "final_filled_count")
-	private Double finalFilledCount;
+	private String finalFilledCount;
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
@@ -450,28 +450,12 @@ public class LoanApplicationMaster implements Serializable {
 		this.finalFilledTime = finalFilledTime;
 	}
 
-	public Double getDetailsFilledCount() {
-		return detailsFilledCount;
-	}
-
-	public void setDetailsFilledCount(Double detailsFilledCount) {
-		this.detailsFilledCount = detailsFilledCount;
-	}
-
-	public Double getPrimaryFilledCount() {
+	public String getPrimaryFilledCount() {
 		return primaryFilledCount;
 	}
 
-	public void setPrimaryFilledCount(Double primaryFilledCount) {
+	public void setPrimaryFilledCount(String primaryFilledCount) {
 		this.primaryFilledCount = primaryFilledCount;
-	}
-
-	public Double getFinalFilledCount() {
-		return finalFilledCount;
-	}
-
-	public void setFinalFilledCount(Double finalFilledCount) {
-		this.finalFilledCount = finalFilledCount;
 	}
 
 	public String getApplicationCode() {
@@ -480,6 +464,22 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setApplicationCode(String applicationCode) {
 		this.applicationCode = applicationCode;
+	}
+
+	public String getDetailsFilledCount() {
+		return detailsFilledCount;
+	}
+
+	public void setDetailsFilledCount(String detailsFilledCount) {
+		this.detailsFilledCount = detailsFilledCount;
+	}
+
+	public String getFinalFilledCount() {
+		return finalFilledCount;
+	}
+
+	public void setFinalFilledCount(String finalFilledCount) {
+		this.finalFilledCount = finalFilledCount;
 	}
 
 	@Override

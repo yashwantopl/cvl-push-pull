@@ -62,6 +62,8 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			
 			//setting flag 
 			loanApplicationRepository.setIsFinalMcqMandatoryFilled(capitalLoanRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getIsFinalMcqFilled())  ? false : capitalLoanRequest.getIsFinalMcqFilled());
+			//set final filled count
+			loanApplicationRepository.setFinalFilledCount(capitalLoanRequest.getApplicationId(), userId, capitalLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Working Capital Details:-");
@@ -80,6 +82,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			FinalWorkingCapitalLoanRequest capitalLoanRequest = new FinalWorkingCapitalLoanRequest();
 			BeanUtils.copyProperties(loanDetails, capitalLoanRequest);
 			capitalLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
+			capitalLoanRequest.setFinalFilledCount(loanDetails.getApplicationId().getFinalFilledCount());
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Capital Details:-");

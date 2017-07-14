@@ -60,7 +60,7 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private Boolean isApplicantDetailsFilled;
 	
-	private Double detailsFilledCount;
+	private String detailsFilledCount;
 
 	public CorporateApplicantRequest() {
 	}
@@ -241,12 +241,11 @@ public class CorporateApplicantRequest implements Serializable {
 		this.isApplicantDetailsFilled = isApplicantDetailsFilled;
 	}
 
-	public Double getDetailsFilledCount() {
+	public String getDetailsFilledCount() {
 		return detailsFilledCount;
 	}
 
-	public void setDetailsFilledCount(Double detailsFilledCount) {
+	public void setDetailsFilledCount(String detailsFilledCount) {
 		this.detailsFilledCount = detailsFilledCount;
 	}
-
 }

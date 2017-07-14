@@ -130,16 +130,16 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.detailsFilledCount =:detailsFilledCount,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int setProfileFilledCount(@Param("id") Long id, @Param("userId") Long userId,
-			@Param("detailsFilledCount") Double detailsFilledCount);
+			@Param("detailsFilledCount") String detailsFilledCount);
 	
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.primaryFilledCount =:primaryFilledCount,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int setPrimaryFilledCount(@Param("id") Long id, @Param("userId") Long userId,
-			@Param("primaryFilledCount") Double primaryFilledCount);
+			@Param("primaryFilledCount") String primaryFilledCount);
 	
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.finalFilledCount =:finalFilledCount,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int setFinalFilledCount(@Param("id") Long id, @Param("userId") Long userId,
-			@Param("finalFilledCount") Double finalFilledCount);
+			@Param("finalFilledCount") String finalFilledCount);
 	
 }

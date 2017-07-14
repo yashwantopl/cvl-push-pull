@@ -62,6 +62,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			
 			//setting flag 
 			loanApplicationRepository.setIsFinalMcqMandatoryFilled(termLoanRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(termLoanRequest.getIsFinalMcqFilled()) ? false : termLoanRequest.getIsFinalMcqFilled());
+			loanApplicationRepository.setFinalFilledCount(termLoanRequest.getApplicationId(), finalUserId,termLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Term Loan Details:-");

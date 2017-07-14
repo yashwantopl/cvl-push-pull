@@ -116,6 +116,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							applicantRequest.getIsCoApp2DetailsFilled());
 				}
 			}
+
+			// Updating Bowl Count
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getDetailsFilledCount());
 			return true;
 
 		} catch (Exception e) {
@@ -127,9 +131,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
-		try{
+		try {
 			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("Error while getCoAppIds:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
@@ -152,6 +156,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
 			applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile:-");
@@ -209,6 +214,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
 				}
 			}
+			// Updating Final Count
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getFinalFilledCount());
 
 			return true;
 
@@ -231,6 +239,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile:-");
@@ -332,63 +341,72 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 				for (CoApplicantDetail coApplicantDetail : coApplicantDetails) {
 					RetailProfileViewResponse profileViewPLResponse = new RetailProfileViewResponse();
-					profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
+					profileViewPLResponse.setNatureOfOccupation(
+							OccupationNature.getById(coApplicantDetail.getOccupationId()).getValue());
 					profileViewPLResponse.setNatureOfOccupationId(coApplicantDetail.getOccupationId());
-					if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())){
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOccupationId())) {
 						switch (coApplicantDetail.getOccupationId().intValue()) {
-							case 2 : //Salaried
-								profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
-								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())){
-									if(coApplicantDetail.getEmployedWithId() != 8){
-										profileViewPLResponse.setEmployeeWith(EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
-									}else{
-										profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
-									}
+						case 2: // Salaried
+							profileViewPLResponse.setCompanyName(coApplicantDetail.getCompanyName());
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmployedWithId())) {
+								if (coApplicantDetail.getEmployedWithId() != 8) {
+									profileViewPLResponse.setEmployeeWith(
+											EmployeeWith.getById(coApplicantDetail.getEmployedWithId()).getValue());
+								} else {
+									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
 								}
-								break;
-							case 3 : //Business
-							case 4 : //Self Employed
-								profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
-								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())){
-									if(coApplicantDetail.getIndustryTypeId() != 16){
-										profileViewPLResponse.setIndustryType(IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
-									}else{
-										profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
-									}
+							}
+							break;
+						case 3: // Business
+						case 4: // Self Employed
+							profileViewPLResponse.setEntityName(coApplicantDetail.getEntityName());
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIndustryTypeId())) {
+								if (coApplicantDetail.getIndustryTypeId() != 16) {
+									profileViewPLResponse.setIndustryType(
+											IndustryType.getById(coApplicantDetail.getIndustryTypeId()).getValue());
+								} else {
+									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
 								}
-								break;
-							case 5 ://Self Employed Professional
-								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())){
-									if(coApplicantDetail.getSelfEmployedOccupationId().intValue() != 10){
-										profileViewPLResponse.setOccupation(Occupation.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
-									}else{
-										profileViewPLResponse.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
-									}
+							}
+							break;
+						case 5:// Self Employed Professional
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())) {
+								if (coApplicantDetail.getSelfEmployedOccupationId().intValue() != 10) {
+									profileViewPLResponse.setOccupation(Occupation
+											.getById(coApplicantDetail.getSelfEmployedOccupationId()).getValue());
+								} else {
+									profileViewPLResponse
+											.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
 								}
-								break;
-							case 6://Agriculturist
-								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())){
-									profileViewPLResponse.setLandSize(LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
-								}
-								if(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())){
-									profileViewPLResponse.setAlliedActivity(AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
-								}
-								break;
-							default:
-								break;
+							}
+							break;
+						case 6:// Agriculturist
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
+								profileViewPLResponse.setLandSize(
+										LandSize.getById(coApplicantDetail.getLandSize().intValue()).getValue());
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAlliedActivityId())) {
+								profileViewPLResponse.setAlliedActivity(
+										AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
+							}
+							break;
+						default:
+							break;
 						}
 					}
 
-					// set pan car
 					profileViewPLResponse.setRelationshipWithApplicant(
 							coApplicantDetail.getRelationshipWithApplicant() != null ? RelationshipType
 									.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : null);
-					profileViewPLResponse.setPan(coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
+					// set pan car
+					profileViewPLResponse.setPan(
+							coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
 					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null
 							? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
 					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null
 							? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
-					profileViewPLResponse.setFirstName(coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+					profileViewPLResponse.setFirstName(
+							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
 					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null
 							? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
 					profileViewPLResponse.setLastName(
@@ -397,50 +415,50 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(
 							coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
-					profileViewPLResponse.setMonthlyIncome(String.valueOf(
-							coApplicantDetail.getMonthlyIncome() != null ? String.format("%.2f",coApplicantDetail.getMonthlyIncome()) : 0));
+					profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null
+							? String.format("%.2f", coApplicantDetail.getMonthlyIncome()) : 0));
 					// set uploads
 					switch (productId) {
-						case 3:// HOME LOAN
-							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-							break;
-						case 7:// PERSONAL LOAN
-							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-							break;
-						case 12:// CAR_LOAN
-							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-							break;
-						case 13:// LOAN_AGAINST_PROPERTY
-							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-							break;
-						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
-							profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
-							profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
-									coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-									DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
-							break;
+					case 3:// HOME LOAN
+						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+						break;
+					case 7:// PERSONAL LOAN
+						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+						break;
+					case 12:// CAR_LOAN
+						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+						break;
+					case 13:// LOAN_AGAINST_PROPERTY
+						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+						break;
+					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+						profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+						break;
 					}
 					plResponses.add(profileViewPLResponse);
 				}
@@ -455,7 +473,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId,int productId)
+	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId, int productId)
 			throws Exception {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
@@ -495,8 +513,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
 											? coApplicantDetail.getSpouseName() : null);
 							finalViewResponse.setSpouseEmployed(
-									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed()) ?coApplicantDetail.getIsSpouseEmployed().toString()
-											: null);
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIsSpouseEmployed())
+											? (coApplicantDetail.getIsSpouseEmployed() == true ? "Yes" : "No") : "-");
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())
 											? coApplicantDetail.getNoChildren().toString() : null);
@@ -518,9 +536,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					}
 					SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 					SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-					finalViewResponse.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getQualifyingYear())
-							? monthFormat.format(coApplicantDetail.getQualifyingYear()) + "/" + yearFormat.format(coApplicantDetail.getQualifyingYear())
-							: null);
+					finalViewResponse
+							.setQualifyingYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getQualifyingYear())
+									? monthFormat.format(coApplicantDetail.getQualifyingYear()) + "/"
+											+ yearFormat.format(coApplicantDetail.getQualifyingYear())
+									: null);
 					finalViewResponse
 							.setInstituteName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getInstitute())
 									? coApplicantDetail.getInstitute() : null);
@@ -535,6 +555,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					} else {
 						finalViewResponse.setResidenceType(null);
 					}
+					finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
+							? coApplicantDetail.getAnnualRent().toString() : "-");
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingYear())
 									? coApplicantDetail.getResidingYear().toString() : null);
@@ -549,7 +571,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setEmploymentStatus(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getEmploymentStatus())
 													? EmploymentStatusRetailMst
-													.getById(coApplicantDetail.getEmploymentStatus()).getValue()
+															.getById(coApplicantDetail.getEmploymentStatus()).getValue()
 													: null);
 							finalViewResponse.setCurrentIndustry(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentIndustry())
@@ -612,7 +634,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									.setOwnershipType(
 											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOwnershipType())
 													? OwnershipTypeRetailMst
-													.getById(coApplicantDetail.getOwnershipType()).getValue()
+															.getById(coApplicantDetail.getOwnershipType()).getValue()
 													: null);
 							finalViewResponse
 									.setOfficeType(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeType())
@@ -624,12 +646,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse.setNameOfPartners(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPartnersName())
 											? coApplicantDetail.getPartnersName() : null);
-							SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-							finalViewResponse
-									.setBusinessEstablishmentYear(
-											!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())
-													? format.format(coApplicantDetail.getBusinessStartDate())
-													: null);
+							SimpleDateFormat format = new SimpleDateFormat("yyyy");
+							finalViewResponse.setBusinessEstablishmentYear(
+									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate())
+											? format.format(coApplicantDetail.getBusinessStartDate()) : null);
 							finalViewResponse.setShareHolding(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getShareHolding())
 											? coApplicantDetail.getShareHolding() : null);
@@ -639,42 +659,58 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse.setTradeLicenseNo(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber())
 											? coApplicantDetail.getTradeLicenseNumber() : null);
+							SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 							finalViewResponse.setTradeExpiryDate(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseExpiryDate())
-											? format.format(coApplicantDetail.getTradeLicenseExpiryDate())
-											: null);
+											? format1.format(coApplicantDetail.getTradeLicenseExpiryDate()) : null);
 							finalViewResponse.setNameOfPoaHolder(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPoaHolderName())
 											? coApplicantDetail.getPoaHolderName() : null);
 						}
 					}
 					List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService
-							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
 
 					List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService
-							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
 					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
-							.getExistingLoanDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getExistingLoanDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
-						cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : null);
-						cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName() : null);
-						cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId())? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue() : null);
-						cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : null);
+						cardsDetailResponse
+								.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber())
+										? cardsDetailRequest.getCardNumber() : null);
+						cardsDetailResponse
+								.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName())
+										? cardsDetailRequest.getIssuerName() : null);
+						cardsDetailResponse
+								.setCreditCardTypes(
+										!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId())
+												? CreditCardTypesRetail
+														.getById(cardsDetailRequest.getCreditCardTypesId()).getValue()
+												: null);
+						cardsDetailResponse.setOutstandingBalance(
+								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
+										? cardsDetailRequest.getOutstandingBalance().toString() : null);
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
 
 					List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService
-							.getFixedDepositsDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getFixedDepositsDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 
 					List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService
-							.getOtherCurrentAssetDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getOtherCurrentAssetDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					List<OtherCurrentAssetDetailResponse> assetDetailResponseList = new ArrayList<OtherCurrentAssetDetailResponse>();
 					for (OtherCurrentAssetDetailRequest assetDetailRequest : otherCurrentAssetDetailRequestList) {
 						OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
@@ -710,63 +746,144 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);
 
 					List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = referenceService
-							.getReferenceRetailDetailList(coApplicantDetail.getId(), CommonUtils.ApplicantType.COAPPLICANT);
+							.getReferenceRetailDetailList(coApplicantDetail.getId(),
+									CommonUtils.ApplicantType.COAPPLICANT);
 					finalViewResponse.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 
 					// for uploaded documents
 
 					// set uploads
 					switch (productId) {
-						case 3:// HOME LOAN
-							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_ADDRESS_PROOF));
-							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
-							break;
-						case 7:// PERSONAL LOAN
-							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
-							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARDANY_1));
-							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
-							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
-							break;
-						case 12:// CAR_LOAN
-							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_ADDRESS_PROOF));
-							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.CAR_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
-							break;
-						case 13:// LOAN_AGAINST_PROPERTY
-							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
-							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
-							break;
-						case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
-							finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
-							finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
-							finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
-							finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
-							finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
-							finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
-							finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
-							break;
+					case 3:// HOME LOAN
+						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+						finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+						finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_ADDRESS_PROOF));
+						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+						break;
+					case 7:// PERSONAL LOAN
+						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+						finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+						finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARDANY_1));
+						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+						break;
+					case 12:// CAR_LOAN
+						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+						finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+						finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_ADDRESS_PROOF));
+						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
+						break;
+					case 13:// LOAN_AGAINST_PROPERTY
+						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+						finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+						finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+						break;
+					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+						finalViewResponse.setCoApplicant_SalaraySlip(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
+						finalViewResponse.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
+						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+						break;
 					}
 
 					finalCommonresponseList.add(finalViewResponse);
@@ -783,14 +900,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public Long getApplicantIdById(Long id) throws Exception {
-		try{
-			return coApplicantDetailRepository.getApplicantIdById(id);			
-		}catch(Exception e){
+		try {
+			return coApplicantDetailRepository.getApplicantIdById(id);
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error While getting Applicant Id by CoApplicant ID");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
-	
+
 }

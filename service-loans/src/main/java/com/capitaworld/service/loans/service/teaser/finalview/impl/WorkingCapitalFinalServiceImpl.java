@@ -622,7 +622,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
                 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-				String promotorName = null;
+				String promotorName = "";
 				if (promotorBackgroundDetailRequest.getSalutationId() != null){
 					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
 				}

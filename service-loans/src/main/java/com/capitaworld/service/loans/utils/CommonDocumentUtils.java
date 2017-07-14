@@ -37,7 +37,7 @@ public class CommonDocumentUtils {
 
 	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
 		if(CommonUtils.isObjectNullOrEmpty(cityId)) return null;
-		List<Long> cityIdRequest = new ArrayList<>();
+		List<Long> cityIdRequest = new ArrayList<>(1);
 		cityIdRequest.add(cityId);
 		OneFormResponse response  = oneFormClient.getCityByCityListId(cityIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
@@ -47,7 +47,7 @@ public class CommonDocumentUtils {
 
 	public static String getState(Long stateId, OneFormClient oneFormClient) throws Exception {
 		if(CommonUtils.isObjectNullOrEmpty(stateId)) return null;
-		List<Long> stateIdRequest = new ArrayList<>();
+		List<Long> stateIdRequest = new ArrayList<>(1);
 		stateIdRequest.add(stateId);
 		OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
@@ -57,7 +57,7 @@ public class CommonDocumentUtils {
 
 	public static String getCountry(Long countryId,OneFormClient oneFormClient) throws Exception {
 		if(CommonUtils.isObjectNullOrEmpty(countryId)) return null;
-		List<Long> countryIdRequest = new ArrayList<>();
+		List<Long> countryIdRequest = new ArrayList<>(1);
 		countryIdRequest.add(countryId);
 		OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
