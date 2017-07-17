@@ -9,10 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
@@ -35,6 +41,12 @@ public class NotificationServiceImpl implements NotificationService{
 	
 	@Autowired
 	private NotificationClient notificationClient;
+	
+	@Autowired
+	private CorporateApplicantService corporateApplicantService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
 	
 	private static Notification createNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
@@ -67,12 +79,15 @@ public class NotificationServiceImpl implements NotificationService{
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			if (MatchConstant.UserType.FUNDSEEKER == fromUserTypeId) {
 				try {
-					Object o[]=loanApplicationService.getApplicationDetailsById(applicationId);
-					if(o!=null)
-						parameters.put("name", o[1].toString());
-					else
-						parameters.put("name", "NA");
-
+					int fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
+					int fsType = CommonUtils.getUserMainType(fsProdId);
+					if(CommonUtils.UserMainType.CORPORATE == fsType){
+						CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
+						parameters.put("name",corporateApplicantRequest.getOrganisationName());
+					}else if(CommonUtils.UserMainType.RETAIL == fsType){
+						RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
+						parameters.put("name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
+					}
 				} catch (Exception e) {
 					// TODO: handle exception
 					parameters.put("name", "NA");
