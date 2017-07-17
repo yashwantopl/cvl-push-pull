@@ -155,28 +155,14 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				termLoanPrimaryViewResponse.setEstablishmentMonth(
 						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-			
-//			List<Long> cityList = new ArrayList<>();
-//			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-//				cityList.add(corporateApplicantDetail.getRegisteredCityId());
-//			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-//				
-//					try {
-//						OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-//						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-//								.getListData();
-//						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-//							MasterResponse masterResponse = MultipleJSONObjectHelper
-//									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-//							termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
-//						} else {
-//							termLoanPrimaryViewResponse.setCity(CommonUtils.NOT_APPLICABLE);
-//						}
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//			}
-			
+			// set state
+			try{
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())){
+					termLoanPrimaryViewResponse.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId().longValue(),oneFormClient));
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 
 			// set state
 			try{
@@ -186,56 +172,15 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			
-//			List<Long> stateList = new ArrayList<>();
-//			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-//			stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-//			if (!CommonUtils.isListNullOrEmpty(stateList)){
-//				try {
-//					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-//					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-//							.getListData();
-//					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-//						MasterResponse masterResponse = MultipleJSONObjectHelper
-//								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-//						termLoanPrimaryViewResponse.setState(masterResponse.getValue());
-//					} else {
-//						termLoanPrimaryViewResponse.setState(CommonUtils.NOT_APPLICABLE);
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//
-//			}
+
 			// set country
 			try{
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())){
-					termLoanPrimaryViewResponse.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(),oneFormClient));
+					termLoanPrimaryViewResponse.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 				}
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			
-//			List<Long> countryList = new ArrayList<>();
-//			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-//			countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-//			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-//				try {
-//					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-//					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-//							.getListData();
-//					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-//						MasterResponse masterResponse = MultipleJSONObjectHelper
-//								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-//						termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
-//					} else {
-//						termLoanPrimaryViewResponse.setCountry(CommonUtils.NOT_APPLICABLE);
-//					}
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
 			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
