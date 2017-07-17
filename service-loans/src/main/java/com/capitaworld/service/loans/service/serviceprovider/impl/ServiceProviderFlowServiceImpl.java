@@ -148,7 +148,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByAppId(notificationRequestSpFS);
 							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 							
-							applicationDetailsForSp.setNotificationCount(sysNotificationSpFs.size());
+							applicationDetailsForSp.setNotificationCount(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs) ? sysNotificationSpFs.size() : 0);
 							
 							//code for getting recent viewer						
 							NotificationRequest notificationRequest = new NotificationRequest();
@@ -248,7 +248,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 						NotificationResponse responseSpFsCount = notificationClient.getAllUnreadNotificationByProdId(notificationRequestSpFp);
 						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 						
-						productDetailsForSp.setNotificationCount(sysNotificationSpFs.size());
+						productDetailsForSp.setNotificationCount(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs) ? sysNotificationSpFs.size() : 0);
 						
 						
 						//code for getting recent viewer
