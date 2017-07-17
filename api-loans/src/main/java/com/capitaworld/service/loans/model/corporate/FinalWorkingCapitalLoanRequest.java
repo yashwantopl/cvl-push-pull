@@ -31,6 +31,7 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer technologyRequiresUpgradationId;
 	private Integer technologyTypeId;
 	private Boolean whetherTechnologyIsTied;
+	private String finalFilledCount;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 	
 	private Boolean isFinalMcqFilled;
@@ -231,6 +232,16 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	public void setIsFinalMcqFilled(Boolean isFinalMcqFilled) {
 		this.isFinalMcqFilled = isFinalMcqFilled;
 	}
+
+	public String getFinalFilledCount() {
+		return finalFilledCount;
+	}
+
+	public void setFinalFilledCount(String finalFilledCount) {
+		this.finalFilledCount = finalFilledCount;
+	}
+	
+	
 	
 
 }

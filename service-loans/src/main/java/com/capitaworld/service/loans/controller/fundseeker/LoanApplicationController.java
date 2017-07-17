@@ -157,9 +157,10 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			loanApplicationService.inActive(id, userId);
+			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.inActive(id, userId));
 			CommonDocumentUtils.endHook(logger, "inActive");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Inactivated", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(loansResponse,
 					HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -385,9 +386,9 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/update_final_information_flag/{applicationId}/{flag}/{finalFilledCount}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateFinalInformationFlag(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("flag") Boolean flag, HttpServletRequest request,
+			@PathVariable("flag") Boolean flag,@PathVariable("finalFilledCount") String finalFilledCount, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -406,7 +407,7 @@ public class LoanApplicationController {
 						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			loanApplicationService.updateFinalCommonInformation(applicationId, userId, flag);
+			loanApplicationService.updateFinalCommonInformation(applicationId, userId, flag,finalFilledCount);
 			CommonDocumentUtils.endHook(logger, "updateFinalInformationFlag");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -721,6 +722,40 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getBowlCount/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBowlCount(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getBowlCount");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (applicationId == null || userId == null) {
+				logger.warn("ID And UserId Require to get Bowl Count Details ==>" + applicationId
+						+ " and UserId ==>" + userId);
+				CommonDocumentUtils.endHook(logger, "getBowlCount");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getBowlCount(applicationId, userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getBowlCount Details==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

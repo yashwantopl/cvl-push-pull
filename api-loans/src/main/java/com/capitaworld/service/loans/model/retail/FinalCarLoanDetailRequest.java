@@ -43,6 +43,8 @@ public class FinalCarLoanDetailRequest implements Serializable {
 	
 	private Boolean isFinalInformationFilled;
 	
+	private String finalFilledCount;
+	
 	public Long getId() {
 		return id;
 	}
@@ -161,6 +163,14 @@ public class FinalCarLoanDetailRequest implements Serializable {
 
 	public void setIsFinalInformationFilled(Boolean isFinalInformationFilled) {
 		this.isFinalInformationFilled = isFinalInformationFilled;
+	}
+
+	public String getFinalFilledCount() {
+		return finalFilledCount;
+	}
+
+	public void setFinalFilledCount(String finalFilledCount) {
+		this.finalFilledCount = finalFilledCount;
 	}
 
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
@@ -28,13 +29,17 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws Exception {
 		// ID must not be null
 		try {
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getClientId()) ? userId : carLoanDetailRequest.getClientId());
 			PrimaryCarLoanDetail primaryCarLoanDetail = primaryCarLoanDetailRepository
-					.getByApplicationAndUserId(carLoanDetailRequest.getId(), (CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getClientId()) ? userId : carLoanDetailRequest.getClientId()));
+					.getByApplicationAndUserId(carLoanDetailRequest.getId(),finalUserId);
 			if (primaryCarLoanDetail == null) {
 				throw new NullPointerException("PrimaryCarLoanDetail not exist in DB with ID=>"
 						+ carLoanDetailRequest.getId() + " and User Id ==>" + userId);
@@ -44,6 +49,9 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			primaryCarLoanDetail.setModifiedBy(userId);
 			primaryCarLoanDetail.setModifiedDate(new Date());
 			primaryCarLoanDetailRepository.save(primaryCarLoanDetail);
+			
+			//Updating Primary Flag
+			loanApplicationRepository.setPrimaryFilledCount(primaryCarLoanDetail.getId(), finalUserId, carLoanDetailRequest.getPrimaryFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details");

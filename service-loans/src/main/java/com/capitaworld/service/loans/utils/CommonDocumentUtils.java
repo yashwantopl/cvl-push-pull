@@ -36,33 +36,37 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
-		List<Long> cityIdRequest = new ArrayList<>();
+		if(CommonUtils.isObjectNullOrEmpty(cityId)) return null;
+		List<Long> cityIdRequest = new ArrayList<>(1);
 		cityIdRequest.add(cityId);
 		OneFormResponse response  = oneFormClient.getCityByCityListId(cityIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : "NA";
+		return data != null ? data.getValue() : null;
 	}
 
 	public static String getState(Long stateId, OneFormClient oneFormClient) throws Exception {
-		List<Long> stateIdRequest = new ArrayList<>();
+		if(CommonUtils.isObjectNullOrEmpty(stateId)) return null;
+		List<Long> stateIdRequest = new ArrayList<>(1);
 		stateIdRequest.add(stateId);
 		OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : "NA";
+		return data != null ? data.getValue() : null;
 	}
 
 	public static String getCountry(Long countryId,OneFormClient oneFormClient) throws Exception {
-		List<Long> countryIdRequest = new ArrayList<>();
+		if(CommonUtils.isObjectNullOrEmpty(countryId)) return null;
+		List<Long> countryIdRequest = new ArrayList<>(1);
 		countryIdRequest.add(countryId);
 		OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
-		return data != null ? data.getValue() : "NA";
+		return data != null ? data.getValue() : null;
 	}
 
 	public static Integer getYear(Long yearId,OneFormClient oneFormClient) throws Exception {
+		if(CommonUtils.isObjectNullOrEmpty(yearId)) return null;
 		OneFormResponse response = oneFormClient.getYearByYearId(yearId);
 		if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
 			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(

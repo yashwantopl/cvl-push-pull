@@ -82,6 +82,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			// Updating Flag
 			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
 					finalUserId, applicantRequest.getIsApplicantDetailsFilled());
+			
+			// Updating Bowl Count
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
 
 			return true;
 
@@ -115,10 +118,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
-				// throw new NullPointerException("RetailApplicantDetail Record
-				// not exists in DB of Application ID : "
-				// + applicationId + " and User Id==>" + userId);
-				return null;
+				RetailApplicantRequest request = new RetailApplicantRequest();
+				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+				request.setDetailsFilledCount(applicationMaster.getDetailsFilledCount());
+				return request;
 			}
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
@@ -129,6 +132,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -148,6 +152,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
+			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -178,6 +183,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
 								finaluserId, applicantRequest.getIsApplicantFinalFilled());
+			// Updating Final Count
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(),
+											finaluserId, applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");

@@ -333,9 +333,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception {
+	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
+			loanApplicationRepository.setFinalFilledCount(applicationId, userId,finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag");
 			e.printStackTrace();
@@ -579,6 +580,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} else {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getBowlCount(Long applicationId, Long userId) {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		JSONObject response = new JSONObject();
+		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)){
+			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
+			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
+			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
+		}
+		return response;
 	}
 
 	@SuppressWarnings("unchecked")
