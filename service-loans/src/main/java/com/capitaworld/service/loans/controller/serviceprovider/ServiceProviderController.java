@@ -132,4 +132,37 @@ public class ServiceProviderController {
 	}
 	
 	
+	@RequestMapping(value = "/client/allNotifications",method = RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserResponse> spClientAllNotifications(HttpServletRequest request){
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		try {
+			List<SpSysNotifyResponse> clientotification = serviceProviderFlowService.spClientAllNotifications(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()));
+
+			if(clientotification != null){
+				logger.info("Serivce provider's client list");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse(clientotification,"Serivce provider's client list", HttpStatus.OK.value()),
+						HttpStatus.OK);
+			}else{
+				logger.info("Something went wrong..!");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error("Something went wrong..!");
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
+	
+	
 	}
