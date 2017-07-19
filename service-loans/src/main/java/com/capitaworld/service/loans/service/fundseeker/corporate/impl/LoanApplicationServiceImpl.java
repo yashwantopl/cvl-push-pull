@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -1661,7 +1662,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						currency = CommonDocumentUtils.getCurrency(currencyId);
 					}
 					obj.put("loanCode", loanMstr.getApplicationCode());
-					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount()) ? loanMstr.getAmount().doubleValue() : 0) + " "+currency);
+					DecimalFormat decimalFormat = new DecimalFormat("#.##");
+					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount()) ? decimalFormat.format(loanMstr.getAmount()) : 0) + " "+currency);
 					obj.put("tenure",loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure()/12) : null);
 					obj.put("profileFilled",CommonUtils.getBowlCount(loanMstr.getDetailsFilledCount(), null));
 					jsonList.add(obj);
