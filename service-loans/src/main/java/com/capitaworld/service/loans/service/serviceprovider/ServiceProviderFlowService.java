@@ -19,4 +19,7 @@ public interface ServiceProviderFlowService {
 
   public List<SpSysNotifyResponse> spClientNotifications(Long valueOf) throws Exception;
 
+
+public List<SpSysNotifyResponse> spClientAllNotifications(Long valueOf) throws Exception;
+
 }

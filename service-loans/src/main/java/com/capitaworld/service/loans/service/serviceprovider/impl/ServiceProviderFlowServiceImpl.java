@@ -435,5 +435,91 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 		}
 		
 	
+	}
+
+	@Override
+	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId) throws Exception {
+		String[] userTypeIds = {"fs","fp"};
+		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
+		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
+		try {
+			for(String userTpyeId : userTypeIds){
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(spId, userTpyeId);
+			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
+			for (int i = 0; i < spClientResponseList.size(); i++) {
+				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
+						SpClientResponse.class);
+				
+				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
+					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
+					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
+					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
+						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
+							//code for sp fs notification
+							NotificationRequest notificationRequestSpFS = new NotificationRequest();
+							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
+							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
+							NotificationResponse responseSpFsCount = notificationClient.getAllNotificationByAppId(notificationRequestSpFS);
+							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
+							
+							
+							if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
+							for(SysNotifyResponse source : sysNotificationSpFs){
+								SpSysNotifyResponse target = new SpSysNotifyResponse();
+							BeanUtils.copyProperties(source, target);
+							spSysNotifResponse.add(target);
+							
+							}
+							}
+							
+							
+						}else{
+							applicationDetailsForSp.setProductName("NA");
+						}
+					}
+					
+
+				} 
+				
+				
+				else if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
+
+					
+					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
+					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
+						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
+							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
+						}
+						//code for sp fp notification
+						NotificationRequest notificationRequestSpFp = new NotificationRequest();
+						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
+						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
+						NotificationResponse responseSpFsCount = notificationClient.getAllNotificationByProdId(notificationRequestSpFp);
+						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
+
+						productDetailsForSp.setSysNotifyResponse(new ArrayList<SpSysNotifyResponse>());
+						if(!CommonUtils.isListNullOrEmpty(sysNotificationSpFs)){
+							for(SysNotifyResponse source : sysNotificationSpFs){
+								SpSysNotifyResponse target = new SpSysNotifyResponse();
+							BeanUtils.copyProperties(source, target);
+							spSysNotifResponse.add(target);
+							
+							}
+						}
+						
+						
+					}
+				}
+			}
+			}
+			return spSysNotifResponse;
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new Exception("Error while getting client list.");
+		}
+		
+	
 	}	
 }

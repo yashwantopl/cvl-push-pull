@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -209,5 +210,24 @@ public class CommonUtils {
 			if(flag) return true;
 		}
 		return false;
+	}
+	public static Double getBowlCount(String count,Integer tabNumber){
+		if(!isObjectListNull(count) && count != "0"){
+			String[] split = count.split("\\|");
+			if(split.length > 0){
+				if(!isObjectListNull(tabNumber)){
+					return !isObjectListNull(split[tabNumber]) ? Double.parseDouble(split[tabNumber]) : 0.0;
+				} else {
+					return !isObjectListNull(split[split.length - 1]) ? Double.parseDouble(split[split.length - 1]) : 0.0;
+				}
+			}
+		}
+		return 0.0;
+	}
+	
+	public static List<String> urlsBrforeLogin = null;
+	static {
+		urlsBrforeLogin = new ArrayList();
+		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 	}
 }
