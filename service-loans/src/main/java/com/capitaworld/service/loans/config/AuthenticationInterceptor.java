@@ -29,6 +29,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
+		String requestURI = request.getRequestURI();
+		if(CommonUtils.urlsBrforeLogin.contains(requestURI)){
+			return true;
+		}
+		
 		// for only client call
 		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
 		if (reqAuth != null && reqAuth != "") {
