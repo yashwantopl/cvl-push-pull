@@ -571,7 +571,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 							documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
 							
-							DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 							String imagePath = null;
 							if (documentResponse != null && documentResponse.getStatus() == 200) {
 								List<Map<String, Object>> list = documentResponse.getDataList();
@@ -644,7 +644,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							documentRequest.setApplicationId(applicationId.longValue());
 							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 							documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-							DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 							String imagePath = null;
 							if (documentResponse != null && documentResponse.getStatus() == 200) {
 								List<Map<String, Object>> list = documentResponse.getDataList();
