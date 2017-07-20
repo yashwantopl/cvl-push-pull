@@ -70,10 +70,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail != null) {
-				// throw new NullPointerException("Applicant ID does not match
-				// with the database==> Applicant ID==>"
-				// + applicantRequest.getApplicationId() + " and User Id==>" +
-				// userId);
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
 				// inactive previous before adding new Data
