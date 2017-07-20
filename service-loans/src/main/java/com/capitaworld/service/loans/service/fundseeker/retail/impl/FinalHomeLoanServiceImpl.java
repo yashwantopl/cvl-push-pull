@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +16,7 @@ import com.capitaworld.service.loans.model.retail.FinalHomeLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalHomeLoanService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -33,6 +35,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Override
 	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws Exception {
@@ -61,6 +66,9 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 //				we are reusing this method and also same column in loanApplication master. it is actually using Corporate. 
 				loanApplicationRepository.setIsFinalMcqMandatoryFilled(finalHomeLoanDetailRequest.getApplicationId(), finalUserId, finalHomeLoanDetailRequest.getIsFinalInformationFilled());
 			}
+			
+			//Update Bowl Count Flag
+			loanApplicationRepository.setFinalFilledCount(finalHomeLoanDetailRequest.getApplicationId(), finalUserId,finalHomeLoanDetailRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Home Loan Details:-");
@@ -77,12 +85,17 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			FinalHomeLoanDetailRequest finalHomeLoanDetailRequest = new FinalHomeLoanDetailRequest();
 			if (loanDetail == null) {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
+				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
 				finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
+					finalHomeLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());	
+				}
 				return finalHomeLoanDetailRequest;
 			}
 			BeanUtils.copyProperties(loanDetail, finalHomeLoanDetailRequest);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+			finalHomeLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Home Loan Details:-");

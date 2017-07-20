@@ -40,6 +40,8 @@ public class GuarantorRequest {
 	
 	private Boolean isGuarantor1DetailsFilled;
 	private Boolean isGuarantor2DetailsFilled;
+	
+	private String detailsFilledCount;
 
 
 	public Long getId() {
@@ -313,6 +315,14 @@ public class GuarantorRequest {
 
 	public void setIsGuarantor2DetailsFilled(Boolean isGuarantor2DetailsFilled) {
 		this.isGuarantor2DetailsFilled = isGuarantor2DetailsFilled;
+	}
+
+	public String getDetailsFilledCount() {
+		return detailsFilledCount;
+	}
+
+	public void setDetailsFilledCount(String detailsFilledCount) {
+		this.detailsFilledCount = detailsFilledCount;
 	}
 
 }

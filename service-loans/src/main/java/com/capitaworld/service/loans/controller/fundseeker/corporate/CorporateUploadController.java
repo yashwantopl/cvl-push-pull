@@ -431,9 +431,9 @@ public class CorporateUploadController {
 		}
 	}
 
-	@RequestMapping(value = "/update_flag/{isFilled}/{applicationId}/{tabType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/update_flag/{isFilled}/{applicationId}/{tabType}/{filledCount}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadFlag(@PathVariable("isFilled") Boolean isFilled, @PathVariable("applicationId") Long applicationId,
-			@PathVariable("tabType") Integer tabType, 
+			@PathVariable("tabType") Integer tabType,@PathVariable(value = "filledCount",required = false) String filledCount, 
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadFlag");
@@ -448,7 +448,7 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			corporateUploadService.updateLoanApplicationFlag(applicationId, userId, tabType, isFilled);
+			corporateUploadService.updateLoanApplicationFlag(applicationId, userId, tabType, isFilled,filledCount);
 			CommonDocumentUtils.endHook(logger, "uploadFlag");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);

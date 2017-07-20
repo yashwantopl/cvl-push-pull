@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
@@ -28,12 +29,16 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository; 
 
 	@Override
 	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws Exception {
 		// ID must not be null
 		try{
-		PrimaryHomeLoanDetail primaryHomeLoanDetail= primaryHomeLoanDetailRepository.getByApplicationAndUserId(homeLoanDetailRequest.getId(),(CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getClientId()) ? userId : homeLoanDetailRequest.getClientId()));
+		Long finalUserId = (CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getClientId()) ? userId : homeLoanDetailRequest.getClientId());
+		PrimaryHomeLoanDetail primaryHomeLoanDetail= primaryHomeLoanDetailRepository.getByApplicationAndUserId(homeLoanDetailRequest.getId(),finalUserId);
 		if (primaryHomeLoanDetail == null) {
 			throw new NullPointerException(
 					"PrimaryHomeLoanDetail not exist in DB with Application Id=>" + homeLoanDetailRequest.getId() + " and user Id ==>" + userId); 
@@ -43,7 +48,10 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		primaryHomeLoanDetail.setModifiedBy(userId);
 		primaryHomeLoanDetail.setModifiedDate(new Date());
 		primaryHomeLoanDetail.setIsActive(true);
-		primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
+		primaryHomeLoanDetail = primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
+		
+		//Updating Primary Flag
+		loanApplicationRepository.setPrimaryFilledCount(primaryHomeLoanDetail.getId(), finalUserId, homeLoanDetailRequest.getPrimaryFilledCount());
 		return true;
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details Profile:-");

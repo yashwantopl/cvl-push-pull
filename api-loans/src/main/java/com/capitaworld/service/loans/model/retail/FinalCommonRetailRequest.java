@@ -82,6 +82,8 @@ public class FinalCommonRetailRequest {
 	
 	private Boolean isGuarantor1FinalFilled;
 	private Boolean isGuarantor2FinalFilled;
+	
+	private String finalFilledCount;
 
 	public Long getId() {
 		return id;
@@ -585,6 +587,14 @@ public class FinalCommonRetailRequest {
 
 	public void setIsGuarantor2FinalFilled(Boolean isGuarantor2FinalFilled) {
 		this.isGuarantor2FinalFilled = isGuarantor2FinalFilled;
+	}
+
+	public String getFinalFilledCount() {
+		return finalFilledCount;
+	}
+
+	public void setFinalFilledCount(String finalFilledCount) {
+		this.finalFilledCount = finalFilledCount;
 	}
 
 }

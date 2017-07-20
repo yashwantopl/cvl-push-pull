@@ -15,5 +15,5 @@ public interface CorporateUploadService {
 
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
 	
-	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled) throws Exception;
+	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
 }

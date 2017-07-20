@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +16,7 @@ import com.capitaworld.service.loans.model.retail.FinalCarLoanDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalCarLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalCarLoanService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -33,6 +35,9 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Override
 	public boolean saveOrUpdate(FinalCarLoanDetailRequest finalCarLoanDetailRequest, Long userId) throws Exception {
@@ -62,6 +67,9 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 				loanApplicationRepository.setIsFinalMcqMandatoryFilled(finalCarLoanDetailRequest.getApplicationId(), finalUserId, finalCarLoanDetailRequest.getIsFinalInformationFilled());
 			}
 			
+			//Update Bowl Count Flag
+			loanApplicationRepository.setFinalFilledCount(finalCarLoanDetailRequest.getApplicationId(), finalUserId,finalCarLoanDetailRequest.getFinalFilledCount());
+			
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Car Loan Details:-");
@@ -78,11 +86,17 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			if (loanDetail == null) {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 				finalCarLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				JSONObject bowlCount = loanApplicationService.getBowlCount(applicationId, userId);
+				finalCarLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+				if(!CommonUtils.isObjectNullOrEmpty(bowlCount.get("finalFilledCount"))){
+					finalCarLoanDetailRequest.setFinalFilledCount(bowlCount.get("finalFilledCount").toString());	
+				}
 				return finalCarLoanDetailRequest;
 			}
 			BeanUtils.copyProperties(loanDetail, finalCarLoanDetailRequest);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			finalCarLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
+			finalCarLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalCarLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Car Loan Details:-");

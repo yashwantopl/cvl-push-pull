@@ -110,6 +110,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
 
 	@Autowired
+	private PastFinancialEstiamateDetailsService pastFinancialEstiamateDetailsService;
+
+	@Autowired
 	private ExistingProductDetailsService existingProductDetailsService;
 
 	@Autowired
@@ -290,52 +293,22 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					toApplicationId);
 
 			if (!CommonUtils.isObjectNullOrEmpty(finalWorkingCapitalLoanRequest)) {
-				response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null
-						? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue()
-						: null);
-				response.setTechnologyPatented(
-						finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented
-								.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
-				response.setTechnologyRequiresUpgradation(
-						finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null
-								? TechnologyRequiresUpgradation
-										.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId())
-										.getValue()
-								: null);
-				response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
-						? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue()
-						: null);
-				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null
-						? MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
-				response.setMarketShareTurnover(
-						finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover
-								.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
-				response.setIndiaDistributionNetwork(
-						finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null
-								? IndiaDistributionNetwork
-										.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId())
-										.getValue()
-								: null);
-				response.setDistributionAndTieUps(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()!=null?DistributionMarketingTieUps.getById(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()).getValue():null);
-				response.setBrandAmbassador(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()!=null?BrandAmbassador.getById(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()).getValue():null);
-				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId()!=null?MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue():null);
-				response.setProductServicesPerse(finalWorkingCapitalLoanRequest.getProductServicesPerseId() != null
-						? ProductServicesPerse.getById(finalWorkingCapitalLoanRequest.getProductServicesPerseId()).getValue() : null);
-				response.setEnvironmentCertification(
-						finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null
-								? EnvironmentCertification
-										.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId())
-										.getValue()
-								: null);
-				response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null
-						? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue()
-						: null);
-				response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null
-						? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
-				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null
-						? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
-				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null
-						? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
+				response.setTechnologyType(finalWorkingCapitalLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalWorkingCapitalLoanRequest.getTechnologyTypeId()).getValue() : null);
+				response.setTechnologyPatented(finalWorkingCapitalLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalWorkingCapitalLoanRequest.getTechnologyPatentedId()).getValue() : null);
+				response.setTechnologyRequiresUpgradation(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalWorkingCapitalLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
+				response.setMarketPosition(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
+				response.setMarketingPositioning(finalWorkingCapitalLoanRequest.getMarketingPositioningId() != null ? MarketingPositioningNew.getById(finalWorkingCapitalLoanRequest.getMarketingPositioningId()).getValue() : null);
+				response.setMarketPositioningTop(finalWorkingCapitalLoanRequest.getMarketPositioningTopId() != null ? MarketPositioningTop.getById(finalWorkingCapitalLoanRequest.getMarketPositioningTopId()).getValue() : null);
+				response.setMarketShareTurnover(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalWorkingCapitalLoanRequest.getMarketShareTurnoverId()).getValue() : null);
+				response.setIndiaDistributionNetwork(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId() != null ? IndiaDistributionNetwork.getById(finalWorkingCapitalLoanRequest.getIndiaDistributionNetworkId()).getValue() : null);
+				response.setDistributionAndTieUps(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId() != null ? DistributionMarketingTieUps.getById(finalWorkingCapitalLoanRequest.getDistributionAndMarketingTieUpsId()).getValue() : null);
+				response.setBrandAmbassador(finalWorkingCapitalLoanRequest.getBrandAmbassadorId() != null ? BrandAmbassador.getById(finalWorkingCapitalLoanRequest.getBrandAmbassadorId()).getValue() : null);
+				response.setProductServicesPerse(finalWorkingCapitalLoanRequest.getProductServicesPerseId() != null ? ProductServicesPerse.getById(finalWorkingCapitalLoanRequest.getProductServicesPerseId()).getValue() : null);
+				response.setEnvironmentCertification(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId() != null ? EnvironmentCertification.getById(finalWorkingCapitalLoanRequest.getEnvironmentCertificationId()).getValue() : null);
+				response.setAccountingSystems(finalWorkingCapitalLoanRequest.getAccountingSystemsId() != null ? AccountingSystems.getById(finalWorkingCapitalLoanRequest.getAccountingSystemsId()).getValue() : null);
+				response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
+				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
+				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
 				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
 					response.setIsIsoCertified("Yes");
 				} else {
@@ -648,8 +621,13 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-				promotorBackgroundDetailResponse.setPromotorsName(promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null + " " + promotorBackgroundDetailRequest.getPromotorsName());
+                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String promotorName = "";
+				if (promotorBackgroundDetailRequest.getSalutationId() != null){
+					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				promotorName += promotorBackgroundDetailRequest.getPromotorsName();
+				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
 				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
 				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
@@ -659,13 +637,14 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			logger.error("Problem to get Data of Promotor Background {}", e);
 		}
 
-		/*
-		 * //get value of Past Financial and set in response try {
-		 * response.setPastFinancialEstimatesDetailRequestList(
-		 * pastFinancialEstiamateDetailsService.getFinancialListData(userId,
-		 * toApplicationId)); } catch (Exception e) {
-		 * logger.error("Problem to get Data of Past Financial {}", e); }
-		 */
+
+		//get value of Past Financial and set in response
+		try {
+			response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Past Financial {}", e);
+		}
+
 
 		// get value of Future Projection and set in response
 		try {

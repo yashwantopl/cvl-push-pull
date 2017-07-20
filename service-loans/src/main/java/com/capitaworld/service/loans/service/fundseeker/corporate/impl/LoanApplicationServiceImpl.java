@@ -1,7 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +42,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -71,7 +75,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ApplicationSequenceService applicationSequenceService;
-
+	
+	@Autowired
+	private UsersClient userClient;
+	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -333,9 +340,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag) throws Exception {
+	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
+			loanApplicationRepository.setFinalFilledCount(applicationId, userId,finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag");
 			e.printStackTrace();
@@ -579,6 +587,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} else {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getBowlCount(Long applicationId, Long userId) {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		JSONObject response = new JSONObject();
+		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)){
+			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
+			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
+			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
+		}
+		return response;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1602,6 +1623,54 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		default:
 			break;
+		}
+		return response;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails() {
+		
+		UserResponse userResponse = userClient.getRegisterdUserList();
+		List userList = (List) userResponse.getData();
+		List<RegisteredUserResponse> response = new ArrayList<>();
+		for(Object user : userList){
+			RegisteredUserResponse users = null;
+			try {
+				users = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)user, RegisteredUserResponse.class);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER){
+				List<JSONObject> jsonList = new ArrayList<>();
+				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
+				for(LoanApplicationMaster loanMstr : userLoans){
+					JSONObject obj = new JSONObject();
+					obj.put("name",CommonUtils.LoanType.getType(loanMstr.getProductId()));
+					
+					String currency = "";
+					int userMainType = CommonUtils.getUserMainType(loanMstr.getProductId());
+					if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+						if (!CommonUtils.isObjectNullOrEmpty(loanMstr.getCurrencyId())
+								&& !CommonUtils.isObjectNullOrEmpty(loanMstr.getDenominationId())) {
+							currency = CommonDocumentUtils.getCurrency(loanMstr.getCurrencyId());
+							currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanMstr.getDenominationId()));
+						}
+					} else {
+						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(), loanMstr.getId());
+						currency = CommonDocumentUtils.getCurrency(currencyId);
+					}
+					obj.put("loanCode", loanMstr.getApplicationCode());
+					DecimalFormat decimalFormat = new DecimalFormat("#.##");
+					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount()) ? decimalFormat.format(loanMstr.getAmount()) : 0) + " "+currency);
+					obj.put("tenure",loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure()/12) : null);
+					obj.put("profileFilled",CommonUtils.getBowlCount(loanMstr.getDetailsFilledCount(), null));
+					jsonList.add(obj);
+				}
+				users.setLoanList(jsonList);
+			}
+			response.add(users);
 		}
 		return response;
 	}
