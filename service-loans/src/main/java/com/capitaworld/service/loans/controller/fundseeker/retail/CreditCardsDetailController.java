@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -48,6 +49,9 @@ public class CreditCardsDetailController {
 	
 	@Autowired
 	private GuarantorService guarantorService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -77,6 +81,22 @@ public class CreditCardsDetailController {
 			frameRequest.setUserId(userId);
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				frameRequest.setClientId(clientId);
+			}
+			//Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Long applicationId = null;
+			if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
+				applicationId = frameRequest.getApplicationId();
+			}else if(CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()){
+				applicationId = coApplicantService.getApplicantIdById(frameRequest.getApplicationId());
+			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
+				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
+			}
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 			}
 			creditCardsDetailService.saveOrUpdate(frameRequest);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

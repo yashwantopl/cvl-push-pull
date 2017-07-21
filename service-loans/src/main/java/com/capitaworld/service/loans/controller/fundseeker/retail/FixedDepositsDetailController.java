@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
@@ -48,6 +49,9 @@ public class FixedDepositsDetailController {
 
 	@Autowired
 	private GuarantorService guarantorService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -56,7 +60,8 @@ public class FixedDepositsDetailController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
@@ -74,6 +79,27 @@ public class FixedDepositsDetailController {
 		}
 
 		try {
+			frameRequest.setUserId(userId);
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				frameRequest.setClientId(clientId);
+			}
+			//Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Long applicationId = null;
+			if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
+				applicationId = frameRequest.getApplicationId();
+			}else if(CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()){
+				applicationId = coApplicantService.getApplicantIdById(frameRequest.getApplicationId());
+			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
+				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
+			}
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
 			boolean response = fixedDepositsDetailService.saveOrUpdate(frameRequest);
 			if (response) {
 				return new ResponseEntity<LoansResponse>(

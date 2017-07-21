@@ -252,6 +252,7 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				logger.info("End getProductByApplication() method");
+				logger.warn("ProductId not found");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -309,8 +310,8 @@ public class LoanApplicationController {
 
 			LoansResponse loansResponse = new LoansResponse();
 
-			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
-			loansResponse.setData(response[1]);
+			String nameResponse = loanApplicationService.getFsApplicantName(applicationId);
+			loansResponse.setData(nameResponse);
 			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 

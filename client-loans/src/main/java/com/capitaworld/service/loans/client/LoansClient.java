@@ -29,6 +29,7 @@ public class LoansClient {
 	private static final String LOAN_PRODUCT_DETAILS_BY_USER_ID ="/product_master/getListByUserIdList";
 	private static final String USERNAME_BY_PRODUCT_ID="/product_master/getUserNameByProductId";
 	private static final String USER_ID_BY_PRODUCT_ID="/product_master/getUserIdByProductId";
+	private static final String REGISTERD_USERS_DETAILS="/loan_application/getUsersRegisteredLoanDetails";
 	
 	
 	private String loansBaseUrl;
@@ -225,6 +226,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getRegisteredUsersDetails() throws  LoansException {
+		String url = loansBaseUrl.concat(REGISTERD_USERS_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getRegisteredUsersDetails");
 		}
 	}
 	

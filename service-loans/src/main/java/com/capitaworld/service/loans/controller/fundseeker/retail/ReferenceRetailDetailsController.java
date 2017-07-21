@@ -20,7 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 /**
@@ -35,6 +40,18 @@ public class ReferenceRetailDetailsController {
 
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
+	
+	@Autowired
+	private CoApplicantService coApplicantService;
+	
+	@Autowired
+	private GuarantorService guarantorService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -66,6 +83,22 @@ public class ReferenceRetailDetailsController {
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
 				frameRequest.setClientId(clientId);
 			}
+			//Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Long applicationId = null;
+			if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
+				applicationId = frameRequest.getApplicationId();
+			}else if(CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()){
+				applicationId = coApplicantService.getApplicantIdById(frameRequest.getApplicationId());
+			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
+				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
+			}
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
 			boolean response = referenceRetailDetailsService.saveOrUpdate(frameRequest);
 			if (response) {
 				return new ResponseEntity<LoansResponse>(
@@ -85,9 +118,17 @@ public class ReferenceRetailDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
 			if (id == null) {
 				logger.warn("ID Require to get Reference Retail Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -97,6 +138,22 @@ public class ReferenceRetailDetailsController {
 					.getReferenceRetailDetailList(id, applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
+			Integer currencyId = null;
+			Long applicantIdById = null;
+			switch (applicationType) {
+			case CommonUtils.ApplicantType.APPLICANT:
+				currencyId = retailApplicantService.getCurrency(id, userId);
+				break;
+			case CommonUtils.ApplicantType.COAPPLICANT:
+				applicantIdById = coApplicantService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			case CommonUtils.ApplicantType.GARRANTOR:
+				applicantIdById = guarantorService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
+				break;
+			}
+			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Reference Retail Details==>", e);
