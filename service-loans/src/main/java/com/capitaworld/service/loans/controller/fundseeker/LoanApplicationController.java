@@ -309,8 +309,8 @@ public class LoanApplicationController {
 
 			LoansResponse loansResponse = new LoansResponse();
 
-			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
-			loansResponse.setData(response[1]);
+			String nameResponse = loanApplicationService.getFsApplicantName(applicationId);
+			loansResponse.setData(nameResponse);
 			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
