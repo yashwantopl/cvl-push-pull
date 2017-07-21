@@ -194,15 +194,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
 		if (!CommonUtils.isListNullOrEmpty(userLoans)) {
-			usersRequest.setLastAccessApplicantId(userLoans.get(0).getId());
 			LoanApplicationMaster loan = userLoans.get(0);
+			usersRequest.setLastAccessApplicantId(loan.getId());
+			usersRequest.setId(userId);
+			userClient.setLastAccessApplicant(usersRequest);
 			return new LoanApplicationRequest(loan.getId(),loan.getProductId());
 		} else {
+			usersRequest.setId(userId);
 			usersRequest.setLastAccessApplicantId(null);
+			userClient.setLastAccessApplicant(usersRequest);
 		}
-		usersRequest.setId(userId);
-		UsersClient usersClient = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
-		usersClient.setLastAccessApplicant(usersRequest);
 		return null; 
 	}
 
