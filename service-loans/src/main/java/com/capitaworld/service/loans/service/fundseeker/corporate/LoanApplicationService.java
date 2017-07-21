@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 
 public interface LoanApplicationService {
@@ -57,6 +57,8 @@ public interface LoanApplicationService {
 	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId);
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
+	
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
 	
 
 }
