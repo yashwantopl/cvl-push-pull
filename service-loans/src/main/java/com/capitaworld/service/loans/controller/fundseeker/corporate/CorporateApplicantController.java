@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -30,8 +31,12 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class CorporateApplicantController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateApplicantController.class.getName());
+	
 	@Autowired
 	private CorporateApplicantService applicantService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -62,6 +67,14 @@ public class CorporateApplicantController {
 				logger.warn("Application Id can not be empty ==>", applicantRequest);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			//Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId());
+			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(applicantRequest.getApplicationId(), finalUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 			}
 
 			applicantService.save(applicantRequest, userId);
