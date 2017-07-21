@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -25,6 +26,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDet
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
@@ -1627,6 +1629,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return response;
 	}
+
+	@Override
+	public String getFsApplicantName(Long applicationId) throws Exception {
+		LoanApplicationMaster applicationMaster=loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
+			return null;
+		
+		if(CommonUtils.getUserMainType(applicationMaster.getProductId())==CommonUtils.UserMainType.RETAIL)
+		{
+			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+			return retailApplicantDetail.getFirstName()+" "+retailApplicantDetail.getLastName();
+		}
+		else if(CommonUtils.getUserMainType(applicationMaster.getProductId())==CommonUtils.UserMainType.CORPORATE)
+		{
+			CorporateApplicantDetail corporateApplicantDetail= corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+			return corporateApplicantDetail.getOrganisationName();
+		}
+		return null;
+    }
 	
 	@SuppressWarnings("unchecked")
 	@Override
