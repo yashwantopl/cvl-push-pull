@@ -139,11 +139,11 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 }else{
                 	profileViewLAPResponse.setNatureOfOccupation("NA");
                 }
-				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : "NA"));
-				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : "NA"));
-				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : "NA"));
-				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
-				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
+				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : null));
+				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : null));
+				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : null));
+				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : null));
+				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null));
 				profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
 				
 				
@@ -173,7 +173,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
 
                         officeCountry.add(officeCountryLong);
-                        OneFormResponse country = oneFormClient.getCityByCityListId(officeCountry);
+                        OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                         	officeAddress.setCountry(dataCountry.getValue());
@@ -280,7 +280,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				profileViewLAPResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
                 lapResponse.setLoanType(applicationMaster.getProductId()!=null?LoanType.getById(applicationMaster.getProductId()).getValue():null);
-				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");
+				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : null);
 
 				profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
 
@@ -323,35 +323,33 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurpose())){
 				lapResponse.setLoanPurpose(LoanPurpose.getById(loanDetail.getLoanPurpose()).getValue());
 				if(loanDetail.getLoanPurpose() == 5){
-					lapResponse.setLoanPurposeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurposeOther()) ? loanDetail.getLoanPurposeOther() : "NA");		
+					lapResponse.setLoanPurposeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurposeOther()) ? loanDetail.getLoanPurposeOther() : null);
 				}
 			}
-			
-			lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure()/12) : "NA");
+			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure()/12) : null);
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
 				lapResponse.setPropertyType(PropertyType.getById(loanDetail.getPropertyType()).getValue());
 				if(loanDetail.getPropertyType() == 4){
-					lapResponse.setPropertyTypeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyTypeOther()) ? loanDetail.getPropertyTypeOther() : "NA");		
+					lapResponse.setPropertyTypeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyTypeOther()) ? loanDetail.getPropertyTypeOther() : null);
 				}
 			}
 			
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatus())){
 				lapResponse.setOccupationStatus(OccupationStatus.getById(loanDetail.getOccupationStatus()).getValue());
 				if(loanDetail.getOccupationStatus() == 5){
-					lapResponse.setOccupationStatusOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatusOther()) ? loanDetail.getOccupationStatusOther() : "NA");		
+					lapResponse.setOccupationStatusOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatusOther()) ? loanDetail.getOccupationStatusOther() : null);
 				}
 			}
 			
-			lapResponse.setPropertyAgeInMonths(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInMonth()) ? loanDetail.getPropertyAgeInMonth().toString() : "NA");
-			lapResponse.setPropertyAgeInYears(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInYear()) ? loanDetail.getPropertyAgeInYear().toString() : "NA");
-			lapResponse.setTotalArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
-			lapResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBuiltUpArea()) ? loanDetail.getBuiltUpArea().toString() : "NA");
-			lapResponse.setPropertyValue(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyValue()) ? loanDetail.getPropertyValue().toString() : "NA");
-			lapResponse.setPropertyOwnerName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOwnerName()) ? loanDetail.getOwnerName() : "NA");
-			lapResponse.setPropertyPremiseNumber(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressPremise()) ? loanDetail.getAddressPremise() : "NA");
-			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : "NA");
-			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : "NA");
+			lapResponse.setPropertyAgeInMonths(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInMonth()) ? loanDetail.getPropertyAgeInMonth().toString() : null);
+			lapResponse.setPropertyAgeInYears(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInYear()) ? loanDetail.getPropertyAgeInYear().toString() : null);
+			lapResponse.setTotalArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : null);
+			lapResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBuiltUpArea()) ? loanDetail.getBuiltUpArea().toString() : null);
+			lapResponse.setPropertyValue(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyValue()) ? loanDetail.getPropertyValue().toString() : null);
+			lapResponse.setPropertyOwnerName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOwnerName()) ? loanDetail.getOwnerName() : null);
+			lapResponse.setPropertyPremiseNumber(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressPremise()) ? loanDetail.getAddressPremise() : null);
+			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : null);
+			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : null);
 			
             try {
                 List<Long> officeCity = new ArrayList<Long>(1);
@@ -406,16 +404,16 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	lapResponse.setPropertyState("NA");
                     }
                 }else{
-                	lapResponse.setPropertyState("NA");
+                	lapResponse.setPropertyState(null);
                 }
             } catch (Exception e) {
             	e.printStackTrace();
             }
 			
-			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : "NA");
+			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : null);
 		}
 		
-		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : null);
 		lapPrimaryViewResponse.setLapResponse(lapResponse);
 		
 		//setting co-application details
