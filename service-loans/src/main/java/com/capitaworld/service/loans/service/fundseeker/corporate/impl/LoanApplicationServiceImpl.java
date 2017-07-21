@@ -1631,7 +1631,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws Exception {
-		LoanApplicationMaster applicationMaster=loanApplicationRepository.getOne(applicationId);
+		LoanApplicationMaster applicationMaster=loanApplicationRepository.findOne(applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 		
