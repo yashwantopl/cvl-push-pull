@@ -77,11 +77,21 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCurrency(Integer currencyId) {
-		return !CommonUtils.isObjectNullOrEmpty(currencyId) ? Currency.getById(currencyId).getValue() : "NA";
+		if(!CommonUtils.isObjectNullOrEmpty(currencyId)){
+			if(!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))){
+				return Currency.getById(currencyId).getValue();	
+			}
+		}
+		return "NA";	
 	}
 	
 	public static String getDenomination(Integer denominationId) {
-		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() :  "NA";
+		if(!CommonUtils.isObjectNullOrEmpty(denominationId)){
+			if(!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))){
+				return Denomination.getById(denominationId).getValue();	
+			}
+		}
+		return "NA";
 	}
 	
 	public static void startHook(Logger logger,String methodName){
