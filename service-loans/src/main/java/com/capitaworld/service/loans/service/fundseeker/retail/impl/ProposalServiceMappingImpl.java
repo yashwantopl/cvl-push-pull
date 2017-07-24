@@ -196,14 +196,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							
 					corporateProposalDetails.setAmount(amount);
 
-					// calling DMS for getting fp profile image path
+					// calling DMS for getting fs corporate profile image path
 					
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setApplicationId(applicationId);
 					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-					documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+					documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
 					
-					DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					String imagePath = null;
 					if (documentResponse != null && documentResponse.getStatus() == 200) {
 						List<Map<String, Object>> list = documentResponse.getDataList();
@@ -277,7 +277,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					
 					retailProposalDetails.setName(name);
 
-					// calling DMS for getting fp profile image path
+					// calling DMS for getting fs retail  profile image path
 					
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setApplicationId(applicationId);
