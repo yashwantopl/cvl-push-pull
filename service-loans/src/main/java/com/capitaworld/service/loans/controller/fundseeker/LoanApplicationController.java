@@ -199,18 +199,22 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/set_last_application_access/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> setLastApplicationAccess(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> setLastApplicationAccess(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "setLastApplicationAccess");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null) {
 				logger.warn("applicationId Require to Set last Access Profile ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-
 			UserResponse userResponse = loanApplicationService.setLastAccessApplication(applicationId, userId);
 			if (userResponse != null && userResponse.getStatus() == 200) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
