@@ -11,7 +11,8 @@ public class LoanApplicationDetailsForSp {
 	private Integer productId;
 	private String productName;
 	private Double amount;
-	
+	private Integer currencyId;
+
 	private Integer denominationId;
 	private String denominationValue;
 	
@@ -20,11 +21,7 @@ public class LoanApplicationDetailsForSp {
 	private Integer notificationCount;
 	
 	private List<SpSysNotifyResponse> sysNotifyResponse;
-	
-	
-	
-	
-	
+		
 	public List<SpSysNotifyResponse> getSysNotifyResponse() {
 		return sysNotifyResponse;
 	}
@@ -39,7 +36,6 @@ public class LoanApplicationDetailsForSp {
 	}
 
 	
-
 	public Integer getNotificationCount() {
 		return notificationCount;
 	}
@@ -70,11 +66,12 @@ public class LoanApplicationDetailsForSp {
 		super();
 	}
 
-	public LoanApplicationDetailsForSp(Long id, Integer productId, Double amount, Integer denominationId) {
+	public LoanApplicationDetailsForSp(Long id, Integer productId, Double amount, Integer currencyId,Integer denominationId) {
 		super();
 		this.id = id;
 		this.productId = productId;
 		this.amount = amount;
+		this.currencyId = currencyId;
 		this.denominationId = denominationId;
 	}
 
@@ -134,5 +131,12 @@ public class LoanApplicationDetailsForSp {
 		this.hasAlreadyApplied = hasAlreadyApplied;
 	}
 	
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
 	
 }
