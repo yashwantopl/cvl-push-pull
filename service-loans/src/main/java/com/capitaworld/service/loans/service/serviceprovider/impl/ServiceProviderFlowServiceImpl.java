@@ -19,12 +19,16 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.SpClientListing;
 import com.capitaworld.service.loans.model.SpSysNotifyResponse;
 import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -70,6 +74,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	
 	@Autowired
 	private DashboardService dashboardService;
+	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 	
 	private static final String USERS_BASE_URL_KEY = "userURL";
 	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
@@ -141,6 +148,12 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							applicationDetailsForSp.setHasAlreadyApplied(applied);
 							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
 							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
+							int fsType = CommonUtils.getUserMainType(applicationDetailsForSp.getProductId());
+							if(CommonUtils.UserMainType.RETAIL == fsType){
+								RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationDetailsForSp.getId());
+								applicationDetailsForSp.setCurrencyId((!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) ? retailApplicantDetail.getCurrencyId() : null);
+							}
+							
 							//code for sp fs notification
 							NotificationRequest notificationRequestSpFS = new NotificationRequest();
 							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
