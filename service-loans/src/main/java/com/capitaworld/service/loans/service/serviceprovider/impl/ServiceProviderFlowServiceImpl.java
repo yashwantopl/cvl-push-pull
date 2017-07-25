@@ -40,6 +40,7 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -153,7 +154,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 								RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationDetailsForSp.getId());
 								applicationDetailsForSp.setCurrencyId((!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) ? retailApplicantDetail.getCurrencyId() : null);
 							}
-							
+							applicationDetailsForSp.setCurrencyValue(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getCurrencyId()) ? Currency.getById(applicationDetailsForSp.getCurrencyId()).getValue() : null);
 							//code for sp fs notification
 							NotificationRequest notificationRequestSpFS = new NotificationRequest();
 							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
