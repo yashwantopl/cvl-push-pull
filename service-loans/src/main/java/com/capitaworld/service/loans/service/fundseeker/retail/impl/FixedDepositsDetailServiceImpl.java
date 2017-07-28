@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,6 +113,12 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 			for (FixedDepositsDetail detail : fixedDepositsDetails) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
 				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
+				{
+					SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
+					
+					fixedDepositsDetailRequest.setMaturityDateInString(dateFormat.format(detail.getMaturityDate()).toString());
+				}
 				fixedDepositsDetailRequests.add(fixedDepositsDetailRequest);
 			}
 			return fixedDepositsDetailRequests;

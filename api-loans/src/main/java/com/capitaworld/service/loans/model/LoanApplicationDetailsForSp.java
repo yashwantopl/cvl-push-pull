@@ -12,7 +12,7 @@ public class LoanApplicationDetailsForSp {
 	private String productName;
 	private Double amount;
 	private Integer currencyId;
-
+	private String currencyValue;
 	private Integer denominationId;
 	private String denominationValue;
 	
@@ -137,6 +137,14 @@ public class LoanApplicationDetailsForSp {
 
 	public void setCurrencyId(Integer currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public String getCurrencyValue() {
+		return currencyValue;
+	}
+
+	public void setCurrencyValue(String currencyValue) {
+		this.currencyValue = currencyValue;
 	}
 	
 }
