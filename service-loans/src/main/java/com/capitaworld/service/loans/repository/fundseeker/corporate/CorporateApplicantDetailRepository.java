@@ -36,4 +36,8 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select count(cr.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public long getApplicantCount(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
+	
+	@Query("select cr.establishmentYear from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	public Integer getApplicantEstablishmentYear(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
 }
