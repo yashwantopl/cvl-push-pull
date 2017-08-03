@@ -191,8 +191,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 
 			List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			
-			SimpleDateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
-			dateFormat.format(depositsDetailsRequestList.get(0).getMaturityDate());
+			
 			
 			finalViewCommonResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 

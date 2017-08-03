@@ -22,8 +22,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private String panNo;
 	private String websiteAddress;
 	private String city;
+	private String regOfficeCity;
+	private String addOfficeCity;
 	private String country;
+	private String regOfficecountry;
+	private String addOfficecountry;
 	private String state;
+	private String regOfficestate;
+	private String addOfficestate;
 	private String constitution;
 	private String establishmentMonth;
 	private String establishmentYear;
@@ -831,5 +837,54 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.dprYourFormatList = dprYourFormatList;
 	}
 
+	public String getRegOfficeCity() {
+		return regOfficeCity;
+	}
+
+	public void setRegOfficeCity(String regOfficeCity) {
+		this.regOfficeCity = regOfficeCity;
+	}
+
+	public String getAddOfficeCity() {
+		return addOfficeCity;
+	}
+
+	public void setAddOfficeCity(String addOfficeCity) {
+		this.addOfficeCity = addOfficeCity;
+	}
+
+	public String getRegOfficecountry() {
+		return regOfficecountry;
+	}
+
+	public void setRegOfficecountry(String regOfficecountry) {
+		this.regOfficecountry = regOfficecountry;
+	}
+
+	public String getAddOfficecountry() {
+		return addOfficecountry;
+	}
+
+	public void setAddOfficecountry(String addOfficecountry) {
+		this.addOfficecountry = addOfficecountry;
+	}
+
+	public String getRegOfficestate() {
+		return regOfficestate;
+	}
+
+	public void setRegOfficestate(String regOfficestate) {
+		this.regOfficestate = regOfficestate;
+	}
+
+	public String getAddOfficestate() {
+		return addOfficestate;
+	}
+
+	public void setAddOfficestate(String addOfficestate) {
+		this.addOfficestate = addOfficestate;
+	}
+
+	
 	
 }
