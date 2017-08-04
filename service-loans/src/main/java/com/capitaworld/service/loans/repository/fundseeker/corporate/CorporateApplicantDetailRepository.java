@@ -19,6 +19,11 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	public CorporateApplicantDetail getByApplicationAndUserIdForSP(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 	
+	@Query("select cr.organisationName,cr.modifiedDate from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	public List<Object[]> getByNameAndLastUpdateDate(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
+	
+	
 	public CorporateApplicantDetail findOneByApplicationIdId(Long applicationId);
 
 	
