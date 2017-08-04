@@ -142,4 +142,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int setFinalFilledCount(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("finalFilledCount") String finalFilledCount);
 	
+	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true")
+	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds);
+	
 }
