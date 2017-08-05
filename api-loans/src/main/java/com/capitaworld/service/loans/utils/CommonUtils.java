@@ -29,6 +29,13 @@ public class CommonUtils {
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
+	
+	public static String getYesNo(Boolean value) {
+		if(!isObjectNullOrEmpty(value)){
+			return value ? "Yes" : "No";
+		}
+		return "";
+	}
 
 	public static boolean isObjectNullOrEmpty(Object value) {
 		return (value == null || (value instanceof String ? (((String) value).isEmpty()
@@ -136,6 +143,16 @@ public class CommonUtils {
 		else
 			return 1;
 	}
+	
+	public static String getUserMainTypeName(int productId) {
+		if(isObjectNullOrEmpty(productId)){
+			return "NA";
+		}
+		if (productId == 1 || productId == 2)
+			return CORPORATE;
+		else
+			return RETAIL;
+	}
 
 	public static String getCorporateLoanType(int productId) {
 		if (productId == 1 || productId == 2)
@@ -226,9 +243,14 @@ public class CommonUtils {
 		return 0.0;
 	}
 	
+	public static Double getTotalBowlCount(String profileCount,String primaryCount,String finalCount){
+		return getBowlCount(profileCount,null) + getBowlCount(primaryCount,null) + getBowlCount(finalCount,null);
+	}
+	
 	public static List<String> urlsBrforeLogin = null;
 	static {
 		urlsBrforeLogin = new ArrayList();
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
+		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 	}
 }

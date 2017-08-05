@@ -23,4 +23,7 @@ public interface CorporateApplicantService {
 	public int updateLatLong(LongitudeLatitudeRequest request,Long userId) throws Exception;
 	
 	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
+	
+	public Integer getCorporateEstablishmentYear(Long applicationId,Long userId) throws Exception;
+	
 }
