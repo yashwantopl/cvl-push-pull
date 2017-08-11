@@ -169,6 +169,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			try{
 				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
 				applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
@@ -179,7 +181,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}catch (Exception e) {
 				logger.error("Error while getting Status From Proposal Client");
 				e.printStackTrace();
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				return applicationRequest;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
@@ -234,6 +236,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
+				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
+				request.setFinalLocked(master.getIsFinalLocked());
 				try{
 					ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
 					request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
@@ -242,9 +246,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setName(loanType.getValue());
 					requests.add(request);
 				}catch (Exception e) {
-					logger.error("Error while Getting Loan Status from Proposal Client:-");
+					logger.error("Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-");
 					e.printStackTrace();
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+//					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
 			return requests;
