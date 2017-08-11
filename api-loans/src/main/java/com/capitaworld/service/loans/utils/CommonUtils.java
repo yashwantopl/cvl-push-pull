@@ -24,6 +24,8 @@ public class CommonUtils {
 	public static final String WC_PRIMARY_EXCEL = "Teaser Download-Working Capital.xlsx";
 	public static final String EXCEL_TEASER_BASE_URL= "excelTeaserBaseUrl";
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
+	public static final String MAXIMUM = "maximum";
+	public static final String MINIMUM = "minimum";
 	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
