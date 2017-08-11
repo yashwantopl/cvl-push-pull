@@ -4,7 +4,6 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,8 +22,11 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadServiceImpl.class);
 
+//	@Autowired
+//	private Environment environment;
+	
 	@Autowired
-	private Environment environment;
+	private DMSClient dmsClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -34,7 +36,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName, String userType,
 			MultipartFile multipartFile) throws Exception {
 		try {
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			JSONObject jsonObj = new JSONObject();
 
 			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
@@ -83,7 +84,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
@@ -96,7 +96,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles)
 			throws Exception {
 		try {
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			return dmsClient.uploadFile(documentRequestString, multipartFiles);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
@@ -109,7 +108,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@Override
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception {
 		try {
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			return dmsClient.listProductDocument(documentRequest);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block

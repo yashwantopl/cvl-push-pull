@@ -475,162 +475,170 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			if (!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType())) {
 				for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-					Integer applicationId = (Integer) proposalDetailsResponse.getDataList().get(i);
-					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-							.findOne(applicationId.longValue());
-					if (CommonUtils.UserMainType.CORPORATE == CommonUtils
-							.getUserMainType(loanApplicationMaster.getProductId())) {
+					try {
+						Integer applicationId = (Integer) proposalDetailsResponse.getDataList().get(i);
+						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+								.findOne(applicationId.longValue());
+						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
+								.getUserMainType(loanApplicationMaster.getProductId())) {
 
-						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-								.findOneByApplicationIdId(applicationId.longValue());
+							CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+									.findOneByApplicationIdId(applicationId.longValue());
 
-						if (corporateApplicantDetail == null)
-							continue;
+							if (corporateApplicantDetail == null)
+								continue;
 
-						// for get address city state country
-						String address = "";
-						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
-							address += CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(),
-									oneFormClient) + ",";
-						} else {
-							address += "NA ,";
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())) {
-							address += CommonDocumentUtils.getState(
-									corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient) + ",";
-						} else {
-							address += "NA ,";
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())) {
-							address += CommonDocumentUtils.getCountry(
-									corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
-						} else {
-							address += "NA";
-						}
-
-						CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
-
-						corporateProposalDetails.setAddress(address);
-
-						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-							corporateProposalDetails.setName("NA");
-						else
-							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
-
-						corporateProposalDetails
-								.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
-
-						String amount = "";
-						if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
-							amount += "NA";
-						else
-							amount += df.format(loanApplicationMaster.getAmount());
-
-						if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
-							amount += " NA";
-						else
-							amount += " " + Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();
-
-						corporateProposalDetails.setAmount(amount);
-
-						// calling DMS for getting fs corporate profile image
-						// path
-
-						DocumentRequest documentRequest = new DocumentRequest();
-						documentRequest.setApplicationId(applicationId.longValue());
-						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-						documentRequest.setProductDocumentMappingId(
-								CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-
-						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-						String imagePath = null;
-						if (documentResponse != null && documentResponse.getStatus() == 200) {
-							List<Map<String, Object>> list = documentResponse.getDataList();
-							if (!CommonUtils.isListNullOrEmpty(list)) {
-								StorageDetailsResponse response = null;
-
-								response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
-										StorageDetailsResponse.class);
-
-								if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
-									imagePath = response.getFilePath();
-								else
-									imagePath = null;
+							// for get address city state country
+							String address = "";
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
+								address += CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(),
+										oneFormClient) + ",";
+							} else {
+								address += "NA ,";
 							}
-						}
-
-						corporateProposalDetails.setImagePath(imagePath);
-						corporateProposalDetails.setApplicationId(applicationId.longValue());
-						corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-						proposalDetailsList.add(corporateProposalDetails);
-					} else {
-						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-								.findOneByApplicationIdId(applicationId.longValue());
-
-						if (retailApplicantDetail == null)
-							continue;
-
-						// for get address city state country
-						String address = "";
-						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
-							address += CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(),
-									oneFormClient) + ",";
-						} else {
-							address += "NA ,";
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
-							address += CommonDocumentUtils.getState(
-									retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient) + ",";
-						} else {
-							address += "NA ,";
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
-							address += CommonDocumentUtils.getCountry(
-									retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
-						} else {
-							address += "NA";
-						}
-
-						RetailProposalDetails retailProposalDetails = new RetailProposalDetails();
-						retailProposalDetails.setAddress(address);
-
-						String name = "";
-
-						if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
-							name += "NA";
-						else
-							name += retailApplicantDetail.getFirstName();
-
-						retailProposalDetails.setName(name);
-
-						// calling DMS for getting fs retail profile image path
-
-						DocumentRequest documentRequest = new DocumentRequest();
-						documentRequest.setApplicationId(applicationId.longValue());
-						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-						documentRequest.setProductDocumentMappingId(
-								CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-						String imagePath = null;
-						if (documentResponse != null && documentResponse.getStatus() == 200) {
-							List<Map<String, Object>> list = documentResponse.getDataList();
-							if (!CommonUtils.isListNullOrEmpty(list)) {
-								StorageDetailsResponse response = null;
-
-								response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
-										StorageDetailsResponse.class);
-
-								if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
-									imagePath = response.getFilePath();
-								else
-									imagePath = null;
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())) {
+								address += CommonDocumentUtils.getState(
+										corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)
+										+ ",";
+							} else {
+								address += "NA ,";
 							}
-						}
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())) {
+								address += CommonDocumentUtils.getCountry(
+										corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+							} else {
+								address += "NA";
+							}
 
-						retailProposalDetails.setImagePath(imagePath);
-						retailProposalDetails.setApplicationId(applicationId.longValue());
-						retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
-						proposalDetailsList.add(retailProposalDetails);
+							CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
+
+							corporateProposalDetails.setAddress(address);
+
+							if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+								corporateProposalDetails.setName("NA");
+							else
+								corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+
+							corporateProposalDetails.setFsMainType(
+									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+
+							String amount = "";
+							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
+								amount += "NA";
+							else
+								amount += df.format(loanApplicationMaster.getAmount());
+
+							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
+								amount += " NA";
+							else
+								amount += " "
+										+ Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();
+
+							corporateProposalDetails.setAmount(amount);
+
+							// calling DMS for getting fs corporate profile
+							// image
+							// path
+
+							DocumentRequest documentRequest = new DocumentRequest();
+							documentRequest.setApplicationId(applicationId.longValue());
+							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+							documentRequest.setProductDocumentMappingId(
+									CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+							String imagePath = null;
+							if (documentResponse != null && documentResponse.getStatus() == 200) {
+								List<Map<String, Object>> list = documentResponse.getDataList();
+								if (!CommonUtils.isListNullOrEmpty(list)) {
+									StorageDetailsResponse response = null;
+
+									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+											StorageDetailsResponse.class);
+
+									if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+										imagePath = response.getFilePath();
+									else
+										imagePath = null;
+								}
+							}
+
+							corporateProposalDetails.setImagePath(imagePath);
+							corporateProposalDetails.setApplicationId(applicationId.longValue());
+							corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+							proposalDetailsList.add(corporateProposalDetails);
+						} else {
+							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+									.findOneByApplicationIdId(applicationId.longValue());
+
+							if (retailApplicantDetail == null)
+								continue;
+
+							// for get address city state country
+							String address = "";
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
+								address += CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(),
+										oneFormClient) + ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
+								address += CommonDocumentUtils.getState(
+										retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient) + ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
+								address += CommonDocumentUtils.getCountry(
+										retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
+							} else {
+								address += "NA";
+							}
+
+							RetailProposalDetails retailProposalDetails = new RetailProposalDetails();
+							retailProposalDetails.setAddress(address);
+
+							String name = "";
+
+							if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+								name += "NA";
+							else
+								name += retailApplicantDetail.getFirstName();
+
+							retailProposalDetails.setName(name);
+
+							// calling DMS for getting fs retail profile image
+							// path
+
+							DocumentRequest documentRequest = new DocumentRequest();
+							documentRequest.setApplicationId(applicationId.longValue());
+							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+							documentRequest.setProductDocumentMappingId(
+									CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+							String imagePath = null;
+							if (documentResponse != null && documentResponse.getStatus() == 200) {
+								List<Map<String, Object>> list = documentResponse.getDataList();
+								if (!CommonUtils.isListNullOrEmpty(list)) {
+									StorageDetailsResponse response = null;
+
+									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+											StorageDetailsResponse.class);
+
+									if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+										imagePath = response.getFilePath();
+									else
+										imagePath = null;
+								}
+							}
+
+							retailProposalDetails.setImagePath(imagePath);
+							retailProposalDetails.setApplicationId(applicationId.longValue());
+							retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
+							proposalDetailsList.add(retailProposalDetails);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 
 				}
