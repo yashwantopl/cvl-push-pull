@@ -1715,7 +1715,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.warn("Throw Exception while get matches count for registration user details------------->" + loanMstr.getId());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)){
-						obj.put("totalMatches",proposalCountResponse.getMatches());	
+						obj.put("totalMatches",proposalCountResponse.getTotal());
+						obj.put("matches", proposalCountResponse.getMatches());
+						obj.put("directSent", proposalCountResponse.getSent());
+						obj.put("directRecieved", proposalCountResponse.getReceived());
+						obj.put("hold", proposalCountResponse.getHold());
+						obj.put("reject", proposalCountResponse.getRejected());
+						obj.put("approved", proposalCountResponse.getAdvanced());
+						obj.put("accept", proposalCountResponse.getPrimary());
+						
 					}
 					
 					
