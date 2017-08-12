@@ -24,6 +24,8 @@ public class CommonUtils {
 	public static final String WC_PRIMARY_EXCEL = "Teaser Download-Working Capital.xlsx";
 	public static final String EXCEL_TEASER_BASE_URL= "excelTeaserBaseUrl";
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
+	public static final String MAXIMUM = "maximum";
+	public static final String MINIMUM = "minimum";
 	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
@@ -252,5 +254,33 @@ public class CommonUtils {
 		urlsBrforeLogin = new ArrayList();
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
+	}
+	
+	public static int calculateAge(Date dateOfBirth) {
+	    Calendar today = Calendar.getInstance();
+	    Calendar birthDate = Calendar.getInstance();
+	    birthDate.setTime(dateOfBirth);
+	    if (birthDate.after(today)) {
+	        throw new IllegalArgumentException("You don't exist yet");
+	    }
+	    int todayYear = today.get(Calendar.YEAR);
+	    int birthDateYear = birthDate.get(Calendar.YEAR);
+	    int todayDayOfYear = today.get(Calendar.DAY_OF_YEAR);
+	    int birthDateDayOfYear = birthDate.get(Calendar.DAY_OF_YEAR);
+	    int todayMonth = today.get(Calendar.MONTH);
+	    int birthDateMonth = birthDate.get(Calendar.MONTH);
+	    int todayDayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+	    int birthDateDayOfMonth = birthDate.get(Calendar.DAY_OF_MONTH);
+	    int age = todayYear - birthDateYear;
+
+	    // If birth date is greater than todays date (after 2 days adjustment of leap year) then decrement age one year
+	    if ((birthDateDayOfYear - todayDayOfYear > 3) || (birthDateMonth > todayMonth)){
+	        age--;
+	    
+	    // If birth date and todays date are of same month and birth day of month is greater than todays day of month then decrement age
+	    } else if ((birthDateMonth == todayMonth) && (birthDateDayOfMonth > todayDayOfMonth)){
+	        age--;
+	    }
+	    return age;
 	}
 }
