@@ -1783,6 +1783,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
 			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
 			response.setLoanAmount(loanApplicationMaster.getAmount());
+			
+			
+			String currency = "";
+			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+					currency = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
+					currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
+				}
+			} else {
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				currency = CommonDocumentUtils.getCurrency(currencyId);
+			}
+			
+			response.setCurrency(currency);
+			
 			if(type == 1){
 				response.setTenure(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTenure()) ? Double.valueOf((loanApplicationMaster.getTenure()/12)) : null);	
 			} else {
