@@ -120,8 +120,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				MasterResponse bankResponse = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) data, MasterResponse.class);
 				HomeLoanEligibilityCriteria homeLoanCriteria = loanEligibilityCriteriaRepository.getHomeLoanBySVMV(
-						homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue(),
-						homeLoanRequest.getEmploymentType(), Integer.class.cast(bankResponse.getId()));
+						homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue(),Integer.class.cast(bankResponse.getId()));
 				if (homeLoanCriteria == null)
 					continue;
 				double saleDeedValue = 0.0;

@@ -168,9 +168,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String currencyAndDenomination = "NA";
 				if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
 						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
-					currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
-					currencyAndDenomination = currencyAndDenomination
-							.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					try{
+						currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination
+								.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
@@ -235,9 +239,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					String currencyAndDenomination = "NA";
 					if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())
 							&& !CommonUtils.isObjectNullOrEmpty(master.getDenominationId())) {
-						currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
-						currencyAndDenomination = currencyAndDenomination
-								.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+						try{
+							currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
+							currencyAndDenomination = currencyAndDenomination
+									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));							
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					}
 					request.setCurrencyValue(currencyAndDenomination);
 					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
