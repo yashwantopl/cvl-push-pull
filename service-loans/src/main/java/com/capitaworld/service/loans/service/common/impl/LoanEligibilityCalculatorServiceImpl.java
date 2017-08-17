@@ -44,8 +44,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			Integer tenure = homeLoanRequest.getTenure();
 			if (CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getTenure())) {
 				Integer age = CommonUtils.getAgeFromBirthDate(homeLoanRequest.getDateOfBirth());
+				if(age == null || age >= 60){
+					return null;
+				}
 				tenure = (60 - age > 30 ? 30 : 60 - age);
 			} else {
+				if(tenure <= 0){
+					return null;
+				}
 				tenure = (tenure > 30 ? 30 : tenure);
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
@@ -66,17 +72,15 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				
 				//Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
-				int totalPayments = tenure * 12;
+				double totalPayments = tenure * 12;
 				double loanAmount = 100000;
-				Long result = Double
-						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount)
-						.longValue();
+				double result = Double
+						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
 				double maximum = ((income / result) * loanAmount);
 
 				//Minimum Amount Based on Salary and Min ROI
 				monthlyRate = homeLoanCriteria.getRoiHigh() / 100 / 12;
-				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount)
-						.longValue();
+				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
 				double minimum = ((income / result) * loanAmount);
 				JSONObject json = new JSONObject();
 				json.put(CommonUtils.MAXIMUM, maximum);
@@ -96,6 +100,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Override
 	public JSONObject getMinMaxBySalarySlab(HomeLoanEligibilityRequest homeLoanRequest) throws Exception{
 		Map<Integer,JSONObject> minMaxData = calculateMinMaxForHomeLoan(homeLoanRequest);
+		if(minMaxData == null){
+			return null;
+		}
+		
 		JSONObject json = new JSONObject();
 		Entry<Integer, JSONObject> minFromMap = getMinFromMap(minMaxData);
 		if(minFromMap != null){
@@ -113,6 +121,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Override
 	public JSONObject calcHomeLoanAmount(HomeLoanEligibilityRequest homeLoanRequest) throws Exception {
 		CommonDocumentUtils.startHook(logger, "calculateMinSVMVForHomeLoan");
+		Map<Integer, JSONObject> minMaxSalary = calculateMinMaxForHomeLoan(homeLoanRequest);
+		if(minMaxSalary == null){
+			return null;
+		}
 		try {
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer,Double> minData = new HashMap<>(bankByStatus.getListData().size());
@@ -139,7 +151,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			
 			CommonDocumentUtils.endHook(logger, "calculateMinSVMVForHomeLoan");
-			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(calculateMinMaxForHomeLoan(homeLoanRequest),minData);
+			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(minMaxSalary,minData);
 			Map<Double, Double> resultMap = new HashMap<>(minMaxFromSalaryAndMVSV.size());
 			for (Entry<Integer, JSONObject> entry : minMaxFromSalaryAndMVSV.entrySet()) {
 				JSONObject json = entry.getValue();
@@ -171,6 +183,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	public Integer calculateTenure(HomeLoanEligibilityRequest homeLoanRequest) throws Exception {
 		try {
 			Integer age = CommonUtils.getAgeFromBirthDate(homeLoanRequest.getDateOfBirth());
+			if(age == null || age >= 60){
+				return null;
+			}
 			return (60 - age > 30 ? 30 : 60 - age);
 		} catch (Exception e) {
 			e.printStackTrace();
