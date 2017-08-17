@@ -63,8 +63,17 @@ public class LoanEligibilityCalculatorController {
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(loanEligibilityCalculatorService.calculateTenure(homeLoanRequest));
+			LoansResponse response = null;
+			Integer tenure = loanEligibilityCalculatorService.calculateTenure(homeLoanRequest);
+			if(tenure == null){
+				response = new LoansResponse("Invalid Age");
+				response.setData("You are not eligible for Home Loan");
+				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+			}else{
+				response = new LoansResponse("Success");
+				response.setData(tenure);
+				response.setStatus(HttpStatus.OK.value());
+			}
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (Exception e) {

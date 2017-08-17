@@ -66,17 +66,15 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				
 				//Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
-				int totalPayments = tenure * 12;
+				double totalPayments = tenure * 12;
 				double loanAmount = 100000;
-				Long result = Double
-						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount)
-						.longValue();
+				double result = Double
+						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
 				double maximum = ((income / result) * loanAmount);
 
 				//Minimum Amount Based on Salary and Min ROI
 				monthlyRate = homeLoanCriteria.getRoiHigh() / 100 / 12;
-				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount)
-						.longValue();
+				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
 				double minimum = ((income / result) * loanAmount);
 				JSONObject json = new JSONObject();
 				json.put(CommonUtils.MAXIMUM, maximum);
@@ -96,6 +94,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Override
 	public JSONObject getMinMaxBySalarySlab(HomeLoanEligibilityRequest homeLoanRequest) throws Exception{
 		Map<Integer,JSONObject> minMaxData = calculateMinMaxForHomeLoan(homeLoanRequest);
+		if(minMaxData == null){
+			return null;
+		}
+		
 		JSONObject json = new JSONObject();
 		Entry<Integer, JSONObject> minFromMap = getMinFromMap(minMaxData);
 		if(minFromMap != null){
@@ -171,6 +173,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	public Integer calculateTenure(HomeLoanEligibilityRequest homeLoanRequest) throws Exception {
 		try {
 			Integer age = CommonUtils.getAgeFromBirthDate(homeLoanRequest.getDateOfBirth());
+			if(age == null || age >= 60){
+				return null;
+			}
 			return (60 - age > 30 ? 30 : 60 - age);
 		} catch (Exception e) {
 			e.printStackTrace();
