@@ -317,7 +317,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setTechnologyType(finalTermLoanRequest.getTechnologyTypeId() != null ? TypeTechnology.getById(finalTermLoanRequest.getTechnologyTypeId()).getValue() : null);
 			response.setTechnologyPatented(finalTermLoanRequest.getTechnologyPatentedId() != null ? TechnologyPatented.getById(finalTermLoanRequest.getTechnologyPatentedId()).getValue() : null);
 			response.setTechnologyRequiresUpgradation(finalTermLoanRequest.getTechnologyRequiresUpgradationId() != null ? TechnologyRequiresUpgradation.getById(finalTermLoanRequest.getTechnologyRequiresUpgradationId()).getValue() : null);
-			response.setMarketPosition(finalTermLoanRequest.getMarketingPositioningId() != null ? MarketPosition.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
+			response.setMarketPosition(finalTermLoanRequest.getMarketPositionId() != null ? MarketPosition.getById(finalTermLoanRequest.getMarketPositionId()).getValue() : null);
 			response.setMarketingPositioning(finalTermLoanRequest.getMarketingPositioningId() != null ? MarketingPositioningNew.getById(finalTermLoanRequest.getMarketingPositioningId()).getValue() : null);
 			response.setMarketPositioningTop(finalTermLoanRequest.getMarketPositioningTopId() != null ? MarketPositioningTop.getById(finalTermLoanRequest.getMarketPositioningTopId()).getValue() : null);
 			response.setMarketShareTurnover(finalTermLoanRequest.getMarketShareTurnoverId() != null ? MarketShareTurnover.getById(finalTermLoanRequest.getMarketShareTurnoverId()).getValue() : null);
