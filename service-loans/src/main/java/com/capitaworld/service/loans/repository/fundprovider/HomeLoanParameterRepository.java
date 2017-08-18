@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
 
 public interface HomeLoanParameterRepository extends JpaRepository<HomeLoanParameter, Long>{
-	@Query("from HomeLoanParameter hlp where hlp.fpProductId.id =:id and isActive=true")
+	@Query("from HomeLoanParameter hlp where hlp.fpProductId.id =:id")
 	public HomeLoanParameter getByID(@Param("id") Long id);
 }
