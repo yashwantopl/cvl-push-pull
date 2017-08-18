@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,13 +76,13 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer maxDebtEquity;
 
-	private Double maxInvestSize;
+	private BigDecimal maxInvestSize;
 
-	private Double maxNetworth;
+	private BigDecimal maxNetworth;
 
-	private Double maxPastTurnover;
+	private BigDecimal maxPastTurnover;
 
-	private Double maxTenure;
+	private BigDecimal maxTenure;
 
 	private Integer minAgeEstablishment;
 
@@ -89,17 +90,19 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer minDebtEquity;
 
-	private Double minInvestSize;
+	private BigDecimal minInvestSize;
 
-	private Double minNetworth;
+	private BigDecimal minNetworth;
 
-	private Double minPastTurnover;
+	private BigDecimal minPastTurnover;
 
-	private Double minTenure;
+	private BigDecimal minTenure;
 
 	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
+	
+	private Long uninterestedIndustry;
 	
 	private List<DataRequest> industrylist = Collections.emptyList();
 
@@ -335,36 +338,36 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxDebtEquity = maxDebtEquity;
 	}
 
-	public Double getMaxInvestSize() {
+	public BigDecimal getMaxInvestSize() {
 		return maxInvestSize;
 	}
 
-	public void setMaxInvestSize(Double maxInvestSize) {
+	public void setMaxInvestSize(BigDecimal maxInvestSize) {
 		this.maxInvestSize = maxInvestSize;
 	}
 
-	public Double getMaxNetworth() {
+	public BigDecimal getMaxNetworth() {
 		return maxNetworth;
 	}
 
-	public void setMaxNetworth(Double maxNetworth) {
+	public void setMaxNetworth(BigDecimal maxNetworth) {
 		this.maxNetworth = maxNetworth;
 	}
 
-	public Double getMaxPastTurnover() {
+	public BigDecimal getMaxPastTurnover() {
 		return maxPastTurnover;
 	}
 
-	public void setMaxPastTurnover(Double maxPastTurnover) {
+	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
 		this.maxPastTurnover = maxPastTurnover;
 	}
 
-	public Double getMaxTenure() {
-		return ((this.maxTenure != null && this.maxTenure > 0) ? this.maxTenure / 12 : null);
+	public BigDecimal getMaxTenure() {
+		return maxTenure;
 	}
 
-	public void setMaxTenure(Double maxTenure) {
-		 this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
+	public void setMaxTenure(BigDecimal maxTenure) {
+		this.maxTenure = maxTenure;
 	}
 
 	public Integer getMinAgeEstablishment() {
@@ -391,36 +394,36 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minDebtEquity = minDebtEquity;
 	}
 
-	public Double getMinInvestSize() {
+	public BigDecimal getMinInvestSize() {
 		return minInvestSize;
 	}
 
-	public void setMinInvestSize(Double minInvestSize) {
+	public void setMinInvestSize(BigDecimal minInvestSize) {
 		this.minInvestSize = minInvestSize;
 	}
 
-	public Double getMinNetworth() {
+	public BigDecimal getMinNetworth() {
 		return minNetworth;
 	}
 
-	public void setMinNetworth(Double minNetworth) {
+	public void setMinNetworth(BigDecimal minNetworth) {
 		this.minNetworth = minNetworth;
 	}
 
-	public Double getMinPastTurnover() {
+	public BigDecimal getMinPastTurnover() {
 		return minPastTurnover;
 	}
 
-	public void setMinPastTurnover(Double minPastTurnover) {
+	public void setMinPastTurnover(BigDecimal minPastTurnover) {
 		this.minPastTurnover = minPastTurnover;
 	}
 
-	public Double getMinTenure() {
-		return ((this.minTenure != null && this.minTenure > 0) ? this.minTenure / 12 : null);
+	public BigDecimal getMinTenure() {
+		return minTenure;
 	}
 
-	public void setMinTenure(Double minTenure) {
-		this.minTenure = (minTenure != null ? minTenure * 12 : null);
+	public void setMinTenure(BigDecimal minTenure) {
+		this.minTenure = minTenure;
 	}
 
 	public Integer getProfitabilityHistory() {
@@ -437,6 +440,14 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setShortTermCreditRating(Integer shortTermCreditRating) {
 		this.shortTermCreditRating = shortTermCreditRating;
+	}
+
+	public Long getUninterestedIndustry() {
+		return uninterestedIndustry;
+	}
+
+	public void setUninterestedIndustry(Long uninterestedIndustry) {
+		this.uninterestedIndustry = uninterestedIndustry;
 	}
 
 	public List<DataRequest> getIndustrylist() {
@@ -478,9 +489,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setCityList(List<DataRequest> cityList) {
 		this.cityList = cityList;
 	}
-	
 
-	
+		
 	
 
 }

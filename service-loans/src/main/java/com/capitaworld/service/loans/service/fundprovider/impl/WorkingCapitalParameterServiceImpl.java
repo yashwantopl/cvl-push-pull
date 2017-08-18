@@ -273,6 +273,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveCity");
 	}
+
+	@Override
+	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }

@@ -1,49 +1,40 @@
 package com.capitaworld.service.loans.model.retail;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
-/**
- * The persistent class for the fp_home_loan_details database table.
- * 
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class HomeLoanParameterRequest extends ProductMasterRequest implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class RetailProduct extends ProductMasterRequest {
 
 	private Long fpProductId;
-
+	
 	private Integer currency;
 
-	private Boolean isAgeDisplay=false;
+	private Boolean isAgeDisplay = false;
 
-	private Boolean isAgeMandatory=false;
+	private Boolean isAgeMandatory = false;
 
-	private Boolean isAssetValueDisplay=false;
+	private Boolean isAssetValueDisplay = false;
 
-	private Boolean isAssetValueMandatory=false;
+	private Boolean isAssetValueMandatory = false;
 
-	private Boolean isGeographicalDisplay=false;
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isGeographicalMandatory=false;
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isLoanAmountDisplay=false;
+	private Boolean isLoanAmountDisplay = false;
 
-	private Boolean isLoanAmountMandatory=false;
+	private Boolean isLoanAmountMandatory = false;
 
-	private Boolean isTenureDisplay=false;
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isTenureMandatory=false;
+	private Boolean isTenureMandatory = false;
 
-	private Boolean isYearlyIncomeRangeDisplay=false;
+	private Boolean isYearlyIncomeRangeDisplay = false;
 
-	private Boolean isYearlyIncomeRangeMandatory=false;
+	private Boolean isYearlyIncomeRangeMandatory = false;
 
 	private Double maxAge;
 
@@ -72,21 +63,15 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	private List<DataRequest> cityList = Collections.emptyList();
 	
 	
-	public HomeLoanParameterRequest() {
-	}
 
 	public Long getFpProductId() {
-		return this.fpProductId;
+		return fpProductId;
 	}
 
 	public void setFpProductId(Long fpProductId) {
 		this.fpProductId = fpProductId;
 	}
 
-	
-
-
-	
 	public Integer getCurrency() {
 		return currency;
 	}
@@ -96,7 +81,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsAgeDisplay() {
-		return this.isAgeDisplay;
+		return isAgeDisplay;
 	}
 
 	public void setIsAgeDisplay(Boolean isAgeDisplay) {
@@ -104,7 +89,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsAgeMandatory() {
-		return this.isAgeMandatory;
+		return isAgeMandatory;
 	}
 
 	public void setIsAgeMandatory(Boolean isAgeMandatory) {
@@ -112,7 +97,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsAssetValueDisplay() {
-		return this.isAssetValueDisplay;
+		return isAssetValueDisplay;
 	}
 
 	public void setIsAssetValueDisplay(Boolean isAssetValueDisplay) {
@@ -120,7 +105,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsAssetValueMandatory() {
-		return this.isAssetValueMandatory;
+		return isAssetValueMandatory;
 	}
 
 	public void setIsAssetValueMandatory(Boolean isAssetValueMandatory) {
@@ -128,7 +113,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalDisplay() {
-		return this.isGeographicalDisplay;
+		return isGeographicalDisplay;
 	}
 
 	public void setIsGeographicalDisplay(Boolean isGeographicalDisplay) {
@@ -136,7 +121,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalMandatory() {
-		return this.isGeographicalMandatory;
+		return isGeographicalMandatory;
 	}
 
 	public void setIsGeographicalMandatory(Boolean isGeographicalMandatory) {
@@ -144,7 +129,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsLoanAmountDisplay() {
-		return this.isLoanAmountDisplay;
+		return isLoanAmountDisplay;
 	}
 
 	public void setIsLoanAmountDisplay(Boolean isLoanAmountDisplay) {
@@ -152,7 +137,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsLoanAmountMandatory() {
-		return this.isLoanAmountMandatory;
+		return isLoanAmountMandatory;
 	}
 
 	public void setIsLoanAmountMandatory(Boolean isLoanAmountMandatory) {
@@ -160,7 +145,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureDisplay() {
-		return this.isTenureDisplay;
+		return isTenureDisplay;
 	}
 
 	public void setIsTenureDisplay(Boolean isTenureDisplay) {
@@ -168,7 +153,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureMandatory() {
-		return this.isTenureMandatory;
+		return isTenureMandatory;
 	}
 
 	public void setIsTenureMandatory(Boolean isTenureMandatory) {
@@ -176,7 +161,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsYearlyIncomeRangeDisplay() {
-		return this.isYearlyIncomeRangeDisplay;
+		return isYearlyIncomeRangeDisplay;
 	}
 
 	public void setIsYearlyIncomeRangeDisplay(Boolean isYearlyIncomeRangeDisplay) {
@@ -184,7 +169,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsYearlyIncomeRangeMandatory() {
-		return this.isYearlyIncomeRangeMandatory;
+		return isYearlyIncomeRangeMandatory;
 	}
 
 	public void setIsYearlyIncomeRangeMandatory(Boolean isYearlyIncomeRangeMandatory) {
@@ -192,7 +177,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxAge() {
-		return this.maxAge;
+		return maxAge;
 	}
 
 	public void setMaxAge(Double maxAge) {
@@ -200,7 +185,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxAssetValue() {
-		return this.maxAssetValue;
+		return maxAssetValue;
 	}
 
 	public void setMaxAssetValue(Double maxAssetValue) {
@@ -208,7 +193,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxLoanAmount() {
-		return this.maxLoanAmount;
+		return maxLoanAmount;
 	}
 
 	public void setMaxLoanAmount(Double maxLoanAmount) {
@@ -216,7 +201,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxTenure() {
-		return this.maxTenure;
+		return maxTenure;
 	}
 
 	public void setMaxTenure(Double maxTenure) {
@@ -224,7 +209,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMaxYearlyIncomeRange() {
-		return this.maxYearlyIncomeRange;
+		return maxYearlyIncomeRange;
 	}
 
 	public void setMaxYearlyIncomeRange(Double maxYearlyIncomeRange) {
@@ -232,7 +217,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinAge() {
-		return this.minAge;
+		return minAge;
 	}
 
 	public void setMinAge(Double minAge) {
@@ -240,7 +225,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinAssetValue() {
-		return this.minAssetValue;
+		return minAssetValue;
 	}
 
 	public void setMinAssetValue(Double minAssetValue) {
@@ -248,7 +233,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinLoanAmount() {
-		return this.minLoanAmount;
+		return minLoanAmount;
 	}
 
 	public void setMinLoanAmount(Double minLoanAmount) {
@@ -256,7 +241,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinTenure() {
-		return this.minTenure;
+		return minTenure;
 	}
 
 	public void setMinTenure(Double minTenure) {
@@ -264,7 +249,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Double getMinYearlyIncomeRange() {
-		return this.minYearlyIncomeRange;
+		return minYearlyIncomeRange;
 	}
 
 	public void setMinYearlyIncomeRange(Double minYearlyIncomeRange) {
@@ -296,6 +281,5 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 	
 	
-
-
+	
 }
