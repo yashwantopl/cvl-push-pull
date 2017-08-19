@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.common;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,18 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(loanEligibilityCalculatorService.getMinMaxBySalarySlab(homeLoanRequest));
+			
+			LoansResponse response = null;
+			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService.getMinMaxBySalarySlab(homeLoanRequest);
+			if(minMaxBySalarySlab == null){
+				response = new LoansResponse("Invalid Age");
+				response.setData("You are not eligible for Home Loan");
+				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+			}else{
+				response = new LoansResponse("Success");
+				response.setData(minMaxBySalarySlab);
+				response.setStatus(HttpStatus.OK.value());
+			}
 			CommonDocumentUtils.endHook(logger, "calcMinMax");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -63,8 +74,17 @@ public class LoanEligibilityCalculatorController {
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(loanEligibilityCalculatorService.calculateTenure(homeLoanRequest));
+			LoansResponse response = null;
+			Integer tenure = loanEligibilityCalculatorService.calculateTenure(homeLoanRequest);
+			if(tenure == null){
+				response = new LoansResponse("Invalid Age");
+				response.setData("You are not eligible for Home Loan");
+				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+			}else{
+				response = new LoansResponse("Success");
+				response.setData(tenure);
+				response.setStatus(HttpStatus.OK.value());
+			}
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -88,8 +108,18 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(loanEligibilityCalculatorService.calcHomeLoanAmount(homeLoanRequest));
+			
+			LoansResponse response = null;
+			JSONObject jsonObject = loanEligibilityCalculatorService.calcHomeLoanAmount(homeLoanRequest);
+			if(jsonObject == null){
+				response = new LoansResponse("Invalid Age");
+				response.setData("You are not eligible for Home Loan");
+				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+			}else{
+				response = new LoansResponse("Success");
+				response.setData(jsonObject);
+				response.setStatus(HttpStatus.OK.value());
+			}
 			CommonDocumentUtils.endHook(logger, "calcHomeLoanAmount");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {

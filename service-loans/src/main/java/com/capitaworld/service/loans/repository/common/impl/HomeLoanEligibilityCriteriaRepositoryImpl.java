@@ -41,14 +41,15 @@ public class HomeLoanEligibilityCriteriaRepositoryImpl implements LoanEligibilit
 	}
 
 	@Override
-	public HomeLoanEligibilityCriteria getHomeLoanBySVMV(Long sv, Long mv, Integer type, Integer bankId) {
+	public HomeLoanEligibilityCriteria getHomeLoanBySVMV(Long sv, Long mv, Integer bankId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getMinMaxFromSalarySlab");
-		String query = "select hl from HomeLoanEligibilityCriteria hl where hl.type =:type and hl.bankId =:bankId and hl.isActive =:isActive and ("
+//		hl.type =:type and
+		String query = "select hl from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and ("
 				+ sv + " >= hl.minPropertyAmount and " + sv + " <= hl.maxPropertyAmount) and (" + mv
 				+ " >= hl.minPropertyAmount and " + mv + " <= hl.maxPropertyAmount)";
 		List<HomeLoanEligibilityCriteria> eligibility = entityManager
-				.createQuery(query, HomeLoanEligibilityCriteria.class).setParameter("type", type)
+				.createQuery(query, HomeLoanEligibilityCriteria.class)
 				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, "getMinFromSVMV");

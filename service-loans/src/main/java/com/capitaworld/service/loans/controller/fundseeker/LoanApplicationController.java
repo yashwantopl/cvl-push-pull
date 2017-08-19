@@ -487,7 +487,7 @@ public class LoanApplicationController {
 			if(!loanApplicationService.isApplicationIdActive(applicationId))
 			{
 				loansResponse.setData(false);
-				loansResponse.setMessage("Requested User In Active");	
+				loansResponse.setMessage("Requested user is Inactive");	
 				CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}

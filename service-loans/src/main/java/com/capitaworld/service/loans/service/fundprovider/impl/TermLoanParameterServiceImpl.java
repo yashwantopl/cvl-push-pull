@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -63,9 +64,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure() * 12);
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure() * 12);
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
@@ -98,15 +99,15 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
 		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
-		TermLoanParameter loanParameter = termLoanParameterRepository.getByID(id);
+		TermLoanParameter loanParameter = termLoanParameterRepository.getById(id);
 		if(loanParameter==null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure() / 12);
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12")));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure() / 12);
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12")));
 		
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());

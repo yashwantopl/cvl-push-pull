@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 
 public interface PersonalLoanParameterRepository extends JpaRepository<PersonalLoanParameter, Long>{
-	@Query("from PersonalLoanParameter pp where pp.fpProductId.id =:id and isActive=true")
+	@Query("from PersonalLoanParameter pp where pp.fpProductId.id =:id ")
 	public PersonalLoanParameter getByID(@Param("id") Long id);
 }
