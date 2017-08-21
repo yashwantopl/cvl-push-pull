@@ -81,7 +81,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
                         	profileViewLAPResponse.setCompanyName(applicantDetail.getCompanyName());
                         }else{
-                        	profileViewLAPResponse.setCompanyName("NA");
+                        	profileViewLAPResponse.setCompanyName("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEmployedWithId())){
                             if (applicantDetail.getEmployedWithId() == 8){
@@ -90,7 +90,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
                             }
                         }else{
-                        	profileViewLAPResponse.setEmployeeWith("NA");
+                        	profileViewLAPResponse.setEmployeeWith("-");
                         }
                     }
                     else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
@@ -98,7 +98,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEntityName())){
                         	profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
                         }else{
-                        	profileViewLAPResponse.setEntityName("NA");
+                        	profileViewLAPResponse.setEntityName("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getIndustryTypeId())){
                             if (applicantDetail.getIndustryTypeId()==16){
@@ -107,7 +107,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
                             }
                         }else{
-                        	profileViewLAPResponse.setIndustryType("NA");
+                        	profileViewLAPResponse.setIndustryType("-");
                         }
                     }
                     else if(applicantDetail.getOccupationId()==5){
@@ -119,25 +119,25 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setOccupation(Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
                             }	
                         }else{
-                        	profileViewLAPResponse.setOccupation("NA");
+                        	profileViewLAPResponse.setOccupation("-");
                         }
                     }else if(applicantDetail.getOccupationId()==6){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getLandSize())){                          
                         	profileViewLAPResponse.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
                         }else{
-                        	profileViewLAPResponse.setLandSize("NA");
+                        	profileViewLAPResponse.setLandSize("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getAlliedActivityId())){
                         	profileViewLAPResponse.setAlliedActivity(AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
                         }else{
-                        	profileViewLAPResponse.setAlliedActivity("NA");
+                        	profileViewLAPResponse.setAlliedActivity("-");
                         }
                     }else if(applicantDetail.getOccupationId()==7){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                     }                   
                 }else{
-                	profileViewLAPResponse.setNatureOfOccupation("NA");
+                	profileViewLAPResponse.setNatureOfOccupation("-");
                 }
 				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : null));
 				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : null));
@@ -158,10 +158,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(data)){
                         	officeAddress.setCity(data.getValue());	
                         }else{
-                        	officeAddress.setCity("NA");
+                        	officeAddress.setCity("-");
                         }	
                     }else{
-                       	officeAddress.setCity("NA");
+                       	officeAddress.setCity("-");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -178,10 +178,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                         	officeAddress.setCountry(dataCountry.getValue());
                         }else{
-                        	officeAddress.setCountry("NA");
+                        	officeAddress.setCountry("-");
                         }
                     }else{
-                    	officeAddress.setCountry("NA");
+                    	officeAddress.setCountry("-");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -199,10 +199,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                         	officeAddress.setState(dataState.getValue());	
                         }else{
-                        	officeAddress.setState("NA");
+                        	officeAddress.setState("-");
                         }
                     }else{
-                    	officeAddress.setState("NA");
+                    	officeAddress.setState("-");
                     }
                 } catch (Exception e) {
                 	e.printStackTrace();
@@ -224,10 +224,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	permanentAddress.setCity(dataCity.getValue());	
                         }else{
-                        	permanentAddress.setCity("NA");
+                        	permanentAddress.setCity("-");
                         }
                     }else{
-                    	permanentAddress.setCity("NA");
+                    	permanentAddress.setCity("-");
                     }
                 } catch (Exception e) {
 
@@ -243,10 +243,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	permanentAddress.setCountry(dataCountry.getValue());	
                         }else{
-                        	permanentAddress.setCountry("NA");
+                        	permanentAddress.setCountry("-");
                         }
                     }else{
-                    	permanentAddress.setCountry("NA");
+                    	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
 
@@ -262,10 +262,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	permanentAddress.setState(dataState.getValue());	
                         }else{
-                        	permanentAddress.setCountry("NA");	
+                        	permanentAddress.setCountry("-");	
                         }
                     }else{
-                    	permanentAddress.setCountry("NA");
+                    	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
 
@@ -360,10 +360,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtils.isObjectNullOrEmpty(data)){
                     	lapResponse.setPropertyCity(data.getValue());
                     }else{
-                    	lapResponse.setPropertyCity("NA");
+                    	lapResponse.setPropertyCity("-");
                     }	
                 }else{
-                	lapResponse.setPropertyCity("NA");
+                	lapResponse.setPropertyCity("-");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -380,10 +380,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                     	lapResponse.setPropertyCountry(dataCountry.getValue());
                     }else{
-                    	lapResponse.setPropertyCountry("NA");
+                    	lapResponse.setPropertyCountry("-");
                     }
                 }else{
-                	lapResponse.setPropertyCountry("NA");
+                	lapResponse.setPropertyCountry("-");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -401,7 +401,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                     	lapResponse.setPropertyState(dataState.getValue());
                     }else{
-                    	lapResponse.setPropertyState("NA");
+                    	lapResponse.setPropertyState("-");
                     }
                 }else{
                 	lapResponse.setPropertyState(null);
