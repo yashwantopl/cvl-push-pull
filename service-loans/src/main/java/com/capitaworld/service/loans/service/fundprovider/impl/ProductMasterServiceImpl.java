@@ -307,7 +307,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productDetailsResponse.setStatus(HttpStatus.OK.value());
 					UsersRequest req = new UsersRequest();
 					req.setId(productMaster.getId());
-					usersClient.getLastAccessApplicant(req);
+					usersClient.setLastAccessApplicant(req);
 				}else{
 					productDetailsResponse.setMessage("Something went wrong");
 					productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());					
