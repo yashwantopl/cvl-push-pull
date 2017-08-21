@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.auth.model.UserRequest;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
@@ -299,8 +298,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productDetailsResponse.setMessage("Proposal Details Sent");
 				productDetailsResponse.setStatus(HttpStatus.OK.value());
 			}else{
-				productDetailsResponse.setMessage("Something went wrong");
-				productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());	
+				List<ProductMaster> userProductList = productMasterRepository.getUserProductList(userId);
+				if(!CommonUtils.isListNullOrEmpty(userProductList)){
+					ProductMaster productMaster = userProductList.get(0);
+					productDetailsResponse.setProductId(productMaster.getProductId());
+					productDetailsResponse.setProductMappingId(productMaster.getId());
+					productDetailsResponse.setMessage("Proposal Details Sent");
+					productDetailsResponse.setStatus(HttpStatus.OK.value());
+					UsersRequest req = new UsersRequest();
+					req.setId(productMaster.getId());
+					usersClient.setLastAccessApplicant(req);
+				}else{
+					productDetailsResponse.setMessage("Something went wrong");
+					productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());					
+				}
 			}
 		}else{
 			productDetailsResponse.setMessage("Something went wrong");
