@@ -168,9 +168,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				String currencyAndDenomination = "NA";
 				if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
 						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
-					currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
-					currencyAndDenomination = currencyAndDenomination
-							.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					try{
+						currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination
+								.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					}catch(Exception e){
+						e.printStackTrace();
+					}
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
@@ -180,6 +184,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			try{
 				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
 				applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
@@ -190,7 +196,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}catch (Exception e) {
 				logger.error("Error while getting Status From Proposal Client");
 				e.printStackTrace();
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				return applicationRequest;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
@@ -233,9 +239,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					String currencyAndDenomination = "NA";
 					if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())
 							&& !CommonUtils.isObjectNullOrEmpty(master.getDenominationId())) {
-						currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
-						currencyAndDenomination = currencyAndDenomination
-								.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+						try{
+							currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
+							currencyAndDenomination = currencyAndDenomination
+									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));							
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					}
 					request.setCurrencyValue(currencyAndDenomination);
 					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
@@ -245,6 +255,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
+				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
+				request.setFinalLocked(master.getIsFinalLocked());
 				try{
 					ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
 					request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
@@ -253,9 +265,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setName(loanType.getValue());
 					requests.add(request);
 				}catch (Exception e) {
-					logger.error("Error while Getting Loan Status from Proposal Client:-");
+					logger.error("Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-");
 					e.printStackTrace();
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+//					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
 			return requests;
@@ -1660,6 +1672,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
     }
 	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails() {
@@ -1694,11 +1707,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(), loanMstr.getId());
 						currency = CommonDocumentUtils.getCurrency(currencyId);
 					}
+					obj.put("product", CommonUtils.getUserMainTypeName(loanMstr.getProductId()));
+					obj.put("profileFilled",CommonUtils.getTotalBowlCount(loanMstr.getDetailsFilledCount(), loanMstr.getPrimaryFilledCount(), loanMstr.getFinalFilledCount()) / 3);
 					obj.put("loanCode", loanMstr.getApplicationCode());
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
 					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount()) ? decimalFormat.format(loanMstr.getAmount()) : 0) + " "+currency);
 					obj.put("tenure",loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure()/12) : null);
-					obj.put("profileFilled",CommonUtils.getBowlCount(loanMstr.getDetailsFilledCount(), null));
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					proposalMappingRequest.setApplicationId(loanMstr.getId());
 					ProposalCountResponse proposalCountResponse = null;
@@ -1709,7 +1723,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.warn("Throw Exception while get matches count for registration user details------------->" + loanMstr.getId());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)){
-						obj.put("totalMatches",proposalCountResponse.getMatches());	
+						obj.put("totalMatches",proposalCountResponse.getTotal());
+						obj.put("matches", proposalCountResponse.getMatches());
+						obj.put("directSent", proposalCountResponse.getSent());
+						obj.put("directRecieved", proposalCountResponse.getReceived());
+						obj.put("hold", proposalCountResponse.getHold());
+						obj.put("reject", proposalCountResponse.getRejected());
+						obj.put("approved", proposalCountResponse.getAdvanced());
+						obj.put("accept", proposalCountResponse.getPrimary());
+						
+					}
+					
+					
+					if(!CommonUtils.isObjectNullOrEmpty(loanMstr.getProductId())){
+						int productId = CommonUtils.getUserMainType(loanMstr.getProductId());
+						if(productId == CommonUtils.UserMainType.CORPORATE){
+							List<Object[]> corporateDataList = corporateApplicantDetailRepository.getByNameAndLastUpdateDate(loanMstr.getUserId(), loanMstr.getId());
+							if(!CommonUtils.isListNullOrEmpty(corporateDataList)){
+								Object[] corporateData = corporateDataList.get(0);
+								obj.put("oneFormName",!CommonUtils.isObjectNullOrEmpty(corporateData[0]) ? corporateData[0].toString() : null);
+							}							
+						} else {
+							List<Object[]> retailDataList = retailApplicantDetailRepository.getNameAndLastUpdatedDate(loanMstr.getUserId(), loanMstr.getId());
+							if(!CommonUtils.isListNullOrEmpty(retailDataList)){
+								Object[] retailData = retailDataList.get(0);
+								obj.put("oneFormName",(!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString() : null) + " "+ (!CommonUtils.isObjectNullOrEmpty(retailData[1]) ? retailData[1].toString() : null));
+							}
+						}
 					}
 			
 					jsonList.add(obj);
@@ -1751,6 +1791,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
 			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
 			response.setLoanAmount(loanApplicationMaster.getAmount());
+			
+			
+			String currency = "";
+			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+					currency = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
+					currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
+				}
+			} else {
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				currency = CommonDocumentUtils.getCurrency(currencyId);
+			}
+			
+			response.setCurrency(currency);
+			
 			if(type == 1){
 				response.setTenure(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTenure()) ? Double.valueOf((loanApplicationMaster.getTenure()/12)) : null);	
 			} else {
@@ -1793,7 +1850,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							response.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient));
 							response.setState(CommonDocumentUtils.getState(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()) ? retailApplicantDetail.getPermanentStateId().longValue() : null, oneFormClient));
 							response.setCountry(CommonDocumentUtils.getCountry(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()) ? retailApplicantDetail.getPermanentCountryId().longValue() : null, oneFormClient));
-							response.setConstitution(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getGenderId()) ?  Gender.getById(retailApplicantDetail.getGenderId()).getValue() : null);	
+							response.setConstitution(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getGenderId()) ?  Gender.getById(retailApplicantDetail.getGenderId()).getValue() : null);
+							
+							if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())){
+								response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+							}
+							
 						}	
 					} else {
 						List<Object[]> retailDataList = retailApplicantDetailRepository.getNameAndLastUpdatedDate(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());

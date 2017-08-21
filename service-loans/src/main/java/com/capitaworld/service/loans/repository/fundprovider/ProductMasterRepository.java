@@ -16,10 +16,27 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("update ProductMaster pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId);
 	
+	@Modifying
+	@Query("update ProductMaster pm set pm.name =:name,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId and pm.id=:productMappingId ")
+	public int changeProductName(@Param("userId") Long userId,@Param("productMappingId") Long productMappingId,@Param("name") String name);
+	
+	@Modifying
+	@Query("update ProductMaster pm set pm.isActive = :status,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId  and pm.id=:productId")
+	public int changeStatus(@Param("userId") Long userId,@Param("productId") Long productId,@Param("status") Boolean status);
+	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMaster> getUserProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId and pm.isActive = true")
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2)")
+	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId not in (1,2)")
+	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userId =:userId and productId=:productId ")
+	public List<ProductMaster> getUserProductListByProduct(@Param("userId") Long userId,@Param("productId") Integer productId);
+	
+	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId ")
 	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId);
 	
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
@@ -38,4 +55,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Modifying
 	@Query("update ProductMaster pm set pm.isMatched=true,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.userId =:userId and pm.isActive = true")
 	public int setIsMatchProduct(@Param("id") Long id, @Param("userId") Long userId);
+	
+	@Query("from ProductMaster  where modifiedDate=(select max(modifiedDate) from  ProductMaster pm where pm.userId =:userId and pm.isActive = true)")
+	public ProductMaster getLastAccessedProduct(@Param("userId") Long userId);
 }

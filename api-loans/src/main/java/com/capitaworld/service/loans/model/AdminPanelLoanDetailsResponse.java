@@ -27,6 +27,7 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private String profileAndPrimaryLocked;
 	private String finalLocked;
 	private String lastUpdatedDate;
+	private String currency;
 	
 	
 	public String getApplicationId() {
@@ -149,6 +150,12 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 	
 	
