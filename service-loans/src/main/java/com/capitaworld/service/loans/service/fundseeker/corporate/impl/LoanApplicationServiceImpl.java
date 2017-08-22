@@ -1780,7 +1780,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			userIds.add(obj.getId());
 		}
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds);
-		SimpleDateFormat dt = new SimpleDateFormat("MM-dd-yyyy hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 		for(LoanApplicationMaster loanApplicationMaster : loanApplicationList){
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			
@@ -1837,7 +1837,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							Object[] corporateData = corporateDataList.get(0);
 							response.setName(!CommonUtils.isObjectNullOrEmpty(corporateData[0]) ? corporateData[0].toString() : null);
 							if(!CommonUtils.isObjectNullOrEmpty(corporateData[1])){
-								response.setLastUpdatedDate(dt.format(dt.parse(corporateData[1].toString())));
+								response.setLastUpdatedDate(corporateData[1].toString());
 							}
 						}
 					}
@@ -1863,7 +1863,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							Object[] retailData = retailDataList.get(0);
 							response.setName((!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString() : null) + " "+ (!CommonUtils.isObjectNullOrEmpty(retailData[1]) ? retailData[1].toString() : null));
 							if(!CommonUtils.isObjectNullOrEmpty(retailData[2])){
-								response.setLastUpdatedDate(dt.format(dt.parse(retailData[2].toString())));
+								response.setLastUpdatedDate(retailData[2].toString());
 							}
 						}
 					}
