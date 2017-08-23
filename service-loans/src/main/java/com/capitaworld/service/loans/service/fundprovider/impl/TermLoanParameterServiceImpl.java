@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -105,9 +106,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12")));
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12")));
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());
