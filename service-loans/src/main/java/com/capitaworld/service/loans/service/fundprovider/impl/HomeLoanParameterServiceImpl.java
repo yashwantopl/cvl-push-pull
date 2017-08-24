@@ -63,6 +63,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 		BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		homeLoanParameter.setModifiedBy(homeLoanParameterRequest.getUserId());
+		homeLoanParameter.setIsParameterFilled(true);
 		homeLoanParameter.setModifiedDate(new Date());
 		homeLoanParameterRepository.save(homeLoanParameter);
 
