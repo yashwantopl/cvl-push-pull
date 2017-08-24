@@ -103,6 +103,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getMinMaxBySalarySlab(HomeLoanEligibilityRequest homeLoanRequest) throws Exception{
+		CommonDocumentUtils.startHook(logger, "getMinMaxBySalarySlab");
 		Map<Integer,JSONObject> minMaxData = calculateMinMaxForHomeLoan(homeLoanRequest);
 		if(minMaxData == null){
 			return null;
@@ -117,6 +118,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		if(minFromMap != null){
 			json.put(CommonUtils.MAXIMUM, Math.round((Double) maxFromMap.getValue().get(CommonUtils.MAXIMUM)));
 		}
+		CommonDocumentUtils.endHook(logger, "getMinMaxBySalarySlab");
 		return json;
 	}
 	
@@ -276,6 +278,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getMinMaxBySalarySlabPL(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception {
+		CommonDocumentUtils.startHook(logger, "getMinMaxBySalarySlabPL");
 		Map<Integer,JSONObject> minMaxData = calculateMinMaxForPersonalLoan(eligibilityRequest);
 		if(minMaxData == null){
 			return null;
@@ -296,6 +299,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			json.put("minRoi",minMaxArr[0]);
 			json.put("maxRoi",minMaxArr[1]);
 		}
+		CommonDocumentUtils.endHook(logger, "getMinMaxBySalarySlabPL");
 		return json;
 	}
 
@@ -306,6 +310,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	//COMMON STARTS
 	@Override
 	public Integer calculateTenure(LoanEligibilility eligibilility,Integer productId) throws Exception {
+		CommonDocumentUtils.startHook(logger, "calculateTenure");
 		try {
 			Integer age = CommonUtils.getAgeFromBirthDate(eligibilility.getDateOfBirth());
 			if(age == null || age >= 60){
@@ -318,9 +323,11 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			case PERSONAL_LOAN:
 				return (60 - age > 5 ? 5 : 60 - age);
 			default:
+				CommonDocumentUtils.endHook(logger, "calculateTenure");
 				return null;
 			}
 		} catch (Exception e) {
+			CommonDocumentUtils.endHook(logger, "calculateTenure");
 			e.printStackTrace();
 			logger.error("Error while calulating tenure for Product ==>" + productId);
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
