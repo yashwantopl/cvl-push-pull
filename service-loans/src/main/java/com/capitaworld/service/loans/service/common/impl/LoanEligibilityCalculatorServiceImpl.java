@@ -70,7 +70,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 								Integer.class.cast(bankResponse.getId()));
 				if (homeLoanCriteria == null)
 					continue;
-				double income = (Double.valueOf((homeLoanRequest.getIncome() * homeLoanCriteria.getFoir()) / 100))
+				double income =  (Double.valueOf((homeLoanRequest.getIncome() * homeLoanCriteria.getFoir()) / 100))
 						.longValue();
 				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
 					income = income - homeLoanRequest.getObligation();
@@ -79,15 +79,13 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				//Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
 				double totalPayments = tenure * 12;
-				double loanAmount = 100000;
-				double result = Double
-						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
-				double maximum = ((income / result) * loanAmount);
+				double result = getPMTCalculation(monthlyRate, totalPayments);
+				double maximum = getMinMax(income,result);
 
 				//Minimum Amount Based on Salary and Min ROI
 				monthlyRate = homeLoanCriteria.getRoiHigh() / 100 / 12;
-				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
-				double minimum = ((income / result) * loanAmount);
+				result = getPMTCalculation(monthlyRate, totalPayments);
+				double minimum = getMinMax(income,result);
 				JSONObject json = new JSONObject();
 				json.put(CommonUtils.MAXIMUM, maximum);
 				json.put(CommonUtils.MINIMUM, minimum);
@@ -252,15 +250,13 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				//Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				double totalPayments = tenure * 12;
-				double loanAmount = 100000;
-				double result = Double
-						.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
-				double maximum = ((income / result) * loanAmount);
+				double result = getPMTCalculation(monthlyRate, totalPayments);
+				double maximum = getMinMax(income,result);
 
 				//Minimum Amount Based on Salary and Min ROI
 				monthlyRate = personalLoanCriteria.getRoiHigh() / 100 / 12;
-				result = Double.valueOf((monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount);
-				double minimum = ((income / result) * loanAmount);
+				result = getPMTCalculation(monthlyRate, totalPayments);
+				double minimum = getMinMax(income,result);
 				JSONObject json = new JSONObject();
 				json.put(CommonUtils.MAXIMUM, maximum);
 				json.put(CommonUtils.MINIMUM, minimum);
@@ -362,6 +358,16 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 		}
 		return maxEntry;
+	}
+	
+	private static double getPMTCalculation(double monthlyRate,double totalPayments){
+		double loanAmount = 100000;
+		return (monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalPayments)) * loanAmount;
+	}
+	
+	private static double getMinMax(double income,double perLakhEMI){
+		double loanAmount = 100000;
+		return ((income / perLakhEMI) * loanAmount);
 	}
 	
 	//COMMON ENDS
