@@ -66,6 +66,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 		BeanUtils.copyProperties(carLoanParameterRequest, carLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		carLoanParameter.setModifiedBy(carLoanParameterRequest.getUserId());
 		carLoanParameter.setModifiedDate(new Date());
+		carLoanParameter.setIsParameterFilled(true);
 		carLoanParameterRepository.save(carLoanParameter);
 
 		geographicalCountryRepository.inActiveMappingByFpProductId(carLoanParameterRequest.getId());
