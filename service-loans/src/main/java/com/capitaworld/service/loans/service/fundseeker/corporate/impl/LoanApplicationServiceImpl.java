@@ -50,6 +50,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -1790,9 +1791,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setCreateDate(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate()) ? dt.format(loanApplicationMaster.getCreatedDate()) :null);
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
 			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
-			response.setLoanAmount(loanApplicationMaster.getAmount());
-			
-			
+			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
+			response.setAbsoluteDisplayAmount(loanApplicationMaster.getAmount());
+			response.setAmounInRuppes(false);
 			String currency = "";
 			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
@@ -1800,10 +1801,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
 					currency = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
 					currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
+					
+					if(loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())){
+						response.setAmounInRuppes(true);	
+						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+						response.setAbsoluteAmount(absoluteAmount);
+						response.setAbsoluteDisplayAmount(absoluteAmount);
+					}
 				}
 			} else {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				currency = CommonDocumentUtils.getCurrency(currencyId);
+				if(currency.equals(Currency.RUPEES.getId())){
+					response.setAmounInRuppes(true);
+				}
 			}
 			
 			response.setCurrency(currency);
