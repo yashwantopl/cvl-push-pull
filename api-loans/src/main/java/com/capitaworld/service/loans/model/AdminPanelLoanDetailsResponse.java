@@ -13,7 +13,9 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private String name;
 	private String productName;
 	private String subProduct;
-	private Double loanAmount;
+	private Double absoluteDisplayAmount;
+	private Double absoluteAmount;
+	private boolean amounInRuppes;
 	private Double tenure;
 	private Integer age;
 	private String country;
@@ -60,11 +62,23 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	public void setSubProduct(String subProduct) {
 		this.subProduct = subProduct;
 	}
-	public Double getLoanAmount() {
-		return loanAmount;
+	public Double getAbsoluteDisplayAmount() {
+		return absoluteDisplayAmount;
 	}
-	public void setLoanAmount(Double loanAmount) {
-		this.loanAmount = loanAmount;
+	public void setAbsoluteDisplayAmount(Double absoluteDisplayAmount) {
+		this.absoluteDisplayAmount = absoluteDisplayAmount;
+	}
+	public Double getAbsoluteAmount() {
+		return absoluteAmount;
+	}
+	public void setAbsoluteAmount(Double absoluteAmount) {
+		this.absoluteAmount = absoluteAmount;
+	}
+	public boolean isAmounInRuppes() {
+		return amounInRuppes;
+	}
+	public void setAmounInRuppes(boolean amounInRuppes) {
+		this.amounInRuppes = amounInRuppes;
 	}
 	public Double getTenure() {
 		return tenure;

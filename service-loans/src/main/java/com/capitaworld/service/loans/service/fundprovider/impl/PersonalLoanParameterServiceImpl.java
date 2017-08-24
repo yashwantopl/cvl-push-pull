@@ -61,6 +61,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			personalLoanParameter.setMinTenure(personalLoanParameterRequest.getMinTenure() * 12);
 		
 		BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		personalLoanParameter.setIsParameterFilled(true);
 		personalLoanParameter.setModifiedBy(personalLoanParameterRequest.getUserId());
 		personalLoanParameter.setModifiedDate(new Date());
 		personalLoanParameterRepository.save(personalLoanParameter);
