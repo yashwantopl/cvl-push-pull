@@ -1812,8 +1812,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				currency = CommonDocumentUtils.getCurrency(currencyId);
-				if(currency.equals(Currency.RUPEES.getId())){
-					response.setAmounInRuppes(true);
+				if(!CommonUtils.isObjectNullOrEmpty(currencyId)){
+					if(currencyId.equals(Currency.RUPEES.getId())){
+						response.setAmounInRuppes(true);
+					}	
 				}
 			}
 			
