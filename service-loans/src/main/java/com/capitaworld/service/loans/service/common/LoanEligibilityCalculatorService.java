@@ -18,5 +18,5 @@ public interface LoanEligibilityCalculatorService {
 	public JSONObject calcHomeLoanAmount(HomeLoanEligibilityRequest homeLoanRequest) throws Exception;
 
 	// For Personal Loan
-	public JSONObject getMinMaxBySalarySlabPL(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception;
+	public JSONObject calcMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception;
 }

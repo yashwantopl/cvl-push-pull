@@ -277,8 +277,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getMinMaxBySalarySlabPL(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception {
-		CommonDocumentUtils.startHook(logger, "getMinMaxBySalarySlabPL");
+	public JSONObject calcMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception {
+		CommonDocumentUtils.startHook(logger, "calcMinMaxForPersonalLoan");
 		Map<Integer,JSONObject> minMaxData = calculateMinMaxForPersonalLoan(eligibilityRequest);
 		if(minMaxData == null){
 			return null;
@@ -299,7 +299,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			json.put("minRoi",minMaxArr[0]);
 			json.put("maxRoi",minMaxArr[1]);
 		}
-		CommonDocumentUtils.endHook(logger, "getMinMaxBySalarySlabPL");
+		CommonDocumentUtils.endHook(logger, "calcMinMaxForPersonalLoan");
 		return json;
 	}
 

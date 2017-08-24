@@ -208,7 +208,7 @@ public class LoanEligibilityCalculatorController {
 
 			LoansResponse response = null;
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService
-					.getMinMaxBySalarySlabPL(eligibilityRequest);
+					.calcMinMaxForPersonalLoan(eligibilityRequest);
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Personal Loan");
