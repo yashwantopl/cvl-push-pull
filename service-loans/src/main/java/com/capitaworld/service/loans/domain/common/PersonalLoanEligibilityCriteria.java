@@ -11,66 +11,52 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="home_loan_criteria")
-public class HomeLoanEligibilityCriteria implements Serializable {
+@Table(name = "personal_loan_criteria")
+public class PersonalLoanEligibilityCriteria implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(name="type")
-    private Integer type;
-    
-    @Column(name="bank_id")
-    private Integer bankId;
-    
-    private Long min;
-    private Long max;
-    
-    @Column(name="foir")
-    private Float foir;
-    
-    @Column(name="roi_low")
-    private Float roiLow;
-    
-    @Column(name="roi_high")
-    private Float roiHigh;
-    
-    @Column(name="min_property_amount")
-    private Long minPropertyAmount;
-    
-    @Column(name="max_property_amount")
-    private Long maxPropertyAmount;
-    
-    @Column(name="market_value")
-    private Float marketValue;
-    
-    @Column(name="sale_deed_value")
-    private Float saleDeedValue;
-    
-    @Column(name="is_active")
-    private Boolean isActive;
-    
-    @Column(name="created_date")
-    private Date createdDate;
-    
-    @Column(name="updated_date")
-    private Date updateDate;
-    
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name = "type")
+	private Integer type;
+
+	@Column(name = "bank_id")
+	private Integer bankId;
+
+	private Long min;
+	private Long max;
+
+	@Column(name = "foir")
+	private Float foir;
+
+	@Column(name = "roi_low")
+	private Float roiLow;
+
+	@Column(name = "roi_high")
+	private Float roiHigh;
+
+	@Column(name = "is_active")
+	private Boolean isActive;
+
+	@Column(name = "created_date")
+	private Date createdDate;
+
+	@Column(name = "updated_date")
+	private Date updateDate;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Column(name = "updated_by")
 	private Long updateBy;
-    
-    
 
-	public HomeLoanEligibilityCriteria() {
+	public PersonalLoanEligibilityCriteria() {
 		super();
 	}
 
@@ -138,38 +124,6 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 		this.roiHigh = roiHigh;
 	}
 
-	public Long getMinPropertyAmount() {
-		return minPropertyAmount;
-	}
-
-	public void setMinPropertyAmount(Long minPropertyAmount) {
-		this.minPropertyAmount = minPropertyAmount;
-	}
-
-	public Long getMaxPropertyAmount() {
-		return maxPropertyAmount;
-	}
-
-	public void setMaxPropertyAmount(Long maxPropertyAmount) {
-		this.maxPropertyAmount = maxPropertyAmount;
-	}
-
-	public Float getMarketValue() {
-		return marketValue;
-	}
-
-	public void setMarketValue(Float marketValue) {
-		this.marketValue = marketValue;
-	}
-
-	public Float getSaleDeedValue() {
-		return saleDeedValue;
-	}
-
-	public void setSaleDeedValue(Float saleDeedValue) {
-		this.saleDeedValue = saleDeedValue;
-	}
-
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -193,8 +147,8 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	
-	public Long getCreatedBy() {;
+
+	public Long getCreatedBy() {
 		return createdBy;
 	}
 
@@ -212,6 +166,6 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 
 	@Override
 	public String toString() {
-		return "HomeLoanEligibilityCriteria [id=" + id + "]";
+		return "PersonalLoanEligibilityCriteria [id=" + id + "]";
 	}
 }
