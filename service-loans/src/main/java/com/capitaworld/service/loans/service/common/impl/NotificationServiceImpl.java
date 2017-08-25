@@ -78,17 +78,32 @@ public class NotificationServiceImpl implements NotificationService{
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
 				try {
-					int fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
+					int fsProdId;
+					if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
+					else
+						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, Long.parseLong(toUserId));
+					
 					int fsType = CommonUtils.getUserMainType(fsProdId);
 					if(CommonUtils.UserMainType.CORPORATE == fsType){
-						CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
+						CorporateApplicantRequest corporateApplicantRequest;
+						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
+						else
+							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(Long.parseLong(toUserId), applicationId);
 						parameters.put("fs_name",corporateApplicantRequest.getOrganisationName());
 					}else if(CommonUtils.UserMainType.RETAIL == fsType){
-						RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
+						RetailApplicantRequest retailApplicantRequest;
+						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+							retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
+						else
+							retailApplicantRequest = retailApplicantService.get(Long.parseLong(toUserId), applicationId);
+						
 						parameters.put("fs_name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
 					}
 				} catch (Exception e) {
 					// TODO: handle exception
+					e.printStackTrace();
 					parameters.put("fs_name", "NA");
 				}
 				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,
