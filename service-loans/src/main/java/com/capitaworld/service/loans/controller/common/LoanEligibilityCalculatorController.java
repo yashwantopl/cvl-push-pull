@@ -164,7 +164,7 @@ public class LoanEligibilityCalculatorController {
 			if (tenure == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Personal Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(tenure);
@@ -202,7 +202,7 @@ public class LoanEligibilityCalculatorController {
 			// If Constitution Must be 1(Proprietorship/Partnership) OR 2(Others)
 			if (!eligibilityRequest.getConstitution().equals(CommonUtils.EmployerConstitution.ANYOTHER) && !eligibilityRequest.getConstitution().equals(CommonUtils.EmployerConstitution.PARTNERSHIP_PROPRIETORSHIP)) {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Constitution Must be 1 or 2", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("Constitution Must be ANYOTHER or PARTNERSHIP/PROPRIETORSHIP", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 

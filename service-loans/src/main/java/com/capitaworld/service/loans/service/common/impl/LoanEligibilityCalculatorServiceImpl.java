@@ -115,7 +115,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			json.put(CommonUtils.MINIMUM, Math.round((Double) minFromMap.getValue().get(CommonUtils.MINIMUM)));
 		}
 		Entry<Integer, JSONObject> maxFromMap = getMaxFromMap(minMaxData);
-		if(minFromMap != null){
+		if(maxFromMap != null){
 			json.put(CommonUtils.MAXIMUM, Math.round((Double) maxFromMap.getValue().get(CommonUtils.MAXIMUM)));
 		}
 		CommonDocumentUtils.endHook(logger, "getMinMaxBySalarySlab");
@@ -290,7 +290,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			json.put(CommonUtils.MINIMUM, Math.round((Double) minFromMap.getValue().get(CommonUtils.MINIMUM)));
 		}
 		Entry<Integer, JSONObject> maxFromMap = getMaxFromMap(minMaxData);
-		if(minFromMap != null){
+		if(maxFromMap != null){
 			json.put(CommonUtils.MAXIMUM, Math.round((Double) maxFromMap.getValue().get(CommonUtils.MAXIMUM)));
 		}
 		
