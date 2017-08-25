@@ -81,7 +81,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())){
                         	profileViewLAPResponse.setCompanyName(applicantDetail.getCompanyName());
                         }else{
-                        	profileViewLAPResponse.setCompanyName("NA");
+                        	profileViewLAPResponse.setCompanyName("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEmployedWithId())){
                             if (applicantDetail.getEmployedWithId() == 8){
@@ -90,7 +90,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setEmployeeWith(EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
                             }
                         }else{
-                        	profileViewLAPResponse.setEmployeeWith("NA");
+                        	profileViewLAPResponse.setEmployeeWith("-");
                         }
                     }
                     else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
@@ -98,7 +98,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEntityName())){
                         	profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
                         }else{
-                        	profileViewLAPResponse.setEntityName("NA");
+                        	profileViewLAPResponse.setEntityName("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getIndustryTypeId())){
                             if (applicantDetail.getIndustryTypeId()==16){
@@ -107,7 +107,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setIndustryType(IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
                             }
                         }else{
-                        	profileViewLAPResponse.setIndustryType("NA");
+                        	profileViewLAPResponse.setIndustryType("-");
                         }
                     }
                     else if(applicantDetail.getOccupationId()==5){
@@ -119,31 +119,31 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                             	profileViewLAPResponse.setOccupation(Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
                             }	
                         }else{
-                        	profileViewLAPResponse.setOccupation("NA");
+                        	profileViewLAPResponse.setOccupation("-");
                         }
                     }else if(applicantDetail.getOccupationId()==6){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getLandSize())){                          
                         	profileViewLAPResponse.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
                         }else{
-                        	profileViewLAPResponse.setLandSize("NA");
+                        	profileViewLAPResponse.setLandSize("-");
                         }
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getAlliedActivityId())){
                         	profileViewLAPResponse.setAlliedActivity(AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
                         }else{
-                        	profileViewLAPResponse.setAlliedActivity("NA");
+                        	profileViewLAPResponse.setAlliedActivity("-");
                         }
                     }else if(applicantDetail.getOccupationId()==7){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                     }                   
                 }else{
-                	profileViewLAPResponse.setNatureOfOccupation("NA");
+                	profileViewLAPResponse.setNatureOfOccupation("-");
                 }
-				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : "NA"));
-				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : "NA"));
-				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : "NA"));
-				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
-				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
+				profileViewLAPResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName()) ? applicantDetail.getFirstName() : null));
+				profileViewLAPResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName()) ? applicantDetail.getMiddleName() : null));
+				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : null));
+				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : null));
+				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null));
 				profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
 				
 				
@@ -158,10 +158,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(data)){
                         	officeAddress.setCity(data.getValue());	
                         }else{
-                        	officeAddress.setCity("NA");
+                        	officeAddress.setCity("-");
                         }	
                     }else{
-                       	officeAddress.setCity("NA");
+                       	officeAddress.setCity("-");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -173,15 +173,15 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         officeCountryLong = Long.valueOf(applicantDetail.getOfficeCountryId().toString());
 
                         officeCountry.add(officeCountryLong);
-                        OneFormResponse country = oneFormClient.getCityByCityListId(officeCountry);
+                        OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
                         MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                         	officeAddress.setCountry(dataCountry.getValue());
                         }else{
-                        	officeAddress.setCountry("NA");
+                        	officeAddress.setCountry("-");
                         }
                     }else{
-                    	officeAddress.setCountry("NA");
+                    	officeAddress.setCountry("-");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -199,10 +199,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                         	officeAddress.setState(dataState.getValue());	
                         }else{
-                        	officeAddress.setState("NA");
+                        	officeAddress.setState("-");
                         }
                     }else{
-                    	officeAddress.setState("NA");
+                    	officeAddress.setState("-");
                     }
                 } catch (Exception e) {
                 	e.printStackTrace();
@@ -224,10 +224,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	permanentAddress.setCity(dataCity.getValue());	
                         }else{
-                        	permanentAddress.setCity("NA");
+                        	permanentAddress.setCity("-");
                         }
                     }else{
-                    	permanentAddress.setCity("NA");
+                    	permanentAddress.setCity("-");
                     }
                 } catch (Exception e) {
 
@@ -243,10 +243,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	permanentAddress.setCountry(dataCountry.getValue());	
                         }else{
-                        	permanentAddress.setCountry("NA");
+                        	permanentAddress.setCountry("-");
                         }
                     }else{
-                    	permanentAddress.setCountry("NA");
+                    	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
 
@@ -262,10 +262,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	permanentAddress.setState(dataState.getValue());	
                         }else{
-                        	permanentAddress.setCountry("NA");	
+                        	permanentAddress.setCountry("-");	
                         }
                     }else{
-                    	permanentAddress.setCountry("NA");
+                    	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
 
@@ -280,7 +280,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				profileViewLAPResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewLAPResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
                 lapResponse.setLoanType(applicationMaster.getProductId()!=null?LoanType.getById(applicationMaster.getProductId()).getValue():null);
-				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");
+				lapResponse.setCurrency(applicantDetail.getCurrencyId() != null ? Currency.getById(applicantDetail.getCurrencyId()).getValue() : null);
 
 				profileViewLAPResponse.setEntityName(applicantDetail.getEntityName());
 
@@ -323,35 +323,33 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurpose())){
 				lapResponse.setLoanPurpose(LoanPurpose.getById(loanDetail.getLoanPurpose()).getValue());
 				if(loanDetail.getLoanPurpose() == 5){
-					lapResponse.setLoanPurposeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurposeOther()) ? loanDetail.getLoanPurposeOther() : "NA");		
+					lapResponse.setLoanPurposeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanPurposeOther()) ? loanDetail.getLoanPurposeOther() : null);
 				}
 			}
-			
-			lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure()/12) : "NA");
+			lapResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure()/12) : null);
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType())){
 				lapResponse.setPropertyType(PropertyType.getById(loanDetail.getPropertyType()).getValue());
 				if(loanDetail.getPropertyType() == 4){
-					lapResponse.setPropertyTypeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyTypeOther()) ? loanDetail.getPropertyTypeOther() : "NA");		
+					lapResponse.setPropertyTypeOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyTypeOther()) ? loanDetail.getPropertyTypeOther() : null);
 				}
 			}
 			
 			if(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatus())){
 				lapResponse.setOccupationStatus(OccupationStatus.getById(loanDetail.getOccupationStatus()).getValue());
 				if(loanDetail.getOccupationStatus() == 5){
-					lapResponse.setOccupationStatusOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatusOther()) ? loanDetail.getOccupationStatusOther() : "NA");		
+					lapResponse.setOccupationStatusOther(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOccupationStatusOther()) ? loanDetail.getOccupationStatusOther() : null);
 				}
 			}
 			
-			lapResponse.setPropertyAgeInMonths(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInMonth()) ? loanDetail.getPropertyAgeInMonth().toString() : "NA");
-			lapResponse.setPropertyAgeInYears(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInYear()) ? loanDetail.getPropertyAgeInYear().toString() : "NA");
-			lapResponse.setTotalArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
-			lapResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBuiltUpArea()) ? loanDetail.getBuiltUpArea().toString() : "NA");
-			lapResponse.setPropertyValue(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyValue()) ? loanDetail.getPropertyValue().toString() : "NA");
-			lapResponse.setPropertyOwnerName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOwnerName()) ? loanDetail.getOwnerName() : "NA");
-			lapResponse.setPropertyPremiseNumber(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressPremise()) ? loanDetail.getAddressPremise() : "NA");
-			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : "NA");
-			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : "NA");
+			lapResponse.setPropertyAgeInMonths(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInMonth()) ? loanDetail.getPropertyAgeInMonth().toString() : null);
+			lapResponse.setPropertyAgeInYears(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyAgeInYear()) ? loanDetail.getPropertyAgeInYear().toString() : null);
+			lapResponse.setTotalArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : null);
+			lapResponse.setBuiltUpArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBuiltUpArea()) ? loanDetail.getBuiltUpArea().toString() : null);
+			lapResponse.setPropertyValue(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyValue()) ? loanDetail.getPropertyValue().toString() : null);
+			lapResponse.setPropertyOwnerName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOwnerName()) ? loanDetail.getOwnerName() : null);
+			lapResponse.setPropertyPremiseNumber(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressPremise()) ? loanDetail.getAddressPremise() : null);
+			lapResponse.setPropertyStreetName(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressStreet()) ? loanDetail.getAddressStreet() : null);
+			lapResponse.setPropertyLandmark(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAddressLandmark()) ? loanDetail.getAddressLandmark() : null);
 			
             try {
                 List<Long> officeCity = new ArrayList<Long>(1);
@@ -362,10 +360,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtils.isObjectNullOrEmpty(data)){
                     	lapResponse.setPropertyCity(data.getValue());
                     }else{
-                    	lapResponse.setPropertyCity("NA");
+                    	lapResponse.setPropertyCity("-");
                     }	
                 }else{
-                	lapResponse.setPropertyCity("NA");
+                	lapResponse.setPropertyCity("-");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -382,10 +380,10 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())){
                     	lapResponse.setPropertyCountry(dataCountry.getValue());
                     }else{
-                    	lapResponse.setPropertyCountry("NA");
+                    	lapResponse.setPropertyCountry("-");
                     }
                 }else{
-                	lapResponse.setPropertyCountry("NA");
+                	lapResponse.setPropertyCountry("-");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -403,19 +401,19 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     if(!CommonUtil.isObjectNullOrEmpty(dataState)){
                     	lapResponse.setPropertyState(dataState.getValue());
                     }else{
-                    	lapResponse.setPropertyState("NA");
+                    	lapResponse.setPropertyState("-");
                     }
                 }else{
-                	lapResponse.setPropertyState("NA");
+                	lapResponse.setPropertyState(null);
                 }
             } catch (Exception e) {
             	e.printStackTrace();
             }
 			
-			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : "NA");
+			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : null);
 		}
 		
-		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
+		lapResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : null);
 		lapPrimaryViewResponse.setLapResponse(lapResponse);
 		
 		//setting co-application details

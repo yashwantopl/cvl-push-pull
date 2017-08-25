@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by win7 on 11/16/2016.
@@ -30,15 +30,24 @@ public class MultipleJSONObjectHelper implements Serializable {
 
 	public static List getListOfObjects(String data, String key, Class<?> clazz) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		JsonNode node = mapper.readTree(data);
-		return mapper.readValue(node.get(key), mapper.getTypeFactory().constructCollectionType(List.class, clazz));
+		if(key != null){
+			JsonNode node = mapper.readTree(data);
+			return mapper.readValue(node.get(key).asText(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));			
+		}else{
+			return mapper.readValue(data, mapper.getTypeFactory().constructCollectionType(List.class, clazz));
+		}
 	}
 
 	public static <T> T getObjectFromMap(Map map, Class<?> clazz) throws IOException {
-		final com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper(); // jackson's
-		mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		final ObjectMapper mapper = new ObjectMapper(); // jackson's
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		return (T) mapper.convertValue(map, clazz);
 	}
+	
+	/*@SuppressWarnings("unchecked")
+	public static <T extends List<?>> T getListFromObject(Object obj) {
+	    return (T) obj;
+	}*/
 
 //	public static <T> T getListFromMap(List<Map<String, Object>> map, Class<?> clazz) throws IOException {
 //		final ObjectMapper mapper = new ObjectMapper(); // jackson's

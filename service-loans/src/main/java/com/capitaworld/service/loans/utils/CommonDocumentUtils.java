@@ -77,11 +77,43 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCurrency(Integer currencyId) {
-		return !CommonUtils.isObjectNullOrEmpty(currencyId) ? Currency.getById(currencyId).getValue() : "NA";
+		if(!CommonUtils.isObjectNullOrEmpty(currencyId)){
+			if(!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))){
+				return Currency.getById(currencyId).getValue();	
+			}
+		}
+		return "NA";	
 	}
 	
 	public static String getDenomination(Integer denominationId) {
-		return !CommonUtils.isObjectNullOrEmpty(denominationId) ? Denomination.getById(denominationId).getValue() :  "NA";
+		if(!CommonUtils.isObjectNullOrEmpty(denominationId)){
+			if(!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))){
+				return Denomination.getById(denominationId).getValue();	
+			}
+		}
+		return "NA";
+	}
+	
+	public static Double convertAmountInAbsolute(Integer denominationId,Double amount) {
+		if(!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(amount)){
+			switch (denominationId) {
+			case 1:
+				amount = amount * 100000;//Lakhs
+				break;
+			case 2:
+				amount = amount * 1000000;//Millions
+				break;
+			case 3:
+				amount = amount * 10000000;//Crores
+				break;
+			case 4:
+				amount = amount * 1000000000;//Billions
+				break;
+			default:
+				break;//Absolute
+			}
+		}
+		return amount;
 	}
 	
 	public static void startHook(Logger logger,String methodName){

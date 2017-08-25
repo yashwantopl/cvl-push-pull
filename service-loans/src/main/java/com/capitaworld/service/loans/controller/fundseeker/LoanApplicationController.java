@@ -65,7 +65,7 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving applicationRequest Details==>", e);
+			logger.error("Error while saving applicationRequest Details ==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -199,18 +199,22 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/set_last_application_access/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> setLastApplicationAccess(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> setLastApplicationAccess(@PathVariable("applicationId") Long applicationId, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "setLastApplicationAccess");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			if (applicationId == null) {
 				logger.warn("applicationId Require to Set last Access Profile ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-
 			UserResponse userResponse = loanApplicationService.setLastAccessApplication(applicationId, userId);
 			if (userResponse != null && userResponse.getStatus() == 200) {
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -252,6 +256,7 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
 				logger.info("End getProductByApplication() method");
+				logger.warn("ProductId not found");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -309,8 +314,8 @@ public class LoanApplicationController {
 
 			LoansResponse loansResponse = new LoansResponse();
 
-			Object[] response = loanApplicationService.getApplicationDetailsById(applicationId);
-			loansResponse.setData(response[1]);
+			String nameResponse = loanApplicationService.getFsApplicantName(applicationId);
+			loansResponse.setData(nameResponse);
 			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -564,7 +569,7 @@ public class LoanApplicationController {
 			loansResponse.setData(true);
 			if(!loanApplicationService.isApplicationIdActive(applicationId)) {
 				loansResponse.setData(false);
-				loansResponse.setMessage("Requested User In Active");
+				loansResponse.setMessage("Requested user is Inactive");
 				CommonDocumentUtils.endHook(logger, "isFinalLocked");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -773,6 +778,40 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForSignUpUserList==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getLoanDetailsForAdminPanel", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanDetailsForAdminPanel() {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getLoanDetailsForAdminPanel");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(1));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanDetailsForAdminPanel==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getFilledLoanDetailsForAdminPanel", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFilledLoanDetailsForAdminPanel() {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getFilledLoanDetailsForAdminPanel");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(2));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getFilledLoanDetailsForAdminPanel==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

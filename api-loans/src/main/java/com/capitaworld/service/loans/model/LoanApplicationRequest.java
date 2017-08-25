@@ -49,6 +49,10 @@ public class LoanApplicationRequest implements Serializable {
 	private Integer status;
 	
 	private String primaryFilledCount;
+	
+	private Boolean profilePrimaryLocked;
+	
+	private Boolean finalLocked;
 
 	public LoanApplicationRequest() {
 	}
@@ -215,4 +219,19 @@ public class LoanApplicationRequest implements Serializable {
 		this.primaryFilledCount = primaryFilledCount;
 	}
 
+	public Boolean getProfilePrimaryLocked() {
+		return profilePrimaryLocked;
+	}
+
+	public void setProfilePrimaryLocked(Boolean profilePrimaryLocked) {
+		this.profilePrimaryLocked = profilePrimaryLocked;
+	}
+
+	public Boolean getFinalLocked() {
+		return finalLocked;
+	}
+
+	public void setFinalLocked(Boolean finalLocked) {
+		this.finalLocked = finalLocked;
+	}
 }

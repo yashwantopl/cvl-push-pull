@@ -70,6 +70,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
+		workingCapitalParameter.setIsParameterFilled(true);
 		workingCapitalParameterRepository.save(workingCapitalParameter);
 		industrySectorRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		// industry data save
@@ -272,6 +273,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			geographicalCityRepository.save(geographicalCityDetail);
 		}
 		logger.info("end saveCity");
+	}
+
+	@Override
+	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

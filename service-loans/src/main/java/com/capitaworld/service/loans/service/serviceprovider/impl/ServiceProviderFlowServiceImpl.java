@@ -19,12 +19,16 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.SpClientListing;
 import com.capitaworld.service.loans.model.SpSysNotifyResponse;
 import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -36,6 +40,7 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -71,6 +76,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	@Autowired
 	private DashboardService dashboardService;
 	
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
+	
 	private static final String USERS_BASE_URL_KEY = "userURL";
 	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
 	@Override
@@ -87,6 +95,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				spClientDetail.setClientId(clientResponse.getClientId());
 				spClientDetail.setClientName(clientResponse.getClientName());
 				spClientDetail.setClientEmail(clientResponse.getClientEmail());
+				spClientDetail.setLastAccessId(clientResponse.getLastAccessId());
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity())
 						&& clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
@@ -141,6 +150,12 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							applicationDetailsForSp.setHasAlreadyApplied(applied);
 							applicationDetailsForSp.setApplicationType(CommonUtils.getUserMainType(applicationDetailsForSp.getProductId()));
 							applicationDetailsForSp.setProductName(LoanType.getById(applicationDetailsForSp.getProductId()).getValue());
+							int fsType = CommonUtils.getUserMainType(applicationDetailsForSp.getProductId());
+							if(CommonUtils.UserMainType.RETAIL == fsType){
+								RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationDetailsForSp.getId());
+								applicationDetailsForSp.setCurrencyId((!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) ? retailApplicantDetail.getCurrencyId() : null);
+							}
+							applicationDetailsForSp.setCurrencyValue(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getCurrencyId()) ? Currency.getById(applicationDetailsForSp.getCurrencyId()).getValue() : null);
 							//code for sp fs notification
 							NotificationRequest notificationRequestSpFS = new NotificationRequest();
 							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());

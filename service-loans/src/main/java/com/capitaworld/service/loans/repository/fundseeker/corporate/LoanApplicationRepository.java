@@ -97,7 +97,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
-	@Query("select new com.capitaworld.service.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
+	@Query("select new com.capitaworld.service.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.currencyId,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
 	public List<LoanApplicationDetailsForSp> getListByUserId(@Param("userId") Long userId);
 
 	@Query("select lm.productId from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true")
@@ -141,5 +141,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("update LoanApplicationMaster lm set lm.finalFilledCount =:finalFilledCount,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int setFinalFilledCount(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("finalFilledCount") String finalFilledCount);
+	
+	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true")
+	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds);
 	
 }

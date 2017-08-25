@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
@@ -32,6 +34,8 @@ public interface LoanApplicationService {
 	
 	public Object[] getApplicationDetailsById(Long applicationId) throws Exception;
 	
+	public String getFsApplicantName(Long applicationId) throws Exception;
+	
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception;
 	
 	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId,Long userId) throws Exception;
@@ -58,5 +62,6 @@ public interface LoanApplicationService {
 	
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
 	
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 
 }

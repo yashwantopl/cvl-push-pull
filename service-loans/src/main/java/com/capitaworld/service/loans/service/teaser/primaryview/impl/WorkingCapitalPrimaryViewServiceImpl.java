@@ -169,65 +169,139 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			}
 
 			// set city
-			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-				cityList.add(corporateApplicantDetail.getRegisteredCityId());
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						workingCapitalPrimaryViewResponse.setCity(masterResponse.getValue());
-					} else {
-						workingCapitalPrimaryViewResponse.setCity("NA");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			// set state
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-				stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						workingCapitalPrimaryViewResponse.setState(masterResponse.getValue());
-					} else {
-						workingCapitalPrimaryViewResponse.setState("NA");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			// set country
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-				countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						workingCapitalPrimaryViewResponse.setCountry(masterResponse.getValue());
-					} else {
-						workingCapitalPrimaryViewResponse.setCountry("NA");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+						List<Long> cityList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+						cityList.add(corporateApplicantDetail.getRegisteredCityId());
+						if(!CommonUtils.isListNullOrEmpty(cityList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								workingCapitalPrimaryViewResponse.setCity(masterResponse.getValue());
+								workingCapitalPrimaryViewResponse.setRegOfficeCity(masterResponse.getValue());
+							} else {
+								workingCapitalPrimaryViewResponse.setCity("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						cityList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+						cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+						if(!CommonUtils.isListNullOrEmpty(cityList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								workingCapitalPrimaryViewResponse.setAddOfficeCity(masterResponse.getValue());
+								
+							} else {
+								workingCapitalPrimaryViewResponse.setCity("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+
+						// set state
+						List<Long> stateList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+						stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+						if(!CommonUtils.isListNullOrEmpty(stateList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								workingCapitalPrimaryViewResponse.setState(masterResponse.getValue());
+								workingCapitalPrimaryViewResponse.setRegOfficestate(masterResponse.getValue());
+							} else {
+								workingCapitalPrimaryViewResponse.setState("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						
+						stateList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+							stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+							if(!CommonUtils.isListNullOrEmpty(stateList))
+							{
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+										.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper
+											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									workingCapitalPrimaryViewResponse.setAddOfficestate(masterResponse.getValue());
+								} else {
+									workingCapitalPrimaryViewResponse.setState("NA");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							}
+						// set country
+						List<Long> countryList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+						countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+						if(!CommonUtils.isListNullOrEmpty(countryList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								workingCapitalPrimaryViewResponse.setCountry(masterResponse.getValue());
+								workingCapitalPrimaryViewResponse.setRegOfficecountry(masterResponse.getValue());
+							} else {
+								workingCapitalPrimaryViewResponse.setCountry("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						countryList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+							countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
+							if(!CommonUtils.isListNullOrEmpty(countryList))
+							{
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+										.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper
+											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									workingCapitalPrimaryViewResponse.setAddOfficecountry(masterResponse.getValue());
+								} else {
+									workingCapitalPrimaryViewResponse.setCountry("NA");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							}
+							
 
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
