@@ -179,7 +179,7 @@ public class CommonUtils {
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
-	
+
 	public interface ReceiptMode {
 		public static final int CASH = 1;
 		public static final int BANK = 2;
@@ -199,10 +199,14 @@ public class CommonUtils {
 			Integer years = 0;
 			Calendar birthDay = Calendar.getInstance();
 			birthDay.setTime(date);
-			Calendar now = Calendar.getInstance();
-			now.setTimeInMillis(System.currentTimeMillis());
-
-			years = now.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
+			Calendar today = Calendar.getInstance();
+			today.setTime(new Date());
+			
+			Integer yearsInBetween = today.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
+			Integer monthsDiff = 1;
+			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
+			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
+			years = ageInMonths / 12;
 			System.out.println("Age :===" + years);
 			return years;
 		} else {
