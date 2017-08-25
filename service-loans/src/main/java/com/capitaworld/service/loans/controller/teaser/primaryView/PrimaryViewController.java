@@ -518,7 +518,7 @@ public class PrimaryViewController {
 			{
 				Object[] o=loanApplicationService.getApplicationDetailsById(applicationId);
 				toUserId=o[0].toString();
-				notificationId=NotificationAlias.SYS_FS_VIEWSEC;
+				notificationId=NotificationAlias.SYS_FP_VIEWSEC;
 			}
 			
 			try {
