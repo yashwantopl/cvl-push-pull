@@ -77,40 +77,36 @@ public class NotificationServiceImpl implements NotificationService{
 			NotificationRequest request = new NotificationRequest();
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			if (MatchConstant.UserType.FUNDSEEKER == fromUserTypeId) {
 				try {
 					int fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
 					int fsType = CommonUtils.getUserMainType(fsProdId);
 					if(CommonUtils.UserMainType.CORPORATE == fsType){
 						CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
-						parameters.put("name",corporateApplicantRequest.getOrganisationName());
+						parameters.put("fs_name",corporateApplicantRequest.getOrganisationName());
 					}else if(CommonUtils.UserMainType.RETAIL == fsType){
 						RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
-						parameters.put("name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
+						parameters.put("fs_name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
 					}
 				} catch (Exception e) {
 					// TODO: handle exception
-					parameters.put("name", "NA");
+					parameters.put("fs_name", "NA");
 				}
 				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,
 						notificationId, parameters, applicationId, fpProductId));
-			} else {
 				try {
 					Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
 					if(o!=null)
-						parameters.put("name",o[1].toString());
+						parameters.put("fp_name",o[1].toString());
 					else
-						parameters.put("name","NA");
+						parameters.put("fp_name","NA");
 					
 
 				} catch (Exception e) {
 					// TODO: handle exception
 					e.printStackTrace(); 
-					parameters.put("name", "NA");
+					parameters.put("fp_name", "NA");
 				}
 				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId));
-			}
-
 			try {
 				notificationClient.send(request);
 			} catch (NotificationException e) {
