@@ -1702,6 +1702,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if(!users.isOtpVerified()){
+				response.add(users);
+				continue;
+			}
 			if(users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER){
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
