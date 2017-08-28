@@ -94,6 +94,28 @@ public class CommonDocumentUtils {
 		return "NA";
 	}
 	
+	public static Double convertAmountInAbsolute(Integer denominationId,Double amount) {
+		if(!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(amount)){
+			switch (denominationId) {
+			case 1:
+				amount = amount * 100000;//Lakhs
+				break;
+			case 2:
+				amount = amount * 1000000;//Millions
+				break;
+			case 3:
+				amount = amount * 10000000;//Crores
+				break;
+			case 4:
+				amount = amount * 1000000000;//Billions
+				break;
+			default:
+				break;//Absolute
+			}
+		}
+		return amount;
+	}
+	
 	public static void startHook(Logger logger,String methodName){
 		logger.info("Start " + methodName + "() Method");
 	}

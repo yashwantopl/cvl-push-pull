@@ -13,7 +13,14 @@ public class SpClientListing implements Serializable {
 	private String clientState;
 	private String clientCity;
 	private String clientImagePath;
+	private Long lastAccessId;
 	
+	public Long getLastAccessId() {
+		return lastAccessId;
+	}
+	public void setLastAccessId(Long lastAccessId) {
+		this.lastAccessId = lastAccessId;
+	}
 	public String getClientImagePath() {
 		return clientImagePath;
 	}

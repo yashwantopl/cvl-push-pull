@@ -95,6 +95,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				spClientDetail.setClientId(clientResponse.getClientId());
 				spClientDetail.setClientName(clientResponse.getClientName());
 				spClientDetail.setClientEmail(clientResponse.getClientEmail());
+				spClientDetail.setLastAccessId(clientResponse.getLastAccessId());
 				if (!CommonUtils.isObjectNullOrEmpty(clientResponse.getClientCity())
 						&& clientResponse.getClientCity() != 0) {
 					List<Long> cityList = new ArrayList<>();
