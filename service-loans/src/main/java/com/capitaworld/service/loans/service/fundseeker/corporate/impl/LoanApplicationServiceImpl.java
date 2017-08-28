@@ -1814,11 +1814,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			String currency = "";
 			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
-				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
-						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())) {
 					currency = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
-					currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
-					
 					if(loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())){
 						response.setAmounInRuppes(true);	
 						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
