@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
@@ -299,4 +300,5 @@ public class CommonUtils {
 		}
 		return age;
 	}
+	
 }
