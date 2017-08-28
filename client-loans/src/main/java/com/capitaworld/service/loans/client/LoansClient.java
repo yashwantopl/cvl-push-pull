@@ -292,7 +292,35 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getChatListByApplicationId(Long applicationId) throws  LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
+		}
+	}
 	
+
+	public LoansResponse getChatListByFpMappingId(Long productMappingId) throws  LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(productMappingId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByProductMappingId");
+		}
+	}
+
 	
 
 }

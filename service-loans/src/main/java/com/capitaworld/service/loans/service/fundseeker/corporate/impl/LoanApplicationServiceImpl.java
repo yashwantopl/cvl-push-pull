@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
@@ -30,21 +32,26 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.loans.service.common.DashboardService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -65,9 +72,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private Environment environment;
 	
-	@Autowired
-	private ProposalDetailsClient proposalDetailsClient; 
-
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
@@ -91,6 +95,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient ; 
+	
+	@Autowired
+	private DashboardService dashboardService; 
+	
+	@Autowired
+	private CorporateUploadService corporateUploadService;
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -1873,5 +1886,69 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			responseList.add(response);
 		}
 		return responseList;
+	}
+
+	@Override
+	public List<ChatDetails> getChatListByFpMappingId(Long fpMappingId) {
+		// TODO Auto-generated method stub
+		ProposalMappingRequest mappingRequest=new ProposalMappingRequest();
+		mappingRequest.setFpProductId(fpMappingId);
+		try {
+			List<LinkedHashMap<String, Object>> mappingRequestList=(List<LinkedHashMap<String, Object>>) proposalDetailsClient.getFundProviderChatList(mappingRequest).getDataList();
+			if(!CommonUtils.isListNullOrEmpty(mappingRequestList))
+			{
+				List<ChatDetails> chatDetailList=new ArrayList<ChatDetails>(mappingRequestList.size());
+				for(LinkedHashMap<String, Object> linkedHashMap:mappingRequestList)
+				{
+					try {
+						ChatDetails chatDetails=new ChatDetails();
+						ProposalMappingRequest proposalMappingRequest=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
+						Object[] object=getApplicationDetailsById(proposalMappingRequest.getApplicationId());
+						DashboardProfileResponse  dashboardProfileResponse=dashboardService.getBasicProfileInfo(proposalMappingRequest.getApplicationId(),(Long) object[0], false);
+						chatDetails.setProposalId(proposalMappingRequest.getId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setName(dashboardProfileResponse.getName());
+						List<LinkedHashMap<String, Object>> detailsResponseList=(List<LinkedHashMap<String, Object>>) corporateUploadService.getProfilePic(proposalMappingRequest.getApplicationId(), getProfilePicKeyByProductId(dashboardProfileResponse.getProductId()), DocumentAlias.UERT_TYPE_APPLICANT).getDataList();
+						if(!CommonUtils.isListNullOrEmpty(detailsResponseList))
+						{
+							StorageDetailsResponse storageDetailsResponse=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) detailsResponseList.get(0), StorageDetailsResponse.class);
+							chatDetails.setProfile(storageDetailsResponse.getFilePath());
+						}
+						chatDetailList.add(chatDetails);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return chatDetailList;
+			}
+		} catch (MatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Long getProfilePicKeyByProductId(Integer id)
+	{
+		switch (id){
+        case 1://WORKING CAPITAL
+        	 return DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE;
+        case 2://Term CAPITAL
+        	return DocumentAlias.TERM_LOAN_PROFIEL_PICTURE;
+        case 3://HOME LOAN
+        	return DocumentAlias.HOME_LOAN_PROFIEL_PICTURE;
+        case 7://PERSONAL LOAN
+        	return DocumentAlias.PERSONAL_LOAN_PROFIEL_PICTURE;
+        case 12://CAR_LOAN
+        	return DocumentAlias.CAR_LOAN_PROFIEL_PICTURE;
+        case 13://LOAN_AGAINST_PROPERTY
+        	return DocumentAlias.LAP_LOAN_PROFIEL_PICTURE;
+        default:
+            return null;
+		}
 	}
 }
