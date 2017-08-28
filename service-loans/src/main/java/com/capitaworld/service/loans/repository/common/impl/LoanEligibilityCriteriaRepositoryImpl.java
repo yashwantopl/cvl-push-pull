@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
+import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
 import com.capitaworld.service.loans.repository.common.LoanEligibilityCriteriaRepository;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -105,7 +106,39 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		}
 		return null;
 	}
-	
+
 	//Personal Loan Ends
+	
+   //LAP Starts
+	@Override
+	public LAPEligibilityCriteria getLAPBySalarySlab(Long income, Integer type, Integer bankId, Integer propertyType) {
+		CommonDocumentUtils.startHook(logger, "getLAPBySalarySlab");
+		String query = "select lap from LAPEligibilityCriteria lap where lap.type =:type and lap.bankId =:bankId and lap.isActive =:isActive and lap.propertyType =:propertyType and " + income + " >= lap.min";
+		List<LAPEligibilityCriteria> eligibility = entityManager
+				.createQuery(query, LAPEligibilityCriteria.class).setParameter("type", type)
+				.setParameter("bankId", bankId)
+				.setParameter("propertyType", propertyType)
+				.setParameter("isActive", true).getResultList();
+		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
+			CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
+			return eligibility.get(0);
+		}
+		logger.warn("Given Criteria Does not match with the Database Records");
+		CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
+		return null;
+	}
+	
+	@Override
+	public Object[] getMinMaxRoiForLAP() {
+		@SuppressWarnings("unchecked")
+		List<Object[]> data = entityManager.createQuery("select min(lap.roiLow),max(lap.roiHigh) from LAPEligibilityCriteria lap where lap.isActive =:isActive")
+				.setParameter("isActive", true).getResultList();
+		if (!CommonUtils.isListNullOrEmpty(data)) {
+			return data.get(0);
+		}
+		return null;
+	}
+	
+	//LAP Ends
 	
 }

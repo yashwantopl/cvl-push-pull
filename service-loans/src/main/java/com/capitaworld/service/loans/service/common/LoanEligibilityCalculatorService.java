@@ -5,6 +5,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
 
@@ -19,4 +20,11 @@ public interface LoanEligibilityCalculatorService {
 
 	// For Personal Loan
 	public JSONObject calcMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception;
+	
+	//For LAP
+	
+	public JSONObject calcMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws Exception;
+	
+	public JSONObject calcLAPAmount(LAPEligibilityRequest homeLoanRequest) throws Exception;
+	
 }
