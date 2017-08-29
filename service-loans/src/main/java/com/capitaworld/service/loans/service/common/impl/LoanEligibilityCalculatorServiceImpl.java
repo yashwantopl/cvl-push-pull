@@ -389,7 +389,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		CommonDocumentUtils.endHook(logger, "calcMinMaxForLAP");
 		return json;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject calcLAPAmount(LAPEligibilityRequest eligibilityRequest) throws Exception {
@@ -409,11 +409,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 						Integer.class.cast(bankResponse.getId()), eligibilityRequest.getPropertyType());
 				if (eligibilityCriteria == null || CommonUtils.isObjectNullOrEmpty(eligibilityCriteria.getMin()))
 					continue;
-				double marketValue = 0.0;
-				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getMarketValue())) {
-					marketValue = eligibilityRequest.getMarketValue() * eligibilityCriteria.getMarketValue() / 100;
-				}
-					minData.put(eligibilityCriteria.getBankId(), marketValue);
+				
+				double marketValue = eligibilityRequest.getMarketValue() * eligibilityCriteria.getMarketValue() / 100;
+				minData.put(eligibilityCriteria.getBankId(), marketValue);
 			}
 
 			CommonDocumentUtils.endHook(logger, "calcLAPAmount");

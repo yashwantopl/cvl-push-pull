@@ -185,6 +185,13 @@ public class CommonUtils {
 		public static final int CASH = 1;
 		public static final int BANK = 2;
 	}
+	
+	public interface PropertyType {
+		public static final int RESIDENTIAL = 1;
+		public static final int COMMERCIAL = 2;
+		public static final int INDUSTRIAL = 3;
+		public static final int PLOT = 4;
+	}
 
 	public static String getStringDateFromDate(Date date) {
 		if (date != null) {

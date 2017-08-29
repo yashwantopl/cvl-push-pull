@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.controller.common;
 
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,10 +198,14 @@ public class LoanEligibilityCalculatorController {
 						HttpStatus.OK);
 			}
 
-			// If Constitution Must be 1(Proprietorship/Partnership) OR 2(Others)
-			if (!eligibilityRequest.getConstitution().equals(CommonUtils.EmployerConstitution.ANYOTHER) && !eligibilityRequest.getConstitution().equals(CommonUtils.EmployerConstitution.PARTNERSHIP_PROPRIETORSHIP)) {
+			// If Constitution Must be 1(Proprietorship/Partnership) OR
+			// 2(Others)
+			if (!eligibilityRequest.getConstitution().equals(CommonUtils.EmployerConstitution.ANYOTHER)
+					&& !eligibilityRequest.getConstitution()
+							.equals(CommonUtils.EmployerConstitution.PARTNERSHIP_PROPRIETORSHIP)) {
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Constitution Must be ANYOTHER or PARTNERSHIP/PROPRIETORSHIP", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse("Constitution Must be ANYOTHER or PARTNERSHIP/PROPRIETORSHIP",
+								HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -231,8 +233,8 @@ public class LoanEligibilityCalculatorController {
 	}
 
 	// Personal Loan Calculation Ends
-	
-	//LAP Calculation Starts
+
+	// LAP Calculation Starts
 	@RequestMapping(value = "${lap}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getEligibleTenureLAP(
 			@RequestBody PersonalLoanEligibilityRequest eligibilityRequest) {
@@ -243,10 +245,11 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
 			LoansResponse response = null;
-			Integer tenure = loanEligibilityCalculatorService.calculateTenure(eligibilityRequest, CommonUtils.LoanType.LAP_LOAN.getValue());
+			Integer tenure = loanEligibilityCalculatorService.calculateTenure(eligibilityRequest,
+					CommonUtils.LoanType.LAP_LOAN.getValue());
 			if (tenure == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Loan Against Properties.");
@@ -267,13 +270,19 @@ public class LoanEligibilityCalculatorController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "${lap}/calc_min_max", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> calcMinMaxLAP(@RequestBody LAPEligibilityRequest eligibilityRequest) {
 		CommonDocumentUtils.startHook(logger, "calcMinMaxLAP");
 		try {
 			if (CommonUtils.isObjectListNull(eligibilityRequest.getDateOfBirth(), eligibilityRequest.getIncome(),
 					eligibilityRequest.getEmploymentType(), eligibilityRequest.getPropertyType())) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
+			if(!validRequest){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -299,15 +308,21 @@ public class LoanEligibilityCalculatorController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "${lap}/calc_lap_amount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> calcLAP(@RequestBody LAPEligibilityRequest eligibilityRequest) {
 		CommonDocumentUtils.startHook(logger, "calcLAP");
 		try {
 			boolean isNull = CommonUtils.isObjectListNull(eligibilityRequest.getEmploymentType(),
 					eligibilityRequest.getIncome(), eligibilityRequest.getDateOfBirth(),
-					eligibilityRequest.getMarketValue());
+					eligibilityRequest.getPropertyType(), eligibilityRequest.getMarketValue());
 			if (isNull) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
+			if(!validRequest){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -333,7 +348,20 @@ public class LoanEligibilityCalculatorController {
 					HttpStatus.OK);
 		}
 	}
-	
-	//LAP Calculation Ends
-	
+
+	private static boolean isValidRequest(Integer propertyType) {
+		if (CommonUtils.isObjectNullOrEmpty(propertyType)) {
+			return false;
+		}
+		if (!(propertyType.intValue() == CommonUtils.PropertyType.RESIDENTIAL)
+				&& !(propertyType.intValue() == CommonUtils.PropertyType.COMMERCIAL)
+				&& !(propertyType.intValue() == CommonUtils.PropertyType.INDUSTRIAL)
+				&& !(propertyType.intValue() == CommonUtils.PropertyType.PLOT)) {
+			return false;
+		}
+		return true;
+	}
+
+	// LAP Calculation Ends
+
 }
