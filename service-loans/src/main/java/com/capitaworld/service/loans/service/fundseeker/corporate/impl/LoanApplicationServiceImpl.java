@@ -1702,6 +1702,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if(!users.isOtpVerified()){
+				response.add(users);
+				continue;
+			}
 			if(users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER){
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
@@ -1807,14 +1811,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(loanApplicationMaster.getAmount());
 			response.setAmounInRuppes(false);
-			String currency = "";
 			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
-				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
-						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
-					currency = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
-					currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
-					
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId()) && !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+					response.setCurrency(CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId()));
 					if(loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())){
 						response.setAmounInRuppes(true);	
 						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
@@ -1824,7 +1824,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			} else {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				currency = CommonDocumentUtils.getCurrency(currencyId);
+				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
 				if(!CommonUtils.isObjectNullOrEmpty(currencyId)){
 					if(currencyId.equals(Currency.RUPEES.getId())){
 						response.setAmounInRuppes(true);
@@ -1832,7 +1832,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 			
-			response.setCurrency(currency);
+			
 			
 			if(type == 1){
 				response.setTenure(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTenure()) ? Double.valueOf((loanApplicationMaster.getTenure()/12)) : null);	
