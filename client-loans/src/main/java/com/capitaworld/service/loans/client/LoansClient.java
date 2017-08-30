@@ -33,6 +33,7 @@ public class LoansClient {
 	private static final String GET_LOAN_DETAILS_ADMIN_PANEL="/loan_application/getLoanDetailsForAdminPanel";
 	private static final String GET_FILLED_LOAN_DETAILS_ADMIN_PANEL="/loan_application/getFilledLoanDetailsForAdminPanel";
 	private static final String GET_CHATLIST_BY_FP_MAPPING="/loan_application/getChatListByFpMappingId";
+	private static final String GET_CHATLIST_BY_APPLICATION_ID="/loan_application/getChatListByApplicationId";
 	
 	
 	private String loansBaseUrl;
@@ -309,7 +310,7 @@ public class LoansClient {
 	
 
 	public LoansResponse getChatListByFpMappingId(Long productMappingId) throws  LoansException {
-		String url = loansBaseUrl.concat(GET_CHATLIST_BY_FP_MAPPING);
+		String url = loansBaseUrl.concat(GET_CHATLIST_BY_APPLICATION_ID);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
