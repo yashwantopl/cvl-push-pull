@@ -11,8 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="home_loan_criteria")
-public class HomeLoanEligibilityCriteria implements Serializable {
+@Table(name="lap_criteria")
+public class LAPEligibilityCriteria implements Serializable {
 
 	/**
 	 * 
@@ -26,11 +26,13 @@ public class HomeLoanEligibilityCriteria implements Serializable {
     @Column(name="type")
     private Integer type;
     
+    @Column(name="property_type")
+    private Integer propertyType;
+    
     @Column(name="bank_id")
     private Integer bankId;
     
     private Long min;
-    private Long max;
     
     @Column(name="foir")
     private Float foir;
@@ -41,17 +43,8 @@ public class HomeLoanEligibilityCriteria implements Serializable {
     @Column(name="roi_high")
     private Float roiHigh;
     
-    @Column(name="min_property_amount")
-    private Long minPropertyAmount;
-    
-    @Column(name="max_property_amount")
-    private Long maxPropertyAmount;
-    
     @Column(name="market_value")
     private Float marketValue;
-    
-    @Column(name="sale_deed_value")
-    private Float saleDeedValue;
     
     @Column(name="is_active")
     private Boolean isActive;
@@ -70,7 +63,7 @@ public class HomeLoanEligibilityCriteria implements Serializable {
     
     
 
-	public HomeLoanEligibilityCriteria() {
+	public LAPEligibilityCriteria() {
 		super();
 	}
 
@@ -106,14 +99,6 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 		this.min = min;
 	}
 
-	public Long getMax() {
-		return max;
-	}
-
-	public void setMax(Long max) {
-		this.max = max;
-	}
-
 	public Float getFoir() {
 		return foir;
 	}
@@ -138,36 +123,12 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 		this.roiHigh = roiHigh;
 	}
 
-	public Long getMinPropertyAmount() {
-		return minPropertyAmount;
-	}
-
-	public void setMinPropertyAmount(Long minPropertyAmount) {
-		this.minPropertyAmount = minPropertyAmount;
-	}
-
-	public Long getMaxPropertyAmount() {
-		return maxPropertyAmount;
-	}
-
-	public void setMaxPropertyAmount(Long maxPropertyAmount) {
-		this.maxPropertyAmount = maxPropertyAmount;
-	}
-
 	public Float getMarketValue() {
 		return marketValue;
 	}
 
 	public void setMarketValue(Float marketValue) {
 		this.marketValue = marketValue;
-	}
-
-	public Float getSaleDeedValue() {
-		return saleDeedValue;
-	}
-
-	public void setSaleDeedValue(Float saleDeedValue) {
-		this.saleDeedValue = saleDeedValue;
 	}
 
 	public Boolean getIsActive() {
@@ -209,9 +170,17 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 	public void setUpdateBy(Long updateBy) {
 		this.updateBy = updateBy;
 	}
+	
+	public Integer getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
+	}
 
 	@Override
 	public String toString() {
-		return "HomeLoanEligibilityCriteria [id=" + id + "]";
+		return "LAPEligibilityCriteria [id=" + id + "]";
 	}
 }

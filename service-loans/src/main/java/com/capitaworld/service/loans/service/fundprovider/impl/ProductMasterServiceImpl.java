@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
@@ -22,11 +25,14 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
@@ -56,6 +62,9 @@ import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParamete
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -121,6 +130,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private LapLoanParameterService lapLoanParameterService;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient ;
+	
+
 
 	@Override
 	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest) {
@@ -550,6 +564,51 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		BeanUtils.copyProperties(productMasterRepository.getLastAccessedProduct(userId), productMasterRequest);
 		CommonDocumentUtils.endHook(logger, "lastAccessedProduct");
 		return  productMasterRequest;
+	}
+
+	@Override
+	public List<ChatDetails> getChatListByLoanApplicationId(Long applicationId) {
+		// TODO Auto-generated method stub
+		ProposalMappingRequest mappingRequest=new ProposalMappingRequest();
+		mappingRequest.setApplicationId(applicationId);
+		try {
+			List<LinkedHashMap<String, Object>> mappingRequestList=(List<LinkedHashMap<String, Object>>) proposalDetailsClient.getFundSeekerChatList(mappingRequest).getDataList();
+			if(!CommonUtils.isListNullOrEmpty(mappingRequestList))
+			{
+				List<ChatDetails> chatDetailList=new ArrayList<ChatDetails>(mappingRequestList.size());
+				for(LinkedHashMap<String, Object> linkedHashMap:mappingRequestList)
+				{
+					try {
+						ChatDetails chatDetails=new ChatDetails();
+						ProposalMappingRequest proposalMappingRequest=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
+						//Object[] object=getApplicationDetailsById(proposalMappingRequest.getApplicationId());
+						//DashboardProfileResponse  dashboardProfileResponse=dashboardService.getBasicProfileInfo(proposalMappingRequest.getApplicationId(),(Long) object[0], false);
+						ProductMaster productMaster=productMasterRepository.findOne(proposalMappingRequest.getFpProductId());
+						chatDetails.setProposalId(proposalMappingRequest.getId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setName(productMaster.getFpName());
+					/*	List<LinkedHashMap<String, Object>> detailsResponseList=(List<LinkedHashMap<String, Object>>) corporateUploadService.getProfilePic(proposalMappingRequest.getApplicationId(), getProfilePicKeyByProductId(dashboardProfileResponse.getProductId()), DocumentAlias.UERT_TYPE_APPLICANT).getDataList();
+						if(!CommonUtils.isListNullOrEmpty(detailsResponseList))
+						{
+							StorageDetailsResponse storageDetailsResponse=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) detailsResponseList.get(0), StorageDetailsResponse.class);
+							chatDetails.setProfile(storageDetailsResponse.getFilePath());
+						}*/
+						chatDetailList.add(chatDetails);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return chatDetailList;
+			}
+		} catch (MatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

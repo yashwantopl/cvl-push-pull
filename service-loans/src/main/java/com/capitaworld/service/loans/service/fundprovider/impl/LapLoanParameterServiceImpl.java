@@ -64,6 +64,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		BeanUtils.copyProperties(lapParameterRequest, lapParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
 		lapParameter.setModifiedBy(lapParameterRequest.getUserId());
 		lapParameter.setModifiedDate(new Date());
+		lapParameter.setIsParameterFilled(true);
 		lapParameterRepository.save(lapParameter);
 		
 		geographicalCountryRepository.inActiveMappingByFpProductId(lapParameterRequest.getId());

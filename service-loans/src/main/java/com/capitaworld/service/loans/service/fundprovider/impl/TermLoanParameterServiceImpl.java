@@ -73,6 +73,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
+		termLoanParameter.setIsParameterFilled(true);
 		termLoanParameterRepository.save(termLoanParameter);
 		
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());

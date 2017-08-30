@@ -70,6 +70,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
+		workingCapitalParameter.setIsParameterFilled(true);
 		workingCapitalParameterRepository.save(workingCapitalParameter);
 		industrySectorRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		// industry data save

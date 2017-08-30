@@ -2,17 +2,17 @@ package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
 
-public class HomeLoanEligibilityRequest extends LoanEligibilility implements Serializable {
+public class LAPEligibilityRequest extends LoanEligibilility implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer employmentType;
-	private Long stampValue;
+	private Integer propertyType;
 	private Long marketValue;
 
-	public HomeLoanEligibilityRequest() {
+	public LAPEligibilityRequest() {
 		super();
 	}
 
@@ -24,12 +24,12 @@ public class HomeLoanEligibilityRequest extends LoanEligibilility implements Ser
 		this.employmentType = employmentType;
 	}
 
-	public Long getStampValue() {
-		return stampValue;
+	public Integer getPropertyType() {
+		return propertyType;
 	}
 
-	public void setStampValue(Long stampValue) {
-		this.stampValue = stampValue;
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
 	}
 
 	public Long getMarketValue() {
