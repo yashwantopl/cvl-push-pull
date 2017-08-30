@@ -428,13 +428,18 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 
 			JSONObject result = new JSONObject();
-			result.put(CommonUtils.MAXIMUM, Math.round(Collections.max(resultMap.keySet())));
-			result.put(CommonUtils.MINIMUM, Math.round(Collections.min(resultMap.values())));
-			Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP();
-			if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
-				result.put("minRoi", minMaxArr[0]);
-				result.put("maxRoi", minMaxArr[1]);
+			if(resultMap.isEmpty()){
+				result.put("message", "No Result Found");
+			}else{
+				result.put(CommonUtils.MAXIMUM, Math.round(Collections.max(resultMap.keySet())));
+				result.put(CommonUtils.MINIMUM, Math.round(Collections.min(resultMap.values())));
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP();
+				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
+					result.put("minRoi", minMaxArr[0]);
+					result.put("maxRoi", minMaxArr[1]);
+				}	
 			}
+			
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();

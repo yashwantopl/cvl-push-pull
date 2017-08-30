@@ -52,7 +52,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -84,7 +84,7 @@ public class LoanEligibilityCalculatorController {
 			if (tenure == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(tenure);
@@ -119,7 +119,7 @@ public class LoanEligibilityCalculatorController {
 			if (jsonObject == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(jsonObject);
@@ -215,7 +215,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Personal Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -292,7 +292,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Loan Against Properties.");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -332,7 +332,7 @@ public class LoanEligibilityCalculatorController {
 			if (jsonObject == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(jsonObject);
