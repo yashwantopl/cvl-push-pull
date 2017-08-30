@@ -113,7 +113,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer maxCollateral;
 
 	@Column(name="max_debt_equity")
-	private Integer maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
 	@Column(name="max_invest_size")
 	private BigDecimal maxInvestSize;
@@ -134,7 +134,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer minCollateral;
 
 	@Column(name="min_debt_equity")
-	private Integer minDebtEquity;
+	private BigDecimal minDebtEquity;
 
 	@Column(name="min_invest_size")
 	private BigDecimal minInvestSize;
@@ -458,13 +458,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Integer getMaxDebtEquity() {
-		return maxDebtEquity;
-	}
-
-	public void setMaxDebtEquity(Integer maxDebtEquity) {
-		this.maxDebtEquity = maxDebtEquity;
-	}
+	
 
 	public Integer getMinCollateral() {
 		return minCollateral;
@@ -474,11 +468,20 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.minCollateral = minCollateral;
 	}
 
-	public Integer getMinDebtEquity() {
+	
+	public BigDecimal getMaxDebtEquity() {
+		return maxDebtEquity;
+	}
+
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
+		this.maxDebtEquity = maxDebtEquity;
+	}
+
+	public BigDecimal getMinDebtEquity() {
 		return minDebtEquity;
 	}
 
-	public void setMinDebtEquity(Integer minDebtEquity) {
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
 	}
 

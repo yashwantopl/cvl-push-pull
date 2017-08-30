@@ -67,7 +67,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer maxCollateral;
 
-	private Integer maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
 	private BigDecimal maxInvestSize;
 
@@ -81,7 +81,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer minCollateral;
 
-	private Integer minDebtEquity;
+	private BigDecimal minDebtEquity;
 
 	private BigDecimal minInvestSize;
 
@@ -371,13 +371,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Integer getMaxDebtEquity() {
-		return maxDebtEquity;
-	}
-
-	public void setMaxDebtEquity(Integer maxDebtEquity) {
-		this.maxDebtEquity = maxDebtEquity;
-	}
+	
 
 	public Integer getMinCollateral() {
 		return minCollateral;
@@ -387,11 +381,21 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.minCollateral = minCollateral;
 	}
 
-	public Integer getMinDebtEquity() {
+	
+
+	public BigDecimal getMaxDebtEquity() {
+		return maxDebtEquity;
+	}
+
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
+		this.maxDebtEquity = maxDebtEquity;
+	}
+
+	public BigDecimal getMinDebtEquity() {
 		return minDebtEquity;
 	}
 
-	public void setMinDebtEquity(Integer minDebtEquity) {
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
 	}
 
