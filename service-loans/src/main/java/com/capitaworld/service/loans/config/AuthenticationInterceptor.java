@@ -35,7 +35,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		}
 		
 		// for only client call
-		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
+		String reqAuth = request.getHeader("reqAuth");
 		logger.info("URI----->"+requestURI);
 		logger.info("Client Call----------------->" + reqAuth);
 		if (reqAuth != null && reqAuth != "") {
