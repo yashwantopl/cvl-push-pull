@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HomeLoanEligibilityRequest extends LoanEligibilility implements Serializable {
 
 	/**

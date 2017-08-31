@@ -2,6 +2,9 @@ package com.capitaworld.service.loans.model.common;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoanEligibilility {
 
 	private Long income;

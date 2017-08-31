@@ -52,7 +52,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -84,7 +84,7 @@ public class LoanEligibilityCalculatorController {
 			if (tenure == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(tenure);
@@ -119,7 +119,7 @@ public class LoanEligibilityCalculatorController {
 			if (jsonObject == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(jsonObject);
@@ -150,7 +150,8 @@ public class LoanEligibilityCalculatorController {
 			}
 
 			// If Receipt Mode is CASH
-			if (eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.CASH)) {
+			if (CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getReceiptMode())
+					|| eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.CASH)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("You are not eligible for Personal Loan", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -215,7 +216,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Personal Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -280,9 +281,9 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
-			if(!validRequest){
+			if (!validRequest) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -292,7 +293,7 @@ public class LoanEligibilityCalculatorController {
 			if (minMaxBySalarySlab == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Loan Against Properties.");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(minMaxBySalarySlab);
@@ -320,9 +321,9 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
-			if(!validRequest){
+			if (!validRequest) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -332,7 +333,7 @@ public class LoanEligibilityCalculatorController {
 			if (jsonObject == null) {
 				response = new LoansResponse("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
-				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");
 				response.setData(jsonObject);
