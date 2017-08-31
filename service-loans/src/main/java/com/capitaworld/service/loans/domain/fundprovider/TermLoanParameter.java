@@ -118,7 +118,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	private Integer maxCollateral;
 
 	@Column(name = "max_debt_equity")
-	private Integer maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
 	@Column(name = "max_invest_size")
 	private BigDecimal maxInvestSize;
@@ -139,7 +139,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	private Integer minCollateral;
 
 	@Column(name = "min_debt_equity")
-	private Integer minDebtEquity;
+	private BigDecimal minDebtEquity;
 
 	@Column(name = "min_invest_size")
 	private BigDecimal minInvestSize;
@@ -420,14 +420,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Integer getMaxDebtEquity() {
-		return this.maxDebtEquity;
-	}
-
-	public void setMaxDebtEquity(Integer maxDebtEquity) {
-		this.maxDebtEquity = maxDebtEquity;
-	}
-
+	
 	public Integer getMinAgeEstablishment() {
 		return this.minAgeEstablishment;
 	}
@@ -444,11 +437,21 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.minCollateral = minCollateral;
 	}
 
-	public Integer getMinDebtEquity() {
-		return this.minDebtEquity;
+	
+
+	public BigDecimal getMaxDebtEquity() {
+		return maxDebtEquity;
 	}
 
-	public void setMinDebtEquity(Integer minDebtEquity) {
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
+		this.maxDebtEquity = maxDebtEquity;
+	}
+
+	public BigDecimal getMinDebtEquity() {
+		return minDebtEquity;
+	}
+
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
 	}
 

@@ -36,6 +36,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		
 		// for only client call
 		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
+		logger.info("URI----->"+requestURI);
+		logger.info("Client Call----------------->" + reqAuth);
 		if (reqAuth != null && reqAuth != "") {
 			if ("true".equals(reqAuth)) {
 				return true;
@@ -50,10 +52,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(username) || StringUtils.isEmpty(refreshToken)
 				|| StringUtils.isEmpty(loginToken)) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			logger.debug("Access Token ----------> " + accessToken);
-			logger.debug("UserName --------------> " + username);
-			logger.debug("Refresh Token  --------> " + refreshToken);
-			logger.debug("Login Token -----------> " + loginToken);
+			logger.warn("Access Token ----------> " + accessToken);
+			logger.warn("UserName --------------> " + username);
+			logger.warn("Refresh Token  --------> " + refreshToken);
+			logger.warn("Login Token -----------> " + loginToken);
 			logger.warn("Bad Request, If any one of from the above four is null or empty");
 			return false;
 		}

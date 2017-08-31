@@ -74,7 +74,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer maxCollateral;
 
-	private Integer maxDebtEquity;
+	private BigDecimal maxDebtEquity;
 
 	private BigDecimal maxInvestSize;
 
@@ -88,7 +88,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Integer minCollateral;
 
-	private Integer minDebtEquity;
+	private BigDecimal minDebtEquity;
 
 	private BigDecimal minInvestSize;
 
@@ -330,12 +330,17 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxCollateral = maxCollateral;
 	}
 
-	public Integer getMaxDebtEquity() {
+	
+	public BigDecimal getMaxDebtEquity() {
 		return maxDebtEquity;
 	}
 
-	public void setMaxDebtEquity(Integer maxDebtEquity) {
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
 		this.maxDebtEquity = maxDebtEquity;
+	}
+
+	public void setMinDebtEquity(BigDecimal minDebtEquity) {
+		this.minDebtEquity = minDebtEquity;
 	}
 
 	public BigDecimal getMaxInvestSize() {
@@ -386,12 +391,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minCollateral = minCollateral;
 	}
 
-	public Integer getMinDebtEquity() {
-		return minDebtEquity;
-	}
+	
 
-	public void setMinDebtEquity(Integer minDebtEquity) {
-		this.minDebtEquity = minDebtEquity;
+	public BigDecimal getMinDebtEquity() {
+		return minDebtEquity;
 	}
 
 	public BigDecimal getMinInvestSize() {
