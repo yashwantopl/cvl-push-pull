@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.LogDetailsModel;
 
 public class LoansClient {
 	
@@ -34,6 +35,7 @@ public class LoansClient {
 	private static final String GET_FILLED_LOAN_DETAILS_ADMIN_PANEL="/loan_application/getFilledLoanDetailsForAdminPanel";
 	private static final String GET_CHATLIST_BY_FP_MAPPING="/loan_application/getChatListByFpMappingId";
 	private static final String GET_CHATLIST_BY_APPLICATION_ID="/loan_application/getChatListByApplicationId";
+	private static final String CREATE_LOG="/createLog";
 	
 	
 	private String loansBaseUrl;
@@ -320,6 +322,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call getChatListByProductMappingId");
+		}
+	}
+	
+	public LoansResponse createLog(LogDetailsModel logDetailsModel) throws  LoansException {
+		String url = loansBaseUrl.concat(CREATE_LOG);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<LogDetailsModel> entity = new HttpEntity<LogDetailsModel>(logDetailsModel, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call create log");
 		}
 	}
 
