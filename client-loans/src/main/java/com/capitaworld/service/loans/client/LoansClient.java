@@ -297,7 +297,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse getChatListByApplicationId(Long applicationId) throws  LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
+		String url = loansBaseUrl.concat(GET_CHATLIST_BY_FP_MAPPING);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
