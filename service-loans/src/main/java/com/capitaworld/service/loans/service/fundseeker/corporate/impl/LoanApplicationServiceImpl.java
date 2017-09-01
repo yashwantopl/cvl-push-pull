@@ -342,6 +342,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			applicationMaster.setIsFinalLocked(flag);
 			loanApplicationRepository.save(applicationMaster);
+			// create log when teaser submit
+			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
