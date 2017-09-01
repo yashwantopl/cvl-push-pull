@@ -1722,7 +1722,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (!users.isOtpVerified()) {
+			if (!users.getIsOtpVerified()) {
 				response.add(users);
 				continue;
 			}
