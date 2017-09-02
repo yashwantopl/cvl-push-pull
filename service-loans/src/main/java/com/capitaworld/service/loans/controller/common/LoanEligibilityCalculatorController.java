@@ -332,7 +332,7 @@ public class LoanEligibilityCalculatorController {
 			JSONObject jsonObject = loanEligibilityCalculatorService.calcLAPAmount(eligibilityRequest);
 			if (jsonObject == null) {
 				response = new LoansResponse("Invalid Age");
-				response.setData("You are not eligible for Home Loan");
+				response.setData("You are not eligible for Loan Against Property");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response = new LoansResponse("Success");

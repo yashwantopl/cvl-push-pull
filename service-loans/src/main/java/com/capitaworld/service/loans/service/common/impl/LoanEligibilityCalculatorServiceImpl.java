@@ -168,6 +168,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
+				if(min < 0){
+					min = 0d;
+				}
 				resultMap.put(max, min);
 			}
 
@@ -432,6 +435,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
+				if(min < 0){
+					min = 0d;
+				}
 				resultMap.put(max, min);
 			}
 
@@ -471,8 +477,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			switch (type) {
 			case HOME_LOAN:
 			case LAP_LOAN:
+				CommonDocumentUtils.endHook(logger, "calculateTenure");
 				return (60 - age > 30 ? 30 : 60 - age);
 			case PERSONAL_LOAN:
+				CommonDocumentUtils.endHook(logger, "calculateTenure");
 				return (60 - age > 5 ? 5 : 60 - age);
 			default:
 				CommonDocumentUtils.endHook(logger, "calculateTenure");
