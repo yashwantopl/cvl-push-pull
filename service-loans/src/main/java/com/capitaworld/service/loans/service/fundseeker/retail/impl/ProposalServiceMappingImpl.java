@@ -365,7 +365,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						FundproviderType.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 				fundProviderProposalDetails.setFpType("DEBT");
 				
-				fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" - ":master.getName());
+				fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
 
 				// calling DMS for getting fp profile image path
 
@@ -669,7 +669,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 						fundProviderProposalDetails.setFpType("DEBT");
 						
-						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" - ":master.getName());
+						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
 
 						// calling DMS for getting fp profile image path
 
