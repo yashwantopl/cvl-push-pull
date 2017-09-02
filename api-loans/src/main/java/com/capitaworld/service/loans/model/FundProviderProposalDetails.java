@@ -5,6 +5,8 @@ public class FundProviderProposalDetails {
 	
 	private String name;
 	
+	private String fpProductName;
+	
 	private String whoAreYou;
 	
 	private String fpType;
@@ -17,6 +19,14 @@ public class FundProviderProposalDetails {
 
 	
 	
+	public String getFpProductName() {
+		return fpProductName;
+	}
+
+	public void setFpProductName(String fpProductName) {
+		this.fpProductName = fpProductName;
+	}
+
 	public Long getProductId() {
 		return productId;
 	}

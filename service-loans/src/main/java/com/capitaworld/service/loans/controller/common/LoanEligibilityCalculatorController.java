@@ -150,7 +150,8 @@ public class LoanEligibilityCalculatorController {
 			}
 
 			// If Receipt Mode is CASH
-			if (eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.CASH)) {
+			if (CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getReceiptMode())
+					|| eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.CASH)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("You are not eligible for Personal Loan", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -280,9 +281,9 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
-			if(!validRequest){
+			if (!validRequest) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -320,9 +321,9 @@ public class LoanEligibilityCalculatorController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			boolean validRequest = isValidRequest(eligibilityRequest.getPropertyType());
-			if(!validRequest){
+			if (!validRequest) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
