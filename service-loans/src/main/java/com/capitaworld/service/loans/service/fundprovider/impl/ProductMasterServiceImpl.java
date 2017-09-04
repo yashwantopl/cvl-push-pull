@@ -585,7 +585,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						//DashboardProfileResponse  dashboardProfileResponse=dashboardService.getBasicProfileInfo(proposalMappingRequest.getApplicationId(),(Long) object[0], false);
 						ProductMaster productMaster=productMasterRepository.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
-						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
 						chatDetails.setName(productMaster.getFpName());
 					/*	List<LinkedHashMap<String, Object>> detailsResponseList=(List<LinkedHashMap<String, Object>>) corporateUploadService.getProfilePic(proposalMappingRequest.getApplicationId(), getProfilePicKeyByProductId(dashboardProfileResponse.getProductId()), DocumentAlias.UERT_TYPE_APPLICANT).getDataList();
 						if(!CommonUtils.isListNullOrEmpty(detailsResponseList))
