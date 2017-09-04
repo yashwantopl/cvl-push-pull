@@ -4,11 +4,13 @@ import java.util.List;
 
 public class FpProductDetails {
 	
-	List<String> geographicalFocus;
+	private List<String> geographicalFocus;
 	
-	String typeOfInvestment;
+	private String name;
 	
-	Object fpDashboard;
+	private String typeOfInvestment;
+	
+	private Object fpDashboard;
 
 	public List<String> getGeographicalFocus() {
 		return geographicalFocus;
@@ -33,7 +35,16 @@ public class FpProductDetails {
 	public void setFpDashboard(Object fpDashboard) {
 		this.fpDashboard = fpDashboard;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	
+
 	
 
 }
