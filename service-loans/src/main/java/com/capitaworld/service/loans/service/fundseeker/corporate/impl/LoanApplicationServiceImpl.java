@@ -1752,8 +1752,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							loanMstr.getPrimaryFilledCount(), loanMstr.getFinalFilledCount()) / 3);
 					obj.put("loanCode", loanMstr.getApplicationCode());
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
-					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount())
-							? decimalFormat.format(loanMstr.getAmount()) : 0) + " " + currency);
+					obj.put("amount", !CommonUtils.isObjectListNull(loanMstr.getAmount())
+							? decimalFormat.format(loanMstr.getAmount()) : 0);
+					obj.put("currency",currency);
 					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					proposalMappingRequest.setApplicationId(loanMstr.getId());
