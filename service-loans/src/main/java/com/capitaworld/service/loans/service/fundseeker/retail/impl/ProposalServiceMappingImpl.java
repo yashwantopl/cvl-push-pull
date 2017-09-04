@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
+import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -363,6 +364,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setWhoAreYou(
 						FundproviderType.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 				fundProviderProposalDetails.setFpType("DEBT");
+				
+				fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
 
 				// calling DMS for getting fp profile image path
 
@@ -665,6 +668,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setWhoAreYou(FundproviderType
 								.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 						fundProviderProposalDetails.setFpType("DEBT");
+						
+						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
 
 						// calling DMS for getting fp profile image path
 
