@@ -47,64 +47,7 @@ public class ProductMasterController {
 		return "Ping Succeed";
 	}
 
-	/*
-	 * @RequestMapping(value = "/save", method = RequestMethod.POST, consumes =
-	 * MediaType.APPLICATION_JSON_VALUE, produces =
-	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<LoansResponse>
-	 * save(@RequestBody MultipleFpPruductRequest multipleFpPruductRequest,
-	 * HttpServletRequest request, @RequestParam(value = "clientId", required =
-	 * false) Long clientId) { CommonDocumentUtils.startHook(logger, "save");
-	 * try { // request must not be null
-	 * 
-	 * Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-	 * multipleFpPruductRequest.setUserId(userId); if
-	 * (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
-	 * request.getAttribute(CommonUtils.USER_TYPE)) .intValue()) {
-	 * multipleFpPruductRequest.setClientId(clientId); }
-	 * 
-	 * if (userId == null) { logger.warn("userId  can not be empty ==>" +
-	 * userId); CommonDocumentUtils.endHook(logger, "save"); return new
-	 * ResponseEntity<LoansResponse>( new
-	 * LoansResponse(CommonUtils.INVALID_REQUEST,
-	 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); } if
-	 * (multipleFpPruductRequest == null) {
-	 * logger.warn("multipleFpPruductRequest Object can not be empty ==>" +
-	 * multipleFpPruductRequest); CommonDocumentUtils.endHook(logger, "save");
-	 * return new ResponseEntity<LoansResponse>( new
-	 * LoansResponse(CommonUtils.INVALID_REQUEST,
-	 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); } if
-	 * (multipleFpPruductRequest.getDataList() == null) {
-	 * logger.warn("data list can not be empty ==>" + multipleFpPruductRequest);
-	 * CommonDocumentUtils.endHook(logger, "save"); return new
-	 * ResponseEntity<LoansResponse>( new
-	 * LoansResponse("Requested data can not be empty.",
-	 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); } if
-	 * (multipleFpPruductRequest.getFpName() == null ||
-	 * multipleFpPruductRequest.getFpName().length() == 0) {
-	 * logger.warn("fund provider name  can not be empty ==>" +
-	 * multipleFpPruductRequest); CommonDocumentUtils.endHook(logger, "save");
-	 * return new ResponseEntity<LoansResponse>( new
-	 * LoansResponse("Requested data can not be empty.",
-	 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); }
-	 * 
-	 * 
-	 * List<ProductMasterRequest> response =
-	 * productMasterService.saveOrUpdate(multipleFpPruductRequest); if (response
-	 * == null || !response.isEmpty()) { LoansResponse loansResponse = new
-	 * LoansResponse("Data saved.", HttpStatus.OK.value());
-	 * loansResponse.setListData(response); CommonDocumentUtils.endHook(logger,
-	 * "save"); return new ResponseEntity<LoansResponse>(loansResponse,
-	 * HttpStatus.OK); } else { CommonDocumentUtils.endHook(logger, "save");
-	 * return new ResponseEntity<LoansResponse>( new
-	 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-	 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK); } } catch
-	 * (Exception e) {
-	 * logger.error("Error while saving multipleFpPruductRequest Details==>",
-	 * e); e.printStackTrace(); return new ResponseEntity<LoansResponse>( new
-	 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
-	 * HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK); } }
-	 */
-
+	
 	@RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> addProduct(@RequestBody AddProductRequest addProductRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -647,12 +590,12 @@ public class ProductMasterController {
 	
 	@RequestMapping(value = "/getChatListByApplicationId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getChatListByApplicationId(HttpServletRequest request,
-			@RequestBody Long applicationId) {
+			@RequestBody Long mappingId) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getChatListByApplicationId");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getChatListByLoanApplicationId(applicationId));
+			loansResponse.setListData(productMasterService.getChatListByFpMappingId(mappingId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByApplicationId==>", e);

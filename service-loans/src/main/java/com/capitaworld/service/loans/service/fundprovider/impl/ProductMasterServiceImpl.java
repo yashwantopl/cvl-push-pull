@@ -16,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
@@ -133,6 +137,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@Override
 	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest) {
@@ -566,10 +573,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ChatDetails> getChatListByLoanApplicationId(Long applicationId) {
+	public List<ChatDetails> getChatListByFpMappingId(Long mappingId) {
 		// TODO Auto-generated method stub
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
-		mappingRequest.setApplicationId(applicationId);
+		mappingRequest.setApplicationId(mappingId);
 		try {
 			List<LinkedHashMap<String, Object>> mappingRequestList = (List<LinkedHashMap<String, Object>>) proposalDetailsClient
 					.getFundSeekerChatList(mappingRequest).getDataList();
@@ -580,33 +587,38 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						ChatDetails chatDetails = new ChatDetails();
 						ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
 								(LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
-						// Object[]
-						// object=getApplicationDetailsById(proposalMappingRequest.getApplicationId());
-						// DashboardProfileResponse
-						// dashboardProfileResponse=dashboardService.getBasicProfileInfo(proposalMappingRequest.getApplicationId(),(Long)
-						// object[0], false);
+						
 						ProductMaster productMaster = productMasterRepository
 								.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
 						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
 						chatDetails.setName(productMaster.getFpName());
-						/*
-						 * List<LinkedHashMap<String, Object>>
-						 * detailsResponseList=(List<LinkedHashMap<String,
-						 * Object>>) corporateUploadService.getProfilePic(
-						 * proposalMappingRequest.getApplicationId(),
-						 * getProfilePicKeyByProductId(dashboardProfileResponse.
-						 * getProductId()),
-						 * DocumentAlias.UERT_TYPE_APPLICANT).getDataList();
-						 * if(!CommonUtils.isListNullOrEmpty(detailsResponseList
-						 * )) { StorageDetailsResponse
-						 * storageDetailsResponse=MultipleJSONObjectHelper.
-						 * getObjectFromMap((LinkedHashMap<String, Object>)
-						 * detailsResponseList.get(0),
-						 * StorageDetailsResponse.class);
-						 * chatDetails.setProfile(storageDetailsResponse.
-						 * getFilePath()); }
-						 */
+			
+						//set profile pic
+						 DocumentRequest documentRequest = new DocumentRequest();
+						 documentRequest.setUserType(DocumentAlias.UERT_TYPE_USER);
+						 documentRequest.setUserId(productMaster.getUserId());
+						 documentRequest.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
+						  try {
+						        DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+						        if(!CommonUtils.isObjectNullOrEmpty(documentResponse))
+						        {
+						        	if(!CommonUtils.isListNullOrEmpty(documentResponse.getDataList()))
+						        	{
+						        		StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap(
+												(LinkedHashMap<String, Object>) documentResponse.getDataList().get(0),
+												StorageDetailsResponse.class);
+						        		if(!CommonUtils.isObjectNullOrEmpty(storageDetailsResponse))
+						        		{
+						        			chatDetails.setProfile(storageDetailsResponse.getFilePath());
+						        		}
+						        	}
+						        }
+						    } catch (DocumentException e) {
+						        e.printStackTrace();
+						        throw new DocumentException(e.getMessage());
+						    	}
+						
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
