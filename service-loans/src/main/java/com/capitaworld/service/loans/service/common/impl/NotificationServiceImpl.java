@@ -106,8 +106,6 @@ public class NotificationServiceImpl implements NotificationService{
 					e.printStackTrace();
 					parameters.put("fs_name", "NA");
 				}
-				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,
-						notificationId, parameters, applicationId, fpProductId));
 				try {
 					Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
 					if(o!=null)
