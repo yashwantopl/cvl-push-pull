@@ -65,6 +65,6 @@ public interface LoanApplicationService {
 	
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 	
-	public List<ChatDetails> getChatListByFpMappingId(Long fpMappingId);
+	public List<ChatDetails> getChatListByApplicationId(Long fpMappingId);
 	
 }
