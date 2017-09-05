@@ -818,12 +818,12 @@ public class LoanApplicationController {
 
 	@RequestMapping(value = "/getChatListByFpMappingId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getChatListByFpMappingId(HttpServletRequest request,
-			@RequestBody Long fpMappingId) {
+			@RequestBody Long applicationId) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getChatListByFpMappingId");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getChatListByFpMappingId(fpMappingId));
+			loansResponse.setListData(loanApplicationService.getChatListByApplicationId(applicationId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByFpMappingId==>", e);
