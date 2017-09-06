@@ -1,5 +1,17 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -20,20 +32,21 @@ import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryVi
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.CarPurchaseType;
+import com.capitaworld.service.oneform.enums.CarType;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 @Service
 @Transactional
@@ -288,6 +301,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         try {
             PrimaryCarLoanDetailRequest primaryCarLoanDetailRequest = primaryCarLoanService.get(toApplicationId, userId);
             BeanUtils.copyProperties(primaryCarLoanDetailRequest, carLoanResponse);
+            if(!CommonUtils.isObjectNullOrEmpty(primaryCarLoanDetailRequest.getCertifiedDealer()) && primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue()){
+                carLoanResponse.setCertifiedDealer(primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue() ? "Yes" : "No");
+             }
             carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
             carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
             carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
