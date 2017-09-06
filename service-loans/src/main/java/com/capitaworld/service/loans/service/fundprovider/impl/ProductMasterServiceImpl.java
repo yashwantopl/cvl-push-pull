@@ -142,10 +142,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private DMSClient dmsClient;
 
 	@Override
-	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest) {
+	public Boolean saveOrUpdate(AddProductRequest addProductRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 
-		List<ProductMasterRequest> masterRequests = new ArrayList<>();
 		List<ProductMaster> masters = new ArrayList<>();
 		try {
 
@@ -197,9 +196,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
 				productMasterRepository.save(productMaster);
+				return true;
 			}
 
-			masters = productMasterRepository
+			/*masters = productMasterRepository
 					.getUserProductListByProduct(
 							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 									? addProductRequest.getUserId() : addProductRequest.getClientId()),
@@ -211,16 +211,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(master, masterRequest);
 					masterRequests.add(masterRequest);
 				}
-			}
+			}*/
 			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
-			return masterRequests;
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("error while saveOrUpdate", e);
-			return null;
+			return false;
 		}
+		return false;
 	}
 
 	@Override
