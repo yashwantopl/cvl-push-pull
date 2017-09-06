@@ -42,7 +42,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
 
-	@Query(value="select user_id, fp_name from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
+	@Query(value="select user_id, fp_name,name from fp_product_master pm where pm.fp_product_id=:productId", nativeQuery=true)
 	public List<Object[]> findById(@Param("productId") Long fpProductId);
 	
 	@Query("select count(id) from ProductMaster pm where pm.id=:productId and pm.isParameterFilled=1 and pm.isActive = true")
