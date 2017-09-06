@@ -51,7 +51,7 @@ public interface ProductMasterService {
 	
 	public ProductMasterRequest lastAccessedProduct(Long userId);
 	
-	public List<ChatDetails> getChatListByLoanApplicationId(Long applicationId);
+	public List<ChatDetails> getChatListByFpMappingId(Long applicationId);
 
 	
 }

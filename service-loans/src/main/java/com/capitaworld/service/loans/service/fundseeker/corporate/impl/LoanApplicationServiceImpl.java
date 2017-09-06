@@ -1974,10 +1974,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<ChatDetails> getChatListByFpMappingId(Long fpMappingId) {
+	public List<ChatDetails> getChatListByApplicationId(Long applicationId) {
 		// TODO Auto-generated method stub
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
-		mappingRequest.setFpProductId(fpMappingId);
+		mappingRequest.setFpProductId(applicationId);
 		try {
 			List<LinkedHashMap<String, Object>> mappingRequestList = (List<LinkedHashMap<String, Object>>) proposalDetailsClient
 					.getFundProviderChatList(mappingRequest).getDataList();
