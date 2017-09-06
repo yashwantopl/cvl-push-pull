@@ -16,6 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
@@ -130,11 +134,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private LapLoanParameterService lapLoanParameterService;
+
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 	
 	@Autowired
-	private ProposalDetailsClient proposalDetailsClient ;
-	
-
+	private DMSClient dmsClient;
 
 	@Override
 	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest) {
@@ -147,8 +152,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
 				productMasterRepository.changeProductName(
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-								? addProductRequest.getUserId() : addProductRequest.getClientId()),addProductRequest.getProductMappingId(),
-						addProductRequest.getName());
+								? addProductRequest.getUserId() : addProductRequest.getClientId()),
+						addProductRequest.getProductMappingId(), addProductRequest.getName());
 			} else {
 				ProductMaster productMaster = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
@@ -303,17 +308,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		UserResponse usrResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
 		ProductDetailsResponse productDetailsResponse = new ProductDetailsResponse();
-		if(usrResponse != null && usrResponse.getStatus() == 200){
+		if (usrResponse != null && usrResponse.getStatus() == 200) {
 			Long fpMappingId = usrResponse.getId();
-			if(fpMappingId != null){
+			if (fpMappingId != null) {
 				ProductMaster userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
 				productDetailsResponse.setProductId(userProduct.getProductId());
 				productDetailsResponse.setProductMappingId(fpMappingId);
 				productDetailsResponse.setMessage("Proposal Details Sent");
 				productDetailsResponse.setStatus(HttpStatus.OK.value());
-			}else{
+			} else {
 				List<ProductMaster> userProductList = productMasterRepository.getUserProductList(userId);
-				if(!CommonUtils.isListNullOrEmpty(userProductList)){
+				if (!CommonUtils.isListNullOrEmpty(userProductList)) {
 					ProductMaster productMaster = userProductList.get(0);
 					productDetailsResponse.setProductId(productMaster.getProductId());
 					productDetailsResponse.setProductMappingId(productMaster.getId());
@@ -322,16 +327,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					UsersRequest req = new UsersRequest();
 					req.setId(productMaster.getId());
 					usersClient.setLastAccessApplicant(req);
-				}else{
+				} else {
 					productDetailsResponse.setMessage("Something went wrong");
-					productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());					
+					productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 				}
 			}
-		}else{
+		} else {
 			productDetailsResponse.setMessage("Something went wrong");
 			productDetailsResponse.setStatus(HttpStatus.BAD_REQUEST.value());
 		}
-		
+
 		return productDetailsResponse;
 	}
 
@@ -342,6 +347,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
 		LoanType loanType = LoanType.getById(productMaster.getProductId());
 		FpProductDetails fpProductDetails = new FpProductDetails();
+		if (!CommonUtils.isObjectNullOrEmpty(productMaster.getName())) {
+			fpProductDetails.setName(productMaster.getName());
+		}
 		switch (loanType) {
 		case WORKING_CAPITAL:
 			productMaster = workingCapitalParameterRepository.findOne(productMappingId);
@@ -528,24 +536,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
 				if (retailProduct.getProductId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
-					CarLoanParameterRequest carLoanParameterRequest= new CarLoanParameterRequest();
+					CarLoanParameterRequest carLoanParameterRequest = new CarLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, carLoanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveRetail");
 					return carLoanParameterService.saveOrUpdate(carLoanParameterRequest);
 				} else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
-					HomeLoanParameterRequest homeLoanParameterRequest= new HomeLoanParameterRequest();
+					HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveRetail");
 					return homeLoanParameterService.saveOrUpdate(homeLoanParameterRequest);
-				}
-				else if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
-					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
+				} else if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+					PersonalLoanParameterRequest personalLoanParameterRequest = new PersonalLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveRetail");
 					return personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest);
-				}
-				else if (retailProduct.getProductId() == CommonUtils.LoanType.LAP_LOAN.getValue()) {
-					LapParameterRequest lapParameterRequest= new LapParameterRequest();
+				} else if (retailProduct.getProductId() == CommonUtils.LoanType.LAP_LOAN.getValue()) {
+					LapParameterRequest lapParameterRequest = new LapParameterRequest();
 					BeanUtils.copyProperties(retailProduct, lapParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveRetail");
 					return lapLoanParameterService.saveOrUpdate(lapParameterRequest);
@@ -560,39 +566,59 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public ProductMasterRequest lastAccessedProduct(Long userId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "lastAccessedProduct");
-		ProductMasterRequest productMasterRequest=new ProductMasterRequest();
+		ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 		BeanUtils.copyProperties(productMasterRepository.getLastAccessedProduct(userId), productMasterRequest);
 		CommonDocumentUtils.endHook(logger, "lastAccessedProduct");
-		return  productMasterRequest;
+		return productMasterRequest;
 	}
 
 	@Override
-	public List<ChatDetails> getChatListByLoanApplicationId(Long applicationId) {
+	public List<ChatDetails> getChatListByFpMappingId(Long mappingId) {
 		// TODO Auto-generated method stub
-		ProposalMappingRequest mappingRequest=new ProposalMappingRequest();
-		mappingRequest.setApplicationId(applicationId);
+		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
+		mappingRequest.setApplicationId(mappingId);
 		try {
-			List<LinkedHashMap<String, Object>> mappingRequestList=(List<LinkedHashMap<String, Object>>) proposalDetailsClient.getFundSeekerChatList(mappingRequest).getDataList();
-			if(!CommonUtils.isListNullOrEmpty(mappingRequestList))
-			{
-				List<ChatDetails> chatDetailList=new ArrayList<ChatDetails>(mappingRequestList.size());
-				for(LinkedHashMap<String, Object> linkedHashMap:mappingRequestList)
-				{
+			List<LinkedHashMap<String, Object>> mappingRequestList = (List<LinkedHashMap<String, Object>>) proposalDetailsClient
+					.getFundSeekerChatList(mappingRequest).getDataList();
+			if (!CommonUtils.isListNullOrEmpty(mappingRequestList)) {
+				List<ChatDetails> chatDetailList = new ArrayList<ChatDetails>(mappingRequestList.size());
+				for (LinkedHashMap<String, Object> linkedHashMap : mappingRequestList) {
 					try {
-						ChatDetails chatDetails=new ChatDetails();
-						ProposalMappingRequest proposalMappingRequest=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
-						//Object[] object=getApplicationDetailsById(proposalMappingRequest.getApplicationId());
-						//DashboardProfileResponse  dashboardProfileResponse=dashboardService.getBasicProfileInfo(proposalMappingRequest.getApplicationId(),(Long) object[0], false);
-						ProductMaster productMaster=productMasterRepository.findOne(proposalMappingRequest.getFpProductId());
+						ChatDetails chatDetails = new ChatDetails();
+						ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
+						
+						ProductMaster productMaster = productMasterRepository
+								.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
-						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
 						chatDetails.setName(productMaster.getFpName());
-					/*	List<LinkedHashMap<String, Object>> detailsResponseList=(List<LinkedHashMap<String, Object>>) corporateUploadService.getProfilePic(proposalMappingRequest.getApplicationId(), getProfilePicKeyByProductId(dashboardProfileResponse.getProductId()), DocumentAlias.UERT_TYPE_APPLICANT).getDataList();
-						if(!CommonUtils.isListNullOrEmpty(detailsResponseList))
-						{
-							StorageDetailsResponse storageDetailsResponse=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) detailsResponseList.get(0), StorageDetailsResponse.class);
-							chatDetails.setProfile(storageDetailsResponse.getFilePath());
-						}*/
+			
+						//set profile pic
+						 DocumentRequest documentRequest = new DocumentRequest();
+						 documentRequest.setUserType(DocumentAlias.UERT_TYPE_USER);
+						 documentRequest.setUserId(productMaster.getUserId());
+						 documentRequest.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
+						  try {
+						        DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+						        if(!CommonUtils.isObjectNullOrEmpty(documentResponse))
+						        {
+						        	if(!CommonUtils.isListNullOrEmpty(documentResponse.getDataList()))
+						        	{
+						        		StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap(
+												(LinkedHashMap<String, Object>) documentResponse.getDataList().get(0),
+												StorageDetailsResponse.class);
+						        		if(!CommonUtils.isObjectNullOrEmpty(storageDetailsResponse))
+						        		{
+						        			chatDetails.setProfile(storageDetailsResponse.getFilePath());
+						        		}
+						        	}
+						        }
+						    } catch (DocumentException e) {
+						        e.printStackTrace();
+						        throw new DocumentException(e.getMessage());
+						    	}
+						
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block

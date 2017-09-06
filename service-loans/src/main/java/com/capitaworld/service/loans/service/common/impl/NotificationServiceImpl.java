@@ -106,10 +106,8 @@ public class NotificationServiceImpl implements NotificationService{
 					e.printStackTrace();
 					parameters.put("fs_name", "NA");
 				}
-				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,
-						notificationId, parameters, applicationId, fpProductId));
+				Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
 				try {
-					Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
 					if(o!=null)
 						parameters.put("fp_name",o[1].toString());
 					else
@@ -120,6 +118,15 @@ public class NotificationServiceImpl implements NotificationService{
 					// TODO: handle exception
 					e.printStackTrace(); 
 					parameters.put("fp_name", "NA");
+				}
+				try {
+					if(o!=null)
+						parameters.put("fp_pname", o[2].toString());
+					else
+						parameters.put("fp_pname", "NA");
+				} catch (Exception e) {
+					// TODO: handle exception
+					parameters.put("fp_pname", "NA");
 				}
 				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId));
 			try {
