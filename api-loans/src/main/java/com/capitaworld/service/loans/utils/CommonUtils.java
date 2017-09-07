@@ -113,7 +113,7 @@ public class CommonUtils {
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
-				"alliedActivityId", "userId" };
+				"alliedActivityId", "userId", "nameAsPerAadharCard" };
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",

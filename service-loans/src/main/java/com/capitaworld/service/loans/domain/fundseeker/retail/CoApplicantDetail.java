@@ -32,6 +32,9 @@ public class CoApplicantDetail implements Serializable {
 
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
+	
+	@Column(name = "name_as_per_aadharCard")
+	private String nameAsPerAadharCard;
 
 	@Column(name = "address_city")
 	private Integer addressCity;
@@ -343,6 +346,14 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
+	}
+	
+	public String getNameAsPerAadharCard() {
+		return nameAsPerAadharCard;
+	}
+
+	public void setNameAsPerAadharCard(String nameAsPerAadharCard) {
+		this.nameAsPerAadharCard = nameAsPerAadharCard;
 	}
 
 	public Integer getAddressCity() {
