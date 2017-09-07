@@ -16,6 +16,7 @@ public class GuarantorRequest {
 	private Integer occupationId;
 	private String pan;
 	private String aadharNumber;
+	private String nameAsPerAadharCard;
 	private Double monthlyIncome;
 	private Integer currencyId;
 	private Address firstAddress;
@@ -138,6 +139,14 @@ public class GuarantorRequest {
 
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
+	}
+	
+	public String getNameAsPerAadharCard() {
+		return nameAsPerAadharCard;
+	}
+
+	public void setNameAsPerAadharCard(String nameAsPerAadharCard) {
+		this.nameAsPerAadharCard = nameAsPerAadharCard;
 	}
 
 	public Double getMonthlyIncome() {
