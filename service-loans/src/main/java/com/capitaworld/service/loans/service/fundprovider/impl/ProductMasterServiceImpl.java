@@ -594,7 +594,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						ProductMaster productMaster = productMasterRepository
 								.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
-						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
 						chatDetails.setName(productMaster.getFpName());
 			
 						//set profile pic
