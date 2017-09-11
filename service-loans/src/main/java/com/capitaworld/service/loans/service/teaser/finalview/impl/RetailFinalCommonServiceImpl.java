@@ -190,6 +190,9 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			finalViewCommonResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
 
 			List<FixedDepositsDetailsRequest> depositsDetailsRequestList = fixedDepositService.getFixedDepositsDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
+			
+			
+			
 			finalViewCommonResponse.setFixedDepositsDetailsRequest(depositsDetailsRequestList);
 
 			List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetailRequestList = otherCurrentAssetService.getOtherCurrentAssetDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);

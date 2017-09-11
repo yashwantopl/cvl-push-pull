@@ -65,7 +65,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer maxAgeEstablishment;
 
-	private BigDecimal maxCollateral;
+	private Integer maxCollateral;
 
 	private BigDecimal maxDebtEquity;
 
@@ -79,7 +79,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer minAgeEstablishment;
 
-	private BigDecimal minCollateral;
+	private Integer minCollateral;
 
 	private BigDecimal minDebtEquity;
 
@@ -91,7 +91,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Integer minTenure;
 
-	private String profitabilityHistory;
+	private Integer profitabilityHistory;
 
 	private Integer shortTermCreditRating;
 
@@ -318,22 +318,6 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public BigDecimal getMaxCollateral() {
-		return maxCollateral;
-	}
-
-	public void setMaxCollateral(BigDecimal maxCollateral) {
-		this.maxCollateral = maxCollateral;
-	}
-
-	public BigDecimal getMaxDebtEquity() {
-		return maxDebtEquity;
-	}
-
-	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
-		this.maxDebtEquity = maxDebtEquity;
-	}
-
 	public BigDecimal getMaxInvestSize() {
 		return maxInvestSize;
 	}
@@ -363,7 +347,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public void setMaxTenure(Integer maxTenure) {
-		 this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
+		this.maxTenure = (maxTenure != null ? maxTenure * 12 : null);
 	}
 
 	public Integer getMinAgeEstablishment() {
@@ -374,12 +358,37 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
 
-	public BigDecimal getMinCollateral() {
+	public BigDecimal getMinInvestSize() {
+		return minInvestSize;
+	}
+
+	
+	public Integer getMaxCollateral() {
+		return maxCollateral;
+	}
+
+	public void setMaxCollateral(Integer maxCollateral) {
+		this.maxCollateral = maxCollateral;
+	}
+
+	
+
+	public Integer getMinCollateral() {
 		return minCollateral;
 	}
 
-	public void setMinCollateral(BigDecimal minCollateral) {
+	public void setMinCollateral(Integer minCollateral) {
 		this.minCollateral = minCollateral;
+	}
+
+	
+
+	public BigDecimal getMaxDebtEquity() {
+		return maxDebtEquity;
+	}
+
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
+		this.maxDebtEquity = maxDebtEquity;
 	}
 
 	public BigDecimal getMinDebtEquity() {
@@ -388,10 +397,6 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
-	}
-
-	public BigDecimal getMinInvestSize() {
-		return minInvestSize;
 	}
 
 	public void setMinInvestSize(BigDecimal minInvestSize) {
@@ -419,14 +424,14 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	}
 
 	public void setMinTenure(Integer minTenure) {
-		 this.minTenure = (minTenure != null ? minTenure * 12 : null);
+		this.minTenure = (minTenure != null ? minTenure * 12 : null);
 	}
 
-	public String getProfitabilityHistory() {
+	public Integer getProfitabilityHistory() {
 		return profitabilityHistory;
 	}
 
-	public void setProfitabilityHistory(String profitabilityHistory) {
+	public void setProfitabilityHistory(Integer profitabilityHistory) {
 		this.profitabilityHistory = profitabilityHistory;
 	}
 
@@ -486,5 +491,4 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.cityList = cityList;
 	}
 
-	
 }

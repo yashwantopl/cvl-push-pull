@@ -30,6 +30,8 @@ public class FixedDepositsDetailsRequest implements Serializable {
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date maturityDate;
+	
+	private String maturityDateInString;
 
 	private Double rate;
 
@@ -89,5 +91,14 @@ public class FixedDepositsDetailsRequest implements Serializable {
 		this.rate = rate;
 	}
 
+	public String getMaturityDateInString() {
+		return maturityDateInString;
+	}
+
+	public void setMaturityDateInString(String maturityDateInString) {
+		this.maturityDateInString = maturityDateInString;
+	}
+
+	
 
 }

@@ -83,7 +83,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getCompanyName())) {
 							profileViewHLResponse.setCompanyName(applicantDetail.getCompanyName());
 						} else {
-							profileViewHLResponse.setCompanyName("NA");
+							profileViewHLResponse.setCompanyName("-");
 						}
 						if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEmployedWithId())) {
 							if (applicantDetail.getEmployedWithId() == 8) {
@@ -93,7 +93,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 										EmployeeWith.getById(applicantDetail.getEmployedWithId()).getValue());
 							}
 						} else {
-							profileViewHLResponse.setEmployeeWith("NA");
+							profileViewHLResponse.setEmployeeWith("-");
 						}
 					} else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
 						profileViewHLResponse.setNatureOfOccupation(
@@ -101,7 +101,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEntityName())) {
 							profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
 						} else {
-							profileViewHLResponse.setEntityName("NA");
+							profileViewHLResponse.setEntityName("-");
 						}
 						if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getIndustryTypeId())) {
 							if (applicantDetail.getIndustryTypeId() == 16) {
@@ -111,7 +111,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 										IndustryType.getById(applicantDetail.getIndustryTypeId()).getValue());
 							}
 						} else {
-							profileViewHLResponse.setIndustryType("NA");
+							profileViewHLResponse.setIndustryType("-");
 						}
 					} else if (applicantDetail.getOccupationId() == 5) {
 						profileViewHLResponse.setNatureOfOccupation(
@@ -124,7 +124,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 										Occupation.getById(applicantDetail.getSelfEmployedOccupationId()).getValue());
 							}
 						} else {
-							profileViewHLResponse.setOccupation("NA");
+							profileViewHLResponse.setOccupation("-");
 						}
 					} else if (applicantDetail.getOccupationId() == 6) {
 						profileViewHLResponse.setNatureOfOccupation(
@@ -133,20 +133,20 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							profileViewHLResponse
 									.setLandSize(LandSize.getById(applicantDetail.getLandSize().intValue()).getValue());
 						} else {
-							profileViewHLResponse.setLandSize("NA");
+							profileViewHLResponse.setLandSize("-");
 						}
 						if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getAlliedActivityId())) {
 							profileViewHLResponse.setAlliedActivity(
 									AlliedActivity.getById(applicantDetail.getAlliedActivityId()).getValue());
 						} else {
-							profileViewHLResponse.setAlliedActivity("NA");
+							profileViewHLResponse.setAlliedActivity("-");
 						}
 					} else if (applicantDetail.getOccupationId() == 7) {
 						profileViewHLResponse.setNatureOfOccupation(
 								OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
 					}
 				} else {
-					profileViewHLResponse.setNatureOfOccupation("NA");
+					profileViewHLResponse.setNatureOfOccupation("-");
 				}
 				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName())
 						? applicantDetail.getFirstName() : null));
@@ -155,9 +155,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName())
 						? applicantDetail.getLastName() : null));
 				profileViewHLResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())
-						? Gender.getById(applicantDetail.getGenderId()).getValue() : "NA"));
+						? Gender.getById(applicantDetail.getGenderId()).getValue() : "-"));
 				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())
-						? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "NA"));
+						? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "-"));
 				profileViewHLResponse.setMonthlyIncome(
 						(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
 								? String.format("%.2f", applicantDetail.getMonthlyIncome()) : "0"));
@@ -175,10 +175,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtils.isObjectNullOrEmpty(data)) {
 							officeAddress.setCity(data.getValue());
 						} else {
-							officeAddress.setCity("NA");
+							officeAddress.setCity("-");
 						}
 					} else {
-						officeAddress.setCity("NA");
+						officeAddress.setCity("-");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -196,10 +196,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())) {
 							officeAddress.setCountry(dataCountry.getValue());
 						} else {
-							officeAddress.setCountry("NA");
+							officeAddress.setCountry("-");
 						}
 					} else {
-						officeAddress.setCountry("NA");
+						officeAddress.setCountry("-");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -218,10 +218,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtil.isObjectNullOrEmpty(dataState)) {
 							officeAddress.setState(dataState.getValue());
 						} else {
-							officeAddress.setState("NA");
+							officeAddress.setState("-");
 						}
 					} else {
-						officeAddress.setState("NA");
+						officeAddress.setState("-");
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -246,10 +246,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtils.isObjectNullOrEmpty(dataCity)) {
 							permanentAddress.setCity(dataCity.getValue());
 						} else {
-							permanentAddress.setCity("NA");
+							permanentAddress.setCity("-");
 						}
 					} else {
-						permanentAddress.setCity("NA");
+						permanentAddress.setCity("-");
 					}
 				} catch (Exception e) {
 
@@ -267,10 +267,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtils.isObjectNullOrEmpty(dataCountry)) {
 							permanentAddress.setCountry(dataCountry.getValue());
 						} else {
-							permanentAddress.setCountry("NA");
+							permanentAddress.setCountry("-");
 						}
 					} else {
-						permanentAddress.setCountry("NA");
+						permanentAddress.setCountry("-");
 					}
 				} catch (Exception e) {
 
@@ -288,10 +288,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						if (!CommonUtils.isObjectNullOrEmpty(dataState)) {
 							permanentAddress.setState(dataState.getValue());
 						} else {
-							permanentAddress.setCountry("NA");
+							permanentAddress.setCountry("-");
 						}
 					} else {
-						permanentAddress.setCountry("NA");
+						permanentAddress.setCountry("-");
 					}
 				} catch (Exception e) {
 
@@ -307,7 +307,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null
-						? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "NA");
+						? Currency.getById(applicantDetail.getCurrencyId()).getValue() : "-");
 
 				profileViewHLResponse.setEntityName(applicantDetail.getEntityName());
 
@@ -355,49 +355,49 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				homeLoanResponse.setPropertyType(PropertySubType.getById(loanDetail.getPropertyType()).getValue());
 				homeLoanResponse.setPropertyUsedTypeId(loanDetail.getPropertyType().toString());
 				if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 3) {
-					homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "NA");
+					homeLoanResponse.setPropertyUsedType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) ? PropertyUsedType.getById(loanDetail.getPropertyUsedType()).getValue() : "-");
 					if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsedType()) && loanDetail.getPropertyUsedType() == 3) {
-						homeLoanResponse.setConstructionCompleted(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsConstructionCompleted()) ? Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue() : "NA");
+						homeLoanResponse.setConstructionCompleted(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsConstructionCompleted()) ? Options.getById((loanDetail.getIsConstructionCompleted() ? 1 : 0)).getValue() : "-");
 						if (!loanDetail.getIsConstructionCompleted()) {
-							homeLoanResponse.setConstructionCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "NA");
-							homeLoanResponse.setConstructionCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "NA");
+							homeLoanResponse.setConstructionCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "-");
+							homeLoanResponse.setConstructionCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "-");
 						}
 					}
 					homeLoanResponse.setProjectName(loanDetail.getProjectName());
 					homeLoanResponse.setProjectCity(loanDetail.getProjectCity());
-					homeLoanResponse.setArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getArea()) ? loanDetail.getArea().toString() : "NA");
+					homeLoanResponse.setArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getArea()) ? loanDetail.getArea().toString() : "-");
 					homeLoanResponse.setPropertyPrice(loanDetail.getPropertyPrice().toString());
 				} else if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 4) {
-					homeLoanResponse.setBunglowCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBunglowCost()) ? loanDetail.getBunglowCost().toString() : "NA");
-					homeLoanResponse.setConstructionCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCost()) ? loanDetail.getConstructionCost().toString() : "NA");
-					homeLoanResponse.setCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "NA");
-					homeLoanResponse.setCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "NA");
+					homeLoanResponse.setBunglowCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getBunglowCost()) ? loanDetail.getBunglowCost().toString() : "-");
+					homeLoanResponse.setConstructionCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCost()) ? loanDetail.getConstructionCost().toString() : "-");
+					homeLoanResponse.setCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInMonth()) ? loanDetail.getConstructionCompletionTimeInMonth().toString() : "-");
+					homeLoanResponse.setCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getConstructionCompletionTimeInYear()) ? loanDetail.getConstructionCompletionTimeInYear().toString() : "-");
 				} else if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 5) {
-					homeLoanResponse.setRenovationType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) ? RepairType.getById(loanDetail.getRenovationType()).getValue() : "NA");
+					homeLoanResponse.setRenovationType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) ? RepairType.getById(loanDetail.getRenovationType()).getValue() : "-");
 					if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationType()) && loanDetail.getRenovationType() == 8) {
 						homeLoanResponse.setRenovationTypeOther(loanDetail.getOtherRenovationType());
 					}
 					homeLoanResponse.setRenovationCost(loanDetail.getRenovationCost().toString());
-					homeLoanResponse.setRenovationCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInMonth()) ? loanDetail.getRenovationCompletionTimeInMonth().toString() : "NA");
-					homeLoanResponse.setRenovationCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInYear()) ? loanDetail.getRenovationCompletionTimeInYear().toString() : "NA");
+					homeLoanResponse.setRenovationCompletionTimeInMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInMonth()) ? loanDetail.getRenovationCompletionTimeInMonth().toString() : "-");
+					homeLoanResponse.setRenovationCompletionTimeInYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRenovationCompletionTimeInYear()) ? loanDetail.getRenovationCompletionTimeInYear().toString() : "-");
 					if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken())) {
 						if (loanDetail.getIsLoanTaken()) {
-							homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
-							homeLoanResponse.setDateOfLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDateOfLoanTaken()) ? CommonUtils.getStringDateFromDate(loanDetail.getDateOfLoanTaken()) : "NA");
+							homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "-");
+							homeLoanResponse.setDateOfLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDateOfLoanTaken()) ? CommonUtils.getStringDateFromDate(loanDetail.getDateOfLoanTaken()) : "-");
 						} else {
-							homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "NA");
+							homeLoanResponse.setLoanTaken(!CommonUtils.isObjectNullOrEmpty(loanDetail.getIsLoanTaken()) ? Options.getById(loanDetail.getIsLoanTaken() ? 1 : 0).getValue() : "-");
 						}
 					}
 
 				} else if (!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyType()) && loanDetail.getPropertyType() == 6) {
-					homeLoanResponse.setLandPlotCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandPlotCost()) ? loanDetail.getLandPlotCost().toString() : "NA");
-					homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "NA");
+					homeLoanResponse.setLandPlotCost(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandPlotCost()) ? loanDetail.getLandPlotCost().toString() : "-");
+					homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "-");
 				}
 			}
 
-			homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ? loanDetail.getDownPayment().toString() : "NA");
-			homeLoanResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "NA");
-			homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "NA");
+			homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ? loanDetail.getDownPayment().toString() : "-");
+			homeLoanResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ? loanDetail.getAmount().toString() : "-");
+			homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "-");
 		}
 		homeLoanResponse.setLoanType(LoanType.getById(applicationMaster.getProductId()).getValue());
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);

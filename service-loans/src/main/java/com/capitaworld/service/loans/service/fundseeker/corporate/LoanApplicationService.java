@@ -1,12 +1,15 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 
@@ -60,5 +63,8 @@ public interface LoanApplicationService {
 	
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
 	
-
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
+	
+	public List<ChatDetails> getChatListByApplicationId(Long fpMappingId);
+	
 }

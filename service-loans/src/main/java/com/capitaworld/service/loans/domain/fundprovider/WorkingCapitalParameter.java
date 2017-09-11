@@ -110,7 +110,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer maxAgeEstablishment;
 
 	@Column(name="max_collateral")
-	private BigDecimal maxCollateral;
+	private Integer maxCollateral;
 
 	@Column(name="max_debt_equity")
 	private BigDecimal maxDebtEquity;
@@ -131,7 +131,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Integer minAgeEstablishment;
 
 	@Column(name="min_collateral")
-	private BigDecimal minCollateral;
+	private Integer minCollateral;
 
 	@Column(name="min_debt_equity")
 	private BigDecimal minDebtEquity;
@@ -156,7 +156,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	private Date modifiedDate;
 
 	@Column(name="profitability_history")
-	private String profitabilityHistory;
+	private Integer profitabilityHistory;
 
 	@Column(name="short_term_credit_rating")
 	private Integer shortTermCreditRating;
@@ -407,21 +407,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public BigDecimal getMaxCollateral() {
-		return this.maxCollateral;
-	}
 
-	public void setMaxCollateral(BigDecimal maxCollateral) {
-		this.maxCollateral = maxCollateral;
-	}
-
-	public BigDecimal getMaxDebtEquity() {
-		return this.maxDebtEquity;
-	}
-
-	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
-		this.maxDebtEquity = maxDebtEquity;
-	}
 
 	public BigDecimal getMaxInvestSize() {
 		return this.maxInvestSize;
@@ -463,16 +449,36 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
 
-	public BigDecimal getMinCollateral() {
-		return this.minCollateral;
+
+	public Integer getMaxCollateral() {
+		return maxCollateral;
 	}
 
-	public void setMinCollateral(BigDecimal minCollateral) {
+	public void setMaxCollateral(Integer maxCollateral) {
+		this.maxCollateral = maxCollateral;
+	}
+
+	
+
+	public Integer getMinCollateral() {
+		return minCollateral;
+	}
+
+	public void setMinCollateral(Integer minCollateral) {
 		this.minCollateral = minCollateral;
 	}
 
+	
+	public BigDecimal getMaxDebtEquity() {
+		return maxDebtEquity;
+	}
+
+	public void setMaxDebtEquity(BigDecimal maxDebtEquity) {
+		this.maxDebtEquity = maxDebtEquity;
+	}
+
 	public BigDecimal getMinDebtEquity() {
-		return this.minDebtEquity;
+		return minDebtEquity;
 	}
 
 	public void setMinDebtEquity(BigDecimal minDebtEquity) {
@@ -527,11 +533,11 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.modifiedDate = modifiedDate;
 	}
 
-	public String getProfitabilityHistory() {
-		return this.profitabilityHistory;
+	public Integer getProfitabilityHistory() {
+		return profitabilityHistory;
 	}
 
-	public void setProfitabilityHistory(String profitabilityHistory) {
+	public void setProfitabilityHistory(Integer profitabilityHistory) {
 		this.profitabilityHistory = profitabilityHistory;
 	}
 

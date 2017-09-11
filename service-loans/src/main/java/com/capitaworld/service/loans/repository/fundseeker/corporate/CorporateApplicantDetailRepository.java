@@ -19,6 +19,11 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	public CorporateApplicantDetail getByApplicationAndUserIdForSP(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 	
+	@Query("select cr.organisationName,cr.modifiedDate from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	public List<Object[]> getByNameAndLastUpdateDate(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
+	
+	
 	public CorporateApplicantDetail findOneByApplicationIdId(Long applicationId);
 
 	
@@ -35,5 +40,9 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 
 	@Query("select count(cr.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public long getApplicantCount(@Param("userId") Long userId,
+			@Param("applicationId") Long applicationId);
+	
+	@Query("select cr.establishmentYear from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	public Integer getApplicantEstablishmentYear(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
 }

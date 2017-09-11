@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.LogDetailsModel;
 
 public class LoansClient {
 	
@@ -30,6 +31,11 @@ public class LoansClient {
 	private static final String USERNAME_BY_PRODUCT_ID="/product_master/getUserNameByProductId";
 	private static final String USER_ID_BY_PRODUCT_ID="/product_master/getUserIdByProductId";
 	private static final String REGISTERD_USERS_DETAILS="/loan_application/getUsersRegisteredLoanDetails";
+	private static final String GET_LOAN_DETAILS_ADMIN_PANEL="/loan_application/getLoanDetailsForAdminPanel";
+	private static final String GET_FILLED_LOAN_DETAILS_ADMIN_PANEL="/loan_application/getFilledLoanDetailsForAdminPanel";
+	private static final String GET_CHATLIST_BY_FP_MAPPING="/loan_application/getChatListByFpMappingId";
+	private static final String GET_CHATLIST_BY_APPLICATION_ID="/product_master/getChatListByApplicationId";
+	private static final String CREATE_LOG="/createLog";
 	
 	
 	private String loansBaseUrl;
@@ -243,6 +249,34 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getLoanDetailsForAdminPanel() throws  LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	
+	public LoansResponse getFilledLoanDetailsForAdminPanel() throws  LoansException {
+		String url = loansBaseUrl.concat(GET_FILLED_LOAN_DETAILS_ADMIN_PANEL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getFilledLoanDetailsForAdminPanel");
+		}
+	}
+	
 	public String getUserIdByProductId(Long productId) throws  LoansException {
 		String url = loansBaseUrl.concat(USER_ID_BY_PRODUCT_ID);
 		try {
@@ -262,7 +296,49 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getChatListByApplicationId(Long applicationId) throws  LoansException {
+		String url = loansBaseUrl.concat(GET_CHATLIST_BY_APPLICATION_ID);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
+		}
+	}
 	
+
+	public LoansResponse getChatListByFpMappingId(Long productMappingId) throws  LoansException {
+		String url = loansBaseUrl.concat(GET_CHATLIST_BY_FP_MAPPING);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<Long> entity = new HttpEntity<Long>(productMappingId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByProductMappingId");
+		}
+	}
+	
+	public LoansResponse createLog(LogDetailsModel logDetailsModel) throws  LoansException {
+		String url = loansBaseUrl.concat(CREATE_LOG);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<LogDetailsModel> entity = new HttpEntity<LogDetailsModel>(logDetailsModel, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call create log");
+		}
+	}
+
 	
 
 }

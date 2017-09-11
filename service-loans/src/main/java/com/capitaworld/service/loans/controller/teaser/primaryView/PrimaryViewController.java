@@ -518,7 +518,56 @@ public class PrimaryViewController {
 			{
 				Object[] o=loanApplicationService.getApplicationDetailsById(applicationId);
 				toUserId=o[0].toString();
+				notificationId=NotificationAlias.SYS_FP_VIEWSEC;
+			}
+			else if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+			{
+				Object[] o=loanApplicationService.getApplicationDetailsById(applicationId);
+				toUserId=o[0].toString();
 				notificationId=NotificationAlias.SYS_FS_VIEWSEC;
+			}
+			
+			try {
+			
+				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId);
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+	}
+	
+	@RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public void finalTeaserReqViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
+		
+		// request must not be null
+	
+		Long fromUserId = null;
+		Long fromUserTypeId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) {
+			fromUserId = clientId;
+			fromUserTypeId = clientUserType;
+		} else {
+			fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		
+			Long applicationId=request.getApplicationId();
+			Long fpProductId=request.getFpProductId();
+			String toUserId = null;
+			Long notificationId = null;
+			
+			if(CommonUtils.UserType.FUND_PROVIDER == fromUserTypeId)
+			{
+				Object[] o=loanApplicationService.getApplicationDetailsById(applicationId);
+				toUserId=o[0].toString();
+				notificationId=NotificationAlias.SYS_FP_REQ_VIEWSEC;
+			}
+			else if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+			{
+				Object[] o=loanApplicationService.getApplicationDetailsById(applicationId);
+				toUserId=o[0].toString();
+				notificationId=NotificationAlias.SYS_FS_REQ_VIEWSEC;
 			}
 			
 			try {

@@ -132,7 +132,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(applicationId));
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
-			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());				
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -492,6 +492,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			logger.error("Erro While Updating Lat and Lon");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	@Override
+	public Integer getCorporateEstablishmentYear(Long applicationId, Long userId) throws Exception {
+		try {
+			return applicantDetailRepository.getApplicantEstablishmentYear(userId, applicationId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while getting Establishment Year");
+		}
+		return null;
 	}
 
 }

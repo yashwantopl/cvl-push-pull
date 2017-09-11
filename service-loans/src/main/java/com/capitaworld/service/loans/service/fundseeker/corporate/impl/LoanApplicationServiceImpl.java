@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -14,9 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
@@ -27,22 +31,36 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
+import com.capitaworld.service.loans.service.common.DashboardService;
+import com.capitaworld.service.loans.service.common.LogService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
@@ -56,9 +74,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
-	
-	@Autowired
-	private ProposalDetailsClient proposalDetailsClient; 
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -77,10 +92,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ApplicationSequenceService applicationSequenceService;
-	
+
 	@Autowired
 	private UsersClient userClient;
-	
+
+	@Autowired
+	private OneFormClient oneFormClient;
+
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
+
+	@Autowired
+	private DashboardService dashboardService;
+
+	@Autowired
+	private CorporateUploadService corporateUploadService;
+
+	@Autowired
+	LogService logService;
+
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -122,7 +152,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 						: commonRequest.getClientId()));
-				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster,"name");
+				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster, "name");
 				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 						: commonRequest.getClientId()));
 				applicationMaster.setCreatedBy(userId);
@@ -149,17 +179,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (applicationMaster == null) {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
 			}
-			BeanUtils.copyProperties(applicationMaster, applicationRequest,"name");
-			applicationRequest.setHasAlreadyApplied(hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
+			applicationRequest.setHasAlreadyApplied(
+					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				applicationRequest.setLoanTypeMain(CommonUtils.CORPORATE);
 				String currencyAndDenomination = "NA";
 				if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
 						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
-					currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
-					currencyAndDenomination = currencyAndDenomination
-							.concat(" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					try {
+						currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination.concat(
+								" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
@@ -169,17 +204,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
-			try{
-				ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(applicationMaster.getId());
-				applicationRequest.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			try {
+				ProposalMappingResponse response = proposalDetailsClient
+						.getFundSeekerApplicationStatus(applicationMaster.getId());
+				applicationRequest.setStatus(
+						CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
 				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 						.getById(applicationMaster.getProductId());
 				applicationRequest.setName(loanType.getValue());
 				return applicationRequest;
-			}catch (Exception e) {
+			} catch (Exception e) {
 				logger.error("Error while getting Status From Proposal Client");
 				e.printStackTrace();
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				return applicationRequest;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details:-");
@@ -198,13 +237,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			usersRequest.setLastAccessApplicantId(loan.getId());
 			usersRequest.setId(userId);
 			userClient.setLastAccessApplicant(usersRequest);
-			return new LoanApplicationRequest(loan.getId(),loan.getProductId());
+			return new LoanApplicationRequest(loan.getId(), loan.getProductId());
 		} else {
 			usersRequest.setId(userId);
 			usersRequest.setLastAccessApplicantId(null);
 			userClient.setLastAccessApplicant(usersRequest);
 		}
-		return null; 
+		return null;
 	}
 
 	@Override
@@ -214,7 +253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
-				BeanUtils.copyProperties(master, request,"name");
+				BeanUtils.copyProperties(master, request, "name");
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
@@ -222,9 +261,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					String currencyAndDenomination = "NA";
 					if (!CommonUtils.isObjectNullOrEmpty(master.getCurrencyId())
 							&& !CommonUtils.isObjectNullOrEmpty(master.getDenominationId())) {
-						currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
-						currencyAndDenomination = currencyAndDenomination
-								.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+						try {
+							currencyAndDenomination = CommonDocumentUtils.getCurrency(master.getCurrencyId());
+							currencyAndDenomination = currencyAndDenomination
+									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 					request.setCurrencyValue(currencyAndDenomination);
 					request.setLoanTypeSub(CommonUtils.getCorporateLoanType(master.getProductId()));
@@ -234,17 +277,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 					request.setLoanTypeSub("DEBT");
 				}
-				try{
-					ProposalMappingResponse response = proposalDetailsClient.getFundSeekerApplicationStatus(master.getId());
-					request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer)response.getData());
+				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
+				request.setFinalLocked(master.getIsFinalLocked());
+				try {
+					ProposalMappingResponse response = proposalDetailsClient
+							.getFundSeekerApplicationStatus(master.getId());
+					request.setStatus(
+							CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
 					com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 							.getById(master.getProductId());
 					request.setName(loanType.getValue());
 					requests.add(request);
-				}catch (Exception e) {
-					logger.error("Error while Getting Loan Status from Proposal Client:-");
+				} catch (Exception e) {
+					logger.error(
+							"Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-");
 					e.printStackTrace();
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					// throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
 			return requests;
@@ -272,6 +320,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			applicationMaster.setIsPrimaryLocked(flag);
 			loanApplicationRepository.save(applicationMaster);
+			// create log when teaser submit
+			logService.saveFsLog(applicationId, LogDateTypeMaster.TEASER_SUBMIT.getId());
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -291,6 +342,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			applicationMaster.setIsFinalLocked(flag);
 			loanApplicationRepository.save(applicationMaster);
+			// create log when teaser submit
+			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -343,10 +396,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception {
+	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag, String finalFilledCount)
+			throws Exception {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
-			loanApplicationRepository.setFinalFilledCount(applicationId, userId,finalFilledCount);
+			loanApplicationRepository.setFinalFilledCount(applicationId, userId, finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag");
 			e.printStackTrace();
@@ -432,7 +486,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
 	public Boolean isApplicationIdActive(Long applicationId) throws Exception {
 		try {
@@ -444,7 +498,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
 
 	@Override
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception {
@@ -470,8 +523,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 
 				Long coApps = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationId, userId);
-				/*if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
-					return false;*/
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
+				 * return false;
+				 */
 
 				if (coApps == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
@@ -488,8 +543,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				Long guarantors = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(applicationId,
 						userId);
-				/*if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0)
-					return false;*/
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors
+				 * == 0) return false;
+				 */
 
 				if (guarantors == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
@@ -506,19 +563,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				// Here we are using MCQ column for Final Home loan and Final
 				// Car Loan
-				
+
 				com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 						.getById(applicationMaster.getProductId());
-				if(CommonUtils.isObjectNullOrEmpty(loanType)){
+				if (CommonUtils.isObjectNullOrEmpty(loanType)) {
 					logger.warn("Invalid Product Id==>" + applicationMaster.getProductId());
 					return false;
 				}
-				
+
 				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-								|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
+						|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 							|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-						return false;	
+						return false;
 					}
 				}
 				return true;
@@ -591,13 +648,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getBowlCount(Long applicationId, Long userId) {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		JSONObject response = new JSONObject();
-		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)){
+		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
 			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
 			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
@@ -1632,62 +1689,120 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws Exception {
-		LoanApplicationMaster applicationMaster=loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
-		
-		if(CommonUtils.getUserMainType(applicationMaster.getProductId())==CommonUtils.UserMainType.RETAIL)
-		{
-			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-			return retailApplicantDetail.getFirstName()+" "+retailApplicantDetail.getLastName();
-		}
-		else if(CommonUtils.getUserMainType(applicationMaster.getProductId())==CommonUtils.UserMainType.CORPORATE)
-		{
-			CorporateApplicantDetail corporateApplicantDetail= corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+
+		if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
+			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
+			return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+		} else if (CommonUtils
+				.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
 		return null;
-    }
-	
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails() {
-		
+
 		UserResponse userResponse = userClient.getRegisterdUserList();
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
-		for(Object user : userList){
+		for (Object user : userList) {
 			RegisteredUserResponse users = null;
 			try {
-				users = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)user, RegisteredUserResponse.class);
+				users = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) user,
+						RegisteredUserResponse.class);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER){
+			if (!users.getIsOtpVerified()) {
+				response.add(users);
+				continue;
+			}
+			if (users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER) {
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
-				for(LoanApplicationMaster loanMstr : userLoans){
+				for (LoanApplicationMaster loanMstr : userLoans) {
 					JSONObject obj = new JSONObject();
-					obj.put("name",CommonUtils.LoanType.getType(loanMstr.getProductId()));
-					
+					obj.put("name", CommonUtils.LoanType.getType(loanMstr.getProductId()));
+
 					String currency = "";
 					int userMainType = CommonUtils.getUserMainType(loanMstr.getProductId());
 					if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 						if (!CommonUtils.isObjectNullOrEmpty(loanMstr.getCurrencyId())
 								&& !CommonUtils.isObjectNullOrEmpty(loanMstr.getDenominationId())) {
 							currency = CommonDocumentUtils.getCurrency(loanMstr.getCurrencyId());
-							currency = currency.concat(" in " + CommonDocumentUtils.getDenomination(loanMstr.getDenominationId()));
+							currency = currency
+									.concat(" in " + CommonDocumentUtils.getDenomination(loanMstr.getDenominationId()));
 						}
 					} else {
-						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(), loanMstr.getId());
+						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(),
+								loanMstr.getId());
 						currency = CommonDocumentUtils.getCurrency(currencyId);
 					}
+					obj.put("product", CommonUtils.getUserMainTypeName(loanMstr.getProductId()));
+					obj.put("profileFilled", CommonUtils.getTotalBowlCount(loanMstr.getDetailsFilledCount(),
+							loanMstr.getPrimaryFilledCount(), loanMstr.getFinalFilledCount()) / 3);
 					obj.put("loanCode", loanMstr.getApplicationCode());
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
-					obj.put("amount", (!CommonUtils.isObjectListNull(loanMstr.getAmount()) ? decimalFormat.format(loanMstr.getAmount()) : 0) + " "+currency);
-					obj.put("tenure",loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure()/12) : null);
-					obj.put("profileFilled",CommonUtils.getBowlCount(loanMstr.getDetailsFilledCount(), null));
+					obj.put("amount", !CommonUtils.isObjectListNull(loanMstr.getAmount())
+							? decimalFormat.format(loanMstr.getAmount()) : 0);
+					obj.put("currency",currency);
+					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setApplicationId(loanMstr.getId());
+					ProposalCountResponse proposalCountResponse = null;
+					try {
+						proposalCountResponse = proposalDetailsClient.proposalCountOfFundSeeker(proposalMappingRequest);
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.warn(
+								"Throw Exception while get matches count for registration user details------------->"
+										+ loanMstr.getId());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+						obj.put("totalMatches", proposalCountResponse.getTotal());
+						obj.put("matches", proposalCountResponse.getMatches());
+						obj.put("directSent", proposalCountResponse.getSent());
+						obj.put("directRecieved", proposalCountResponse.getReceived());
+						obj.put("hold", proposalCountResponse.getHold());
+						obj.put("reject", proposalCountResponse.getRejected());
+						obj.put("approved", proposalCountResponse.getAdvanced());
+						obj.put("accept", proposalCountResponse.getPrimary());
+
+					}
+
+					if (!CommonUtils.isObjectNullOrEmpty(loanMstr.getProductId())) {
+						int productId = CommonUtils.getUserMainType(loanMstr.getProductId());
+						if (productId == CommonUtils.UserMainType.CORPORATE) {
+							List<Object[]> corporateDataList = corporateApplicantDetailRepository
+									.getByNameAndLastUpdateDate(loanMstr.getUserId(), loanMstr.getId());
+							if (!CommonUtils.isListNullOrEmpty(corporateDataList)) {
+								Object[] corporateData = corporateDataList.get(0);
+								obj.put("oneFormName", !CommonUtils.isObjectNullOrEmpty(corporateData[0])
+										? corporateData[0].toString() : null);
+							}
+						} else {
+							List<Object[]> retailDataList = retailApplicantDetailRepository
+									.getNameAndLastUpdatedDate(loanMstr.getUserId(), loanMstr.getId());
+							if (!CommonUtils.isListNullOrEmpty(retailDataList)) {
+								Object[] retailData = retailDataList.get(0);
+								obj.put("oneFormName",
+										(!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString()
+												: null) + " "
+												+ (!CommonUtils.isObjectNullOrEmpty(retailData[1])
+														? retailData[1].toString() : null));
+							}
+						}
+					}
+
 					jsonList.add(obj);
 				}
 				users.setLoanList(jsonList);
@@ -1696,4 +1811,235 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return response;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws Exception {
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			listOfObjects.add(userRequest);
+		}
+		List<Long> userIds = new ArrayList<>();
+		for (UsersRequest obj : listOfObjects) {
+			userIds.add(obj.getId());
+		}
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository
+				.getLoanDetailsForAdminPanel(userIds);
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+
+			UsersRequest usersRequest = listOfObjects.stream()
+					.filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+			response.setApplicationId(loanApplicationMaster.getApplicationCode());
+			response.setCreateDate(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())
+					? dt.format(loanApplicationMaster.getCreatedDate()) : null);
+			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
+			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
+			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
+			response.setAbsoluteDisplayAmount(loanApplicationMaster.getAmount());
+			response.setAmounInRuppes(false);
+			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+					response.setCurrency(CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId()));
+					if (loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())) {
+						response.setAmounInRuppes(true);
+						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(
+								loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+						response.setAbsoluteAmount(absoluteAmount);
+						response.setAbsoluteDisplayAmount(absoluteAmount);
+					}
+				}
+			} else {
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(),
+						loanApplicationMaster.getId());
+				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
+				if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
+					if (currencyId.equals(Currency.RUPEES.getId())) {
+						response.setAmounInRuppes(true);
+					}
+				}
+			}
+
+			if (type == 1) {
+				response.setTenure(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTenure())
+						? Double.valueOf((loanApplicationMaster.getTenure() / 12)) : null);
+			} else {
+				response.setProfileAndPrimaryLocked(CommonUtils.getYesNo(loanApplicationMaster.getIsPrimaryLocked()));
+				response.setFinalLocked(CommonUtils.getYesNo(loanApplicationMaster.getIsFinalLocked()));
+				response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+				response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+				response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+				response.setTotalCount(CommonUtils.getTotalBowlCount(loanApplicationMaster.getDetailsFilledCount(),
+						loanApplicationMaster.getPrimaryFilledCount(), loanApplicationMaster.getFinalFilledCount())
+						/ 3);
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getProductId())) {
+				int productId = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+				if (productId == CommonUtils.UserMainType.CORPORATE) {
+					if (type == 1) {
+						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+								.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
+										loanApplicationMaster.getId());
+						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+							response.setName(corporateApplicantDetail.getOrganisationName());
+							response.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(),
+									oneFormClient));
+							response.setState(CommonDocumentUtils.getState(
+									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())
+											? corporateApplicantDetail.getRegisteredStateId().longValue() : null,
+									oneFormClient));
+							response.setCountry(CommonDocumentUtils.getCountry(
+									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())
+											? corporateApplicantDetail.getRegisteredCountryId().longValue() : null,
+									oneFormClient));
+							response.setConstitution(
+									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId())
+											? Constitution.getById(corporateApplicantDetail.getConstitutionId())
+													.getValue()
+											: null);
+						}
+					} else {
+						List<Object[]> corporateDataList = corporateApplicantDetailRepository
+								.getByNameAndLastUpdateDate(loanApplicationMaster.getUserId(),
+										loanApplicationMaster.getId());
+						if (!CommonUtils.isListNullOrEmpty(corporateDataList)) {
+							Object[] corporateData = corporateDataList.get(0);
+							response.setName(!CommonUtils.isObjectNullOrEmpty(corporateData[0])
+									? corporateData[0].toString() : null);
+							if (!CommonUtils.isObjectNullOrEmpty(corporateData[1])) {
+								response.setLastUpdatedDate(corporateData[1].toString());
+							}
+						}
+					}
+
+				} else {
+					if (type == 1) {
+						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+								.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
+										loanApplicationMaster.getId());
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+							response.setName(
+									retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName());
+							response.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(),
+									oneFormClient));
+							response.setState(CommonDocumentUtils.getState(
+									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())
+											? retailApplicantDetail.getPermanentStateId().longValue() : null,
+									oneFormClient));
+							response.setCountry(CommonDocumentUtils.getCountry(
+									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())
+											? retailApplicantDetail.getPermanentCountryId().longValue() : null,
+									oneFormClient));
+							response.setConstitution(
+									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getGenderId())
+											? Gender.getById(retailApplicantDetail.getGenderId()).getValue() : null);
+
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+								response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+							}
+
+						}
+					} else {
+						List<Object[]> retailDataList = retailApplicantDetailRepository.getNameAndLastUpdatedDate(
+								loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+						if (!CommonUtils.isListNullOrEmpty(retailDataList)) {
+							Object[] retailData = retailDataList.get(0);
+							response.setName(
+									(!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString() : null)
+											+ " " + (!CommonUtils.isObjectNullOrEmpty(retailData[1])
+													? retailData[1].toString() : null));
+							if (!CommonUtils.isObjectNullOrEmpty(retailData[2])) {
+								response.setLastUpdatedDate(retailData[2].toString());
+							}
+						}
+					}
+
+				}
+			}
+			responseList.add(response);
+		}
+		return responseList;
+	}
+
+	@Override
+	public List<ChatDetails> getChatListByApplicationId(Long applicationId) {
+		// TODO Auto-generated method stub
+		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
+		mappingRequest.setFpProductId(applicationId);
+		try {
+			List<LinkedHashMap<String, Object>> mappingRequestList = (List<LinkedHashMap<String, Object>>) proposalDetailsClient
+					.getFundProviderChatList(mappingRequest).getDataList();
+			if (!CommonUtils.isListNullOrEmpty(mappingRequestList)) {
+				List<ChatDetails> chatDetailList = new ArrayList<ChatDetails>(mappingRequestList.size());
+				for (LinkedHashMap<String, Object> linkedHashMap : mappingRequestList) {
+					try {
+						ChatDetails chatDetails = new ChatDetails();
+						ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
+						Object[] object = getApplicationDetailsById(proposalMappingRequest.getApplicationId());
+						DashboardProfileResponse dashboardProfileResponse = dashboardService.getBasicProfileInfo(
+								proposalMappingRequest.getApplicationId(), (Long) object[0], false);
+						chatDetails.setProposalId(proposalMappingRequest.getId());
+						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setName(dashboardProfileResponse.getName());
+						List<LinkedHashMap<String, Object>> detailsResponseList = (List<LinkedHashMap<String, Object>>) corporateUploadService
+								.getProfilePic(proposalMappingRequest.getApplicationId(),
+										getProfilePicKeyByProductId(dashboardProfileResponse.getProductId()),
+										DocumentAlias.UERT_TYPE_APPLICANT)
+								.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(detailsResponseList)) {
+							StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) detailsResponseList.get(0),
+									StorageDetailsResponse.class);
+							chatDetails.setProfile(storageDetailsResponse.getFilePath());
+						}
+						chatDetailList.add(chatDetails);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				return chatDetailList;
+			}
+		} catch (MatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Long getProfilePicKeyByProductId(Integer id) {
+		switch (id) {
+		case 1:// WORKING CAPITAL
+			return DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE;
+		case 2:// Term CAPITAL
+			return DocumentAlias.TERM_LOAN_PROFIEL_PICTURE;
+		case 3:// HOME LOAN
+			return DocumentAlias.HOME_LOAN_PROFIEL_PICTURE;
+		case 7:// PERSONAL LOAN
+			return DocumentAlias.PERSONAL_LOAN_PROFIEL_PICTURE;
+		case 12:// CAR_LOAN
+			return DocumentAlias.CAR_LOAN_PROFIEL_PICTURE;
+		case 13:// LOAN_AGAINST_PROPERTY
+			return DocumentAlias.LAP_LOAN_PROFIEL_PICTURE;
+		default:
+			return null;
+		}
+	}
+
 }

@@ -1,5 +1,18 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -8,36 +21,64 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
+import com.capitaworld.service.oneform.enums.CreditRatingFund;
+import com.capitaworld.service.oneform.enums.CreditRatingTerm;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.NatureFacility;
+import com.capitaworld.service.oneform.enums.Particular;
+import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -106,8 +147,11 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private DMSClient dmsClient;
 
 	@Autowired
-	MatchEngineClient matchEngineClient;
-
+	private MatchEngineClient matchEngineClient;
+	
+	@Autowired
+	private UsersClient usersClient;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
@@ -123,8 +167,13 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 																	// provider
 				Long fpProductMappingId = null;
 				try {
-					fpProductMappingId = productMasterService.getList(fundProviderUserId).get(0).getId();
+					
+					 UsersRequest usersRequest = new UsersRequest();
+					 usersRequest.setId(fundProviderUserId);
+					 UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
+					 fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
 					e.printStackTrace();
 				}
 				try {
@@ -155,32 +204,142 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				termLoanPrimaryViewResponse.setEstablishmentMonth(
 						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-			// set state
-			try{
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())){
-					termLoanPrimaryViewResponse.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId().longValue(),oneFormClient));
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
+			
+			// set city
+						List<Long> cityList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+						cityList.add(corporateApplicantDetail.getRegisteredCityId());
+						if(!CommonUtils.isListNullOrEmpty(cityList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
+								termLoanPrimaryViewResponse.setRegOfficeCity(masterResponse.getValue());
+							} else {
+								termLoanPrimaryViewResponse.setCity("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						cityList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+						cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+						if(!CommonUtils.isListNullOrEmpty(cityList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								termLoanPrimaryViewResponse.setAddOfficeCity(masterResponse.getValue());
+								
+							} else {
+								termLoanPrimaryViewResponse.setCity("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
 
-			// set state
-			try{
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())){
-					termLoanPrimaryViewResponse.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(),oneFormClient));
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-
-			// set country
-			try{
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())){
-					termLoanPrimaryViewResponse.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
-				}
-			}catch(Exception e){
-				e.printStackTrace();
-			}
+						// set state
+						List<Long> stateList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+						stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+						if(!CommonUtils.isListNullOrEmpty(stateList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								termLoanPrimaryViewResponse.setState(masterResponse.getValue());
+								termLoanPrimaryViewResponse.setRegOfficestate(masterResponse.getValue());
+							} else {
+								termLoanPrimaryViewResponse.setState("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						
+						stateList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+							stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+							if(!CommonUtils.isListNullOrEmpty(stateList))
+							{
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+										.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper
+											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									termLoanPrimaryViewResponse.setAddOfficestate(masterResponse.getValue());
+								} else {
+									termLoanPrimaryViewResponse.setState("NA");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							}
+						// set country
+						List<Long> countryList = new ArrayList<>();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+						countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+						if(!CommonUtils.isListNullOrEmpty(countryList))
+						{
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
+								termLoanPrimaryViewResponse.setRegOfficecountry(masterResponse.getValue());
+							} else {
+								termLoanPrimaryViewResponse.setCountry("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						}
+						
+						countryList.clear();
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+							countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
+							if(!CommonUtils.isListNullOrEmpty(countryList))
+							{
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+										.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper
+											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									termLoanPrimaryViewResponse.setAddOfficecountry(masterResponse.getValue());
+								} else {
+									termLoanPrimaryViewResponse.setCountry("NA");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							}
+							
+			
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
 			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());

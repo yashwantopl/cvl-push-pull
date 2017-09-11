@@ -29,6 +29,12 @@ public class ProductMasterRequest implements Serializable {
 	private String productCode;
 	
 	private Boolean isMatched;
+	
+	private Date createdDate;
+	
+	private String fpName;
+	
+	private Boolean isActive;
 
 	
 	public ProductMasterRequest() {
@@ -97,6 +103,32 @@ public class ProductMasterRequest implements Serializable {
 	public void setIsMatched(Boolean isMatched) {
 		this.isMatched = isMatched;
 	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getFpName() {
+		return fpName;
+	}
+
+	public void setFpName(String fpName) {
+		this.fpName = fpName;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+	
+	
 
 	
 }

@@ -19,7 +19,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Long fpProductId;
 
-	private Long currency;
+	private Integer currency;
 
 	private Boolean isAgeDisplay=false;
 
@@ -85,15 +85,16 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	
 
-	public Long getCurrency() {
-		return this.currency;
+
+	
+	public Integer getCurrency() {
+		return currency;
 	}
 
-	public void setCurrency(Long currency) {
+	public void setCurrency(Integer currency) {
 		this.currency = currency;
 	}
 
-	
 	public Boolean getIsAgeDisplay() {
 		return this.isAgeDisplay;
 	}
