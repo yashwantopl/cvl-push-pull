@@ -212,6 +212,11 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 
 	@Override
 	public String toString() {
-		return "HomeLoanEligibilityCriteria [id=" + id + "]";
+		return "HomeLoanEligibilityCriteria [id=" + id + ", type=" + type + ", bankId=" + bankId + ", min=" + min
+				+ ", max=" + max + ", foir=" + foir + ", roiLow=" + roiLow + ", roiHigh=" + roiHigh
+				+ ", minPropertyAmount=" + minPropertyAmount + ", maxPropertyAmount=" + maxPropertyAmount
+				+ ", updateDate=" + updateDate + ", createdBy=" + createdBy + ", updateBy=" + updateBy + "]";
 	}
+
+	
 }

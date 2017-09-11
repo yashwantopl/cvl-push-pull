@@ -181,6 +181,10 @@ public class LAPEligibilityCriteria implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LAPEligibilityCriteria [id=" + id + "]";
+		return "LAPEligibilityCriteria [id=" + id + ", type=" + type + ", propertyType=" + propertyType + ", bankId="
+				+ bankId + ", min=" + min + ", foir=" + foir + ", roiLow=" + roiLow + ", roiHigh=" + roiHigh
+				+ ", marketValue=" + marketValue + "]";
 	}
+
+	
 }
