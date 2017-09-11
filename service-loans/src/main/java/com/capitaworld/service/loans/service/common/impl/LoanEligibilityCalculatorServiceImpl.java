@@ -533,16 +533,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			Double minNew = null;
 			Double min = (Double) json.get(CommonUtils.MINIMUM);
 			logger.info("min==>" + min);
-			logger.info("minNew==>" + minNew);
 			if (minEntry != null) {
 				minNew = (Double) minEntry.getValue().get(CommonUtils.MINIMUM);
+				logger.info("minNew==>" + minNew);
 			}
 			if (minEntry == null || min < minNew) {
 				minEntry = entry;
 			}
 		}
-		logger.info("minEntry Key==>" + minEntry.getKey());
-		logger.info("minEntry.getValue()==>" + minEntry.getValue().toJSONString());
 		return minEntry;
 	}
 
@@ -554,16 +552,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			Double maxNew = null;
 			Double max = (Double) json.get(CommonUtils.MAXIMUM);
 			logger.info("MAx==>" + max);
-			logger.info("maxNew==>" + maxNew);
 			if (maxEntry != null) {
 				maxNew = (Double) maxEntry.getValue().get(CommonUtils.MAXIMUM);
+				logger.info("maxNew==>" + maxNew);
 			}
 			if (maxEntry == null || max > maxNew) {
 				maxEntry = entry;
 			}
 		}
-		logger.info("maxEntry Key==>" + maxEntry.getKey());
-		logger.info("maxEntry.getValue()==>" + maxEntry.getValue().toJSONString());
 		return maxEntry;
 	}
 
