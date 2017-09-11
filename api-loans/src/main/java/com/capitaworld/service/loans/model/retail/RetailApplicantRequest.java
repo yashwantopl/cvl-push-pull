@@ -31,7 +31,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Double monthlyIncome;
 	private Address firstAddress;
 	private Address secondAddress;
-	private boolean addressSameAs;
+	private Boolean addressSameAs;
 	private String contactNo;
 	private List<CoApplicantRequest> coApplicants = Collections.emptyList();
 	private List<GuarantorRequest> guarantors = Collections.emptyList();
@@ -184,11 +184,12 @@ public class RetailApplicantRequest implements Serializable {
 		this.secondAddress = secondAddress;
 	}
 
-	public boolean isAddressSameAs() {
+
+	public Boolean getAddressSameAs() {
 		return addressSameAs;
 	}
 
-	public void setAddressSameAs(boolean addressSameAs) {
+	public void setAddressSameAs(Boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 
