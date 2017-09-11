@@ -168,6 +168,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
+				if(min < 0){
+					min = 0d;
+				}
 				resultMap.put(max, min);
 			}
 
@@ -199,22 +202,31 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			JSONObject finaljson = new JSONObject();
 			JSONObject json = entry.getValue();
 			Double mvsnMin = mvsvMap.get(entry.getKey());
-
+			
 			// Setting Minimum
 			Double salMinMax = (Double) json.get(CommonUtils.MINIMUM);
-			if (mvsnMin < salMinMax) {
-				finaljson.put(CommonUtils.MINIMUM, mvsnMin);
+			if(CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)){
+				finaljson.put(CommonUtils.MINIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin :salMinMax);
 			} else {
-				finaljson.put(CommonUtils.MINIMUM, salMinMax);
+				if (mvsnMin < salMinMax) {
+					finaljson.put(CommonUtils.MINIMUM, mvsnMin);
+				} else {
+					finaljson.put(CommonUtils.MINIMUM, salMinMax);
+				}	
 			}
-
+			
 			// Setting Maximum
 			salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
-			if (mvsnMin > salMinMax) {
-				finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
+			if(CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)){
+				finaljson.put(CommonUtils.MAXIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin :salMinMax);
 			} else {
-				finaljson.put(CommonUtils.MAXIMUM, salMinMax);
+				if (mvsnMin > salMinMax) {
+					finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
+				} else {
+					finaljson.put(CommonUtils.MAXIMUM, salMinMax);
+				}	
 			}
+			
 			finalMap.put(entry.getKey(), finaljson);
 		}
 		return finalMap;
@@ -432,6 +444,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
+				if(min < 0){
+					min = 0d;
+				}
 				resultMap.put(max, min);
 			}
 
@@ -471,8 +486,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			switch (type) {
 			case HOME_LOAN:
 			case LAP_LOAN:
+				CommonDocumentUtils.endHook(logger, "calculateTenure");
 				return (60 - age > 30 ? 30 : 60 - age);
 			case PERSONAL_LOAN:
+				CommonDocumentUtils.endHook(logger, "calculateTenure");
 				return (60 - age > 5 ? 5 : 60 - age);
 			default:
 				CommonDocumentUtils.endHook(logger, "calculateTenure");

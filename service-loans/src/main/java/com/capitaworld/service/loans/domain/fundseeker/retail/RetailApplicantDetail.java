@@ -35,7 +35,10 @@ public class RetailApplicantDetail implements Serializable {
 
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
-
+	
+	@Column(name = "name_as_per_aadharCard")
+	private String nameAsPerAadharCard;
+	
 	@Column(name = "address_city")
 	private Long addressCity;
 
@@ -363,6 +366,14 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
+	}
+
+	public String getNameAsPerAadharCard() {
+		return nameAsPerAadharCard;
+	}
+
+	public void setNameAsPerAadharCard(String nameAsPerAadharCard) {
+		this.nameAsPerAadharCard = nameAsPerAadharCard;
 	}
 
 	public Long getAddressCity() {
