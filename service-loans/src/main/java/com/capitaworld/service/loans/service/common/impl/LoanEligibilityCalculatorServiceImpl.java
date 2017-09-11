@@ -76,6 +76,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
 					income = income - homeLoanRequest.getObligation();
 				}
+				
+				if(income <= 0.0) {
+					continue;
+				}
 
 				// Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
@@ -263,11 +267,17 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (personalLoanCriteria == null)
 					continue;
 				logger.info("PersonalLoanEligibilityCriteria==>" + personalLoanCriteria.toString());
+				logger.info("personalLoanCriteria.getFoir()==>" + personalLoanCriteria.getFoir());
+				logger.info("eligibilityRequest.getObligation()==>" + eligibilityRequest.getObligation());
+				logger.info("Before income==>" + eligibilityRequest.getIncome());
 				double income = eligibilityRequest.getIncome() * personalLoanCriteria.getFoir() / 100;
 				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
 					income = income - eligibilityRequest.getObligation();
 				}
-
+				logger.info("After income==>" + income);
+				if(income <= 0.0) {
+					continue;
+				}
 				// Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
@@ -275,6 +285,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("monthlyRate==>" + totalPayments);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result==>" + result);
+				
 				double maximum = getMinMax(income, result);
 				logger.info("maximum==>" + maximum);
 
@@ -369,6 +380,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 					income = income - eligibilityRequest.getObligation();
 				}
 
+				if(income <= 0.0) {
+					continue;
+				}
+				
 				// Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = lapEligibilityCriteria.getRoiLow() / 100 / 12;
 				double totalPayments = tenure * 12;
