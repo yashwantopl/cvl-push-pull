@@ -67,6 +67,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			for (Object data : bankByStatus.getListData()) {
 				MasterResponse bankResponse = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) data, MasterResponse.class);
+				
+				logger.info("bankResponse.getId()==>" + bankResponse.getId());
 				HomeLoanEligibilityCriteria homeLoanCriteria = loanEligibilityCriteriaRepository
 						.getHomeLoanBySalarySlab(homeLoanRequest.getIncome(), homeLoanRequest.getEmploymentType(),
 								Integer.class.cast(bankResponse.getId()));
@@ -160,6 +162,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 						Integer.class.cast(bankResponse.getId()));
 				if (homeLoanCriteria == null)
 					continue;
+				
+				logger.info("homeLoanCriteria==>" + homeLoanCriteria.toString());
+				logger.info("db Stamp Value==>" + homeLoanCriteria.getSaleDeedValue());
+				logger.info("Request Stamp Value==>" + homeLoanRequest.getStampValue());
+				logger.info("db Market Value==>" + homeLoanCriteria.getMarketValue());
+				logger.info("Request Market Value==>" + homeLoanRequest.getMarketValue());
 				double saleDeedValue = 0.0;
 				double marketValue = 0.0;
 				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getStampValue())) {
@@ -168,6 +176,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getMarketValue())) {
 					marketValue = homeLoanRequest.getMarketValue() * homeLoanCriteria.getMarketValue() / 100;
 				}
+				
+				logger.info("marketValue==> " + marketValue);
+				logger.info("saleDeedValue==> " + saleDeedValue);
 				if (saleDeedValue == 0.0 && marketValue > 0.0) {
 					minData.put(homeLoanCriteria.getBankId(), marketValue);
 				} else if (saleDeedValue > 0.0 && marketValue == 0.0) {
@@ -182,8 +193,11 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			}
 
+			logger.info("minData ==> " + minData.toString());
+			logger.info("minMaxSalary ==> " + minMaxSalary.toString());
 			CommonDocumentUtils.endHook(logger, "calculateMinSVMVForHomeLoan");
 			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(minMaxSalary, minData);
+			logger.info("minMaxFromSalaryAndMVSV==> " + minMaxFromSalaryAndMVSV.toString());
 			Map<Double, Double> resultMap = new HashMap<>(minMaxFromSalaryAndMVSV.size());
 			for (Entry<Integer, JSONObject> entry : minMaxFromSalaryAndMVSV.entrySet()) {
 				JSONObject json = entry.getValue();
@@ -396,8 +410,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (lapEligibilityCriteria == null || CommonUtils.isObjectNullOrEmpty(lapEligibilityCriteria.getMin()))
 					continue;
 				
+				logger.info("lapEligibilityCriteria==>" + lapEligibilityCriteria.toString());
 				logger.info("Before Income==>" + eligibilityRequest.getIncome());
-				logger.info("After Income==>" + eligibilityRequest.getIncome());
+				logger.info("lapEligibilityCriteria.getFoir()==>" + lapEligibilityCriteria.getFoir());
 				logger.info("eligibilityRequest.getObligation()==>" + eligibilityRequest.getObligation());
 				double income = eligibilityRequest.getIncome() * lapEligibilityCriteria.getFoir() / 100;
 				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
