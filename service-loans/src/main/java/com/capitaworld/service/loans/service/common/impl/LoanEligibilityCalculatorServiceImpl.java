@@ -201,22 +201,31 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			JSONObject finaljson = new JSONObject();
 			JSONObject json = entry.getValue();
 			Double mvsnMin = mvsvMap.get(entry.getKey());
-
+			
 			// Setting Minimum
 			Double salMinMax = (Double) json.get(CommonUtils.MINIMUM);
-			if (mvsnMin < salMinMax) {
-				finaljson.put(CommonUtils.MINIMUM, mvsnMin);
+			if(CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)){
+				finaljson.put(CommonUtils.MINIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin :salMinMax);
 			} else {
-				finaljson.put(CommonUtils.MINIMUM, salMinMax);
+				if (mvsnMin < salMinMax) {
+					finaljson.put(CommonUtils.MINIMUM, mvsnMin);
+				} else {
+					finaljson.put(CommonUtils.MINIMUM, salMinMax);
+				}	
 			}
-
+			
 			// Setting Maximum
 			salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
-			if (mvsnMin > salMinMax) {
-				finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
+			if(CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)){
+				finaljson.put(CommonUtils.MAXIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin :salMinMax);
 			} else {
-				finaljson.put(CommonUtils.MAXIMUM, salMinMax);
+				if (mvsnMin > salMinMax) {
+					finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
+				} else {
+					finaljson.put(CommonUtils.MAXIMUM, salMinMax);
+				}	
 			}
+			
 			finalMap.put(entry.getKey(), finaljson);
 		}
 		return finalMap;
