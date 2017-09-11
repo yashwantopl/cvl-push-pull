@@ -55,7 +55,7 @@ public class RetailApplicantDetail implements Serializable {
 	private String addressPremiseName;
 
 	@Column(name = "address_same_as")
-	private boolean addressSameAs;
+	private Boolean addressSameAs;
 
 	@Column(name = "address_state")
 	private Long addressState;
@@ -416,11 +416,11 @@ public class RetailApplicantDetail implements Serializable {
 		this.addressPremiseName = addressPremiseName;
 	}
 
-	public boolean getAddressSameAs() {
-		return this.addressSameAs;
+	public Boolean getAddressSameAs() {
+		return addressSameAs;
 	}
 
-	public void setAddressSameAs(boolean addressSameAs) {
+	public void setAddressSameAs(Boolean addressSameAs) {
 		this.addressSameAs = addressSameAs;
 	}
 
