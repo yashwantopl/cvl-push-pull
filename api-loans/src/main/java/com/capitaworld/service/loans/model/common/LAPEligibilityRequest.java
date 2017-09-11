@@ -43,4 +43,11 @@ public class LAPEligibilityRequest extends LoanEligibilility implements Serializ
 		this.marketValue = marketValue;
 	}
 
+	@Override
+	public String toString() {
+		return "LAPEligibilityRequest [employmentType=" + employmentType + ", propertyType=" + propertyType
+				+ ", marketValue=" + marketValue + ", getIncome()=" + getIncome() + ", getObligation()="
+				+ getObligation() + ", getDateOfBirth()=" + getDateOfBirth() + "]";
+	}
+
 }

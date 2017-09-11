@@ -166,6 +166,14 @@ public class PersonalLoanEligibilityCriteria implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PersonalLoanEligibilityCriteria [id=" + id + "]";
+		return "PersonalLoanEligibilityCriteria [id=" + id + ", type=" + type + ", bankId=" + bankId + ", min=" + min
+				+ ", max=" + max + ", foir=" + foir + ", roiLow=" + roiLow + ", roiHigh=" + roiHigh + ", getId()="
+				+ getId() + ", getType()=" + getType() + ", getBankId()=" + getBankId() + ", getMin()=" + getMin()
+				+ ", getMax()=" + getMax() + ", getFoir()=" + getFoir() + ", getRoiLow()=" + getRoiLow()
+				+ ", getRoiHigh()=" + getRoiHigh() + ", getIsActive()=" + getIsActive() + ", getCreatedDate()="
+				+ getCreatedDate() + ", getUpdateDate()=" + getUpdateDate() + ", getCreatedBy()=" + getCreatedBy()
+				+ ", getUpdateBy()=" + getUpdateBy() + "]";
 	}
+
+	
 }
