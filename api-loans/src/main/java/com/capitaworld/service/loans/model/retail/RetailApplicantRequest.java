@@ -184,6 +184,15 @@ public class RetailApplicantRequest implements Serializable {
 		this.secondAddress = secondAddress;
 	}
 
+
+	public Boolean getAddressSameAs() {
+		return addressSameAs;
+	}
+
+	public void setAddressSameAs(Boolean addressSameAs) {
+		this.addressSameAs = addressSameAs;
+	}
+
 	public String getContactNo() {
 		return contactNo;
 	}
