@@ -50,6 +50,10 @@ public class LoanEligibilityCalculatorController {
 				response.setMessage("Invalid Age");
 				response.setData("You are not eligible for Home Loan");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			} else if (minMaxBySalarySlab.isEmpty()) {
+				response.setMessage("Invalid");
+				response.setData("You are not eligible for Home Loan");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(minMaxBySalarySlab);
 				response.setStatus(HttpStatus.OK.value());
