@@ -153,6 +153,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 								? addProductRequest.getUserId() : addProductRequest.getClientId()),
 						addProductRequest.getProductMappingId(), addProductRequest.getName());
+				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+				return true;
 			} else {
 				ProductMaster productMaster = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
@@ -212,7 +214,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					masterRequests.add(masterRequest);
 				}
 			}*/
-			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+			
 		}
 
 		catch (Exception e) {
@@ -220,7 +222,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.error("error while saveOrUpdate", e);
 			return false;
 		}
-		return false;
 	}
 
 	@Override
