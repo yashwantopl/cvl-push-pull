@@ -213,8 +213,18 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			if (resultMap.isEmpty()) {
 				result.put("message", "No Result Found");
 			} else {
-				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(resultMap.keySet()))));
-				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(resultMap.values()))));
+				long finalMax = Math.abs(Math.round(Collections.max(resultMap.keySet())));
+				long finalMin = Math.abs(Math.round(Collections.min(resultMap.values())));
+				JSONObject salarySlab = getMinMaxBySalarySlab(homeLoanRequest);
+				Long max = (Long)salarySlab.get(CommonUtils.MAXIMUM);
+				Long min = (Long)salarySlab.get(CommonUtils.MINIMUM);
+				if(max != null) {
+					result.put(CommonUtils.MAXIMUM, max < finalMax ? max : finalMax);
+				}
+				
+				if(min != null) {
+					result.put(CommonUtils.MINIMUM, min < finalMin ? min : finalMin);
+				}
 				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForHomeLoan();
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
@@ -523,8 +533,17 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			if (resultMap.isEmpty()) {
 				result.put("message", "No Result Found");
 			} else {
-				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(resultMap.keySet()))));
-				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(resultMap.values()))));
+				long finalMax =  Math.abs(Math.round(Collections.max(resultMap.keySet())));
+				long finalMin = Math.abs(Math.round(Collections.min(resultMap.values())));
+				JSONObject salarySlab = calcMinMaxForLAP(eligibilityRequest);
+				Long max = (Long)salarySlab.get(CommonUtils.MAXIMUM);
+				Long min = (Long)salarySlab.get(CommonUtils.MINIMUM);
+				if(max != null) {
+					result.put(CommonUtils.MAXIMUM, max < finalMax ? max : finalMax);
+				}
+				if(min != null) {
+					result.put(CommonUtils.MINIMUM, min < finalMin ? min : finalMin);
+				}
 				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP();
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
