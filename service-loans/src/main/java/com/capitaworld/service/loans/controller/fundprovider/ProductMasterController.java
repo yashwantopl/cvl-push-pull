@@ -64,31 +64,30 @@ public class ProductMasterController {
 
 			if (userId == null) {
 				logger.warn("userId  can not be empty ==>" + userId);
-				CommonDocumentUtils.endHook(logger, "save");
+				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			if (addProductRequest == null) {
 				logger.warn("addProductRequest Object can not be empty ==>" + addProductRequest);
-				CommonDocumentUtils.endHook(logger, "save");
+				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<ProductMasterRequest> response = productMasterService.saveOrUpdate(addProductRequest);
-			if (response == null || !response.isEmpty()) {
-				LoansResponse loansResponse = new LoansResponse("Data saved.", HttpStatus.OK.value());
-				loansResponse.setListData(response);
-				CommonDocumentUtils.endHook(logger, "save");
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			Boolean response = productMasterService.saveOrUpdate(addProductRequest);
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "addProduct");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				CommonDocumentUtils.endHook(logger, "save");
+				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while saving multipleFpPruductRequest Details==>", e);
+			logger.error("Error while saving addProduct Details==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -101,6 +100,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporate(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
+		System.out.println("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",
