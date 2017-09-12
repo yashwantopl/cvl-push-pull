@@ -227,7 +227,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			to.setPermanentPincode(from.getFirstAddress().getPincode());
 		}
 
-		if (from.isAddressSameAs()) {
+		if (from.getAddressSameAs()) {
 			if (from.getFirstAddress() != null) {
 				to.setOfficePremiseNumberName(from.getFirstAddress().getPremiseNumber());
 				to.setOfficeStreetName(from.getFirstAddress().getStreetName());

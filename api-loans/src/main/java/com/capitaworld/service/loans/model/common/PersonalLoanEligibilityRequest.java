@@ -34,4 +34,12 @@ public class PersonalLoanEligibilityRequest extends LoanEligibilility implements
 		this.receiptMode = receiptMode;
 	}
 
+	@Override
+	public String toString() {
+		return "PersonalLoanEligibilityRequest [constitution=" + constitution + ", receiptMode=" + receiptMode
+				+ ", getIncome()=" + getIncome() + ", getObligation()=" + getObligation() + ", getDateOfBirth()="
+				+ getDateOfBirth() + ", getTenure()=" + getTenure() + "]";
+	}
+	
+
 }

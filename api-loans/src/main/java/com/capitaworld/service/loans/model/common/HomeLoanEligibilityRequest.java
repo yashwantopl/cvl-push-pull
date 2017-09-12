@@ -43,4 +43,12 @@ public class HomeLoanEligibilityRequest extends LoanEligibilility implements Ser
 		this.marketValue = marketValue;
 	}
 
+	@Override
+	public String toString() {
+		return "HomeLoanEligibilityRequest [employmentType=" + employmentType + ", stampValue=" + stampValue
+				+ ", marketValue=" + marketValue + ", getIncome()=" + getIncome() + ", getObligation()="
+				+ getObligation() + ", getDateOfBirth()=" + getDateOfBirth() + ", getTenure()=" + getTenure() + "]";
+	}
+	
+
 }
