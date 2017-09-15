@@ -200,8 +200,7 @@ public class LoanEligibilityCalculatorController {
 
 	// LAP Calculation Starts
 	@RequestMapping(value = "${lap}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getEligibleTenureLAP(
-			@RequestBody LAPEligibilityRequest eligibilityRequest) {
+	public ResponseEntity<LoansResponse> getEligibleTenureLAP(@RequestBody LAPEligibilityRequest eligibilityRequest) {
 		CommonDocumentUtils.startHook(logger, "getEligibleTenureLAP");
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
@@ -306,7 +305,7 @@ public class LoanEligibilityCalculatorController {
 	}
 
 	private static LoansResponse isHomeLoanRequestIsValid(HomeLoanEligibilityRequest homeLoanRequest, boolean isMVSV) {
-		final String MSG ="You are not eligible for Home Loan";
+		final String MSG = "You are not eligible for Home Loan";
 		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)) {
 			logger.info("Request Object ==>" + homeLoanRequest.toString());
 		}
@@ -325,28 +324,18 @@ public class LoanEligibilityCalculatorController {
 			response.setData(MSG);
 			return response;
 		}
-		
+
 		if (homeLoanRequest.getIncome() < 9000) {
-			response = new LoansResponse("Minimum Salary should be 9000", HttpStatus.BAD_REQUEST.value());
+			if (homeLoanRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
+				response = new LoansResponse("Minimum Salary should be 9000", HttpStatus.BAD_REQUEST.value());
+			} else {
+				response = new LoansResponse("Minimum Cash Profit should be 9000", HttpStatus.BAD_REQUEST.value());
+			}
 			response.setData(MSG);
 			return response;
 		}
-		
-		/*if(homeLoanRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
-			if (homeLoanRequest.getIncome() < 9000) {
-				response = new LoansResponse("Minimum Salary should be 9000", HttpStatus.BAD_REQUEST.value());
-				response.setData(MSG);
-				return response;
-			}
-		}else {
-			if (homeLoanRequest.getIncome() < 16667) {
-				response = new LoansResponse("Minimum Salary should be 16667", HttpStatus.BAD_REQUEST.value());
-				response.setData(MSG);
-				return response;
-			}
-		}*/
-		
-		
+
+
 		if (isMVSV) {
 			isNull = CommonUtils.isObjectListNull(homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue());
 			if (isNull) {
@@ -426,20 +415,22 @@ public class LoanEligibilityCalculatorController {
 			response.setData(MSG);
 			return response;
 		}
-		if(eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL && eligibilityRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
+		
+		if (eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL
+				&& eligibilityRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
 			if (eligibilityRequest.getIncome() < 12000) {
 				response = new LoansResponse("Minimum Salary should be 12000", HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
 			}
-		}else {
+		} else {
 			if (eligibilityRequest.getIncome() < 16667) {
-				response = new LoansResponse("Minimum Salary should be 16667", HttpStatus.BAD_REQUEST.value());
+				response = new LoansResponse("Minimum Cash Profit should be 16667", HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
 			}
 		}
-		
+
 		return new LoansResponse("Success", HttpStatus.OK.value());
 	}
 	// LAP Calculation Ends

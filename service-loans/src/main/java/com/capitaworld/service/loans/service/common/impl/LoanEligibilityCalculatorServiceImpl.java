@@ -257,16 +257,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			JSONObject finaljson = new JSONObject();
 			JSONObject json = entry.getValue();
 			Double mvsnMin = mvsvMap.get(entry.getKey());
-
-			// Setting Minimum
 			Double salMinMax = (Double) json.get(CommonUtils.MINIMUM);
-			/*
-			 * if (CommonUtils.isObjectNullOrEmpty(mvsnMin) ||
-			 * CommonUtils.isObjectNullOrEmpty(salMinMax)) {
-			 * finaljson.put(CommonUtils.MINIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin)
-			 * ? mvsnMin : salMinMax); }
-			 */
-//			if (!CommonUtils.isObjectNullOrEmpty(mvsnMin)) {
 				// Setting Minimum
 				if (mvsnMin < salMinMax) {
 					finaljson.put(CommonUtils.MINIMUM, mvsnMin);
@@ -276,13 +267,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			
 				// Setting Maximum
 				salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
-				if (mvsnMin > salMinMax) {
+				if (mvsnMin < salMinMax) {
 					finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
 				} else {
 					finaljson.put(CommonUtils.MAXIMUM, salMinMax);
 				}
 				finalMap.put(entry.getKey(), finaljson);
-//			}
 		}
 		return finalMap;
 	}
@@ -416,7 +406,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (tenure <= 0) {
 					return null;
 				}
-				tenure = (tenure > 30 ? 30 : tenure);
+				tenure = (tenure > 15 ? 15 : tenure);
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer, JSONObject> minMaxData = new HashMap<>(bankByStatus.getListData().size());
@@ -525,7 +515,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			CommonDocumentUtils.endHook(logger, "calcLAPAmount");
 			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(minMaxSalary, minData);
-			Map<Double, Double> resultMap = new HashMap<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMinList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMaxList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Integer> bankIds = new ArrayList<Integer>(minMaxFromSalaryAndMVSV.size());
 			for (Entry<Integer, JSONObject> entry : minMaxFromSalaryAndMVSV.entrySet()) {
 				JSONObject json = entry.getValue();
 				Double min = (Double) json.get(CommonUtils.MINIMUM);
@@ -533,28 +525,18 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
-				if (min < 0) {
-					min = 0d;
-				}
-				resultMap.put(max, min);
+				finalMinList.add(min);
+				finalMaxList.add(max);
+				bankIds.add(entry.getKey());
 			}
 
 			JSONObject result = new JSONObject();
-			if (resultMap.isEmpty()) {
+			if (finalMinList.isEmpty() && finalMaxList.isEmpty()) {
 				result.put("message", "No Result Found");
 			} else {
-				long finalMax = Math.abs(Math.round(Collections.max(resultMap.keySet())));
-				long finalMin = Math.abs(Math.round(Collections.min(resultMap.values())));
-				JSONObject salarySlab = calcMinMaxForLAP(eligibilityRequest);
-				Long max = (Long) salarySlab.get(CommonUtils.MAXIMUM);
-				Long min = (Long) salarySlab.get(CommonUtils.MINIMUM);
-				if (max != null) {
-					result.put(CommonUtils.MAXIMUM, max < finalMax ? max : finalMax);
-				}
-				if (min != null) {
-					result.put(CommonUtils.MINIMUM, min < finalMin ? min : finalMin);
-				}
-				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP();
+				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
+				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds);
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
