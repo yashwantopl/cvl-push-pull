@@ -17,7 +17,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 public interface ProductMasterService {
-	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest);
+	public Boolean saveOrUpdate(AddProductRequest addProductRequest);
 
 	public ProductMaster getProductMaster(Long id);
 
