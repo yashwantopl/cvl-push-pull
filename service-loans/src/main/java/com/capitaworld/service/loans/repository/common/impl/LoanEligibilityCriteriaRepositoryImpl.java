@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -64,10 +65,16 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	}
 
 	@Override
-	public Object[] getMinMaxRoiForHomeLoan() {
+	public Object[] getMinMaxRoiForHomeLoan(List<Integer> bankIds) {
+		if(CommonUtils.isListNullOrEmpty(bankIds)) {
+			return null;
+		}
+		
 		@SuppressWarnings("unchecked")
-		List<Object[]> data = entityManager.createQuery("select min(hl.roiLow),max(hl.roiHigh) from HomeLoanEligibilityCriteria hl where hl.isActive =:isActive")
-				.setParameter("isActive", true).getResultList();
+		List<Object[]> data = entityManager.createQuery("select min(hl.roiLow),max(hl.roiHigh) from HomeLoanEligibilityCriteria hl where hl.isActive =:isActive and hl.bankId in (:ids)")
+				.setParameter("isActive", true)
+				.setParameter("ids", bankIds)
+				.getResultList();
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);
 		}

@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.common;
 
+import java.util.List;
+
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
@@ -11,7 +13,7 @@ public interface LoanEligibilityCriteriaRepository {
 
 	public HomeLoanEligibilityCriteria getHomeLoanBySVMV(Long sv, Long mv, Integer bankId);
 
-	public Object[] getMinMaxRoiForHomeLoan();
+	public Object[] getMinMaxRoiForHomeLoan(List<Integer> bankIds);
 
 	// For Personal Loan
 	public PersonalLoanEligibilityCriteria getPersonalLoanBySalarySlab(Long income, Integer type, Integer bankId);
