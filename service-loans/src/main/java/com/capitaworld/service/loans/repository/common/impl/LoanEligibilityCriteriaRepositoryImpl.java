@@ -45,16 +45,15 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	}
 
 	@Override
-	public HomeLoanEligibilityCriteria getHomeLoanBySVMV(Long sv, Long mv, Integer bankId) {
+	public Float getHomeLoanBySV(Long sv,Integer bankId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
-		// hl.type =:type and
-		String query = "select hl from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and ("
-				+ sv + " >= hl.minPropertyAmount and " + sv + " <= hl.maxPropertyAmount) and (" + mv
-				+ " >= hl.minPropertyAmount and " + mv + " <= hl.maxPropertyAmount)";
-		List<HomeLoanEligibilityCriteria> eligibility = entityManager
-				.createQuery(query, HomeLoanEligibilityCriteria.class).setParameter("bankId", bankId)
-				.setParameter("isActive", true).getResultList();
+//		hl.type =:type and
+		String query = "select hl.saleDeedValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and ("
+				+ sv + " >= hl.minPropertyAmount and " + sv + " <= hl.maxPropertyAmount) order by hl.id";
+		List<Float> eligibility = entityManager
+				.createQuery(query, Float.class)
+				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 			return eligibility.get(0);
@@ -62,6 +61,26 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		logger.warn("Given Criteria Does not match with the Database Records");
 		CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 		return null;
+	}
+	
+	@Override
+	public Float getHomeLoanByMV(Long mv, Integer bankId) {
+		// TODO Auto-generated method stub
+				CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
+//				hl.type =:type and
+				String query = "select hl.marketValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and (" + mv
+						+ " >= hl.minPropertyAmount and " + mv + " <= hl.maxPropertyAmount) order by hl.id";
+				List<Float> eligibility = entityManager
+						.createQuery(query, Float.class)
+						.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
+				if (!CommonUtils.isListNullOrEmpty(eligibility)) {
+					CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+					return eligibility.get(0);
+				}
+				logger.warn("Given Criteria Does not match with the Database Records");
+				CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+				return null;
+
 	}
 
 	@Override

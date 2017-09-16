@@ -159,37 +159,39 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			for (Object data : bankByStatus.getListData()) {
 				MasterResponse bankResponse = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) data, MasterResponse.class);
-				HomeLoanEligibilityCriteria homeLoanCriteria = loanEligibilityCriteriaRepository.getHomeLoanBySVMV(
-						homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue(),
+				Float marketValue = loanEligibilityCriteriaRepository.getHomeLoanByMV(homeLoanRequest.getMarketValue(),
 						Integer.class.cast(bankResponse.getId()));
-				if (homeLoanCriteria == null)
-					continue;
-
-				logger.info("homeLoanCriteria==>" + homeLoanCriteria.toString());
-				logger.info("db Stamp Value==>" + homeLoanCriteria.getSaleDeedValue());
-				logger.info("Request Stamp Value==>" + homeLoanRequest.getStampValue());
-				logger.info("db Market Value==>" + homeLoanCriteria.getMarketValue());
+				Double mv = null;
+				Double sv = null;
 				logger.info("Request Market Value==>" + homeLoanRequest.getMarketValue());
-				double saleDeedValue = 0.0;
-				double marketValue = 0.0;
-				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getStampValue())) {
-					saleDeedValue = homeLoanRequest.getStampValue() * homeLoanCriteria.getSaleDeedValue() / 100;
-				}
-				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getMarketValue())) {
-					marketValue = homeLoanRequest.getMarketValue() * homeLoanCriteria.getMarketValue() / 100;
+				logger.info("Request Stamp Value==>" + homeLoanRequest.getStampValue());
+				if (marketValue != null && !CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getMarketValue())) {
+					logger.info("db Market Value==>" + marketValue);
+					mv = (double) (homeLoanRequest.getMarketValue() * marketValue / 100);
 				}
 
-				logger.info("marketValue==> " + marketValue);
-				logger.info("saleDeedValue==> " + saleDeedValue);
-				if (saleDeedValue == 0.0 && marketValue > 0.0) {
-					minData.put(homeLoanCriteria.getBankId(), marketValue);
-				} else if (saleDeedValue > 0.0 && marketValue == 0.0) {
-					minData.put(homeLoanCriteria.getBankId(), saleDeedValue);
+				Float stampValue = loanEligibilityCriteriaRepository.getHomeLoanBySV(homeLoanRequest.getStampValue(),
+						Integer.class.cast(bankResponse.getId()));
+				if (stampValue != null && !CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getStampValue())) {
+					logger.info("db Stamp Value==>" + stampValue);
+					sv = (double) homeLoanRequest.getStampValue() * stampValue / 100;
+				}
+				if (mv == null && sv == null) {
+					continue;
+				}
+				logger.info("Result MV==>" + mv);
+				logger.info("Result SV==>" + sv);
+
+				logger.info("saleDeedValue==> " + stampValue);
+				if (sv == null && mv != null) {
+					minData.put(Integer.class.cast(bankResponse.getId()), mv);
+				} else if (mv == null && sv != null) {
+					minData.put(Integer.class.cast(bankResponse.getId()), sv);
 				} else {
-					if (saleDeedValue < marketValue) {
-						minData.put(homeLoanCriteria.getBankId(), saleDeedValue);
+					if (sv < mv) {
+						minData.put(Integer.class.cast(bankResponse.getId()), sv);
 					} else {
-						minData.put(homeLoanCriteria.getBankId(), marketValue);
+						minData.put(Integer.class.cast(bankResponse.getId()), mv);
 					}
 				}
 
@@ -325,7 +327,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
 				double totalPayments = tenure * 12;
-				logger.info("monthlyRate==>" + totalPayments);
+				logger.info("totalPayments==>" + totalPayments);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result==>" + result);
 
@@ -452,7 +454,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result First==>" + result);
 				double maximum = getMinMax(income, result);
-				logger.info("maximum==>" + income);
+				logger.info("maximum==>" + maximum);
 
 				monthlyRate = lapEligibilityCriteria.getRoiHigh() / 100 / 12;
 				logger.info("monthlyRate Sec==>" + monthlyRate);

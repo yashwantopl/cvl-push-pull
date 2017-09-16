@@ -11,7 +11,9 @@ public interface LoanEligibilityCriteriaRepository {
 	// For Home Loan
 	public HomeLoanEligibilityCriteria getHomeLoanBySalarySlab(Long income, Integer type, Integer bankId);
 
-	public HomeLoanEligibilityCriteria getHomeLoanBySVMV(Long sv, Long mv, Integer bankId);
+	public Float getHomeLoanBySV(Long sv,Integer bankId);
+	
+	public Float getHomeLoanByMV(Long mv, Integer bankId);
 
 	public Object[] getMinMaxRoiForHomeLoan(List<Integer> bankIds);
 
