@@ -319,10 +319,12 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 
-		if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
+			if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
 
 		if (homeLoanRequest.getIncome() < 9000) {
@@ -334,7 +336,6 @@ public class LoanEligibilityCalculatorController {
 			response.setData(MSG);
 			return response;
 		}
-
 
 		if (isMVSV) {
 			isNull = CommonUtils.isObjectListNull(homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue());
@@ -364,7 +365,7 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 		if (!eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.BANK)) {
-			response = new LoansResponse("Receipt Mode Cash is Not allowed.", HttpStatus.BAD_REQUEST.value());
+			response = new LoansResponse("only Bank is allowed as Receipt Mode.", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
@@ -377,10 +378,12 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 
-		if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
+			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
 		if (eligibilityRequest.getIncome() < 10000) {
 			response = new LoansResponse("Minimum Salary should be 10000", HttpStatus.BAD_REQUEST.value());
@@ -410,12 +413,14 @@ public class LoanEligibilityCalculatorController {
 			response = new LoansResponse("Invalid PropertyType", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 		}
-		if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
+			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
-		
+
 		if (eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL
 				&& eligibilityRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
 			if (eligibilityRequest.getIncome() < 12000) {

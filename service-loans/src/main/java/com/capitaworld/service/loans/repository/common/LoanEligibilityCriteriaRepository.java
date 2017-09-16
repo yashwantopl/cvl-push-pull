@@ -18,7 +18,7 @@ public interface LoanEligibilityCriteriaRepository {
 	// For Personal Loan
 	public PersonalLoanEligibilityCriteria getPersonalLoanBySalarySlab(Long income, Integer type, Integer bankId);
 
-	public Object[] getMinMaxRoiForPersonalLoan(Integer type);
+	public Object[] getMinMaxRoiForPersonalLoan(List<Integer> bankIds, Integer type);
 
 	// For LAP
 	public LAPEligibilityCriteria getLAPBySalarySlab(Long income, Integer type, Integer bankId, Integer propertyType);

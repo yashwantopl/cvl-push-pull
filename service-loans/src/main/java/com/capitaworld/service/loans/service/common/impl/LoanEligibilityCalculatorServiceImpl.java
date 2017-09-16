@@ -321,6 +321,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 					continue;
 				}
 				// Maximum Amount Based on Salary and Max ROI
+				logger.info("=========>Bank Name=====>" + bankResponse.getValue());
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
 				double totalPayments = tenure * 12;
@@ -377,12 +378,20 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		if (json.isEmpty()) {
 			json.put("message", "No Result Found");
 		} else {
+			
+			//Getting Loan Providers
+			List<Integer> bankIds = new ArrayList<>(minMaxData.size());
+			for(Entry<Integer, JSONObject> entry : minMaxData.entrySet()) {
+				bankIds.add(entry.getKey());
+			}
+			json.put("fundProivders",bankIds.size());
 			Object[] minMaxArr = loanEligibilityCriteriaRepository
-					.getMinMaxRoiForPersonalLoan(eligibilityRequest.getConstitution());
+					.getMinMaxRoiForPersonalLoan(bankIds,eligibilityRequest.getConstitution());
 			if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 				json.put("minRoi", minMaxArr[0]);
 				json.put("maxRoi", minMaxArr[1]);
 			}
+			
 		}
 		CommonDocumentUtils.endHook(logger, "calcMinMaxForPersonalLoan");
 		return json;

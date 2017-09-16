@@ -99,12 +99,19 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object[] getMinMaxRoiForPersonalLoan(Integer type) {
-		@SuppressWarnings("unchecked")
+	public Object[] getMinMaxRoiForPersonalLoan(List<Integer> bankIds, Integer type) {
+		if (CommonUtils.isListNullOrEmpty(bankIds)) {
+			return null;
+		}
+		
 		List<Object[]> data = entityManager.createQuery(
-				"select min(pl.roiLow),max(pl.roiHigh) from PersonalLoanEligibilityCriteria pl where pl.isActive =:isActive and pl.type =:type")
-				.setParameter("isActive", true).setParameter("type", type).getResultList();
+				"select min(pl.roiLow),max(pl.roiHigh) from PersonalLoanEligibilityCriteria pl where pl.isActive =:isActive and pl.type =:type and pl.bankId in (:ids)")
+				.setParameter("isActive", true)
+				.setParameter("type", type)
+				.setParameter("ids", bankIds)
+				.getResultList();
 
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);
@@ -141,11 +148,8 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		}
 		List<Object[]> data = entityManager.createQuery(
 				"select min(lap.roiLow),max(lap.roiHigh) from LAPEligibilityCriteria lap where lap.isActive =:isActive and lap.bankId in (:ids) and lap.type =:employementType and lap.propertyType =:propertyType")
-				.setParameter("isActive", true)
-				.setParameter("ids", bankIds)
-				.setParameter("propertyType", propertyType)
-				.setParameter("employementType", employementType)
-				.getResultList();
+				.setParameter("isActive", true).setParameter("ids", bankIds).setParameter("propertyType", propertyType)
+				.setParameter("employementType", employementType).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);
 		}
