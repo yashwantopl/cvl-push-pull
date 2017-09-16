@@ -3,11 +3,10 @@ package com.capitaworld.service.loans.service.common.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Map.Entry;	
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -230,6 +229,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
+				result.put("fundProivders",bankIds.size());
 			}
 			return result;
 		} catch (Exception e) {
@@ -424,6 +424,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("Before Income==>" + eligibilityRequest.getIncome());
 				logger.info("lapEligibilityCriteria.getFoir()==>" + lapEligibilityCriteria.getFoir());
 				logger.info("eligibilityRequest.getObligation()==>" + eligibilityRequest.getObligation());
+				
 				double income = eligibilityRequest.getIncome() * lapEligibilityCriteria.getFoir() / 100;
 				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
 					income = income - eligibilityRequest.getObligation();
@@ -435,6 +436,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				}
 
 				// Maximum Amount Based on Salary and Max ROI
+				logger.info("Bank Name()==>" + bankResponse.getValue());
 				double monthlyRate = lapEligibilityCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate First==>" + monthlyRate);
 				double totalPayments = tenure * 12;
@@ -536,11 +538,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
-				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds);
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds,eligibilityRequest.getEmploymentType(),eligibilityRequest.getPropertyType());
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
+				result.put("fundProivders",bankIds.size());
 			}
 
 			return result;

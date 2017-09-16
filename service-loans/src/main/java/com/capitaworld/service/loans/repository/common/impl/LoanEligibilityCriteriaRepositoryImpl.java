@@ -134,14 +134,18 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object[] getMinMaxRoiForLAP(List<Integer> bankIds) {
+	public Object[] getMinMaxRoiForLAP(List<Integer> bankIds, Integer employementType, Integer propertyType) {
 		if (CommonUtils.isListNullOrEmpty(bankIds)) {
 			logger.warn("Bank Ids got Null or Empty");
 			return null;
 		}
 		List<Object[]> data = entityManager.createQuery(
-				"select min(lap.roiLow),max(lap.roiHigh) from LAPEligibilityCriteria lap where lap.isActive =:isActive and lap.bankId in (:ids)")
-				.setParameter("isActive", true).setParameter("ids", bankIds).getResultList();
+				"select min(lap.roiLow),max(lap.roiHigh) from LAPEligibilityCriteria lap where lap.isActive =:isActive and lap.bankId in (:ids) and lap.type =:employementType and lap.propertyType =:propertyType")
+				.setParameter("isActive", true)
+				.setParameter("ids", bankIds)
+				.setParameter("propertyType", propertyType)
+				.setParameter("employementType", employementType)
+				.getResultList();
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);
 		}
