@@ -73,6 +73,33 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/saveFromLoanEligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromLoanEligibility(@RequestBody FrameRequest commonRequest, HttpServletRequest request) {
+		try {
+			// request must not be null
+						CommonDocumentUtils.startHook(logger, "save");
+						Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+						
+						if (userId == null) {
+							logger.warn("userId  can not be empty ==>" + userId);
+							return new ResponseEntity<LoansResponse>(
+									new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						}
+						commonRequest.setUserId(userId);
+						
+						loanApplicationService.saveOrUpdateFromLoanEligibilty(commonRequest, userId);
+						CommonDocumentUtils.endHook(logger, "save");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+								HttpStatus.OK);
+						
+		} catch (Exception e) {
+			logger.error("Error while saving applicationRequest Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
