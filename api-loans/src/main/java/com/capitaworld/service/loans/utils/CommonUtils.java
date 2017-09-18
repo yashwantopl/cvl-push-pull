@@ -180,6 +180,11 @@ public class CommonUtils {
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
+	
+	public interface EmployementType {
+		public static final int SALARIED = 1;
+		public static final int BUSINESSMAN = 2;
+	}
 
 	public interface ReceiptMode {
 		public static final int CASH = 1;
