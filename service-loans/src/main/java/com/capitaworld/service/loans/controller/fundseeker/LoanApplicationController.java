@@ -765,13 +765,13 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails() {
+	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody Long userType) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForSignUpUserList");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails());
+			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails(userType));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForSignUpUserList==>", e);
