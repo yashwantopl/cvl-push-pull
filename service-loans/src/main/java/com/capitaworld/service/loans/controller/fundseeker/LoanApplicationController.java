@@ -792,7 +792,7 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody Long userType) {
 		// request must not be null
 		try {
