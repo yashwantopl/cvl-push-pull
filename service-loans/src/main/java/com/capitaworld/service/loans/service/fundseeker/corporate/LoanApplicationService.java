@@ -16,6 +16,8 @@ import com.capitaworld.service.users.model.UserResponse;
 public interface LoanApplicationService {
 
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception;
+	
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
 
