@@ -1842,9 +1842,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails() {
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType) {
 
-		UserResponse userResponse = userClient.getRegisterdUserList();
+		UserResponse userResponse = userClient.getRegisterdUserList(userType);
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
 		for (Object user : userList) {
@@ -1860,7 +1860,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.add(users);
 				continue;
 			}
-			if (users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER) {
+			if (userType.intValue() == CommonUtils.UserType.FUND_SEEKER) {
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
 				for (LoanApplicationMaster loanMstr : userLoans) {
