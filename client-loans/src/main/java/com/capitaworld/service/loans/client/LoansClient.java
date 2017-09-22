@@ -11,8 +11,14 @@ import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 
 public class LoansClient {
 	
@@ -36,7 +42,27 @@ public class LoansClient {
 	private static final String GET_CHATLIST_BY_FP_MAPPING="/loan_application/getChatListByFpMappingId";
 	private static final String GET_CHATLIST_BY_APPLICATION_ID="/product_master/getChatListByApplicationId";
 	private static final String CREATE_LOG="/createLog";
-	
+	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
+	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL="/associated_concern_details/save";
+	private static final String CORPORATE_APPLICATION_DETAILS= "/fs_profile/save";
+	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
+	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
+	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
+	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
+	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
+	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
+	private static final String OWNERSHIP_DETAILS = "/ownership_details/save";
+	private static final String PAST_FINANCIAL_ESTIMATE_DETAILS = "/past_financial_estimate_details/save";
+	private static final String PROMOTOR_BACKGROUND_DETAILS = "/promotor_background_details/save";
+	private static final String PROPOSED_PRODUCT_DETAILS = "/proposed_product_details/save";
+	private static final String SECURITY_CORPORATE_DETAILS = "/security_corporate_details/save";
+	private static final String SAVE_TERM_LOAN_FINAL = "/term_loan/final/save";
+	private static final String SAVE_TERM_LOAN_PRIMARY = "/term_loan/primary/save";
+	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
+	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
+	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
+	private static final String WORKING_CAPITAL_FINAL_PING = "/working_capital/ping";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -339,6 +365,301 @@ public class LoansClient {
 		}
 	}
 
-	
 
+	public LoansResponse saveAchievementdetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_ACHIEVEMENT_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveAssociatedConcernDetail(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_ASSOCIATED_CONCERN_DETAIL);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCreditRatingOrganizationDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(CREDIT_RATING_ORGANIZATION_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveExistingProductDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(EXISTING_PRODUCT_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveMeansOfFinance(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(MEANS_OF_FINANCE);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveFinancialArrangementDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveFutureFinancialEstimatesDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUTURE_FINANCIAL_ESTIMATE_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveGuarantorsCorporateDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(GUARANTORS_CORPORATE_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveMonthlyTurnoverDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(MONTHLY_TURNOVER_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveOwnershipDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(OWNERSHIP_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse savePastFinancialEstimateDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(PAST_FINANCIAL_ESTIMATE_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse savePromotorBackgroundDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(PROMOTOR_BACKGROUND_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveProposedProductDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(PROPOSED_PRODUCT_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveSecurityCorporateDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SECURITY_CORPORATE_DETAILS);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveTermLoanFinal(FinalTermLoanRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_TERM_LOAN_FINAL);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FinalTermLoanRequest> entity = new HttpEntity<FinalTermLoanRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	public LoansResponse saveTermLoanPrimary(PrimaryTermLoanRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_TERM_LOAN_PRIMARY);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<PrimaryTermLoanRequest> entity = new HttpEntity<PrimaryTermLoanRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveTotalCostOfProject(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(TOTAL_COST_OF_PROJECT);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveWorkingCapitalPrimary(PrimaryWorkingCapitalLoanRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<PrimaryWorkingCapitalLoanRequest> entity = new HttpEntity<PrimaryWorkingCapitalLoanRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	public LoansResponse saveWorkingCapitalFinal(FinalWorkingCapitalLoanRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(WORKING_CAPITAL_FINAL);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<FinalWorkingCapitalLoanRequest> entity = new HttpEntity<FinalWorkingCapitalLoanRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse test(String a)throws Exception{
+		String url = loansBaseUrl.concat(WORKING_CAPITAL_FINAL_PING);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.set("test", a);
+		    HttpEntity<FinalWorkingCapitalLoanRequest> entity = new HttpEntity<FinalWorkingCapitalLoanRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+		
+	}
+	
 }

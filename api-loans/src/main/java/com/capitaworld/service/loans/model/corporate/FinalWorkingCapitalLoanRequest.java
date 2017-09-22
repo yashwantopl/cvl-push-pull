@@ -32,8 +32,17 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer technologyTypeId;
 	private Boolean whetherTechnologyIsTied;
 	private String finalFilledCount;
+	private Long userId;
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 	
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
 	private Boolean isFinalMcqFilled;
 
 	public FinalWorkingCapitalLoanRequest() {

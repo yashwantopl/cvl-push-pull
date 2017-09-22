@@ -48,7 +48,18 @@ public class TermLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId =null;
+			
+			Long tempUserId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(tempUserId != null){
+				userId =tempUserId;
+			}
+			else if(termLoanRequest.getUserId() !=null){
+				userId = termLoanRequest.getUserId();
+			}
+			else{
+				userId = null;
+			}
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + termLoanRequest);
 				return new ResponseEntity<LoansResponse>(

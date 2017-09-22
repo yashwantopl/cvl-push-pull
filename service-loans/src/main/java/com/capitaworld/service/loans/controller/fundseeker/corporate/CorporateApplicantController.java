@@ -50,7 +50,18 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId =null;
+			
+			Long tempUserId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(tempUserId != null){
+				userId =tempUserId;
+			}
+			else if(applicantRequest.getUserId() !=null){
+				userId = applicantRequest.getUserId();
+			}
+			else{
+				userId = null;
+			}
 
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
