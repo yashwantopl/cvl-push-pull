@@ -47,18 +47,8 @@ public class WorkingCapitalLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveFinal");
 			// request must not be null
-			Long userId =null;
 			
-			Long tempUserId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(tempUserId != null){
-				userId =tempUserId;
-			}
-			else if(capitalLoanRequest.getUserId() !=null){
-				userId = capitalLoanRequest.getUserId();
-			}
-			else{
-				userId = null;
-			}
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				capitalLoanRequest.setClientId(clientId);
