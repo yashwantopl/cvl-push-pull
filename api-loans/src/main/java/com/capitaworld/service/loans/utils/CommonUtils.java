@@ -113,18 +113,18 @@ public class CommonUtils {
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
-				"alliedActivityId", "userId", "nameAsPerAadharCard" };
+				"alliedActivityId", "userId", "nameAsPerAadharCard", "currentJobMonth", "currentJobYear", "previousJobMonth", 
+				"previousJobYear", "totalExperienceMonth", "totalExperienceYear", "monthlyLoanObligation", 
+				"previousEmployersAddress", "previousEmployersName", "annualTurnover", "businessStartDate", "patPreviousYear",
+				"patCurrentYear", "depreciationPreviousYear", "depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
 				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
-				"annualRent", "annualTurnover", "noPartners", "birthDate", "businessStartDate", "currentDepartment",
-				"currentDesignation", "currentIndustry", "currentJobMonth", "currentJobYear", "employmentStatus",
-				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",
-				"presentlyIrrigated", "previousEmployersAddress", "previousEmployersName", "previousJobMonth",
-				"previousJobYear", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear",
-				"seasonalIrrigated", "shareholding", "totalExperienceMonth", "totalExperienceYear", "totalLandOwned",
-				"tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
+				"annualRent", "noPartners", "birthDate", "currentDepartment","currentDesignation", "currentIndustry", "employmentStatus",				
+				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",	"presentlyIrrigated",  
+				 "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear","seasonalIrrigated", "shareholding",  
+				"totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 
 	public interface ApplicantType {
