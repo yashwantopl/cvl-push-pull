@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.ExcelException;
@@ -47,11 +48,13 @@ public class DashboardServiceImpl implements DashboardService {
 		CommonDocumentUtils.startHook(logger, "getBasicProfileInfo");
 		
 		Integer productId = null;
-		if(isSP){
+		/*if(isSP){
 			productId = loanApplicationRepository.getProductIdByApplicationIdForSP(applicationId, userId);
 		}else{
 			productId = loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);			
-		}
+		}*/
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		productId = loanApplicationMaster.getProductId();
 		DashboardProfileResponse dashboardProfileResponse = null;
 		int userMainType = CommonUtils.getUserMainType(productId);
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
