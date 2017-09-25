@@ -16,6 +16,8 @@ import com.capitaworld.service.users.model.UserResponse;
 public interface LoanApplicationService {
 
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception;
+	
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
 
@@ -61,7 +63,7 @@ public interface LoanApplicationService {
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
 	
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType);
 	
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 	

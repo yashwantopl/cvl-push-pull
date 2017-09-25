@@ -36,11 +36,14 @@ import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
@@ -109,7 +112,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private CorporateUploadService corporateUploadService;
 
 	@Autowired
-	LogService logService;
+	private LogService logService;
+
+	@Autowired
+	private  PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository; 
+	
+	@Autowired
+	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -144,7 +153,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					break;
 				case CAR_LOAN:
 					applicationMaster = new PrimaryCarLoanDetail();
-					break;
+					break;	
 
 				default:
 					continue;
@@ -171,6 +180,131 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	@Override
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId)
+			throws Exception {
+		logger.info("Entry in saveOrUpdateFromLoanEligibilty");
+		try {
+			LoanApplicationMaster applicationMaster = null;
+			for (Map<String, Object> obj : commonRequest.getDataList()) {
+				LoanEligibilityRequest loanEligibilityRequest = (LoanEligibilityRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, LoanEligibilityRequest.class);
+				LoanType type = CommonUtils.LoanType.getType(loanEligibilityRequest.getProductId());
+				if (type == null) {
+					continue;
+				}
+
+				switch (type) {
+				case WORKING_CAPITAL:
+					applicationMaster = new PrimaryWorkingCapitalLoanDetail();
+					break;
+				case TERM_LOAN:
+					applicationMaster = new PrimaryTermLoanDetail();
+					break;
+				/*case LAS_LOAN:
+					applicationMaster = new PrimaryLasLoanDetail();
+					break;*/
+				case LAP_LOAN:
+					applicationMaster = new PrimaryLapLoanDetail();
+					break;
+				case PERSONAL_LOAN:
+					applicationMaster = new PrimaryPersonalLoanDetail();
+					break;
+				case HOME_LOAN:
+					applicationMaster = new PrimaryHomeLoanDetail();
+					break;
+				case CAR_LOAN:
+					applicationMaster = new PrimaryCarLoanDetail();
+					break;
+
+				default:
+					continue;
+				}
+
+				logger.info("userId==>" + userId);
+				//BeanUtils.copyProperties(loanEligibilityRequest, applicationMaster, "name");
+				if(!CommonUtils.isObjectNullOrEmpty(loanEligibilityRequest.getTenure()))
+				{
+				applicationMaster.setTenure(loanEligibilityRequest.getTenure()*12);
+				}
+				applicationMaster.setProductId(loanEligibilityRequest.getProductId());
+				applicationMaster.setUserId(userId);
+				applicationMaster.setCreatedBy(userId);
+				applicationMaster.setCreatedDate(new Date());
+				applicationMaster.setModifiedBy(userId);
+				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+				applicationMaster = loanApplicationRepository.save(applicationMaster);
+				
+				//for save primary details
+				
+				switch (type) {
+				case WORKING_CAPITAL:
+					
+					break;
+				case TERM_LOAN:
+					
+					break;
+				/*case LAS_LOAN:
+					applicationMaster = new PrimaryLasLoanDetail();
+					break;*/
+				case LAP_LOAN:
+					PrimaryLapLoanDetail lapLoanDetail=primaryLapLoanDetailRepository.findOne(applicationMaster.getId());
+					lapLoanDetail.setPropertyValue(loanEligibilityRequest.getMarketValue());
+					lapLoanDetail.setPropertyType(loanEligibilityRequest.getPropertyType());
+					primaryLapLoanDetailRepository.save(lapLoanDetail);
+					
+					//create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);						
+					break;
+				case PERSONAL_LOAN:
+					//create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);
+					break;
+				case HOME_LOAN:
+					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository.findOne(applicationMaster.getId());
+					primaryHomeLoanDetail.setPropertyPrice(loanEligibilityRequest.getMarketValue());
+					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
+					
+					//create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);
+					break;
+				case CAR_LOAN:
+					break;
+
+				default:
+					continue;
+				}
+			}
+			logger.info("Exit from saveOrUpdateFromLoanEligibilty");
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while Saving Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	public Boolean saveRetailApplicantDetailFromLoanEligibility(LoanApplicationMaster applicationMaster, LoanEligibilityRequest loanEligibilityRequest){
+		try{
+			RetailApplicantDetail retailApplicantDetail=new RetailApplicantDetail();
+			retailApplicantDetail.setApplicationId(applicationMaster);
+			retailApplicantDetail.setOccupationId(loanEligibilityRequest.getEmploymentType());
+			retailApplicantDetail.setBirthDate(loanEligibilityRequest.getDateOfBirth());
+			retailApplicantDetail.setMonthlyIncome(loanEligibilityRequest.getIncome());
+			retailApplicantDetail.setIsActive(true);
+			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setCreatedDate(new  Date());
+			retailApplicantDetail.setModifiedDate(new  Date());
+			retailApplicantDetailRepository.save(retailApplicantDetail);
+			return true;
+		}catch(Exception e){
+			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
+			e.printStackTrace();
+			return false;
+		}
+	}
 	@Override
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
 		try {
@@ -1708,9 +1842,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails() {
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType) {
 
-		UserResponse userResponse = userClient.getRegisterdUserList();
+		UserResponse userResponse = userClient.getRegisterdUserList(userType);
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
 		for (Object user : userList) {
@@ -1726,7 +1860,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.add(users);
 				continue;
 			}
-			if (users.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER) {
+			if (userType.intValue() == CommonUtils.UserType.FUND_SEEKER) {
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
 				for (LoanApplicationMaster loanMstr : userLoans) {
@@ -1754,7 +1888,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
 					obj.put("amount", !CommonUtils.isObjectListNull(loanMstr.getAmount())
 							? decimalFormat.format(loanMstr.getAmount()) : 0);
-					obj.put("currency",currency);
+					obj.put("currency", currency);
 					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					proposalMappingRequest.setApplicationId(loanMstr.getId());
