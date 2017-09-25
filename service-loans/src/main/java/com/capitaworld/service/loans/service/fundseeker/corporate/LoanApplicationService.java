@@ -61,7 +61,7 @@ public interface LoanApplicationService {
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
 	
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType);
 	
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 	
