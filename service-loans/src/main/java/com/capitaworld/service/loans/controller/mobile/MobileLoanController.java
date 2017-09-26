@@ -82,4 +82,19 @@ public class MobileLoanController {
 		}
 	}
 	
+	@RequestMapping(value="/lockPrimary",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> lockPrimary(@RequestBody MobileUserRequest mobileUserRequest){
+		logger.info("Enter in lock profile and primary details for mobile app");
+		try {
+			loanApplicationService.lockPrimary(mobileUserRequest.getApplicationId(),mobileUserRequest.getUserId(), true);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Your profile & primary details are locked", HttpStatus.OK.value()),HttpStatus.OK);
+		} catch(Exception e) {
+			logger.warn("Error While lock profile and primary details for mobile app");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
 }
