@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
-import com.capitaworld.service.loans.model.mobile.MobileUserRequest;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.MobileService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -35,7 +35,7 @@ public class MobileLoanController {
 	private MobileService mobileService;
 	
 	@RequestMapping(value="/loanList",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getLoanList(@RequestBody MobileUserRequest mobileUserRequest){
+	public ResponseEntity<LoansResponse> getLoanList(@RequestBody MobileLoanRequest mobileUserRequest){
 		logger.info("Enter in get loan list for mobile app");
 		try {
 			List<MLoanDetailsResponse> response = loanApplicationService.getLoanListForMobile(mobileUserRequest.getUserId());
@@ -51,7 +51,7 @@ public class MobileLoanController {
 	}
 	
 	@RequestMapping(value="/getApplicantDetails",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getApplicantDetails(@RequestBody MobileUserRequest mobileUserRequest){
+	public ResponseEntity<LoansResponse> getApplicantDetails(@RequestBody MobileLoanRequest mobileUserRequest){
 		logger.info("Enter in get applicant details for mobile app");
 		try {
 			MRetailApplicantResponse response = mobileService.getApplicantDetails(mobileUserRequest);
@@ -83,7 +83,7 @@ public class MobileLoanController {
 	}
 	
 	@RequestMapping(value="/lockPrimary",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> lockPrimary(@RequestBody MobileUserRequest mobileUserRequest){
+	public ResponseEntity<LoansResponse> lockPrimary(@RequestBody MobileLoanRequest mobileUserRequest){
 		logger.info("Enter in lock profile and primary details for mobile app");
 		try {
 			loanApplicationService.lockPrimary(mobileUserRequest.getApplicationId(),mobileUserRequest.getUserId(), true);

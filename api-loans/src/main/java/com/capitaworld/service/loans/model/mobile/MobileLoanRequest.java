@@ -2,7 +2,7 @@ package com.capitaworld.service.loans.model.mobile;
 
 import java.io.Serializable;
 
-public class MobileUserRequest implements Serializable{
+public class MobileLoanRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -11,22 +11,22 @@ public class MobileUserRequest implements Serializable{
 	private Long userType;
 	private Integer productId;
 	
-	public MobileUserRequest() {
+	public MobileLoanRequest() {
 		
 	}
 	
-	public MobileUserRequest(Long userId, Long userType) {
+	public MobileLoanRequest(Long userId, Long userType) {
 		super();
 		this.userId = userId;
 		this.userType = userType;
 	}
-	public MobileUserRequest(Long applicationId, Long userId, Long userType) {
+	public MobileLoanRequest(Long applicationId, Long userId, Long userType) {
 		super();
 		this.applicationId = applicationId;
 		this.userId = userId;
 		this.userType = userType;
 	}
-	public MobileUserRequest(Long applicationId, Long userId, Long userType,Integer productId) {
+	public MobileLoanRequest(Long applicationId, Long userId, Long userType,Integer productId) {
 		super();
 		this.applicationId = applicationId;
 		this.userId = userId;
