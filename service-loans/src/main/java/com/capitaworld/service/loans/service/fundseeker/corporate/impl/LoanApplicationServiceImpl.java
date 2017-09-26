@@ -32,11 +32,14 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.common.ProposalList;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
@@ -45,6 +48,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -56,12 +60,14 @@ import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.model.ProposalStatusList;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -111,6 +117,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	LogService logService;
 
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
+
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -159,6 +168,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setIsProceed(false);
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
@@ -1754,7 +1764,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
 					obj.put("amount", !CommonUtils.isObjectListNull(loanMstr.getAmount())
 							? decimalFormat.format(loanMstr.getAmount()) : 0);
-					obj.put("currency",currency);
+					obj.put("currency", currency);
 					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					proposalMappingRequest.setApplicationId(loanMstr.getId());
@@ -2040,6 +2050,63 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		default:
 			return null;
 		}
+	}
+
+	@Override
+	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId) {
+		// TODO Auto-generated method stub
+		try {
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+				List<Long> fpUserIdList = productMasterRepository
+						.getUserIdListByProductId(applicationMaster.getProductId());
+				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
+					CommonResponse response = new CommonResponse();
+					// get fp name from user client
+
+					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
+					if(userResponse!=null &&  userResponse.getData()!=null)
+					{
+					List<FpProfileBasicDetailRequest> basicDetailRequests = (List<FpProfileBasicDetailRequest>) userResponse
+							.getData();
+					return basicDetailRequests;
+					}
+					
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean isFsProceed(Long applicationId) {
+		// TODO Auto-generated method stub
+		return loanApplicationRepository.isProceed(applicationId);
+	}
+
+	
+	@Override
+	public void saveSuggestionList(ProposalList proposalList) {
+		// TODO Auto-generated method stub
+		try{
+			
+			
+			
+			//change proposal status
+			if(!CommonUtils.isListNullOrEmpty(proposalList.getSuggetionIds()))
+			{
+				proposalDetailsClient.saveSuggestionList(proposalList.getSuggetionIds());
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 	}
 
 }

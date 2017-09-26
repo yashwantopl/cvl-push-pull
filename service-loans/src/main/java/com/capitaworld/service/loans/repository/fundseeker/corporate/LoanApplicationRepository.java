@@ -145,4 +145,13 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true")
 	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds);
 	
+	@Query("select lm.isProceed from LoanApplicationMaster lm where lm.id=:applicationId")
+	public Boolean isProceed(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query("update LoanApplicationMaster lm set lm.isProceed = true,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
+	public int setIsProceed(@Param("id") Long id, @Param("userId") Long userId);
+
+	
+	
 }

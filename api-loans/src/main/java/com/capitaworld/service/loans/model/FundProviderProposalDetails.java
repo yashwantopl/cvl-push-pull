@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.model;
 public class FundProviderProposalDetails {
 
 	
+	private Long id;
+	
 	private String name;
 	
 	private String fpProductName;
@@ -73,6 +75,14 @@ public class FundProviderProposalDetails {
 
 	public void setProposalMappingId(Long proposalMappingId) {
 		this.proposalMappingId = proposalMappingId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	

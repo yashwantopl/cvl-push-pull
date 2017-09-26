@@ -162,6 +162,10 @@ public class LoanApplicationMaster implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private ApplicationStatusMaster applicationStatusMaster;
+	
+	@Column(name = "is_proceed")
+	private Boolean isProceed;
+	
 
 	public LoanApplicationMaster() {
 	}
@@ -480,6 +484,15 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setFinalFilledCount(String finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
+	}
+
+	
+	public Boolean getIsProceed() {
+		return isProceed;
+	}
+
+	public void setIsProceed(Boolean isProceed) {
+		this.isProceed = isProceed;
 	}
 
 	@Override
