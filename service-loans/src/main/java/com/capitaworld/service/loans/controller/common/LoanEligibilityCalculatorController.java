@@ -200,18 +200,15 @@ public class LoanEligibilityCalculatorController {
 
 	// LAP Calculation Starts
 	@RequestMapping(value = "${lap}/get_eligible_tenure", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getEligibleTenureLAP(
-			@RequestBody PersonalLoanEligibilityRequest eligibilityRequest) {
+	public ResponseEntity<LoansResponse> getEligibleTenureLAP(@RequestBody LAPEligibilityRequest eligibilityRequest) {
 		CommonDocumentUtils.startHook(logger, "getEligibleTenureLAP");
 		try {
-			boolean isNull = CommonUtils.isObjectListNull(eligibilityRequest.getDateOfBirth());
-			if (isNull) {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
+			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
+				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 			}
 
 			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
-			LoansResponse response = null;
 			Integer tenure = loanEligibilityCalculatorService.calculateTenure(eligibilityRequest,
 					CommonUtils.LoanType.LAP_LOAN.getValue());
 			if (tenure == null) {
@@ -308,6 +305,7 @@ public class LoanEligibilityCalculatorController {
 	}
 
 	private static LoansResponse isHomeLoanRequestIsValid(HomeLoanEligibilityRequest homeLoanRequest, boolean isMVSV) {
+		final String MSG = "You are not eligible for Home Loan";
 		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)) {
 			logger.info("Request Object ==>" + homeLoanRequest.toString());
 		}
@@ -317,26 +315,34 @@ public class LoanEligibilityCalculatorController {
 				homeLoanRequest.getDateOfBirth());
 		if (isNull) {
 			response = new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value());
-			response.setData("You are not eligible for Home Loan");
+			response.setData(MSG);
 			return response;
 		}
 
-		if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData("You are not eligible for Home Loan");
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
+			if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
+
 		if (homeLoanRequest.getIncome() < 9000) {
-			response = new LoansResponse("Minimum Salary should be 9000", HttpStatus.BAD_REQUEST.value());
-			response.setData("You are not eligible for Home Loan");
+			if (homeLoanRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
+				response = new LoansResponse("Minimum Salary should be 9000", HttpStatus.BAD_REQUEST.value());
+			} else {
+				response = new LoansResponse("Minimum Cash Profit should be 9000", HttpStatus.BAD_REQUEST.value());
+			}
+			response.setData(MSG);
 			return response;
 		}
+
 		if (isMVSV) {
 			isNull = CommonUtils.isObjectListNull(homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue());
 			if (isNull) {
 				response = new LoansResponse("Market Value and Stamp value must not be empty.",
 						HttpStatus.BAD_REQUEST.value());
-				response.setData("You are not eligible for Home Loan");
+				response.setData(MSG);
 				return response;
 			}
 		}
@@ -359,7 +365,7 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 		if (!eligibilityRequest.getReceiptMode().equals(CommonUtils.ReceiptMode.BANK)) {
-			response = new LoansResponse("Receipt Mode Cash is Not allowed.", HttpStatus.BAD_REQUEST.value());
+			response = new LoansResponse("only Bank is allowed as Receipt Mode.", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 			return response;
 		}
@@ -372,10 +378,12 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 
-		if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
+			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
 		if (eligibilityRequest.getIncome() < 10000) {
 			response = new LoansResponse("Minimum Salary should be 10000", HttpStatus.BAD_REQUEST.value());
@@ -405,16 +413,29 @@ public class LoanEligibilityCalculatorController {
 			response = new LoansResponse("Invalid PropertyType", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 		}
-		if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
-			response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
+			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+				response = new LoansResponse("Obligation Must be less than Income", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
-		if (eligibilityRequest.getIncome() < 12000) {
-			response = new LoansResponse("Minimum Salary should be 12000", HttpStatus.BAD_REQUEST.value());
-			response.setData(MSG);
-			return response;
+
+		if (eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL
+				&& eligibilityRequest.getEmploymentType().intValue() == CommonUtils.EmployementType.SALARIED) {
+			if (eligibilityRequest.getIncome() < 12000) {
+				response = new LoansResponse("Minimum Salary should be 12000", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
+		} else {
+			if (eligibilityRequest.getIncome() < 16667) {
+				response = new LoansResponse("Minimum Cash Profit should be 16667", HttpStatus.BAD_REQUEST.value());
+				response.setData(MSG);
+				return response;
+			}
 		}
+
 		return new LoansResponse("Success", HttpStatus.OK.value());
 	}
 	// LAP Calculation Ends

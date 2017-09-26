@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.auth.model.MobilelAppLoginResponse;
+import com.capitaworld.service.loans.controller.mobile.MobileLoanController;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -13,12 +15,15 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 
 public interface LoanApplicationService {
 
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception;
+	
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
 
@@ -64,7 +69,7 @@ public interface LoanApplicationService {
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
 	
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails();
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType);
 	
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 	
@@ -75,5 +80,6 @@ public interface LoanApplicationService {
 	public boolean isFsProceed( Long applicationId);
 	
 	public void saveSuggestionList(ProposalList  proposalList);	
+	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
 	
 }
