@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
+import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -25,6 +26,8 @@ public interface ProposalService {
 	
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request);
 	
-	public ProposalMappingResponse getConectionList(ProposalMappingRequest proposalMappingRequest);
+	public ProposalResponse getConectionList(ProposalMappingRequest proposalMappingRequest);
+	
+	public Integer getPendingProposalCount(Long applicationId);
 	
 }

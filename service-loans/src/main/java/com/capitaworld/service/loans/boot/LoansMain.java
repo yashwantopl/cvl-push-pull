@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -33,6 +34,7 @@ import com.capitaworld.service.users.client.UsersClient;
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.capitaworld" })
 @EnableAsync
+@EnableScheduling
 public class LoansMain {
 
 	@Autowired

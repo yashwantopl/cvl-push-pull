@@ -180,6 +180,11 @@ public class CommonUtils {
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
+	
+	public interface EmployementType {
+		public static final int SALARIED = 1;
+		public static final int BUSINESSMAN = 2;
+	}
 
 	public interface ReceiptMode {
 		public static final int CASH = 1;
@@ -311,6 +316,26 @@ public class CommonUtils {
 			age--;
 		}
 		return age;
+	}
+	
+	public static String getLoanName(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term Loan";
+		case 3:
+			return "Home Loan";
+		case 12:
+			return "Car Loan";
+		case 7:
+			return "Personal Loan";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
 	}
 	
 }

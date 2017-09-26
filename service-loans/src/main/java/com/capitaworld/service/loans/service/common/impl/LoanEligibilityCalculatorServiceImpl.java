@@ -1,10 +1,12 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Map.Entry;	
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -67,7 +69,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			for (Object data : bankByStatus.getListData()) {
 				MasterResponse bankResponse = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) data, MasterResponse.class);
-				
+
 				logger.info("bankResponse.getId()==>" + bankResponse.getId());
 				HomeLoanEligibilityCriteria homeLoanCriteria = loanEligibilityCriteriaRepository
 						.getHomeLoanBySalarySlab(homeLoanRequest.getIncome(), homeLoanRequest.getEmploymentType(),
@@ -157,79 +159,79 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			for (Object data : bankByStatus.getListData()) {
 				MasterResponse bankResponse = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) data, MasterResponse.class);
-				HomeLoanEligibilityCriteria homeLoanCriteria = loanEligibilityCriteriaRepository.getHomeLoanBySVMV(
-						homeLoanRequest.getStampValue(), homeLoanRequest.getMarketValue(),
+				Float marketValue = loanEligibilityCriteriaRepository.getHomeLoanByMV(homeLoanRequest.getMarketValue(),
 						Integer.class.cast(bankResponse.getId()));
-				if (homeLoanCriteria == null)
-					continue;
-				
-				logger.info("homeLoanCriteria==>" + homeLoanCriteria.toString());
-				logger.info("db Stamp Value==>" + homeLoanCriteria.getSaleDeedValue());
-				logger.info("Request Stamp Value==>" + homeLoanRequest.getStampValue());
-				logger.info("db Market Value==>" + homeLoanCriteria.getMarketValue());
+				Double mv = null;
+				Double sv = null;
 				logger.info("Request Market Value==>" + homeLoanRequest.getMarketValue());
-				double saleDeedValue = 0.0;
-				double marketValue = 0.0;
-				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getStampValue())) {
-					saleDeedValue = homeLoanRequest.getStampValue() * homeLoanCriteria.getSaleDeedValue() / 100;
+				logger.info("Request Stamp Value==>" + homeLoanRequest.getStampValue());
+				if (marketValue != null && !CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getMarketValue())) {
+					logger.info("db Market Value==>" + marketValue);
+					mv = (double) (homeLoanRequest.getMarketValue() * marketValue / 100);
 				}
-				if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getMarketValue())) {
-					marketValue = homeLoanRequest.getMarketValue() * homeLoanCriteria.getMarketValue() / 100;
+
+				Float stampValue = loanEligibilityCriteriaRepository.getHomeLoanBySV(homeLoanRequest.getStampValue(),
+						Integer.class.cast(bankResponse.getId()));
+				if (stampValue != null && !CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getStampValue())) {
+					logger.info("db Stamp Value==>" + stampValue);
+					sv = (double) homeLoanRequest.getStampValue() * stampValue / 100;
 				}
-				
-				logger.info("marketValue==> " + marketValue);
-				logger.info("saleDeedValue==> " + saleDeedValue);
-				if (saleDeedValue == 0.0 && marketValue > 0.0) {
-					minData.put(homeLoanCriteria.getBankId(), marketValue);
-				} else if (saleDeedValue > 0.0 && marketValue == 0.0) {
-					minData.put(homeLoanCriteria.getBankId(), saleDeedValue);
+				if (mv == null && sv == null) {
+					continue;
+				}
+				logger.info("Result MV==>" + mv);
+				logger.info("Result SV==>" + sv);
+
+				logger.info("saleDeedValue==> " + stampValue);
+				if (sv == null && mv != null) {
+					minData.put(Integer.class.cast(bankResponse.getId()), mv);
+				} else if (mv == null && sv != null) {
+					minData.put(Integer.class.cast(bankResponse.getId()), sv);
 				} else {
-					if (saleDeedValue < marketValue) {
-						minData.put(homeLoanCriteria.getBankId(), saleDeedValue);
+					if (sv < mv) {
+						minData.put(Integer.class.cast(bankResponse.getId()), sv);
 					} else {
-						minData.put(homeLoanCriteria.getBankId(), marketValue);
+						minData.put(Integer.class.cast(bankResponse.getId()), mv);
 					}
 				}
 
 			}
 
-			logger.info("minData ==> " + minData.toString());
-			logger.info("minMaxSalary ==> " + minMaxSalary.toString());
 			CommonDocumentUtils.endHook(logger, "calculateMinSVMVForHomeLoan");
 			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(minMaxSalary, minData);
 			logger.info("minMaxFromSalaryAndMVSV==> " + minMaxFromSalaryAndMVSV.toString());
-			Map<Double, Double> resultMap = new HashMap<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMinList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMaxList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Integer> bankIds = new ArrayList<Integer>(minMaxFromSalaryAndMVSV.size());
+
 			for (Entry<Integer, JSONObject> entry : minMaxFromSalaryAndMVSV.entrySet()) {
 				JSONObject json = entry.getValue();
+				logger.info("json==>" + json.toJSONString());
 				Double min = (Double) json.get(CommonUtils.MINIMUM);
 				Double max = (Double) json.get(CommonUtils.MAXIMUM);
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
-				resultMap.put(max, min);
+				finalMinList.add(min);
+				finalMaxList.add(max);
+				bankIds.add(entry.getKey());
 			}
 
+			logger.info("finalMaxList==> " + finalMaxList.toString());
+			logger.info("finalMinList==> " + finalMinList.toString());
+
 			JSONObject result = new JSONObject();
-			if (resultMap.isEmpty()) {
+			if (finalMaxList.isEmpty() && finalMinList.isEmpty()) {
 				result.put("message", "No Result Found");
 			} else {
-				long finalMax = Math.abs(Math.round(Collections.max(resultMap.keySet())));
-				long finalMin = Math.abs(Math.round(Collections.min(resultMap.values())));
-				JSONObject salarySlab = getMinMaxBySalarySlab(homeLoanRequest);
-				Long max = (Long)salarySlab.get(CommonUtils.MAXIMUM);
-				Long min = (Long)salarySlab.get(CommonUtils.MINIMUM);
-				if(max != null) {
-					result.put(CommonUtils.MAXIMUM, max < finalMax ? max : finalMax);
-				}
-				
-				if(min != null) {
-					result.put(CommonUtils.MINIMUM, min < finalMin ? min : finalMin);
-				}
-				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForHomeLoan();
+				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
+				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForHomeLoan(bankIds);
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
+				result.put("fundProivders",bankIds.size());
 			}
 			return result;
 		} catch (Exception e) {
@@ -242,37 +244,37 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@SuppressWarnings("unchecked")
 	public static Map<Integer, JSONObject> getMinMaxFromSalaryAndMVSV(Map<Integer, JSONObject> salaryMap,
 			Map<Integer, Double> mvsvMap) {
+		
+		logger.info("Before Remove minData ==> " + mvsvMap.toString());
+		logger.info("Before Remove minMaxSalary ==> " + salaryMap.toString());
+		
+		salaryMap.entrySet().removeIf(e -> !mvsvMap.containsKey(e.getKey()));
+		 mvsvMap.entrySet().removeIf(e-> !salaryMap.containsKey(e.getKey()));
+
+		logger.info("After Remove minData ==> " + mvsvMap.toString());
+		logger.info("After Remove minMaxSalary ==> " + salaryMap.toString());
+
 		Map<Integer, JSONObject> finalMap = new HashMap<>(salaryMap.size());
 		for (Entry<Integer, JSONObject> entry : salaryMap.entrySet()) {
 			JSONObject finaljson = new JSONObject();
 			JSONObject json = entry.getValue();
 			Double mvsnMin = mvsvMap.get(entry.getKey());
-
-			// Setting Minimum
 			Double salMinMax = (Double) json.get(CommonUtils.MINIMUM);
-			if (CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)) {
-				finaljson.put(CommonUtils.MINIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin : salMinMax);
-			} else {
+				// Setting Minimum
 				if (mvsnMin < salMinMax) {
 					finaljson.put(CommonUtils.MINIMUM, mvsnMin);
 				} else {
 					finaljson.put(CommonUtils.MINIMUM, salMinMax);
 				}
-			}
-
-			// Setting Maximum
-			salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
-			if (CommonUtils.isObjectNullOrEmpty(mvsnMin) || CommonUtils.isObjectNullOrEmpty(salMinMax)) {
-				finaljson.put(CommonUtils.MAXIMUM, !CommonUtils.isObjectNullOrEmpty(mvsnMin) ? mvsnMin : salMinMax);
-			} else {
-				if (mvsnMin > salMinMax) {
+			
+				// Setting Maximum
+				salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
+				if (mvsnMin < salMinMax) {
 					finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
 				} else {
 					finaljson.put(CommonUtils.MAXIMUM, salMinMax);
 				}
-			}
-
-			finalMap.put(entry.getKey(), finaljson);
+				finalMap.put(entry.getKey(), finaljson);
 		}
 		return finalMap;
 	}
@@ -321,10 +323,11 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 					continue;
 				}
 				// Maximum Amount Based on Salary and Max ROI
+				logger.info("=========>Bank Name=====>" + bankResponse.getValue());
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
 				double totalPayments = tenure * 12;
-				logger.info("monthlyRate==>" + totalPayments);
+				logger.info("totalPayments==>" + totalPayments);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result==>" + result);
 
@@ -377,12 +380,20 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		if (json.isEmpty()) {
 			json.put("message", "No Result Found");
 		} else {
+			
+			//Getting Loan Providers
+			List<Integer> bankIds = new ArrayList<>(minMaxData.size());
+			for(Entry<Integer, JSONObject> entry : minMaxData.entrySet()) {
+				bankIds.add(entry.getKey());
+			}
+			json.put("fundProivders",bankIds.size());
 			Object[] minMaxArr = loanEligibilityCriteriaRepository
-					.getMinMaxRoiForPersonalLoan(eligibilityRequest.getConstitution());
+					.getMinMaxRoiForPersonalLoan(bankIds,eligibilityRequest.getConstitution());
 			if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 				json.put("minRoi", minMaxArr[0]);
 				json.put("maxRoi", minMaxArr[1]);
 			}
+			
 		}
 		CommonDocumentUtils.endHook(logger, "calcMinMaxForPersonalLoan");
 		return json;
@@ -406,7 +417,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (tenure <= 0) {
 					return null;
 				}
-				tenure = (tenure > 30 ? 30 : tenure);
+				tenure = (tenure > 15 ? 15 : tenure);
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer, JSONObject> minMaxData = new HashMap<>(bankByStatus.getListData().size());
@@ -419,11 +430,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 						Integer.class.cast(bankResponse.getId()), eligibilityRequest.getPropertyType());
 				if (lapEligibilityCriteria == null || CommonUtils.isObjectNullOrEmpty(lapEligibilityCriteria.getMin()))
 					continue;
-				
+
 				logger.info("lapEligibilityCriteria==>" + lapEligibilityCriteria.toString());
 				logger.info("Before Income==>" + eligibilityRequest.getIncome());
 				logger.info("lapEligibilityCriteria.getFoir()==>" + lapEligibilityCriteria.getFoir());
 				logger.info("eligibilityRequest.getObligation()==>" + eligibilityRequest.getObligation());
+				
 				double income = eligibilityRequest.getIncome() * lapEligibilityCriteria.getFoir() / 100;
 				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
 					income = income - eligibilityRequest.getObligation();
@@ -435,13 +447,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				}
 
 				// Maximum Amount Based on Salary and Max ROI
+				logger.info("Bank Name()==>" + bankResponse.getValue());
 				double monthlyRate = lapEligibilityCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate First==>" + monthlyRate);
 				double totalPayments = tenure * 12;
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result First==>" + result);
 				double maximum = getMinMax(income, result);
-				logger.info("maximum==>" + income);
+				logger.info("maximum==>" + maximum);
 
 				monthlyRate = lapEligibilityCriteria.getRoiHigh() / 100 / 12;
 				logger.info("monthlyRate Sec==>" + monthlyRate);
@@ -450,7 +463,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("result Sec==>" + result);
 				double minimum = getMinMax(income, result);
 				logger.info("minimum==>" + minimum);
-				
+
 				JSONObject json = new JSONObject();
 				json.put(CommonUtils.MAXIMUM, maximum);
 				json.put(CommonUtils.MINIMUM, minimum);
@@ -515,7 +528,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			CommonDocumentUtils.endHook(logger, "calcLAPAmount");
 			Map<Integer, JSONObject> minMaxFromSalaryAndMVSV = getMinMaxFromSalaryAndMVSV(minMaxSalary, minData);
-			Map<Double, Double> resultMap = new HashMap<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMinList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Double> finalMaxList = new ArrayList<>(minMaxFromSalaryAndMVSV.size());
+			List<Integer> bankIds = new ArrayList<Integer>(minMaxFromSalaryAndMVSV.size());
 			for (Entry<Integer, JSONObject> entry : minMaxFromSalaryAndMVSV.entrySet()) {
 				JSONObject json = entry.getValue();
 				Double min = (Double) json.get(CommonUtils.MINIMUM);
@@ -523,32 +538,23 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				if (max.doubleValue() == min.doubleValue()) {
 					min = (min - (min * 10 / 100));
 				}
-				if (min < 0) {
-					min = 0d;
-				}
-				resultMap.put(max, min);
+				finalMinList.add(min);
+				finalMaxList.add(max);
+				bankIds.add(entry.getKey());
 			}
 
 			JSONObject result = new JSONObject();
-			if (resultMap.isEmpty()) {
+			if (finalMinList.isEmpty() && finalMaxList.isEmpty()) {
 				result.put("message", "No Result Found");
 			} else {
-				long finalMax =  Math.abs(Math.round(Collections.max(resultMap.keySet())));
-				long finalMin = Math.abs(Math.round(Collections.min(resultMap.values())));
-				JSONObject salarySlab = calcMinMaxForLAP(eligibilityRequest);
-				Long max = (Long)salarySlab.get(CommonUtils.MAXIMUM);
-				Long min = (Long)salarySlab.get(CommonUtils.MINIMUM);
-				if(max != null) {
-					result.put(CommonUtils.MAXIMUM, max < finalMax ? max : finalMax);
-				}
-				if(min != null) {
-					result.put(CommonUtils.MINIMUM, min < finalMin ? min : finalMin);
-				}
-				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP();
+				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
+				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds,eligibilityRequest.getEmploymentType(),eligibilityRequest.getPropertyType());
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
+				result.put("fundProivders",bankIds.size());
 			}
 
 			return result;
