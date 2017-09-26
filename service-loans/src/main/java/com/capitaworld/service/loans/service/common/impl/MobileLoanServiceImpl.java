@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
-import com.capitaworld.service.loans.model.mobile.MobileUserRequest;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryLapLoanDetailRequest;
@@ -50,7 +50,7 @@ public class MobileLoanServiceImpl implements MobileService {
 	private PrimaryLapLoanService primaryLapLoanService;
 	
 	@Override
-	public MRetailApplicantResponse getApplicantDetails(MobileUserRequest mobileUserRequest) throws Exception {
+	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception {
 		logger.info("Get Applicant Details From RetailApplicantDetail");
 		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(mobileUserRequest.getUserId(), mobileUserRequest.getApplicationId());
 		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {

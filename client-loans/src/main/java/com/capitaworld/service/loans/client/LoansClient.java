@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
-import com.capitaworld.service.loans.model.mobile.MobileUserRequest;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 
 public class LoansClient {
 	
@@ -346,12 +346,12 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getLoanListForMobile(MobileUserRequest mobileUserRequest) throws  LoansException {
+	public LoansResponse getLoanListForMobile(MobileLoanRequest mobileUserRequest) throws  LoansException {
 		String url = loansBaseUrl.concat(MOBILE_LOANLIST);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-		    HttpEntity<MobileUserRequest> entity = new HttpEntity<MobileUserRequest>(mobileUserRequest, headers);
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		
 		} catch (Exception e) {
@@ -360,12 +360,12 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse lockPrimaryDetails(MobileUserRequest mobileUserRequest) throws  LoansException {
+	public LoansResponse lockPrimaryDetails(MobileLoanRequest mobileUserRequest) throws  LoansException {
 		String url = loansBaseUrl.concat(MOBILE_LOCK_PRIMARY);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-		    HttpEntity<MobileUserRequest> entity = new HttpEntity<MobileUserRequest>(mobileUserRequest, headers);
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		
 		} catch (Exception e) {
@@ -374,12 +374,12 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getApplicantDetails(MobileUserRequest mobileUserRequest) throws  LoansException {
+	public LoansResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws  LoansException {
 		String url = loansBaseUrl.concat(MOBILE_GET_APPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-		    HttpEntity<MobileUserRequest> entity = new HttpEntity<MobileUserRequest>(mobileUserRequest, headers);
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		
 		} catch (Exception e) {
