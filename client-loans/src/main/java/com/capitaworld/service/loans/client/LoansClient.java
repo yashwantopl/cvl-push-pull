@@ -19,6 +19,8 @@ import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 
 public class LoansClient {
 	
@@ -63,6 +65,12 @@ public class LoansClient {
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String LOAN_APPLICATION = "/loan_application/save";
+	
+	private static final String MOBILE_LOANLIST = "/mobile/loanList";
+	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
+	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
+	private static final String MOBILE_LOCK_PRIMARY = "/mobile/lockPrimary";
+	
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -362,6 +370,62 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call create log");
+		}
+	}
+	
+	public LoansResponse getLoanListForMobile(MobileLoanRequest mobileUserRequest) throws  LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOANLIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call loan list for mobile app");
+		}
+	}
+	
+	public LoansResponse lockPrimaryDetails(MobileLoanRequest mobileUserRequest) throws  LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOCK_PRIMARY);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call loan list for mobile app");
+		}
+	}
+	
+	public LoansResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws  LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_APPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveApplicantDetails(MRetailApplicantResponse response) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_APPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(response, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save applicant details for mobile app");
 		}
 	}
 
