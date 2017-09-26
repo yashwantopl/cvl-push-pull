@@ -13,6 +13,8 @@ import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
+import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
+import com.capitaworld.service.loans.model.mobile.MobileUserRequest;
 
 public class LoansClient {
 	
@@ -36,6 +38,10 @@ public class LoansClient {
 	private static final String GET_CHATLIST_BY_FP_MAPPING="/loan_application/getChatListByFpMappingId";
 	private static final String GET_CHATLIST_BY_APPLICATION_ID="/product_master/getChatListByApplicationId";
 	private static final String CREATE_LOG="/createLog";
+	
+	private static final String MOBILE_LOANLIST = "/mobile/loanList";
+	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
+	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
 	
 	
 	private String loansBaseUrl;
@@ -336,6 +342,48 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call create log");
+		}
+	}
+	
+	public LoansResponse getLoanListForMobile(MobileUserRequest mobileUserRequest) throws  LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOANLIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MobileUserRequest> entity = new HttpEntity<MobileUserRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call loan list for mobile app");
+		}
+	}
+	
+	public LoansResponse getApplicantDetails(MobileUserRequest mobileUserRequest) throws  LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_APPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MobileUserRequest> entity = new HttpEntity<MobileUserRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveApplicantDetails(MRetailApplicantResponse response) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_APPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(response, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save applicant details for mobile app");
 		}
 	}
 
