@@ -318,4 +318,24 @@ public class CommonUtils {
 		return age;
 	}
 	
+	public static String getLoanName(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term Loan";
+		case 3:
+			return "Home Loan";
+		case 12:
+			return "Car Loan";
+		case 7:
+			return "Personal Loan";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
+	}
+	
 }
