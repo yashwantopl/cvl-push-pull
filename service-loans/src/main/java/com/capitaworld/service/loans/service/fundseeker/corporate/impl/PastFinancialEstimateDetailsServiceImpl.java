@@ -199,9 +199,17 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else {
 					List<PastFinancialEstimatesDetail> financialEstimatesNewList = new ArrayList<>();
-					String recordYearsArray[] = pastFinancialEstimateDetails.get(0).getFinancialYear().toString()
+					String recordYearsArray[] = null;
+					if(pastFinancialEstimateDetails.get(0)!=null){
+						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
+					recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString()
 							.split("-");
-					int lastYear = Integer.parseInt(recordYearsArray[0].trim());
+						}
+					}
+					int lastYear= 0;
+					if(recordYearsArray !=null){
+					 lastYear = Integer.parseInt(recordYearsArray[0].trim());
+					}
 					int yearCount = 0;
 					for (int i = pastFinancialEstimateDetails.size(); i < differenceOfYears; i++) {
 						PastFinancialEstimatesDetail financialEstimateObject = new PastFinancialEstimatesDetail();

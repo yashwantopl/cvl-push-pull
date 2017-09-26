@@ -62,7 +62,7 @@ public class LoansClient {
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
-	private static final String WORKING_CAPITAL_FINAL_PING = "/working_capital/ping";
+	private static final String LOAN_APPLICATION = "/loan_application/save";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -646,20 +646,19 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse test(String a)throws Exception{
-		String url = loansBaseUrl.concat(WORKING_CAPITAL_FINAL_PING);
+	public LoansResponse saveLoanApplicationMaster(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(LOAN_APPLICATION);
 		try {
 			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			headers.set("test", a);
-		    HttpEntity<FinalWorkingCapitalLoanRequest> entity = new HttpEntity<FinalWorkingCapitalLoanRequest>(null, headers);
+		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
 		}
-		
 	}
+	
 	
 }

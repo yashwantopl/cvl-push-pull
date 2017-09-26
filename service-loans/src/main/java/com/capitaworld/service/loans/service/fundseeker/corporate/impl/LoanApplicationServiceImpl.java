@@ -2176,4 +2176,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	@Override
+	public String getMcaCompanyId(Long applicationId, Long userId) {
+		try{
+		return loanApplicationRepository.getMCACompanyIdByIdAndUserId(applicationId, userId).getMcaCompanyId();
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
 }

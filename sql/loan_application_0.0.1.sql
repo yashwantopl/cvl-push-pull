@@ -1,0 +1,1 @@
+ALTER TABLE fs_loan_application_master ADD COLUMN mca_company_id VARCHAR(50) DEFAULT NULL;
