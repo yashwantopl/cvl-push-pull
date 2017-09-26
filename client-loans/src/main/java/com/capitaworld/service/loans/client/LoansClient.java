@@ -235,13 +235,13 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getRegisteredUsersDetails() throws  LoansException {
+	public LoansResponse getRegisteredUsersDetails(Long userType) throws  LoansException {
 		String url = loansBaseUrl.concat(REGISTERD_USERS_DETAILS);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-		    HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		    HttpEntity<Long> entity = new HttpEntity<Long>(userType, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		
 		} catch (Exception e) {
 			e.printStackTrace();
