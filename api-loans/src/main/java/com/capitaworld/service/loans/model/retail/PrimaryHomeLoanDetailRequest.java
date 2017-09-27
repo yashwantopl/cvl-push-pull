@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -63,6 +65,7 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 
 	private Integer renovationType;
 
+	private List<Long> negativeList=Collections.emptyList();
 	
 	public Double getArea() {
 		return area;
@@ -246,6 +249,14 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 
 	public void setRenovationType(Integer renovationType) {
 		this.renovationType = renovationType;
+	}
+
+	public List<Long> getNegativeList() {
+		return negativeList;
+	}
+
+	public void setNegativeList(List<Long> negativeList) {
+		this.negativeList = negativeList;
 	}
 
 	
