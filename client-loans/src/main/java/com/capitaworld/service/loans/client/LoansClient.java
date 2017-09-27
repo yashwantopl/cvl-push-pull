@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -64,7 +65,7 @@ public class LoansClient {
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
-	private static final String LOAN_APPLICATION = "/loan_application/save";
+	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
@@ -711,12 +712,26 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveLoanApplicationMaster(FrameRequest request) throws ExcelException {
-		String url = loansBaseUrl.concat(LOAN_APPLICATION);
+		String url = loansBaseUrl.concat(UPDATE_LOAN_APPLICATION);
 		try {
 			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 		    HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updateLoanApplicationMaster(LoanApplicationRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(UPDATE_LOAN_APPLICATION);
+		try {
+			/*return restTemplate.postForObject(url, request, ExcelResponse.class);*/
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+		    HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();

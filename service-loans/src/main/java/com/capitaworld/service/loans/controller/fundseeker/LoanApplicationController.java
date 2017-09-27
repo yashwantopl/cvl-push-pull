@@ -59,6 +59,10 @@ public class LoanApplicationController {
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				commonRequest.setClientId(clientId);
 			}
+			
+			
+			//==============
+			
 			loanApplicationService.saveOrUpdate(commonRequest, userId);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
@@ -877,6 +881,40 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getMcaCompanyId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/updateLoanApplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateLoanApplication(@RequestBody LoanApplicationRequest loanRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "updateLoanApplication");
+			Long userId = null;
+			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())){
+				loanRequest.setClientId(clientId);
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}else{
+				   if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){ 
+					   userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				   }else if(!CommonUtils.isObjectNullOrEmpty( loanRequest.getUserId())){
+					   userId= loanRequest.getClientId();
+				   }else{
+				    logger.warn("Invalid request.");
+				    return new ResponseEntity<LoansResponse>(
+				      new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()),
+				      HttpStatus.OK);
+				   }
+			}
+			 loanRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loanApplicationService.updateLoanApplication(loanRequest);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updateLoanApplication==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

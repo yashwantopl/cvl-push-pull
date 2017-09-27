@@ -2224,4 +2224,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	@Override
+	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
+		
+		LoanApplicationMaster master = loanApplicationRepository.getByIdAndUserId(loanRequest.getId(), loanRequest.getUserId());
+		
+		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
+		
+		loanApplicationRepository.save(master);
+		
+	}
+
 }

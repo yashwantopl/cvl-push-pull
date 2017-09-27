@@ -75,5 +75,7 @@ public interface LoanApplicationService {
 	public String getMcaCompanyId(Long applicationId, Long userId);
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
+
+	public void updateLoanApplication(LoanApplicationRequest loanRequest);
 	
 }
