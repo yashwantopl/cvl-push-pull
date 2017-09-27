@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.auth.model.MobilelAppLoginResponse;
 import com.capitaworld.service.loans.controller.mobile.MobileLoanController;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.CommonResponse;

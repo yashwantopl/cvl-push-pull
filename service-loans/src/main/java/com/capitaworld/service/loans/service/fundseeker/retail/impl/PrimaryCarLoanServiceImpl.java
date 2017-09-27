@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryCarLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -33,6 +36,9 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	private FsNegativeFpListRepository fsNegativeFpListRepository;
+	
 	@Override
 	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws Exception {
 		// ID must not be null
@@ -52,6 +58,9 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			
 			//Updating Primary Flag
 			loanApplicationRepository.setPrimaryFilledCount(primaryCarLoanDetail.getId(), finalUserId, carLoanDetailRequest.getPrimaryFilledCount());
+			//save negative list
+			fsNegativeFpListRepository.inActiveMappingByApplicationId(primaryCarLoanDetail.getApplicationId().getId());
+			saveNegativeList(primaryCarLoanDetail.getApplicationId().getId(), carLoanDetailRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details");
@@ -60,6 +69,24 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 		}
 	}
 
+	private void saveNegativeList(Long id, List<Long> negativeList) {
+		// TODO Auto-generated method stub
+		FsNegativeFpList fsNegativeFpList= null;
+		for (Long fpId : negativeList) {
+			fsNegativeFpList = new FsNegativeFpList();
+			fsNegativeFpList.setApplicationId(id);
+			fsNegativeFpList.setFpId(fpId);
+			fsNegativeFpList.setCreatedBy(id);
+			fsNegativeFpList.setModifiedBy(id);
+			fsNegativeFpList.setCreatedDate(new Date());
+			fsNegativeFpList.setModifiedDate(new Date());
+			fsNegativeFpList.setIsActive(true);
+			// create by and update
+			fsNegativeFpListRepository.save(fsNegativeFpList);
+		}
+		
+	}
+	
 	@Override
 	public PrimaryCarLoanDetailRequest get(Long id, Long userId) throws Exception {
 		try {
@@ -69,6 +96,8 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 						"PrimaryCarLoanDetail not exist in DB with ID=>" + id + " and User Id ==>" + userId);
 			}
 			PrimaryCarLoanDetailRequest carLoanDetailRequest = new PrimaryCarLoanDetailRequest();
+			//get fp negative list
+			carLoanDetailRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(id));
 			BeanUtils.copyProperties(loanDetail, carLoanDetailRequest);
 			carLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, id);
