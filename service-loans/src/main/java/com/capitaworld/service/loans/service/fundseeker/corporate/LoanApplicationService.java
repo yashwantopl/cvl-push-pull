@@ -76,9 +76,8 @@ public interface LoanApplicationService {
 	
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
 	
-	public boolean isFsProceed( Long applicationId);
-	
 	public void saveSuggestionList(ProposalList  proposalList);	
+	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
 	
 }

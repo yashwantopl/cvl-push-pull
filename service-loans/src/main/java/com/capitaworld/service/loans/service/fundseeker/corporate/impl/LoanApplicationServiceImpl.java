@@ -178,7 +178,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
-				applicationMaster.setIsProceed(false);
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
@@ -2251,12 +2250,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	@Override
-	public boolean isFsProceed(Long applicationId) {
-		// TODO Auto-generated method stub
-		return loanApplicationRepository.isProceed(applicationId);
 	}
 
 	

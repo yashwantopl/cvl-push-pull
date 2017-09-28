@@ -55,7 +55,7 @@ public class LoanApplicationMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_date")
 	private Date modifiedDate;
-	
+
 	private String name;
 	
 	@Column(name = "application_code")
@@ -163,10 +163,6 @@ public class LoanApplicationMaster implements Serializable {
 	@JoinColumn(name = "status")
 	private ApplicationStatusMaster applicationStatusMaster;
 	
-	@Column(name = "is_proceed")
-	private Boolean isProceed;
-	
-
 	public LoanApplicationMaster() {
 	}
 
@@ -485,15 +481,7 @@ public class LoanApplicationMaster implements Serializable {
 	public void setFinalFilledCount(String finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
-
 	
-	public Boolean getIsProceed() {
-		return isProceed;
-	}
-
-	public void setIsProceed(Boolean isProceed) {
-		this.isProceed = isProceed;
-	}
 
 	@Override
 	public String toString() {
