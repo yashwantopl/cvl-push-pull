@@ -38,6 +38,7 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
@@ -435,6 +436,43 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	@Override
+	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId){
+		List<LoanApplicationMaster> loanApplicationMasterList = loanApplicationRepository.getUserLoans(userId);
+		List<MLoanDetailsResponse> responseList = new ArrayList<>(loanApplicationMasterList.size());
+		for(LoanApplicationMaster loanApplicationMaster : loanApplicationMasterList) {
+			MLoanDetailsResponse response = new MLoanDetailsResponse();
+			response.setId(loanApplicationMaster.getId());
+			response.setApplicationCode(loanApplicationMaster.getApplicationCode());
+			response.setLoan(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+			response.setAmount(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()) ? loanApplicationMaster.getAmount() : 0.0);
+			response.setCreatedDate(loanApplicationMaster.getCreatedDate());
+			response.setProductId(loanApplicationMaster.getProductId());
+			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				response.setLoanType(CommonUtils.CORPORATE);
+				String currencyAndDenomination = "NA";
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
+					try {
+						currencyAndDenomination = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination
+								.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				response.setCurrency(currencyAndDenomination);
+			} else {
+				response.setLoanType(CommonUtils.RETAIL);
+				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, loanApplicationMaster.getId());
+				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
+			}
+			responseList.add(response);
+		}
+		return responseList;
 	}
 
 	@Override
@@ -2174,6 +2212,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		default:
 			return null;
 		}
+	}
+
+	@Override
+	public String getMcaCompanyId(Long applicationId, Long userId) {
+		try{
+		return loanApplicationRepository.getMCACompanyIdByIdAndUserId(applicationId, userId).getMcaCompanyId();
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
+		
+		LoanApplicationMaster master = loanApplicationRepository.getByIdAndUserId(loanRequest.getId(), loanRequest.getUserId());
+		
+		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
+		
+		loanApplicationRepository.save(master);
+		
 	}
 
 }

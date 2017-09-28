@@ -342,6 +342,25 @@ public class CommonUtils {
 	public static String CurrencyFormat(String value) {
 		NumberFormat nf=NumberFormat.getInstance();
 		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString()))+" ";		
+  }
+	public static String getLoanName(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term Loan";
+		case 3:
+			return "Home Loan";
+		case 12:
+			return "Car Loan";
+		case 7:
+			return "Personal Loan";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
 	}
 	
 }
