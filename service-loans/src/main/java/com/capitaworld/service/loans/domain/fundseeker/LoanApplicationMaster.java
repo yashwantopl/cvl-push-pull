@@ -157,6 +157,18 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "final_filled_count")
 	private String finalFilledCount;
+	
+	@Column(name = "mca_company_id")
+	private String mcaCompanyId;
+
+	
+	public String getMcaCompanyId() {
+		return mcaCompanyId;
+	}
+
+	public void setMcaCompanyId(String mcaCompanyId) {
+		this.mcaCompanyId = mcaCompanyId;
+	}
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne

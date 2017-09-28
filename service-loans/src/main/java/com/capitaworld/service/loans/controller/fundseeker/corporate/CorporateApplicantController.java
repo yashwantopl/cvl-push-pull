@@ -31,10 +31,10 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class CorporateApplicantController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateApplicantController.class.getName());
-	
+
 	@Autowired
 	private CorporateApplicantService applicantService;
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
@@ -50,12 +50,42 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			Long userId =null;
+			
+//			Long tempUserId =null;// (Long) request.getAttribute(CommonUtils.USER_ID);
+//			if(tempUserId != null){
+//				userId =tempUserId;
+//			}
+//			else if(applicantRequest.getUserId() !=null){
+//				userId = applicantRequest.getUserId();
+//			}
+//			else{
+//				userId = null;
+//			}
+			
+			//==============
+			
+			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())){
 				applicantRequest.setClientId(clientId);
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}else{
+				   if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){ 
+					   userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				   }else if(!CommonUtils.isObjectNullOrEmpty( applicantRequest.getUserId())){
+					   userId= applicantRequest.getUserId();
+				   }else{
+				    logger.warn("Invalid request.");
+				    return new ResponseEntity<LoansResponse>(
+				      new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()),
+				      HttpStatus.OK);
+				   }
 			}
+			
+// ==============
+//			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+//					.intValue()) {
+//				applicantRequest.setClientId(clientId);
+//			}
 
 			if (applicantRequest == null) {
 				logger.warn("applicantRequest  can not be empty ==>", userId);
@@ -68,6 +98,7 @@ public class CorporateApplicantController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			applicantRequest.setUserId(userId);
 			//Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -219,7 +250,7 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "/save_lat_lon", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLatLon(@RequestBody LongitudeLatitudeRequest applicantRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -233,7 +264,7 @@ public class CorporateApplicantController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
+
 			if (applicantRequest.getId() == null) {
 				logger.warn("applicationId Require to Save Lat Lon Details ==>" + applicantRequest.getId());
 				return new ResponseEntity<LoansResponse>(
@@ -243,7 +274,7 @@ public class CorporateApplicantController {
 			loansResponse.setData(applicantService.updateLatLong(applicantRequest, userId));
 			CommonDocumentUtils.endHook(logger, "saveLatLon");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			
+
 		} catch (Exception e) {
 			logger.error("Error while Saving LatLon Details==>", e);
 			return new ResponseEntity<LoansResponse>(
@@ -251,8 +282,7 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	
+
 	@RequestMapping(value = "/get_lat_lon/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getLatLon(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -266,7 +296,7 @@ public class CorporateApplicantController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
+
 			if (applicationId == null) {
 				logger.warn("applicationId Require to get LatLon Details ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -276,7 +306,7 @@ public class CorporateApplicantController {
 			loansResponse.setData(applicantService.getLatLonByApplicationAndUserId(applicationId, userId));
 			CommonDocumentUtils.endHook(logger, "getLatLon");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			
+
 		} catch (Exception e) {
 			logger.error("Error while Getting LatLon Details==>", e);
 			return new ResponseEntity<LoansResponse>(

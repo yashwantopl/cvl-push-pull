@@ -73,11 +73,15 @@ public interface LoanApplicationService {
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
 	
 	public List<ChatDetails> getChatListByApplicationId(Long fpMappingId);
+
+	public String getMcaCompanyId(Long applicationId, Long userId);
 	
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
 	
 	public void saveSuggestionList(ProposalList  proposalList);	
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
+
+	public void updateLoanApplication(LoanApplicationRequest loanRequest);
 	
 }
