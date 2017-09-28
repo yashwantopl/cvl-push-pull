@@ -52,6 +52,8 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	
+	//new requirement cw-384
 	private Double monthlyLoanObligation;
 	private Double patPreviousYear;
 	private Double patCurrentYear;

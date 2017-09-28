@@ -29,6 +29,25 @@ public class RetailProfileViewResponse {
 	private String industryType;
 	private String landSize;
 	private String alliedActivity;
+	
+	//new requirement cw-384
+	private String yearsInCurrentJob;
+	private String monthsInCurrentJob;
+	private String totalExperienceInYears;
+	private String totalExperienceInMonths;
+	private String previousExperienceInYears;
+	private String previousExperienceInMonths;
+	private String previousEmployerName;
+	private String previousEmployerAddress;
+	private String businessExperience;
+	private String annualTurnover;
+	private String monthlyLoanObligation;
+	private String patPreviousYear;
+	private String patCurrentYear;
+	private String depreciationPreviousYear;
+	private String depreciationCurrentYear;
+	private String remunerationPreviousYear;
+	private String remunerationCurrentYear;
 
 	public String getFirstName() {
 		return firstName;
@@ -197,4 +216,142 @@ public class RetailProfileViewResponse {
 	public void setAlliedActivity(String alliedActivity) {
 		this.alliedActivity = alliedActivity;
 	}
+
+	public String getYearsInCurrentJob() {
+		return yearsInCurrentJob;
+	}
+
+	public void setYearsInCurrentJob(String yearsInCurrentJob) {
+		this.yearsInCurrentJob = yearsInCurrentJob;
+	}
+
+	public String getMonthsInCurrentJob() {
+		return monthsInCurrentJob;
+	}
+
+	public void setMonthsInCurrentJob(String monthsInCurrentJob) {
+		this.monthsInCurrentJob = monthsInCurrentJob;
+	}
+
+	public String getTotalExperienceInYears() {
+		return totalExperienceInYears;
+	}
+
+	public void setTotalExperienceInYears(String totalExperienceInYears) {
+		this.totalExperienceInYears = totalExperienceInYears;
+	}
+
+	public String getTotalExperienceInMonths() {
+		return totalExperienceInMonths;
+	}
+
+	public void setTotalExperienceInMonths(String totalExperienceInMonths) {
+		this.totalExperienceInMonths = totalExperienceInMonths;
+	}
+
+	public String getPreviousExperienceInYears() {
+		return previousExperienceInYears;
+	}
+
+	public void setPreviousExperienceInYears(String previousExperienceInYears) {
+		this.previousExperienceInYears = previousExperienceInYears;
+	}
+
+	public String getPreviousExperienceInMonths() {
+		return previousExperienceInMonths;
+	}
+
+	public void setPreviousExperienceInMonths(String previousExperienceInMonths) {
+		this.previousExperienceInMonths = previousExperienceInMonths;
+	}
+
+	public String getPreviousEmployerName() {
+		return previousEmployerName;
+	}
+
+	public void setPreviousEmployerName(String previousEmployerName) {
+		this.previousEmployerName = previousEmployerName;
+	}
+
+	public String getPreviousEmployerAddress() {
+		return previousEmployerAddress;
+	}
+
+	public void setPreviousEmployerAddress(String previousEmployerAddress) {
+		this.previousEmployerAddress = previousEmployerAddress;
+	}
+
+	public String getBusinessExperience() {
+		return businessExperience;
+	}
+
+	public void setBusinessExperience(String businessExperience) {
+		this.businessExperience = businessExperience;
+	}
+
+	public String getAnnualTurnover() {
+		return annualTurnover;
+	}
+
+	public void setAnnualTurnover(String annualTurnover) {
+		this.annualTurnover = annualTurnover;
+	}
+
+	public String getMonthlyLoanObligation() {
+		return monthlyLoanObligation;
+	}
+
+	public void setMonthlyLoanObligation(String monthlyLoanObligation) {
+		this.monthlyLoanObligation = monthlyLoanObligation;
+	}
+
+	public String getPatPreviousYear() {
+		return patPreviousYear;
+	}
+
+	public void setPatPreviousYear(String patPreviousYear) {
+		this.patPreviousYear = patPreviousYear;
+	}
+
+	public String getPatCurrentYear() {
+		return patCurrentYear;
+	}
+
+	public void setPatCurrentYear(String patCurrentYear) {
+		this.patCurrentYear = patCurrentYear;
+	}
+
+	public String getDepreciationPreviousYear() {
+		return depreciationPreviousYear;
+	}
+
+	public void setDepreciationPreviousYear(String depreciationPreviousYear) {
+		this.depreciationPreviousYear = depreciationPreviousYear;
+	}
+
+	public String getDepreciationCurrentYear() {
+		return depreciationCurrentYear;
+	}
+
+	public void setDepreciationCurrentYear(String depreciationCurrentYear) {
+		this.depreciationCurrentYear = depreciationCurrentYear;
+	}
+
+	public String getRemunerationPreviousYear() {
+		return remunerationPreviousYear;
+	}
+
+	public void setRemunerationPreviousYear(String remunerationPreviousYear) {
+		this.remunerationPreviousYear = remunerationPreviousYear;
+	}
+
+	public String getRemunerationCurrentYear() {
+		return remunerationCurrentYear;
+	}
+
+	public void setRemunerationCurrentYear(String remunerationCurrentYear) {
+		this.remunerationCurrentYear = remunerationCurrentYear;
+	}
+	
+	
 }

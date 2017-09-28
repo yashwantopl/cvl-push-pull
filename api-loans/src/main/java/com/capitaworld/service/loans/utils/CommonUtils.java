@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -316,6 +318,30 @@ public class CommonUtils {
 			age--;
 		}
 		return age;
+	}
+	
+	public static String calculateBusinessExperience(Date establishmentYear){
+		
+		Calendar today = Calendar.getInstance();
+		Calendar establishment = Calendar.getInstance();
+		establishment.setTime(establishmentYear);
+		
+		int estYear = establishment.get(Calendar.YEAR);
+		int estMonth = establishment.get(Calendar.MONTH);
+		
+		int todayYear = today.get(Calendar.YEAR);
+		int todayMonth = today.get(Calendar.MONTH)+1;
+		
+		int year = todayYear - estYear;
+		int month = todayMonth - estMonth;
+		
+		String value = year + " Years " + month + " Months ";
+		return value;		
+	}
+	
+	public static String CurrencyFormat(String value) {
+		NumberFormat nf=NumberFormat.getInstance();
+		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString()))+" ";		
 	}
 	
 }
