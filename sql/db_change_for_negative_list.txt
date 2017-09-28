@@ -1,0 +1,18 @@
+
+create table `loan_applications`.`fs_negative_fp_list` (
+	`id` bigint (20),
+	`application_id` bigint (20),
+	`fp_id` bigint (20),
+	`created_by` bigint (20),
+	`created_date` datetime ,
+	`is_active` bit (1),
+	`modified_by` bigint (20),
+	`modified_date` datetime 
+); 
+
+
+insert into `loan_applications`.`proposal_status_master` (`id`, `status`, `code`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('10','Suggestion','SUGGESTION','2017-09-11 12:22:02','2017-09-11 12:22:02',NULL,NULL,'');
+
+
+ALTER TABLE `loan_applications`.`proposal_details` 
+  ADD COLUMN pending_proposal_update_date DATETIME;
