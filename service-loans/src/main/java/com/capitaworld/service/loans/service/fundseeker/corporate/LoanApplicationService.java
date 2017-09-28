@@ -5,13 +5,15 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.auth.model.MobilelAppLoginResponse;
 import com.capitaworld.service.loans.controller.mobile.MobileLoanController;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.common.ProposalList;
+import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
@@ -73,6 +75,10 @@ public interface LoanApplicationService {
 	public List<ChatDetails> getChatListByApplicationId(Long fpMappingId);
 
 	public String getMcaCompanyId(Long applicationId, Long userId);
+	
+	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId);
+	
+	public void saveSuggestionList(ProposalList  proposalList);	
 	
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
 

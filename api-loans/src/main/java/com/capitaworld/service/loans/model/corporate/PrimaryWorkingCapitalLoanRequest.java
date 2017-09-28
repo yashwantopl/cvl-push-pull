@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,6 +25,8 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 	private String projectBrief;
 
 	private Double totalCollateralDetails;
+	
+	private List<Long> negativeList=Collections.emptyList();
 
 	public PrimaryWorkingCapitalLoanRequest() {
 	}
@@ -67,4 +71,13 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 		this.totalCollateralDetails = totalCollateralDetails;
 	}
 
+	public List<Long> getNegativeList() {
+		return negativeList;
+	}
+
+	public void setNegativeList(List<Long> negativeList) {
+		this.negativeList = negativeList;
+	}
+
+	
 }
