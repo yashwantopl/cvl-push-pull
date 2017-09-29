@@ -27,6 +27,10 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	
+	public static final Long RETAIL_APPLICANT = 1L;
+	public static final Long RETAIL_COAPPLICANT = 2L;
+	public static final Long RETAIL_GUARANTOR = 3L;
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
