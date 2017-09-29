@@ -2300,11 +2300,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
 		
 		LoanApplicationMaster master = loanApplicationRepository.getByIdAndUserId(loanRequest.getId(), loanRequest.getUserId());
-		
+		if(!CommonUtils.isObjectNullOrEmpty(master)){
+			logger.info("In LOANAPPLICATIONMASTER");
 		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
 		
 		loanApplicationRepository.save(master);
-		
+		}
+		else{
+			logger.error("NUll LOANAPPLICATIONMASTER");
+		}
 	}
 
 }
