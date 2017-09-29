@@ -871,11 +871,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getDetailsForEkycAuthentication(HttpServletRequest request,@RequestBody EkycRequest ekycRequest,
 			 @RequestParam(value = "clientId", required = false) Long clientId) {
 		
-		ekycRequest.setApplicantsId(438l);
-		ekycRequest.setApplicantType(1l);
-		ekycRequest.setApplicationId(438l);
-		
-		        // request must not be null
+				// request must not be null
 				try {
 					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 					loansResponse.setData(loanApplicationService.getDetailsForEkycAuthentication(ekycRequest));
