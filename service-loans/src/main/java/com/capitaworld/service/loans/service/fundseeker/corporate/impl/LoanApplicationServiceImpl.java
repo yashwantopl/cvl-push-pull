@@ -25,6 +25,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
@@ -41,6 +43,8 @@ import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.model.common.EkycRequest;
+import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -122,8 +126,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LogService logService;
 
 	@Autowired
-	private  PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository; 
-	
+	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
+
 	@Autowired
 	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
 
@@ -163,7 +167,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					break;
 				case CAR_LOAN:
 					applicationMaster = new PrimaryCarLoanDetail();
-					break;	
+					break;
 
 				default:
 					continue;
@@ -191,8 +195,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId)
-			throws Exception {
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception {
 		logger.info("Entry in saveOrUpdateFromLoanEligibilty");
 		try {
 			LoanApplicationMaster applicationMaster = null;
@@ -211,9 +214,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				case TERM_LOAN:
 					applicationMaster = new PrimaryTermLoanDetail();
 					break;
-				/*case LAS_LOAN:
-					applicationMaster = new PrimaryLasLoanDetail();
-					break;*/
+				/*
+				 * case LAS_LOAN: applicationMaster = new
+				 * PrimaryLasLoanDetail(); break;
+				 */
 				case LAP_LOAN:
 					applicationMaster = new PrimaryLapLoanDetail();
 					break;
@@ -232,10 +236,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 
 				logger.info("userId==>" + userId);
-				//BeanUtils.copyProperties(loanEligibilityRequest, applicationMaster, "name");
-				if(!CommonUtils.isObjectNullOrEmpty(loanEligibilityRequest.getTenure()))
-				{
-				applicationMaster.setTenure(loanEligibilityRequest.getTenure()*12);
+				// BeanUtils.copyProperties(loanEligibilityRequest,
+				// applicationMaster, "name");
+				if (!CommonUtils.isObjectNullOrEmpty(loanEligibilityRequest.getTenure())) {
+					applicationMaster.setTenure(loanEligibilityRequest.getTenure() * 12);
 				}
 				applicationMaster.setProductId(loanEligibilityRequest.getProductId());
 				applicationMaster.setUserId(userId);
@@ -243,41 +247,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
-				applicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+				applicationMaster
+						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
-				
-				//for save primary details
-				
+
+				// for save primary details
+
 				switch (type) {
 				case WORKING_CAPITAL:
-					
+
 					break;
 				case TERM_LOAN:
-					
+
 					break;
-				/*case LAS_LOAN:
-					applicationMaster = new PrimaryLasLoanDetail();
-					break;*/
+				/*
+				 * case LAS_LOAN: applicationMaster = new
+				 * PrimaryLasLoanDetail(); break;
+				 */
 				case LAP_LOAN:
-					PrimaryLapLoanDetail lapLoanDetail=primaryLapLoanDetailRepository.findOne(applicationMaster.getId());
+					PrimaryLapLoanDetail lapLoanDetail = primaryLapLoanDetailRepository
+							.findOne(applicationMaster.getId());
 					lapLoanDetail.setPropertyValue(loanEligibilityRequest.getMarketValue());
 					lapLoanDetail.setPropertyType(loanEligibilityRequest.getPropertyType());
 					primaryLapLoanDetailRepository.save(lapLoanDetail);
-					
-					//create record in fs retail applicant
-					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);						
+
+					// create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
 				case PERSONAL_LOAN:
-					//create record in fs retail applicant
-					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);
+					// create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
 				case HOME_LOAN:
-					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository.findOne(applicationMaster.getId());
+					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository
+							.findOne(applicationMaster.getId());
 					primaryHomeLoanDetail.setPropertyPrice(loanEligibilityRequest.getMarketValue());
 					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
-					
-					//create record in fs retail applicant
-					saveRetailApplicantDetailFromLoanEligibility(applicationMaster,loanEligibilityRequest);
+
+					// create record in fs retail applicant
+					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
 				case CAR_LOAN:
 					break;
@@ -295,9 +303,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-	public Boolean saveRetailApplicantDetailFromLoanEligibility(LoanApplicationMaster applicationMaster, LoanEligibilityRequest loanEligibilityRequest){
-		try{
-			RetailApplicantDetail retailApplicantDetail=new RetailApplicantDetail();
+	public Boolean saveRetailApplicantDetailFromLoanEligibility(LoanApplicationMaster applicationMaster,
+			LoanEligibilityRequest loanEligibilityRequest) {
+		try {
+			RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
 			retailApplicantDetail.setApplicationId(applicationMaster);
 			retailApplicantDetail.setOccupationId(loanEligibilityRequest.getEmploymentType());
 			retailApplicantDetail.setBirthDate(loanEligibilityRequest.getDateOfBirth());
@@ -305,16 +314,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailApplicantDetail.setIsActive(true);
 			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
 			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
-			retailApplicantDetail.setCreatedDate(new  Date());
-			retailApplicantDetail.setModifiedDate(new  Date());
+			retailApplicantDetail.setCreatedDate(new Date());
+			retailApplicantDetail.setModifiedDate(new Date());
 			retailApplicantDetailRepository.save(retailApplicantDetail);
 			return true;
-		}catch(Exception e){
+		} catch (Exception e) {
 			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
 			e.printStackTrace();
 			return false;
 		}
 	}
+
 	@Override
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
 		try {
@@ -446,17 +456,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@Override
-	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId){
+	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId) {
 		List<LoanApplicationMaster> loanApplicationMasterList = loanApplicationRepository.getUserLoans(userId);
 		List<MLoanDetailsResponse> responseList = new ArrayList<>(loanApplicationMasterList.size());
-		for(LoanApplicationMaster loanApplicationMaster : loanApplicationMasterList) {
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationMasterList) {
 			MLoanDetailsResponse response = new MLoanDetailsResponse();
 			response.setId(loanApplicationMaster.getId());
 			response.setApplicationCode(loanApplicationMaster.getApplicationCode());
 			response.setLoan(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
-			response.setAmount(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()) ? loanApplicationMaster.getAmount() : 0.0);
+			response.setAmount(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount())
+					? loanApplicationMaster.getAmount() : 0.0);
 			response.setCreatedDate(loanApplicationMaster.getCreatedDate());
 			response.setProductId(loanApplicationMaster.getProductId());
 			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
@@ -466,9 +477,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCurrencyId())
 						&& !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId())) {
 					try {
-						currencyAndDenomination = CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId());
-						currencyAndDenomination = currencyAndDenomination
-								.concat(" in " + CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
+						currencyAndDenomination = CommonDocumentUtils
+								.getCurrency(loanApplicationMaster.getCurrencyId());
+						currencyAndDenomination = currencyAndDenomination.concat(" in "
+								+ CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -2272,6 +2284,66 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
   }
+	public EkycResponse getDetailsForEkycAuthentication(EkycRequest ekycRequest) {
+		EkycResponse ekycResponse = new EkycResponse();
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(ekycRequest.getApplicationId());
+		
+		if(CommonUtils.getUserMainType(loanApplicationMaster.getProductId())==CommonUtils.UserMainType.CORPORATE)
+		{
+			CorporateApplicantDetail corp = new CorporateApplicantDetail();
+			ekycResponse.setOrganizationName(corp.getOrganisationName());
+			ekycResponse.setPanNo(corp.getPanNo());
+			return ekycResponse;
+		}
+		else
+		{
+			if(ekycRequest.getApplicantType()==CommonUtils.RETAIL_APPLICANT)
+			{
+				RetailApplicantDetail retail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
+				String fullName= retail.getFirstName() +" "+ retail.getLastName();
+				Date date = retail.getBirthDate();
+			    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			    String strDate = sdf.format(date);
+				ekycResponse.setFullName(fullName);
+				ekycResponse.setPanNo(retail.getPan());
+				ekycResponse.setAadharNo(retail.getAadharNumber());
+				ekycResponse.setNameAsPerAadhar(retail.getNameAsPerAadharCard());
+				ekycResponse.setDob(strDate);	
+				return ekycResponse;
+			}
+			else if(ekycRequest.getApplicantType()==CommonUtils.RETAIL_COAPPLICANT)
+			{
+				CoApplicantDetail coApp = coApplicantDetailRepository.get(ekycRequest.getApplicationId(), loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
+				String fullName= coApp.getFirstName() +" "+ coApp.getLastName();
+				Date date = coApp.getBirthDate();
+			    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			    String strDate = sdf.format(date);
+				ekycResponse.setFullName(fullName);
+				ekycResponse.setPanNo(coApp.getPan());
+				ekycResponse.setAadharNo(coApp.getAadharNumber());
+				ekycResponse.setNameAsPerAadhar(coApp.getNameAsPerAadharCard());
+				ekycResponse.setDob(strDate);	
+				return ekycResponse;
+				
+			}
+			else if(ekycRequest.getApplicantType()==CommonUtils.RETAIL_GUARANTOR)
+			{
+				GuarantorDetails gua = guarantorDetailsRepository.get(ekycRequest.getApplicationId(), loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
+				String fullName= gua.getFirstName() +" "+ gua.getLastName();
+				Date date = gua.getBirthDate();
+			    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			    String strDate = sdf.format(date);
+				ekycResponse.setFullName(fullName);
+				ekycResponse.setPanNo(gua.getPan());
+				ekycResponse.setAadharNo(gua.getAadharNumber());
+				ekycResponse.setNameAsPerAadhar(gua.getNameAsPerAadharCard());
+				ekycResponse.setDob(strDate);
+				return ekycResponse;
+			}
+		}
+		return ekycResponse;
+		
+	}
 	public String getMcaCompanyId(Long applicationId, Long userId) {
 		try{
 		return loanApplicationRepository.getMCACompanyIdByIdAndUserId(applicationId, userId).getMcaCompanyId();
@@ -2285,11 +2357,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
 		
 		LoanApplicationMaster master = loanApplicationRepository.getByIdAndUserId(loanRequest.getId(), loanRequest.getUserId());
-		
+		if(!CommonUtils.isObjectNullOrEmpty(master)){
+			logger.info("In LOANAPPLICATIONMASTER");
 		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
 		
 		loanApplicationRepository.save(master);
-		
+		}
+		else{
+			logger.error("NUll LOANAPPLICATIONMASTER");
+		}
 	}
 
 }

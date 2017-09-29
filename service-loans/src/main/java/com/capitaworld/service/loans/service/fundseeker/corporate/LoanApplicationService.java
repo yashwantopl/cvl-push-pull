@@ -14,6 +14,8 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.loans.model.common.EkycRequest;
+import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
@@ -83,5 +85,9 @@ public interface LoanApplicationService {
 	public List<MLoanDetailsResponse> getLoanListForMobile(Long userId);
 
 	public void updateLoanApplication(LoanApplicationRequest loanRequest);
+	
+	public EkycResponse getDetailsForEkycAuthentication(EkycRequest ekycRequest);
+	
+
 	
 }

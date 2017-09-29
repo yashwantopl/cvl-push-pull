@@ -22,6 +22,8 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.EkycRequest;
+import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -882,6 +884,25 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	@RequestMapping(value = "/getDetailsForEkycAuthentication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDetailsForEkycAuthentication(HttpServletRequest request,@RequestBody EkycRequest ekycRequest,
+			 @RequestParam(value = "clientId", required = false) Long clientId) {
+		
+				// request must not be null
+				try {
+					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					loansResponse.setData(loanApplicationService.getDetailsForEkycAuthentication(ekycRequest));
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+				} catch (Exception e) {
+					logger.error("Something went wrong", e);
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		
+	}
 	@RequestMapping(value = "/getMcaCompanyId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getMcaCompanyId(HttpServletRequest request, @RequestBody Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId){
 		try {
@@ -940,4 +961,5 @@ public class LoanApplicationController {
 		}
 	}
 
+	
 }
