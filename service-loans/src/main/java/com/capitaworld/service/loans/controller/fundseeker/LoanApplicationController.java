@@ -867,6 +867,23 @@ public class LoanApplicationController {
 		}
 	}
 	
+	@RequestMapping(value = "/getFpNegativeList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpNegativeList(HttpServletRequest request,
+			@RequestBody Long applicationId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getFpNegativeList");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(loanApplicationService.getFpNegativeList(applicationId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getFpNegativeList==>", e);
+      e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	@RequestMapping(value = "/getDetailsForEkycAuthentication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getDetailsForEkycAuthentication(HttpServletRequest request,@RequestBody EkycRequest ekycRequest,
 			 @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -909,6 +926,7 @@ public class LoanApplicationController {
 		}
 	}
 	
+
 	@RequestMapping(value = "/updateLoanApplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateLoanApplication(@RequestBody LoanApplicationRequest loanRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId){

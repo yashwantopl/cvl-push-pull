@@ -1,11 +1,13 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.ConnectionReleaseMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,8 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -36,6 +40,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
@@ -465,21 +470,27 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public ProposalMappingResponse getConectionList(ProposalMappingRequest proposalMappingRequest) {
+	public ProposalResponse getConectionList(ProposalMappingRequest proposalMappingRequest) {
 		// TODO Auto-generated method stub
 
-		ProposalMappingResponse proposalMappingResponse = new ProposalMappingResponse();
+		ProposalResponse proposalResponse = new ProposalResponse();
 
+		List proposalByMatches = new ArrayList();
+		List proposalWithoutMatches = new ArrayList();
 		// calling MATCHENGINE for getting connection list
 
 		try {
-			List proposalDetailsList = new ArrayList();
+			
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
+			ConnectionResponse connectionResponse=	(ConnectionResponse) MultipleJSONObjectHelper
+			.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
+			
 
-			if (!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType())) {
-				for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
+			if (!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType())) {	
+				//for get suggetionListby matches (10)
+				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						Integer applicationId = (Integer) proposalDetailsResponse.getDataList().get(i);
+						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionByMatchesList().get(i);
 						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 								.findOne(applicationId.longValue());
 						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
@@ -569,7 +580,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setImagePath(imagePath);
 							corporateProposalDetails.setApplicationId(applicationId.longValue());
 							corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-							proposalDetailsList.add(corporateProposalDetails);
+							proposalByMatches.add(corporateProposalDetails);
 						} else {
 							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 									.findOneByApplicationIdId(applicationId.longValue());
@@ -638,20 +649,191 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							retailProposalDetails.setImagePath(imagePath);
 							retailProposalDetails.setApplicationId(applicationId.longValue());
 							retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
-							proposalDetailsList.add(retailProposalDetails);
+							proposalByMatches.add(retailProposalDetails);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
 				}
+				//for set connection without proposal 10
+				
+				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
+					try {
+						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionList().get(i);
+						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+								.findOne(applicationId.longValue());
+						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
+								.getUserMainType(loanApplicationMaster.getProductId())) {
+
+							CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+									.findOneByApplicationIdId(applicationId.longValue());
+
+							if (corporateApplicantDetail == null)
+								continue;
+
+							// for get address city state country
+							String address = "";
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
+								address += CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(),
+										oneFormClient) + ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())) {
+								address += CommonDocumentUtils.getState(
+										corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)
+										+ ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())) {
+								address += CommonDocumentUtils.getCountry(
+										corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+							} else {
+								address += "NA";
+							}
+
+							CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
+
+							corporateProposalDetails.setAddress(address);
+
+							if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+								corporateProposalDetails.setName("NA");
+							else
+								corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+
+							corporateProposalDetails.setFsMainType(
+									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+
+							String amount = "";
+							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
+								amount += "NA";
+							else
+								amount += df.format(loanApplicationMaster.getAmount());
+
+							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDenominationId()))
+								amount += " NA";
+							else
+								amount += " "
+										+ Denomination.getById(loanApplicationMaster.getDenominationId()).getValue();
+
+							corporateProposalDetails.setAmount(amount);
+
+							// calling DMS for getting fs corporate profile
+							// image
+							// path
+
+							DocumentRequest documentRequest = new DocumentRequest();
+							documentRequest.setApplicationId(applicationId.longValue());
+							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+							documentRequest.setProductDocumentMappingId(
+									CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+							String imagePath = null;
+							if (documentResponse != null && documentResponse.getStatus() == 200) {
+								List<Map<String, Object>> list = documentResponse.getDataList();
+								if (!CommonUtils.isListNullOrEmpty(list)) {
+									StorageDetailsResponse response = null;
+
+									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+											StorageDetailsResponse.class);
+
+									if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+										imagePath = response.getFilePath();
+									else
+										imagePath = null;
+								}
+							}
+
+							corporateProposalDetails.setImagePath(imagePath);
+							corporateProposalDetails.setApplicationId(applicationId.longValue());
+							corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+							proposalWithoutMatches.add(corporateProposalDetails);
+						} else {
+							RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+									.findOneByApplicationIdId(applicationId.longValue());
+
+							if (retailApplicantDetail == null)
+								continue;
+
+							// for get address city state country
+							String address = "";
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
+								address += CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(),
+										oneFormClient) + ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
+								address += CommonDocumentUtils.getState(
+										retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient) + ",";
+							} else {
+								address += "NA ,";
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
+								address += CommonDocumentUtils.getCountry(
+										retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
+							} else {
+								address += "NA";
+							}
+
+							RetailProposalDetails retailProposalDetails = new RetailProposalDetails();
+							retailProposalDetails.setAddress(address);
+
+							String name = "";
+
+							if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+								name += "NA";
+							else
+								name += retailApplicantDetail.getFirstName();
+
+							retailProposalDetails.setName(name);
+
+							// calling DMS for getting fs retail profile image
+							// path
+
+							DocumentRequest documentRequest = new DocumentRequest();
+							documentRequest.setApplicationId(applicationId.longValue());
+							documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+							documentRequest.setProductDocumentMappingId(
+									CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+							DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+							String imagePath = null;
+							if (documentResponse != null && documentResponse.getStatus() == 200) {
+								List<Map<String, Object>> list = documentResponse.getDataList();
+								if (!CommonUtils.isListNullOrEmpty(list)) {
+									StorageDetailsResponse response = null;
+
+									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+											StorageDetailsResponse.class);
+
+									if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+										imagePath = response.getFilePath();
+									else
+										imagePath = null;
+								}
+							}
+
+							retailProposalDetails.setImagePath(imagePath);
+							retailProposalDetails.setApplicationId(applicationId.longValue());
+							retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
+							proposalWithoutMatches.add(retailProposalDetails);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+				}
+				
 			} else {
 
-				for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
+				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
-						Integer fpProductId = Integer.class.cast(proposalDetailsResponse.getDataList().get(i));
+						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
@@ -696,25 +878,82 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 						fundProviderProposalDetails.setImagePath(imagePath);
 						fundProviderProposalDetails.setProductId(fpProductId.longValue());
-						proposalDetailsList.add(fundProviderProposalDetails);
+						proposalByMatches.add(fundProviderProposalDetails);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				//set connection without matches
+				
+				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
+					try {
+						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
+
+						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
+						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
+						UsersRequest userRequest = new UsersRequest();
+						userRequest.setId(master.getUserId());
+
+						// calling USER for getting fp details
+						UserResponse userResponse = usersClient.getFPDetails(userRequest);
+
+						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
+								.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(),
+										FundProviderDetailsRequest.class);
+						FundProviderProposalDetails fundProviderProposalDetails = new FundProviderProposalDetails();
+
+						fundProviderProposalDetails.setName(fundProviderDetailsRequest.getOrganizationName());
+						fundProviderProposalDetails.setWhoAreYou(FundproviderType
+								.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
+						fundProviderProposalDetails.setFpType("DEBT");
+						
+						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
+
+						// calling DMS for getting fp profile image path
+
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setUserId(master.getUserId());
+						documentRequest.setUserType("user");
+						documentRequest.setUserDocumentMappingId(1L);
+
+						DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+						String imagePath = null;
+						if (documentResponse != null && documentResponse.getStatus() == 200) {
+							List<Map<String, Object>> list = documentResponse.getDataList();
+							if (!CommonUtils.isListNullOrEmpty(list)) {
+								StorageDetailsResponse response = null;
+
+								response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+										StorageDetailsResponse.class);
+								if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+									imagePath = response.getFilePath();
+								else
+									imagePath = null;
+							}
+						}
+
+						fundProviderProposalDetails.setImagePath(imagePath);
+						fundProviderProposalDetails.setProductId(fpProductId.longValue());
+						proposalWithoutMatches.add(fundProviderProposalDetails);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
-			proposalMappingResponse.setDataList(proposalDetailsList);
-			proposalMappingResponse.setMessage("connection list sent");
-			proposalMappingResponse.setStatus(HttpStatus.OK.value());
+			
 
 		} catch (Exception e) {
 			// TODO: handle exception
 			ProposalMappingResponse proposalMappingResponseErr = new ProposalMappingResponse(
 					"Error while getting connection list", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			e.printStackTrace();
-			return proposalMappingResponseErr;
+			return null;
 		}
 
-		return proposalMappingResponse;
+		proposalResponse.setProposalByMatches(proposalByMatches);
+		proposalResponse.setProposalWithoutMatches(proposalWithoutMatches);
+		return proposalResponse;
 	}
 
 	@Override
@@ -727,6 +966,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+
+	@Override
+	public Integer getPendingProposalCount(Long applicationId) {
+		// TODO Auto-generated method stub
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		try {
+			response = proposalDetailsClient.getPendingProposalCount(applicationId);
+			return (Integer)response.getData();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 }
