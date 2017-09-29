@@ -1,4 +1,6 @@
 
+
+DROP TABLE IF EXISTS `loan_applications`.`fs_negative_fp_list`;
 create table `loan_applications`.`fs_negative_fp_list` (
 	`id` bigint(20) NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) unsigned DEFAULT NULL,
