@@ -47,8 +47,28 @@ public class OwnershipDetailsController {
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "save");
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+		Long userId =null;
+		
+		//==============
+		
+		if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())){
+			frameRequest.setClientId(clientId);
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}else{
+			   if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){ 
+				   userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			   }else if(!CommonUtils.isObjectNullOrEmpty( frameRequest.getUserId())){
+				   userId= frameRequest.getUserId();
+			   }else{
+			    logger.warn("Invalid request.");
+			    return new ResponseEntity<LoansResponse>(
+			      new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()),
+			      HttpStatus.OK);
+			   }
+		}
+		
+//==============
+		
 		if (frameRequest == null) {
 			logger.warn("frameRequest can not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
@@ -64,9 +84,9 @@ public class OwnershipDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
-				frameRequest.setClientId(clientId);
-			}
+//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+//				frameRequest.setClientId(clientId);
+//			}
 			ownershipDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

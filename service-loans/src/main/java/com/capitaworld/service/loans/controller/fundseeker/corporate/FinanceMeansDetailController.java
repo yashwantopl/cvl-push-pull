@@ -48,8 +48,9 @@ public class FinanceMeansDetailController {
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "save");
+		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
+		
 		if (frameRequest == null) {
 			logger.warn("frameRequest must not be empty ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(

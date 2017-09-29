@@ -2286,6 +2286,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return ekycResponse;
 		
+	}
+	public String getMcaCompanyId(Long applicationId, Long userId) {
+		try{
+		return loanApplicationRepository.getMCACompanyIdByIdAndUserId(applicationId, userId).getMcaCompanyId();
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
+		
+		LoanApplicationMaster master = loanApplicationRepository.getByIdAndUserId(loanRequest.getId(), loanRequest.getUserId());
+		
+		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
+		
+		loanApplicationRepository.save(master);
 		
 	}
 
