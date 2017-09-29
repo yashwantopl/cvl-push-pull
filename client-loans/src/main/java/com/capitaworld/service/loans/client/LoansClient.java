@@ -14,6 +14,7 @@ import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
@@ -71,6 +72,8 @@ public class LoansClient {
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
 	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
 	private static final String MOBILE_LOCK_PRIMARY = "/mobile/lockPrimary";
+	
+	private static final String EKYC_AUTHENTICATION="/loan_application/getDetailsForEkycAuthentication";
 	
 	
 	private String loansBaseUrl;
@@ -226,6 +229,19 @@ public class LoansClient {
 		}
 	}
 
+	public LoansResponse getDetailsForEkycAuthentication(EkycRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(EKYC_AUTHENTICATION);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<EkycRequest> entity = new HttpEntity<EkycRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
 	public String getUserIdByApplicationId(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(USER_ID_BY_APPLICATON_ID);
 		try {
