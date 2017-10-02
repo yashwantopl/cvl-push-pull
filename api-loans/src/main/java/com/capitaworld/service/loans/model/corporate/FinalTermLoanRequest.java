@@ -37,6 +37,17 @@ public class FinalTermLoanRequest implements Serializable {
 	private Integer technologyTypeId;
 	private Boolean whetherTechnologyIsTied;
 	private String finalFilledCount;
+	private Long userId;
+	
+	
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
 	private List<Integer> overseasNetworkIds = Collections.emptyList();
 
 	private Boolean isFinalMcqFilled;

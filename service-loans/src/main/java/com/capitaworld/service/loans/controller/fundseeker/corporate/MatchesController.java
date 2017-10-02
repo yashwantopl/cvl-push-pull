@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -35,6 +37,8 @@ public class MatchesController {
 	@Autowired
 	private ProductMasterService productMasterService; 
 
+	@Autowired LoanApplicationService loanApplicationService; 
+	
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -194,6 +198,44 @@ public class MatchesController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/saveSuggestionList", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveSuggestionList(@RequestBody ProposalList proposalList,
+			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
+		CommonDocumentUtils.startHook(logger, "saveSuggestionList");
+		Long userId = null;
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		    userId = clientId;
+		   } else {
+		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		   }
+		   proposalList.setUserId(userId);
+		
+		if (proposalList == null || proposalList.getApplicationId() == null ||CommonUtils.isObjectNullOrEmpty(proposalList.getApplicationId())) {
+			logger.warn("proposalList must not be empty ==>" + proposalList);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			
+				
+				// update is match field in parameter table
+				loanApplicationService.saveSuggestionList(proposalList);
+				CommonDocumentUtils.endHook(logger, "saveSuggestionList");	
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("saveSuggestionList Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+			
+
+		} catch (Exception e) {
+			logger.error("Error while saveSuggestionList ==>" + e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

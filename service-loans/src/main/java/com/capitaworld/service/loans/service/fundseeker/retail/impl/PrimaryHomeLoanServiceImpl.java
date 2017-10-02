@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
@@ -33,6 +36,9 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository; 
 
+	@Autowired
+	private FsNegativeFpListRepository fsNegativeFpListRepository;
+	
 	@Override
 	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws Exception {
 		// ID must not be null
@@ -52,6 +58,9 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		
 		//Updating Primary Flag
 		loanApplicationRepository.setPrimaryFilledCount(primaryHomeLoanDetail.getId(), finalUserId, homeLoanDetailRequest.getPrimaryFilledCount());
+		//save negative list
+		fsNegativeFpListRepository.inActiveMappingByApplicationId(primaryHomeLoanDetail.getApplicationId().getId());
+		saveNegativeList(primaryHomeLoanDetail.getApplicationId().getId(), homeLoanDetailRequest.getNegativeList());
 		return true;
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details Profile:-");
@@ -60,6 +69,24 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		}
 	}
 
+	private void saveNegativeList(Long id, List<Long> negativeList) {
+		// TODO Auto-generated method stub
+		FsNegativeFpList fsNegativeFpList= null;
+		for (Long fpId : negativeList) {
+			fsNegativeFpList = new FsNegativeFpList();
+			fsNegativeFpList.setApplicationId(id);
+			fsNegativeFpList.setFpId(fpId);
+			fsNegativeFpList.setCreatedBy(id);
+			fsNegativeFpList.setModifiedBy(id);
+			fsNegativeFpList.setCreatedDate(new Date());
+			fsNegativeFpList.setModifiedDate(new Date());
+			fsNegativeFpList.setIsActive(true);
+			// create by and update
+			fsNegativeFpListRepository.save(fsNegativeFpList);
+		}
+		
+	}
+	
 	@Override
 	public PrimaryHomeLoanDetailRequest get(Long applicationId,Long userId) throws Exception {
 		try{
@@ -68,6 +95,8 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			throw new NullPointerException("PrimaryHomeLoanDetail not exist in DB with applicationId=>" + applicationId + " and UserId==>"+ userId);
 		}
 		PrimaryHomeLoanDetailRequest primaryHomeLoanDetailRequest= new PrimaryHomeLoanDetailRequest();
+		//get fp negative list
+		primaryHomeLoanDetailRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(applicationId));
 		BeanUtils.copyProperties(loanDetail, primaryHomeLoanDetailRequest);
 		primaryHomeLoanDetailRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 		Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
