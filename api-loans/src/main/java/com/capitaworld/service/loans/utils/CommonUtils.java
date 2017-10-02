@@ -33,6 +33,7 @@ public class CommonUtils {
 	public static final Long RETAIL_APPLICANT = 1L;
 	public static final Long RETAIL_COAPPLICANT = 2L;
 	public static final Long RETAIL_GUARANTOR = 3L;
+	public static final Long CORPORATE_USER=4L;
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());

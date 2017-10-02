@@ -2290,10 +2290,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		if(CommonUtils.getUserMainType(loanApplicationMaster.getProductId())==CommonUtils.UserMainType.CORPORATE)
 		{
-			CorporateApplicantDetail corp = new CorporateApplicantDetail();
+			if(ekycRequest.getApplicantType()==CommonUtils.CORPORATE_USER){
+			CorporateApplicantDetail corp = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), ekycRequest.getApplicationId());
 			ekycResponse.setOrganizationName(corp.getOrganisationName());
 			ekycResponse.setPanNo(corp.getPanNo());
 			return ekycResponse;
+			}
 		}
 		else
 		{
