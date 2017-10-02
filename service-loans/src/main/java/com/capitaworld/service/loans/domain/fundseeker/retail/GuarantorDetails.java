@@ -333,6 +333,27 @@ public class GuarantorDetails implements Serializable {
 
 	@Column(name = "contact_no")
 	private String contactNo;
+	
+	@Column(name = "monthly_loan_obligation")
+	private Double monthlyLoanObligation;
+	
+	@Column(name = "pat_previous_year")
+	private Double patPreviousYear;
+	
+	@Column(name = "pat_current_year")
+	private Double patCurrentYear;
+	
+	@Column(name = "depreciation_previous_year")
+	private Double depreciationPreviousYear;
+	
+	@Column(name = "depreciation_current_year")
+	private Double depreciationCurrentYear;
+	
+	@Column(name = "remuneration_previous_year")
+	private Double remunerationPreviousYear;
+	
+	@Column(name = "remuneration_current_year")
+	private Double remunerationCurrentYear;
 
 	public Long getId() {
 		return id;
@@ -1133,5 +1154,63 @@ public class GuarantorDetails implements Serializable {
 	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
 	}
+
+	public Double getMonthlyLoanObligation() {
+		return monthlyLoanObligation;
+	}
+
+	public void setMonthlyLoanObligation(Double monthlyLoanObligation) {
+		this.monthlyLoanObligation = monthlyLoanObligation;
+	}
+
+	public Double getPatPreviousYear() {
+		return patPreviousYear;
+	}
+
+	public void setPatPreviousYear(Double patPreviousYear) {
+		this.patPreviousYear = patPreviousYear;
+	}
+
+	public Double getPatCurrentYear() {
+		return patCurrentYear;
+	}
+
+	public void setPatCurrentYear(Double patCurrentYear) {
+		this.patCurrentYear = patCurrentYear;
+	}
+
+	public Double getDepreciationPreviousYear() {
+		return depreciationPreviousYear;
+	}
+
+	public void setDepreciationPreviousYear(Double depreciationPreviousYear) {
+		this.depreciationPreviousYear = depreciationPreviousYear;
+	}
+
+	public Double getDepreciationCurrentYear() {
+		return depreciationCurrentYear;
+	}
+
+	public void setDepreciationCurrentYear(Double depreciationCurrentYear) {
+		this.depreciationCurrentYear = depreciationCurrentYear;
+	}
+
+	public Double getRemunerationPreviousYear() {
+		return remunerationPreviousYear;
+	}
+
+	public void setRemunerationPreviousYear(Double remunerationPreviousYear) {
+		this.remunerationPreviousYear = remunerationPreviousYear;
+	}
+
+	public Double getRemunerationCurrentYear() {
+		return remunerationCurrentYear;
+	}
+
+	public void setRemunerationCurrentYear(Double remunerationCurrentYear) {
+		this.remunerationCurrentYear = remunerationCurrentYear;
+	}
+	
+	
 
 }

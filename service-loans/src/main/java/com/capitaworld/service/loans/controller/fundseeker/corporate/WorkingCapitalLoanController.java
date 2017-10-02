@@ -47,7 +47,9 @@ public class WorkingCapitalLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveFinal");
 			// request must not be null
+			
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				capitalLoanRequest.setClientId(clientId);
 			}
@@ -126,6 +128,7 @@ public class WorkingCapitalLoanController {
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				capitalLoanRequest.setClientId(clientId);
 			}
+			else
 			
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + capitalLoanRequest);

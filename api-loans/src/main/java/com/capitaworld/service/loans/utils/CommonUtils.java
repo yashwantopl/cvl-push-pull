@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +29,11 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	
+	public static final Long RETAIL_APPLICANT = 1L;
+	public static final Long RETAIL_COAPPLICANT = 2L;
+	public static final Long RETAIL_GUARANTOR = 3L;
+	public static final Long CORPORATE_USER=4L;
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -113,18 +120,18 @@ public class CommonUtils {
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
-				"alliedActivityId", "userId", "nameAsPerAadharCard" };
+				"alliedActivityId", "userId", "nameAsPerAadharCard", "currentJobMonth", "currentJobYear", "previousJobMonth", 
+				"previousJobYear", "totalExperienceMonth", "totalExperienceYear", "monthlyLoanObligation", 
+				"previousEmployersAddress", "previousEmployersName", "annualTurnover", "businessStartDate", "patPreviousYear",
+				"patCurrentYear", "depreciationPreviousYear", "depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
 				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
-				"annualRent", "annualTurnover", "noPartners", "birthDate", "businessStartDate", "currentDepartment",
-				"currentDesignation", "currentIndustry", "currentJobMonth", "currentJobYear", "employmentStatus",
-				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",
-				"presentlyIrrigated", "previousEmployersAddress", "previousEmployersName", "previousJobMonth",
-				"previousJobYear", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear",
-				"seasonalIrrigated", "shareholding", "totalExperienceMonth", "totalExperienceYear", "totalLandOwned",
-				"tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
+				"annualRent", "noPartners", "birthDate", "currentDepartment","currentDesignation", "currentIndustry", "employmentStatus",				
+				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",	"presentlyIrrigated",  
+				 "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear","seasonalIrrigated", "shareholding",  
+				"totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 
 	public interface ApplicantType {
@@ -316,6 +323,49 @@ public class CommonUtils {
 			age--;
 		}
 		return age;
+	}
+	
+	public static String calculateBusinessExperience(Date establishmentYear){
+		
+		Calendar today = Calendar.getInstance();
+		Calendar establishment = Calendar.getInstance();
+		establishment.setTime(establishmentYear);
+		
+		int estYear = establishment.get(Calendar.YEAR);
+		int estMonth = establishment.get(Calendar.MONTH);
+		
+		int todayYear = today.get(Calendar.YEAR);
+		int todayMonth = today.get(Calendar.MONTH)+1;
+		
+		int year = todayYear - estYear;
+		int month = todayMonth - estMonth;
+		
+		String value = year + " Years " + month + " Months ";
+		return value;		
+	}
+	
+	public static String CurrencyFormat(String value) {
+		NumberFormat nf=NumberFormat.getInstance();
+		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString()))+" ";		
+  }
+	public static String getLoanName(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term Loan";
+		case 3:
+			return "Home Loan";
+		case 12:
+			return "Car Loan";
+		case 7:
+			return "Personal Loan";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
 	}
 	
 }

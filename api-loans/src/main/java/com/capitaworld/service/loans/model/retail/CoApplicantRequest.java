@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.model.retail;
 
+import java.util.Date;
+
 import com.capitaworld.service.loans.model.Address;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CoApplicantRequest {
 
@@ -39,11 +42,31 @@ public class CoApplicantRequest {
 	private Integer date;
 	private Integer month;
 	private Integer year;
-	
+
 	private Boolean isCoApp1DetailsFilled;
 	private Boolean isCoApp2DetailsFilled;
-	
+
 	private String detailsFilledCount;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	private Date businessStartDate;
+	private Integer currentJobMonth;
+	private Integer currentJobYear;
+	private String previousEmployersAddress;
+	private String previousEmployersName;
+	private Integer previousJobMonth;
+	private Integer previousJobYear;
+	private Integer totalExperienceMonth;
+	private Integer totalExperienceYear;
+	
+	private Double monthlyLoanObligation;
+	private Double patPreviousYear;
+	private Double patCurrentYear;
+	private Double depreciationPreviousYear;
+	private Double depreciationCurrentYear;
+	private Double remunerationPreviousYear;
+	private Double remunerationCurrentYear;
+	private Double annualTurnover;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -61,7 +84,6 @@ public class CoApplicantRequest {
 		this.id = id;
 	}
 
-	
 	public Long getClientId() {
 		return clientId;
 	}
@@ -341,5 +363,143 @@ public class CoApplicantRequest {
 	public void setDetailsFilledCount(String detailsFilledCount) {
 		this.detailsFilledCount = detailsFilledCount;
 	}
+
+	public Date getBusinessStartDate() {
+		return businessStartDate;
+	}
+
+	public void setBusinessStartDate(Date businessStartDate) {
+		this.businessStartDate = businessStartDate;
+	}
+
+	public Integer getCurrentJobMonth() {
+		return currentJobMonth;
+	}
+
+	public void setCurrentJobMonth(Integer currentJobMonth) {
+		this.currentJobMonth = currentJobMonth;
+	}
+
+	public Integer getCurrentJobYear() {
+		return currentJobYear;
+	}
+
+	public void setCurrentJobYear(Integer currentJobYear) {
+		this.currentJobYear = currentJobYear;
+	}
+
+	public String getPreviousEmployersAddress() {
+		return previousEmployersAddress;
+	}
+
+	public void setPreviousEmployersAddress(String previousEmployersAddress) {
+		this.previousEmployersAddress = previousEmployersAddress;
+	}
+
+	public String getPreviousEmployersName() {
+		return previousEmployersName;
+	}
+
+	public void setPreviousEmployersName(String previousEmployersName) {
+		this.previousEmployersName = previousEmployersName;
+	}
+
+	public Integer getPreviousJobMonth() {
+		return previousJobMonth;
+	}
+
+	public void setPreviousJobMonth(Integer previousJobMonth) {
+		this.previousJobMonth = previousJobMonth;
+	}
+
+	public Integer getPreviousJobYear() {
+		return previousJobYear;
+	}
+
+	public void setPreviousJobYear(Integer previousJobYear) {
+		this.previousJobYear = previousJobYear;
+	}
+
+	public Integer getTotalExperienceMonth() {
+		return totalExperienceMonth;
+	}
+
+	public void setTotalExperienceMonth(Integer totalExperienceMonth) {
+		this.totalExperienceMonth = totalExperienceMonth;
+	}
+
+	public Integer getTotalExperienceYear() {
+		return totalExperienceYear;
+	}
+
+	public void setTotalExperienceYear(Integer totalExperienceYear) {
+		this.totalExperienceYear = totalExperienceYear;
+	}
+
+	public Double getMonthlyLoanObligation() {
+		return monthlyLoanObligation;
+	}
+
+	public void setMonthlyLoanObligation(Double monthlyLoanObligation) {
+		this.monthlyLoanObligation = monthlyLoanObligation;
+	}
+
+	public Double getPatPreviousYear() {
+		return patPreviousYear;
+	}
+
+	public void setPatPreviousYear(Double patPreviousYear) {
+		this.patPreviousYear = patPreviousYear;
+	}
+
+	public Double getPatCurrentYear() {
+		return patCurrentYear;
+	}
+
+	public void setPatCurrentYear(Double patCurrentYear) {
+		this.patCurrentYear = patCurrentYear;
+	}
+
+	public Double getDepreciationPreviousYear() {
+		return depreciationPreviousYear;
+	}
+
+	public void setDepreciationPreviousYear(Double depreciationPreviousYear) {
+		this.depreciationPreviousYear = depreciationPreviousYear;
+	}
+
+	public Double getDepreciationCurrentYear() {
+		return depreciationCurrentYear;
+	}
+
+	public void setDepreciationCurrentYear(Double depreciationCurrentYear) {
+		this.depreciationCurrentYear = depreciationCurrentYear;
+	}
+
+	public Double getRemunerationPreviousYear() {
+		return remunerationPreviousYear;
+	}
+
+	public void setRemunerationPreviousYear(Double remunerationPreviousYear) {
+		this.remunerationPreviousYear = remunerationPreviousYear;
+	}
+
+	public Double getRemunerationCurrentYear() {
+		return remunerationCurrentYear;
+	}
+
+	public void setRemunerationCurrentYear(Double remunerationCurrentYear) {
+		this.remunerationCurrentYear = remunerationCurrentYear;
+	}
+
+	public Double getAnnualTurnover() {
+		return annualTurnover;
+	}
+
+	public void setAnnualTurnover(Double annualTurnover) {
+		this.annualTurnover = annualTurnover;
+	}
+	
+	
 
 }
