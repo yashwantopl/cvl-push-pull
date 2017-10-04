@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -41,7 +42,7 @@ public class RetailApplicantController {
 
 	@RequestMapping(value = "${profile}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody RetailApplicantRequest applicantRequest,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -56,8 +57,8 @@ public class RetailApplicantController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-	
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				applicantRequest.setClientId(clientId);
 			}
 			applicantService.save(applicantRequest, userId);
@@ -72,15 +73,15 @@ public class RetailApplicantController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "${profile}/getCoapAndGuarIds/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoapAndGuarIds(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 			userId = clientId;
-		}else{
+		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		if (applicationId == null) {
@@ -100,18 +101,18 @@ public class RetailApplicantController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 	}
 
 	@RequestMapping(value = "${profile}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
@@ -133,9 +134,26 @@ public class RetailApplicantController {
 		}
 	}
 
+	@RequestMapping(value = "${profile}/get_basic_details/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getBasicDetailsClient(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("userId") Long userId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getBasicDetailsClient");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.getProfile(userId, applicationId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getMcaCompanyId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequest applicantRequest,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -151,7 +169,8 @@ public class RetailApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				applicantRequest.setClientId(clientId);
 			}
 			applicantService.saveFinal(applicantRequest, userId);
@@ -169,13 +188,13 @@ public class RetailApplicantController {
 
 	@RequestMapping(value = "${final}/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinal(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
@@ -199,13 +218,13 @@ public class RetailApplicantController {
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
@@ -229,13 +248,13 @@ public class RetailApplicantController {
 
 	@RequestMapping(value = "/get_guarantors/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getGuarantors(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				userId = clientId;
-			}else{
+			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {

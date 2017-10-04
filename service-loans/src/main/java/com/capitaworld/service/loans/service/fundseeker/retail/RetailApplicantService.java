@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 
 public interface RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception;
@@ -25,4 +27,6 @@ public interface RetailApplicantService {
 	public Integer getCurrency(Long applicationId,Long userId) throws Exception;
 	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
+	
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception;
 }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;	
+import java.util.Map.Entry;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -51,18 +51,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			throws Exception {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForHomeLoan");
 		try {
-			Integer tenure = homeLoanRequest.getTenure();
-			if (CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getTenure())) {
-				Integer age = CommonUtils.getAgeFromBirthDate(homeLoanRequest.getDateOfBirth());
-				if (age == null || age >= 60) {
-					return null;
-				}
-				tenure = (60 - age > 30 ? 30 : 60 - age);
-			} else {
-				if (tenure <= 0) {
-					return null;
-				}
-				tenure = (tenure > 30 ? 30 : tenure);
+			Integer tenure = getUpdatedTenure(homeLoanRequest, CommonUtils.LoanType.HOME_LOAN.getValue());
+			if (tenure == null) {
+				return null;
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer, JSONObject> minMaxData = new HashMap<>(bankByStatus.getListData().size());
@@ -231,7 +222,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
-				result.put("fundProivders",bankIds.size());
+				result.put("fundProivders", bankIds.size());
 			}
 			return result;
 		} catch (Exception e) {
@@ -244,12 +235,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@SuppressWarnings("unchecked")
 	public static Map<Integer, JSONObject> getMinMaxFromSalaryAndMVSV(Map<Integer, JSONObject> salaryMap,
 			Map<Integer, Double> mvsvMap) {
-		
+
 		logger.info("Before Remove minData ==> " + mvsvMap.toString());
 		logger.info("Before Remove minMaxSalary ==> " + salaryMap.toString());
-		
+
 		salaryMap.entrySet().removeIf(e -> !mvsvMap.containsKey(e.getKey()));
-		 mvsvMap.entrySet().removeIf(e-> !salaryMap.containsKey(e.getKey()));
+		mvsvMap.entrySet().removeIf(e -> !salaryMap.containsKey(e.getKey()));
 
 		logger.info("After Remove minData ==> " + mvsvMap.toString());
 		logger.info("After Remove minMaxSalary ==> " + salaryMap.toString());
@@ -260,21 +251,21 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			JSONObject json = entry.getValue();
 			Double mvsnMin = mvsvMap.get(entry.getKey());
 			Double salMinMax = (Double) json.get(CommonUtils.MINIMUM);
-				// Setting Minimum
-				if (mvsnMin < salMinMax) {
-					finaljson.put(CommonUtils.MINIMUM, mvsnMin);
-				} else {
-					finaljson.put(CommonUtils.MINIMUM, salMinMax);
-				}
-			
-				// Setting Maximum
-				salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
-				if (mvsnMin < salMinMax) {
-					finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
-				} else {
-					finaljson.put(CommonUtils.MAXIMUM, salMinMax);
-				}
-				finalMap.put(entry.getKey(), finaljson);
+			// Setting Minimum
+			if (mvsnMin < salMinMax) {
+				finaljson.put(CommonUtils.MINIMUM, mvsnMin);
+			} else {
+				finaljson.put(CommonUtils.MINIMUM, salMinMax);
+			}
+
+			// Setting Maximum
+			salMinMax = (Double) json.get(CommonUtils.MAXIMUM);
+			if (mvsnMin < salMinMax) {
+				finaljson.put(CommonUtils.MAXIMUM, mvsnMin);
+			} else {
+				finaljson.put(CommonUtils.MAXIMUM, salMinMax);
+			}
+			finalMap.put(entry.getKey(), finaljson);
 		}
 		return finalMap;
 	}
@@ -286,18 +277,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			throws Exception {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForPersonalLoan");
 		try {
-			Integer tenure = eligibilityRequest.getTenure();
-			if (CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getTenure())) {
-				Integer age = CommonUtils.getAgeFromBirthDate(eligibilityRequest.getDateOfBirth());
-				if (age == null || age >= 60) {
-					return null;
-				}
-				tenure = (60 - age > 5 ? 5 : 60 - age);
-			} else {
-				if (tenure <= 0) {
-					return null;
-				}
-				tenure = (tenure > 5 ? 5 : tenure);
+			Integer tenure = getUpdatedTenure(eligibilityRequest, CommonUtils.LoanType.PERSONAL_LOAN.getValue());
+			if (tenure == null) {
+				return null;
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer, JSONObject> minMaxData = new HashMap<>(bankByStatus.getListData().size());
@@ -380,20 +362,20 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		if (json.isEmpty()) {
 			json.put("message", "No Result Found");
 		} else {
-			
-			//Getting Loan Providers
+
+			// Getting Loan Providers
 			List<Integer> bankIds = new ArrayList<>(minMaxData.size());
-			for(Entry<Integer, JSONObject> entry : minMaxData.entrySet()) {
+			for (Entry<Integer, JSONObject> entry : minMaxData.entrySet()) {
 				bankIds.add(entry.getKey());
 			}
-			json.put("fundProivders",bankIds.size());
-			Object[] minMaxArr = loanEligibilityCriteriaRepository
-					.getMinMaxRoiForPersonalLoan(bankIds,eligibilityRequest.getConstitution());
+			json.put("fundProivders", bankIds.size());
+			Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForPersonalLoan(bankIds,
+					eligibilityRequest.getConstitution());
 			if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 				json.put("minRoi", minMaxArr[0]);
 				json.put("maxRoi", minMaxArr[1]);
 			}
-			
+
 		}
 		CommonDocumentUtils.endHook(logger, "calcMinMaxForPersonalLoan");
 		return json;
@@ -406,18 +388,9 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	private Map<Integer, JSONObject> calculateMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws Exception {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForLAP");
 		try {
-			Integer tenure = eligibilityRequest.getTenure();
-			if (CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getTenure())) {
-				Integer age = CommonUtils.getAgeFromBirthDate(eligibilityRequest.getDateOfBirth());
-				if (age == null || age >= 60) {
-					return null;
-				}
-				tenure = (60 - age > 15 ? 15 : 60 - age);
-			} else {
-				if (tenure <= 0) {
-					return null;
-				}
-				tenure = (tenure > 15 ? 15 : tenure);
+			Integer tenure = getUpdatedTenure(eligibilityRequest, CommonUtils.LoanType.LAP_LOAN.getValue());
+			if (tenure == null) {
+				return null;
 			}
 			OneFormResponse bankByStatus = oneFormClient.getBankByStatus(true);
 			Map<Integer, JSONObject> minMaxData = new HashMap<>(bankByStatus.getListData().size());
@@ -435,7 +408,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("Before Income==>" + eligibilityRequest.getIncome());
 				logger.info("lapEligibilityCriteria.getFoir()==>" + lapEligibilityCriteria.getFoir());
 				logger.info("eligibilityRequest.getObligation()==>" + eligibilityRequest.getObligation());
-				
+
 				double income = eligibilityRequest.getIncome() * lapEligibilityCriteria.getFoir() / 100;
 				if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
 					income = income - eligibilityRequest.getObligation();
@@ -549,12 +522,13 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
-				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds,eligibilityRequest.getEmploymentType(),eligibilityRequest.getPropertyType());
+				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds,
+						eligibilityRequest.getEmploymentType(), eligibilityRequest.getPropertyType());
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
 					result.put("minRoi", minMaxArr[0]);
 					result.put("maxRoi", minMaxArr[1]);
 				}
-				result.put("fundProivders",bankIds.size());
+				result.put("fundProivders", bankIds.size());
 			}
 
 			return result;
@@ -645,6 +619,47 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	private static double getMinMax(double income, double perLakhEMI) {
 		double loanAmount = 100000;
 		return (income / perLakhEMI * loanAmount);
+	}
+	public static Integer getUpdatedTenure(LoanEligibilility request, Integer productId) {
+		Integer age = null;
+		Integer tenure = request.getTenure();
+		if (CommonUtils.isObjectNullOrEmpty(tenure)) {
+			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
+			if (age == null || age >= 60) {
+				return null;
+			}
+		} else {
+			if (tenure <= 0) {
+				return null;
+			}
+		}
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		Integer actualTenure = null;
+		switch (type) {
+		case HOME_LOAN:
+			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
+			actualTenure = (60 - age > 30 ? 30 : 60 - age);
+			break;
+		case LAP_LOAN:
+			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
+			actualTenure = (60 - age > 15 ? 15 : 60 - age);
+			break;
+		case PERSONAL_LOAN:
+			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
+			actualTenure = (60 - age > 5 ? 5 : 60 - age);
+			break;
+		default:
+			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			break;
+		}
+		
+		if(tenure == null || tenure > actualTenure) {
+			tenure = actualTenure;
+		}
+		return tenure;
 	}
 
 	// COMMON ENDS
