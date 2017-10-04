@@ -253,7 +253,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			cibilFullFillOfferRequest.setDateOfBirth(applicantDetail.getBirthDate());
 			cibilFullFillOfferRequest.setForName(applicantDetail.getFirstName());
 			cibilFullFillOfferRequest.setSurName(applicantDetail.getLastName());
-			if (CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId())) {
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId())) {
 				cibilFullFillOfferRequest.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
 			}
 			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getContactNo());
