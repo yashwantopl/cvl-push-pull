@@ -36,17 +36,19 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
-		if(CommonUtils.isObjectNullOrEmpty(cityId)) return null;
+		if (CommonUtils.isObjectNullOrEmpty(cityId))
+			return null;
 		List<Long> cityIdRequest = new ArrayList<>(1);
 		cityIdRequest.add(cityId);
-		OneFormResponse response  = oneFormClient.getCityByCityListId(cityIdRequest);
+		OneFormResponse response = oneFormClient.getCityByCityListId(cityIdRequest);
 		MasterResponse data = MultipleJSONObjectHelper
 				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
 		return data != null ? data.getValue() : null;
 	}
 
 	public static String getState(Long stateId, OneFormClient oneFormClient) throws Exception {
-		if(CommonUtils.isObjectNullOrEmpty(stateId)) return null;
+		if (CommonUtils.isObjectNullOrEmpty(stateId))
+			return null;
 		List<Long> stateIdRequest = new ArrayList<>(1);
 		stateIdRequest.add(stateId);
 		OneFormResponse response = oneFormClient.getStateByStateListId(stateIdRequest);
@@ -55,8 +57,20 @@ public class CommonDocumentUtils {
 		return data != null ? data.getValue() : null;
 	}
 
-	public static String getCountry(Long countryId,OneFormClient oneFormClient) throws Exception {
-		if(CommonUtils.isObjectNullOrEmpty(countryId)) return null;
+	public static String getStateCode(Long stateId, OneFormClient oneFormClient) throws Exception {
+		if (CommonUtils.isObjectNullOrEmpty(stateId))
+			return null;
+		List<Long> stateIdRequest = new ArrayList<>(1);
+		stateIdRequest.add(stateId);
+		OneFormResponse response = oneFormClient.getStateCodeByStateListId(stateIdRequest);
+		MasterResponse data = MultipleJSONObjectHelper
+				.getObjectFromMap((LinkedHashMap<String, Object>) response.getListData().get(0), MasterResponse.class);
+		return data != null ? data.getValue() : null;
+	}
+
+	public static String getCountry(Long countryId, OneFormClient oneFormClient) throws Exception {
+		if (CommonUtils.isObjectNullOrEmpty(countryId))
+			return null;
 		List<Long> countryIdRequest = new ArrayList<>(1);
 		countryIdRequest.add(countryId);
 		OneFormResponse response = oneFormClient.getCountryByCountryListId(countryIdRequest);
@@ -65,8 +79,9 @@ public class CommonDocumentUtils {
 		return data != null ? data.getValue() : null;
 	}
 
-	public static Integer getYear(Long yearId,OneFormClient oneFormClient) throws Exception {
-		if(CommonUtils.isObjectNullOrEmpty(yearId)) return null;
+	public static Integer getYear(Long yearId, OneFormClient oneFormClient) throws Exception {
+		if (CommonUtils.isObjectNullOrEmpty(yearId))
+			return null;
 		OneFormResponse response = oneFormClient.getYearByYearId(yearId);
 		if (!CommonUtils.isListNullOrEmpty(response.getListData())) {
 			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
@@ -77,51 +92,51 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getCurrency(Integer currencyId) {
-		if(!CommonUtils.isObjectNullOrEmpty(currencyId)){
-			if(!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))){
-				return Currency.getById(currencyId).getValue();	
-			}
-		}
-		return "NA";	
-	}
-	
-	public static String getDenomination(Integer denominationId) {
-		if(!CommonUtils.isObjectNullOrEmpty(denominationId)){
-			if(!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))){
-				return Denomination.getById(denominationId).getValue();	
+		if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
+			if (!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))) {
+				return Currency.getById(currencyId).getValue();
 			}
 		}
 		return "NA";
 	}
-	
-	public static Double convertAmountInAbsolute(Integer denominationId,Double amount) {
-		if(!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(amount)){
+
+	public static String getDenomination(Integer denominationId) {
+		if (!CommonUtils.isObjectNullOrEmpty(denominationId)) {
+			if (!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))) {
+				return Denomination.getById(denominationId).getValue();
+			}
+		}
+		return "NA";
+	}
+
+	public static Double convertAmountInAbsolute(Integer denominationId, Double amount) {
+		if (!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(amount)) {
 			switch (denominationId) {
 			case 1:
-				amount = amount * 100000;//Lakhs
+				amount = amount * 100000;// Lakhs
 				break;
 			case 2:
-				amount = amount * 1000000;//Millions
+				amount = amount * 1000000;// Millions
 				break;
 			case 3:
-				amount = amount * 10000000;//Crores
+				amount = amount * 10000000;// Crores
 				break;
 			case 4:
-				amount = amount * 1000000000;//Billions
+				amount = amount * 1000000000;// Billions
 				break;
 			default:
-				break;//Absolute
+				break;// Absolute
 			}
 		}
 		return amount;
 	}
-	
-	public static void startHook(Logger logger,String methodName){
+
+	public static void startHook(Logger logger, String methodName) {
 		logger.info("Start " + methodName + "() Method");
 	}
-	
-	public static void endHook(Logger logger,String methodName){
-        logger.info("End " + methodName + "() Method");
+
+	public static void endHook(Logger logger, String methodName) {
+		logger.info("End " + methodName + "() Method");
 	}
 
 }
