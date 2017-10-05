@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -27,9 +28,13 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -51,6 +56,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private OneFormClient oneFormClient;
+
+	@Autowired
+	private UsersClient usersClient;
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -260,7 +268,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())) {
 				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 			}
-
+			// Email ID
+			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				cibilFullFillOfferRequest.setEmail(request.getEmail());
+			}
 			return cibilFullFillOfferRequest;
 		} catch (Exception e) {
 			e.printStackTrace();
