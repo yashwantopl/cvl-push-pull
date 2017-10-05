@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.common.AddressRequest;
+import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
@@ -25,6 +28,13 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -43,6 +53,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private OneFormClient oneFormClient;
+
+	@Autowired
+	private UsersClient usersClient;
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -217,6 +233,53 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception {
 		return guarantorService.getList(applicationId, userId);
+	}
+
+	@Override
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicationId);
+			if (applicantDetail == null) {
+				return null;
+			}
+			CibilFullFillOfferRequest cibilFullFillOfferRequest = new CibilFullFillOfferRequest();
+			cibilFullFillOfferRequest.setPan(applicantDetail.getPan());
+			cibilFullFillOfferRequest.setAdhaar(applicantDetail.getAadharNumber());
+			AddressRequest address = new AddressRequest();
+			address.setAddressType("01"); // PermenantType
+			address.setStreetAddress(applicantDetail.getPermanentStreetName());
+			address.setCity(CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient));
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
+				address.setPostalCode(applicantDetail.getPermanentPincode().toString());
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
+				address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
+						oneFormClient));
+			}
+			cibilFullFillOfferRequest.setAddress(address);
+			cibilFullFillOfferRequest.setDateOfBirth(applicantDetail.getBirthDate());
+			cibilFullFillOfferRequest.setForName(applicantDetail.getFirstName());
+			cibilFullFillOfferRequest.setSurName(applicantDetail.getLastName());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId())) {
+				cibilFullFillOfferRequest.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+			}
+			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getContactNo());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())) {
+				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
+			}
+			// Email ID
+			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				cibilFullFillOfferRequest.setEmail(request.getEmail());
+			}
+			return cibilFullFillOfferRequest;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	public static void copyAddressFromRequestToDomain(RetailApplicantRequest from, RetailApplicantDetail to) {
