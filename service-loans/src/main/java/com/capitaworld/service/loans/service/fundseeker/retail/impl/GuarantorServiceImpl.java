@@ -369,6 +369,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 							profileViewPLResponse.setMonthsInCurrentJob(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getCurrentJobMonth()) ?  guarantorDetail.getCurrentJobMonth().toString() : "-");
 							profileViewPLResponse.setTotalExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTotalExperienceMonth()) ?  guarantorDetail.getTotalExperienceMonth().toString() : "-");
 							profileViewPLResponse.setTotalExperienceInYears(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTotalExperienceYear()) ?  guarantorDetail.getTotalExperienceYear().toString() : "-");
+							profileViewPLResponse.setPreviousExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousJobMonth()) ?  guarantorDetail.getPreviousJobMonth().toString() : "-");
+							profileViewPLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousJobYear()) ?  guarantorDetail.getPreviousJobYear().toString() : "-");
+							profileViewPLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersName()) ?  guarantorDetail.getPreviousEmployersName() : "-");
+							profileViewPLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersAddress()) ?  guarantorDetail.getPreviousEmployersAddress() : "-");
 							break;
 						case 3: // Business
 						case 4: // Self Employed
@@ -382,14 +386,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 								}
 							}
 							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( guarantorDetail.getAnnualTurnover().toString()) : "-");
-							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "0.0");
-							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "0.0");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
 							break;
 						case 5:// Self Employed Professional
 							if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())) {
@@ -402,14 +406,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 								}
 							}
 							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( guarantorDetail.getAnnualTurnover().toString()) : "-");
-							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "0.0");
-							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "0.0");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
 							break;
 						case 6:// Agriculturist
 							if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())) {
@@ -421,14 +425,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 										AlliedActivity.getById(guarantorDetail.getAlliedActivityId()).getValue());
 							}
 							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( guarantorDetail.getAnnualTurnover().toString()) : "-");
-							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "0.0");
-							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "0.0");
-							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "0.0");
-							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "0.0");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
 							break;
 						default:
 							break;
