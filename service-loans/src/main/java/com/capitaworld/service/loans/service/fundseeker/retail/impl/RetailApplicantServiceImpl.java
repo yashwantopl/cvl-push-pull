@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -27,6 +28,7 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Title;
@@ -269,7 +271,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			// Email ID
 			UserResponse userResponse = usersClient.getEmailMobile(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
-				UsersRequest request = (UsersRequest) userResponse.getData();
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				cibilFullFillOfferRequest.setEmail(request.getEmail());
 			}
 			return cibilFullFillOfferRequest;
