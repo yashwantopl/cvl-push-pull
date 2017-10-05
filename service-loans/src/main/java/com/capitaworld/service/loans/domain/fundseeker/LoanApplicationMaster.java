@@ -160,8 +160,19 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "mca_company_id")
 	private String mcaCompanyId;
-
 	
+	@Column(name = "is_mca")
+	private Boolean isMca;
+	
+	
+	public Boolean getIsMca() {
+		return isMca;
+	}
+
+	public void setIsMca(Boolean isMca) {
+		this.isMca = isMca;
+	}
+
 	public String getMcaCompanyId() {
 		return mcaCompanyId;
 	}
