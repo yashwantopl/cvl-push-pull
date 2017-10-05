@@ -85,6 +85,8 @@ public interface LoanApplicationService {
 	public void updateLoanApplication(LoanApplicationRequest loanRequest);
 	
 	public EkycResponse getDetailsForEkycAuthentication(EkycRequest ekycRequest);
+
+	public Boolean isMca(Long applicationId, Long userId);
 	
 
 	

@@ -2361,12 +2361,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(!CommonUtils.isObjectNullOrEmpty(master)){
 			logger.info("In LOANAPPLICATIONMASTER");
 		master.setMcaCompanyId(loanRequest.getMcaCompanyId());
-		
+		master.setIsMca(loanRequest.getIsMca());
 		loanApplicationRepository.save(master);
 		}
 		else{
 			logger.error("NUll LOANAPPLICATIONMASTER");
 		}
+	}
+
+	@Override
+	public Boolean isMca(Long applicationId, Long userId) {
+		try{
+			return loanApplicationRepository.getMCACompanyIdByIdAndUserId(applicationId, userId).getIsMca();
+			}
+			catch (Exception e) {
+				return null;
+			}
 	}
 
 }

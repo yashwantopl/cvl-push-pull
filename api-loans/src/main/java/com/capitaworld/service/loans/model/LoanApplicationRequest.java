@@ -56,7 +56,19 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private String mcaCompanyId;
 	
+	private Boolean isMca;
 	
+	
+	
+	
+
+	public Boolean getIsMca() {
+		return isMca;
+	}
+
+	public void setIsMca(Boolean isMca) {
+		this.isMca = isMca;
+	}
 
 	public String getMcaCompanyId() {
 		return mcaCompanyId;
