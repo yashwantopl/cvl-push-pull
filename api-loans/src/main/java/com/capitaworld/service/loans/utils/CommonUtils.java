@@ -59,9 +59,10 @@ public class CommonUtils {
 		calendar.clear();
 		calendar.setTime(new Date());
 		calendar.set(Calendar.DAY_OF_MONTH, date);
-		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
 
+		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -76,6 +77,9 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH);
 		result[2] = calendar.get(Calendar.YEAR);
+		System.out.println("result[0] day Of Month=======>" + result[0]);
+		System.out.println("result[1] Month=======>" + result[1]);
+		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
