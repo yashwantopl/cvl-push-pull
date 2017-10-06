@@ -9,6 +9,8 @@ public class AddressRequest implements Serializable {
 
 	private static final long serialVersionUID = 6232712419796541868L;
 	private String streetAddress;// Required
+	private String premiseNo;// Required
+	private String landMark;// Required
 	private String region;// Required
 	private String addressType;// Required
 	private String city;
@@ -56,6 +58,22 @@ public class AddressRequest implements Serializable {
 
 	public void setAddressType(String addressType) {
 		this.addressType = addressType;
+	}
+
+	public String getPremiseNo() {
+		return premiseNo;
+	}
+
+	public void setPremiseNo(String premiseNo) {
+		this.premiseNo = premiseNo;
+	}
+
+	public String getLandMark() {
+		return landMark;
+	}
+
+	public void setLandMark(String landMark) {
+		this.landMark = landMark;
 	}
 
 }
