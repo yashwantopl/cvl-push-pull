@@ -75,7 +75,7 @@ public class CommonUtils {
 		calendar.clear();
 		calendar.setTime(date);
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
-		result[1] = calendar.get(Calendar.MONTH);
+		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
 		System.out.println("result[0] day Of Month=======>" + result[0]);
 		System.out.println("result[1] Month=======>" + result[1]);
