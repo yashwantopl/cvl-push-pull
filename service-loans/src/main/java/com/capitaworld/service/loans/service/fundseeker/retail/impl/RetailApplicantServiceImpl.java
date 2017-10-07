@@ -249,6 +249,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			AddressRequest address = new AddressRequest();
 			address.setAddressType("01"); // PermenantType
 			address.setStreetAddress(applicantDetail.getPermanentStreetName());
+			address.setPremiseNo(applicantDetail.getPermanentPremiseNumberName());
+			address.setLandMark(applicantDetail.getPermanentLandMark());
 			address.setCity(CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient));
 			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
 				address.setPostalCode(applicantDetail.getPermanentPincode().toString());
