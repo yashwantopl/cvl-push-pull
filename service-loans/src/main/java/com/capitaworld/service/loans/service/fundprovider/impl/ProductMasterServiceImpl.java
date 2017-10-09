@@ -37,6 +37,7 @@ import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
@@ -55,6 +56,7 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
@@ -140,12 +142,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Autowired
 	private DMSClient dmsClient;
+	
+	@Autowired 
+	private LoanApplicationRepository loanApplicationRepository; 
 
 	@Override
-	public List<ProductMasterRequest> saveOrUpdate(AddProductRequest addProductRequest) {
+	public Boolean saveOrUpdate(AddProductRequest addProductRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 
-		List<ProductMasterRequest> masterRequests = new ArrayList<>();
 		List<ProductMaster> masters = new ArrayList<>();
 		try {
 
@@ -154,6 +158,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 								? addProductRequest.getUserId() : addProductRequest.getClientId()),
 						addProductRequest.getProductMappingId(), addProductRequest.getName());
+				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+				return true;
 			} else {
 				ProductMaster productMaster = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
@@ -197,9 +203,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
 				productMasterRepository.save(productMaster);
+				return true;
 			}
 
-			masters = productMasterRepository
+			/*masters = productMasterRepository
 					.getUserProductListByProduct(
 							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 									? addProductRequest.getUserId() : addProductRequest.getClientId()),
@@ -211,15 +218,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(master, masterRequest);
 					masterRequests.add(masterRequest);
 				}
-			}
-			CommonDocumentUtils.endHook(logger, "saveOrUpdate");
-			return masterRequests;
+			}*/
+			
 		}
 
 		catch (Exception e) {
 			e.printStackTrace();
 			logger.error("error while saveOrUpdate", e);
-			return null;
+			return false;
 		}
 	}
 
@@ -639,5 +645,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		return null;
 	}
+
 
 }

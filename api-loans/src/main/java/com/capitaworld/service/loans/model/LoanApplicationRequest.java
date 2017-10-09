@@ -53,6 +53,30 @@ public class LoanApplicationRequest implements Serializable {
 	private Boolean profilePrimaryLocked;
 	
 	private Boolean finalLocked;
+	
+	private String mcaCompanyId;
+	
+	private Boolean isMca;
+	
+	
+	
+	
+
+	public Boolean getIsMca() {
+		return isMca;
+	}
+
+	public void setIsMca(Boolean isMca) {
+		this.isMca = isMca;
+	}
+
+	public String getMcaCompanyId() {
+		return mcaCompanyId;
+	}
+
+	public void setMcaCompanyId(String mcaCompanyId) {
+		this.mcaCompanyId = mcaCompanyId;
+	}
 
 	public LoanApplicationRequest() {
 	}

@@ -35,6 +35,13 @@ public class LoansResponse implements Serializable{
 		this.message = message;
 		this.status = status;
 	}
+	
+	public LoansResponse(String message, Integer status, Object data) {
+		super();
+		this.message = message;
+		this.status = status;
+		this.data = data;
+	}
 
 	public Long getId() {
 		return id;

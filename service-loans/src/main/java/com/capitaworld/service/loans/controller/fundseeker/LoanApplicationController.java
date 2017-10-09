@@ -22,6 +22,8 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.EkycRequest;
+import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -59,6 +61,10 @@ public class LoanApplicationController {
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				commonRequest.setClientId(clientId);
 			}
+			
+			
+			//==============
+			
 			loanApplicationService.saveOrUpdate(commonRequest, userId);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
@@ -73,6 +79,33 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/saveFromLoanEligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromLoanEligibility(@RequestBody FrameRequest commonRequest, HttpServletRequest request) {
+		try {
+			// request must not be null
+						CommonDocumentUtils.startHook(logger, "save");
+						Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+						
+						if (userId == null) {
+							logger.warn("userId  can not be empty ==>" + userId);
+							return new ResponseEntity<LoansResponse>(
+									new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						}
+						commonRequest.setUserId(userId);
+						
+						loanApplicationService.saveOrUpdateFromLoanEligibilty(commonRequest, userId);
+						CommonDocumentUtils.endHook(logger, "save");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+								HttpStatus.OK);
+						
+		} catch (Exception e) {
+			logger.error("Error while saving applicationRequest Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -833,5 +866,123 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/getFpNegativeList", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpNegativeList(HttpServletRequest request,
+			@RequestBody Long applicationId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "getFpNegativeList");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(loanApplicationService.getFpNegativeList(applicationId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getFpNegativeList==>", e);
+      e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@RequestMapping(value = "/getDetailsForEkycAuthentication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDetailsForEkycAuthentication(HttpServletRequest request,@RequestBody EkycRequest ekycRequest,
+			 @RequestParam(value = "clientId", required = false) Long clientId) {
+		
+				// request must not be null
+				try {
+					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					loansResponse.setData(loanApplicationService.getDetailsForEkycAuthentication(ekycRequest));
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
+				} catch (Exception e) {
+					logger.error("Something went wrong", e);
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+		
+	}
+	@RequestMapping(value = "/getMcaCompanyId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMcaCompanyId(HttpServletRequest request, @RequestBody Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getMcaCompanyId(applicationId,userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getMcaCompanyId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+
+	@RequestMapping(value = "/updateLoanApplication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateLoanApplication(@RequestBody LoanApplicationRequest loanRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "updateLoanApplication");
+			Long userId = null;
+			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())){
+				loanRequest.setClientId(clientId);
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}else{
+				   if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){ 
+					   userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				   }else if(!CommonUtils.isObjectNullOrEmpty( loanRequest.getUserId())){
+					   userId= loanRequest.getClientId();
+				   }else{
+				    logger.warn("Invalid request.");
+				    return new ResponseEntity<LoansResponse>(
+				      new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()),
+				      HttpStatus.OK);
+				   }
+			}
+			 loanRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loanApplicationService.updateLoanApplication(loanRequest);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updateLoanApplication==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/isMca", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isMca(HttpServletRequest request, @RequestBody Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.isMca(applicationId,userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getMcaCompanyId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 }

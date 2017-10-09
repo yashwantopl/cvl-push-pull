@@ -356,6 +356,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									profileViewPLResponse.setEmployeeWith(coApplicantDetail.getEmployedWithOther());
 								}
 							}
+							profileViewPLResponse.setYearsInCurrentJob(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobYear()) ?  coApplicantDetail.getCurrentJobYear().toString() : "-");
+							profileViewPLResponse.setMonthsInCurrentJob(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getCurrentJobMonth()) ?  coApplicantDetail.getCurrentJobMonth().toString() : "-");
+							profileViewPLResponse.setTotalExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceMonth()) ?  coApplicantDetail.getTotalExperienceMonth().toString() : "-");
+							profileViewPLResponse.setTotalExperienceInYears(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTotalExperienceYear()) ?  coApplicantDetail.getTotalExperienceYear().toString() : "-");
+							profileViewPLResponse.setPreviousExperienceInMonths(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobMonth()) ?  coApplicantDetail.getPreviousJobMonth().toString() : "-");
+							profileViewPLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobYear()) ?  coApplicantDetail.getPreviousJobYear().toString() : "-");
+							profileViewPLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersName()) ?  coApplicantDetail.getPreviousEmployersName() : "-");
+							profileViewPLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersAddress()) ?  coApplicantDetail.getPreviousEmployersAddress() : "-");
 							break;
 						case 3: // Business
 						case 4: // Self Employed
@@ -368,6 +376,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									profileViewPLResponse.setIndustryType(coApplicantDetail.getIndustryTypeOther());
 								}
 							}
+							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getAnnualTurnover().toString()) : "-");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
 							break;
 						case 5:// Self Employed Professional
 							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())) {
@@ -379,6 +396,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 											.setOccupation(coApplicantDetail.getSelfEmployedOccupationOther());
 								}
 							}
+							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getAnnualTurnover().toString()) : "-");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
 							break;
 						case 6:// Agriculturist
 							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
@@ -389,6 +415,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								profileViewPLResponse.setAlliedActivity(
 										AlliedActivity.getById(coApplicantDetail.getAlliedActivityId()).getValue());
 							}
+							profileViewPLResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getAnnualTurnover().toString()) : "-");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setPatPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatPreviousYear().toString()): "-");
+							profileViewPLResponse.setPatCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPatCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getPatCurrentYear().toString()): "-");
+							profileViewPLResponse.setDepreciationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationPreviousYear().toString()): "-");
+							profileViewPLResponse.setDepreciationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getDepreciationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getDepreciationCurrentYear().toString()): "-");
+							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
+							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
+							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
 							break;
 						default:
 							break;

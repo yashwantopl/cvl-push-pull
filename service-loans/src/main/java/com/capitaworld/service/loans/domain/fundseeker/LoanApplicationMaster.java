@@ -55,7 +55,7 @@ public class LoanApplicationMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "modified_date")
 	private Date modifiedDate;
-	
+
 	private String name;
 	
 	@Column(name = "application_code")
@@ -157,12 +157,35 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "final_filled_count")
 	private String finalFilledCount;
+	
+	@Column(name = "mca_company_id")
+	private String mcaCompanyId;
+	
+	@Column(name = "is_mca")
+	private Boolean isMca;
+	
+	
+	public Boolean getIsMca() {
+		return isMca;
+	}
+
+	public void setIsMca(Boolean isMca) {
+		this.isMca = isMca;
+	}
+
+	public String getMcaCompanyId() {
+		return mcaCompanyId;
+	}
+
+	public void setMcaCompanyId(String mcaCompanyId) {
+		this.mcaCompanyId = mcaCompanyId;
+	}
 
 	// bi-directional many-to-one association to ApplicationStatusMaster
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private ApplicationStatusMaster applicationStatusMaster;
-
+	
 	public LoanApplicationMaster() {
 	}
 
@@ -481,6 +504,7 @@ public class LoanApplicationMaster implements Serializable {
 	public void setFinalFilledCount(String finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
+	
 
 	@Override
 	public String toString() {

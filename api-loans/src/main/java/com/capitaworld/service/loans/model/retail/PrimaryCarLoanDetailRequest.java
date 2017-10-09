@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -42,6 +44,16 @@ public class PrimaryCarLoanDetailRequest extends LoanApplicationRequest implemen
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date purchaseReimbursmentDate;
+
+	private List<Long> negativeList=Collections.emptyList();
+	
+	public List<Long> getNegativeList() {
+		return negativeList;
+	}
+
+	public void setNegativeList(List<Long> negativeList) {
+		this.negativeList = negativeList;
+	}
 
 	private Long clientId;
 	

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
+import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryPersonalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
@@ -29,6 +32,9 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
+	@Autowired
+	private FsNegativeFpListRepository fsNegativeFpListRepository;
+	
 	@Override
 	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws Exception {
 		// ID must not be null
@@ -46,6 +52,9 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			primaryPersonalLoanDetail.setModifiedBy(userId);
 			primaryPersonalLoanDetail.setModifiedDate(new Date());
 			personalLoanDetailRepository.save(primaryPersonalLoanDetail);
+			//save negative list
+			fsNegativeFpListRepository.inActiveMappingByApplicationId(primaryPersonalLoanDetail.getApplicationId().getId());
+			saveNegativeList(primaryPersonalLoanDetail.getApplicationId().getId(), personalLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details");
@@ -54,6 +63,24 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 		}
 	}
 
+	private void saveNegativeList(Long id, List<Long> negativeList) {
+		// TODO Auto-generated method stub
+		FsNegativeFpList fsNegativeFpList= null;
+		for (Long fpId : negativeList) {
+			fsNegativeFpList = new FsNegativeFpList();
+			fsNegativeFpList.setApplicationId(id);
+			fsNegativeFpList.setFpId(fpId);
+			fsNegativeFpList.setCreatedBy(id);
+			fsNegativeFpList.setModifiedBy(id);
+			fsNegativeFpList.setCreatedDate(new Date());
+			fsNegativeFpList.setModifiedDate(new Date());
+			fsNegativeFpList.setIsActive(true);
+			// create by and update
+			fsNegativeFpListRepository.save(fsNegativeFpList);
+		}
+		
+	}
+	
 	@Override
 	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
@@ -63,6 +90,8 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 						"PrimaryPersonalLoanDetail not exist in DB with ID=>" + applicationId + " and User Id ==>" + userId);
 			}
 			PrimaryPersonalLoanRequest personalLoanRequest = new PrimaryPersonalLoanRequest();
+			//get fp negative list
+			personalLoanRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(applicationId));
 			BeanUtils.copyProperties(loanDetail, personalLoanRequest);
 			personalLoanRequest.setTenure(CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);

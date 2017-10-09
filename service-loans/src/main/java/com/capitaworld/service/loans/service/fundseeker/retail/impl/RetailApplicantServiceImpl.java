@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.common.AddressRequest;
+import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
@@ -25,6 +28,13 @@ import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -43,6 +53,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private OneFormClient oneFormClient;
+
+	@Autowired
+	private UsersClient usersClient;
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -73,18 +89,19 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
-				coApplicantService.save(request, applicantRequest.getApplicationId(),finalUserId);
+				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
 			for (GuarantorRequest request : applicantRequest.getGuarantors()) {
-				guarantorService.save(request, applicantRequest.getApplicationId(),finalUserId);
+				guarantorService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
 
 			// Updating Flag
 			loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantRequest.getApplicationId(),
 					finalUserId, applicantRequest.getIsApplicantDetailsFilled());
-			
+
 			// Updating Bowl Count
-			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId, applicantRequest.getDetailsFilledCount());
+			loanApplicationRepository.setProfileFilledCount(applicantRequest.getApplicationId(), finalUserId,
+					applicantRequest.getDetailsFilledCount());
 
 			return true;
 
@@ -94,18 +111,18 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception{
-		try{
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+		try {
 			List<Long> coAppIds = coApplicantService.getCoAppIds(userId, applicationId);
 			List<Long> guarantorIds = guarantorService.getGuarantorIds(userId, applicationId);
 			JSONObject obj = new JSONObject();
 			obj.put("coAppIds", coAppIds);
 			obj.put("guarantorIds", guarantorIds);
 			return obj;
-		} catch(Exception e){
+		} catch (Exception e) {
 			logger.error("Error while getCoapAndGuarIds:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
@@ -119,7 +136,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 					applicationId);
 			if (applicantDetail == null) {
 				RetailApplicantRequest request = new RetailApplicantRequest();
-				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
+						userId);
 				request.setDetailsFilledCount(applicationMaster.getDetailsFilledCount());
 				return request;
 			}
@@ -168,7 +186,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
 						+ applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
 			}
-			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId : applicantRequest.getClientId());
+			Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+					: applicantRequest.getClientId());
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
 					applicantRequest.getApplicationId());
 			if (applicantDetail == null) {
@@ -182,10 +201,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRepository.save(applicantDetail);
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
-								finaluserId, applicantRequest.getIsApplicantFinalFilled());
+					finaluserId, applicantRequest.getIsApplicantFinalFilled());
 			// Updating Final Count
-			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(),
-											finaluserId, applicantRequest.getFinalFilledCount());
+			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finaluserId,
+					applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
@@ -203,7 +222,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
 		try {
-			return applicantRepository.getCurrency(userId,applicationId);
+			return applicantRepository.getCurrency(userId, applicationId);
 		} catch (Exception e) {
 			logger.error("Error while Getting Currency:-");
 			e.printStackTrace();
@@ -214,6 +233,55 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception {
 		return guarantorService.getList(applicationId, userId);
+	}
+
+	@Override
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
+					applicationId);
+			if (applicantDetail == null) {
+				return null;
+			}
+			CibilFullFillOfferRequest cibilFullFillOfferRequest = new CibilFullFillOfferRequest();
+			cibilFullFillOfferRequest.setPan(applicantDetail.getPan());
+			cibilFullFillOfferRequest.setAdhaar(applicantDetail.getAadharNumber());
+			AddressRequest address = new AddressRequest();
+			address.setAddressType("01"); // PermenantType
+			address.setStreetAddress(applicantDetail.getPermanentStreetName());
+			address.setPremiseNo(applicantDetail.getPermanentPremiseNumberName());
+			address.setLandMark(applicantDetail.getPermanentLandMark());
+			address.setCity(CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient));
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
+				address.setPostalCode(applicantDetail.getPermanentPincode().toString());
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
+				address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
+						oneFormClient));
+			}
+			cibilFullFillOfferRequest.setAddress(address);
+			cibilFullFillOfferRequest.setDateOfBirth(applicantDetail.getBirthDate());
+			cibilFullFillOfferRequest.setForName(applicantDetail.getFirstName());
+			cibilFullFillOfferRequest.setSurName(applicantDetail.getLastName());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId())) {
+				cibilFullFillOfferRequest.setTitle(Title.getById(applicantDetail.getTitleId()).getValue());
+			}
+			cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getContactNo());
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())) {
+				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
+			}
+			// Email ID
+			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				cibilFullFillOfferRequest.setEmail(request.getEmail());
+			}
+			return cibilFullFillOfferRequest;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	public static void copyAddressFromRequestToDomain(RetailApplicantRequest from, RetailApplicantDetail to) {
@@ -261,18 +329,20 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		address.setCountryId(from.getPermanentCountryId());
 		address.setPincode(from.getPermanentPincode());
 		to.setFirstAddress(address);
-		if (from.getAddressSameAs()) {
-			to.setSecondAddress(address);
-		} else {
-			address = new Address();
-			address.setPremiseNumber(from.getOfficePremiseNumberName());
-			address.setLandMark(from.getOfficeLandMark());
-			address.setStreetName(from.getOfficeStreetName());
-			address.setCityId(from.getOfficeCityId());
-			address.setStateId(from.getOfficeStateId());
-			address.setCountryId(from.getOfficeCountryId());
-			address.setPincode(from.getOfficePincode());
-			to.setSecondAddress(address);
+		if (!CommonUtils.isObjectNullOrEmpty(from.getAddressSameAs())) {
+			if (from.getAddressSameAs()) {
+				to.setSecondAddress(address);
+			} else {
+				address = new Address();
+				address.setPremiseNumber(from.getOfficePremiseNumberName());
+				address.setLandMark(from.getOfficeLandMark());
+				address.setStreetName(from.getOfficeStreetName());
+				address.setCityId(from.getOfficeCityId());
+				address.setStateId(from.getOfficeStateId());
+				address.setCountryId(from.getOfficeCountryId());
+				address.setPincode(from.getOfficePincode());
+				to.setSecondAddress(address);
+			}
 		}
 	}
 
