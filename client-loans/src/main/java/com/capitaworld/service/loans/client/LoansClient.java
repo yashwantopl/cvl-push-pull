@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequ
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
+import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 
 public class LoansClient {
@@ -73,6 +74,10 @@ public class LoansClient {
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
 	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
 	private static final String MOBILE_LOCK_PRIMARY = "/mobile/lockPrimary";
+	private static final String MOBILE_GET_COAPPLICANT = "/mobile/getCoApplicantDetails";
+	private static final String MOBILE_SAVE_COAPPLICANT = "/mobile/saveCoApplicantDetails";
+	private static final String MOBILE_GET_GUARANTOR= "/mobile/getGuarantorDetails";
+	private static final String MOBILE_SAVE_GUARANTOR = "/mobile/saveGuarantorDetails";
 
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
 
@@ -762,6 +767,62 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getCoApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_COAPPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get co-applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveCoApplicantDetails(MRetailCoAppGuarResponse coAppGuarResponse) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_COAPPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save co-applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse getGuarantorDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_GUARANTOR);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get guarantor details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveGuarantorDetails(MRetailCoAppGuarResponse coAppGuarResponse) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_GUARANTOR);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save guarantor details for mobile app");
 		}
 	}
 
