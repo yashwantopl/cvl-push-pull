@@ -33,7 +33,6 @@ import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLo
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.mysql.fabric.xmlrpc.base.Data;
 
 @Service
 @Transactional
