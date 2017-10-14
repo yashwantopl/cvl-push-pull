@@ -168,6 +168,13 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name = "uninterested_industry")
 	private Long uninterestedIndustry;
+	
+	@Column(name="is_uninterested_industry_display")
+	private Boolean isUnInterestedIndustryDisplay=false;
+
+	@Column(name="is_uninterested_industry_mandatory")
+	private Boolean isUnInterestedIndustryMandatory=false;
+
 
 	public TermLoanParameter() {
 	}
@@ -559,5 +566,22 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.minTenure = minTenure;
 	}
 
+	public Boolean getIsUnInterestedIndustryDisplay() {
+		return isUnInterestedIndustryDisplay;
+	}
+
+	public void setIsUnInterestedIndustryDisplay(Boolean isUnInterestedIndustryDisplay) {
+		this.isUnInterestedIndustryDisplay = isUnInterestedIndustryDisplay;
+	}
+
+	public Boolean getIsUnInterestedIndustryMandatory() {
+		return isUnInterestedIndustryMandatory;
+	}
+
+	public void setIsUnInterestedIndustryMandatory(Boolean isUnInterestedIndustryMandatory) {
+		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
+	}
+
+	
 	
 }
