@@ -67,6 +67,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isTenureDisplay=false;
 
 	private Boolean isTenureMandatory=false;
+	
+	private Boolean isUnInterestedIndustryDisplay=false;
+
+	private Boolean isUnInterestedIndustryMandatory=false;
 
 	private Integer LongTermCreditRating;
 
@@ -113,6 +117,8 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
+	
+	private List<DataRequest> unInterestedIndustrylist=Collections.emptyList();
 
 	public Integer getCurrency() {
 		return currency;
@@ -476,6 +482,16 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setCountryList(List<DataRequest> countryList) {
 		this.countryList = countryList;
 	}
+	
+	
+
+	public List<DataRequest> getUnInterestedIndustrylist() {
+		return unInterestedIndustrylist;
+	}
+
+	public void setUnInterestedIndustrylist(List<DataRequest> unInterestedIndustrylist) {
+		this.unInterestedIndustrylist = unInterestedIndustrylist;
+	}
 
 	public List<DataRequest> getStateList() {
 		return stateList;
@@ -493,6 +509,31 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.cityList = cityList;
 	}
 
+	public List<DataRequest> getNegativeIndustryList() {
+		return unInterestedIndustrylist;
+	}
+
+	public void setNegativeIndustryList(List<DataRequest> unInterestedIndustrylist) {
+		this.unInterestedIndustrylist = unInterestedIndustrylist;
+	}
+
+	public Boolean getIsUnInterestedIndustryDisplay() {
+		return isUnInterestedIndustryDisplay;
+	}
+
+	public void setIsUnInterestedIndustryDisplay(Boolean isUnInterestedIndustryDisplay) {
+		this.isUnInterestedIndustryDisplay = isUnInterestedIndustryDisplay;
+	}
+
+	public Boolean getIsUnInterestedIndustryMandatory() {
+		return isUnInterestedIndustryMandatory;
+	}
+
+	public void setIsUnInterestedIndustryMandatory(Boolean isUnInterestedIndustryMandatory) {
+		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
+	}
+
+	
 		
 	
 

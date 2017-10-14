@@ -206,19 +206,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				return true;
 			}
 
-			/*masters = productMasterRepository
-					.getUserProductListByProduct(
-							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-									? addProductRequest.getUserId() : addProductRequest.getClientId()),
-							addProductRequest.getProductId());
-
-			if (!CommonUtils.isObjectListNull(masters)) {
-				for (ProductMaster master : masters) {
-					ProductMasterRequest masterRequest = new ProductMasterRequest();
-					BeanUtils.copyProperties(master, masterRequest);
-					masterRequests.add(masterRequest);
-				}
-			}*/
+			
 			
 		}
 
