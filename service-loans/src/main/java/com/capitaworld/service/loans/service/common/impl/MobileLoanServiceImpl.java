@@ -11,13 +11,19 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
+import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryLapLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.MobileService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
@@ -48,6 +54,13 @@ public class MobileLoanServiceImpl implements MobileService {
 	
 	@Autowired
 	private PrimaryLapLoanService primaryLapLoanService;
+	
+	@Autowired
+	private GuarantorDetailsRepository guarantorDetailsRepository;
+
+	@Autowired
+	private CoApplicantDetailRepository coApplicantDetailRepository;
+
 	
 	@Override
 	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception {
@@ -121,4 +134,76 @@ public class MobileLoanServiceImpl implements MobileService {
 		return retailApplicantDetail.getId();
 	}
 	
+	@Override
+	public MRetailCoAppGuarResponse getGuarantorDetails(MobileLoanRequest mobileUserRequest) {
+		GuarantorDetails guaDetail = guarantorDetailsRepository.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId(), mobileUserRequest.getId());
+		MRetailCoAppGuarResponse response = new MRetailCoAppGuarResponse();
+		if(!CommonUtils.isObjectNullOrEmpty(guaDetail)) {
+			BeanUtils.copyProperties(guaDetail, response);
+			response.setDateOfBirth(guaDetail.getBirthDate());
+			response.setContactNo(guaDetail.getContactNo());
+		}
+		return response;
+	}
+	
+	@Override
+	public Long saveGuarantorDetails(MRetailCoAppGuarResponse response) {
+		GuarantorDetails guaDetail = null;
+		if(!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+			guaDetail = guarantorDetailsRepository.findOne(response.getId());	
+			guaDetail.setModifiedBy(response.getUserId());
+			guaDetail.setModifiedDate(new Date());
+		} else {
+			Long count = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(response.getApplicationId(), response.getUserId());
+			if(count == 2) {
+				return null;
+			}
+			guaDetail = new GuarantorDetails();
+			guaDetail.setCreatedBy(response.getUserId());
+			guaDetail.setCreatedDate(new Date());
+			guaDetail.setIsActive(true);
+			guaDetail.setApplicationId(new LoanApplicationMaster(response.getApplicationId()));
+		}
+		BeanUtils.copyProperties(response, guaDetail,"id","userId","isActive","applicationId");
+		guaDetail.setBirthDate(response.getDateOfBirth());
+		guaDetail = guarantorDetailsRepository.save(guaDetail);
+		return guaDetail.getId();
+	}
+	
+	@Override
+	public MRetailCoAppGuarResponse getCoApplicantDetails(MobileLoanRequest mobileUserRequest) {
+		CoApplicantDetail coAppDetail = coApplicantDetailRepository.get(mobileUserRequest.getApplicationId(), mobileUserRequest.getUserId(), mobileUserRequest.getId());
+		MRetailCoAppGuarResponse response = new MRetailCoAppGuarResponse();
+		if(!CommonUtils.isObjectNullOrEmpty(coAppDetail)) {
+			BeanUtils.copyProperties(coAppDetail, response);
+			response.setDateOfBirth(coAppDetail.getBirthDate());
+			response.setContactNo(coAppDetail.getContactNo());
+		}
+		return response;
+	}
+	
+	@Override
+	public Long saveCoApplicantDetails(MRetailCoAppGuarResponse response) {
+		CoApplicantDetail coAppDetail = null;
+		if(!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+			coAppDetail = coApplicantDetailRepository.get(response.getApplicationId(), response.getUserId(), response.getId());
+			coAppDetail.setModifiedBy(response.getUserId());
+			coAppDetail.setModifiedDate(new Date());
+		} else {
+			Long count = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(response.getApplicationId(), response.getUserId());
+			if(count == 2) {
+				return null;
+			}
+			coAppDetail = new CoApplicantDetail();
+			coAppDetail.setCreatedBy(response.getUserId());
+			coAppDetail.setCreatedDate(new Date());
+			coAppDetail.setIsActive(true);
+			coAppDetail.setApplicationId(new LoanApplicationMaster(response.getApplicationId()));			
+			coAppDetail.setRelationshipWithApplicant(response.getRelationshipWithApplicant());
+		}
+		BeanUtils.copyProperties(response, coAppDetail,"id","userId","isActive","applicationId");
+		coAppDetail.setBirthDate(response.getDateOfBirth());
+		coAppDetail = coApplicantDetailRepository.save(coAppDetail);
+		return coAppDetail.getId();	
+	}
 }
