@@ -101,6 +101,12 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
 	@Column(name="is_tenure_mandatory")
 	private Boolean isTenureMandatory=false;
+	
+	@Column(name="is_uninterested_industry_display")
+	private Boolean isUnInterestedIndustryDisplay=false;
+
+	@Column(name="is_uninterested_industry_mandatory")
+	private Boolean isUnInterestedIndustryMandatory=false;
 
 	
 	@Column(name="long_term_credit_rating")
@@ -557,4 +563,21 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.uninterestedIndustry = uninterestedIndustry;
 	}
 
+	public Boolean getIsUnInterestedIndustryDisplay() {
+		return isUnInterestedIndustryDisplay;
+	}
+
+	public void setIsUnInterestedIndustryDisplay(Boolean isUnInterestedIndustryDisplay) {
+		this.isUnInterestedIndustryDisplay = isUnInterestedIndustryDisplay;
+	}
+
+	public Boolean getIsUnInterestedIndustryMandatory() {
+		return isUnInterestedIndustryMandatory;
+	}
+
+	public void setIsUnInterestedIndustryMandatory(Boolean isUnInterestedIndustryMandatory) {
+		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
+	}
+
+	
 }
