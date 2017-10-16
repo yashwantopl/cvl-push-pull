@@ -12,6 +12,16 @@ public class ChatDetails implements Serializable{
 	
 	String profile;
 
+	Boolean isAppFpProdActive;
+	
+	public Boolean getIsAppFpProdActive() {
+		return isAppFpProdActive;
+	}
+
+	public void setIsAppFpProdActive(Boolean isAppFpProdActive) {
+		this.isAppFpProdActive = isAppFpProdActive;
+	}
+
 	public Long getProposalId() {
 		return proposalId;
 	}

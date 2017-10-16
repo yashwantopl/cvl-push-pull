@@ -54,7 +54,7 @@ public interface ProductMasterService {
 	
 	public List<ChatDetails> getChatListByFpMappingId(Long applicationId);
 	
-	
+	public boolean isProductActive(Long productId);
 
 	
 }
