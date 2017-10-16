@@ -58,6 +58,10 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isTenureDisplay=false;
 
 	private Boolean isTenureMandatory=false;
+	
+	private Boolean isUnInterestedIndustryDisplay=false;
+
+	private Boolean isUnInterestedIndustryMandatory=false;
 
 	private Integer LongTermCreditRating;
 
@@ -104,6 +108,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private List<DataRequest> stateList = Collections.emptyList();
 
 	private List<DataRequest> cityList = Collections.emptyList();
+	
+	private List<DataRequest> unInterestedIndustrylist = Collections.emptyList();
 
 	public Integer getCurrency() {
 		return currency;
@@ -483,6 +489,32 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.cityList = cityList;
 	}
 
+	public List<DataRequest> getUnInterestedIndustrylist() {
+		return unInterestedIndustrylist;
+	}
+
+	public void setUnInterestedIndustrylist(List<DataRequest> unInterestedIndustrylist) {
+		this.unInterestedIndustrylist = unInterestedIndustrylist;
+	}
+
+	public Boolean getIsUnInterestedIndustryDisplay() {
+		return isUnInterestedIndustryDisplay;
+	}
+
+	public void setIsUnInterestedIndustryDisplay(Boolean isUnInterestedIndustryDisplay) {
+		this.isUnInterestedIndustryDisplay = isUnInterestedIndustryDisplay;
+	}
+
+	public Boolean getIsUnInterestedIndustryMandatory() {
+		return isUnInterestedIndustryMandatory;
+	}
+
+	public void setIsUnInterestedIndustryMandatory(Boolean isUnInterestedIndustryMandatory) {
+		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
+	}
+
+
+	
 	
 	
 }

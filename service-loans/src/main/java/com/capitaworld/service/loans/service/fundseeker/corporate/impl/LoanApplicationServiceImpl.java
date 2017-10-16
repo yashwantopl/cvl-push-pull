@@ -240,6 +240,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!CommonUtils.isObjectNullOrEmpty(loanEligibilityRequest.getTenure())) {
 					applicationMaster.setTenure(loanEligibilityRequest.getTenure() * 12);
 				}
+				applicationMaster.setCategoryCode(loanEligibilityRequest.getCategoryCode());  // categaoryCode set
 				applicationMaster.setProductId(loanEligibilityRequest.getProductId());
 				applicationMaster.setUserId(userId);
 				applicationMaster.setCreatedBy(userId);

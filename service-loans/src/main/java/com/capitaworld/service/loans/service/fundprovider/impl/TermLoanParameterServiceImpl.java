@@ -16,12 +16,14 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
@@ -48,6 +50,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Autowired
 	private GeographicalCityRepository geographicalCityRepository;
+	
+	@Autowired
+	private NegativeIndustryRepository negativeIndustryRepository;
  	
 	@Autowired
 	private OneFormClient oneFormClient; 
@@ -90,11 +95,16 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		saveCity(termLoanParameterRequest);
+		//negative industry save
+		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
+		saveNegativeIndustry(termLoanParameterRequest);
 		
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
 	}
+
+	
 
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
@@ -185,6 +195,20 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			logger.error("error while getTermLoanParameterRequest",e);
 			e.printStackTrace();
 		}
+		}
+		
+		
+		List<Long> negativeIndustryList = negativeIndustryRepository
+				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
+		if (!negativeIndustryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				termLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getTermLoanParameterRequest",e);
+				e.printStackTrace();
+			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return termLoanParameterRequest;
@@ -280,6 +304,25 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
+
+	private void saveNegativeIndustry(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
+		NegativeIndustry negativeIndustry= null;
+		for (DataRequest dataRequest : termLoanParameterRequest.getNegativeIndustryList()) {
+			negativeIndustry = new NegativeIndustry();
+			negativeIndustry.setFpProductMasterId(termLoanParameterRequest.getId());
+			negativeIndustry.setIndustryId(dataRequest.getId());
+			negativeIndustry.setCreatedBy(termLoanParameterRequest.getUserId());
+			negativeIndustry.setModifiedBy(termLoanParameterRequest.getUserId());
+			negativeIndustry.setCreatedDate(new Date());
+			negativeIndustry.setModifiedDate(new Date());
+			negativeIndustry.setIsActive(true);
+			// create by and update
+			negativeIndustryRepository.save(negativeIndustry);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
 		
+	}
 	
 }
