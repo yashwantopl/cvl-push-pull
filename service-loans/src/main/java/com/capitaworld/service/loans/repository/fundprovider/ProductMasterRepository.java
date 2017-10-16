@@ -62,4 +62,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("from ProductMaster  where modifiedDate=(select max(modifiedDate) from  ProductMaster pm where pm.userId =:userId and pm.isActive = true)")
 	public ProductMaster getLastAccessedProduct(@Param("userId") Long userId);
+	
+	@Query("select count(fpProductId) from ProductMaster pm where pm.id=:productId and pm.isActive = true")
+	public Long getActiveProductsById(@Param("productId") Long productId);
 }
