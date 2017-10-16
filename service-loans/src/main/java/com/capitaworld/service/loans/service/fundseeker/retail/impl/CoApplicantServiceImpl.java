@@ -790,6 +790,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					// set uploads
 					switch (productId) {
 					case 3:// HOME LOAN
+						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.HOME_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -816,6 +822,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.HOME_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 						break;
 					case 7:// PERSONAL LOAN
+						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -842,6 +854,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 						break;
 					case 12:// CAR_LOAN
+						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.CAR_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -868,6 +886,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.CAR_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 						break;
 					case 13:// LOAN_AGAINST_PROPERTY
+						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.LAP_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -894,6 +918,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 						break;
 					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(
+								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.LAS_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));

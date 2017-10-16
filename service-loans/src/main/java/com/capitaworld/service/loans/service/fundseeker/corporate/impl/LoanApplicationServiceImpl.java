@@ -607,13 +607,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				boolean isAnythingIsNull = CommonUtils.isObjectListNull(applicationMaster.getIsApplicantDetailsFilled(),
-						applicationMaster.getIsApplicantPrimaryFilled(), applicationMaster.getIsPrimaryUploadFilled());
+						applicationMaster.getIsApplicantPrimaryFilled());
 				if (isAnythingIsNull)
 					return false;
 
 				return (applicationMaster.getIsApplicantDetailsFilled()
-						&& applicationMaster.getIsApplicantPrimaryFilled()
-						&& applicationMaster.getIsPrimaryUploadFilled());
+						&& applicationMaster.getIsApplicantPrimaryFilled());
 			} else {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue())
@@ -654,9 +653,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue())
 					return false;
 
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+				/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 						|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue())
-					return false;
+					return false;*/
 
 				return true;
 			}
@@ -919,12 +918,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			break;
 		case CommonUtils.TabType.FINAL_INFORMATION:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
@@ -945,12 +944,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
-					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-				response.put("result", false);
-				return response;
-			}
+//			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+//					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+//				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+//				response.put("result", false);
+//				return response;
+//			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
@@ -971,18 +970,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
-					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-				response.put("result", false);
-				return response;
-			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+//			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+//					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+//				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+//				response.put("result", false);
+//				return response;
+//			}
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
@@ -1016,12 +1015,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
@@ -1393,12 +1392,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 			// Primary Upload Tab Validating
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			break;
 		case CommonUtils.TabType.FINAL_CO_APPLICANT:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
@@ -1476,12 +1475,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
@@ -1576,12 +1575,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
@@ -1685,12 +1684,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
@@ -1803,12 +1802,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 					|| !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 				response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
