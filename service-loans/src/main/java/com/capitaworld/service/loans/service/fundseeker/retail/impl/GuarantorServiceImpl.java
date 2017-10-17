@@ -789,6 +789,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 					// set uploads
 					switch (productId) {
 					case 3:// HOME LOAN
+						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setGuarantor_aadharCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.HOME_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.HOME_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -815,6 +821,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.HOME_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 						break;
 					case 7:// PERSONAL LOAN
+						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setGuarantor_aadharCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -841,6 +853,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 						break;
 					case 12:// CAR_LOAN
+						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setGuarantor_aadharCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.CAR_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.CAR_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -867,6 +885,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.CAR_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 						break;
 					case 13:// LOAN_AGAINST_PROPERTY
+						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setGuarantor_aadharCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.LAP_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.LAP_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
@@ -893,6 +917,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 						break;
 					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_PAN_CARD));
+						finalViewResponse.setGuarantor_aadharCardList(documentManagementService.getDocumentDetails(
+								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
+								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						finalViewResponse.setGuarantor_BankACStatments(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.LAS_LOAN_GUARANTOR_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
