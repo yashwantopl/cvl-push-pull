@@ -2185,6 +2185,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								proposalMappingRequest.getApplicationId(), (Long) object[0], false);
 						chatDetails.setProposalId(proposalMappingRequest.getId());
 						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getApplicationId());
+						chatDetails.setIsAppFpProdActive(isApplicationIdActive(proposalMappingRequest.getApplicationId()));
 						chatDetails.setName(dashboardProfileResponse.getName());
 						List<LinkedHashMap<String, Object>> detailsResponseList = (List<LinkedHashMap<String, Object>>) corporateUploadService
 								.getProfilePic(proposalMappingRequest.getApplicationId(),
