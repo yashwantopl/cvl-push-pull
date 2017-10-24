@@ -56,10 +56,6 @@ public class NotificationServiceImpl implements NotificationService{
 	@Autowired
 	private UsersClient usersClient;
 	
-	@Autowired
-	private Environment environment;
-	
-	private static final String LOGIN_URL = "capitaworld.login.url";
 	
 	private static Notification createSysNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
@@ -196,7 +192,6 @@ public class NotificationServiceImpl implements NotificationService{
 						UserResponse response = usersClient.checkUserUnderSp(Long.valueOf(toUserId));
 						if(!CommonUtils.isObjectNullOrEmpty(response)) {
 							if(!(Boolean)response.getData()) {
-								parameters.put("login_url", environment.getRequiredProperty(LOGIN_URL));
 								request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate));
 								logger.info("Ending sending mail for fs primary and final view, OBJECT CREATE SUCCESSFULLY");
 							} else {

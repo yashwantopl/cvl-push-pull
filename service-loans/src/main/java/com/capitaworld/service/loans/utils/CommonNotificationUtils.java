@@ -7,7 +7,7 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 public class CommonNotificationUtils {
 	
 	public enum NotificationTemplate {
-		PRIMARY_VIEW(NotificationAlias.EMAIL_PRIMARY_VIEW_FS,"View Primary Details"), FINAL_VIEW(NotificationAlias.EMAIL_FINAL_VIEW_FS,"View Final Details");
+		PRIMARY_VIEW(NotificationAlias.EMAIL_PRIMARY_VIEW_FS,"Fund provider viewed your teaser"), FINAL_VIEW(NotificationAlias.EMAIL_FINAL_VIEW_FS,"Fund provider viewed your final details");
 		
 		private Long value;
 		private String subject;
