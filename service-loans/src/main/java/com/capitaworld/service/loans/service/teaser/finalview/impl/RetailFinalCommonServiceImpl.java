@@ -228,6 +228,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			// set uploads
 			switch (productId) {
 				case 3:// HOME LOAN
+					finalViewCommonResponse.setApplicant_panCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+					finalViewCommonResponse.setApplicant_aadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.HOME_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 					finalViewCommonResponse.setApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 					finalViewCommonResponse.setApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
 					finalViewCommonResponse.setApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
@@ -238,6 +240,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 					break;
 				case 7:// PERSONAL LOAN
+					finalViewCommonResponse.setApplicant_panCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+					finalViewCommonResponse.setApplicant_aadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 					finalViewCommonResponse.setApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.PERSONAL_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 					finalViewCommonResponse.setApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.PERSONAL_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
 					finalViewCommonResponse.setApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.PERSONAL_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
@@ -248,6 +252,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.PERSONAL_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 					break;
 				case 12:// CAR_LOAN
+					finalViewCommonResponse.setApplicant_panCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+					finalViewCommonResponse.setApplicant_aadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 					finalViewCommonResponse.setApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.CAR_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 					finalViewCommonResponse.setApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.CAR_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
 					finalViewCommonResponse.setApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.CAR_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
@@ -258,6 +264,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.CAR_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES));
 					break;
 				case 13:// LOAN_AGAINST_PROPERTY
+					finalViewCommonResponse.setApplicant_panCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAP_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+					finalViewCommonResponse.setApplicant_aadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAP_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 					finalViewCommonResponse.setApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAP_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 					finalViewCommonResponse.setApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAP_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
 					finalViewCommonResponse.setApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAP_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
@@ -268,6 +276,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setApplicant_AlliedActivities(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAP_LOAN_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
 					break;
 				case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
+					finalViewCommonResponse.setApplicant_panCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAS_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+					finalViewCommonResponse.setApplicant_aadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAS_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 					finalViewCommonResponse.setApplicant_BankACStatments(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAS_LOAN_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 					finalViewCommonResponse.setApplicant_SalaraySlip(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAS_LOAN_APPLICANT_INCOME_PROOF_LATEST_SALARY_SLIP));
 					finalViewCommonResponse.setApplicant_ItReturn(documentManagementService.getDocumentDetails(applicantId, DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.LAS_LOAN_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
@@ -283,7 +293,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return finalViewCommonResponse;
+ 		return finalViewCommonResponse;
 	}
 
 }
