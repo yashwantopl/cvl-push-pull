@@ -85,7 +85,7 @@ public class NotificationServiceImpl implements NotificationService{
         CommonDocumentUtils.startHook(logger, "create Email Notification");
         
         String fromEmail = "";
-        String[] toEmail = new String[] {};
+        String[] toEmail = new String[toIds.length];
         
         try {
         	for(int i=0;i <toIds.length;i++) {
