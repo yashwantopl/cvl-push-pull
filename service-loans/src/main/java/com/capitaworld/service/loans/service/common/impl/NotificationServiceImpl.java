@@ -1,15 +1,16 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
@@ -19,13 +20,17 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationType;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -48,7 +53,15 @@ public class NotificationServiceImpl implements NotificationService{
 	@Autowired
 	private RetailApplicantService retailApplicantService;
 	
-	private static Notification createNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
+	@Autowired
+	private UsersClient usersClient;
+	
+	@Autowired
+	private Environment environment;
+	
+	private static final String LOGIN_URL = "capitaworld.login.url";
+	
+	private static Notification createSysNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
         CommonDocumentUtils.startHook(logger, "createNotification");
         
@@ -65,10 +78,58 @@ public class NotificationServiceImpl implements NotificationService{
 		return notification;
 
 	}
+	
+	private Notification createEmailNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate) {
+		
+        CommonDocumentUtils.startHook(logger, "create Email Notification");
+        
+        String fromEmail = "";
+        String[] toEmail = new String[] {};
+        
+        try {
+        	for(int i=0;i <toIds.length;i++) {
+        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i].toString()));
+                if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
+        			UsersRequest request = MultipleJSONObjectHelper
+        					.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
+        			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+        				toEmail[i] = request.getEmail();	
+        			}
+        		}	
+        	}
+            UserResponse fromUsersDetails = usersClient.getEmailMobile(fromId);
+            if (!CommonUtils.isObjectNullOrEmpty(fromUsersDetails.getData())) {
+    			UsersRequest request = MultipleJSONObjectHelper
+    					.getObjectFromMap((LinkedHashMap<String, Object>) fromUsersDetails.getData(), UsersRequest.class);
+    			fromEmail = request.getEmail();
+    		}
+        } catch(Exception e) {
+        	logger.info("Throw exception while get users details for send mail in send notification");
+        	e.printStackTrace();
+        }
+        if(CommonUtils.isObjectNullOrEmpty(fromEmail) || CommonUtils.isObjectNullOrEmpty(toEmail)) {
+        	logger.info("FromEmail Or ToEmail Null Or Empty");
+        	return null;
+        }
+        
+ 		Notification notification = new Notification();
+		notification.setTo(toEmail);
+		notification.setType(NotificationType.EMAIL);
+		notification.setTemplateId(notificationTemplate.getValue());
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setParameters(parameters);
+		notification.setFrom(fromEmail);
+		notification.setSubject(notificationTemplate.getSubject());
+		CommonDocumentUtils.endHook(logger, "create Email Notification");
+		return notification;
+
+	}
+	
 
 	@Override
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
-			Long applicationId, Long fpProductId) {
+			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "sendViewNotification");
 		
@@ -128,9 +189,30 @@ public class NotificationServiceImpl implements NotificationService{
 					// TODO: handle exception
 					parameters.put("fp_pname", "NA");
 				}
-				request.addNotification(createNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId));
+				request.addNotification(createSysNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId));
+				if(CommonUtils.UserType.FUND_PROVIDER == loginUserType.intValue()) {
+					try {
+						logger.info("Starting sending mail for fs primary and final view");
+						UserResponse response = usersClient.checkUserUnderSp(Long.valueOf(toUserId));
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							if(!(Boolean)response.getData()) {
+								parameters.put("login_url", environment.getRequiredProperty(LOGIN_URL));
+								request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate));
+								logger.info("Ending sending mail for fs primary and final view, OBJECT CREATE SUCCESSFULLY");
+							} else {
+								logger.info("Ending sending mail for fs primary and final view, FS USER IS UNDER SERVICE PROVIDER");		
+							}
+						} else {
+							logger.info("Ending sending mail for fs primary and final view, USER CLIENT RESPONSE IS NULL OR EMPTY");
+						}
+					} catch (Exception e) {
+						logger.info("Throw Exception While Sending Mail For FS Primary And Final View");
+						e.printStackTrace();
+					}
+				}
 			try {
 				notificationClient.send(request);
+				logger.info("Successfully sent notification and email for primary or final view");
 			} catch (NotificationException e) {
 				e.printStackTrace();
 			}
