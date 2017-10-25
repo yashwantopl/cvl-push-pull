@@ -37,6 +37,7 @@ import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryV
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
@@ -458,13 +459,15 @@ public class PrimaryViewController {
 	
 			Long fromUserId = null;
 			Long fromUserTypeId = null;
+			Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+			
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
 				fromUserId = clientId;
 				fromUserTypeId = clientUserType;
 			} else {
 				fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-				fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+				fromUserTypeId = loginUserType;
 			}
 			Long applicationId=request.getApplicationId();
 			Long fpProductId=request.getFpProductId();
@@ -486,7 +489,7 @@ public class PrimaryViewController {
 			
 			try {
 			
-				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId);
+				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId,NotificationTemplate.PRIMARY_VIEW,loginUserType);
 				
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -500,13 +503,15 @@ public class PrimaryViewController {
 	
 		Long fromUserId = null;
 		Long fromUserTypeId = null;
+		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
 				.intValue()) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {
 			fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+			fromUserTypeId = loginUserType;
 		}
 		
 			Long applicationId=request.getApplicationId();
@@ -529,7 +534,7 @@ public class PrimaryViewController {
 			
 			try {
 			
-				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId);
+				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId,NotificationTemplate.FINAL_VIEW,loginUserType);
 				
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -543,13 +548,15 @@ public class PrimaryViewController {
 	
 		Long fromUserId = null;
 		Long fromUserTypeId = null;
+		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
 				.intValue()) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {
 			fromUserId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			fromUserTypeId = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+			fromUserTypeId = loginUserType;
 		}
 		
 			Long applicationId=request.getApplicationId();
@@ -572,7 +579,7 @@ public class PrimaryViewController {
 			
 			try {
 			
-				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId);
+				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId,NotificationTemplate.FINAL_VIEW,loginUserType);
 				
 			} catch (Exception e) {
 				// TODO: handle exception
