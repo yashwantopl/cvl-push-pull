@@ -376,5 +376,25 @@ public class CommonUtils {
 		}
 		return null;
 	}
+	
+	public static String getLoanNameForMail(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term";
+		case 3:
+			return "Home";
+		case 12:
+			return "Car";
+		case 7:
+			return "Personal";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
+	}
 
 }
