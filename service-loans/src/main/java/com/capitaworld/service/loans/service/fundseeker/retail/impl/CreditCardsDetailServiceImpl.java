@@ -90,7 +90,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 	}
 
 	@Override
-	public List<CreditCardsDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception {
+	public List<CreditCardsDetailRequest> getCreditCardDetailList(Long id, int applicationType) throws Exception {
 
 		List<CreditCardsDetail> creditCardsDetails = new ArrayList<CreditCardsDetail>();
 		switch (applicationType) {
@@ -115,6 +115,46 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 			creditCardsRequests.add(creditCardsRequest);
 		}
 		return creditCardsRequests;
+	}
+
+	@Override
+	public Boolean saveOrUpdateFromCibil(List<CreditCardsDetailRequest> creditCardDetail, Long applicationId,
+			Long userId, int applicantType) throws Exception {
+		try {
+			for (CreditCardsDetailRequest request : creditCardDetail) {
+				CreditCardsDetail crediCardsDetail = new CreditCardsDetail();
+				BeanUtils.copyProperties(request, crediCardsDetail);
+				if (request.getId() == null) {
+					crediCardsDetail.setCreatedBy(userId);
+					crediCardsDetail.setCreatedDate(new Date());
+				}
+				switch (applicantType) {
+				case CommonUtils.ApplicantType.APPLICANT:
+					crediCardsDetail.setApplicantionId(loanApplicationRepository.findOne(applicationId));
+					break;
+				case CommonUtils.ApplicantType.COAPPLICANT:
+					crediCardsDetail.setCoApplicantDetailId(coApplicantDetailRepository.findOne(applicationId));
+					break;
+				case CommonUtils.ApplicantType.GARRANTOR:
+					crediCardsDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
+					break;
+				default:
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				}
+
+				crediCardsDetail.setModifiedBy(userId);
+				crediCardsDetail.setModifiedDate(new Date());
+				creditCardsDetailRepository.save(crediCardsDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save CreditCard from CIBIL :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
 	}
 
 }

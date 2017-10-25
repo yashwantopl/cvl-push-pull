@@ -27,6 +27,8 @@ import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRe
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 
 public class LoansClient {
 
@@ -90,6 +92,10 @@ public class LoansClient {
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
+	
+	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
+	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
+	
 	
 	
 	
@@ -965,5 +971,30 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility LAP calc lap amount for mobile app");
 		}
 	}
-
+	public LoansResponse saveExistingLoanFromCibil(List<ExistingLoanDetailRequest> detailRequests,Long userId,Long clientId,Long applicationId,Integer applicantType) throws ExcelException {
+		String url = loansBaseUrl.concat(EXISTING_LOAN_DETAIL_CIBIL).concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + applicantType);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<List<ExistingLoanDetailRequest>> entity = new HttpEntity<List<ExistingLoanDetailRequest>>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCreditCardFromCibil(List<CreditCardsDetailRequest> detailRequests,Long userId,Long clientId,Long applicationId,Integer applicantType) throws ExcelException {
+		String url = loansBaseUrl.concat(CREDIT_CARD_DETAIL_CIBIL).concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + applicantType);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
 }

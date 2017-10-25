@@ -128,7 +128,7 @@ public class CreditCardsDetailController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<CreditCardsDetailRequest> response = creditCardsDetailService.getExistingLoanDetailList(id,
+			List<CreditCardsDetailRequest> response = creditCardsDetailService.getCreditCardDetailList(id,
 					applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
@@ -159,4 +159,43 @@ public class CreditCardsDetailController {
 
 	}
 
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{applicantType}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<CreditCardsDetailRequest> detailRequests,@PathVariable("applicationId") Long applicationId,
+			@PathVariable("userId") Long userId,@PathVariable("clientId") Long clientId,@PathVariable("applicantType") Integer applicantType) {
+		// request must not be null
+		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
+			logger.warn("CreditCardsDetailRequest can not be empty ==>" + detailRequests);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		// application id and user id must not be null
+		if (applicationId == null || applicantType == null || applicantType == 0 || userId == null) {
+			logger.warn("application id, user id and applicant Type must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+		try {
+			//Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId
+					: clientId);
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
+			creditCardsDetailService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId, applicantType);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 }
