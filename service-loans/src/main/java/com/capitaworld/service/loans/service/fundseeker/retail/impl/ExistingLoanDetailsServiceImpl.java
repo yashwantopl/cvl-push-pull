@@ -116,5 +116,48 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		}
 		return existingLoanDetailRequests;
 	}
+	
+	
+	@Override
+	public Boolean saveOrUpdateFromCibil(List<ExistingLoanDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId,int applicantType) throws Exception {
+		try {
+			for (ExistingLoanDetailRequest request : existingLoanDetailRequest) {
+				ExistingLoanDetail existingLoanDetail = new ExistingLoanDetail();
+				BeanUtils.copyProperties(request, existingLoanDetail);
+				if (request.getId() == null) {
+					existingLoanDetail.setCreatedBy(userId);
+					existingLoanDetail.setCreatedDate(new Date());
+				}
+				switch (applicantType) {
+				case CommonUtils.ApplicantType.APPLICANT:
+					existingLoanDetail
+							.setApplicantId(loanApplicationRepository.findOne(applicationId));
+					break;
+				case CommonUtils.ApplicantType.COAPPLICANT:
+					existingLoanDetail.setCoApplicantDetailId(
+							coApplicantDetailRepository.findOne(applicationId));
+					break;
+				case CommonUtils.ApplicantType.GARRANTOR:
+					existingLoanDetail
+							.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
+					break;
+				default:
+					throw new Exception("Invalid Application Type==>" + applicantType);
+				}
+
+				existingLoanDetail.setModifiedBy(userId);
+				existingLoanDetail.setModifiedDate(new Date());
+				existingLoanDetailsRepository.save(existingLoanDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save existingLoanDetail from CIBIL :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
 
 }

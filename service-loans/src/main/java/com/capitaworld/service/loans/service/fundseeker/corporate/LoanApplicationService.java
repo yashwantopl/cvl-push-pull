@@ -88,6 +88,8 @@ public interface LoanApplicationService {
 
 	public Boolean isMca(Long applicationId, Long userId);
 	
+	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId);
+	
 
 	
 }

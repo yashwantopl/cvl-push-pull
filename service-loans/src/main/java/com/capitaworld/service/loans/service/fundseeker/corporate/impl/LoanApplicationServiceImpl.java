@@ -324,6 +324,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return false;
 		}
 	}
+	
+	@Override
+	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		if (applicationMaster == null) {
+			return null;
+		}
+		applicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
+		applicationRequest.setProductId(applicationMaster.getProductId());
+		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+		return applicationRequest;
+	}
 
 	@Override
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception {

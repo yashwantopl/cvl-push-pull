@@ -714,7 +714,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
 					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
-							.getExistingLoanDetailList(coApplicantDetail.getId(),
+							.getCreditCardDetailList(coApplicantDetail.getId(),
 									CommonUtils.ApplicantType.COAPPLICANT);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
