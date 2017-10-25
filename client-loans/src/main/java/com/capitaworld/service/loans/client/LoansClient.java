@@ -72,7 +72,8 @@ public class LoansClient {
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
-
+	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
+	
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
 	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
@@ -770,6 +771,19 @@ public class LoansClient {
 		}
 	}
 
+	public LoansResponse getLoanBasicDetails(LoanApplicationRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(LOAN_BASIC_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available while calling loan basic details for sending mails");
+		}
+	}
+	
 	public LoansResponse getBasicDetail(Long userId, Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(BASIC_DETAIL_URL).concat("/" + applicationId + "/" + userId);
 		try {
