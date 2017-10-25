@@ -177,7 +177,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			finalViewCommonResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
-			List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
+			List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService.getCreditCardDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
 			List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 			for(CreditCardsDetailRequest cardsDetailRequest:creditCardsDetailRequestList){
 				CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();

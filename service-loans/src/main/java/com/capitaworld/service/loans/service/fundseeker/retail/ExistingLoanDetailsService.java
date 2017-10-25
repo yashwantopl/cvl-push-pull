@@ -14,5 +14,7 @@ public interface ExistingLoanDetailsService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<ExistingLoanDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws Exception;
+	
+	public Boolean saveOrUpdateFromCibil(List<ExistingLoanDetailRequest> existingLoanDetail,Long applicationId,Long userId,int applicantType) throws Exception;
 
 }
