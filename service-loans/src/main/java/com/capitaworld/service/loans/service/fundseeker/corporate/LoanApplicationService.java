@@ -90,6 +90,8 @@ public interface LoanApplicationService {
 	
 	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId);
 	
+	public Long getTotalUserApplication(Long userId);
+	
 
 	
 }

@@ -7,7 +7,9 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 public class CommonNotificationUtils {
 	
 	public enum NotificationTemplate {
-		PRIMARY_VIEW(NotificationAlias.EMAIL_PRIMARY_VIEW_FS,"Fund provider viewed your teaser"), FINAL_VIEW(NotificationAlias.EMAIL_FINAL_VIEW_FS,"Fund provider viewed your final details");
+		PRIMARY_VIEW(NotificationAlias.EMAIL_PRIMARY_VIEW_FS,"Fund provider viewed your teaser"),
+		FINAL_VIEW(NotificationAlias.EMAIL_FINAL_VIEW_FS,"Fund provider viewed your final details"),
+		LOGOUT_IMMEDIATELY(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY,"Fund provider viewed your final details");
 		
 		private Long value;
 		private String subject;
@@ -31,6 +33,8 @@ public class CommonNotificationUtils {
 				return PRIMARY_VIEW; 
 			} else if(x == NotificationAlias.EMAIL_FINAL_VIEW_FS) {
 				return FINAL_VIEW; 
+			}else if(x == NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY) {
+				return LOGOUT_IMMEDIATELY; 
 			} else {
 				return null;
 			} 
