@@ -59,6 +59,7 @@ public class AsyncComponent {
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				NotificationRequest notificationRequest = new NotificationRequest();
+    				notificationRequest.setClientRefId(userId.toString());
     				//GET EMAIL TEMPLATE 
     				NotificationTemplate template = NotificationTemplate.LOGOUT_IMMEDIATELY;
     				//SET EMAIL PARAMETER 
