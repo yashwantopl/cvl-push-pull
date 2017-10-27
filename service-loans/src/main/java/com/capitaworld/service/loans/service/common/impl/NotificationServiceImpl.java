@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
@@ -57,9 +58,10 @@ public class NotificationServiceImpl implements NotificationService{
 	private UsersClient usersClient;
 	
 	@Autowired
-	private Environment environment;
+	private Environment environment; 
 	
-	private static final String LOGIN_URL = "capitaworld.login.url";
+	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
+
 	
 	private static Notification createSysNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
 			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
@@ -84,7 +86,6 @@ public class NotificationServiceImpl implements NotificationService{
 		
         CommonDocumentUtils.startHook(logger, "create Email Notification");
         
-        String fromEmail = "";
         String[] toEmail = new String[toIds.length];
         
         try {
@@ -98,18 +99,12 @@ public class NotificationServiceImpl implements NotificationService{
         			}
         		}	
         	}
-            UserResponse fromUsersDetails = usersClient.getEmailMobile(fromId);
-            if (!CommonUtils.isObjectNullOrEmpty(fromUsersDetails.getData())) {
-    			UsersRequest request = MultipleJSONObjectHelper
-    					.getObjectFromMap((LinkedHashMap<String, Object>) fromUsersDetails.getData(), UsersRequest.class);
-    			fromEmail = request.getEmail();
-    		}
         } catch(Exception e) {
         	logger.info("Throw exception while get users details for send mail in send notification");
         	e.printStackTrace();
         }
-        if(CommonUtils.isObjectNullOrEmpty(fromEmail) || CommonUtils.isObjectNullOrEmpty(toEmail)) {
-        	logger.info("FromEmail Or ToEmail Null Or Empty");
+        if(CommonUtils.isObjectNullOrEmpty(toEmail)) {
+        	logger.info("ToEmail Null Or Empty");
         	return null;
         }
         
@@ -119,7 +114,7 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setTemplateId(notificationTemplate.getValue());
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
-		notification.setFrom(fromEmail);
+		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
 		notification.setSubject(notificationTemplate.getSubject());
 		CommonDocumentUtils.endHook(logger, "create Email Notification");
 		return notification;
@@ -196,7 +191,16 @@ public class NotificationServiceImpl implements NotificationService{
 						UserResponse response = usersClient.checkUserUnderSp(Long.valueOf(toUserId));
 						if(!CommonUtils.isObjectNullOrEmpty(response)) {
 							if(!(Boolean)response.getData()) {
-								parameters.put("login_url", environment.getRequiredProperty(LOGIN_URL));
+								if(NotificationTemplate.FINAL_VIEW.getValue() == notificationTemplate.getValue()) {
+									LoanApplicationRequest loanDetails = loanApplicationService.getLoanBasicDetails(applicationId, Long.valueOf(toUserId));
+									if(!CommonUtils.isObjectNullOrEmpty(loanDetails)) {
+										parameters.put("application_id", loanDetails.getApplicationCode());
+										parameters.put("loan", com.capitaworld.service.loans.utils.CommonUtils.getLoanNameForMail(loanDetails.getProductId()));
+									} else {
+										parameters.put("application_id", "NA");
+										parameters.put("loan", "NA");
+									}
+								}
 								request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate));
 								logger.info("Ending sending mail for fs primary and final view, OBJECT CREATE SUCCESSFULLY");
 							} else {

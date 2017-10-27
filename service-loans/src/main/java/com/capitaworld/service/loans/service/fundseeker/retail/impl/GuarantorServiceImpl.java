@@ -718,7 +718,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 					finalViewResponse.setBankAccountHeldDetailsRequest(accountHeldDetailsRequestList);
 
 					List<CreditCardsDetailRequest> creditCardsDetailRequestList = creditCardDetailsService
-							.getExistingLoanDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
+							.getCreditCardDetailList(guarantorDetail.getId(), CommonUtils.ApplicantType.GARRANTOR);
 					List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 					for (CreditCardsDetailRequest cardsDetailRequest : creditCardsDetailRequestList) {
 						CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();

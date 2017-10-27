@@ -324,6 +324,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return false;
 		}
 	}
+	
+	@Override
+	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		if (applicationMaster == null) {
+			return null;
+		}
+		applicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
+		applicationRequest.setProductId(applicationMaster.getProductId());
+		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+		return applicationRequest;
+	}
 
 	@Override
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
@@ -2378,6 +2391,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			catch (Exception e) {
 				return null;
 			}
+	}
+	
+	@Override
+	public Long getTotalUserApplication(Long userId) {
+		logger.info("Enter in get Total User Application");
+		Long totalApp = loanApplicationRepository.getTotalUserApplication(userId);
+		logger.info("Exit in get Total User Application --->" +totalApp);
+		return totalApp;
 	}
 
 }
