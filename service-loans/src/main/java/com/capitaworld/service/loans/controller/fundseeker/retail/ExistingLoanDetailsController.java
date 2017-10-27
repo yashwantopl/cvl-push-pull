@@ -184,7 +184,7 @@ public class ExistingLoanDetailsController {
 
 		// When calling client for this method if one of this path variable is null it
 		// takes "null" so can not cast to Long
-		if (clientId == -1) {
+		if (clientId != null && clientId == -1) {
 			clientId = null;
 		}
 
