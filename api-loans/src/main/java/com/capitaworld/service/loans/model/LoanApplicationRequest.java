@@ -90,6 +90,12 @@ public class LoanApplicationRequest implements Serializable {
 		this.id = id;
 		this.productId = productId;
 	}
+	
+	public LoanApplicationRequest(Long id,Long userId) {
+		super();
+		this.id = id;
+		this.userId = userId;
+	}
 
 	public Long getId() {
 		return this.id;

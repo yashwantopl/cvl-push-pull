@@ -2392,5 +2392,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return null;
 			}
 	}
+	
+	@Override
+	public Long getTotalUserApplication(Long userId) {
+		logger.info("Enter in get Total User Application");
+		Long totalApp = loanApplicationRepository.getTotalUserApplication(userId);
+		logger.info("Exit in get Total User Application --->" +totalApp);
+		return totalApp;
+	}
 
 }
