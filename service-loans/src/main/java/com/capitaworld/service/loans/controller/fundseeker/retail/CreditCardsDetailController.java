@@ -176,6 +176,7 @@ public class CreditCardsDetailController {
 					HttpStatus.OK);
 		}
 
+		logger.warn("applicationId == >"+ applicationId +"and userId == >"+ userId +" and ClienId ==> "+ clientId +" and applicantType ==>" + applicantType);
 		try {
 			//Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId

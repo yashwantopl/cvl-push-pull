@@ -174,10 +174,11 @@ public class ExistingLoanDetailsController {
 		if (applicationId == null || applicantType == null || applicantType == 0 || userId == null) {
 			logger.warn("application id, user id and applicant Type must not be null ==>");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
+		logger.warn("applicationId == >"+ applicationId +"and userId == >"+ userId +" and ClienId ==> "+ clientId +" and applicantType ==>" + applicantType);
 		try {
 			//Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId
