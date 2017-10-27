@@ -121,6 +121,11 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 	@Override
 	public Boolean saveOrUpdateFromCibil(List<ExistingLoanDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId,int applicantType) throws Exception {
 		try {
+
+			// Inactive Previous Loans Before Adding new
+			existingLoanDetailsRepository.inactive(applicationId);
+
+			
 			for (ExistingLoanDetailRequest request : existingLoanDetailRequest) {
 				ExistingLoanDetail existingLoanDetail = new ExistingLoanDetail();
 				BeanUtils.copyProperties(request, existingLoanDetail);

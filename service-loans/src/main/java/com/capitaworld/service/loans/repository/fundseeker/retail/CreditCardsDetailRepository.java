@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.repository.fundseeker.retail;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,5 +23,9 @@ public interface CreditCardsDetailRepository extends JpaRepository<CreditCardsDe
 
 	@Query("select o from CreditCardsDetail o where o.guarantorDetailId.id = :id and isActive = true")
 	public List<CreditCardsDetail> listCreditCardsFromGarrId(@Param("id")Long id);
+	
+	@Modifying
+	@Query("update CreditCardsDetail o set o.isActive = false,o.modifiedDate = NOW() where o.applicantId.id = :id and o.isActive = true")
+	public int inactive(@Param("id") Long id);
 
 }
