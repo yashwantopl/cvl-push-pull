@@ -121,6 +121,9 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 	public Boolean saveOrUpdateFromCibil(List<CreditCardsDetailRequest> creditCardDetail, Long applicationId,
 			Long userId, int applicantType) throws Exception {
 		try {
+			// Inactive Previous Loans Before Adding new
+			creditCardsDetailRepository.inactive(applicationId);
+
 			for (CreditCardsDetailRequest request : creditCardDetail) {
 				CreditCardsDetail crediCardsDetail = new CreditCardsDetail();
 				BeanUtils.copyProperties(request, crediCardsDetail);
