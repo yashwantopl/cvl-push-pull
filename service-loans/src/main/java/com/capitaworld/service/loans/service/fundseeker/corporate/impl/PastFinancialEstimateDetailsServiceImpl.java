@@ -191,18 +191,29 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				if (differenceOfYears == pastFinancialEstimateDetails.size()) {
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else if (differenceOfYears < pastFinancialEstimateDetails.size()) {
+//					for (int i = 0; i < differenceOfYears; i++) {
+//						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
+//								pastFinancialEstimateDetails.get(i).getId());
+//						pastFinancialEstimateDetails.remove(i);
+//						differenceOfYears = pastFinancialEstimateDetails.size(); 
+//						i--;
+//					}
+					
 					for (int i = 0; i < differenceOfYears; i++) {
-						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
-								pastFinancialEstimateDetails.get(i).getId());
-						pastFinancialEstimateDetails.remove(i);
-					}
+					      pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
+					        pastFinancialEstimateDetails.get(i).getId());
+					     }
+
+					     for (int i = 0; i < differenceOfYears; i++) {
+					      pastFinancialEstimateDetails.remove(i);
+					     }
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else {
 					List<PastFinancialEstimatesDetail> financialEstimatesNewList = new ArrayList<>();
 					String recordYearsArray[] = null;
-					if(pastFinancialEstimateDetails.get(0)!=null){
-						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
-					recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString()
+					if(pastFinancialEstimateDetails.get(pastFinancialEstimateDetails.size()-1)!=null){
+						if(pastFinancialEstimateDetails.get(pastFinancialEstimateDetails.size()-1).getFinancialYear()!=null){
+					recordYearsArray = pastFinancialEstimateDetails.get(pastFinancialEstimateDetails.size()-1).getFinancialYear().toString()
 							.split("-");
 						}
 					}
