@@ -55,6 +55,7 @@ public class AsyncComponent {
 	private ProductMasterService productMasterService;
 	
 	
+	
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 	
 	
@@ -156,6 +157,11 @@ public class AsyncComponent {
 	public void sendMailWhenUserNotCompleteFinalDetails(Long fpUserId, Long applicationId){
 		logger.info("Enter in sending mail when FP Click View More Details But FS not filled final details");
 		try {
+			Long lastFpProductId = getLastAccessId(fpUserId);
+			if(CommonUtils.isObjectNullOrEmpty(lastFpProductId)) {
+				logger.warn("Return, FP Product Id null or empty =========================>"+fpUserId);
+				return;
+			}
 			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
 			UserResponse response = usersClient.checkUserUnderSp(userId);
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
@@ -177,13 +183,15 @@ public class AsyncComponent {
 		    				}
 		    				String fpName = "NA";
 		    				try {
-		    					Object o[]=productMasterService.getUserDetailsByPrductId(request.getLastAccessApplicantId());
+		    					logger.info("Start Getting Fp Name By Fp Product Id =======>"+ lastFpProductId);
+		    					Object o[] = productMasterService.getUserDetailsByPrductId(lastFpProductId);
 		    					if(o!=null) {
 		    						fpName = o[1].toString();
-	    							parameters.put("fp_name",fpName);
+		    						logger.info("Successfully get fo name------->" + fpName);
 	    						} else {
-	    							parameters.put("fp_name","NA");
+	    							logger.info("Fund Provider name can't find using "+ lastFpProductId +" id");
 	    						}
+		    					parameters.put("fp_name",fpName);
 		    				} catch (Exception e) {
 		    					logger.warn("Error while get fund provider name");
 		    					e.printStackTrace();
@@ -213,6 +221,24 @@ public class AsyncComponent {
 		} catch(Exception e) {
 			logger.info("Throw exception while sending mail, Primary Complete");
 			e.printStackTrace();
+		}
+	}
+	
+	private Long getLastAccessId(Long userId) {
+		try {
+			logger.info("Start Getting get last application or fpProduct Id =======>"+userId);
+			UserResponse userLastAppResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
+			if (!CommonUtils.isObjectNullOrEmpty(userLastAppResponse.getData())) {
+				UsersRequest userLastApprequest = MultipleJSONObjectHelper
+    					.getObjectFromMap((LinkedHashMap<String, Object>) userLastAppResponse.getData(), UsersRequest.class);
+				logger.info("Successfully get fp product id=======>"+userLastApprequest.getLastAccessApplicantId());
+				return userLastApprequest.getLastAccessApplicantId();
+			}
+			return null;
+		} catch (Exception e) {
+			logger.warn("Error while get fund provider name");
+			e.printStackTrace();
+			return null;
 		}
 	}
 	
