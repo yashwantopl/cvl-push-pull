@@ -82,7 +82,7 @@ public class NotificationServiceImpl implements NotificationService{
 	}
 	
 	private Notification createEmailNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
-			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate) {
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName) {
 		
         CommonDocumentUtils.startHook(logger, "create Email Notification");
         
@@ -115,7 +115,7 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(notificationTemplate.getSubject());
+		notification.setSubject(notificationTemplate.isSubjConfig() ? fpName + notificationTemplate.getSubject() : notificationTemplate.getSubject());
 		CommonDocumentUtils.endHook(logger, "create Email Notification");
 		return notification;
 
@@ -163,12 +163,15 @@ public class NotificationServiceImpl implements NotificationService{
 					parameters.put("fs_name", "NA");
 				}
 				Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
+				
+				String fpName = "";
 				try {
-					if(o!=null)
-						parameters.put("fp_name",o[1].toString());
-					else
+					if(o!=null) {
+						fpName = o[1].toString();
+						parameters.put("fp_name",fpName);
+					} else {
 						parameters.put("fp_name","NA");
-					
+					}
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -201,7 +204,7 @@ public class NotificationServiceImpl implements NotificationService{
 										parameters.put("loan", "NA");
 									}
 								}
-								request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate));
+								request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
 								logger.info("Ending sending mail for fs primary and final view, OBJECT CREATE SUCCESSFULLY");
 							} else {
 								logger.info("Ending sending mail for fs primary and final view, FS USER IS UNDER SERVICE PROVIDER");		
