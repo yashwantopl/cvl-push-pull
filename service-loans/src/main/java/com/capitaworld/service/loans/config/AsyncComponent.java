@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
+import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -127,9 +128,21 @@ public class AsyncComponent {
     					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
     					proposalMappingRequest.setApplicationId(applicationId);
     					ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
-    					ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
-    					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
-    					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
+    					if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsResponse)) {
+    						ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
+    		    					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
+    						if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
+    							logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
+    							parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
+    						} else {
+    							logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
+    							parameters.put("total_matches",0);
+    						}
+    					} else {
+    						logger.warn("Something went wrong, Proposal service not available");
+    						parameters.put("total_matches",0);
+    					}
+    						
     				} catch(Exception e) {
     					logger.warn("Error while get total suggestion matches list when primary locked mail sending");
     					e.printStackTrace();
@@ -202,10 +215,13 @@ public class AsyncComponent {
 		    					logger.info("Stating get total match count");
 		    					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		    					proposalMappingRequest.setApplicationId(applicationId);
-		    					ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
-		    					ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
-		    					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
-		    					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
+		    					ProposalCountResponse proposalCountResponse = proposalDetailsClient.proposalCountOfFundSeeker(proposalMappingRequest);
+		    					if(!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+		    						logger.info("Successfully get total matches count ----> "+proposalCountResponse.getMatches());
+			    					parameters.put("total_matches", !CommonUtils.isObjectNullOrEmpty(proposalCountResponse.getMatches()) ? proposalCountResponse.getMatches() : 0);	
+		    					} else {
+		    						logger.info("Something went to wrong while get total matches count");
+		    					}
 		    				} catch(Exception e) {
 		    					logger.warn("Error while get total suggestion matches list when final details not filling mail sending");
 		    					e.printStackTrace();
