@@ -228,11 +228,9 @@ public class AsyncComponent {
 		try {
 			logger.info("Start Getting get last application or fpProduct Id =======>"+userId);
 			UserResponse userLastAppResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
-			if (!CommonUtils.isObjectNullOrEmpty(userLastAppResponse.getData())) {
-				UsersRequest userLastApprequest = MultipleJSONObjectHelper
-    					.getObjectFromMap((LinkedHashMap<String, Object>) userLastAppResponse.getData(), UsersRequest.class);
-				logger.info("Successfully get fp product id=======>"+userLastApprequest.getLastAccessApplicantId());
-				return userLastApprequest.getLastAccessApplicantId();
+			if (!CommonUtils.isObjectNullOrEmpty(userLastAppResponse.getId())) {
+				logger.info("Successfully get fp product id=======>"+userLastAppResponse.getId());
+				return userLastAppResponse.getId();
 			}
 			return null;
 		} catch (Exception e) {
