@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
@@ -37,7 +38,10 @@ public class MatchesController {
 	@Autowired
 	private ProductMasterService productMasterService; 
 
-	@Autowired LoanApplicationService loanApplicationService; 
+	@Autowired LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
 	
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -50,7 +54,8 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -66,6 +71,10 @@ public class MatchesController {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
+				if(CommonUtils.UserType.FUND_SEEKER == userType){
+					logger.info("Start Sending Mail To Fs for Profile and primary fill complete");
+					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
+				}
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}

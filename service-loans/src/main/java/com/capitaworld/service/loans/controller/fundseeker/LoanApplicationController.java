@@ -586,8 +586,8 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isFinalLocked");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -610,6 +610,10 @@ public class LoanApplicationController {
 			if (!loanApplicationService.isFinalLocked(applicationId, userId)) {
 				loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
 				loansResponse.setMessage("Requested User has not filled Final Details");
+				if(CommonUtils.UserType.FUND_PROVIDER == userType){
+					logger.info("Start Sending Mail To Fs for Fill Final Details When FP Click View More Details");
+					asyncComponent.sendMailWhenUserNotCompleteFinalDetails(userId,applicationId);	
+				}
 				CommonDocumentUtils.endHook(logger, "isFinalLocked");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
