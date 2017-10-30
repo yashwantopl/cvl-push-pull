@@ -11,8 +11,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
@@ -55,6 +59,12 @@ public class AsyncComponent {
 	@Autowired
 	private ProductMasterService productMasterService;
 	
+	@Autowired
+	private CorporateApplicantService corporateApplicantService;
+	
+	@Autowired
+	private RetailApplicantService retailApplicantService;
+	
 	
 	
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
@@ -88,6 +98,8 @@ public class AsyncComponent {
     				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,null);
     				logger.info("Exits, Successfully sent mail when user has no application ---->"+request.getEmail());
     			}
+    		} else {
+    			logger.info("User response null while getting email id and user type");
     		}
 		} catch(Exception e) {
 			logger.info("Throw exception while sending mail, logout immediately");
@@ -113,7 +125,8 @@ public class AsyncComponent {
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				Map<String, Object> parameters = new HashMap<String, Object>();
-    				parameters.put("fs_name", request.getName());
+    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
     				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
     				if(loanBasicDetails != null) {
     					parameters.put("application_id", loanBasicDetails.getApplicationCode());
@@ -159,6 +172,7 @@ public class AsyncComponent {
 		}
 	}
 	
+	
 	/**
 	 * FS Mail Number :- 14
 	 *  Send Mail when FP Click View More Details But FS not Complete Final Details 
@@ -185,7 +199,8 @@ public class AsyncComponent {
 		    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 		    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
 		    				Map<String, Object> parameters = new HashMap<String, Object>();
-		    				parameters.put("fs_name", request.getName());
+		    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
 		    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
@@ -238,6 +253,37 @@ public class AsyncComponent {
 			logger.info("Throw exception while sending mail, Primary Complete");
 			e.printStackTrace();
 		}
+	}
+	
+	private String getFundSeekerName(Long applicationId,Long fsUserId) {
+		try {
+			logger.info("Starting get fund seeker name service");
+			int fsProdId = loanApplicationService.getProductIdByApplicationId(applicationId, fsUserId);
+			int fsType = CommonUtils.getUserMainType(fsProdId);
+			if(CommonUtils.UserMainType.CORPORATE == fsType){
+				logger.info("In Corporate, Find fpProd Id by userid and applicationId");
+				CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fsUserId, applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest)) {
+					logger.info("Successfully get fundseeker name =====> "+corporateApplicantRequest.getOrganisationName());
+					return corporateApplicantRequest.getOrganisationName();
+				}
+			} else if(CommonUtils.UserMainType.RETAIL == fsType){
+				logger.info("In Retails, Find fpProd Id by userid and applicationId");
+				RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(fsUserId, applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
+					String fsName = (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") 
+							+ " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : "");
+					logger.info("Successfully get fundseeker name =====> "+fsName);
+					return fsName;	
+				}
+			}
+			return null;
+		}catch (Exception e) {
+			logger.warn("Something went wrong while get fundseeker name");
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 	private Long getLastAccessId(Long userId) {
