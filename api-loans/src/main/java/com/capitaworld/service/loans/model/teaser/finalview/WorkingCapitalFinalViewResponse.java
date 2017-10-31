@@ -51,8 +51,8 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	/**
 	 * Working Capital Primary Frame Data Fields
 	 */
-	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
+	/*private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList;
@@ -60,12 +60,12 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimatesDetailRequestList;
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
-	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;*/
 
 	/**
 	 * DPR Data Fields
 	 */
-	private Boolean isDprUploaded;
+	/*private Boolean isDprUploaded;
 	private List<BoardOfDirectorsResponse> boardOfDirectorsResponseList;
 	private List<StrategicAlliancesResponse> strategicAlliancesResponseList;
 	private List<KeyManagementResponse> keyManagementResponseList;
@@ -78,7 +78,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private ScotAnalysisDetailResponse scotAnalysisDetailResponses;
 	private DprUserDataDetailResponse dprUserDataDetailResponses;
 	private DriverForFutureGrowthResponse driverForFutureGrowthResponse;
-	private List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList;
+	private List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList;*/
 
 	/**
 	 * Working Capital Final Frame Data Fields
@@ -132,11 +132,11 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	/**
 	 * Working Capital DPR, CMA, BS Formate
 	 */
-	private List<Object> dprList;
+	/*private List<Object> dprList;
+	  private List<Object> dprYourFormatList;*/
 	private List<Object> cmaList;
 	private List<Object> bsFormatList;
 	private List<Object> financialModelList;
-	private List<Object> dprYourFormatList;
 
 	public String getOrganisationName() {
 		return organisationName;
@@ -338,14 +338,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.longTermRating = longTermRating;
 	}
 
-	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
+	/*public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
 	}
 
 	public void setProposedProductDetailRequestList(
 			List<ProposedProductDetailRequest> proposedProductDetailRequestList) {
 		this.proposedProductDetailRequestList = proposedProductDetailRequestList;
-	}
+	}*/
 
 	public List<AchievementDetailRequest> getAchievementDetailList() {
 		return AchievementDetailList;
@@ -355,7 +355,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		AchievementDetailList = achievementDetailList;
 	}
 
-	public List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
+	/*public List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
 		return CreditRatingOrganizationDetailResponse;
 	}
 
@@ -541,7 +541,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	public void setProjectImplementationScheduleResponseList(
 			List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList) {
 		this.projectImplementationScheduleResponseList = projectImplementationScheduleResponseList;
-	}
+	}*/
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailRequests() {
 		return associatedConcernDetailRequests;
@@ -746,13 +746,13 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.competence = competence;
 	}
 
-	public List<Object> getDprList() {
+	/*public List<Object> getDprList() {
 		return dprList;
 	}
 
 	public void setDprList(List<Object> dprList) {
 		this.dprList = dprList;
-	}
+	}*/
 
 	public List<Object> getCmaList() {
 		return cmaList;
@@ -834,13 +834,13 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.financialModelList = financialModelList;
 	}
 
-	public List<Object> getDprYourFormatList() {
+	/*public List<Object> getDprYourFormatList() {
 		return dprYourFormatList;
 	}
 
 	public void setDprYourFormatList(List<Object> dprYourFormatList) {
 		this.dprYourFormatList = dprYourFormatList;
-	}
+	}*/
 
 	public String getRegOfficeCity() {
 		return regOfficeCity;

@@ -40,19 +40,19 @@ public class ExistingLoanDetailsController {
 
 	@Autowired
 	private ExistingLoanDetailsService existingLoanDetailsService;
-	
+
 	@Autowired
 	private RetailApplicantService retailApplicantService;
-	
+
 	@Autowired
 	private CoApplicantService coApplicantService;
-	
+
 	@Autowired
 	private GuarantorService guarantorService;
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
-	
+
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -60,7 +60,8 @@ public class ExistingLoanDetailsController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
@@ -79,24 +80,25 @@ public class ExistingLoanDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 				frameRequest.setClientId(clientId);
 			}
-			
-			//Checking Profile is Locked
+
+			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
 			Long applicationId = null;
-			if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
+			if (CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()) {
 				applicationId = frameRequest.getApplicationId();
-			}else if(CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()){
+			} else if (CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()) {
 				applicationId = coApplicantService.getApplicantIdById(frameRequest.getApplicationId());
-			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
+			} else if (CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()) {
 				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
 			}
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			existingLoanDetailsService.saveOrUpdate(frameRequest);
@@ -113,16 +115,18 @@ public class ExistingLoanDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{applicationType}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,@RequestParam(value = "clientId",required = false) Long clientId,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, @PathVariable int applicationType,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
-			}else{
-				userId = (Long)request.getAttribute(CommonUtils.USER_ID); 
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
+
 			if (id == null) {
 				logger.warn("ID Require to get Existing Loan Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
@@ -137,18 +141,18 @@ public class ExistingLoanDetailsController {
 			Long applicantIdById = null;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
-				currencyId = retailApplicantService.getCurrency(id,userId);
+				currencyId = retailApplicantService.getCurrency(id, userId);
 				break;
 			case CommonUtils.ApplicantType.COAPPLICANT:
-				applicantIdById = coApplicantService.getApplicantIdById(id);				
-				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				applicantIdById = coApplicantService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
 			case CommonUtils.ApplicantType.GARRANTOR:
-				applicantIdById = guarantorService.getApplicantIdById(id);				
-				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				applicantIdById = guarantorService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
 			}
-			
+
 			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -160,10 +164,11 @@ public class ExistingLoanDetailsController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{applicantType}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<ExistingLoanDetailRequest> detailRequests,@PathVariable("applicationId") Long applicationId,
-			@PathVariable("userId") Long userId,@PathVariable("clientId") Long clientId,@PathVariable("applicantType") Integer applicantType) {
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<ExistingLoanDetailRequest> detailRequests,
+			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
+			@PathVariable("clientId") Long clientId, @PathVariable("applicantType") Integer applicantType) {
 		// request must not be null
 		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
 			logger.warn("frameRequest can not be empty ==>" + detailRequests);
@@ -174,20 +179,27 @@ public class ExistingLoanDetailsController {
 		if (applicationId == null || applicantType == null || applicantType == 0 || userId == null) {
 			logger.warn("application id, user id and applicant Type must not be null ==>");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 
+		// When calling client for this method if one of this path variable is null it
+		// takes "null" so can not cast to Long
+		if (clientId != null && clientId == -1) {
+			clientId = null;
+		}
+
+		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId
+				+ " and applicantType ==>" + applicantType);
 		try {
-			//Checking Profile is Locked
-			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId
-					: clientId);
+			// Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
+
 			existingLoanDetailsService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId, applicantType);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);

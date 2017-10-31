@@ -92,6 +92,8 @@ public interface LoanApplicationService {
 	
 	public Long getTotalUserApplication(Long userId);
 	
+	public Long getUserIdByApplicationId(Long applicationId);
+	
 
 	
 }

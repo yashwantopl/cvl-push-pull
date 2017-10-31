@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,9 +31,11 @@ public class MultipleJSONObjectHelper implements Serializable {
 
 	public static List getListOfObjects(String data, String key, Class<?> clazz) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 		if(key != null){
 			JsonNode node = mapper.readTree(data);
-			return mapper.readValue(node.get(key).asText(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));			
+			return mapper.readValue(node.get(key).toString(), mapper.getTypeFactory().constructCollectionType(List.class, clazz));			
 		}else{
 			return mapper.readValue(data, mapper.getTypeFactory().constructCollectionType(List.class, clazz));
 		}
