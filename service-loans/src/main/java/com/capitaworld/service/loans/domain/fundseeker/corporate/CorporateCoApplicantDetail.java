@@ -101,12 +101,18 @@ public class CorporateCoApplicantDetail implements Serializable {
 
 	@Column(name = "same_as")
 	private Boolean sameAs;
+	
+	@Column(name = "aadhar_number")
+	private String aadharNumber;
 
 	@Column(name = "pan")
 	private String panNo;
 
 	@Column(name = "landline_no")
 	private String landlineNo;
+	
+	@Column(name = "relationship_with_applicant")
+	private Integer relationshipWithApplicant;
 
 	public Long getId() {
 		return id;
@@ -316,5 +322,23 @@ public class CorporateCoApplicantDetail implements Serializable {
 		this.landlineNo = landlineNo;
 	}
 
+	public Integer getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+
+	public void setRelationshipWithApplicant(Integer relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+
+	public String getAadharNumber() {
+		return aadharNumber;
+	}
+
+	public void setAadharNumber(String aadharNumber) {
+		this.aadharNumber = aadharNumber;
+	}
+
+	
+	
 	
 }
