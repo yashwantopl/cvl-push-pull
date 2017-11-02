@@ -12,19 +12,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryHomeLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileFrameDetailsRequest;
+import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryLapLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.MobileService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryHomeLoanService;
@@ -60,6 +72,16 @@ public class MobileLoanServiceImpl implements MobileService {
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
+	
+	@Autowired
+	private ApplicationSequenceService applicationSequenceService;
+	
+
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private PrimaryHomeLoanDetailRepository primaryHomeLoanDetailRepository;
 
 	
 	@Override
@@ -205,5 +227,137 @@ public class MobileLoanServiceImpl implements MobileService {
 		coAppDetail.setBirthDate(response.getDateOfBirth());
 		coAppDetail = coApplicantDetailRepository.save(coAppDetail);
 		return coAppDetail.getId();	
+	}
+	
+	
+	@Override
+	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws Exception {
+		try {
+			LoanApplicationMaster applicationMaster = null;
+			for (Map<String, Object> obj : commonRequest.getDataList()) {
+				MobileFrameDetailsRequest loanApplicationRequest = (MobileFrameDetailsRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, MobileFrameDetailsRequest.class);
+				LoanType type = CommonUtils.LoanType.getType(commonRequest.getProductId());
+				if (type == null) {
+					continue;
+				}
+
+				switch (type) {
+				case WORKING_CAPITAL:
+					applicationMaster = new PrimaryWorkingCapitalLoanDetail();
+					break;
+				case TERM_LOAN:
+					applicationMaster = new PrimaryTermLoanDetail();
+					break;
+				case LAS_LOAN:
+					applicationMaster = new PrimaryLasLoanDetail();
+					break;
+				case LAP_LOAN:
+					applicationMaster = new PrimaryLapLoanDetail();
+					break;
+				case PERSONAL_LOAN:
+					applicationMaster = new PrimaryPersonalLoanDetail();
+					break;
+				case HOME_LOAN:
+					applicationMaster = new PrimaryHomeLoanDetail();
+					break;
+				case CAR_LOAN:
+					applicationMaster = new PrimaryCarLoanDetail();
+					break;
+
+				default:
+					continue;
+				}
+
+				logger.info("userId==>" + (commonRequest.getUserId()));
+//				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster, "name");
+				applicationMaster.setUserId(commonRequest.getUserId());
+				applicationMaster.setCreatedBy(commonRequest.getUserId());
+				applicationMaster.setCreatedDate(new Date());
+				applicationMaster.setModifiedBy(commonRequest.getUserId());
+				applicationMaster.setModifiedDate(new Date());
+				
+				
+				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getTenure())) {
+					applicationMaster.setTenure(loanApplicationRequest.getTenure() * 12);
+				}
+				applicationMaster.setCategoryCode(loanApplicationRequest.getCategoryCode());  // categaoryCode set
+				applicationMaster.setProductId(commonRequest.getProductId());
+				
+				
+				applicationMaster
+						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+				applicationMaster = loanApplicationRepository.save(applicationMaster);
+				
+				
+				// for save primary details
+
+				switch (type) {
+				case WORKING_CAPITAL:
+
+					break;
+				case TERM_LOAN:
+
+					break;
+				/*
+				 * case LAS_LOAN: applicationMaster = new
+				 * PrimaryLasLoanDetail(); break;
+				 */
+				case LAP_LOAN:
+					break;
+				case PERSONAL_LOAN:
+					// create record in fs retail applicant
+					break;
+				case HOME_LOAN:
+					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository
+							.findOne(applicationMaster.getId());
+					primaryHomeLoanDetail.setPropertyPrice(loanApplicationRequest.getMarketValue());
+					primaryHomeLoanDetail.setPropertyType(loanApplicationRequest.getPropertyType());
+					primaryHomeLoanDetail.setProjectCity(loanApplicationRequest.getPropertyLocation());
+					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
+
+					// create record in fs retail applicant
+					saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);
+					break;
+				case CAR_LOAN:
+					break;
+
+				default:
+					continue;
+				}
+			}
+			return applicationMaster.getId();
+		} catch (Exception e) {
+			logger.error("Error while Saving Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	private Boolean saveRetailApplicantDetailForMobileApplication(LoanApplicationMaster applicationMaster,
+			MobileFrameDetailsRequest loanApplicationRequest) {
+		try {
+			RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
+			retailApplicantDetail.setApplicationId(applicationMaster);
+			retailApplicantDetail.setOccupationId(loanApplicationRequest.getEmploymentType());
+			retailApplicantDetail.setBirthDate(loanApplicationRequest.getDateOfBirth());
+			retailApplicantDetail.setMonthlyIncome(loanApplicationRequest.getIncome());
+			retailApplicantDetail.setIsActive(true);
+			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setCreatedDate(new Date());
+			retailApplicantDetail.setModifiedDate(new Date());
+			retailApplicantDetail.setTotalExperienceMonth(loanApplicationRequest.getTotalExperienceMonth());
+			retailApplicantDetail.setTotalExperienceYear(loanApplicationRequest.getTotalExperienceYear());
+			retailApplicantDetail.setCurrentJobMonth(loanApplicationRequest.getCurrentJobMonth());
+			retailApplicantDetail.setCurrentJobYear(loanApplicationRequest.getCurrentJobYear());
+			retailApplicantDetail.setMonthlyLoanObligation(loanApplicationRequest.getObligation());
+			retailApplicantDetailRepository.save(retailApplicantDetail);
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

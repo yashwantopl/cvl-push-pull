@@ -17,8 +17,8 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.MobileService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -190,6 +190,33 @@ public class MobileLoanController {
 			}
 		} catch(Exception e) {
 			logger.warn("Error While save CoApplicant Details details for mobile app");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
+	@RequestMapping(value="/saveLoanApplicationDetails",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanApplicationDetails(@RequestBody MobileFrameRequest mobileFrameRequest){
+		logger.info("Enter in save Loan Application Details details for mobile app");
+		try {
+			if( CommonUtils.isObjectNullOrEmpty(mobileFrameRequest.getUserId())) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()),
+						HttpStatus.OK);
+			}
+			Long saveId = mobileService.saveLoanApplicationDetails(mobileFrameRequest);
+			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
+				logger.info("Loan Application details is not saved for mobile app");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not saved", HttpStatus.OK.value()),HttpStatus.OK);
+			} else {
+				logger.info("Successfullly Loan Application details saved for mobile app");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfullly details saved", HttpStatus.OK.value(),saveId),HttpStatus.OK);
+			}
+		} catch(Exception e) {
+			logger.warn("Error While save Loan Application Details details for mobile app");
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
