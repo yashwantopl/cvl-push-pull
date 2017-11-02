@@ -24,6 +24,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
@@ -167,7 +168,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				case CAR_LOAN:
 					applicationMaster = new PrimaryCarLoanDetail();
 					break;
+				case UNSECURED_LOAN:
+					applicationMaster = new PrimaryUnsecuredLoanDetail();
+					break;
 
+					
 				default:
 					continue;
 				}
