@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEs
  */
 public interface PastFinancialEstimateDetailsRepository extends JpaRepository<PastFinancialEstimatesDetail, Long> {
 
-	@Query("select o from PastFinancialEstimatesDetail o where o.applicationId.id = :id and o.isActive = true")
+	@Query("select o from PastFinancialEstimatesDetail o where o.applicationId.id = :id and o.isActive = true order by financialYear asc")
 	public List<PastFinancialEstimatesDetail> listPastFinancialEstimateDetailsFromAppId(@Param("id") Long id);
 
 	@Modifying
