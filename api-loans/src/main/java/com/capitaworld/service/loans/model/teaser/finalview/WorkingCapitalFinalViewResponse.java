@@ -52,7 +52,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	 * Working Capital Primary Frame Data Fields
 	 */
 	private List<AchievementDetailRequest> AchievementDetailList;
-	/*private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
+	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
 	private List<OwnershipDetailResponse> ownershipDetailResponseList;
 	private List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList;
@@ -60,7 +60,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private List<FutureFinancialEstimatesDetailRequest> futureFinancialEstimatesDetailRequestList;
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
-	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;*/
+	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
 
 	/**
 	 * DPR Data Fields
@@ -338,14 +338,14 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.longTermRating = longTermRating;
 	}
 
-	/*public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
+	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
 	}
 
 	public void setProposedProductDetailRequestList(
 			List<ProposedProductDetailRequest> proposedProductDetailRequestList) {
 		this.proposedProductDetailRequestList = proposedProductDetailRequestList;
-	}*/
+	}
 
 	public List<AchievementDetailRequest> getAchievementDetailList() {
 		return AchievementDetailList;
@@ -355,7 +355,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		AchievementDetailList = achievementDetailList;
 	}
 
-	/*public List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
+	public List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
 		return CreditRatingOrganizationDetailResponse;
 	}
 
@@ -426,7 +426,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
 	}
 
-	public Boolean getIsDprUploaded() {
+	/*public Boolean getIsDprUploaded() {
 		return isDprUploaded;
 	}
 
