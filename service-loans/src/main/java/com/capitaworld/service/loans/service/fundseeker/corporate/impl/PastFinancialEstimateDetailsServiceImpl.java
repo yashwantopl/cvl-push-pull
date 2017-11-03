@@ -115,6 +115,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		int currentYear = cal.get(Calendar.YEAR);
 		Date todayDate = null;
 		Date establishmentDate = null;
+		Date compareDate = null;
 		CorporateApplicantDetail detail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
 		if(detail == null){
 			return java.util.Collections.emptyList();
@@ -155,14 +156,19 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						}
 					}
 				} else {
-					currentYear -= 1;
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
-					yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+"-03-31");
+					if (new Date().compareTo(compareDate) > 0) {
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					}else{
+						currentYear -= 1;
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					}
 				}
 				return yearList;
 
@@ -191,9 +197,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				if (differenceOfYears == pastFinancialEstimateDetails.size()) {
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else if (differenceOfYears < pastFinancialEstimateDetails.size()) {
-					for (int i = 0; i < differenceOfYears; i++) {
-						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
-								pastFinancialEstimateDetails.get(i).getId());
+					for (int i = 0; i < (pastFinancialEstimateDetails.size()-differenceOfYears); i++) {
+						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,pastFinancialEstimateDetails.get(i).getId());
 						pastFinancialEstimateDetails.remove(i);
 					}
 					return getRequestFromDomain(pastFinancialEstimateDetails);
@@ -202,8 +207,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					String recordYearsArray[] = null;
 					if(pastFinancialEstimateDetails.get(0)!=null){
 						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
-					recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString()
-							.split("-");
+							recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString().split("-");
 						}
 					}
 					int lastYear= 0;
@@ -214,14 +218,13 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					for (int i = pastFinancialEstimateDetails.size(); i < differenceOfYears; i++) {
 						PastFinancialEstimatesDetail financialEstimateObject = new PastFinancialEstimatesDetail();
 						financialEstimateObject.setApplicationId(new LoanApplicationMaster(applicationId));
-						financialEstimateObject
-								.setFinancialYear((lastYear + yearCount - 1) + " - " + (lastYear + yearCount));
-						financialEstimatesNewList.add(financialEstimateObject);
+						financialEstimateObject.setFinancialYear((lastYear -(yearCount + 1)) + " - " + (lastYear - yearCount));
 						financialEstimateObject.setIsActive(true);
 						financialEstimateObject.setCreatedBy(userId);
 						financialEstimateObject.setCreatedDate(new Date());
 						financialEstimateObject.setModifiedBy(userId);
 						financialEstimateObject.setModifiedDate(new Date());
+						financialEstimatesNewList.add(financialEstimateObject);
 						pastFinancialEstimateDetailsRepository.save(financialEstimateObject);
 						yearCount++;
 					}

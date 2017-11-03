@@ -91,6 +91,10 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private List<Object> applicant_IncomeProof;
 	private List<Object> applicant_CropCultivation;
 	private List<Object> applicant_AlliedActivities;
+	//PAN AND AADHAR
+	private List<Object> applicant_panCardList;
+	private List<Object> applicant_aadharCardList;
+	
 	private List<Object> coApplicant_BankACStatments;
 	private List<Object> coApplicant_SalaraySlip;
 	private List<Object> coApplicant_ItReturn;
@@ -99,6 +103,10 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private List<Object> coApplicant_IncomeProof;
 	private List<Object> coApplicant_CropCultivation;
 	private List<Object> coApplicant_AlliedActivities;
+	//PAN AND AADHAR
+	private List<Object> coApplicant_panCardList;
+	private List<Object> coApplicant_aadharCardList;
+		
 	private List<Object> guarantor_BankACStatments;
 	private List<Object> guarantor_SalaraySlip;
 	private List<Object> guarantor_ItReturn;
@@ -107,6 +115,9 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private List<Object> guarantor_IncomeProof;
 	private List<Object> guarantor_CropCultivation;
 	private List<Object> guarantor_AlliedActivities;
+	//PAN AND AADHAR
+	private List<Object> guarantor_panCardList;
+	private List<Object> guarantor_aadharCardList;
 	
 	public List<Object> getApplicant_BankACStatments() {
 		return applicant_BankACStatments;
@@ -257,6 +268,43 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	}
 	public void setIncomeDetailResponseList(List<OtherIncomeDetailResponse> incomeDetailResponseList) {
 		this.incomeDetailResponseList = incomeDetailResponseList;
+	}
+	
+	public List<Object> getApplicant_panCardList() {
+		return applicant_panCardList;
+	}
+	public void setApplicant_panCardList(List<Object> applicant_panCardList) {
+		this.applicant_panCardList = applicant_panCardList;
+	}
+	public List<Object> getApplicant_aadharCardList() {
+		return applicant_aadharCardList;
+	}
+	public void setApplicant_aadharCardList(List<Object> applicant_aadharCardList) {
+		this.applicant_aadharCardList = applicant_aadharCardList;
+	}
+	public List<Object> getCoApplicant_panCardList() {
+		return coApplicant_panCardList;
+	}
+	public void setCoApplicant_panCardList(List<Object> coApplicant_panCardList) {
+		this.coApplicant_panCardList = coApplicant_panCardList;
+	}
+	public List<Object> getCoApplicant_aadharCardList() {
+		return coApplicant_aadharCardList;
+	}
+	public void setCoApplicant_aadharCardList(List<Object> coApplicant_aadharCardList) {
+		this.coApplicant_aadharCardList = coApplicant_aadharCardList;
+	}
+	public List<Object> getGuarantor_panCardList() {
+		return guarantor_panCardList;
+	}
+	public void setGuarantor_panCardList(List<Object> guarantor_panCardList) {
+		this.guarantor_panCardList = guarantor_panCardList;
+	}
+	public List<Object> getGuarantor_aadharCardList() {
+		return guarantor_aadharCardList;
+	}
+	public void setGuarantor_aadharCardList(List<Object> guarantor_aadharCardList) {
+		this.guarantor_aadharCardList = guarantor_aadharCardList;
 	}
 	public String getCaste() {
 		return caste;

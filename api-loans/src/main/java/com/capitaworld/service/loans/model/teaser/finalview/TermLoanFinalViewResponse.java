@@ -102,6 +102,11 @@ public class TermLoanFinalViewResponse implements Serializable{
     private List<Object> panOfDirectorsList;
     private List<Object> detailedListOfShareholdersList;
     private List<Object> photoOfDirectorsList;
+    
+    //PRIMARY UPLOADS MOVED TO FINAL UPLOADS
+    private List<Object> brochureList;
+	private List<Object> certificateList;
+	private List<Object> panCardList;
 
 
     /**
@@ -900,6 +905,31 @@ public class TermLoanFinalViewResponse implements Serializable{
 	public void setAddOfficestate(String addOfficestate) {
 		this.addOfficestate = addOfficestate;
 	}
+
+	public List<Object> getBrochureList() {
+		return brochureList;
+	}
+
+	public void setBrochureList(List<Object> brochureList) {
+		this.brochureList = brochureList;
+	}
+
+	public List<Object> getCertificateList() {
+		return certificateList;
+	}
+
+	public void setCertificateList(List<Object> certificateList) {
+		this.certificateList = certificateList;
+	}
+
+	public List<Object> getPanCardList() {
+		return panCardList;
+	}
+
+	public void setPanCardList(List<Object> panCardList) {
+		this.panCardList = panCardList;
+	}
+	
 	
 
 }

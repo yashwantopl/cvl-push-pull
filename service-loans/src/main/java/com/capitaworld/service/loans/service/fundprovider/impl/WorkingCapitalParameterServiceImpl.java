@@ -14,15 +14,19 @@ import com.capitaworld.service.loans.domain.IndustrySectorDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
+import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -48,6 +52,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
  	
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private NegativeIndustryRepository negativeIndustryRepository;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
@@ -86,6 +93,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		//city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		saveCity(workingCapitalParameterRequest);
+		//negative industry save
+		negativeIndustryRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
+		saveNegativeIndustry(workingCapitalParameterRequest);
 		logger.info("end saveOrUpdate");
 		return true;
 	}
@@ -180,6 +190,21 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			e.printStackTrace();
 		}
 		}
+		
+		List<Long> negativeIndustryList = negativeIndustryRepository
+				.getIndustryByFpProductMasterId(workingCapitalParameterRequest.getId());
+		if (!negativeIndustryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				workingCapitalParameterRequest.setUnInterestedIndustrylist((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getWCParameterRequest",e);
+				e.printStackTrace();
+			}
+		}
+		
+		
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
@@ -282,4 +307,23 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	}
 	
 
+	private void saveNegativeIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
+		NegativeIndustry negativeIndustry= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
+			negativeIndustry = new NegativeIndustry();
+			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
+			negativeIndustry.setIndustryId(dataRequest.getId());
+			negativeIndustry.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setCreatedDate(new Date());
+			negativeIndustry.setModifiedDate(new Date());
+			negativeIndustry.setIsActive(true);
+			// create by and update
+			negativeIndustryRepository.save(negativeIndustry);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
+		
+	}
 }

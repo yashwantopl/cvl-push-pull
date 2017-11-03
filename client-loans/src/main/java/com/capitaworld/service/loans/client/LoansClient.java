@@ -15,14 +15,21 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
+import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
+import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
+import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 
 public class LoansClient {
 
@@ -68,12 +75,33 @@ public class LoansClient {
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
-
+	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
+	
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
 	private static final String MOBILE_SAVE_APPLICANT = "/mobile/saveApplicantDetails";
 	private static final String MOBILE_LOCK_PRIMARY = "/mobile/lockPrimary";
-
+	private static final String MOBILE_GET_COAPPLICANT = "/mobile/getCoApplicantDetails";
+	private static final String MOBILE_SAVE_COAPPLICANT = "/mobile/saveCoApplicantDetails";
+	private static final String MOBILE_GET_GUARANTOR= "/mobile/getGuarantorDetails";
+	private static final String MOBILE_SAVE_GUARANTOR = "/mobile/saveGuarantorDetails";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/loan_eligibility/hl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/loan_eligibility/hl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/loan_eligibility/hl/calc_home_loan_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/loan_eligibility/pl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/loan_eligibility/pl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
+	
+	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
+	
+	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
+	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
+	
+	
+	
+	
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
 
 	private String loansBaseUrl;
@@ -752,6 +780,19 @@ public class LoansClient {
 		}
 	}
 
+	public LoansResponse getLoanBasicDetails(LoanApplicationRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(LOAN_BASIC_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available while calling loan basic details for sending mails");
+		}
+	}
+	
 	public LoansResponse getBasicDetail(Long userId, Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(BASIC_DETAIL_URL).concat("/" + applicationId + "/" + userId);
 		try {
@@ -764,5 +805,213 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse getCoApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_COAPPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get co-applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveCoApplicantDetails(MRetailCoAppGuarResponse coAppGuarResponse) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_COAPPLICANT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save co-applicant details for mobile app");
+		}
+	}
+	
+	public LoansResponse getGuarantorDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_GUARANTOR);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call get guarantor details for mobile app");
+		}
+	}
+	
+	public LoansResponse saveGuarantorDetails(MRetailCoAppGuarResponse coAppGuarResponse) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_GUARANTOR);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save guarantor details for mobile app");
+		}
+	}
+	
+	public LoansResponse mobileHlCalcMinMax(HomeLoanEligibilityRequest homeLoanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<HomeLoanEligibilityRequest> entity = new HttpEntity<HomeLoanEligibilityRequest>(homeLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility HomeLoan Calc Min Max for mobile app");
+		}
+	}
+	
+	public LoansResponse mobileHlGetEligibleTenure(HomeLoanEligibilityRequest homeLoanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<HomeLoanEligibilityRequest> entity = new HttpEntity<HomeLoanEligibilityRequest>(homeLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility HomeLoan get eligible tenure for mobile app");
+		}
+	}
+	
+	public LoansResponse mobileHlCalcHomeLoanAmount(HomeLoanEligibilityRequest homeLoanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<HomeLoanEligibilityRequest> entity = new HttpEntity<HomeLoanEligibilityRequest>(homeLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility HomeLoan calc loan amount for mobile app");
+		}
+	}
+	
+	public LoansResponse mobilePlGetEligibleTenure(PersonalLoanEligibilityRequest eligibilityRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<PersonalLoanEligibilityRequest> entity = new HttpEntity<PersonalLoanEligibilityRequest>(eligibilityRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility PersonalLoan get eligible amount for mobile app");
+		}
+	}
+	
+	public LoansResponse mobilePlCalcMinMax(PersonalLoanEligibilityRequest eligibilityRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<PersonalLoanEligibilityRequest> entity = new HttpEntity<PersonalLoanEligibilityRequest>(eligibilityRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility PersonalLoan calc min max for mobile app");
+		}
+	}
+	
+	public LoansResponse mobileLapGetEligibleTenure(LAPEligibilityRequest eligibilityRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility LAP get eligible tenure for mobile app");
+		}
+	}
+	
+	public LoansResponse mobileLapCalcMinMax(LAPEligibilityRequest eligibilityRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility LAP Calc Min max for mobile app");
+		}
+	}
+	
+	
+	public LoansResponse mobileLapCalcLapAmount(LAPEligibilityRequest eligibilityRequest) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call Mobile Loan Eligibility LAP calc lap amount for mobile app");
+		}
+	}
+	public LoansResponse saveExistingLoanFromCibil(List<ExistingLoanDetailRequest> detailRequests,Long userId,Long clientId,Long applicationId,Integer applicantType) throws ExcelException {
+		String url = loansBaseUrl.concat(EXISTING_LOAN_DETAIL_CIBIL).concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + applicantType);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<List<ExistingLoanDetailRequest>> entity = new HttpEntity<List<ExistingLoanDetailRequest>>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCreditCardFromCibil(List<CreditCardsDetailRequest> detailRequests,Long userId,Long clientId,Long applicationId,Integer applicantType) throws ExcelException {
+		String url = loansBaseUrl.concat(CREDIT_CARD_DETAIL_CIBIL).concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + applicantType);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveLoanApplicantDetails(MobileFrameRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_LOANAPPLICATION);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileFrameRequest> entity = new HttpEntity<MobileFrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save loan application details for mobile app");
+		}
+	}
+	
 }
