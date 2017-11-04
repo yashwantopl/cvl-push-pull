@@ -35,9 +35,9 @@ import java.util.List;
 
 @Service
 @Transactional
-public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewService {
+public class HomeLoanPrimaryViewSeviceImpl implements HomeLoanPrimaryViewService {
 
-	private static final Logger logger = LoggerFactory.getLogger(HomeLoanPrimaryViewServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(HomeLoanPrimaryViewSeviceImpl.class);
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
