@@ -586,7 +586,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 
-		/*// get value of proposed product and set in response
+		// get value of proposed product and set in response
 		try {
 			response.setProposedProductDetailRequestList(
 					proposedProductDetailsService.getProposedProductDetailList(toApplicationId, userId));
@@ -600,7 +600,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 					existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Existing Product {}", e);
-		}*/
+		}
 
 		// get value of achievement details and set in response
 		try {
@@ -610,7 +610,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			logger.error("Problem to get Data of Achievement Details {}", e);
 		}
 
-		/*// get value of Credit Rating and set in response
+		// get value of Credit Rating and set in response
         try {
             List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
 					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
@@ -640,7 +640,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
-		}*/
+		}
 
 		// set short term rating option
         try {
@@ -684,7 +684,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			e.printStackTrace();
         }
 
-       /* // get value of Ownership Details and set in response
+        // get value of Ownership Details and set in response
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
 					.getOwnershipDetailList(toApplicationId, userId);
@@ -771,7 +771,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-		}*/
+		}
 
 		// get data of Associated Concern
 		try {

@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
@@ -92,6 +93,8 @@ public class LoansClient {
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
+	
+	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
@@ -994,6 +997,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveLoanApplicantDetails(MobileFrameRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_SAVE_LOANAPPLICATION);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileFrameRequest> entity = new HttpEntity<MobileFrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call save loan application details for mobile app");
 		}
 	}
 	

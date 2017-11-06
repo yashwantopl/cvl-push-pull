@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryVie
 import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
@@ -34,6 +35,7 @@ import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryV
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -68,6 +70,9 @@ public class PrimaryViewController {
 	
 	@Autowired
 	private TermLoanPrimaryViewService termLoanPrimaryViewService;
+	
+	@Autowired
+	private UnsecuredLoanPrimaryViewService unsecuredLoanPrimaryViewService;
 	
 	@Autowired
 	private NotificationService notificationService;
@@ -450,6 +455,70 @@ public class PrimaryViewController {
 			}
 		}
 	}
+	
+	//UNSECURED LOAN
+	
+		@GetMapping(value = "/UnsecuredLoan/{toApplicationId}")
+		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+			LoansResponse loansResponse = new LoansResponse();
+
+			// get user id from http servlet request
+			Long userId = null;
+			Integer userType = null;
+			
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+					//MEANS FS, FP VIEW
+					userId = clientId;
+					try {
+						UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+						if(response != null && response.getData() != null){
+							UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+							userType = req.getId().intValue();
+						} else {
+							logger.warn("user_verification, Invalid Request... Client Id is not valid");
+							return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+									HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						}	
+					} catch(Exception e) {
+						logger.warn("user_verification, Invalid Request... Something went wrong");
+						e.printStackTrace();
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+								HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					}
+				} else {
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}
+				
+			} else {
+				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+				userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			}
+			
+			if (toApplicationId == null) {
+				logger.warn("Invalid data or Requested data not found.", toApplicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}else {
+				UnsecuredLoanPrimaryViewResponse unsecuredLoanPrimaryViewResponse = null;
+				try {
+					unsecuredLoanPrimaryViewResponse = unsecuredLoanPrimaryViewService.getUnsecuredLoanPrimaryViewDetails(toApplicationId, userType, userId);
+					if (!CommonUtils.isObjectNullOrEmpty(unsecuredLoanPrimaryViewResponse)) {
+						loansResponse.setData(unsecuredLoanPrimaryViewResponse);
+						loansResponse.setMessage("Working Capital Primary Details");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					} else {
+						loansResponse.setMessage("No data found for Term Loan final view");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					}
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				} catch (Exception e) {
+					loansResponse.setData(unsecuredLoanPrimaryViewResponse);
+					loansResponse.setMessage("Something went wrong..!");
+					loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}
+			}
+		}
 	
 	
 	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
