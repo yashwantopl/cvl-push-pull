@@ -32,4 +32,6 @@ public interface CorporateApplicantService {
 	
 	public CompanyDetails getCompanyDetails(Long applicationId,Long userId)throws Exception;
 	
+	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
+	
 }
