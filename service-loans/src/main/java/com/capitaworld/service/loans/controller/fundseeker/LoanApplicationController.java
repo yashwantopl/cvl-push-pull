@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
@@ -37,6 +38,9 @@ public class LoanApplicationController {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -582,8 +586,8 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isFinalLocked");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -606,6 +610,10 @@ public class LoanApplicationController {
 			if (!loanApplicationService.isFinalLocked(applicationId, userId)) {
 				loansResponse.setData(loanApplicationService.isFinalLocked(applicationId, userId));
 				loansResponse.setMessage("Requested User has not filled Final Details");
+				if(CommonUtils.UserType.FUND_PROVIDER == userType){
+					logger.info("Start Sending Mail To Fs for Fill Final Details When FP Click View More Details");
+					asyncComponent.sendMailWhenUserNotCompleteFinalDetails(userId,applicationId);	
+				}
 				CommonDocumentUtils.endHook(logger, "isFinalLocked");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -961,5 +969,66 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/isMca", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isMca(HttpServletRequest request, @RequestBody Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.isMca(applicationId,userId));
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getMcaCompanyId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/getLoanBasicDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanBasicDetails(@RequestBody LoanApplicationRequest loanRequest){
+		try {
+			CommonDocumentUtils.startHook(logger, "getLoanBasicDetails");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getLoanBasicDetails(loanRequest.getId(),loanRequest.getUserId()));
+			CommonDocumentUtils.endHook(logger, "getLoanBasicDetails");
+			return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanBasicDetails==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/checkUserHasAnyApplication", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkUserHasAnyApplication(HttpServletRequest request){
+		try {
+			CommonDocumentUtils.startHook(logger, "check User Has Any Application");
+			if (CommonUtils.UserType.FUND_SEEKER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				asyncComponent.sendMailWhenUserHasNoApplication(userId);
+			}
+			LoansResponse loansResponse = new LoansResponse("Successfully recieved", HttpStatus.OK.value());
+			CommonDocumentUtils.endHook(logger, "check User Has Any Application");
+			return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while check User Has Any Application==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
 	
 }

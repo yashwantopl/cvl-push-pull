@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
@@ -29,11 +28,11 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
-	
+
 	public static final Long RETAIL_APPLICANT = 1L;
 	public static final Long RETAIL_COAPPLICANT = 2L;
 	public static final Long RETAIL_GUARANTOR = 3L;
-	public static final Long CORPORATE_USER=4L;
+	public static final Long CORPORATE_USER = 4L;
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -47,8 +46,11 @@ public class CommonUtils {
 	}
 
 	public static boolean isObjectNullOrEmpty(Object value) {
-		return (value == null || (value instanceof String ? (((String) value).isEmpty()
-				|| "".equals(((String) value).trim()) || "null".equals(value) || "undefined".equals(value)) : false));
+		return (value == null
+				|| (value instanceof String
+						? (((String) value).isEmpty() || "".equals(((String) value).trim()) || "null".equals(value)
+								|| "undefined".equals(value))
+						: false));
 	}
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
@@ -57,9 +59,10 @@ public class CommonUtils {
 		calendar.clear();
 		calendar.setTime(new Date());
 		calendar.set(Calendar.DAY_OF_MONTH, date);
-		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
 
+		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -72,8 +75,11 @@ public class CommonUtils {
 		calendar.clear();
 		calendar.setTime(date);
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
-		result[1] = calendar.get(Calendar.MONTH);
+		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
+		System.out.println("result[0] day Of Month=======>" + result[0]);
+		System.out.println("result[1] Month=======>" + result[1]);
+		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -120,18 +126,20 @@ public class CommonUtils {
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
-				"alliedActivityId", "userId", "nameAsPerAadharCard", "currentJobMonth", "currentJobYear", "previousJobMonth", 
-				"previousJobYear", "totalExperienceMonth", "totalExperienceYear", "monthlyLoanObligation", 
-				"previousEmployersAddress", "previousEmployersName", "annualTurnover", "businessStartDate", "patPreviousYear",
-				"patCurrentYear", "depreciationPreviousYear", "depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear"};
+				"alliedActivityId", "userId", "nameAsPerAadharCard", "currentJobMonth", "currentJobYear",
+				"previousJobMonth", "previousJobYear", "totalExperienceMonth", "totalExperienceYear",
+				"monthlyLoanObligation", "previousEmployersAddress", "previousEmployersName", "annualTurnover",
+				"businessStartDate", "patPreviousYear", "patCurrentYear", "depreciationPreviousYear",
+				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear" };
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
 				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
-				"annualRent", "noPartners", "birthDate", "currentDepartment","currentDesignation", "currentIndustry", "employmentStatus",				
-				"interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName", "poaHolderName",	"presentlyIrrigated",  
-				 "rainFed", "repaymentCycle", "repaymentMode", "residingMonth", "residingYear","seasonalIrrigated", "shareholding",  
-				"totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
+				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
+				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth",
+				"residingYear", "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
+				"tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 
 	public interface ApplicantType {
@@ -187,7 +195,7 @@ public class CommonUtils {
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
-	
+
 	public interface EmployementType {
 		public static final int SALARIED = 1;
 		public static final int BUSINESSMAN = 2;
@@ -197,7 +205,7 @@ public class CommonUtils {
 		public static final int CASH = 1;
 		public static final int BANK = 2;
 	}
-	
+
 	public interface PropertyType {
 		public static final int RESIDENTIAL = 1;
 		public static final int COMMERCIAL = 2;
@@ -221,10 +229,10 @@ public class CommonUtils {
 			birthDay.setTime(date);
 			Calendar today = Calendar.getInstance();
 			today.setTime(new Date());
-			
+
 			Integer yearsInBetween = today.get(Calendar.YEAR) - birthDay.get(Calendar.YEAR);
 			Integer monthsDiff = 1;
-//			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
+			// monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
@@ -324,30 +332,31 @@ public class CommonUtils {
 		}
 		return age;
 	}
-	
-	public static String calculateBusinessExperience(Date establishmentYear){
-		
+
+	public static String calculateBusinessExperience(Date establishmentYear) {
+
 		Calendar today = Calendar.getInstance();
 		Calendar establishment = Calendar.getInstance();
 		establishment.setTime(establishmentYear);
-		
+
 		int estYear = establishment.get(Calendar.YEAR);
 		int estMonth = establishment.get(Calendar.MONTH);
-		
+
 		int todayYear = today.get(Calendar.YEAR);
-		int todayMonth = today.get(Calendar.MONTH)+1;
-		
+		int todayMonth = today.get(Calendar.MONTH) + 1;
+
 		int year = todayYear - estYear;
 		int month = todayMonth - estMonth;
-		
+
 		String value = year + " Years " + month + " Months ";
-		return value;		
+		return value;
 	}
-	
+
 	public static String CurrencyFormat(String value) {
-		NumberFormat nf=NumberFormat.getInstance();
-		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString()))+" ";		
-  }
+		NumberFormat nf = NumberFormat.getInstance();
+		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";
+	}
+
 	public static String getLoanName(Integer x) {
 		switch (x) {
 		case 1:
@@ -368,4 +377,24 @@ public class CommonUtils {
 		return null;
 	}
 	
+	public static String getLoanNameForMail(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term";
+		case 3:
+			return "Home";
+		case 12:
+			return "Car";
+		case 7:
+			return "Personal";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		}
+		return null;
+	}
+
 }

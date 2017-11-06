@@ -9,6 +9,7 @@ public class MobileLoanRequest implements Serializable{
 	private Long applicationId;
 	private Long userId;
 	private Long userType;
+	private Long id;
 	private Integer productId;
 	
 	public MobileLoanRequest() {
@@ -61,6 +62,14 @@ public class MobileLoanRequest implements Serializable{
 
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 	
 	

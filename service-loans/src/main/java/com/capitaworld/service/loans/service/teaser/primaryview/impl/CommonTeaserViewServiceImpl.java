@@ -8,17 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
-import com.capitaworld.service.loans.service.fundprovider.impl.WorkingCapitalParameterServiceImpl;
 import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
-import com.capitaworld.service.loans.service.teaser.finalview.impl.WorkingCapitalFinalServiceImpl;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CommonTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;

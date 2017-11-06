@@ -43,13 +43,13 @@ public class CreditCardsDetailController {
 
 	@Autowired
 	private RetailApplicantService retailApplicantService;
-	
+
 	@Autowired
 	private CoApplicantService coApplicantService;
-	
+
 	@Autowired
 	private GuarantorService guarantorService;
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
@@ -79,23 +79,25 @@ public class CreditCardsDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				frameRequest.setClientId(clientId);
 			}
-			//Checking Profile is Locked
+			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
 			Long applicationId = null;
-			if(CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()){
+			if (CommonUtils.ApplicantType.APPLICANT == frameRequest.getApplicantType()) {
 				applicationId = frameRequest.getApplicationId();
-			}else if(CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()){
+			} else if (CommonUtils.ApplicantType.COAPPLICANT == frameRequest.getApplicantType()) {
 				applicationId = coApplicantService.getApplicantIdById(frameRequest.getApplicationId());
-			}else if(CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()){
+			} else if (CommonUtils.ApplicantType.GARRANTOR == frameRequest.getApplicantType()) {
 				applicationId = guarantorService.getApplicantIdById(frameRequest.getApplicationId());
 			}
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			creditCardsDetailService.saveOrUpdate(frameRequest);
@@ -117,7 +119,8 @@ public class CreditCardsDetailController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -128,7 +131,7 @@ public class CreditCardsDetailController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<CreditCardsDetailRequest> response = creditCardsDetailService.getExistingLoanDetailList(id,
+			List<CreditCardsDetailRequest> response = creditCardsDetailService.getCreditCardDetailList(id,
 					applicationType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
@@ -136,15 +139,15 @@ public class CreditCardsDetailController {
 			Long applicantIdById = null;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
-				currencyId = retailApplicantService.getCurrency(id,userId);
+				currencyId = retailApplicantService.getCurrency(id, userId);
 				break;
 			case CommonUtils.ApplicantType.COAPPLICANT:
-				applicantIdById = coApplicantService.getApplicantIdById(id);				
-				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				applicantIdById = coApplicantService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
 			case CommonUtils.ApplicantType.GARRANTOR:
-				applicantIdById = guarantorService.getApplicantIdById(id);				
-				currencyId = retailApplicantService.getCurrency(applicantIdById,userId);
+				applicantIdById = guarantorService.getApplicantIdById(id);
+				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
 			}
 			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
@@ -159,4 +162,51 @@ public class CreditCardsDetailController {
 
 	}
 
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{applicantType}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<CreditCardsDetailRequest> detailRequests,
+			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
+			@PathVariable("clientId") Long clientId, @PathVariable("applicantType") Integer applicantType) {
+		// request must not be null
+		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
+			logger.warn("CreditCardsDetailRequest can not be empty ==>" + detailRequests);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		// application id and user id must not be null
+		if (applicationId == null || applicantType == null || applicantType == 0 || userId == null) {
+			logger.warn("application id, user id and applicant Type must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		// When calling client for this method if one of this path variable is null it
+		// takes "null" so can not cast to Long
+		if (clientId != null && clientId == -1) {
+			clientId = null;
+		}
+
+		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId
+				+ " and applicantType ==>" + applicantType);
+		try {
+			// Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			creditCardsDetailService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId, applicantType);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 }

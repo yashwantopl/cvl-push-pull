@@ -115,6 +115,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		int currentYear = cal.get(Calendar.YEAR);
 		Date todayDate = null;
 		Date establishmentDate = null;
+		Date compareDate = null;
 		CorporateApplicantDetail detail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
 		if(detail == null){
 			return java.util.Collections.emptyList();
@@ -155,15 +156,22 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						}
 					}
 				} else {
-					currentYear -= 1;
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
-					yearList.add(
-							new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
-					yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+"-03-31");
+					if (new Date().compareTo(compareDate) > 0) {
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					}else{
+						currentYear -= 1;
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+						yearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+					}
 				}
+	
+				
 				return yearList;
 
 			} catch (ParseException e) {
@@ -172,6 +180,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 		} else {
+			if(pastFinancialEstimateDetails.get(0).getApplicationId().getMcaCompanyId()==null){
 			try {
 				todayDate = dateFormat.parse(establishmentYear + "-03-31");
 				establishmentDate = dateFormat.parse(establishmentYear + "-" + establishmentMonth + "-30");
@@ -191,9 +200,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				if (differenceOfYears == pastFinancialEstimateDetails.size()) {
 					return getRequestFromDomain(pastFinancialEstimateDetails);
 				} else if (differenceOfYears < pastFinancialEstimateDetails.size()) {
-					for (int i = 0; i < differenceOfYears; i++) {
-						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,
-								pastFinancialEstimateDetails.get(i).getId());
+					for (int i = 0; i < (pastFinancialEstimateDetails.size()-differenceOfYears); i++) {
+						pastFinancialEstimateDetailsRepository.inactiveByApplicationAndId(applicationId,pastFinancialEstimateDetails.get(i).getId());
 						pastFinancialEstimateDetails.remove(i);
 					}
 					return getRequestFromDomain(pastFinancialEstimateDetails);
@@ -202,8 +210,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					String recordYearsArray[] = null;
 					if(pastFinancialEstimateDetails.get(0)!=null){
 						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
-					recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString()
-							.split("-");
+							recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString().split("-");
 						}
 					}
 					int lastYear= 0;
@@ -214,14 +221,13 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 					for (int i = pastFinancialEstimateDetails.size(); i < differenceOfYears; i++) {
 						PastFinancialEstimatesDetail financialEstimateObject = new PastFinancialEstimatesDetail();
 						financialEstimateObject.setApplicationId(new LoanApplicationMaster(applicationId));
-						financialEstimateObject
-								.setFinancialYear((lastYear + yearCount - 1) + " - " + (lastYear + yearCount));
-						financialEstimatesNewList.add(financialEstimateObject);
+						financialEstimateObject.setFinancialYear((lastYear -(yearCount + 1)) + " - " + (lastYear - yearCount));
 						financialEstimateObject.setIsActive(true);
 						financialEstimateObject.setCreatedBy(userId);
 						financialEstimateObject.setCreatedDate(new Date());
 						financialEstimateObject.setModifiedBy(userId);
 						financialEstimateObject.setModifiedDate(new Date());
+						financialEstimatesNewList.add(financialEstimateObject);
 						pastFinancialEstimateDetailsRepository.save(financialEstimateObject);
 						yearCount++;
 					}
@@ -233,7 +239,94 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				e.printStackTrace();
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
+		}
+			else{
+				
 
+				try {
+					List<PastFinancialEstimatesDetailRequest> mcaYearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
+					todayDate = dateFormat.parse(establishmentYear + "-03-31");
+					establishmentDate = dateFormat.parse(establishmentYear + "-" + establishmentMonth + "-30");
+					int differenceOfYears = currentYear - establishmentYear;
+					if ((establishmentYear - currentYear) == 0) {
+						if (todayDate.compareTo(establishmentDate) > 0) {
+							differenceOfYears += 1;
+							for (int i = differenceOfYears; i > 0; i--) {
+								String year = (cal.get(Calendar.YEAR) - i) + " - " + (cal.get(Calendar.YEAR) - (i - 1));
+								mcaYearList.add(new PastFinancialEstimatesDetailRequest(year));
+							}
+						}
+					} else if (differenceOfYears <= 3) {
+						if (todayDate.compareTo(establishmentDate) > 0) {
+							differenceOfYears += 1;
+							for (int i = differenceOfYears; i > 0; i--) {
+								String year = (cal.get(Calendar.YEAR) - i) + " - " + (cal.get(Calendar.YEAR) - (i - 1));
+								mcaYearList.add(new PastFinancialEstimatesDetailRequest(year));
+							}
+						} else {
+							for (int i = differenceOfYears; i > 0; i--) {
+								String year = (cal.get(Calendar.YEAR) - i) + " - " + (cal.get(Calendar.YEAR) - (i - 1));
+								mcaYearList.add(new PastFinancialEstimatesDetailRequest(year));
+							}
+						}
+					} else {
+						compareDate = dateFormat.parse(cal.get(Calendar.YEAR)+"-03-31");
+						if (new Date().compareTo(compareDate) > 0) {
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+						}else{
+							currentYear -= 1;
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 4) + " - " + (currentYear - 3)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 3) + " - " + (currentYear - 2)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 2) + " - " + (currentYear - 1)));
+							mcaYearList.add(new PastFinancialEstimatesDetailRequest((currentYear - 1) + " - " + (currentYear)));
+						}
+					}
+					
+					List<PastFinancialEstimatesDetailRequest> finalYearList = new ArrayList<PastFinancialEstimatesDetailRequest>();
+					for(int j = 0 ; j< mcaYearList.size() ; j++){
+						for(PastFinancialEstimatesDetail a : pastFinancialEstimateDetails){
+							if((mcaYearList.get(j).getFinancialYear()).equals(a.getFinancialYear())){
+								PastFinancialEstimatesDetailRequest b = new PastFinancialEstimatesDetailRequest();
+								BeanUtils.copyProperties(a, b);
+								finalYearList.add(b);
+								break;
+							}
+						}
+						
+					}
+					
+					for(int m =0; m<mcaYearList.size() ; m++){
+						boolean isMatch = false;
+					for(int k = m ; k < finalYearList.size() ; k++){
+							
+							System.out.println(mcaYearList.get(m).getFinancialYear());
+							System.out.println(finalYearList.get(k).getFinancialYear());
+							if(finalYearList.get(k).getFinancialYear().equals(mcaYearList.get(m).getFinancialYear())){
+								isMatch = true;
+								break;
+							}else if(!finalYearList.get(k).getFinancialYear().equals(mcaYearList.get(m).getFinancialYear()) && !isMatch){
+								finalYearList.add(mcaYearList.get(k));
+								isMatch = true;
+								break;
+							}
+						}
+					int t = finalYearList.size();
+					if(t<mcaYearList.size() && !isMatch){
+						finalYearList.add(mcaYearList.get(m));
+					}
+					}
+					System.out.println(finalYearList);
+					return finalYearList;
+				} catch (ParseException e) {
+					logger.error("Error While getting Year List of past Financial Year");
+					e.printStackTrace();
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				}
+			
+			}
 		}
 	}
 

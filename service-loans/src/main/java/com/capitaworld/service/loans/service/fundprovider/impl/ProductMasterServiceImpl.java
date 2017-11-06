@@ -206,19 +206,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				return true;
 			}
 
-			/*masters = productMasterRepository
-					.getUserProductListByProduct(
-							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-									? addProductRequest.getUserId() : addProductRequest.getClientId()),
-							addProductRequest.getProductId());
-
-			if (!CommonUtils.isObjectListNull(masters)) {
-				for (ProductMaster master : masters) {
-					ProductMasterRequest masterRequest = new ProductMasterRequest();
-					BeanUtils.copyProperties(master, masterRequest);
-					masterRequests.add(masterRequest);
-				}
-			}*/
+			
 			
 		}
 
@@ -601,6 +589,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
 						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
+						chatDetails.setIsAppFpProdActive(isProductActive(proposalMappingRequest.getFpProductId()));
 						chatDetails.setName(productMaster.getFpName());
 			
 						//set profile pic
@@ -644,6 +633,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isProductActive(Long productId) {
+		Long count = productMasterRepository.getActiveProductsById(productId);
+		if(!CommonUtils.isObjectNullOrEmpty(count) && (count > 0)){
+			return true;
+		}
+		return false;
 	}
 
 

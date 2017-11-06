@@ -5,18 +5,16 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
-import com.capitaworld.service.loans.controller.mobile.MobileLoanController;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.common.ProposalList;
-import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
+import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
+import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 
@@ -87,6 +85,14 @@ public interface LoanApplicationService {
 	public void updateLoanApplication(LoanApplicationRequest loanRequest);
 	
 	public EkycResponse getDetailsForEkycAuthentication(EkycRequest ekycRequest);
+
+	public Boolean isMca(Long applicationId, Long userId);
+	
+	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId);
+	
+	public Long getTotalUserApplication(Long userId);
+	
+	public Long getUserIdByApplicationId(Long applicationId);
 	
 
 	
