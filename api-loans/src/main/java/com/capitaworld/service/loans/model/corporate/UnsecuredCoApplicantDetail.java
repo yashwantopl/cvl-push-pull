@@ -45,6 +45,8 @@ public class UnsecuredCoApplicantDetail {
 	private String landlineNo;
 
 	private Integer relationshipWithApplicant;
+	
+	private String monthlyIncome;
 
 	public Long getId() {
 		return id;
@@ -221,6 +223,16 @@ public class UnsecuredCoApplicantDetail {
 	public void setRelationshipWithApplicant(Integer relationshipWithApplicant) {
 		this.relationshipWithApplicant = relationshipWithApplicant;
 	}
+
+	public String getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(String monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
+	
+	
 
 	
 	
