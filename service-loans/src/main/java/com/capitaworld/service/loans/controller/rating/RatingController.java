@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,8 +83,8 @@ public class RatingController {
 		}
 	}
 	
-	@RequestMapping(value = "/manufacturing/save_financial_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse saveFinancialInputOfManufacturing(MultipartFile fileBytes,HttpServletRequest httpRequest) throws RatingException {
+	@RequestMapping(value = "/manufacturing/save_financial_input", method = RequestMethod.POST)
+	public RatingResponse saveFinancialInputOfManufacturing(@RequestPart MultipartFile fileBytes,HttpServletRequest httpRequest) throws RatingException {
 		try {
 			RatingResponse ratingResponse=new RatingResponse();
 			ratingResponse.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
@@ -106,8 +107,8 @@ public class RatingController {
 
 	
 	
-	@RequestMapping(value = "/service/save_financial_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse saveFinancialInputOfService(MultipartFile fileBytes,HttpServletRequest httpRequest) throws RatingException {
+	@RequestMapping(value = "/service/save_financial_input", method = RequestMethod.POST)
+	public RatingResponse saveFinancialInputOfService(@RequestPart MultipartFile fileBytes,HttpServletRequest httpRequest) throws RatingException {
 		try {
 			RatingResponse ratingResponse=new RatingResponse();
 			ratingResponse.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
