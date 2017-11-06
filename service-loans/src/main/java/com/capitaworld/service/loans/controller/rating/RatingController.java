@@ -9,9 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.model.CompanyDetails;
@@ -30,34 +32,27 @@ public class RatingController {
 	@Autowired
 	private RatingClient ratingClient;
 	
+	@Autowired
+	private CorporateApplicantService applicantService;
+	
 	@RequestMapping(value = "/company_details/get_company_details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse getCompanyDetails(@RequestBody CompanyDetails companyDetails,HttpServletRequest httpRequest) throws RatingException {
+	public RatingResponse getCompanyDetails(@RequestBody Long applicationId,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		try {
-			
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			}
+			CompanyDetails companyDetails=applicantService.getCompanyDetails(applicationId,userId);
 			RatingResponse ratingResponse=ratingClient.getCompanyDetails(companyDetails);
 			return ratingResponse;
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RatingException("Ratings Service is not available");
 		}
 	}
-	
-	
-	@RequestMapping(value = "/company_details/save_company_details", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse saveCompanyDetails(@RequestBody CompanyDetails companyDetails,HttpServletRequest httpRequest) throws RatingException {
-		try {
-			companyDetails.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
-			RatingResponse ratingResponse=ratingClient.getCompanyDetails(companyDetails);
-			return ratingResponse;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RatingException("Ratings Service is not available");
-		}
-	}
-	
-	
+
 	@RequestMapping(value = "/qualitative_input/get_qualitative_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RatingResponse getQualitativeInput(@RequestBody QualitativeInputRequest qualitativeInputRequest,HttpServletRequest httpRequest) throws RatingException {
 		try {
