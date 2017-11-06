@@ -55,8 +55,7 @@ public class CorporateCoApplicantDetail implements Serializable {
 	@Column(name = "administrative_street_name")
 	private String administrativeStreetName;
 
-	@Column(name = "constitution_id")
-	private Integer constitutionId;
+
 
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -110,6 +109,9 @@ public class CorporateCoApplicantDetail implements Serializable {
 
 	@Column(name = "landline_no")
 	private String landlineNo;
+	
+	@Column(name = "monthly_income")
+	private Double monthlyIncome;
 	
 	@Column(name = "relationship_with_applicant")
 	private Integer relationshipWithApplicant;
@@ -184,14 +186,6 @@ public class CorporateCoApplicantDetail implements Serializable {
 
 	public void setAdministrativeStreetName(String administrativeStreetName) {
 		this.administrativeStreetName = administrativeStreetName;
-	}
-
-	public Integer getConstitutionId() {
-		return constitutionId;
-	}
-
-	public void setConstitutionId(Integer constitutionId) {
-		this.constitutionId = constitutionId;
 	}
 
 	public Long getCreatedBy() {
@@ -337,6 +331,15 @@ public class CorporateCoApplicantDetail implements Serializable {
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
 	}
+
+	public Double getMonthlyIncome() {
+		return monthlyIncome;
+	}
+
+	public void setMonthlyIncome(Double monthlyIncome) {
+		this.monthlyIncome = monthlyIncome;
+	}
+
 
 	
 	

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -51,6 +52,8 @@ public class CorporateApplicantRequest implements Serializable {
 	private String websiteAddress;
 
 	private String landlineNo;
+	
+	private List<CorporateCoApplicantRequest> coApplicants = Collections.emptyList();
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -260,4 +263,13 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setDetailsFilledCount(String detailsFilledCount) {
 		this.detailsFilledCount = detailsFilledCount;
 	}
+
+	public List<CorporateCoApplicantRequest> getCoApplicants() {
+		return coApplicants;
+	}
+
+	public void setCoApplicants(List<CorporateCoApplicantRequest> coApplicants) {
+		this.coApplicants = coApplicants;
+	}
+	
 }
