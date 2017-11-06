@@ -538,4 +538,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return companyDetails;
 	}
 
+	@Override
+	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		boolean msmeScoreRequired= loanApplicationMaster.getIsMsmeScoreRequired();
+		return msmeScoreRequired;
+	}
+
 }
