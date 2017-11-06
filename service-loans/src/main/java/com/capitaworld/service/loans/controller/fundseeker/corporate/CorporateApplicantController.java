@@ -20,11 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.rating.model.CompanyDetails;
+import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
 @RequestMapping("/fs_profile")
@@ -37,6 +41,9 @@ public class CorporateApplicantController {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private RatingClient ratingClient;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -314,5 +321,39 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/isMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLatLon(@RequestBody MsmeScoreRequest request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(request)) {
+				logger.warn("request cannot be empty");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			else{
+				boolean response=applicantService.updateIsMsmeScoreRequired(request);
+				if(response)
+				{
+					CompanyDetails companyDetails=applicantService.getCompanyDetails(request.getApplicationId(),userId);
+					RatingResponse ratingResponse=ratingClient.saveCompanyDetails(companyDetails);
+					LoansResponse loansResponse = new LoansResponse();
+					loansResponse.setData(response);
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setData(response);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while Getting LatLon Details==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 
 }
