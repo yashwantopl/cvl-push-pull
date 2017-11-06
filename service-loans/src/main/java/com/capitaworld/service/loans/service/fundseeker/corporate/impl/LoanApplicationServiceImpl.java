@@ -57,6 +57,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -94,6 +95,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	
+	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
 
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
@@ -853,7 +857,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
-			return corporateValidating(loanApplicationMaster, nextTabType);
+			return corporateValidating(loanApplicationMaster, nextTabType,coAppllicantOrGuarantorId);
 		} else {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}
@@ -873,13 +877,51 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType)
+	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
+			Long coAppllicantOrGuarantorId)
 			throws Exception {
+		List<Long> coAppIds = null;
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
 		response.put("message", "NA");
 		response.put("result", true);
 
 		switch (toTabType) {
+		
+		case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				response.put("message", "Please Fill PROFILE details to Move Next !");
+				response.put("result", false);
+				return response;
+			}
+
+			coAppIds = corporateCoApplicantService.getCoAppIds(applicationMaster.getId(),
+					applicationMaster.getUserId());
+			if (CommonUtils.isListNullOrEmpty(coAppIds)) {
+				response.put("message", INVALID_MSG);
+				response.put("result", false);
+				return response;
+			}
+
+			index = coAppIds.indexOf(coAppllicantOrGuarantorId);
+			if (index == -1) {
+				response.put("message", INVALID_MSG);
+				response.put("result", false);
+				return response;
+			}
+
+			if (index == 1) {
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+					response.put("message", "Please CO-APPLICANT-1 details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+			}
+			break;
+		
 		case CommonUtils.TabType.MATCHES:
 			boolean isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
@@ -888,6 +930,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			break;
+			
+		
 		case CommonUtils.TabType.CONNECTIONS:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
