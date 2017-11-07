@@ -16,10 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.model.CompanyDetails;
 import com.capitaworld.service.rating.model.QualitativeInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import exception.RatingException;
 
@@ -84,11 +86,15 @@ public class RatingController {
 	}
 	
 	@RequestMapping(value = "/manufacturing/save_financial_input", method = RequestMethod.POST)
-	public RatingResponse saveFinancialInputOfManufacturing(@RequestPart MultipartFile fileBytes,HttpServletRequest httpRequest) throws RatingException {
+	public RatingResponse saveFinancialInputOfManufacturing(@RequestPart("fileBytes") MultipartFile multipartFile, @RequestPart("request") String request, HttpServletRequest httpRequest,
+			@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		try {
-			RatingResponse ratingResponse=new RatingResponse();
+			ObjectMapper mapperObj = new ObjectMapper();
+			RatingResponse ratingResponse = new RatingResponse();
+			ratingResponse =MultipleJSONObjectHelper.getObjectFromString(request, RatingResponse.class);
 			ratingResponse.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
-			return ratingClient.saveFinancialInputOfManufacturing(fileBytes,ratingResponse.toString());
+			String jsonStr = mapperObj.writeValueAsString(ratingResponse);
+			return ratingClient.saveFinancialInputOfManufacturing(multipartFile,jsonStr);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RatingException("Ratings Service is not available");

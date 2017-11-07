@@ -336,11 +336,15 @@ public class CorporateApplicantController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			else{
+				RatingResponse ratingResponse = new RatingResponse();
 				boolean response=applicantService.updateIsMsmeScoreRequired(request);
 				if(response)
 				{
 					CompanyDetails companyDetails=applicantService.getCompanyDetails(request.getApplicationId(),userId);
-					RatingResponse ratingResponse=ratingClient.saveCompanyDetails(companyDetails);
+					ratingResponse=ratingClient.getCompanyDetails(companyDetails);
+					if(CommonUtils.isObjectNullOrEmpty(ratingResponse.getCompanyDetails().getId())){
+						ratingResponse=ratingClient.saveCompanyDetails(companyDetails);
+					}
 					LoansResponse loansResponse = new LoansResponse();
 					loansResponse.setData(response);
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
