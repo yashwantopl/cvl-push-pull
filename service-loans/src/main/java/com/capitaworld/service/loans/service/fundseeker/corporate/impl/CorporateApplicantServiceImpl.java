@@ -541,6 +541,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+			return false;
 		boolean msmeScoreRequired= loanApplicationMaster.getIsMsmeScoreRequired();
 		return msmeScoreRequired;
 	}

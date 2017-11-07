@@ -1,10 +1,16 @@
 package com.capitaworld.service.loans.controller.rating;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +20,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -38,6 +50,9 @@ public class RatingController {
 	
 	@Autowired
 	private TotalCostOfProjectService totalCostOfProjectService;
+	
+	@Autowired
+	private DMSClient dmsClient;
 	
 	
 	@Autowired
@@ -104,6 +119,21 @@ public class RatingController {
 			ratingResponse =MultipleJSONObjectHelper.getObjectFromString(request, RatingResponse.class);
 			ratingResponse.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
 			String jsonStr = mapperObj.writeValueAsString(ratingResponse);
+			RatingResponse ratingResponseNew=ratingClient.saveFinancialInputOfManufacturing(multipartFile,jsonStr);
+			if(ratingResponseNew.getStatus() == HttpStatus.OK.value())
+			{
+				   JSONObject jsonObj = new JSONObject();
+				   jsonObj.put("companyId", ratingResponse.getCompanyDetailsId());
+				   jsonObj.put("documentId", DocumentAlias.IRR_MANUFACTURING);
+				   jsonObj.put("originalFileName", multipartFile.getOriginalFilename());
+				   try {
+				    DocumentResponse documentResponse = dmsClient.uploadIrrDocument(jsonObj.toString(), multipartFile);
+				    logger.info("exit form uploadDocument()");
+				   } catch (DocumentException e) {
+				    // TODO Auto-generated catch block
+				    e.printStackTrace();
+				  }
+			}
 			return ratingClient.saveFinancialInputOfManufacturing(multipartFile,jsonStr);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -143,6 +173,46 @@ public class RatingController {
 			e.printStackTrace();
 			throw new RatingException("Ratings Service is not available");
 		}
+	}
+	
+	
+	@RequestMapping(value = "/get_irr_format", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public StorageDetailsResponse getIrrFormat(@RequestBody DocumentRequest documentRequest,HttpServletRequest httpRequest) {
+		try {
+		    DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+		    List<Map<String,Object>> list =  documentResponse.getDataList();
+		    if(!CommonUtils.isListNullOrEmpty(list)){
+		     StorageDetailsResponse response = null;
+		     try {
+		      response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
+		      return response;
+		     } catch (IOException e) {
+		      // TODO Auto-generated catch block
+		      e.printStackTrace();
+		     }
+		    }
+		    
+		   } catch (DocumentException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		    logger.warn("Error while getting image");
+		   }
+		return null;
+	}
+	
+	
+	@RequestMapping(value = "/inactive_irr_format", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public DocumentResponse inActiveIrrFormat(@RequestBody String userStorageId,HttpServletRequest httpRequest) {
+		  try {
+			   DocumentResponse documentResponse = dmsClient.deleteUserDocument(userStorageId);
+			   logger.info("exit form deleteUploadedDocuments()");
+			   return documentResponse;
+			  } catch (DocumentException e) {
+			   // TODO Auto-generated catch block
+			   e.printStackTrace();
+			  }  
+			  logger.info("exit form deleteUploadedDocuments()");
+			  return null;
 	}
 	
 	
