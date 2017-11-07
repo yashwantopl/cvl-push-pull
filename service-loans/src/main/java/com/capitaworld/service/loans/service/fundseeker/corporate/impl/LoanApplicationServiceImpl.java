@@ -48,6 +48,7 @@ import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
@@ -104,6 +105,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private CoApplicantDetailRepository coApplicantDetailRepository;
+	
+	@Autowired
+	private CorporateCoApplicantRepository corporateCoApplicantRepository;
 
 	@Autowired
 	private GuarantorDetailsRepository guarantorDetailsRepository;
@@ -947,6 +951,38 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
+			
+			// Co-Applicant Profile Checking
+						Long coAppCount = null;
+						coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+								applicationMaster.getUserId());
+						if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+							if (coAppCount == 1) {
+								if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+										|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+									response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+									response.put("result", false);
+									return response;
+								}
+							}
+
+							if (coAppCount == 2) {
+								if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+										|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+									response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+									response.put("result", false);
+									return response;
+								}
+								if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+										|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+									response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+									response.put("result", false);
+									return response;
+								}
+
+							}
+						}
+			
 			break;
 		case CommonUtils.TabType.PRIMARY_UPLOAD:
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())

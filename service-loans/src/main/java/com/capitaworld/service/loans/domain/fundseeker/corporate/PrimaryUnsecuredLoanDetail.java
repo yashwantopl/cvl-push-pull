@@ -26,20 +26,8 @@ public class PrimaryUnsecuredLoanDetail extends LoanApplicationMaster implements
 	private Integer creditRatingId;
 
 	@Lob
-	@Column(name = "project_brief")
-	private String projectBrief;
-
-	@Column(name = "total_cost_of_estimate")
-	private Double totalCostOfEstimate;
-
-	@Column(name = "total_means_of_finance")
-	private Double totalMeansOfFinance;
-
-	@Column(name = "collateral_security_amt_total")
-	private Double totalCollateralDetails;
-
-	public PrimaryUnsecuredLoanDetail() {
-	}
+	@Column(name = "purpose_of_loan")
+	private String purposeOfLoan;
 
 	public LoanApplicationMaster getApplicationId() {
 		return applicationId;
@@ -57,36 +45,14 @@ public class PrimaryUnsecuredLoanDetail extends LoanApplicationMaster implements
 		this.creditRatingId = creditRatingId;
 	}
 
-	public String getProjectBrief() {
-		return projectBrief;
+	public String getPurposeOfLoan() {
+		return purposeOfLoan;
 	}
 
-	public void setProjectBrief(String projectBrief) {
-		this.projectBrief = projectBrief;
+	public void setPurposeOfLoan(String purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
 	}
 
-	public Double getTotalCostOfEstimate() {
-		return totalCostOfEstimate;
-	}
-
-	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
-		this.totalCostOfEstimate = totalCostOfEstimate;
-	}
-
-	public Double getTotalMeansOfFinance() {
-		return totalMeansOfFinance;
-	}
-
-	public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
-		this.totalMeansOfFinance = totalMeansOfFinance;
-	}
-
-	public Double getTotalCollateralDetails() {
-		return totalCollateralDetails;
-	}
-
-	public void setTotalCollateralDetails(Double totalCollateralDetails) {
-		this.totalCollateralDetails = totalCollateralDetails;
-	}
-
+	
+	
 }
