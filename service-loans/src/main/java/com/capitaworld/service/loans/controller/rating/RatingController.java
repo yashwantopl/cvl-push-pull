@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.rating.RatingClient;
@@ -34,6 +35,10 @@ public class RatingController {
 	
 	@Autowired
 	private RatingClient ratingClient;
+	
+	@Autowired
+	private TotalCostOfProjectService totalCostOfProjectService;
+	
 	
 	@Autowired
 	private CorporateApplicantService applicantService;
@@ -74,8 +79,13 @@ public class RatingController {
 	@RequestMapping(value = "/qualitative_input/save_qualitative_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public RatingResponse saveQualitativeInput(@RequestBody RatingResponse ratingResponse,HttpServletRequest httpRequest) throws RatingException {
 		try {
-			ratingResponse.setUserId(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
+			Long userId=((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			ratingResponse.setUserId(userId);
 			
+			if( 2 == ratingResponse.getProductId())
+			{
+				ratingResponse.setProjectSize(totalCostOfProjectService.getCostOfProject(ratingResponse.getApplicationId(), userId));
+			}
 			RatingResponse ratingResponseNew=ratingClient.saveQualitativeInput(ratingResponse);
 			return ratingResponseNew;
 			
