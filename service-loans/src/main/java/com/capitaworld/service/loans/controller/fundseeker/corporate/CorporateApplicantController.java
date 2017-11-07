@@ -342,7 +342,7 @@ public class CorporateApplicantController {
 				{
 					CompanyDetails companyDetails=applicantService.getCompanyDetails(request.getApplicationId(),userId);
 					ratingResponse=ratingClient.getCompanyDetails(companyDetails);
-					if(CommonUtils.isObjectNullOrEmpty(ratingResponse.getCompanyDetails().getId())){
+					if(CommonUtils.isObjectNullOrEmpty(ratingResponse.getCompanyDetails())){
 						ratingResponse=ratingClient.saveCompanyDetails(companyDetails);
 					}
 					LoansResponse loansResponse = new LoansResponse();
