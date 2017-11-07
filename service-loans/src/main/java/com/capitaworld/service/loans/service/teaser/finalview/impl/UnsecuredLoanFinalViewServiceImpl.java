@@ -265,7 +265,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 		List<Object> dprList = new ArrayList<Object>();
 		// getting data of uploads documents and getting profile picture
-		try {
+		/*try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE));
 		} catch (DocumentException e) {
 			e.printStackTrace();
@@ -311,7 +311,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS));
 		}catch(DocumentException e){
 			e.printStackTrace();
-		}
+		}*/
 		
 		try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
