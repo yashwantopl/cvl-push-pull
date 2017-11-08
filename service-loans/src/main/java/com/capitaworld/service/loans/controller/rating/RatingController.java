@@ -177,18 +177,19 @@ public class RatingController {
 	
 	
 	@RequestMapping(value = "/get_irr_format", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public StorageDetailsResponse getIrrFormat(@RequestBody DocumentRequest documentRequest,HttpServletRequest httpRequest) {
+	public DocumentResponse getIrrFormat(@RequestBody DocumentRequest documentRequest,HttpServletRequest httpRequest) {
+		 StorageDetailsResponse response = null;
 		try {
-		    DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+		    DocumentResponse documentResponse = dmsClient.listIrrDocument(documentRequest);
 		    List<Map<String,Object>> list =  documentResponse.getDataList();
 		    if(!CommonUtils.isListNullOrEmpty(list)){
-		     StorageDetailsResponse response = null;
 		     try {
 		      response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
-		      return response;
+		      return documentResponse;
 		     } catch (IOException e) {
 		      // TODO Auto-generated catch block
 		      e.printStackTrace();
+		      return new DocumentResponse("No data found", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		     }
 		    }
 		    
@@ -196,15 +197,16 @@ public class RatingController {
 		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		    logger.warn("Error while getting image");
+		    return new DocumentResponse("No data found", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		   }
-		return null;
+		 return new DocumentResponse("No data found", HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 	
 	
 	@RequestMapping(value = "/inactive_irr_format", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public DocumentResponse inActiveIrrFormat(@RequestBody String userStorageId,HttpServletRequest httpRequest) {
 		  try {
-			   DocumentResponse documentResponse = dmsClient.deleteUserDocument(userStorageId);
+			   DocumentResponse documentResponse = dmsClient.deleteIrrDocument(userStorageId);
 			   logger.info("exit form deleteUploadedDocuments()");
 			   return documentResponse;
 			  } catch (DocumentException e) {
