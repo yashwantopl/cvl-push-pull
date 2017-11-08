@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -36,6 +37,9 @@ public class PromotorBackgroundDetailsController {
 
 	@Autowired
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -68,6 +72,17 @@ public class PromotorBackgroundDetailsController {
 			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
 				frameRequest.setClientId(clientId);
 			}
+			
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(),
+					finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
 			promotorBackgroundDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
