@@ -142,9 +142,9 @@ public class RatingController {
 	}
 	
 	@RequestMapping(value = "/manufacturing/calculate_fitch_Rating", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse calculateFitchRatingOfManufacturing(HttpServletRequest httpRequest) throws RatingException {
+	public RatingResponse calculateFitchRatingOfManufacturing(@RequestBody Long companyDetailsId,HttpServletRequest httpRequest) throws RatingException {
 		try {
-			return ratingClient.calculateFitchRatingOfManufacturing(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
+			return ratingClient.calculateFitchRatingOfManufacturing(companyDetailsId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RatingException("Ratings Service is not available");
@@ -166,9 +166,9 @@ public class RatingController {
 	}
 	
 	@RequestMapping(value = "/service/calculate_fitch_Rating", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse calculateFitchRatingOfService(HttpServletRequest httpRequest) throws RatingException {
+	public RatingResponse calculateFitchRatingOfService(@RequestBody Long companyDetailsId,HttpServletRequest httpRequest) throws RatingException {
 		try {
-			return ratingClient.calculateFitchRatingOfService(((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue());
+			return ratingClient.calculateFitchRatingOfService(companyDetailsId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RatingException("Ratings Service is not available");
