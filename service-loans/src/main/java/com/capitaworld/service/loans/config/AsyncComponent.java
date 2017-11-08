@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.config;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Timer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class AsyncComponent {
     				Map<String, Object> parameters = new HashMap<String, Object>();
     				parameters.put("fs_name", request.getName());
     				String[] toIds = {request.getEmail()};
-    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,null);
+    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,null,false,null);
     				logger.info("Exits, Successfully sent mail when user has no application ---->"+request.getEmail());
     			}
     		} else {
@@ -118,51 +119,14 @@ public class AsyncComponent {
 	public void sendMailWhenUserCompletePrimaryForm(Long userId, Long applicationId){
 		logger.info("Enter in sending mail when user Complete Primary Form");
 		try {
-			
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 				UsersRequest request = MultipleJSONObjectHelper
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
-    				Map<String, Object> parameters = new HashMap<String, Object>();
-    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
-    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
-    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
-    				if(loanBasicDetails != null) {
-    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
-        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
-    				} else {
-    					parameters.put("application_id", "NA");
-        				parameters.put("loan", "NA");
-    				}
-    				
-    				try {
-    					logger.info("Stating get total match count");
-    					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-    					proposalMappingRequest.setApplicationId(applicationId);
-    					ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
-    					if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsResponse)) {
-    						ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
-    		    					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
-    						if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
-    							logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
-    							parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
-    						} else {
-    							logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
-    							parameters.put("total_matches",0);
-    						}
-    					} else {
-    						logger.warn("Something went wrong, Proposal service not available");
-    						parameters.put("total_matches",0);
-    					}
-    						
-    				} catch(Exception e) {
-    					logger.warn("Error while get total suggestion matches list when primary locked mail sending");
-    					e.printStackTrace();
-    					parameters.put("total_matches", 0);
-    				}
+    				Map<String, Object> parameters = getFSMapData(userId,applicationId);
     				String[] toIds = {request.getEmail()};
-    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,null);
+    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,null,false,null);
     				logger.info("Exits, Successfully sent mail when user complete primary form ---->"+request.getEmail());
     			}
     		}
@@ -172,6 +136,74 @@ public class AsyncComponent {
 		}
 	}
 	
+	/**
+	 * FS Mail Number :- 8
+	 *  Send Mail when Fund seeker submit profile-primary form and go to matches page
+	 * @param userId :- FS Login UserId
+	 * This Method Called From LoanApplicationController.java
+	 */
+	@SuppressWarnings("unchecked")
+	@Async
+	public void sendMailForFirstTimeUserViewMatches(Long applicationId,Long userId) {
+		logger.info("Enter in sending mail when user go first time in matches page----" +NotificationTemplate.PRIMARY_FILL_COMPLETE.getValue());
+		try {
+			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+    				Map<String, Object> parameters = getFSMapData(userId,applicationId);
+    				String[] toIds = {request.getEmail()};
+    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,null,true,300000);
+    				logger.info("Exits, Successfully sent mail when user go first time in matches page---->"+request.getEmail());
+    			}
+    		}
+		} catch(Exception e) {
+			logger.info("Throw exception while sending mail, Primary Complete");
+			e.printStackTrace();
+		}
+	}
+	
+	private Map<String, Object> getFSMapData(Long userId,Long applicationId) throws Exception{
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String fsName = loanApplicationService.getFsApplicantName(applicationId);
+		parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
+		if(loanBasicDetails != null) {
+			parameters.put("application_id", loanBasicDetails.getApplicationCode());
+			parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		} else {
+			parameters.put("application_id", "NA");
+			parameters.put("loan", "NA");
+		}
+		
+		try {
+			logger.info("Stating get total match count");
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setApplicationId(applicationId);
+			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsResponse)) {
+				ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
+    					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
+				if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
+					logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
+					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
+				} else {
+					logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
+					parameters.put("total_matches",0);
+				}
+			} else {
+				logger.warn("Something went wrong, Proposal service not available");
+				parameters.put("total_matches",0);
+			}
+				
+		} catch(Exception e) {
+			logger.warn("Error while get total suggestion matches list when primary locked mail sending");
+			e.printStackTrace();
+			parameters.put("total_matches", 0);
+		}
+		return parameters;
+	}
 	
 	/**
 	 * FS Mail Number :- 14
@@ -243,7 +275,7 @@ public class AsyncComponent {
 		    					parameters.put("total_matches", 0);
 		    				}
 		    				String[] toIds = {request.getEmail()};
-		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_VIEW_MORE_DETAILS,fpName);
+		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_VIEW_MORE_DETAILS,fpName,false,null);
 		    				logger.info("Exits, Successfully sent mail when fp view more details but fs not filled final details ---->"+request.getEmail());
 		    			}
 		    		}
@@ -251,6 +283,69 @@ public class AsyncComponent {
 			}
 		} catch(Exception e) {
 			logger.info("Throw exception while sending mail, Primary Complete");
+			e.printStackTrace();
+		}
+	}
+	
+
+	private Long getLastAccessId(Long userId) {
+		try {
+			logger.info("Start Getting get last application or fpProduct Id =======>"+userId);
+			UserResponse userLastAppResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
+			if (!CommonUtils.isObjectNullOrEmpty(userLastAppResponse.getId())) {
+				logger.info("Successfully get fp product id=======>"+userLastAppResponse.getId());
+				return userLastAppResponse.getId();
+			}
+			return null;
+		} catch (Exception e) {
+			logger.warn("Error while get fund provider name");
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private void sendNotification(String[] toIds, String userId, Map<String, Object> parameters, NotificationTemplate template,String fpName,boolean isTimerMail,Integer milisecond) throws NotificationException {
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(userId);
+		//MAKE NOTIFICATION OBJECT
+		Notification notification = new Notification();
+		notification.setTo(toIds);
+		notification.setType(NotificationType.EMAIL);
+		notification.setTemplateId(template.getValue());
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setParameters(parameters);
+		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
+		notification.setSubject(template.isSubjConfig() ? fpName + template.getSubject() : template.getSubject());
+		notificationRequest.addNotification(notification);
+		//SEND MAIL
+		if(isTimerMail) {
+			sendMailWithTimer(notificationRequest,milisecond,template.getSubject());
+		} else {
+			sendMail(notificationRequest);	
+		}
+	}
+	
+	private void sendMail(NotificationRequest notificationRequest) throws NotificationException {
+		notificationClient.send(notificationRequest);	
+	}
+	
+	private void sendMailWithTimer(NotificationRequest notificationRequest,Integer milisecond,String value) {
+		logger.info("start Sent Mail with timer ------->" + milisecond + "<-------->"+value);
+		try {
+			new Timer().schedule(new java.util.TimerTask() {
+				@Override
+				public void run() {
+					try {
+						logger.info("End Sent Mail Wth Timer------->" + milisecond + "<-------->"+value);
+						sendMail(notificationRequest);
+					} catch (NotificationException e) {
+						logger.error("Error while send mail in notfication");
+						e.printStackTrace();
+					}
+				}
+			}, milisecond);
+		} catch (Exception e) {
+			logger.error("Error while call timer method in notification");
 			e.printStackTrace();
 		}
 	}
@@ -286,36 +381,4 @@ public class AsyncComponent {
 		
 	}
 	
-	private Long getLastAccessId(Long userId) {
-		try {
-			logger.info("Start Getting get last application or fpProduct Id =======>"+userId);
-			UserResponse userLastAppResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
-			if (!CommonUtils.isObjectNullOrEmpty(userLastAppResponse.getId())) {
-				logger.info("Successfully get fp product id=======>"+userLastAppResponse.getId());
-				return userLastAppResponse.getId();
-			}
-			return null;
-		} catch (Exception e) {
-			logger.warn("Error while get fund provider name");
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	private void sendNotification(String[] toIds, String userId, Map<String, Object> parameters, NotificationTemplate template,String fpName) throws NotificationException {
-		NotificationRequest notificationRequest = new NotificationRequest();
-		notificationRequest.setClientRefId(userId);
-		//MAKE NOTIFICATION OBJECT
-		Notification notification = new Notification();
-		notification.setTo(toIds);
-		notification.setType(NotificationType.EMAIL);
-		notification.setTemplateId(template.getValue());
-		notification.setContentType(ContentType.TEMPLATE);
-		notification.setParameters(parameters);
-		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(template.isSubjConfig() ? fpName + template.getSubject() : template.getSubject());
-		notificationRequest.addNotification(notification);
-		//SEND MAIL
-		notificationClient.send(notificationRequest);
-	}
 }
