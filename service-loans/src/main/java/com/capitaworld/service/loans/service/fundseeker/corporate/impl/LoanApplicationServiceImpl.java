@@ -885,7 +885,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long coAppllicantOrGuarantorId)
 			throws Exception {
 		List<Long> coAppIds = null;
+
 		Long coAppCount;
+
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -954,7 +956,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			
 			// Co-Applicant Profile Checking
+
 						 coAppCount = null;
+
 						coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 								applicationMaster.getUserId());
 						if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {

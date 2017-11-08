@@ -4,5 +4,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrima
 
 public interface UnsecuredLoanPrimaryViewService {
 	
-	 public UnsecuredLoanPrimaryViewResponse getUnsecuredLoanPrimaryViewDetails(Long toApplicationId,Integer userType,Long fundProviderUserId);
+
+	 public UnsecuredLoanPrimaryViewResponse getUnsecuredLoanPrimaryViewDetails(Long toApplicationId,Integer userType,Long fundProviderUserId) throws Exception;
+
 }
