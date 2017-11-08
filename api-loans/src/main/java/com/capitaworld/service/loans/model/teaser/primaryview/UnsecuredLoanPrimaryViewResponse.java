@@ -13,6 +13,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredCoApplicantDetail;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 
@@ -70,7 +71,8 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
 	
-	private List<UnsecuredCoApplicantDetail> coApplicantList;
+	private List<CorporateCoApplicantRequest> coApplicantList;
+	private String purposeOfLoan;
 
 	public List<?> getIndustrySector() {
 		return industrySector;
@@ -448,12 +450,20 @@ public class UnsecuredLoanPrimaryViewResponse {
 		this.addOfficestate = addOfficestate;
 	}
 
-	public List<UnsecuredCoApplicantDetail> getCoApplicantList() {
+	public List<CorporateCoApplicantRequest> getCoApplicantList() {
 		return coApplicantList;
 	}
 
-	public void setCoApplicantList(List<UnsecuredCoApplicantDetail> coApplicantList) {
+	public void setCoApplicantList(List<CorporateCoApplicantRequest> coApplicantList) {
 		this.coApplicantList = coApplicantList;
+	}
+
+	public String getPurposeOfLoan() {
+		return purposeOfLoan;
+	}
+
+	public void setPurposeOfLoan(String purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
 	}
 
 	

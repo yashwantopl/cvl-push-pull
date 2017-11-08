@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -40,6 +41,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnse
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
@@ -140,6 +142,9 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 	@Autowired
 	private ProductMasterService productMasterService;
+	
+	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -382,6 +387,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		if (primaryUnsecuredLoanDetail != null) {
 			BeanUtils.copyProperties(primaryUnsecuredLoanDetail, unsecuredLoanPrimaryViewResponse);
 			unsecuredLoanPrimaryViewResponse.setTenure(primaryUnsecuredLoanDetail.getTenure() != null ? primaryUnsecuredLoanDetail.getTenure() / 12 : null);
+			unsecuredLoanPrimaryViewResponse.setPurposeOfLoan(primaryUnsecuredLoanDetail.getPurposeOfLoan() != null ? primaryUnsecuredLoanDetail.getPurposeOfLoan() : null);
 			if (!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getDenominationId()))
 				unsecuredLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryUnsecuredLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryUnsecuredLoanDetail.getDenominationId()).getValue());
 			if (primaryUnsecuredLoanDetail.getProductId() != null)
@@ -672,6 +678,15 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//setting co-application details
+        List<CorporateCoApplicantRequest> coApplicantResponse = null;
+        try {
+            coApplicantResponse = corporateCoApplicantService.getList(toApplicationId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        unsecuredLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
 		return unsecuredLoanPrimaryViewResponse;
 	}

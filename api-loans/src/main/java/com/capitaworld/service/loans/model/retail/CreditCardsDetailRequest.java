@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.retail;
 
 import java.io.Serializable;
 
+
 /**
  * @author Sanket
  *
@@ -24,6 +25,16 @@ public class CreditCardsDetailRequest implements Serializable {
 	private String issuerName;
 
 	private Double outstandingBalance;
+	
+	//UNSECURED LOAN	
+	private String issuingBank;
+	
+	private Integer yearOfIssue;
+	
+	private Integer yearOfExpiry;
+	
+	private Long cardLimit;
+
 
 	public Long getId() {
 		return id;
@@ -71,6 +82,38 @@ public class CreditCardsDetailRequest implements Serializable {
 
 	public void setOutstandingBalance(Double outstandingBalance) {
 		this.outstandingBalance = outstandingBalance;
+	}
+
+	public String getIssuingBank() {
+		return issuingBank;
+	}
+
+	public void setIssuingBank(String issuingBank) {
+		this.issuingBank = issuingBank;
+	}
+
+	public Integer getYearOfIssue() {
+		return yearOfIssue;
+	}
+
+	public void setYearOfIssue(Integer yearOfIssue) {
+		this.yearOfIssue = yearOfIssue;
+	}
+
+	public Integer getYearOfExpiry() {
+		return yearOfExpiry;
+	}
+
+	public void setYearOfExpiry(Integer yearOfExpiry) {
+		this.yearOfExpiry = yearOfExpiry;
+	}
+
+	public Long getCardLimit() {
+		return cardLimit;
+	}
+
+	public void setCardLimit(Long cardLimit) {
+		this.cardLimit = cardLimit;
 	}
 	
 	
