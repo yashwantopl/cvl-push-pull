@@ -885,6 +885,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long coAppllicantOrGuarantorId)
 			throws Exception {
 		List<Long> coAppIds = null;
+		Long coAppCount;
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -953,7 +954,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			
 			// Co-Applicant Profile Checking
-						Long coAppCount = null;
+						 coAppCount = null;
 						coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 								applicationMaster.getUserId());
 						if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
@@ -999,6 +1000,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			break;
 		case CommonUtils.TabType.FINAL_MCQ:
+			
+			// Co-Applicant Profile Checking
+			 coAppCount = null;
+			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+					applicationMaster.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+				if (coAppCount == 1) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (coAppCount == 2) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+						response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+
+				}
+			}
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
 				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
@@ -1132,11 +1164,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
-					|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
-				response.put("message", "Please Fill FINAL DPR details to Move Next !");
-				response.put("result", false);
-				return response;
+			if(applicationMaster.getProductId()!=LoanType.UNSECURED_LOAN.getValue())
+			{
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
+						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL DPR details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
 			}
 			break;
 		default:
