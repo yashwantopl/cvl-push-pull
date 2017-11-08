@@ -160,7 +160,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		// create response object
 		WorkingCapitalFinalViewResponse response = new WorkingCapitalFinalViewResponse();
 
-		List<Object> dprList = new ArrayList<Object>();
+		//List<Object> dprList = new ArrayList<Object>();
 		// get list of uploads of final and profile picture
 		try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE));
@@ -207,12 +207,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		try{
+		/*try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.WC_DPR_OUR_FORMAT));
 			response.setDprList(dprList);
 		} catch (DocumentException e) {
 			e.printStackTrace();
-		}
+		}*/
 		try{
 			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)));
 		} catch (DocumentException e) {
@@ -228,11 +228,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		try{
+		/*try{
 			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_DPR_YOUR_FORMAT)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
-		}
+		}*/
 		try {
 			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES)));
 		} catch (DocumentException e) {
@@ -250,7 +250,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		}
 		
 
-		// if DPR our format not upload no need get data of DPR
+		/*// if DPR our format not upload no need get data of DPR
 		if (dprList.size() > 0) {
 			response.setIsDprUploaded(true);
 			List<BoardOfDirectorsResponse> boardOfDirectorsResponseList = boardOfDirectorsDetailRepository
@@ -302,7 +302,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
 		} else {
 			response.setIsDprUploaded(false);
-		}
+		}*/
 		// final information
 		try {
 			FinalWorkingCapitalLoanRequest finalWorkingCapitalLoanRequest = finalWorkingCapitalLoanService.get(userId,

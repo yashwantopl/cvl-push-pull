@@ -579,7 +579,7 @@ public class PrimaryViewController {
 			
 			try {
 			
-				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId,NotificationTemplate.FINAL_VIEW,loginUserType);
+				notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId, applicationId, fpProductId,null,loginUserType);
 				
 			} catch (Exception e) {
 				// TODO: handle exception
