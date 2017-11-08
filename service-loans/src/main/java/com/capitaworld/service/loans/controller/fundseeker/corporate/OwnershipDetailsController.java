@@ -78,7 +78,7 @@ public class OwnershipDetailsController {
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 
