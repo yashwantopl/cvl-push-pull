@@ -38,7 +38,7 @@ public class CreditRatingOrganizationDetailsController {
 
 	@Autowired
 	private CreditRatingOrganizationDetailsService creditRatingOrganizationDetailsService;
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
@@ -49,10 +49,11 @@ public class CreditRatingOrganizationDetailsController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 
 		CommonDocumentUtils.startHook(logger, "save");
-		
+
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 		// request must not be null
@@ -65,14 +66,25 @@ public class CreditRatingOrganizationDetailsController {
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest.getApplicationId());
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				frameRequest.setClientId(clientId);
+			}
+
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(),
+					finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
 			}
 			creditRatingOrganizationDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
@@ -90,13 +102,15 @@ public class CreditRatingOrganizationDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) {
 			userId = clientId;
-		}else{
+		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		try {
@@ -107,11 +121,11 @@ public class CreditRatingOrganizationDetailsController {
 			}
 
 			List<CreditRatingOrganizationDetailRequest> response = creditRatingOrganizationDetailsService
-					.getcreditRatingOrganizationDetailsList(id,userId);
+					.getcreditRatingOrganizationDetailsList(id, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id,userId);
+			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id, userId);
 			String data = result.get("currency").toString();
-			data = data.concat(" In "+ result.get("denomination").toString());
+			data = data.concat(" In " + result.get("denomination").toString());
 			loansResponse.setListData(response);
 			loansResponse.setData(data);
 			CommonDocumentUtils.endHook(logger, "getList");

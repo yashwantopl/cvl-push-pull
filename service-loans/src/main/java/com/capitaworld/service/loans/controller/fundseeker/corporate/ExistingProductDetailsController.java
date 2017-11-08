@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -37,6 +38,9 @@ public class ExistingProductDetailsController {
 	@Autowired
 	private ExistingProductDetailsService existingProductDetailsService;
 
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -44,10 +48,11 @@ public class ExistingProductDetailsController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest frameRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "save");
-		
+
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 
 		if (frameRequest == null) {
@@ -59,15 +64,27 @@ public class ExistingProductDetailsController {
 		if (frameRequest.getApplicationId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 				frameRequest.setClientId(clientId);
 			}
+
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
+					: frameRequest.getClientId());
+			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(),
+					finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
 			existingProductDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
@@ -84,13 +101,15 @@ public class ExistingProductDetailsController {
 	}
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
-		
+	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) {
 			userId = clientId;
-		}else{
+		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		// request must not be null
@@ -101,8 +120,8 @@ public class ExistingProductDetailsController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			List<ExistingProductDetailRequest> response = existingProductDetailsService
-					.getExistingProductDetailList(id,userId);
+			List<ExistingProductDetailRequest> response = existingProductDetailsService.getExistingProductDetailList(id,
+					userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
