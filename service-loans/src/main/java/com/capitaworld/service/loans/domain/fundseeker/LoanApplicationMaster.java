@@ -164,7 +164,18 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "is_mca")
 	private Boolean isMca;
 	
+	@Column(name = "isMsmeScoreRequired")
+	private Boolean isMsmeScoreRequired;
 	
+	
+	public Boolean getIsMsmeScoreRequired() {
+		return isMsmeScoreRequired;
+	}
+
+	public void setIsMsmeScoreRequired(Boolean isMsmeScoreRequired) {
+		this.isMsmeScoreRequired = isMsmeScoreRequired;
+	}
+
 	public Boolean getIsMca() {
 		return isMca;
 	}
