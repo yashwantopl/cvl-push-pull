@@ -71,8 +71,12 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
 	
+
 	private List<CorporateCoApplicantRequest> coApplicantList;
 	private String purposeOfLoan;
+
+	private List<UnsecuredCoApplicantDetail> coApplicantList;
+
 
 	public List<?> getIndustrySector() {
 		return industrySector;
@@ -450,6 +454,7 @@ public class UnsecuredLoanPrimaryViewResponse {
 		this.addOfficestate = addOfficestate;
 	}
 
+
 	public List<CorporateCoApplicantRequest> getCoApplicantList() {
 		return coApplicantList;
 	}
@@ -465,6 +470,7 @@ public class UnsecuredLoanPrimaryViewResponse {
 	public void setPurposeOfLoan(String purposeOfLoan) {
 		this.purposeOfLoan = purposeOfLoan;
 	}
+
 
 	
 	
