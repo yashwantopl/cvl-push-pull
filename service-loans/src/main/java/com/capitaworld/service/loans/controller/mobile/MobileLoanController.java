@@ -14,14 +14,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.MobileService;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.ProductServicesPerse;
 
 
 @RestController
@@ -36,6 +40,8 @@ public class MobileLoanController {
 	@Autowired
 	private MobileService mobileService;
 	
+	@Autowired
+	private ProductMasterService productMasterService;
 	
 	@RequestMapping(value="/loanList",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getLoanList(@RequestBody MobileLoanRequest mobileUserRequest){
@@ -217,6 +223,30 @@ public class MobileLoanController {
 			}
 		} catch(Exception e) {
 			logger.warn("Error While save Loan Application Details details for mobile app");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value="/getProductList",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProductList(@RequestBody MobileLoanRequest mobileLoanRequest){
+		logger.info("Enter in get fp product list for mobile app");
+		try {
+			if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.OK.value()),
+						HttpStatus.OK);
+			}
+			
+			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId());
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(list);
+			CommonDocumentUtils.endHook(logger, "getProductList for mobile");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch(Exception e) {
+			logger.warn("Error While get fp product list for mobile app");
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
