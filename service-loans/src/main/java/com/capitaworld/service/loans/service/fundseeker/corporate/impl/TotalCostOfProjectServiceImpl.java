@@ -16,10 +16,12 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Denomination;
 
 @Service
 @Transactional
@@ -27,6 +29,9 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 	private static final Logger logger = LoggerFactory.getLogger(TotalCostOfProjectServiceImpl.class.getName());
 	@Autowired
 	private TotalCostOfProjectRepository totalCostOfProjectRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -81,6 +86,22 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	
+	@Override
+	public Double getCostOfProject(Long applicationId, Long userId) {
+			List<TotalCostOfProject> totalCostOfProjectRequest = totalCostOfProjectRepository
+					.listCostOfProjectFromAppId(applicationId, userId);
+			Double totalCost=(double) 0;
+			for(TotalCostOfProject totalCostOfProject:totalCostOfProjectRequest)
+			{
+				totalCost+=totalCostOfProject.getTotalCost();
+			}
+			
+			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
+			totalCost=totalCost*Denomination.getById(denominationId).getDigit();
+			return totalCost;
 	}
 
 }

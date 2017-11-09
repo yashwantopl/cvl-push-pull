@@ -11,7 +11,8 @@ public class CommonNotificationUtils {
 		FINAL_VIEW(NotificationAlias.EMAIL_FINAL_VIEW_FS," viewed your final details",true),
 		LOGOUT_IMMEDIATELY(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY,"Reviews",false),
 		PRIMARY_FILL_COMPLETE(NotificationAlias.EMAIL_FS_PROFILE_PRIMARY_COMPLETE,"Your Matches",false),
-		FP_VIEW_MORE_DETAILS(NotificationAlias.EMAIL_FS_FP_VIEW_MORE_DETAILS," requested for more details",true);
+		FP_VIEW_MORE_DETAILS(NotificationAlias.EMAIL_FS_FP_VIEW_MORE_DETAILS," requested for more details",true),
+		FS_GO_MATCHES_PAGE(NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE,"Matches & Connections",false);
 		
 		private Long value;
 		private String subject;
@@ -47,6 +48,8 @@ public class CommonNotificationUtils {
 				return PRIMARY_FILL_COMPLETE; 
 			} else if(x == NotificationAlias.EMAIL_FS_FP_VIEW_MORE_DETAILS) {
 				return FP_VIEW_MORE_DETAILS; 
+			} else if(x == NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE) {
+				return FS_GO_MATCHES_PAGE; 
 			} else {
 				return null;
 			} 
