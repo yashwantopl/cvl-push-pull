@@ -34,8 +34,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMa
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.rating.model.CompanyDetails;
-import com.capitaworld.service.rating.model.RatingResponse;
+//import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.RatingResponse;
 
 @Service
 @Transactional
@@ -528,7 +528,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return msmeScoreRequired;
 	}
 
-	@Override
+/*	@Override
 	public CompanyDetails getCompanyDetails(Long applicationId, Long userId) throws Exception {
 		CorporateApplicantDetail corp = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		CompanyDetails companyDetails = new CompanyDetails();
@@ -536,7 +536,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		companyDetails.setPan(corp.getPanNo());
 		companyDetails.setUserId(userId);
 		return companyDetails;
-	}
+	}*/
 
 	@Override
 	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
