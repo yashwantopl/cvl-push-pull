@@ -2,7 +2,11 @@ package com.capitaworld.service.loans.model.teaser.finalview;
 
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.UnsecuredCoApplicantDetail;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 import java.io.Serializable;
 import java.util.List;
@@ -67,6 +71,10 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
     private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
     private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
+    
+    private List<BankAccountHeldDetailsRequest> bankAccountHeldDetailsRequest;
+	private List<CreditCardsDetailRequest> creditCardsDetailResponse;
+	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequest;
 
 
     /**
@@ -939,6 +947,30 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 
 	public void setCoApplicantList(List<UnsecuredCoApplicantDetail> coApplicantList) {
 		this.coApplicantList = coApplicantList;
+	}
+
+	public List<BankAccountHeldDetailsRequest> getBankAccountHeldDetailsRequest() {
+		return bankAccountHeldDetailsRequest;
+	}
+
+	public void setBankAccountHeldDetailsRequest(List<BankAccountHeldDetailsRequest> bankAccountHeldDetailsRequest) {
+		this.bankAccountHeldDetailsRequest = bankAccountHeldDetailsRequest;
+	}
+
+	public List<CreditCardsDetailRequest> getCreditCardsDetailResponse() {
+		return creditCardsDetailResponse;
+	}
+
+	public void setCreditCardsDetailResponse(List<CreditCardsDetailRequest> creditCardsDetailResponse) {
+		this.creditCardsDetailResponse = creditCardsDetailResponse;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequest() {
+		return referenceRetailDetailsRequest;
+	}
+
+	public void setReferenceRetailDetailsRequest(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequest) {
+		this.referenceRetailDetailsRequest = referenceRetailDetailsRequest;
 	}
 	
 	
