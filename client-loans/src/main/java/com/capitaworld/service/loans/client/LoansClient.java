@@ -97,6 +97,7 @@ public class LoansClient {
 	private static final String MOBILE_GET_FP_PRODUCT_LIST = "/mobile/getProductList";
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
+	private static final String MOBILE_GET_FS_MATCHES_LIST = "/mobile/fundSeekerProposal";
 	
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
@@ -1031,6 +1032,19 @@ public class LoansClient {
 	
 	public LoansResponse fundproviderProposal(MobileFPMatchesRequest request) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_GET_FP_MATCHES_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+		}
+	}
+	
+	public LoansResponse fundSeekerProposal(MobileFPMatchesRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_FS_MATCHES_LIST);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");

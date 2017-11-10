@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
@@ -284,9 +285,26 @@ public class MobileLoanController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
-		
-		
-		
+	}
+	
+	@RequestMapping(value = "/fundSeekerProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fundSeekerProposal(@RequestBody MobileFPMatchesRequest request) {
+		logger.info("Start get fundseeker matches list for mobile");
+		try {
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			BeanUtils.copyProperties(request, proposalMappingRequest);
+			List<FundProviderProposalDetails> proposalDetailsList = proposalService.fundseekerProposal(proposalMappingRequest, request.getUserId());
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(proposalDetailsList);
+			CommonDocumentUtils.endHook(logger, "fundseekerProposal matches for mobile");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
+		} catch(Exception e) {
+			logger.warn("Error While get FS matches list for mobile app");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
 	}
 	
 	
