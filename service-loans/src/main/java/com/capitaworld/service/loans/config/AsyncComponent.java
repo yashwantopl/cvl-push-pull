@@ -145,7 +145,7 @@ public class AsyncComponent {
 	@SuppressWarnings("unchecked")
 	@Async
 	public void sendMailForFirstTimeUserViewMatches(Long applicationId,Long userId) {
-		logger.info("Enter in sending mail when user go first time in matches page----" +NotificationTemplate.PRIMARY_FILL_COMPLETE.getValue());
+		logger.info("Enter in sending mail when user go first time in matches page----" +NotificationTemplate.FS_GO_MATCHES_PAGE.getValue());
 		try {
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
@@ -154,7 +154,7 @@ public class AsyncComponent {
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				Map<String, Object> parameters = getFSMapData(userId,applicationId);
     				String[] toIds = {request.getEmail()};
-    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,null,true,300000);
+    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FS_GO_MATCHES_PAGE,null,true,300000);
     				logger.info("Exits, Successfully sent mail when user go first time in matches page---->"+request.getEmail());
     			}
     		}
