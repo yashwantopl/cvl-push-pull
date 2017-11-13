@@ -155,7 +155,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-			applicantRequest.setCoApplicants(corporateCoApplicantService.getList(applicationId, userId));
+			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");

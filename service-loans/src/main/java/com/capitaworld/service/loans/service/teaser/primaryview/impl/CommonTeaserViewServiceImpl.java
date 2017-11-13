@@ -14,6 +14,7 @@ import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewS
 import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CommonTeaserViewService;
@@ -70,6 +71,9 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	
 	@Autowired
 	private UnsecuredLoanPrimaryViewService unsecuredLoanPrimaryViewService;
+	
+	@Autowired
+	private UnsecuredLoanFinalViewService unsecuredLoanFinalViewService;
 	
 	@Autowired
 	private LapFinalViewService lapFinalViewService;
@@ -158,6 +162,10 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		case LOAN_AGAINST_PROPERTY:
 			loansResponse.setData(lapFinalViewService.getLapFinalViewDetails(applicantId));
 			loansResponse.setMessage(LoanType.LOAN_AGAINST_PROPERTY.getId().toString());
+			break;
+		case UNSECURED_LOAN:
+			loansResponse.setData(unsecuredLoanFinalViewService.getUnsecuredLoanFinalViewDetails(applicantId, null, null));
+			loansResponse.setMessage(LoanType.UNSECURED_LOAN.getId().toString());
 			break;
 		
 

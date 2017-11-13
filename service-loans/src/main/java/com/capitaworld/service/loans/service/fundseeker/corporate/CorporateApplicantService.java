@@ -8,6 +8,7 @@ import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 //import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.CompanyDetails;
 
 import java.util.List;
 

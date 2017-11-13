@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -129,6 +130,7 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
+@Service
 public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalViewService{
 	@Autowired
 	private TotalCostOfProjectService costOfProjectService;
@@ -256,7 +258,8 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	private static final Logger logger = LoggerFactory.getLogger(UnsecuredLoanFinalViewServiceImpl.class);
 
 	@Override
-	public UnsecuredLoanFinalViewResponse getUnsecuredLoanFinalViewDetails(Long toApplicationId) {
+	public UnsecuredLoanFinalViewResponse getUnsecuredLoanFinalViewDetails(Long toApplicationId, Integer userType,
+			Long fundProviderUserId) {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = applicationMaster.getUserId();
 
