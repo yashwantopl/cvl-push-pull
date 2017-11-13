@@ -28,6 +28,8 @@ public class ReferenceRetailDetailsRequest implements Serializable{
 	private Integer referencesListId;
 
 	private String telephone;
+	
+	private String relationshipWithApplicant;
 
 	public Long getId() {
 		return id;
@@ -91,6 +93,14 @@ public class ReferenceRetailDetailsRequest implements Serializable{
 
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
 	}
 	
 	

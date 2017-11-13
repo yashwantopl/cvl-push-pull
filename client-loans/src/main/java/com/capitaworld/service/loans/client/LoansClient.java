@@ -93,6 +93,7 @@ public class LoansClient {
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
 	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
+	private static final String MOBILE_GET_FP_PRODUCT_LIST = "/mobile/getProductList";
 	
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	
@@ -1011,6 +1012,19 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call save loan application details for mobile app");
+		}
+	}
+	
+	public LoansResponse getProductList(MobileLoanRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_GET_FP_PRODUCT_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while get fp product list for mobile app");
 		}
 	}
 	

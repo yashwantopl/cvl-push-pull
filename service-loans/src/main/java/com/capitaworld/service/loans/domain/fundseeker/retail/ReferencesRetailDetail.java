@@ -71,6 +71,9 @@ public class ReferencesRetailDetail implements Serializable {
 
 	@Column(name="references_list_id")
 	private Integer referencesListId;
+	
+	@Column(name="relationship_with_applicant")
+	private String relationshipWithApplicant;
 
 	private String telephone;
 
@@ -197,4 +200,13 @@ public class ReferencesRetailDetail implements Serializable {
 		this.telephone = telephone;
 	}
 
+	public String getRelationshipWithApplicant() {
+		return relationshipWithApplicant;
+	}
+
+	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
+		this.relationshipWithApplicant = relationshipWithApplicant;
+	}
+	
+	
 }

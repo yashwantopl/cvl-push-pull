@@ -276,6 +276,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				UsersRequest request = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				cibilFullFillOfferRequest.setEmail(request.getEmail());
+				cibilFullFillOfferRequest.setPhoneNumber(request.getMobile());
 			}
 			return cibilFullFillOfferRequest;
 		} catch (Exception e) {

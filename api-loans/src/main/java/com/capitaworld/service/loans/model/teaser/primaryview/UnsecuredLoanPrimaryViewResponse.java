@@ -75,9 +75,6 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private List<CorporateCoApplicantRequest> coApplicantList;
 	private String purposeOfLoan;
 
-	private List<UnsecuredCoApplicantDetail> coApplicantList;
-
-
 	public List<?> getIndustrySector() {
 		return industrySector;
 	}
