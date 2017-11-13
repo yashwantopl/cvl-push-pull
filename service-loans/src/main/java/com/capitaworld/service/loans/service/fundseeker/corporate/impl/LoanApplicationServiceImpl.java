@@ -2060,7 +2060,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					response.setCurrency(CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId()));
 					if (loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())) {
 						response.setAmounInRuppes(true);
-						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(
+						Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(
 								loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 						response.setAbsoluteAmount(absoluteAmount);
 						response.setAbsoluteDisplayAmount(absoluteAmount);
