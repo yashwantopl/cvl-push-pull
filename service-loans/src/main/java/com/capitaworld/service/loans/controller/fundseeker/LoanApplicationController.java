@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -807,12 +808,12 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody Long userType) {
+	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody MobileLoanRequest loanRequest) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForSignUpUserList");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails(userType));
+			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForSignUpUserList==>", e);
@@ -1022,6 +1023,50 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while check User Has Any Application==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/**
+	 * This is method call when fund seeker submit primary details and then go to matches
+	 * This called from matchesPopupCtrl.js controller
+	 * @param applicationId
+	 * @param request
+	 * @param clientId
+	 * @author harshit
+	 * @return
+	 */
+	@RequestMapping(value = "/sendMailForFirstTimeUserViewMatches/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> sendMailForFirstTimeUserViewMatches(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			CommonDocumentUtils.startHook(logger, "sendMailForFirstTimeUserViewMatches");
+			Long userId = null;
+			if (CommonUtils.UserType.FUND_SEEKER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			} else {
+				logger.info("Logged user not fundseeker in sendMailForFirstTimeUserViewMatches method");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested user is not fundseeker", HttpStatus.OK.value()), HttpStatus.OK);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+				logger.warn("ID And UserId Require to send mail for first time user view matches==>" + applicationId + " and UserId ==>"
+						+ userId);
+				CommonDocumentUtils.endHook(logger, "sendMailForFirstTimeUserViewMatches");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			asyncComponent.sendMailForFirstTimeUserViewMatches(applicationId, userId);
+			logger.info("Mail sent successfully while fs go in matches pages first time");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Sent Mail Successfully", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while sendMailForFirstTimeUserViewMatches Details==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

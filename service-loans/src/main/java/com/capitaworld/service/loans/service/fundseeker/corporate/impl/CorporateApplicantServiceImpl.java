@@ -18,10 +18,12 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
@@ -35,6 +37,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRe
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+//import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.RatingResponse;
 
 @Service
 @Transactional
@@ -69,6 +73,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	
 	@Autowired
 	private CorporateCoApplicantService corporateCoApplicantService;
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -526,6 +532,40 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
+	}
+	
+	@Override
+	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+		boolean msmeScoreRequired= false;
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(msmeScoreRequest.getApplicationId());
+			if(msmeScoreRequest.isMsmeScoreRequired()){
+				loanApplicationMaster.setIsMsmeScoreRequired(true);
+				msmeScoreRequired= true;
+			}
+			else{
+				loanApplicationMaster.setIsMsmeScoreRequired(false);
+				msmeScoreRequired= false;
+			}
+		return msmeScoreRequired;
+	}
+
+/*	@Override
+	public CompanyDetails getCompanyDetails(Long applicationId, Long userId) throws Exception {
+		CorporateApplicantDetail corp = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		CompanyDetails companyDetails = new CompanyDetails();
+		companyDetails.setCompanyName(corp.getOrganisationName());
+		companyDetails.setPan(corp.getPanNo());
+		companyDetails.setUserId(userId);
+		return companyDetails;
+	}*/
+
+	@Override
+	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+			return false;
+		boolean msmeScoreRequired= loanApplicationMaster.getIsMsmeScoreRequired();
+		return msmeScoreRequired;
 	}
 
 }
