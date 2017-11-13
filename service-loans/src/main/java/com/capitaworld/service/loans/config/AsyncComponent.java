@@ -129,7 +129,8 @@ public class AsyncComponent {
 						e.printStackTrace();
 					}
 				}
-			}, 172800000);
+			}, 180000);
+			//172800000
 		} catch (Exception e) {
 			logger.error("Error while call timer method in notification");
 			e.printStackTrace();
