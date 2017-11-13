@@ -109,6 +109,12 @@ public class AsyncComponent {
 		}
 	}
 	
+	/**
+	 * FS Mail Number :- 5
+	 *  When user logout without selecting any application after two days this mail sent for remainder
+	 * @param userId :- FS Login UserId
+	 * This Method Called From LoanApplicationController
+	 */
 	@Async
 	private void sendRemainderMailWhenUserHasNoApplication(Long userId,Map<String, Object> parameters,String[] toIds) {
 		logger.info("start Sent remainder Mail when user not fill any application till 2 days ------->");
@@ -125,14 +131,13 @@ public class AsyncComponent {
 						sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY_REMAINDER,null,false,null);
 						logger.info("Logout Immediately remainder,Successfully sent mail to this email ===>" + toIds);
 					} catch (NotificationException e) {
-						logger.error("Error while send mail in notfication");
+						logger.error("Error while sent logout immediately reminder mail");
 						e.printStackTrace();
 					}
 				}
-			}, 180000);
-			//172800000
+			}, 172800000);
 		} catch (Exception e) {
-			logger.error("Error while call timer method in notification");
+			logger.error("Error while sent logout immediately reminder mail");
 			e.printStackTrace();
 		}
 	}
