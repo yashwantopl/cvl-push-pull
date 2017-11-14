@@ -72,6 +72,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private CorporateCoApplicantService coApplicantService;
 	
 	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 
@@ -532,6 +533,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
 	}
+	
+	@Override
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
 		boolean msmeScoreRequired= false;
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(msmeScoreRequest.getApplicationId());
