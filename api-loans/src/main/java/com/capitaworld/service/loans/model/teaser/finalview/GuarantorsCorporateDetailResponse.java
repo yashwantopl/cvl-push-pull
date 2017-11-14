@@ -1,18 +1,6 @@
-package com.capitaworld.service.loans.model;
+package com.capitaworld.service.loans.model.teaser.finalview;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-
-/**
- * @author Sanket
- *
- */
-public class GuarantorsCorporateDetailRequest implements Serializable{
-	
-	/**
-	 * 
-	 */
+public class GuarantorsCorporateDetailResponse {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -27,11 +15,11 @@ public class GuarantorsCorporateDetailRequest implements Serializable{
 
 	private String propertyType;
 	
-	private Integer industrylist;
+	private String industrylist;
 
-	private Integer sectorlist;
+	private String sectorlist;
 	
-	private Integer constitutionId;
+	private String constitutionId;
 	
 	private String panNo;
 	
@@ -89,27 +77,27 @@ public class GuarantorsCorporateDetailRequest implements Serializable{
 		this.propertyType = propertyType;
 	}
 
-	public Integer getIndustrylist() {
+	public String getIndustrylist() {
 		return industrylist;
 	}
 
-	public void setIndustrylist(Integer industrylist) {
+	public void setIndustrylist(String industrylist) {
 		this.industrylist = industrylist;
 	}
 
-	public Integer getSectorlist() {
+	public String getSectorlist() {
 		return sectorlist;
 	}
 
-	public void setSectorlist(Integer sectorlist) {
+	public void setSectorlist(String sectorlist) {
 		this.sectorlist = sectorlist;
 	}
 
-	public Integer getConstitutionId() {
+	public String getConstitutionId() {
 		return constitutionId;
 	}
 
-	public void setConstitutionId(Integer constitutionId) {
+	public void setConstitutionId(String constitutionId) {
 		this.constitutionId = constitutionId;
 	}
 

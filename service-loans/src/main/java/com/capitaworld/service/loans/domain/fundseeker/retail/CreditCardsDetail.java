@@ -61,6 +61,19 @@ public class CreditCardsDetail implements Serializable {
 
 	@Column(name="outstanding_balance")
 	private Double outstandingBalance;
+	
+	//UNSECURED LOAN	
+	@Column(name="issuing_bank")
+	private String issuingBank;
+	
+	@Column(name = "year_of_issue")
+	private Integer yearOfIssue;
+	
+	@Column(name = "year_of_expiry")
+	private Integer yearOfExpiry;
+	
+	@Column(name = "card_limit")
+	private Long cardLimit;
 
 	public CreditCardsDetail() {
 	}
@@ -168,5 +181,39 @@ public class CreditCardsDetail implements Serializable {
 	public void setOutstandingBalance(Double outstandingBalance) {
 		this.outstandingBalance = outstandingBalance;
 	}
+
+	public String getIssuingBank() {
+		return issuingBank;
+	}
+
+	public void setIssuingBank(String issuingBank) {
+		this.issuingBank = issuingBank;
+	}
+
+	public Integer getYearOfIssue() {
+		return yearOfIssue;
+	}
+
+	public void setYearOfIssue(Integer yearOfIssue) {
+		this.yearOfIssue = yearOfIssue;
+	}
+
+	public Integer getYearOfExpiry() {
+		return yearOfExpiry;
+	}
+
+	public void setYearOfExpiry(Integer yearOfExpiry) {
+		this.yearOfExpiry = yearOfExpiry;
+	}
+
+	public Long getCardLimit() {
+		return cardLimit;
+	}
+
+	public void setCardLimit(Long cardLimit) {
+		this.cardLimit = cardLimit;
+	}
+	
+	
 
 }

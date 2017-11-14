@@ -25,6 +25,8 @@ import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -33,6 +35,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndus
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 //import com.capitaworld.service.rating.model.CompanyDetails;
 //import com.capitaworld.service.rating.model.RatingResponse;
@@ -66,6 +69,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 	
 	@Autowired
+	private CorporateCoApplicantService coApplicantService;
+	
+	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 
@@ -101,6 +108,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
+			
+			//save co-applicant details
+			for (CorporateCoApplicantRequest request : applicantRequest.getCoApplicants()) {
+				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
+			}
+			
+			
 			// industry data save
 			saveIndustry(applicantDetail.getApplicationId().getId(), applicantRequest.getIndustrylist());
 			// Sector data save
@@ -141,6 +155,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -513,6 +528,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return null;
 	}
 
+	@Override
+	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
+		// TODO Auto-generated method stub
+		return coApplicantService.getList(applicationId, userId);
+	}
+	
 	@Override
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
 		boolean msmeScoreRequired= false;

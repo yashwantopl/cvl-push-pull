@@ -1,9 +1,7 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,16 +16,12 @@ import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
-
-/**
- * The persistent class for the fs_corporate_guarantors_corporate_details database table.
- * 
- */
 @Entity
-@Table(name="fs_corporate_guarantors_corporate_details")
-public class GuarantorsCorporateDetail implements Serializable {
+@Table(name="fs_corporate_unsecured_guarantor_detail")
+public class UnsecuredGuarantorDetail implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -35,7 +29,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
-
+	
 	@Column(name="created_by")
 	private Long createdBy;
 
@@ -45,50 +39,40 @@ public class GuarantorsCorporateDetail implements Serializable {
 
 	@Column(name="is_active")
 	private Boolean isActive;
-
+	
 	@Column(name="modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
-
+	
+	@Column(name="name")
 	private String name;
-
-	private String occupation;
-
-	@Column(name="properties_owned")
-	private String propertiesOwned;
-
-	@Column(name="property_type")
-	private String propertyType;
 	
-	@Column(name="industry_list")
-	private Integer industrylist;
-
-	@Column(name="sector_list")
-	private Integer sectorlist;
-	
-	@Column(name = "constitution_id")
+	@Column(name="constitution_id")
 	private Integer constitutionId;
 	
-	@Column(name = "pan")
-	private String panNo;
+	@Column(name="pan")
+	private String pan;
 	
-	@Column(name = "profit_after_tax")
+	@Column(name="industry")
+	private String industry;
+	
+	@Column(name="sector")
+	private String sector;
+	
+	@Column(name="profit_after_tax")
 	private String profitAfterTax;
 	
-	@Column(name = "address")
+	@Column(name="address")
 	private String address;
 	
-	@Column(name = "contact_number")
+	@Column(name="contact_number")
 	private String contactNumber;
 
-	public GuarantorsCorporateDetail() {
-	}
-
 	public Long getId() {
-		return this.id;
+		return id;
 	}
 
 	public void setId(Long id) {
@@ -96,7 +80,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public LoanApplicationMaster getApplicationId() {
-		return this.applicationId;
+		return applicationId;
 	}
 
 	public void setApplicationId(LoanApplicationMaster applicationId) {
@@ -104,7 +88,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public Long getCreatedBy() {
-		return this.createdBy;
+		return createdBy;
 	}
 
 	public void setCreatedBy(Long createdBy) {
@@ -112,7 +96,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public Date getCreatedDate() {
-		return this.createdDate;
+		return createdDate;
 	}
 
 	public void setCreatedDate(Date createdDate) {
@@ -120,7 +104,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public Boolean getIsActive() {
-		return this.isActive;
+		return isActive;
 	}
 
 	public void setIsActive(Boolean isActive) {
@@ -128,7 +112,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public Long getModifiedBy() {
-		return this.modifiedBy;
+		return modifiedBy;
 	}
 
 	public void setModifiedBy(Long modifiedBy) {
@@ -136,7 +120,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public Date getModifiedDate() {
-		return this.modifiedDate;
+		return modifiedDate;
 	}
 
 	public void setModifiedDate(Date modifiedDate) {
@@ -144,51 +128,11 @@ public class GuarantorsCorporateDetail implements Serializable {
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getOccupation() {
-		return this.occupation;
-	}
-
-	public void setOccupation(String occupation) {
-		this.occupation = occupation;
-	}
-
-	public String getPropertiesOwned() {
-		return this.propertiesOwned;
-	}
-
-	public void setPropertiesOwned(String propertiesOwned) {
-		this.propertiesOwned = propertiesOwned;
-	}
-
-	public String getPropertyType() {
-		return this.propertyType;
-	}
-
-	public void setPropertyType(String propertyType) {
-		this.propertyType = propertyType;
-	}
-
-	public Integer getIndustrylist() {
-		return industrylist;
-	}
-
-	public void setIndustrylist(Integer industrylist) {
-		this.industrylist = industrylist;
-	}
-
-	public Integer getSectorlist() {
-		return sectorlist;
-	}
-
-	public void setSectorlist(Integer sectorlist) {
-		this.sectorlist = sectorlist;
 	}
 
 	public Integer getConstitutionId() {
@@ -199,12 +143,28 @@ public class GuarantorsCorporateDetail implements Serializable {
 		this.constitutionId = constitutionId;
 	}
 
-	public String getPanNo() {
-		return panNo;
+	public String getPan() {
+		return pan;
 	}
 
-	public void setPanNo(String panNo) {
-		this.panNo = panNo;
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public String getIndustry() {
+		return industry;
+	}
+
+	public void setIndustry(String industry) {
+		this.industry = industry;
+	}
+
+	public String getSector() {
+		return sector;
+	}
+
+	public void setSector(String sector) {
+		this.sector = sector;
 	}
 
 	public String getProfitAfterTax() {
@@ -231,6 +191,4 @@ public class GuarantorsCorporateDetail implements Serializable {
 		this.contactNumber = contactNumber;
 	}
 
-	
-	
 }
