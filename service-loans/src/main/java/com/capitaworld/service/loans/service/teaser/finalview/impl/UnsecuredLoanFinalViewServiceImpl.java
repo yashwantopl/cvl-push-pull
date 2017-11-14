@@ -18,8 +18,10 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -61,6 +63,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Availabilit
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
@@ -264,6 +267,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	private CorporateCoApplicantService corporateCoApplicantService;
 	
 	@Autowired
+	private CorporateCoApplicantRepository corporateCoApplicantRepository;
+	
+	@Autowired
 	private BankAccountHeldDetailService bankAccountHeldDetailService;
 	
 	@Autowired
@@ -354,43 +360,53 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			e.printStackTrace();
 		}
 		
-		//CO-APPLICANT
-		try {
-			response.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ITR)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_Form_16(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_FORM_16)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_CO_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
+		
+		List<CorporateCoApplicantDetail> coApplicantDetails = corporateCoApplicantRepository.getList(toApplicationId, userId);
+		if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
+		
+			for (CorporateCoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				try {
+					response.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+							coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ITR));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_Form_16(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_FORM_16));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
 
+			}
+		}
+		//CO-APPLICANT
+		
 		
 		/*try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
