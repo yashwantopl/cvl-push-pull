@@ -13,6 +13,16 @@ public class CreditCardsDetailResponse implements Serializable{
 	private String creditCardTypes;
 	private String issuerName;
 	private String outstandingBalance;
+	
+	//UNSECURED LOAN	
+	private String issuingBank;
+	
+	private String yearOfIssue;
+	
+	private String yearOfExpiry;
+	
+	private String cardLimit;
+
 	public String getCardNumber() {
 		return cardNumber;
 	}
@@ -36,6 +46,30 @@ public class CreditCardsDetailResponse implements Serializable{
 	}
 	public void setOutstandingBalance(String outstandingBalance) {
 		this.outstandingBalance = outstandingBalance;
+	}
+	public String getIssuingBank() {
+		return issuingBank;
+	}
+	public void setIssuingBank(String issuingBank) {
+		this.issuingBank = issuingBank;
+	}
+	public String getYearOfIssue() {
+		return yearOfIssue;
+	}
+	public void setYearOfIssue(String yearOfIssue) {
+		this.yearOfIssue = yearOfIssue;
+	}
+	public String getYearOfExpiry() {
+		return yearOfExpiry;
+	}
+	public void setYearOfExpiry(String yearOfExpiry) {
+		this.yearOfExpiry = yearOfExpiry;
+	}
+	public String getCardLimit() {
+		return cardLimit;
+	}
+	public void setCardLimit(String cardLimit) {
+		this.cardLimit = cardLimit;
 	}
 	
 	

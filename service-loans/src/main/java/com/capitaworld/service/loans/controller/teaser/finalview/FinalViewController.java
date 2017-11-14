@@ -23,12 +23,14 @@ import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewRes
 import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.TermLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.UnsecuredLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.WorkingCapitalFinalViewResponse;
 import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.client.UsersClient;
@@ -56,6 +58,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 
 	@Autowired
 	private TermLoanFinalViewService tlFinalViewService;
+	
+	@Autowired
+	private UnsecuredLoanFinalViewService unsecuredLoanFinalViewService;
 
 	@Autowired
 	private LapFinalViewService lapFinalViewService;
@@ -424,6 +429,68 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					loansResponse.setStatus(HttpStatus.OK.value());
 				}else{
 					loansResponse.setMessage("No data found for Term Loan final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} catch (Exception e) {
+				loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
+	
+	@GetMapping(value = "/UnsecuredLoan/{toApplicationId}")
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+		LoansResponse loansResponse = new LoansResponse();
+		//get user id from http servlet request
+		Long userId = null;
+		Integer userType = null;
+		
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}	
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+			}
+			
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
+
+		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		}else {
+			UnsecuredLoanFinalViewResponse unsecuredLoanFinalViewResponse = null;
+			try {
+				unsecuredLoanFinalViewResponse = unsecuredLoanFinalViewService.getUnsecuredLoanFinalViewDetails(toApplicationId,userType,userId);
+				if(!CommonUtils.isObjectNullOrEmpty(unsecuredLoanFinalViewResponse)){
+					loansResponse.setData(unsecuredLoanFinalViewResponse);
+					loansResponse.setMessage("Unsecured Loan Final Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}else{
+					loansResponse.setMessage("No data found for Unsecured Loan final view");
 					loansResponse.setStatus(HttpStatus.OK.value());
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

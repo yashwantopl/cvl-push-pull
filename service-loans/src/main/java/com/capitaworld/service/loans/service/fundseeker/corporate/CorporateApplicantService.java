@@ -7,7 +7,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest
 import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.CompanyDetails;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public interface CorporateApplicantService {
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception;
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
 	
-	public CompanyDetails getCompanyDetails(Long applicationId,Long userId)throws Exception;
+	//public CompanyDetails getCompanyDetails(Long applicationId,Long userId)throws Exception;
 	
 	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
 	

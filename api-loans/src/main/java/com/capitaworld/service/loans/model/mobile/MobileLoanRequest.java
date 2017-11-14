@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.mobile;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class MobileLoanRequest implements Serializable{
 
@@ -11,6 +12,9 @@ public class MobileLoanRequest implements Serializable{
 	private Long userType;
 	private Long id;
 	private Integer productId;
+	private Date fromDate;
+	private Date toDate;
+	
 	
 	public MobileLoanRequest() {
 		
@@ -33,6 +37,13 @@ public class MobileLoanRequest implements Serializable{
 		this.userId = userId;
 		this.userType = userType;
 		this.productId = productId;
+	}
+	
+	public MobileLoanRequest(Long userType,Date fromDate,Date toDate) {
+		super();
+		this.userType = userType;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
 	}
 	
 	public Long getApplicationId() {
@@ -70,6 +81,22 @@ public class MobileLoanRequest implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
 	}
 	
 	

@@ -46,6 +46,7 @@ import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
@@ -81,6 +82,7 @@ import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.capitaworld.service.users.model.mobile.MobileUserRequest;
 
 @Service
 @Transactional
@@ -727,9 +729,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
-				boolean isAnythingIsNull = CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
+				boolean isAnythingIsNull=false;
+				if(applicationMaster.getProductId()==LoanType.UNSECURED_LOAN.getValue())
+				{
+					isAnythingIsNull =  CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
+							applicationMaster.getIsApplicantFinalFilled(),
+							applicationMaster.getIsFinalUploadFilled());
+				}
+				else
+				{
+				isAnythingIsNull = CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
 						applicationMaster.getIsApplicantFinalFilled(), applicationMaster.getIsFinalDprUploadFilled(),
 						applicationMaster.getIsFinalUploadFilled());
+				}
 				if (isAnythingIsNull)
 					return false;
 
@@ -2037,9 +2049,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(Long userType) {
-
-		UserResponse userResponse = userClient.getRegisterdUserList(userType);
+	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest) {
+		UserResponse userResponse = userClient.getRegisterdUserList(new MobileUserRequest(loanRequest.getUserType(), loanRequest.getFromDate(), loanRequest.getToDate()));
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
 		for (Object user : userList) {
@@ -2055,7 +2066,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.add(users);
 				continue;
 			}
-			if (userType.intValue() == CommonUtils.UserType.FUND_SEEKER) {
+			if (loanRequest.getUserType().intValue() == CommonUtils.UserType.FUND_SEEKER) {
 				List<JSONObject> jsonList = new ArrayList<>();
 				List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(users.getUserId());
 				for (LoanApplicationMaster loanMstr : userLoans) {

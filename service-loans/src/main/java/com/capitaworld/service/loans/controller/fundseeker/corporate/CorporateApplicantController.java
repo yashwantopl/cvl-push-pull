@@ -22,15 +22,16 @@ import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
+//import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.rating.RatingClient;
-import com.capitaworld.service.rating.model.CompanyDetails;
-import com.capitaworld.service.rating.model.RatingResponse;
+//import com.capitaworld.service.rating.RatingClient;
+//import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
 @RequestMapping("/fs_profile")
@@ -44,8 +45,8 @@ public class CorporateApplicantController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 	
-	@Autowired
-	private RatingClient ratingClient;
+	/*@Autowired
+	private RatingClient ratingClient;*/
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -324,7 +325,7 @@ public class CorporateApplicantController {
 		}
 	}
 	
-	@RequestMapping(value = "/isMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/isMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveIsMsmeScoreREquired(@RequestBody MsmeScoreRequest request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			Long userId = null;
@@ -359,7 +360,7 @@ public class CorporateApplicantController {
 			logger.error("Error while getting msme score==>", e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+	}*/
 	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
