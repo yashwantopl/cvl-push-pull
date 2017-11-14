@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.config;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
@@ -84,7 +85,11 @@ public class AsyncComponent {
 		try {
 			Long totalApplication = loanApplicationService.getTotalUserApplication(userId);
 			if(totalApplication > 0) {
-				logger.info("Exits,User has more then one application");
+				if(totalApplication == 1) {
+					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
+					sentMailWhenUserLogoutWithoutFillingFirstProfileData(userId);	
+				}
+				logger.info("Exits,User has more then one application ====>" + totalApplication);
 				return;
 			}
 			logger.info("Call user client for get email and name by user id");
@@ -110,10 +115,53 @@ public class AsyncComponent {
 	}
 	
 	/**
+	 * FS Mail Number :- 6
+	 *  When user logout without filling first profile details
+	 * @param userId :- FS Login UserId
+	 * This Method Called From sendMailWhenUserHasNoApplication method
+	 */
+	@Async
+	private void sentMailWhenUserLogoutWithoutFillingFirstProfileData(Long userId) {
+		logger.info("Start sent mail process for user logout withour filled first application profile details");
+		try {
+			List<LoanApplicationRequest> loanApplicationRequestList = loanApplicationService.getList(userId);
+			if(loanApplicationRequestList.size() > 1 || loanApplicationRequestList.size() == 0) {
+				logger.info("User has more one application or not application list========>"+loanApplicationRequestList.size());
+				return;
+			}
+			LoanApplicationRequest loanApplicationRequest = loanApplicationRequestList.get(0);
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest)) {
+				UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+					@SuppressWarnings("unchecked")
+					UsersRequest request = MultipleJSONObjectHelper
+	    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+	    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+	    				Map<String, Object> parameters = new HashMap<String, Object>();
+	    				parameters.put("fs_name", request.getName());
+	    				parameters.put("application_id", loanApplicationRequest.getApplicationCode());
+	    				String[] toIds = {request.getEmail()};
+	    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS,null,false,null);
+	    				logger.info("Exits, Successfully sent mail when user not filled first profile data ---->"+request.getEmail());
+	    			}
+	    		} else {
+	    			logger.info("User response null while getting email id and user type");
+	    		}
+			} else {
+				logger.info("LoanAoplicationRequest object null or empty");	
+			}
+		} catch(Exception e){
+			logger.info("Throw Exception while sent Mail When User Logout Without Filling First Profile Data");
+		}
+		
+	}
+	
+	
+	/**
 	 * FS Mail Number :- 5
 	 *  When user logout without selecting any application after two days this mail sent for remainder
 	 * @param userId :- FS Login UserId
-	 * This Method Called From LoanApplicationController
+	 * This Method Called From sendMailWhenUserHasNoApplication method
 	 */
 	@Async
 	private void sendRemainderMailWhenUserHasNoApplication(Long userId,Map<String, Object> parameters,String[] toIds) {
