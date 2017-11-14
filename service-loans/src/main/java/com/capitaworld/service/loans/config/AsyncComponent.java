@@ -98,12 +98,46 @@ public class AsyncComponent {
     				String[] toIds = {request.getEmail()};
     				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,null,false,null);
     				logger.info("Exits, Successfully sent mail when user has no application ---->"+request.getEmail());
+    				sendRemainderMailWhenUserHasNoApplication(userId,parameters,toIds);
     			}
     		} else {
     			logger.info("User response null while getting email id and user type");
     		}
 		} catch(Exception e) {
 			logger.info("Throw exception while sending mail, logout immediately");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * FS Mail Number :- 5
+	 *  When user logout without selecting any application after two days this mail sent for remainder
+	 * @param userId :- FS Login UserId
+	 * This Method Called From LoanApplicationController
+	 */
+	@Async
+	private void sendRemainderMailWhenUserHasNoApplication(Long userId,Map<String, Object> parameters,String[] toIds) {
+		logger.info("start Sent remainder Mail when user not fill any application till 2 days ------->");
+		try {
+			new Timer().schedule(new java.util.TimerTask() {
+				@Override
+				public void run() {
+					try {
+						Long totalApplication = loanApplicationService.getTotalUserApplication(userId);
+						if(totalApplication > 0) {
+							logger.info("Logout Immediately remainder, Exits method when User has more then one application");
+							return;
+						}
+						sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_IMMEDIATELY_REMAINDER,null,false,null);
+						logger.info("Logout Immediately remainder,Successfully sent mail to this email ===>" + toIds);
+					} catch (NotificationException e) {
+						logger.error("Error while sent logout immediately reminder mail");
+						e.printStackTrace();
+					}
+				}
+			}, 172800000);
+		} catch (Exception e) {
+			logger.error("Error while sent logout immediately reminder mail");
 			e.printStackTrace();
 		}
 	}
@@ -145,7 +179,7 @@ public class AsyncComponent {
 	@SuppressWarnings("unchecked")
 	@Async
 	public void sendMailForFirstTimeUserViewMatches(Long applicationId,Long userId) {
-		logger.info("Enter in sending mail when user go first time in matches page----" +NotificationTemplate.PRIMARY_FILL_COMPLETE.getValue());
+		logger.info("Enter in sending mail when user go first time in matches page----" +NotificationTemplate.FS_GO_MATCHES_PAGE.getValue());
 		try {
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
@@ -154,7 +188,7 @@ public class AsyncComponent {
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				Map<String, Object> parameters = getFSMapData(userId,applicationId);
     				String[] toIds = {request.getEmail()};
-    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.PRIMARY_FILL_COMPLETE,null,true,300000);
+    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FS_GO_MATCHES_PAGE,null,true,300000);
     				logger.info("Exits, Successfully sent mail when user go first time in matches page---->"+request.getEmail());
     			}
     		}

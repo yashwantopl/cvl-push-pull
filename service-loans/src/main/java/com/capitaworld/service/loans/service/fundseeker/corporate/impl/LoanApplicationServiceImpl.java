@@ -2052,6 +2052,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if(CommonUtils.isObjectNullOrEmpty(users)) {
+				continue;
+			}
+			if(CommonUtils.CW_SP_USER_ID.equals(users.getUserId())) {
+				continue;
+			}
 			if (!users.getIsOtpVerified()) {
 				response.add(users);
 				continue;
@@ -2154,6 +2160,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
 		for (LinkedHashMap<String, Object> data : dataList) {
 			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if(CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
 			listOfObjects.add(userRequest);
 		}
 		List<Long> userIds = new ArrayList<>();
@@ -2184,7 +2193,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					response.setCurrency(CommonDocumentUtils.getCurrency(loanApplicationMaster.getCurrencyId()));
 					if (loanApplicationMaster.getCurrencyId().equals(Currency.RUPEES.getId())) {
 						response.setAmounInRuppes(true);
-						double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(
+						Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(
 								loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 						response.setAbsoluteAmount(absoluteAmount);
 						response.setAbsoluteDisplayAmount(absoluteAmount);

@@ -72,7 +72,7 @@ public class MatchesController {
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
 				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
 				if(CommonUtils.UserType.FUND_SEEKER == userType){
-					logger.info("Start Sending Mail To Fs for Profile and primary fill complete");
+					logger.info("Start Sending Mail To Fs Corporate for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
 				return new ResponseEntity<LoansResponse>(
@@ -98,7 +98,8 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFSRetail");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -114,6 +115,10 @@ public class MatchesController {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfRetailFundSeeker(matchRequest);
 			CommonDocumentUtils.endHook(logger, "matchFSRetail");
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
+				if(CommonUtils.UserType.FUND_SEEKER == userType){
+					logger.info("Start Sending Mail To Fs Retails for Profile and primary fill complete");
+					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
+				}
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
 			}

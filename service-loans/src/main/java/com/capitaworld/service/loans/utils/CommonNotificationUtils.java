@@ -12,7 +12,8 @@ public class CommonNotificationUtils {
 		LOGOUT_IMMEDIATELY(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY,"Reviews",false),
 		PRIMARY_FILL_COMPLETE(NotificationAlias.EMAIL_FS_PROFILE_PRIMARY_COMPLETE,"Your Matches",false),
 		FP_VIEW_MORE_DETAILS(NotificationAlias.EMAIL_FS_FP_VIEW_MORE_DETAILS," requested for more details",true),
-		FS_GO_MATCHES_PAGE(NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE,"Matches & Connections",false);
+		FS_GO_MATCHES_PAGE(NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE,"Matches & Connections",false),
+		LOGOUT_IMMEDIATELY_REMAINDER(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER,"Remainder",false);
 		
 		private Long value;
 		private String subject;
@@ -50,6 +51,8 @@ public class CommonNotificationUtils {
 				return FP_VIEW_MORE_DETAILS; 
 			} else if(x == NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE) {
 				return FS_GO_MATCHES_PAGE; 
+			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER) {
+				return LOGOUT_IMMEDIATELY_REMAINDER; 
 			} else {
 				return null;
 			} 
