@@ -13,7 +13,8 @@ public class CommonNotificationUtils {
 		PRIMARY_FILL_COMPLETE(NotificationAlias.EMAIL_FS_PROFILE_PRIMARY_COMPLETE,"Your Matches",false),
 		FP_VIEW_MORE_DETAILS(NotificationAlias.EMAIL_FS_FP_VIEW_MORE_DETAILS," requested for more details",true),
 		FS_GO_MATCHES_PAGE(NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE,"Matches & Connections",false),
-		LOGOUT_IMMEDIATELY_REMAINDER(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER,"Remainder",false);
+		LOGOUT_IMMEDIATELY_REMAINDER(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER,"Remainder",false),
+		LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS,"Profile not filled",false);
 		
 		private Long value;
 		private String subject;
@@ -53,6 +54,8 @@ public class CommonNotificationUtils {
 				return FS_GO_MATCHES_PAGE; 
 			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER) {
 				return LOGOUT_IMMEDIATELY_REMAINDER; 
+			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS) {
+				return LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS; 
 			} else {
 				return null;
 			} 
