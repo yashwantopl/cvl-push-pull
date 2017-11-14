@@ -729,9 +729,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
-				boolean isAnythingIsNull = CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
+				boolean isAnythingIsNull=false;
+				if(applicationMaster.getProductId()==LoanType.UNSECURED_LOAN.getValue())
+				{
+					isAnythingIsNull =  CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
+							applicationMaster.getIsApplicantFinalFilled(),
+							applicationMaster.getIsFinalUploadFilled());
+				}
+				else
+				{
+				isAnythingIsNull = CommonUtils.isObjectListNull(applicationMaster.getIsFinalMcqFilled(),
 						applicationMaster.getIsApplicantFinalFilled(), applicationMaster.getIsFinalDprUploadFilled(),
 						applicationMaster.getIsFinalUploadFilled());
+				}
 				if (isAnythingIsNull)
 					return false;
 

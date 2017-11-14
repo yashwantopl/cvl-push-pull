@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
 import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredCoApplicantDetail;
 import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
@@ -53,7 +54,7 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private List<String> shortTermRating;
     private List<String> longTermRating;
     
-    private List<UnsecuredCoApplicantDetail> coApplicantList;
+    private List<CorporateCoApplicantRequest> coApplicantList;
     
     /**
      * Term Loan Primary Frame Data Fields
@@ -61,7 +62,7 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private Boolean isDprUploaded;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<AchievementDetailRequest> AchievementDetailList;
-    private List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
+    private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
     private List<OwnershipDetailResponse> ownershipDetailResponseList;
     private List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList;
     private List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList;
@@ -73,7 +74,7 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
     
     private List<BankAccountHeldDetailsRequest> bankAccountHeldDetailsRequest;
-	private List<CreditCardsDetailRequest> creditCardsDetailResponse;
+	private List<CreditCardsDetailResponse> creditCardsDetailResponse;
 	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequest;
 
 
@@ -99,7 +100,7 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
      * Term Loan Final Frame Data Fields
      */
     private List<AssociatedConcernDetailRequest> associatedConcernDetailRequests;
-    private List<UnsecuredGuarantorDetailRequest> guarantorsCorporateDetailRequestList;
+    private List<GuarantorsCorporateDetailResponse> guarantorsCorporateDetailResponseList;
     private List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList;
 
     /**
@@ -119,6 +120,16 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 	private List<Object> certificateList;
 	private List<Object> panCardList;
 
+	//CO-APPLICANT UPLOADS
+	
+	private List<Object> coApplicant_BankACStatments;
+	private List<Object> coApplicant_ItReturn;
+	private List<Object> coApplicant_BalanceSheet;
+	private List<Object> coApplicant_Form_16;
+	
+	private List<Object> coApplicant_AddressProof;
+	private List<Object> coApplicant_aadharCardList;
+	private List<Object> coApplicant_panCardList;
 
     /**
      *Final Term Loan Information
@@ -130,6 +141,7 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private String marketPosition;
     private String marketPositioningTop;
     private String marketShareTurnover;
+    
     public String getMajorlyOnGovernment() {
 		return majorlyOnGovernment;
 	}
@@ -526,12 +538,13 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     }
 
     public List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
-        return CreditRatingOrganizationDetailResponse;
-    }
+		return CreditRatingOrganizationDetailResponse;
+	}
 
-    public void setCreditRatingOrganizationDetailResponse(List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
-        CreditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
-    }
+	public void setCreditRatingOrganizationDetailResponse(
+			List<com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
+		CreditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
+	}
 
     public List<OwnershipDetailResponse> getOwnershipDetailResponseList() {
         return ownershipDetailResponseList;
@@ -613,15 +626,17 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
         this.associatedConcernDetailRequests = associatedConcernDetailRequests;
     }
 
-    public List<UnsecuredGuarantorDetailRequest> getGuarantorsCorporateDetailRequestList() {
-        return guarantorsCorporateDetailRequestList;
-    }
 
-    public void setGuarantorsCorporateDetailRequestList(List<UnsecuredGuarantorDetailRequest> guarantorsCorporateDetailRequestList) {
-        this.guarantorsCorporateDetailRequestList = guarantorsCorporateDetailRequestList;
-    }
+    public List<GuarantorsCorporateDetailResponse> getGuarantorsCorporateDetailResponseList() {
+		return guarantorsCorporateDetailResponseList;
+	}
 
-    public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailRequestList() {
+	public void setGuarantorsCorporateDetailResponseList(
+			List<GuarantorsCorporateDetailResponse> guarantorsCorporateDetailResponseList) {
+		this.guarantorsCorporateDetailResponseList = guarantorsCorporateDetailResponseList;
+	}
+
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailRequestList() {
         return monthlyTurnoverDetailRequestList;
     }
 
@@ -941,11 +956,11 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 		this.panCardList = panCardList;
 	}
 
-	public List<UnsecuredCoApplicantDetail> getCoApplicantList() {
+	public List<CorporateCoApplicantRequest> getCoApplicantList() {
 		return coApplicantList;
 	}
 
-	public void setCoApplicantList(List<UnsecuredCoApplicantDetail> coApplicantList) {
+	public void setCoApplicantList(List<CorporateCoApplicantRequest> coApplicantList) {
 		this.coApplicantList = coApplicantList;
 	}
 
@@ -957,11 +972,11 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 		this.bankAccountHeldDetailsRequest = bankAccountHeldDetailsRequest;
 	}
 
-	public List<CreditCardsDetailRequest> getCreditCardsDetailResponse() {
+	public List<CreditCardsDetailResponse> getCreditCardsDetailResponse() {
 		return creditCardsDetailResponse;
 	}
 
-	public void setCreditCardsDetailResponse(List<CreditCardsDetailRequest> creditCardsDetailResponse) {
+	public void setCreditCardsDetailResponse(List<CreditCardsDetailResponse> creditCardsDetailResponse) {
 		this.creditCardsDetailResponse = creditCardsDetailResponse;
 	}
 
@@ -971,6 +986,62 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 
 	public void setReferenceRetailDetailsRequest(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequest) {
 		this.referenceRetailDetailsRequest = referenceRetailDetailsRequest;
+	}
+
+	public List<Object> getCoApplicant_BankACStatments() {
+		return coApplicant_BankACStatments;
+	}
+
+	public void setCoApplicant_BankACStatments(List<Object> coApplicant_BankACStatments) {
+		this.coApplicant_BankACStatments = coApplicant_BankACStatments;
+	}
+
+	public List<Object> getCoApplicant_ItReturn() {
+		return coApplicant_ItReturn;
+	}
+
+	public void setCoApplicant_ItReturn(List<Object> coApplicant_ItReturn) {
+		this.coApplicant_ItReturn = coApplicant_ItReturn;
+	}
+
+	public List<Object> getCoApplicant_BalanceSheet() {
+		return coApplicant_BalanceSheet;
+	}
+
+	public void setCoApplicant_BalanceSheet(List<Object> coApplicant_BalanceSheet) {
+		this.coApplicant_BalanceSheet = coApplicant_BalanceSheet;
+	}
+
+	public List<Object> getCoApplicant_Form_16() {
+		return coApplicant_Form_16;
+	}
+
+	public void setCoApplicant_Form_16(List<Object> coApplicant_Form_16) {
+		this.coApplicant_Form_16 = coApplicant_Form_16;
+	}
+
+	public List<Object> getCoApplicant_AddressProof() {
+		return coApplicant_AddressProof;
+	}
+
+	public void setCoApplicant_AddressProof(List<Object> coApplicant_AddressProof) {
+		this.coApplicant_AddressProof = coApplicant_AddressProof;
+	}
+
+	public List<Object> getCoApplicant_aadharCardList() {
+		return coApplicant_aadharCardList;
+	}
+
+	public void setCoApplicant_aadharCardList(List<Object> coApplicant_aadharCardList) {
+		this.coApplicant_aadharCardList = coApplicant_aadharCardList;
+	}
+
+	public List<Object> getCoApplicant_panCardList() {
+		return coApplicant_panCardList;
+	}
+
+	public void setCoApplicant_panCardList(List<Object> coApplicant_panCardList) {
+		this.coApplicant_panCardList = coApplicant_panCardList;
 	}
 	
 	

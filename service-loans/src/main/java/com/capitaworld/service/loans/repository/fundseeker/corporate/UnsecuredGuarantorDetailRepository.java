@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.UnsecuredGuaran
  */
 public interface UnsecuredGuarantorDetailRepository extends JpaRepository<GuarantorsCorporateDetail, Long> {
 
-	@Query("select o from UnsecuredGuarantorDetail o where o.applicationId.id =:id and o.applicationId.userId =:userId and o.isActive = true")
-	public List<UnsecuredGuarantorDetail> listGuarantorsCorporateFromAppId(@Param("id")Long id, @Param("userId") Long userId);
+	@Query("select o from UnsecuredGuarantorDetail o where o.applicationId.id =:id and o.isActive = true")
+	public List<UnsecuredGuarantorDetail> listGuarantorsCorporateFromAppId(@Param("id")Long id);
 
 }

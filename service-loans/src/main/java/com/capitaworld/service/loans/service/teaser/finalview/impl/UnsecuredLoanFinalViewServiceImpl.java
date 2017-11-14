@@ -18,29 +18,38 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.UnsecuredGuarantorDetailRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalUnsecuredLoanRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.BoardOfDirectorsResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.CapacityDetailResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.DprUserDataDetailResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.EmployeesCategoryBreaksResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.GuarantorsCorporateDetailResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.KeyManagementResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.ProjectImplementationScheduleResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RequirementsAndAvailabilityRawMaterialsDetailResponse;
@@ -54,6 +63,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Availabilit
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
@@ -73,6 +83,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyP
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinalTermLoanService;
@@ -88,7 +99,9 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.UnsecuredGuarantorDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -97,6 +110,7 @@ import com.capitaworld.service.oneform.enums.AccountingSystems;
 import com.capitaworld.service.oneform.enums.BrandAmbassador;
 import com.capitaworld.service.oneform.enums.Competence;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
 import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
@@ -232,7 +246,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	private AssociatedConcernDetailService associatedConcernDetailService;
 
 	@Autowired
-	private UnsecuredGuarantorDetailService guarantorsCorporateDetailService;
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
 
 	@Autowired
 	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
@@ -248,7 +262,22 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 	@Autowired
 	private UsersClient usersClient;
-
+	
+	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
+	
+	@Autowired
+	private CorporateCoApplicantRepository corporateCoApplicantRepository;
+	
+	@Autowired
+	private BankAccountHeldDetailService bankAccountHeldDetailService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
+	
+	@Autowired
+	private CreditCardsDetailService creditCardsDetailService;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected static final String ONE_FORM_URL = "oneForm";
@@ -268,7 +297,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 		List<Object> dprList = new ArrayList<Object>();
 		// getting data of uploads documents and getting profile picture
-		/*try {
+		try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE));
 		} catch (DocumentException e) {
 			e.printStackTrace();
@@ -314,9 +343,72 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS));
 		}catch(DocumentException e){
 			e.printStackTrace();
-		}*/
+		}
+		try {
+			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setCertificateList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 		
-		try{
+		
+		List<CorporateCoApplicantDetail> coApplicantDetails = corporateCoApplicantRepository.getList(toApplicationId, userId);
+		if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
+		
+			for (CorporateCoApplicantDetail coApplicantDetail : coApplicantDetails) {
+				try {
+					response.setCoApplicant_BankACStatments(documentManagementService.getDocumentDetails(
+							coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
+							DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ITR));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_Form_16(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_FORM_16));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				try {
+					response.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+		//CO-APPLICANT
+		
+		
+		/*try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
 			response.setDprList(dprList);
 		}catch(DocumentException e){
@@ -341,24 +433,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DPR_YOUR_FORMAT)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
-		}
-		try {
-			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCertificateList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-
-		// if DPR our format not upload no need get data of DPR
+		}*/
+		
+		/*// if DPR our format not upload no need get data of DPR
 		if (dprList.size() > 0) {
 			response.setIsDprUploaded(true);
 			// getting data of DPR
@@ -409,7 +486,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 		}else{
 			response.setIsDprUploaded(false);
-		}
+		}*/
 	
 
 		// set final working capital information
@@ -656,7 +733,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+       userType = CommonUtils.ApplicantType.APPLICANT;
 		// get industry sectors
 		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
 		List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
@@ -934,12 +1011,70 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 		// get data of Details of Guarantors
 		try {
-			response.setGuarantorsCorporateDetailRequestList(
-					guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Details of Guarantor {}", e);
-		}
+            List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList= guarantorsCorporateDetailService
+					.getGuarantorsCorporateDetailList(toApplicationId, userId);
+			List<GuarantorsCorporateDetailResponse> guarantorsCorporateDetailResponseList = new ArrayList<>();
+			for (GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest: guarantorsCorporateDetailRequestList) {
+				GuarantorsCorporateDetailResponse guarantorsCorporateDetailResponse= new GuarantorsCorporateDetailResponse();
+				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetailResponse);
+				
+				//set industry
+				if(!CommonUtils.isObjectListNull(guarantorsCorporateDetailRequest.getIndustrylist()))
+				{
+				try {
+					List<Long> industryId = new ArrayList<>();
+					industryId.add((long)guarantorsCorporateDetailRequest.getIndustrylist());
+					
+					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(industryId);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						guarantorsCorporateDetailResponse.setIndustrylist(masterResponse.getValue());
+					} else {
+						guarantorsCorporateDetailResponse.setIndustrylist("NA");
+					}
 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				}
+				
+				//set industry
+				if(!CommonUtils.isObjectListNull(guarantorsCorporateDetailRequest.getSectorlist()))
+				{
+				try {
+					List<Long> sectorId = new ArrayList<>();
+					sectorId.add((long)guarantorsCorporateDetailRequest.getSectorlist());
+					
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(sectorId);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						guarantorsCorporateDetailResponse.setSectorlist(masterResponse.getValue());
+					} else {
+						guarantorsCorporateDetailResponse.setSectorlist("NA");
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				}
+				
+				if(!CommonUtils.isObjectListNull(guarantorsCorporateDetailRequest.getConstitutionId()))
+				{
+					guarantorsCorporateDetailResponse.setConstitutionId(Constitution.getById(guarantorsCorporateDetailRequest.getConstitutionId()).getValue());
+				}
+				
+				guarantorsCorporateDetailResponseList.add(guarantorsCorporateDetailResponse);
+			}
+			response.setGuarantorsCorporateDetailResponseList(guarantorsCorporateDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Credit Rating {}", e);
+		}
 		// get data of Monthly Turnover
 		try {
 			response.setMonthlyTurnoverDetailRequestList(
@@ -947,6 +1082,55 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Monthly Turnover {}", e);
 		}
+		
+		//setting co-application details
+        List<CorporateCoApplicantRequest> coApplicantResponse = null;
+        try {
+            coApplicantResponse = corporateCoApplicantService.getList(toApplicationId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        response.setCoApplicantList(coApplicantResponse);
+        
+        //setting bank account details
+        try {
+			response.setBankAccountHeldDetailsRequest(bankAccountHeldDetailService.getExistingLoanDetailList(toApplicationId, userType));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Bank account {}", e);
+		}
+        
+        //credit card
+		List<CreditCardsDetailRequest> creditCardsDetailRequestList = null;
+		try {
+			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, userType);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
+		CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
+		for(CreditCardsDetailRequest cardsDetailRequest:creditCardsDetailRequestList){
+			//BeanUtils.copyProperties(cardsDetailRequest, cardsDetailResponse);
+			cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : "-");
+			cardsDetailResponse.setIssuingBank(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuingBank()) ? cardsDetailRequest.getIssuingBank() : "-");
+			cardsDetailResponse.setYearOfIssue(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getYearOfIssue()) ?  cardsDetailRequest.getYearOfIssue().toString():"-");
+			cardsDetailResponse.setYearOfExpiry(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getYearOfExpiry()) ?  cardsDetailRequest.getYearOfExpiry().toString():"-");
+			cardsDetailResponse.setCardLimit(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardLimit()) ? cardsDetailRequest.getCardLimit().toString(): "-");
+			creditCardsDetailResponseList.add(cardsDetailResponse);
+		}
+        
+		response.setCreditCardsDetailResponse(creditCardsDetailResponseList);
+        
+        //references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		response.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
+
 		return response;
 	}
 		
