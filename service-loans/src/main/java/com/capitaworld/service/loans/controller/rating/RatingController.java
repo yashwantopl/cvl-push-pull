@@ -1,5 +1,5 @@
 package com.capitaworld.service.loans.controller.rating;
-
+/*
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -218,4 +218,7 @@ public class RatingController {
 	}
 	
 	
+}*/
+
+public class RatingController {
 }

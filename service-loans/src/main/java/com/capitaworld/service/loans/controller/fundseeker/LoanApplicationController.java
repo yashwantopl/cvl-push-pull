@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
+import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -807,12 +808,12 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/getUsersRegisteredLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody Long userType) {
+	public ResponseEntity<LoansResponse> getUsersRegisteredLoanDetails(@RequestBody MobileLoanRequest loanRequest) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForSignUpUserList");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails(userType));
+			loansResponse.setListData(loanApplicationService.getUsersRegisteredLoanDetails(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForSignUpUserList==>", e);

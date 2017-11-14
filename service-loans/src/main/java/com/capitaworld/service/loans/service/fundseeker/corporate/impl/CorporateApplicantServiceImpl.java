@@ -37,8 +37,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRe
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.rating.model.CompanyDetails;
-import com.capitaworld.service.rating.model.RatingResponse;
+//import com.capitaworld.service.rating.model.CompanyDetails;
+//import com.capitaworld.service.rating.model.RatingResponse;
 
 @Service
 @Transactional
@@ -72,6 +72,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private CorporateCoApplicantService coApplicantService;
 	
 	@Autowired
+	private CorporateCoApplicantService corporateCoApplicantService;
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 
@@ -532,6 +533,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
 	}
+	
+	@Override
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
 		boolean msmeScoreRequired= false;
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(msmeScoreRequest.getApplicationId());
@@ -546,7 +549,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return msmeScoreRequired;
 	}
 
-	@Override
+/*	@Override
 	public CompanyDetails getCompanyDetails(Long applicationId, Long userId) throws Exception {
 		CorporateApplicantDetail corp = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		CompanyDetails companyDetails = new CompanyDetails();
@@ -554,7 +557,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		companyDetails.setPan(corp.getPanNo());
 		companyDetails.setUserId(userId);
 		return companyDetails;
-	}
+	}*/
 
 	@Override
 	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
