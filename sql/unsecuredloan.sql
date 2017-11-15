@@ -48,37 +48,39 @@ CREATE TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details` (
 DROP TABLE IF EXISTS `loan_applications`.`fs_corporate_co_applicant_details`;
 
 CREATE TABLE `loan_applications`.`fs_corporate_co_applicant_details` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `application_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-  `organisation_name` VARCHAR(100) DEFAULT '',
-  `pan` VARCHAR(10) DEFAULT NULL,
-  `landline_no` VARCHAR(20) DEFAULT NULL, 
-  `registered_premise_number` VARCHAR(200) DEFAULT NULL,
-  `registered_street_name` VARCHAR(200) DEFAULT NULL,
-  `registered_land_mark` VARCHAR(200) DEFAULT NULL,
-  `registered_city_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-  `registered_state_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-  `registered_country_id` INT(20) UNSIGNED DEFAULT NULL,
-  `registered_pincode` INT(10) DEFAULT NULL,
-  `same_as` BIT(1) DEFAULT b'0',
-  `administrative_premise_number` VARCHAR(100) DEFAULT NULL,
-  `administrative_street_name` VARCHAR(100) DEFAULT NULL,
-  `administrative_land_mark` VARCHAR(100) DEFAULT NULL,
-  `administrative_city_id` BIGINT(20) UNSIGNED DEFAULT NULL,
-  `administrative_state_id` INT(20) UNSIGNED DEFAULT NULL,
-  `administrative_country_id` INT(20) UNSIGNED DEFAULT NULL,
-  `administrative_pincode` INT(10) DEFAULT NULL,  
-  `relationship_with_applicant` INT(2) UNSIGNED DEFAULT NULL,  
-  `monthly_income` DOUBLE DEFAULT NULL,
-  `created_by` BIGINT(20) DEFAULT NULL,
-  `modified_by` BIGINT(20) DEFAULT NULL,
-  `created_date` DATETIME DEFAULT NULL,
-  `modified_date` DATETIME DEFAULT NULL,
-  `is_active` BIT(1) DEFAULT b'0',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `organisation_name` varchar(100) DEFAULT '',
+  `pan` varchar(10) DEFAULT NULL,
+  `landline_no` varchar(20) DEFAULT NULL,
+  `registered_premise_number` varchar(200) DEFAULT NULL,
+  `registered_street_name` varchar(200) DEFAULT NULL,
+  `registered_land_mark` varchar(200) DEFAULT NULL,
+  `registered_city_id` bigint(20) unsigned DEFAULT NULL,
+  `registered_state_id` bigint(20) unsigned DEFAULT NULL,
+  `registered_country_id` int(20) unsigned DEFAULT NULL,
+  `registered_pincode` int(10) DEFAULT NULL,
+  `same_as` bit(1) DEFAULT b'0',
+  `administrative_premise_number` varchar(100) DEFAULT NULL,
+  `administrative_street_name` varchar(100) DEFAULT NULL,
+  `administrative_land_mark` varchar(100) DEFAULT NULL,
+  `administrative_city_id` bigint(20) unsigned DEFAULT NULL,
+  `administrative_state_id` int(20) unsigned DEFAULT NULL,
+  `administrative_country_id` int(20) unsigned DEFAULT NULL,
+  `administrative_pincode` int(10) DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` bit(1) DEFAULT b'0',
+  `relationship_with_applicant` int(2) unsigned DEFAULT NULL,
+  `aadhar_number` varchar(20) DEFAULT NULL,
+  `monthly_income` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `corp_app_application_id_fk1` (`application_id`),
   CONSTRAINT `corp_co_app_application_id_fk1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`)
-) ENGINE=INNODB AUTO_INCREMENT=247 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=260 DEFAULT CHARSET=latin1;
+
 
 
 DROP TABLE IF EXISTS `loan_applications`.`fp_unsecure_loan_details`;
@@ -161,25 +163,6 @@ CREATE TABLE `loan_applications`.`fs_corporate_unsecured_guarantor_detail` (
   
   
   
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('276','9','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('277','10','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('278','11','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('279','12','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('280','13','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('281','1','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('282','2','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('283','3','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('284','14','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('285','15','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('286','16','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('287','42','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('288','86','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('289','87','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('290','45','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('291','46','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('292','30','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-insert into `loan_applications`.`product_document_mapping` (`id`, `document_id`, `product_id`, `is_mandatory`, `limit`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) values('293','31','15','',NULL,'2017-11-08 13:13:58','2017-11-08 13:13:58',NULL,NULL,'');
-
 
 
 
