@@ -131,6 +131,12 @@ public class AsyncComponent {
 			}
 			LoanApplicationRequest loanApplicationRequest = loanApplicationRequestList.get(0);
 			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest)) {
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getIsApplicantDetailsFilled())) {
+					if(loanApplicationRequest.getIsApplicantDetailsFilled()) {
+						logger.info("User has filled profile details ----> "+loanApplicationRequest.getApplicationCode() + "======ID======="+loanApplicationRequest.getId());
+						return;	
+					}
+				}
 				UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 					@SuppressWarnings("unchecked")
