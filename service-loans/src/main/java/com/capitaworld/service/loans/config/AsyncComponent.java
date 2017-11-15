@@ -146,6 +146,10 @@ public class AsyncComponent {
 								logger.info("Mail Template Ready for user has not filled primary details");
 								template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
 							}	
+						} else {
+							//SENT MAIL FOR PRIMARY DETAILS
+							logger.info("Mail Template Ready for user has not filled primary details");
+							template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
 						}
 					} else {
 						logger.info("Mail Template Ready for user has not filled profile details");
