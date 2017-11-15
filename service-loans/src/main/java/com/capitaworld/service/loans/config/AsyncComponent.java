@@ -88,6 +88,7 @@ public class AsyncComponent {
 				if(totalApplication == 1) {
 					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
 					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);	
+					return;
 				} else {
 					logger.info("Exits,User has more then one application ====>" + totalApplication);
 					return;	
@@ -136,13 +137,15 @@ public class AsyncComponent {
 				
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getIsApplicantDetailsFilled())) {
 					if(loanApplicationRequest.getIsApplicantDetailsFilled()) {//CHECK USER HAS FILLED PROFILE DETAILS
-						if(loanApplicationRequest.getIsApplicantPrimaryFilled()) {// CHECK USER HAS FILLED PRIMARY DETAILS
-							logger.info("User has filled profile and primary details ----> "+loanApplicationRequest.getApplicationCode() + "======ID======="+loanApplicationRequest.getId());
-							return;	
-						} else {
-							//SENT MAIL FOR PRIMARY DETAILS
-							logger.info("Mail Template Ready for user has not filled primary details");
-							template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
+						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getIsApplicantPrimaryFilled())) {
+							if(loanApplicationRequest.getIsApplicantPrimaryFilled()) {// CHECK USER HAS FILLED PRIMARY DETAILS
+								logger.info("User has filled profile and primary details ----> "+loanApplicationRequest.getApplicationCode() + "======ID======="+loanApplicationRequest.getId());
+								return;	
+							} else {
+								//SENT MAIL FOR PRIMARY DETAILS
+								logger.info("Mail Template Ready for user has not filled primary details");
+								template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
+							}	
 						}
 					} else {
 						template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS;
