@@ -597,7 +597,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
@@ -608,7 +608,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		// get list fo certificate
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
@@ -619,7 +619,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		// get list of pan card
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
@@ -630,7 +630,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		// get profile pic
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-		documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PROFIEL_PICTURE);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
