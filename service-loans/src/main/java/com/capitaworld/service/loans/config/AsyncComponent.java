@@ -87,10 +87,11 @@ public class AsyncComponent {
 			if(totalApplication > 0) {
 				if(totalApplication == 1) {
 					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
-					sentMailWhenUserLogoutWithoutFillingFirstProfileData(userId);	
+					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);	
+				} else {
+					logger.info("Exits,User has more then one application ====>" + totalApplication);
+					return;	
 				}
-				logger.info("Exits,User has more then one application ====>" + totalApplication);
-				return;
 			}
 			logger.info("Call user client for get email and name by user id");
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
@@ -121,20 +122,31 @@ public class AsyncComponent {
 	 * This Method Called From sendMailWhenUserHasNoApplication method
 	 */
 	@Async
-	private void sentMailWhenUserLogoutWithoutFillingFirstProfileData(Long userId) {
-		logger.info("Start sent mail process for user logout withour filled first application profile details");
+	private void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
+		logger.info("Start sent mail process for user logout withour filled first application profile or primary details");
 		try {
 			List<LoanApplicationRequest> loanApplicationRequestList = loanApplicationService.getList(userId);
 			if(loanApplicationRequestList.size() > 1 || loanApplicationRequestList.size() == 0) {
 				logger.info("User has more one application or not application list========>"+loanApplicationRequestList.size());
 				return;
 			}
+			NotificationTemplate template = null;
 			LoanApplicationRequest loanApplicationRequest = loanApplicationRequestList.get(0);
 			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest)) {
+				
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getIsApplicantDetailsFilled())) {
-					if(loanApplicationRequest.getIsApplicantDetailsFilled()) {
-						logger.info("User has filled profile details ----> "+loanApplicationRequest.getApplicationCode() + "======ID======="+loanApplicationRequest.getId());
-						return;	
+					if(loanApplicationRequest.getIsApplicantDetailsFilled()) {//CHECK USER HAS FILLED PROFILE DETAILS
+						if(loanApplicationRequest.getIsApplicantPrimaryFilled()) {// CHECK USER HAS FILLED PRIMARY DETAILS
+							logger.info("User has filled profile and primary details ----> "+loanApplicationRequest.getApplicationCode() + "======ID======="+loanApplicationRequest.getId());
+							return;	
+						} else {
+							//SENT MAIL FOR PRIMARY DETAILS
+							logger.info("Mail Template Ready for user has not filled primary details");
+							template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
+						}
+					} else {
+						template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS;
+						logger.info("Mail Template Ready for user has not filled profile details");
 					}
 				}
 				UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
@@ -145,10 +157,26 @@ public class AsyncComponent {
 	    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
 	    				Map<String, Object> parameters = new HashMap<String, Object>();
 	    				parameters.put("fs_name", request.getName());
-	    				parameters.put("application_id", loanApplicationRequest.getApplicationCode());
+	    				if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS.getValue()) {
+	    					parameters.put("application_id", loanApplicationRequest.getApplicationCode());	
+	    				} else if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS.getValue()) {
+	    					Integer totalCount = 0;
+	    					try {
+	    						UserResponse response =  usersClient.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
+	    						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+	    							if(!CommonUtils.isObjectNullOrEmpty(response.getData())) {
+	    								totalCount = (Integer) response.getData();
+	    							}
+	    						}
+	    					} catch(Exception e) {
+	    						logger.error("Throw Excecption While Get Total Fp User Count");
+	    						e.printStackTrace();
+	    					}
+	    					parameters.put("total_fp_count", totalCount);	
+	    				}
 	    				String[] toIds = {request.getEmail()};
-	    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS,null,false,null);
-	    				logger.info("Exits, Successfully sent mail when user not filled first profile data ---->"+request.getEmail());
+	    				sendNotification(toIds,userId.toString(),parameters, template,null,false,null);
+	    				logger.info("Exits, Successfully sent mail when user not filled first profile or primary data ---->"+request.getEmail() + "-----Subject----"+template.getSubject());
 	    			}
 	    		} else {
 	    			logger.info("User response null while getting email id and user type");
@@ -157,7 +185,8 @@ public class AsyncComponent {
 				logger.info("LoanAoplicationRequest object null or empty");	
 			}
 		} catch(Exception e){
-			logger.info("Throw Exception while sent Mail When User Logout Without Filling First Profile Data");
+			logger.info("Throw Exception while sent Mail When User Logout Without Filling First Profile or primary Data");
+			e.printStackTrace();
 		}
 		
 	}
