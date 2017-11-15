@@ -131,7 +131,7 @@ public class AsyncComponent {
 				logger.info("User has more one application or not application list========>"+loanApplicationRequestList.size());
 				return;
 			}
-			NotificationTemplate template = null;
+			NotificationTemplate template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS;
 			LoanApplicationRequest loanApplicationRequest = loanApplicationRequestList.get(0);
 			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest)) {
 				
@@ -148,7 +148,6 @@ public class AsyncComponent {
 							}	
 						}
 					} else {
-						template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS;
 						logger.info("Mail Template Ready for user has not filled profile details");
 					}
 				}
