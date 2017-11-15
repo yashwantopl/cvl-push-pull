@@ -745,8 +745,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (isAnythingIsNull)
 					return false;
 
-				return (applicationMaster.getIsFinalMcqFilled() && applicationMaster.getIsApplicantFinalFilled()
-						&& applicationMaster.getIsFinalDprUploadFilled() && applicationMaster.getIsFinalUploadFilled());
+				if(applicationMaster.getProductId()==LoanType.UNSECURED_LOAN.getValue()){
+					return (applicationMaster.getIsFinalMcqFilled() && applicationMaster.getIsApplicantFinalFilled()
+							&& applicationMaster.getIsFinalUploadFilled());
+				} else{
+					return (applicationMaster.getIsFinalMcqFilled() && applicationMaster.getIsApplicantFinalFilled()
+							&& applicationMaster.getIsFinalDprUploadFilled() && applicationMaster.getIsFinalUploadFilled());
+				}
+				
 			} else {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue())

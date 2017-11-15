@@ -295,7 +295,6 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		// create response object
 		UnsecuredLoanFinalViewResponse response = new UnsecuredLoanFinalViewResponse();
 
-		List<Object> dprList = new ArrayList<Object>();
 		// getting data of uploads documents and getting profile picture
 		try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE));
@@ -407,87 +406,6 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		}
 		//CO-APPLICANT
 		
-		
-		/*try{
-			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
-			response.setDprList(dprList);
-		}catch(DocumentException e){
-			e.printStackTrace();
-		}
-		try{
-			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CMA)));
-		}catch(DocumentException e){
-			e.printStackTrace();
-		}
-		try{
-			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COMPANY_ACT)));
-		}catch(DocumentException e){
-			e.printStackTrace();
-		}
-		try{
-			response.setFinancialModelList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TL_FINANCIAL_MODEL));
-		}catch(DocumentException e){
-			e.printStackTrace();
-		}
-		try{
-			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DPR_YOUR_FORMAT)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}*/
-		
-		/*// if DPR our format not upload no need get data of DPR
-		if (dprList.size() > 0) {
-			response.setIsDprUploaded(true);
-			// getting data of DPR
-			List<BoardOfDirectorsResponse> boardOfDirectorsResponseList = boardOfDirectorsDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<StrategicAlliancesResponse> strategicAlliancesResponseList = strategicAlliancesDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<KeyManagementResponse> keyManagementResponseList = keyManagementDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<EmployeesCategoryBreaksResponse> employeesCategoryBreaksResponseList = employeesCategoryBreaksDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<TechnologyPositioningResponse> technologyPositioningResponseList = technologyPositioningDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<RevenueAndOrderBookResponse> revenueAndOrderBookResponseList = revenueAndOrderBookDetailRepository
-					.listByApplicationId(toApplicationId);
-			DriverForFutureGrowthResponse driverForFutureGrowthResponse = driverForFutureGrowthDetailRepository
-					.listByApplicationId(toApplicationId).size() > 0
-							? driverForFutureGrowthDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-			List<ProjectImplementationScheduleResponse> projectImplementationScheduleResponseList = projectImplementationScheduleDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<CapacityDetailResponse> capacityDetailResponses = capacityDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<AvailabilityProposedPlantDetailResponse> availabilityProposedPlantDetailResponses = availabilityProposedPlantDetailRepository
-					.listByApplicationId(toApplicationId);
-			List<RequirementsAndAvailabilityRawMaterialsDetailResponse> requirementsAndAvailabilityRawMaterialsDetailResponses = requirementsAndAvailabilityRawMaterialsDetailRepository
-					.listByApplicationId(toApplicationId);
-			ScotAnalysisDetailResponse scotAnalysisDetailResponses = scotAnalysisDetailRepository
-					.listByApplicationId(toApplicationId).size() > 0
-							? scotAnalysisDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-			DprUserDataDetailResponse dprUserDataDetailResponses = dprUserDataDetailRepository
-					.listByApplicationId(toApplicationId).size() > 0
-							? dprUserDataDetailRepository.listByApplicationId(toApplicationId).get(0) : null;
-
-			response.setAvailabilityProposedPlantDetailResponse(availabilityProposedPlantDetailResponses);
-			response.setBoardOfDirectorsResponseList(boardOfDirectorsResponseList);
-			response.setCapacityDetailResponses(capacityDetailResponses);
-			response.setDprUserDataDetailResponses(dprUserDataDetailResponses);
-			response.setEmployeesCategoryBreaksResponseList(employeesCategoryBreaksResponseList);
-			response.setKeyManagementResponseList(keyManagementResponseList);
-			response.setRequirementsAndAvailabilityRawMaterialsDetailResponse(
-					requirementsAndAvailabilityRawMaterialsDetailResponses);
-			response.setRevenueAndOrderBookResponseList(revenueAndOrderBookResponseList);
-			response.setScotAnalysisDetailResponses(scotAnalysisDetailResponses);
-			response.setStrategicAlliancesResponseList(strategicAlliancesResponseList);
-			response.setTechnologyPositioningResponseList(technologyPositioningResponseList);
-			response.setProjectImplementationScheduleResponseList(projectImplementationScheduleResponseList);
-			response.setDriverForFutureGrowthResponse(driverForFutureGrowthResponse);
-
-		}else{
-			response.setIsDprUploaded(false);
-		}*/
-	
 
 		// set final working capital information
 		try {
