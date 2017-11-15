@@ -8,6 +8,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
@@ -148,6 +149,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
@@ -732,7 +736,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
 		//get value of Past Financial and set in response
 		try {
-			response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
+			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
+			if (pastFinancialEstimatesDetailRequestList.size()>4){
+				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
+			}
+			response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Past Financial {}", e);
 		}
