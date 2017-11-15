@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import com.capitaworld.service.dms.exception.DocumentException;
-import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -9,6 +8,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoan
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,9 +100,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
-
-	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService;
 
 	@Autowired
@@ -119,9 +115,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
 
 	@Autowired
-	private PastFinancialEstiamateDetailsService pastFinancialEstiamateDetailsService;
-
-	@Autowired
 	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
 
 	@Autowired
@@ -132,9 +125,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
-
-	@Autowired
-	private Environment environment;
 
 	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
@@ -162,6 +152,9 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -757,8 +750,11 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 
 		// get value of Past Financial and set in response
 		try {
-			response.setPastFinancialEstimatesDetailRequestList(
-					pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
+			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
+			if (pastFinancialEstimatesDetailRequestList.size()>4){
+				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
+			}
+			response.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Past Financial {}", e);
 		}

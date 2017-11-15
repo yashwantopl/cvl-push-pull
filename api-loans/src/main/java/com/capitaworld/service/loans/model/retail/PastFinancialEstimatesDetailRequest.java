@@ -37,15 +37,30 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 
 	private Boolean isActive = true;
 
+	public PastFinancialEstimatesDetailRequest(Long id, Long applicationId, Double currentAssets, Double currentLiabilities, Double debt, Double ebitda, String financialYear, Double fixedAssets, Double netWorth, Double pat, Double sales, Boolean isActive) {
+		this.id = id;
+		this.applicationId = applicationId;
+		this.currentAssets = currentAssets;
+		this.currentLiabilities = currentLiabilities;
+		this.debt = debt;
+		this.ebitda = ebitda;
+		this.financialYear = financialYear;
+		this.fixedAssets = fixedAssets;
+		this.netWorth = netWorth;
+		this.pat = pat;
+		this.sales = sales;
+		this.isActive = isActive;
+	}
+
+	public PastFinancialEstimatesDetailRequest() {
+	}
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
-	}
-
-	public PastFinancialEstimatesDetailRequest() {
 	}
 
 	public PastFinancialEstimatesDetailRequest(String financialYear) {

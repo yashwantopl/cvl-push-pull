@@ -67,7 +67,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
-	
+
 	@Autowired
 	private CorporateCoApplicantService coApplicantService;
 	
@@ -325,8 +325,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		DecimalFormat decimalFormat = new DecimalFormat("#");
 		DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
 
-		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository
-				.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if (pastEstimates.size()>4){
+			pastEstimates = pastEstimates.subList((pastEstimates.size()-4),pastEstimates.size());
+		}
 		if (!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1) {
 			graphResponse.setGraphAvailable(true);
 		} else {
@@ -433,9 +435,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
 			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
-			/*
-			 * if(Double.isNaN(val)){ val=0; }
-			 */
+			if(Double.isNaN(val)) {
+				val = 0d;
+			}
 			currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
 		}
 
@@ -533,7 +535,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
 	}
-	
+
 	@Override
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
 		boolean msmeScoreRequired= false;
