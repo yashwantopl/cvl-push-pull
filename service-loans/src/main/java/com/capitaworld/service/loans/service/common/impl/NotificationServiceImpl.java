@@ -115,7 +115,7 @@ public class NotificationServiceImpl implements NotificationService{
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(notificationTemplate.isSubjConfig() ? fpName + notificationTemplate.getSubject() : notificationTemplate.getSubject());
+		notification.setSubject(NotificationTemplate.getSubjectName(notificationTemplate.getValue(), fpName));
 		CommonDocumentUtils.endHook(logger, "create Email Notification");
 		return notification;
 

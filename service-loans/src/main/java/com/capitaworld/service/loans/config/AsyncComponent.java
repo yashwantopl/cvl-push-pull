@@ -184,7 +184,7 @@ public class AsyncComponent {
 	    				}
 	    				String[] toIds = {request.getEmail()};
 	    				sendNotification(toIds,userId.toString(),parameters, template,null,false,null);
-	    				logger.info("Exits, Successfully sent mail when user not filled first profile or primary data ---->"+request.getEmail() + "-----Subject----"+template.getSubject());
+	    				logger.info("Exits, Successfully sent mail when user not filled first profile or primary data ---->"+request.getEmail() + "-----Subject----"+NotificationTemplate.getSubjectName(template.getValue(), null));
 	    			}
 	    		} else {
 	    			logger.info("User response null while getting email id and user type");
@@ -487,11 +487,11 @@ public class AsyncComponent {
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(template.isSubjConfig() ? fpName + template.getSubject() : template.getSubject());
+		notification.setSubject(NotificationTemplate.getSubjectName(template.getValue(), fpName));
 		notificationRequest.addNotification(notification);
 		//SEND MAIL
 		if(isTimerMail) {
-			sendMailWithTimer(notificationRequest,milisecond,template.getSubject());
+			sendMailWithTimer(notificationRequest,milisecond,NotificationTemplate.getSubjectName(template.getValue(), fpName));
 		} else {
 			sendMail(notificationRequest);	
 		}
