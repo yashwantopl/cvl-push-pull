@@ -118,7 +118,7 @@ public class AsyncComponent {
 	
 	/**
 	 * FS Mail Number :- 6
-	 *  When user logout without filling first profile details
+	 *  When user logout without filling first profile or primary details
 	 * @param userId :- FS Login UserId
 	 * This Method Called From sendMailWhenUserHasNoApplication method
 	 */
@@ -162,10 +162,12 @@ public class AsyncComponent {
 	    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 	    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
 	    				Map<String, Object> parameters = new HashMap<String, Object>();
-	    				parameters.put("fs_name", request.getName());
 	    				if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS.getValue()) {
+	    					parameters.put("fs_name", request.getName());
 	    					parameters.put("application_id", loanApplicationRequest.getApplicationCode());	
 	    				} else if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS.getValue()) {
+	    					String fsName = loanApplicationService.getFsApplicantName(loanApplicationRequest.getId());
+		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 	    					Integer totalCount = 0;
 	    					try {
 	    						UserResponse response =  usersClient.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
@@ -195,6 +197,53 @@ public class AsyncComponent {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * FS Mail Number :- 12
+	 *  Sent Mail After 3 hour from primary submit If user not filled final detail.
+	 * @param userId :- FS Login UserId
+	 * This Method Called From LoanApplicationController(lockPrimary) method
+	 */
+	@Async
+	public void sentMailWhenUserLogoutWithoutFillingFinalData(Long userId, Long applicationId) {
+		logger.info("Start Sent Mail Process When User not Fill Final Detail After 3 Hour From Primary Submit ------->"+applicationId);
+		try {
+			new Timer().schedule(new java.util.TimerTask() {
+				@Override
+				public void run() {
+					try {
+						Boolean finalDetailFilled = loanApplicationService.isFinalDetailFilled(applicationId, userId);
+						if(finalDetailFilled) {
+							logger.info("FS user filled final detail within 3 hour from primary submit------->"+applicationId);
+							return;
+						}
+						UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+						if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+							UsersRequest request = MultipleJSONObjectHelper
+			    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+			    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+			    				Map<String, Object> parameters = new HashMap<String, Object>();
+			    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+			    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
+			    				String[] toIds = {request.getEmail()};
+			    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_WITHOUT_FILLED_FINAL_DETAILS,null,false,null);
+			    				logger.info("Exits, Successfully sent mail when User not Fill Final Detail After 3 Hour From Primary Submit---->"+request.getEmail() + "------appID---"+applicationId);
+			    			}
+			    		} else {
+			    			logger.info("User response null while getting email id and user type,FS Mail Number :- 12----->"+applicationId);
+			    		}
+					} catch (Exception e) {
+						logger.error("Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"+applicationId);
+						e.printStackTrace();
+					}
+				}
+			}, 180000);
+			//10800000   ---> 3 Hour
+		} catch (Exception e) {
+			logger.error("Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"+applicationId);
+			e.printStackTrace();
+		}
 	}
 	
 	

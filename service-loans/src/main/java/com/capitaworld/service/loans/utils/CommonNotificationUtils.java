@@ -15,7 +15,8 @@ public class CommonNotificationUtils {
 		FS_GO_MATCHES_PAGE(NotificationAlias.EMAIL_FS_GO_MATCHES_PAGE,"Matches & Connections",false),
 		LOGOUT_IMMEDIATELY_REMAINDER(NotificationAlias.EMAIL_FS_LOGOUT_IMMEDIATELY_REMAINDER,"Remainder",false),
 		LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS,"Profile not filled",false),
-		LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS,"Primary not filled",false);
+		LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS,"Primary not filled",false),
+		LOGOUT_WITHOUT_FILLED_FINAL_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_FINAL_DETAILS,"Final not filled",false);
 		
 		private Long value;
 		private String subject;
@@ -57,8 +58,10 @@ public class CommonNotificationUtils {
 				return LOGOUT_IMMEDIATELY_REMAINDER; 
 			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS) {
 				return LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS; 
-			}else if(x == NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS) {
+			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS) {
 				return LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS; 
+			} else if(x == NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_FINAL_DETAILS) {
+				return LOGOUT_WITHOUT_FILLED_FINAL_DETAILS; 
 			} else {
 				return null;
 			} 
