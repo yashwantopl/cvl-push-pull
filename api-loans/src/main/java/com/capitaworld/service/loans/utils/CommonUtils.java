@@ -158,7 +158,7 @@ public class CommonUtils {
 	}
 
 	public static int getUserMainType(int productId) {
-		if (productId == 1 || productId == 2|| productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return 2;
 		else
 			return 1;
@@ -168,14 +168,14 @@ public class CommonUtils {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
-		if (productId == 1 || productId == 2)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return CORPORATE;
 		else
 			return RETAIL;
 	}
 
 	public static String getCorporateLoanType(int productId) {
-		if (productId == 1 || productId == 2)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return "DEBT";
 		else
 			return "EQUITY";
@@ -376,8 +376,11 @@ public class CommonUtils {
 			return "Loan Against Property";
 		case 14:
 			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured Loan";
+		default :
+			return null;
 		}
-		return null;
 	}
 	
 	public static String getLoanNameForMail(Integer x) {
@@ -396,8 +399,11 @@ public class CommonUtils {
 			return "Loan Against Property";
 		case 14:
 			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured ";
+		default :
+			return null;
 		}
-		return null;
 	}
 
 }
