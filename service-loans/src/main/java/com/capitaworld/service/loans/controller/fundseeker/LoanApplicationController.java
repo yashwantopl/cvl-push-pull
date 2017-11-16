@@ -372,8 +372,8 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "lockPrimary");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -384,6 +384,9 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			loanApplicationService.lockPrimary(applicationId, userId, true);
+			if (CommonUtils.UserType.FUND_SEEKER == userType) {
+				asyncComponent.sentMailWhenUserLogoutWithoutFillingFinalData(userId, applicationId);
+			}
 			CommonDocumentUtils.endHook(logger, "lockPrimary");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);
