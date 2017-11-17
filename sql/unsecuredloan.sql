@@ -176,3 +176,5 @@ ALTER TABLE `loan_applications`.`fs_retail_references_retail_details` ADD COLUMN
 
 ALTER TABLE `loan_applications`.`fs_corporate_guarantors_corporate_details` ADD COLUMN industry_list BIGINT(20), ADD COLUMN sector_list BIGINT(20), ADD COLUMN constitution_id BIGINT(20),
 ADD COLUMN pan  VARCHAR(200), ADD COLUMN profit_after_tax VARCHAR(200), ADD COLUMN address VARCHAR(200), ADD COLUMN contact_number VARCHAR(200);
+
+

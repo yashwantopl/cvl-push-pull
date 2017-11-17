@@ -35,4 +35,6 @@ public interface CorporateApplicantService {
 	
 	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
 	
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
+	
 }
