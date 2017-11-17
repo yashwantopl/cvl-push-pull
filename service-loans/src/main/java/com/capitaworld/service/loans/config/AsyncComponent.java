@@ -164,7 +164,7 @@ public class AsyncComponent {
 	    				Map<String, Object> parameters = new HashMap<String, Object>();
 	    				if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS.getValue()) {
 	    					parameters.put("fs_name", request.getName());
-	    					parameters.put("application_id", loanApplicationRequest.getApplicationCode());	
+	    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getApplicationCode()) ? loanApplicationRequest.getApplicationCode() : "NA");	
 	    				} else if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS.getValue()) {
 	    					String fsName = loanApplicationService.getFsApplicantName(loanApplicationRequest.getId());
 		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
@@ -342,7 +342,7 @@ public class AsyncComponent {
 		parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		if(loanBasicDetails != null) {
-			parameters.put("application_id", loanBasicDetails.getApplicationCode());
+			parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
 			parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
 		} else {
 			parameters.put("application_id", "NA");
@@ -407,7 +407,7 @@ public class AsyncComponent {
 		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
-		    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
+		    					parameters.put("application_id",  !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
 		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
 		    				} else {
 		    					parameters.put("application_id", "NA");
@@ -459,6 +459,12 @@ public class AsyncComponent {
 		}
 	}
 	
+	/**
+	 * FS Mail Number :- 14
+	 *  Send Mail when FP Send Direct request to fundseeker
+	 * @param userId :- FP Login UserId
+	 * This Method Called From ProposalController
+	 */
 	@Async
 	public void sentMailWhenFPSentFSDirectREquest(Long fpUserId,Long fpProductId,Long applicationId) {
 		logger.info("Sent Mail When FundProvider sent direct matches request to Fundseeker");
@@ -480,8 +486,10 @@ public class AsyncComponent {
 		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
-		    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
-		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		    					logger.info("FPSentDirectRequestToFS, Application Code ----->"+loanBasicDetails.getApplicationCode());
+		    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
+		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));
+		    					parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
 		    				} else {
 		    					parameters.put("application_id", "NA");
 		        				parameters.put("loan", "NA");
