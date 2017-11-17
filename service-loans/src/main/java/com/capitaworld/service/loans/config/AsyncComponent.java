@@ -459,6 +459,70 @@ public class AsyncComponent {
 		}
 	}
 	
+	@Async
+	public void sentMailWhenFPSentFSDirectREquest(Long fpUserId,Long fpProductId,Long applicationId) {
+		logger.info("Sent Mail When FundProvider sent direct matches request to Fundseeker");
+		try {
+			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
+			logger.info("FPSentDirectRequestToFS, Check FS User Under SP or Not (FS ID) ---->"+userId);
+			UserResponse response = usersClient.checkUserUnderSp(userId);
+			if(!CommonUtils.isObjectNullOrEmpty(response)) {
+				if(!(Boolean)response.getData()) {
+					logger.info("FPSentDirectRequestToFS, Get Email And Name By FS User ID ---->"+userId);
+					UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+					if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+						UsersRequest request = MultipleJSONObjectHelper
+		    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+		    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+		    				logger.info("FPSentDirectRequestToFS, Start Fill Parameters Details (ApplicationId) ---->"+applicationId);
+		    				Map<String, Object> parameters = new HashMap<String, Object>();
+		    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
+		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
+		    				if(loanBasicDetails != null) {
+		    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
+		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		    				} else {
+		    					parameters.put("application_id", "NA");
+		        				parameters.put("loan", "NA");
+		    				}
+		    				logger.info("FPSentDirectRequestToFS, Start get fp name (fpProductId) ---->"+fpProductId);
+		    				String fpName = "NA";
+		    				try {
+		    					logger.info("Start Getting Fp Name By Fp Product Id =======>"+ fpProductId);
+		    					Object o[] = productMasterService.getUserDetailsByPrductId(fpProductId);
+		    					if(o!=null) {
+		    						fpName = o[1].toString();
+		    						logger.info("Successfully get fo name------->" + fpName);
+	    						} else {
+	    							logger.info("Fund Provider name can't find using "+ fpProductId +" id");
+	    						}
+		    					parameters.put("fp_name",fpName);
+		    				} catch (Exception e) {
+		    					logger.warn("Error while get fund provider name");
+		    					e.printStackTrace();
+		    					parameters.put("fp_name","NA");
+		    				}
+		    				logger.info("FPSentDirectRequestToFS, End Parameter fill, And Start sending mail to ---->"+request.getEmail());
+		    				String[] toIds = {request.getEmail()};
+		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_DIRECT_SENT_REQUEST_TO_FP,fpName,false,null);
+		    				logger.info("Exits, Successfully sent mail when fp sent directly request to fs user (FP NAME)---->"+fpName);
+		    			}
+					} else {
+						logger.info("FPSentDirectRequestToFS, User Data Null or Empty (usersClient.getEmailAndNameByUserId) ---->"+userId);
+					}
+				} else {
+					logger.info("FPSentDirectRequestToFS, FS User Under SP (FS ID) ---->"+userId);
+				}
+			} else {
+				logger.info("FPSentDirectRequestToFS, UserResponse Null Or Empty (usersClient.checkUserUnderSp)---->"+userId);
+			}
+		} catch(Exception e) {
+			logger.info("Throw exception while sending mail, Primary Complete");
+			e.printStackTrace();
+		}
+	}
+	
 
 	private Long getLastAccessId(Long userId) {
 		try {
