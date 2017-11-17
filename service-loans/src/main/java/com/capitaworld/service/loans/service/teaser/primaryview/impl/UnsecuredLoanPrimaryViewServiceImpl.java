@@ -20,6 +20,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -682,8 +683,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
 		//setting co-application details
         List<CorporateCoApplicantRequest> coApplicantResponse = null;
         try {
@@ -692,6 +691,100 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
             e.printStackTrace();
         }
         unsecuredLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        
+        //Set Office Address
+        AddressResponse officeAddress = new AddressResponse();
+        try {
+            List<Long> officeCity = new ArrayList<Long>(1);
+            officeCity.add(corporateApplicantDetail.getAdministrativeCityId());
+            OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
+
+            MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
+            officeAddress.setCity(data.getValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            List<Long> officeCountry = new ArrayList<Long>(1);
+            Long officeCountryLong = null;
+            if (corporateApplicantDetail.getAdministrativeCountryId() != null) {
+                officeCountryLong = Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId().toString());
+
+                officeCountry.add(officeCountryLong);
+                OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
+                MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
+                officeAddress.setCountry(dataCountry.getValue());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        try {
+            List<Long> officeState = new ArrayList<Long>(1);
+            Long officeStateLong = null;
+            if (corporateApplicantDetail.getAdministrativeStateId() != null) {
+                officeStateLong = Long.valueOf(corporateApplicantDetail.getAdministrativeStateId().toString());
+
+                officeState.add(officeStateLong);
+                OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
+                MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
+                officeAddress.setState(dataState.getValue());
+            }
+        } catch (Exception e) {
+
+        }
+        officeAddress.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+        officeAddress.setPincode(corporateApplicantDetail.getAdministrativePincode() != null ? corporateApplicantDetail.getAdministrativePincode().toString() : null);
+        officeAddress.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+        officeAddress.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+        unsecuredLoanPrimaryViewResponse.setOfficeAddress(officeAddress);
+        
+      //Set Permanent Address
+        AddressResponse permanentAddress = new AddressResponse();
+        try {
+            List<Long> permanentCity = new ArrayList<Long>(1);
+            permanentCity.add(corporateApplicantDetail.getRegisteredCityId());
+            OneFormResponse formResponse = oneFormClient.getCityByCityListId(permanentCity);
+
+            MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
+            permanentAddress.setCity(data.getValue());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            List<Long> permanentCountry = new ArrayList<Long>(1);
+            Long officeCountryLong = null;
+            if (corporateApplicantDetail.getRegisteredCountryId() != null) {
+                officeCountryLong = Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId().toString());
+
+                permanentCountry.add(officeCountryLong);
+                OneFormResponse country = oneFormClient.getCountryByCountryListId(permanentCountry);
+                MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
+                permanentAddress.setCountry(dataCountry.getValue());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        try {
+            List<Long> permanentState = new ArrayList<Long>(1);
+            Long officeStateLong = null;
+            if (corporateApplicantDetail.getRegisteredStateId() != null) {
+                officeStateLong = Long.valueOf(corporateApplicantDetail.getAdministrativeStateId().toString());
+
+                permanentState.add(officeStateLong);
+                OneFormResponse state = oneFormClient.getStateByStateListId(permanentState);
+                MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
+                permanentAddress.setState(dataState.getValue());
+            }
+        } catch (Exception e) {
+
+        }
+        permanentAddress.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+        permanentAddress.setPincode(corporateApplicantDetail.getRegisteredPincode() != null ? corporateApplicantDetail.getRegisteredPincode().toString() : null);
+        permanentAddress.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+        permanentAddress.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+        unsecuredLoanPrimaryViewResponse.setPermanentAddress(permanentAddress);
 
 		return unsecuredLoanPrimaryViewResponse;
 	}
