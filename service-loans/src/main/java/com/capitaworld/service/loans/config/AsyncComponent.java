@@ -360,7 +360,7 @@ public class AsyncComponent {
 				if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
 					logger.info("successfully get total matches count suggestion list -----> "+connectionResponse.getSuggetionList().size());
 					logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
-					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
+					parameters.put("total_matches", connectionResponse.getSuggetionList().size());	
 				} else {
 					logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
 					parameters.put("total_matches",0);
