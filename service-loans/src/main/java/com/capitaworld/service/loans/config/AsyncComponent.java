@@ -353,6 +353,7 @@ public class AsyncComponent {
 			logger.info("Stating get total match count");
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			proposalMappingRequest.setApplicationId(applicationId);
+			proposalMappingRequest.setUserType(Long.valueOf(CommonUtils.UserType.FUND_SEEKER));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsResponse)) {
 				ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
@@ -360,9 +361,9 @@ public class AsyncComponent {
 				if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
 					logger.info("successfully get total matches count suggestion list -----> "+connectionResponse.getSuggetionList().size());
 					logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
-					parameters.put("total_matches", connectionResponse.getSuggetionList().size());	
+					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
 				} else {
-					logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
+					logger.warn("ConnectionResponse null or empty whilte getting total matches count");
 					parameters.put("total_matches",0);
 				}
 			} else {
