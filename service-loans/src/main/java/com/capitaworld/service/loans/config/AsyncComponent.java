@@ -358,6 +358,7 @@ public class AsyncComponent {
 				ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
     					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
 				if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
+					logger.info("successfully get total matches count suggestion list -----> "+connectionResponse.getSuggetionList().size());
 					logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
 					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
 				} else {
