@@ -73,6 +73,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	
 	@Autowired
 	private CorporateCoApplicantService corporateCoApplicantService;
+	
+	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 
@@ -570,4 +572,19 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return msmeScoreRequired;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+		try {
+			List<Long> coAppIds = coApplicantService.getCoAppIds( applicationId,userId);
+			
+			JSONObject obj = new JSONObject();
+			obj.put("coAppIds", coAppIds);
+			return obj;
+		} catch (Exception e) {
+			logger.error("Error while getCoapIds:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }
