@@ -9,6 +9,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,14 +79,17 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
-	
+
+	@Value("${capitaworld.loans.sp.page.size}")
+	private Integer pageSize;
+
 	private static final String USERS_BASE_URL_KEY = "userURL";
 	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
 	@Override
-	public List<SpClientListing> spClientList(Long spId, String userTypeCode) throws Exception {
+	public List<SpClientListing> spClientList(int pageIndex,Long spId, String userTypeCode) throws Exception {
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		try {
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(spId, userTypeCode);
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(pageIndex,pageSize,spId, userTypeCode);
 			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
 			List<SpClientListing> clientListings = new ArrayList<SpClientListing>();
 			for (int i = 0; i < spClientResponseList.size(); i++) {
@@ -369,7 +373,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
 		try {
 			for(String userTpyeId : userTypeIds){
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(spId, userTpyeId);
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
 			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
 			for (int i = 0; i < spClientResponseList.size(); i++) {
 				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
@@ -459,7 +463,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
 		try {
 			for(String userTpyeId : userTypeIds){
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(spId, userTpyeId);
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
 			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
 			for (int i = 0; i < spClientResponseList.size(); i++) {
 				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
