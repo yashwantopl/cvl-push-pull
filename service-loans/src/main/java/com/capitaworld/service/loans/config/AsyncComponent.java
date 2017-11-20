@@ -118,7 +118,7 @@ public class AsyncComponent {
 	
 	/**
 	 * FS Mail Number :- 6
-	 *  When user logout without filling first profile details
+	 *  When user logout without filling first profile or primary details
 	 * @param userId :- FS Login UserId
 	 * This Method Called From sendMailWhenUserHasNoApplication method
 	 */
@@ -146,6 +146,10 @@ public class AsyncComponent {
 								logger.info("Mail Template Ready for user has not filled primary details");
 								template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
 							}	
+						} else {
+							//SENT MAIL FOR PRIMARY DETAILS
+							logger.info("Mail Template Ready for user has not filled primary details");
+							template = NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS;
 						}
 					} else {
 						logger.info("Mail Template Ready for user has not filled profile details");
@@ -158,10 +162,12 @@ public class AsyncComponent {
 	    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 	    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
 	    				Map<String, Object> parameters = new HashMap<String, Object>();
-	    				parameters.put("fs_name", request.getName());
 	    				if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS.getValue()) {
-	    					parameters.put("application_id", loanApplicationRequest.getApplicationCode());	
+	    					parameters.put("fs_name", request.getName());
+	    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getApplicationCode()) ? loanApplicationRequest.getApplicationCode() : "NA");	
 	    				} else if(template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS.getValue()) {
+	    					String fsName = loanApplicationService.getFsApplicantName(loanApplicationRequest.getId());
+		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 	    					Integer totalCount = 0;
 	    					try {
 	    						UserResponse response =  usersClient.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
@@ -178,7 +184,7 @@ public class AsyncComponent {
 	    				}
 	    				String[] toIds = {request.getEmail()};
 	    				sendNotification(toIds,userId.toString(),parameters, template,null,false,null);
-	    				logger.info("Exits, Successfully sent mail when user not filled first profile or primary data ---->"+request.getEmail() + "-----Subject----"+template.getSubject());
+	    				logger.info("Exits, Successfully sent mail when user not filled first profile or primary data ---->"+request.getEmail() + "-----Subject----"+NotificationTemplate.getSubjectName(template.getValue(), null));
 	    			}
 	    		} else {
 	    			logger.info("User response null while getting email id and user type");
@@ -191,6 +197,53 @@ public class AsyncComponent {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * FS Mail Number :- 12
+	 *  Sent Mail After 3 hour from primary submit If user not filled final detail.
+	 * @param userId :- FS Login UserId
+	 * This Method Called From LoanApplicationController(lockPrimary) method
+	 */
+	@Async
+	public void sentMailWhenUserLogoutWithoutFillingFinalData(Long userId, Long applicationId) {
+		logger.info("Start Sent Mail Process When User not Fill Final Detail After 3 Hour From Primary Submit ------->"+applicationId);
+		try {
+			new Timer().schedule(new java.util.TimerTask() {
+				@Override
+				public void run() {
+					try {
+						Boolean finalDetailFilled = loanApplicationService.isFinalDetailFilled(applicationId, userId);
+						if(finalDetailFilled) {
+							logger.info("FS user filled final detail within 3 hour from primary submit------->"+applicationId);
+							return;
+						}
+						UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+						if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+							UsersRequest request = MultipleJSONObjectHelper
+			    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+			    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+			    				Map<String, Object> parameters = new HashMap<String, Object>();
+			    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+			    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
+			    				String[] toIds = {request.getEmail()};
+			    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.LOGOUT_WITHOUT_FILLED_FINAL_DETAILS,null,false,null);
+			    				logger.info("Exits, Successfully sent mail when User not Fill Final Detail After 3 Hour From Primary Submit---->"+request.getEmail() + "------appID---"+applicationId);
+			    			}
+			    		} else {
+			    			logger.info("User response null while getting email id and user type,FS Mail Number :- 12----->"+applicationId);
+			    		}
+					} catch (Exception e) {
+						logger.error("Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"+applicationId);
+						e.printStackTrace();
+					}
+				}
+			}, 10800000);
+			//10800000   ---> 3 Hour
+		} catch (Exception e) {
+			logger.error("Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"+applicationId);
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -289,7 +342,7 @@ public class AsyncComponent {
 		parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		if(loanBasicDetails != null) {
-			parameters.put("application_id", loanBasicDetails.getApplicationCode());
+			parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
 			parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
 		} else {
 			parameters.put("application_id", "NA");
@@ -300,15 +353,17 @@ public class AsyncComponent {
 			logger.info("Stating get total match count");
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			proposalMappingRequest.setApplicationId(applicationId);
+			proposalMappingRequest.setUserType(Long.valueOf(CommonUtils.UserType.FUND_SEEKER));
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
 			if(!CommonUtils.isObjectNullOrEmpty(proposalDetailsResponse)) {
 				ConnectionResponse connectionResponse =	(ConnectionResponse) MultipleJSONObjectHelper
     					.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
 				if(!CommonUtils.isObjectNullOrEmpty(connectionResponse)) {
+					logger.info("successfully get total matches count suggestion list -----> "+connectionResponse.getSuggetionList().size());
 					logger.info("successfully get total matches count -----> "+connectionResponse.getSuggetionByMatchesList().size());
 					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());	
 				} else {
-					logger.warn("ConnectionResponse null or emprty whilt gettin total matches count");
+					logger.warn("ConnectionResponse null or empty whilte getting total matches count");
 					parameters.put("total_matches",0);
 				}
 			} else {
@@ -354,7 +409,7 @@ public class AsyncComponent {
 		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
-		    					parameters.put("application_id", loanBasicDetails.getApplicationCode());
+		    					parameters.put("application_id",  !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
 		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
 		    				} else {
 		    					parameters.put("application_id", "NA");
@@ -406,6 +461,78 @@ public class AsyncComponent {
 		}
 	}
 	
+	/**
+	 * FS Mail Number :- 14
+	 *  Send Mail when FP Send Direct request to fundseeker
+	 * @param userId :- FP Login UserId
+	 * This Method Called From ProposalController
+	 */
+	@Async
+	public void sentMailWhenFPSentFSDirectREquest(Long fpUserId,Long fpProductId,Long applicationId) {
+		logger.info("Sent Mail When FundProvider sent direct matches request to Fundseeker");
+		try {
+			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
+			logger.info("FPSentDirectRequestToFS, Check FS User Under SP or Not (FS ID) ---->"+userId);
+			UserResponse response = usersClient.checkUserUnderSp(userId);
+			if(!CommonUtils.isObjectNullOrEmpty(response)) {
+				if(!(Boolean)response.getData()) {
+					logger.info("FPSentDirectRequestToFS, Get Email And Name By FS User ID ---->"+userId);
+					UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+					if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+						UsersRequest request = MultipleJSONObjectHelper
+		    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+		    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+		    				logger.info("FPSentDirectRequestToFS, Start Fill Parameters Details (ApplicationId) ---->"+applicationId);
+		    				Map<String, Object> parameters = new HashMap<String, Object>();
+		    				String fsName = loanApplicationService.getFsApplicantName(applicationId);
+		    				parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
+		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
+		    				if(loanBasicDetails != null) {
+		    					logger.info("FPSentDirectRequestToFS, Application Code ----->"+loanBasicDetails.getApplicationCode());
+		    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
+		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));
+		    					parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		    				} else {
+		    					parameters.put("application_id", "NA");
+		        				parameters.put("loan", "NA");
+		    				}
+		    				logger.info("FPSentDirectRequestToFS, Start get fp name (fpProductId) ---->"+fpProductId);
+		    				String fpName = "NA";
+		    				try {
+		    					logger.info("Start Getting Fp Name By Fp Product Id =======>"+ fpProductId);
+		    					Object o[] = productMasterService.getUserDetailsByPrductId(fpProductId);
+		    					if(o!=null) {
+		    						fpName = o[1].toString();
+		    						logger.info("Successfully get fo name------->" + fpName);
+	    						} else {
+	    							logger.info("Fund Provider name can't find using "+ fpProductId +" id");
+	    						}
+		    					parameters.put("fp_name",fpName);
+		    				} catch (Exception e) {
+		    					logger.warn("Error while get fund provider name");
+		    					e.printStackTrace();
+		    					parameters.put("fp_name","NA");
+		    				}
+		    				logger.info("FPSentDirectRequestToFS, End Parameter fill, And Start sending mail to ---->"+request.getEmail());
+		    				String[] toIds = {request.getEmail()};
+		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_DIRECT_SENT_REQUEST_TO_FP,fpName,false,null);
+		    				logger.info("Exits, Successfully sent mail when fp sent directly request to fs user (FP NAME)---->"+fpName);
+		    			}
+					} else {
+						logger.info("FPSentDirectRequestToFS, User Data Null or Empty (usersClient.getEmailAndNameByUserId) ---->"+userId);
+					}
+				} else {
+					logger.info("FPSentDirectRequestToFS, FS User Under SP (FS ID) ---->"+userId);
+				}
+			} else {
+				logger.info("FPSentDirectRequestToFS, UserResponse Null Or Empty (usersClient.checkUserUnderSp)---->"+userId);
+			}
+		} catch(Exception e) {
+			logger.info("Throw exception while sending mail, Primary Complete");
+			e.printStackTrace();
+		}
+	}
+	
 
 	private Long getLastAccessId(Long userId) {
 		try {
@@ -434,11 +561,11 @@ public class AsyncComponent {
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setParameters(parameters);
 		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setSubject(template.isSubjConfig() ? fpName + template.getSubject() : template.getSubject());
+		notification.setSubject(NotificationTemplate.getSubjectName(template.getValue(), fpName));
 		notificationRequest.addNotification(notification);
 		//SEND MAIL
 		if(isTimerMail) {
-			sendMailWithTimer(notificationRequest,milisecond,template.getSubject());
+			sendMailWithTimer(notificationRequest,milisecond,NotificationTemplate.getSubjectName(template.getValue(), fpName));
 		} else {
 			sendMail(notificationRequest);	
 		}

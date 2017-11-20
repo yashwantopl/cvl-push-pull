@@ -119,6 +119,7 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			List<CorporateCoApplicantRequest> requests = new ArrayList<>(details.size());
 			for (CorporateCoApplicantDetail detail : details) {
 				CorporateCoApplicantRequest request = new CorporateCoApplicantRequest();
+				detail.setPanNo(detail.getPanNo() != null ? detail.getPanNo().toUpperCase() : null);
 				BeanUtils.copyProperties(detail, request);
 				requests.add(request);
 			}

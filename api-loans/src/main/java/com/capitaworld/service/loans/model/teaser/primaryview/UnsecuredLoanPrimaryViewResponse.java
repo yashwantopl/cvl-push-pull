@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
@@ -70,6 +71,10 @@ public class UnsecuredLoanPrimaryViewResponse {
 
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
+	
+	private AddressResponse permanentAddress;
+    private AddressResponse officeAddress;
+
 	
 
 	private List<CorporateCoApplicantRequest> coApplicantList;
@@ -468,8 +473,20 @@ public class UnsecuredLoanPrimaryViewResponse {
 		this.purposeOfLoan = purposeOfLoan;
 	}
 
+	public AddressResponse getPermanentAddress() {
+		return permanentAddress;
+	}
 
-	
-	
+	public void setPermanentAddress(AddressResponse permanentAddress) {
+		this.permanentAddress = permanentAddress;
+	}
+
+	public AddressResponse getOfficeAddress() {
+		return officeAddress;
+	}
+
+	public void setOfficeAddress(AddressResponse officeAddress) {
+		this.officeAddress = officeAddress;
+	}
 
 }
