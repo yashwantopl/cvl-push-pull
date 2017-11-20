@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.ConnectionReleaseMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -89,6 +91,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private ProposalDetailsClient proposalDetailsClient;
 
 	DecimalFormat df = new DecimalFormat("#");
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
@@ -111,6 +115,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+
+				if(!loanApplicationMaster.getIsActive()) {
+					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
+					continue;
+				}
+				
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -353,6 +363,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						ProposalMappingRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+				if(!master.getIsActive()) {
+					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
+					continue;
+				}
 				UsersRequest userRequest = new UsersRequest();
 				userRequest.setId(master.getUserId());
 
