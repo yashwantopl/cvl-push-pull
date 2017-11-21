@@ -1044,6 +1044,8 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 		this.coApplicant_panCardList = coApplicant_panCardList;
 	}
 	
-	
-
+	public CorporateCoApplicantRequest addCoApplicantList(CorporateCoApplicantRequest corporateCoApplicantRequest) {
+		getCoApplicantList().add(corporateCoApplicantRequest);
+		return corporateCoApplicantRequest;
+	}
 }

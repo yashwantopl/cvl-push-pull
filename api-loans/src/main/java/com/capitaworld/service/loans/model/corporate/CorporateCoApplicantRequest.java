@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.model.corporate;
 
+import java.util.List;
+
 import com.capitaworld.service.loans.model.Address;
 
 public class CorporateCoApplicantRequest {
@@ -37,6 +39,18 @@ public class CorporateCoApplicantRequest {
 	private Boolean isCoApp2DetailsFilled;
 
 	private Boolean isActive;
+	
+	//CO-APPLICANT UPLOADS
+	
+	private List<Object> coApplicant_BankACStatments;
+	private List<Object> coApplicant_ItReturn;
+	private List<Object> coApplicant_BalanceSheet;
+	private List<Object> coApplicant_Form_16;
+	
+	private List<Object> coApplicant_AddressProof;
+	private List<Object> coApplicant_aadharCardList;
+	private List<Object> coApplicant_panCardList;
+
 
 	public Long getId() {
 		return id;
@@ -172,6 +186,62 @@ public class CorporateCoApplicantRequest {
 
 	public void setMonthlyIncome(Double monthlyIncome) {
 		this.monthlyIncome = monthlyIncome;
+	}
+
+	public List<Object> getCoApplicant_BankACStatments() {
+		return coApplicant_BankACStatments;
+	}
+
+	public void setCoApplicant_BankACStatments(List<Object> coApplicant_BankACStatments) {
+		this.coApplicant_BankACStatments = coApplicant_BankACStatments;
+	}
+
+	public List<Object> getCoApplicant_ItReturn() {
+		return coApplicant_ItReturn;
+	}
+
+	public void setCoApplicant_ItReturn(List<Object> coApplicant_ItReturn) {
+		this.coApplicant_ItReturn = coApplicant_ItReturn;
+	}
+
+	public List<Object> getCoApplicant_BalanceSheet() {
+		return coApplicant_BalanceSheet;
+	}
+
+	public void setCoApplicant_BalanceSheet(List<Object> coApplicant_BalanceSheet) {
+		this.coApplicant_BalanceSheet = coApplicant_BalanceSheet;
+	}
+
+	public List<Object> getCoApplicant_Form_16() {
+		return coApplicant_Form_16;
+	}
+
+	public void setCoApplicant_Form_16(List<Object> coApplicant_Form_16) {
+		this.coApplicant_Form_16 = coApplicant_Form_16;
+	}
+
+	public List<Object> getCoApplicant_AddressProof() {
+		return coApplicant_AddressProof;
+	}
+
+	public void setCoApplicant_AddressProof(List<Object> coApplicant_AddressProof) {
+		this.coApplicant_AddressProof = coApplicant_AddressProof;
+	}
+
+	public List<Object> getCoApplicant_aadharCardList() {
+		return coApplicant_aadharCardList;
+	}
+
+	public void setCoApplicant_aadharCardList(List<Object> coApplicant_aadharCardList) {
+		this.coApplicant_aadharCardList = coApplicant_aadharCardList;
+	}
+
+	public List<Object> getCoApplicant_panCardList() {
+		return coApplicant_panCardList;
+	}
+
+	public void setCoApplicant_panCardList(List<Object> coApplicant_panCardList) {
+		this.coApplicant_panCardList = coApplicant_panCardList;
 	}
 
 	
