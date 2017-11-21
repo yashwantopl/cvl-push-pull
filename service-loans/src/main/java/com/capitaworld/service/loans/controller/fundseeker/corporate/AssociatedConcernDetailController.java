@@ -126,6 +126,12 @@ public class AssociatedConcernDetailController {
 					calendar.setTime(new Date());
 					currentYear = calendar.get(Calendar.YEAR);
 				}
+				 else {
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(new Date());
+						currentYear = calendar.get(Calendar.YEAR);
+					}
+
 			} else {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());
