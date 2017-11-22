@@ -43,7 +43,7 @@ public class ServiceProviderController {
 					HttpStatus.OK);
 		}
 		try {
-			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Integer.parseInt(usersRequest.getPageIndex().toString()),Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()), usersRequest.getUserType().getCode());
+			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Integer.parseInt(usersRequest.getPageIndex().toString()),Integer.parseInt(usersRequest.getSize().toString()),Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()), usersRequest.getUserType().getCode());
 
 			if(clientList != null){
 				logger.info("Serivce provider's client list");

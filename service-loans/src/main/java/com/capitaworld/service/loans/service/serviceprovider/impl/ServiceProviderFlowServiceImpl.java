@@ -80,16 +80,13 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	@Autowired
 	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
-	@Value("${capitaworld.loans.sp.page.size}")
-	private Integer pageSize;
-
 	private static final String USERS_BASE_URL_KEY = "userURL";
 	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
 	@Override
-	public List<SpClientListing> spClientList(int pageIndex,Long spId, String userTypeCode) throws Exception {
+	public List<SpClientListing> spClientList(int pageIndex,int size,Long spId, String userTypeCode) throws Exception {
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		try {
-			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(pageIndex,pageSize,spId, userTypeCode);
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(pageIndex,size,spId, userTypeCode);
 			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
 			List<SpClientListing> clientListings = new ArrayList<SpClientListing>();
 			for (int i = 0; i < spClientResponseList.size(); i++) {
