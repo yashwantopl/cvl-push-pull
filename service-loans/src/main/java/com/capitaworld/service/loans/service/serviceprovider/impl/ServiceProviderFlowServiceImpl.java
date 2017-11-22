@@ -307,8 +307,14 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					            case 13://LOAN_AGAINST_PROPERTY
 					            	documentRequest.setProductDocumentMappingId(DocumentAlias.LAP_LOAN_PROFIEL_PICTURE);
 					            	break;
+								case 14://LAS_LOAN_PROFIEL_PICTURE
+					            	documentRequest.setProductDocumentMappingId(DocumentAlias.LAS_LOAN_PROFIEL_PICTURE);
+					            	break;
+								case 15://UNSECURED_LOAN_PROFIEL_PICTURE
+					            	documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE);
+					            	break;
 					            default:
-					                return null;
+									return null;
 								}
 								// applicant image
 								DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
