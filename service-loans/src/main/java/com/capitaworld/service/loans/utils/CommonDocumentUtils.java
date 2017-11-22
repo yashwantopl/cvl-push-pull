@@ -31,6 +31,8 @@ public class CommonDocumentUtils {
 			return DocumentAlias.LAP_LOAN_PROFIEL_PICTURE;
 		case 14:
 			return DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
+		case 15://UNSECURED_LOAN_PROFIEL_PICTURE
+			return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
 		}
 		return null;
 	}

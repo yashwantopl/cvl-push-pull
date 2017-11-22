@@ -2394,6 +2394,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return DocumentAlias.CAR_LOAN_PROFIEL_PICTURE;
 		case 13:// LOAN_AGAINST_PROPERTY
 			return DocumentAlias.LAP_LOAN_PROFIEL_PICTURE;
+		case 14://LAS_LOAN_PROFIEL_PICTURE
+				return  DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
+		case 15://UNSECURED_LOAN_PROFIEL_PICTURE
+				return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
+
 		default:
 			return null;
 		}
