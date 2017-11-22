@@ -2461,7 +2461,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return ekycResponse;
 			}
 			if(ekycRequest.getApplicantType()==CommonUtils.CORPORATE_COAPPLICANT){
-				CorporateCoApplicantDetail corpCoapp = corporateCoApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), ekycRequest.getApplicationId());
+				CorporateCoApplicantDetail corpCoapp = corporateCoApplicantRepository.get(ekycRequest.getApplicationId(),loanApplicationMaster.getUserId(),ekycRequest.getApplicantsId());
 				ekycResponse.setOrganizationName(corpCoapp.getOrganisationName());
 				ekycResponse.setPanNo(corpCoapp.getPanNo());
 				return ekycResponse;
