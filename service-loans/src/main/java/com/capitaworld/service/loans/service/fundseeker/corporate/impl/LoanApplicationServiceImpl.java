@@ -23,6 +23,7 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
@@ -2459,6 +2460,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ekycResponse.setPanNo(corp.getPanNo());
 			return ekycResponse;
 			}
+			if(ekycRequest.getApplicantType()==CommonUtils.CORPORATE_COAPPLICANT){
+				CorporateCoApplicantDetail corpCoapp = corporateCoApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), ekycRequest.getApplicationId());
+				ekycResponse.setOrganizationName(corpCoapp.getOrganisationName());
+				ekycResponse.setPanNo(corpCoapp.getPanNo());
+				return ekycResponse;
+			}
+			
 		}
 		else
 		{
