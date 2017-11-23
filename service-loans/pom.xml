@@ -118,6 +118,11 @@
 			<artifactId>api-rating</artifactId>
 			<version>0.0.1</version>
 		</dependency> -->
+		<dependency>
+			<groupId>com.capitaworld.cibil.client</groupId>
+			<artifactId>client-cibil</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
