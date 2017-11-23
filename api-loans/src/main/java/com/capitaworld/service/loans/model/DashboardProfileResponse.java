@@ -20,6 +20,7 @@ public class DashboardProfileResponse implements Serializable {
 	private String country;
 	private String address;
 	private String about;
+	private String pan;
 	public Long getId() {
 		return id;
 	}
@@ -71,6 +72,13 @@ public class DashboardProfileResponse implements Serializable {
 	}
 	public void setAbout(String about) {
 		this.about = about;
+	}
+	
+	public String getPan() {
+		return pan;
+	}
+	public void setPan(String pan) {
+		this.pan = pan;
 	}
 	public void setAddress() {
 		String finalAddress = CommonUtils.isObjectNullOrEmpty(this.city) ? "NA ," : this.city +" ,"; 
