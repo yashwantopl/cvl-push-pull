@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.model.SpSysNotifyResponse;
 
 public interface ServiceProviderFlowService {
 
-	public List<SpClientListing> spClientList(Long spId,String userTypeCode) throws Exception;
+	public List<SpClientListing> spClientList(int pageIndex,int size,Long spId,String userTypeCode) throws Exception;
 
 
   public JSONObject spClientCount(Long spId) throws Exception;

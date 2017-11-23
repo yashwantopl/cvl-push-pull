@@ -7,13 +7,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.ConnectionReleaseMode;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.utility.CibilUtils;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -24,9 +30,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
-import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
-import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -87,8 +91,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	DecimalFormat df = new DecimalFormat("#");
+	
+	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
@@ -111,6 +120,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+
+				if(!loanApplicationMaster.getIsActive()) {
+					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
+					continue;
+				}
+				
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -321,6 +336,39 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						// TODO: handle exception
 						e.printStackTrace();
 					}
+					try {
+						CibilRequest cibilRequest = new CibilRequest();
+						cibilRequest.setApplicationId(applicationId);
+						cibilRequest.setUserId(request.getUserId());
+						cibilRequest.setPan(retailApplicantDetail.getPan());
+						CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
+						if(!CibilUtils.isObjectNullOrEmpty(cibilResponse)) {
+							String response = (String)cibilResponse.getData();
+							if(!CibilUtils.isObjectNullOrEmpty(response)) {
+							    JSONObject jsonObject = new JSONObject(response);
+							    JSONObject asset = jsonObject.getJSONObject("Asset");
+							    if(!CibilUtils.isObjectNullOrEmpty(asset)) {
+							    	JSONObject trueLinkCreditReport = asset.getJSONObject("ns4:TrueLinkCreditReport");
+							    	if(!CibilUtils.isObjectNullOrEmpty(trueLinkCreditReport)) {
+							    		String score = trueLinkCreditReport.getJSONObject("ns4:Borrower").getJSONObject("ns4:CreditScore").getString("riskScore");
+							    		retailProposalDetails.setCibilSCore(score);
+							    	}else {
+							    		logger.info("no data Found from key ns4:TrueLinkCreditReport");    		
+							    	}
+							    	
+							    }else {
+						    		logger.info("no data Found from key ns4:Asset");    		
+						    	}
+							}else {
+					    		logger.info("Cibil Actual data Response Found NULL from Loans for PAN ==>" + cibilRequest.getPan());    		
+					    	}	
+						}else {
+							logger.info("CibilResponse Found NULL from Loans for PAN ==>" + cibilRequest.getPan());
+						}
+					}catch(Exception e) {
+						e.printStackTrace();
+						logger.error("Error while getting CIbilScore of User");
+					}
 					proposalDetailsList.add(retailProposalDetails);
 				}
 
@@ -353,6 +401,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						ProposalMappingRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+				if(!master.getIsActive()) {
+					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
+					continue;
+				}
 				UsersRequest userRequest = new UsersRequest();
 				userRequest.setId(master.getUserId());
 

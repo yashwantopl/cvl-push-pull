@@ -120,7 +120,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 							cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " - "
 									+ cal.get(Calendar.YEAR)));
 				}
-			} else if (todayDate.compareTo(comparisonDate) < 0) {
+			} else if (todayDate.compareTo(comparisonDate) <= 0) {
 				System.out.println("Comparison Date is before Today's Date");
 				int year = cal.get(Calendar.YEAR);
 				cal.set(year, currentMonth - 2, currentDate);

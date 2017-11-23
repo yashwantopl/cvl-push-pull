@@ -20,6 +20,7 @@ public class ProposalScheduler {
 	  logger.info("Entry ScheduledTasks proposal");
 	  try {
 	  //proposalDetailsClient.checkPendingProposal();
+		  logger.info("Proposasl Schedule Call................. ");
 		  proposalService.checkPendingProposal();
 	   logger.info("Exit ScheduledTasks proposal");
 	  } catch (Exception e) {

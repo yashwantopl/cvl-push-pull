@@ -33,7 +33,9 @@ public class CommonUtils {
 	public static final Long RETAIL_COAPPLICANT = 2L;
 	public static final Long RETAIL_GUARANTOR = 3L;
 	public static final Long CORPORATE_USER = 4L;
-
+	public static final Long CORPORATE_COAPPLICANT = 7L;
+	public static final Long CW_SP_USER_ID = 101L;
+	
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
@@ -84,7 +86,7 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14),UNSECURED_LOAN(15);
 		private int value;
 
 		private LoanType(int value) {
@@ -111,6 +113,8 @@ public class CommonUtils {
 				return LAP_LOAN;
 			case 14:
 				return LAS_LOAN;
+			case 15:
+				return UNSECURED_LOAN;
 			}
 			return null;
 		}
@@ -155,7 +159,7 @@ public class CommonUtils {
 	}
 
 	public static int getUserMainType(int productId) {
-		if (productId == 1 || productId == 2)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return 2;
 		else
 			return 1;
@@ -165,14 +169,14 @@ public class CommonUtils {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
-		if (productId == 1 || productId == 2)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return CORPORATE;
 		else
 			return RETAIL;
 	}
 
 	public static String getCorporateLoanType(int productId) {
-		if (productId == 1 || productId == 2)
+		if (productId == 1 || productId == 2 || productId == 15)
 			return "DEBT";
 		else
 			return "EQUITY";
@@ -373,8 +377,11 @@ public class CommonUtils {
 			return "Loan Against Property";
 		case 14:
 			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured Loan";
+		default :
+			return null;
 		}
-		return null;
 	}
 	
 	public static String getLoanNameForMail(Integer x) {
@@ -393,8 +400,11 @@ public class CommonUtils {
 			return "Loan Against Property";
 		case 14:
 			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured ";
+		default :
+			return null;
 		}
-		return null;
 	}
 
 }

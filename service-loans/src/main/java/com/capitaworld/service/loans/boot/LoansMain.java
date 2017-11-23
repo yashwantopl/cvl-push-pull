@@ -10,11 +10,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
+//import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
 
 /**
@@ -54,7 +56,12 @@ public class LoansMain {
 	
 	@Value("${matchesURL}")
 	private String matchEngineUrl;
+
+	@Value("${ratingURL}")
+	private String ratingUrl;
 	
+	@Value("${capitaworld.service.cibil.url}")
+	private String cibilUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -102,6 +109,21 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
+	
+	@Bean
+	public CIBILClient cibilClient(){
+		CIBILClient cibilClient = new CIBILClient(cibilUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(cibilClient);
+		return cibilClient;
+	}
+	
+
+	/*@Bean
+	public RatingClient ratingClient(){
+		RatingClient ratingClient = new RatingClient(ratingUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingClient);
+		return ratingClient;
+	}*/
 
 
 }

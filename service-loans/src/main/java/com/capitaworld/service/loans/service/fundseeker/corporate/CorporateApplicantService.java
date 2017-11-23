@@ -3,8 +3,10 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
-
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -25,5 +27,14 @@ public interface CorporateApplicantService {
 	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getCorporateEstablishmentYear(Long applicationId,Long userId) throws Exception;
+	
+	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception;
+	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
+	
+	//public CompanyDetails getCompanyDetails(Long applicationId,Long userId)throws Exception;
+	
+	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
+	
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	
 }

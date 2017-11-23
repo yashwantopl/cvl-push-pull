@@ -108,6 +108,21 @@
 			<artifactId>api-loans</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.cibil.client</groupId>
+			<artifactId>client-cibil</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- <dependency>
+			<groupId>com.capitaworld.rating</groupId>
+			<artifactId>client-rating</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.rating</groupId>
+			<artifactId>api-rating</artifactId>
+			<version>0.0.1</version>
+		</dependency> -->
 	</dependencies>
 
 	<build>

@@ -69,6 +69,13 @@ public class FundProviderSequenceServiceImpl implements FundProviderSequenceServ
                 fundProviderSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
                 CommonDocumentUtils.endHook(logger, "getFundProviderSequenceNumber");
                 return "CW-LAS-"+sequenceNumber;
+            case 15://Unsecure loan
+                sequenceNumber = fundProviderSequenceRepository.getFundProviderSequenceNumber(Long.valueOf(productId));
+                sequenceNumber+=1;
+                fundProviderSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
+                CommonDocumentUtils.endHook(logger, "getFundProviderSequenceNumber");
+                return "CW-USL-"+sequenceNumber;
+                
             default:
             	logger.error("Product Id Found NUll while getting Unique Sequence Number. ");
                 return null;
