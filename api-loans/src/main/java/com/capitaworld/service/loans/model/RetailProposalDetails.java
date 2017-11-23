@@ -18,6 +18,8 @@ public class RetailProposalDetails {
 	private String address;
 	
 	private String amount;
+	
+	private String cibilSCore;
 
 
 	public String getAmount() {
@@ -85,6 +87,13 @@ public class RetailProposalDetails {
 	public void setFsType(int fsType) {
 		this.fsType = fsType;
 	}
-	
+
+	public String getCibilSCore() {
+		return cibilSCore;
+	}
+
+	public void setCibilSCore(String cibilSCore) {
+		this.cibilSCore = cibilSCore;
+	}
 	
 }

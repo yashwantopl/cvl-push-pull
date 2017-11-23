@@ -51,6 +51,7 @@ public class ProposalController {
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
+		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
 		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
 		

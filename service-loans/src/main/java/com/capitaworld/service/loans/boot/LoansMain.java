@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -58,6 +59,9 @@ public class LoansMain {
 
 	@Value("${ratingURL}")
 	private String ratingUrl;
+	
+	@Value("${capitaworld.service.cibil.url}")
+	private String cibilUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -104,6 +108,13 @@ public class LoansMain {
 		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
+	}
+	
+	@Bean
+	public CIBILClient cibilClient(){
+		CIBILClient cibilClient = new CIBILClient(cibilUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(cibilClient);
+		return cibilClient;
 	}
 	
 
