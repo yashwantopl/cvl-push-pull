@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
@@ -801,6 +802,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -982,6 +984,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<ExistingLoanDetailRequest>> entity = new HttpEntity<List<ExistingLoanDetailRequest>>(detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -995,6 +998,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {

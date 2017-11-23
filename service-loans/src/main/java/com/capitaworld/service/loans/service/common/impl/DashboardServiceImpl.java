@@ -74,6 +74,7 @@ public class DashboardServiceImpl implements DashboardService {
 				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
 				return dashboardProfileResponse;
 			}
+			dashboardProfileResponse.setPan(corporateApplicantDetail.getPanNo());
 			dashboardProfileResponse.setId(corporateApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
 			// Setting City Value
@@ -115,6 +116,7 @@ public class DashboardServiceImpl implements DashboardService {
 				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
 				return dashboardProfileResponse;
 			}
+			dashboardProfileResponse.setPan(retailApplicantDetail.getPan());
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(retailApplicantDetail.getApplicationId().getId());
 			// Setting City Value
