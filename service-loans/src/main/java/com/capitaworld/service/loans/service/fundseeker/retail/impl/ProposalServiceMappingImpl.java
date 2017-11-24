@@ -350,8 +350,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							    if(!CibilUtils.isObjectNullOrEmpty(asset)) {
 							    	JSONObject trueLinkCreditReport = asset.getJSONObject("ns4:TrueLinkCreditReport");
 							    	if(!CibilUtils.isObjectNullOrEmpty(trueLinkCreditReport)) {
-							    		String score = trueLinkCreditReport.getJSONObject("ns4:Borrower").getJSONObject("ns4:CreditScore").getString("riskScore");
-							    		retailProposalDetails.setCibilSCore(score);
+							    		JSONObject creditScore = trueLinkCreditReport.getJSONObject("ns4:Borrower").getJSONObject("ns4:CreditScore");
+							    		if(!CibilUtils.isObjectNullOrEmpty(creditScore)) {
+							    			String score  = creditScore.get("riskScore").toString();
+							    			logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
+							    			retailProposalDetails.setCibilSCore(score);;
+							    		}else {
+							    			logger.info("no data Found from key ns4:CreditScore");
+							    		}
+							    		
 							    	}else {
 							    		logger.info("no data Found from key ns4:TrueLinkCreditReport");    		
 							    	}
