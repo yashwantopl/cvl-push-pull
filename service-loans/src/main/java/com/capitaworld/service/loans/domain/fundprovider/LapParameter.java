@@ -109,6 +109,124 @@ public class LapParameter extends ProductMaster implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	//FP NEW REQUIREMENT
+	@Column(name="employment_id")
+	private Integer employmentId;
+	
+	@Column(name="employment_place_id")
+	private Integer employmentPlaceId;
+	
+	@Column(name="property_type_id")
+	private Integer propertyTypeId;
+	
+	@Column(name="min_current_job_experience")
+	private Integer mincurrentJobExperience;
+	
+	@Column(name="max_current_job_experience")
+	private Integer maxCurrentJobExperience;
+	
+	@Column(name="min_total_job_experience")
+	private Integer minTotalJobExperience;
+	
+	@Column(name="max_total_job_experience")
+	private Integer maxTotalJobExperience;
+	
+	@Column(name="foir")
+	private Double foir;
+	
+	@Column(name="min_total_business_experience")
+	private Integer minTotalBusinessExperience;
+	
+	@Column(name="max_total_business_experience")
+	private Integer maxTotalBusinessExperience;
+	
+	@Column(name="min_cash_profit_yearly")
+	private Integer minCashProfitYearly;
+	
+	@Column(name="max_cash_profit_yearly")
+	private Integer maxCashProfitYearly;
+	
+	@Column(name="pat_previous_year")
+	private Double patPreviousYear;
+	
+	@Column(name="pat_current_year")
+	private Double patCurrentYear;
+	
+	@Column(name="is_pat_previous_year_selected")
+	private Boolean isPatPreviousYearSelected = false;
+	
+	@Column(name="is_pat_current_year_selected")
+	private Boolean isPatCurrentYearSelected = false;
+	
+	@Column(name="is_pat_average_selected")
+	private Boolean isPatAverageSelected = false;
+	
+	@Column(name="depreciation_previous_year")
+	private Double depreciationPreviousYear;
+	
+	@Column(name="depreciation_current_year")
+	private Double depreciationCurrentYear;
+	
+	@Column(name="is_depreciation_previous_year_selected")
+	private Boolean isDepreciationPreviousYearSelected = false;
+	
+	@Column(name="is_depreciation_current_year_selected")
+	private Boolean isDepreciationCurrentYearSelected = false;
+	
+	@Column(name="remuneration_previous_year")
+	private Double remunerationPreviousYear;
+	
+	@Column(name="remuneration_current_year")
+	private Double remunerationCurrentYear;
+	
+	@Column(name="is_remuneration_previous_year_selected")
+	private Boolean isRemunerationPreviousYearSelected = false;
+	
+	@Column(name="is_remuneration_current_year_selected")
+	private Boolean isRemunerationCurrentYearSelected = false;
+	
+	@Column(name="is_employment_type_display")
+	private Boolean isEmploymentTypeDisplay=false;
+
+	@Column(name="is_employment_type_mandatory")
+	private Boolean isEmploymentTypeMandatory=false;
+	
+	@Column(name="is_employment_place_display")
+	private Boolean isEmploymentPlaceDisplay=false;
+
+	@Column(name="is_employment_place_mandatory")
+	private Boolean isEmploymentPlaceMandatory=false;
+	
+	@Column(name="is_property_type_display")
+	private Boolean isPropertyTypeDisplay=false;
+
+	@Column(name="is_property_type_mandatory")
+	private Boolean isPropertyTypeMandatory=false;
+	
+	@Column(name="is_current_job_experience_display")
+	private Boolean isCurrentJobExperienceDisplay=false;
+
+	@Column(name="is_current_job_experience_mandatory")
+	private Boolean isCurrentJobExperienceMandatory=false;
+	
+	@Column(name="is_total_job_experience_display")
+	private Boolean isTotalJobExperienceDisplay=false;
+
+	@Column(name="is_total_job_experience_mandatory")
+	private Boolean isTotalJobExperienceMandatory=false;
+	
+	@Column(name="is_total_business_experience_display")
+	private Boolean isTotalBusinessExperienceDisplay=false;
+
+	@Column(name="is_total_business_experience_mandatory")
+	private Boolean isTotalBusinessExperienceMandatory=false;
+	
+	@Column(name="is_cash_profit_display")
+	private Boolean isCashProfitDisplay=false;
+	
+	@Column(name="is_cash_profit_mandatory")
+	private Boolean isCashProfitMandatory=false;
 
 	public LapParameter() {
 	}
@@ -345,4 +463,317 @@ public class LapParameter extends ProductMaster implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Integer getEmploymentId() {
+		return employmentId;
+	}
+
+	public void setEmploymentId(Integer employmentId) {
+		this.employmentId = employmentId;
+	}
+
+	public Integer getEmploymentPlaceId() {
+		return employmentPlaceId;
+	}
+
+	public void setEmploymentPlaceId(Integer employmentPlaceId) {
+		this.employmentPlaceId = employmentPlaceId;
+	}
+
+	public Integer getPropertyTypeId() {
+		return propertyTypeId;
+	}
+
+	public void setPropertyTypeId(Integer propertyTypeId) {
+		this.propertyTypeId = propertyTypeId;
+	}
+
+	public Integer getMincurrentJobExperience() {
+		return mincurrentJobExperience;
+	}
+
+	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
+		this.mincurrentJobExperience = mincurrentJobExperience;
+	}
+
+	public Integer getMaxCurrentJobExperience() {
+		return maxCurrentJobExperience;
+	}
+
+	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
+		this.maxCurrentJobExperience = maxCurrentJobExperience;
+	}
+
+	public Integer getMinTotalJobExperience() {
+		return minTotalJobExperience;
+	}
+
+	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
+		this.minTotalJobExperience = minTotalJobExperience;
+	}
+
+	public Integer getMaxTotalJobExperience() {
+		return maxTotalJobExperience;
+	}
+
+	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
+		this.maxTotalJobExperience = maxTotalJobExperience;
+	}
+
+	public Double getFoir() {
+		return foir;
+	}
+
+	public void setFoir(Double foir) {
+		this.foir = foir;
+	}
+
+	public Integer getMinTotalBusinessExperience() {
+		return minTotalBusinessExperience;
+	}
+
+	public void setMinTotalBusinessExperience(Integer minTotalBusinessExperience) {
+		this.minTotalBusinessExperience = minTotalBusinessExperience;
+	}
+
+	public Integer getMaxTotalBusinessExperience() {
+		return maxTotalBusinessExperience;
+	}
+
+	public void setMaxTotalBusinessExperience(Integer maxTotalBusinessExperience) {
+		this.maxTotalBusinessExperience = maxTotalBusinessExperience;
+	}
+
+	public Integer getMinCashProfitYearly() {
+		return minCashProfitYearly;
+	}
+
+	public void setMinCashProfitYearly(Integer minCashProfitYearly) {
+		this.minCashProfitYearly = minCashProfitYearly;
+	}
+
+	public Integer getMaxCashProfitYearly() {
+		return maxCashProfitYearly;
+	}
+
+	public void setMaxCashProfitYearly(Integer maxCashProfitYearly) {
+		this.maxCashProfitYearly = maxCashProfitYearly;
+	}
+
+	public Double getPatPreviousYear() {
+		return patPreviousYear;
+	}
+
+	public void setPatPreviousYear(Double patPreviousYear) {
+		this.patPreviousYear = patPreviousYear;
+	}
+
+	public Double getPatCurrentYear() {
+		return patCurrentYear;
+	}
+
+	public void setPatCurrentYear(Double patCurrentYear) {
+		this.patCurrentYear = patCurrentYear;
+	}
+
+	public Boolean getIsPatPreviousYearSelected() {
+		return isPatPreviousYearSelected;
+	}
+
+	public void setIsPatPreviousYearSelected(Boolean isPatPreviousYearSelected) {
+		this.isPatPreviousYearSelected = isPatPreviousYearSelected;
+	}
+
+	public Boolean getIsPatCurrentYearSelected() {
+		return isPatCurrentYearSelected;
+	}
+
+	public void setIsPatCurrentYearSelected(Boolean isPatCurrentYearSelected) {
+		this.isPatCurrentYearSelected = isPatCurrentYearSelected;
+	}
+
+	public Boolean getIsPatAverageSelected() {
+		return isPatAverageSelected;
+	}
+
+	public void setIsPatAverageSelected(Boolean isPatAverageSelected) {
+		this.isPatAverageSelected = isPatAverageSelected;
+	}
+
+	public Double getDepreciationPreviousYear() {
+		return depreciationPreviousYear;
+	}
+
+	public void setDepreciationPreviousYear(Double depreciationPreviousYear) {
+		this.depreciationPreviousYear = depreciationPreviousYear;
+	}
+
+	public Double getDepreciationCurrentYear() {
+		return depreciationCurrentYear;
+	}
+
+	public void setDepreciationCurrentYear(Double depreciationCurrentYear) {
+		this.depreciationCurrentYear = depreciationCurrentYear;
+	}
+
+	public Boolean getIsDepreciationPreviousYearSelected() {
+		return isDepreciationPreviousYearSelected;
+	}
+
+	public void setIsDepreciationPreviousYearSelected(Boolean isDepreciationPreviousYearSelected) {
+		this.isDepreciationPreviousYearSelected = isDepreciationPreviousYearSelected;
+	}
+
+	public Boolean getIsDepreciationCurrentYearSelected() {
+		return isDepreciationCurrentYearSelected;
+	}
+
+	public void setIsDepreciationCurrentYearSelected(Boolean isDepreciationCurrentYearSelected) {
+		this.isDepreciationCurrentYearSelected = isDepreciationCurrentYearSelected;
+	}
+
+	public Double getRemunerationPreviousYear() {
+		return remunerationPreviousYear;
+	}
+
+	public void setRemunerationPreviousYear(Double remunerationPreviousYear) {
+		this.remunerationPreviousYear = remunerationPreviousYear;
+	}
+
+	public Double getRemunerationCurrentYear() {
+		return remunerationCurrentYear;
+	}
+
+	public void setRemunerationCurrentYear(Double remunerationCurrentYear) {
+		this.remunerationCurrentYear = remunerationCurrentYear;
+	}
+
+	public Boolean getIsRemunerationPreviousYearSelected() {
+		return isRemunerationPreviousYearSelected;
+	}
+
+	public void setIsRemunerationPreviousYearSelected(Boolean isRemunerationPreviousYearSelected) {
+		this.isRemunerationPreviousYearSelected = isRemunerationPreviousYearSelected;
+	}
+
+	public Boolean getIsRemunerationCurrentYearSelected() {
+		return isRemunerationCurrentYearSelected;
+	}
+
+	public void setIsRemunerationCurrentYearSelected(Boolean isRemunerationCurrentYearSelected) {
+		this.isRemunerationCurrentYearSelected = isRemunerationCurrentYearSelected;
+	}
+
+	public Boolean getIsEmploymentTypeDisplay() {
+		return isEmploymentTypeDisplay;
+	}
+
+	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
+		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
+	}
+
+	public Boolean getIsEmploymentTypeMandatory() {
+		return isEmploymentTypeMandatory;
+	}
+
+	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
+		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
+	}
+
+	public Boolean getIsEmploymentPlaceDisplay() {
+		return isEmploymentPlaceDisplay;
+	}
+
+	public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay) {
+		this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay;
+	}
+
+	public Boolean getIsEmploymentPlaceMandatory() {
+		return isEmploymentPlaceMandatory;
+	}
+
+	public void setIsEmploymentPlaceMandatory(Boolean isEmploymentPlaceMandatory) {
+		this.isEmploymentPlaceMandatory = isEmploymentPlaceMandatory;
+	}
+
+	public Boolean getIsPropertyTypeDisplay() {
+		return isPropertyTypeDisplay;
+	}
+
+	public void setIsPropertyTypeDisplay(Boolean isPropertyTypeDisplay) {
+		this.isPropertyTypeDisplay = isPropertyTypeDisplay;
+	}
+
+	public Boolean getIsPropertyTypeMandatory() {
+		return isPropertyTypeMandatory;
+	}
+
+	public void setIsPropertyTypeMandatory(Boolean isPropertyTypeMandatory) {
+		this.isPropertyTypeMandatory = isPropertyTypeMandatory;
+	}
+
+	public Boolean getIsCurrentJobExperienceDisplay() {
+		return isCurrentJobExperienceDisplay;
+	}
+
+	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
+		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
+	}
+
+	public Boolean getIsCurrentJobExperienceMandatory() {
+		return isCurrentJobExperienceMandatory;
+	}
+
+	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
+		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
+	}
+
+	public Boolean getIsTotalJobExperienceDisplay() {
+		return isTotalJobExperienceDisplay;
+	}
+
+	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
+		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
+	}
+
+	public Boolean getIsTotalJobExperienceMandatory() {
+		return isTotalJobExperienceMandatory;
+	}
+
+	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
+		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
+	}
+
+	public Boolean getIsTotalBusinessExperienceDisplay() {
+		return isTotalBusinessExperienceDisplay;
+	}
+
+	public void setIsTotalBusinessExperienceDisplay(Boolean isTotalBusinessExperienceDisplay) {
+		this.isTotalBusinessExperienceDisplay = isTotalBusinessExperienceDisplay;
+	}
+
+	public Boolean getIsTotalBusinessExperienceMandatory() {
+		return isTotalBusinessExperienceMandatory;
+	}
+
+	public void setIsTotalBusinessExperienceMandatory(Boolean isTotalBusinessExperienceMandatory) {
+		this.isTotalBusinessExperienceMandatory = isTotalBusinessExperienceMandatory;
+	}
+
+	public Boolean getIsCashProfitDisplay() {
+		return isCashProfitDisplay;
+	}
+
+	public void setIsCashProfitDisplay(Boolean isCashProfitDisplay) {
+		this.isCashProfitDisplay = isCashProfitDisplay;
+	}
+
+	public Boolean getIsCashProfitMandatory() {
+		return isCashProfitMandatory;
+	}
+
+	public void setIsCashProfitMandatory(Boolean isCashProfitMandatory) {
+		this.isCashProfitMandatory = isCashProfitMandatory;
+	}
+
+	
 }
