@@ -63,7 +63,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private List<DataRequest> cityList = Collections.emptyList();
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
 	private Integer employmentPlaceId;
@@ -94,7 +94,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	
 	private Boolean isTotalJobExperienceDisplay=false;
 
-	private Boolean isTotalJobExperienceMandatory=false;
+	private Boolean isTotalJobExperienceMandatory=false;*/
 
 	public PersonalLoanParameterRequest() {
 	}
@@ -283,7 +283,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.cityList = cityList;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -409,6 +409,6 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
 		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
-	}
+	}*/
 	
 }

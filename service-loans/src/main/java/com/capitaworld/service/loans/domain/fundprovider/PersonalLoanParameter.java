@@ -98,7 +98,7 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="modified_date")
 	private Date modifiedDate;
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	@Column(name="employment_id")
 	private Integer employmentId;
 	
@@ -142,7 +142,7 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	private Boolean isTotalJobExperienceDisplay=false;
 
 	@Column(name="is_total_job_experience_mandatory")
-	private Boolean isTotalJobExperienceMandatory=false;
+	private Boolean isTotalJobExperienceMandatory=false;*/
 
 	public PersonalLoanParameter() {
 	}
@@ -347,7 +347,7 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -465,7 +465,7 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 
 	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
 		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
-	}
+	}*/
 
 	
 }

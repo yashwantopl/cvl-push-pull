@@ -70,7 +70,7 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 
 	private List<DataRequest> cityList = Collections.emptyList();
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
 	private Integer employmentPlaceId;
@@ -147,7 +147,7 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	
 	private Boolean isCashProfitDisplay=false;
 	
-	private Boolean isCashProfitMandatory=false;
+	private Boolean isCashProfitMandatory=false;*/
 
 	public CarLoanParameterRequest() {
 	}
@@ -368,7 +368,7 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 		this.cityList = cityList;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -678,6 +678,6 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 
 	public void setIsCashProfitMandatory(Boolean isCashProfitMandatory) {
 		this.isCashProfitMandatory = isCashProfitMandatory;
-	}
+	}*/
 	
 }

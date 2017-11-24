@@ -71,7 +71,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private List<DataRequest> cityList = Collections.emptyList();
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
 	private Integer employmentPlaceId;
@@ -148,7 +148,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 	
 	private Boolean isCashProfitDisplay=false;
 	
-	private Boolean isCashProfitMandatory=false;
+	private Boolean isCashProfitMandatory=false;*/
 
 	
 	public HomeLoanParameterRequest() {
@@ -370,7 +370,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 		this.cityList = cityList;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -680,6 +680,6 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setIsCashProfitMandatory(Boolean isCashProfitMandatory) {
 		this.isCashProfitMandatory = isCashProfitMandatory;
-	}
+	}*/
 	
 }

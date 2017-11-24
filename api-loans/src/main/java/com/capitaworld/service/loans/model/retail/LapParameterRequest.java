@@ -71,7 +71,7 @@ public class LapParameterRequest extends ProductMasterRequest implements Seriali
 
 	private List<DataRequest> cityList = Collections.emptyList();
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
 	private Integer employmentPlaceId;
@@ -148,7 +148,7 @@ public class LapParameterRequest extends ProductMasterRequest implements Seriali
 	
 	private Boolean isCashProfitDisplay=false;
 	
-	private Boolean isCashProfitMandatory=false;
+	private Boolean isCashProfitMandatory=false;*/
 
 
 	public LapParameterRequest() {
@@ -370,7 +370,7 @@ public class LapParameterRequest extends ProductMasterRequest implements Seriali
 		this.cityList = cityList;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -680,7 +680,7 @@ public class LapParameterRequest extends ProductMasterRequest implements Seriali
 
 	public void setIsCashProfitMandatory(Boolean isCashProfitMandatory) {
 		this.isCashProfitMandatory = isCashProfitMandatory;
-	}
+	}*/
 	
 	
 }

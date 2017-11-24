@@ -110,7 +110,7 @@ public class LapParameter extends ProductMaster implements Serializable {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 	
-	//FP NEW REQUIREMENT
+	/*//FP NEW REQUIREMENT
 	@Column(name="employment_id")
 	private Integer employmentId;
 	
@@ -226,7 +226,7 @@ public class LapParameter extends ProductMaster implements Serializable {
 	private Boolean isCashProfitDisplay=false;
 	
 	@Column(name="is_cash_profit_mandatory")
-	private Boolean isCashProfitMandatory=false;
+	private Boolean isCashProfitMandatory=false;*/
 
 	public LapParameter() {
 	}
@@ -463,7 +463,7 @@ public class LapParameter extends ProductMaster implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
-	public Integer getEmploymentId() {
+	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
 
@@ -773,7 +773,7 @@ public class LapParameter extends ProductMaster implements Serializable {
 
 	public void setIsCashProfitMandatory(Boolean isCashProfitMandatory) {
 		this.isCashProfitMandatory = isCashProfitMandatory;
-	}
+	}*/
 
 	
 }
