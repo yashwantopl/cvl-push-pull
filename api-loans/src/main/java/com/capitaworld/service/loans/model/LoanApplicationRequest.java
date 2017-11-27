@@ -42,7 +42,11 @@ public class LoanApplicationRequest implements Serializable {
 
 	private String currencyValue;
 	
+	private Boolean isApplicantDetailsFilled;
+	
 	private Boolean isApplicantPrimaryFilled;
+	
+	private Boolean isApplicantFinalFilled;
 	
 	private String applicationCode;
 	
@@ -264,4 +268,22 @@ public class LoanApplicationRequest implements Serializable {
 	public void setFinalLocked(Boolean finalLocked) {
 		this.finalLocked = finalLocked;
 	}
+
+	public Boolean getIsApplicantDetailsFilled() {
+		return isApplicantDetailsFilled;
+	}
+
+	public void setIsApplicantDetailsFilled(Boolean isApplicantDetailsFilled) {
+		this.isApplicantDetailsFilled = isApplicantDetailsFilled;
+	}
+
+	public Boolean getIsApplicantFinalFilled() {
+		return isApplicantFinalFilled;
+	}
+
+	public void setIsApplicantFinalFilled(Boolean isApplicantFinalFilled) {
+		this.isApplicantFinalFilled = isApplicantFinalFilled;
+	}
+	
+	
 }

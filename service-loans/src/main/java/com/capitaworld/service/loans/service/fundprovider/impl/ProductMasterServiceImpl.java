@@ -28,6 +28,7 @@ import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
@@ -41,6 +42,7 @@ import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
@@ -64,6 +66,7 @@ import com.capitaworld.service.loans.service.fundprovider.LapLoanParameterServic
 import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -126,6 +129,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private TermLoanParameterService termLoanParameterService;
 
 	@Autowired
+	private UnsecuredLoanParameterService unsecuredLoanParameterService;
+
+	@Autowired
 	private HomeLoanParameterService homeLoanParameterService;
 
 	@Autowired
@@ -139,12 +145,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
-	
+
 	@Autowired
 	private DMSClient dmsClient;
-	
-	@Autowired 
-	private LoanApplicationRepository loanApplicationRepository; 
+
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest) {
@@ -171,6 +177,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				case TERM_LOAN:
 					productMaster = new TermLoanParameter();
 					break;
+				case UNSECURED_LOAN:
+					productMaster = new UnsecureLoanParameter();
+					break;
+
 				case HOME_LOAN:
 					productMaster = new HomeLoanParameter();
 					break;
@@ -206,8 +216,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				return true;
 			}
 
-			
-			
 		}
 
 		catch (Exception e) {
@@ -321,7 +329,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					UsersRequest req = new UsersRequest();
 					req.setId(productMaster.getId());
 					usersClient.setLastAccessApplicant(req);
-				}else{
+				} else {
 					UsersRequest req = new UsersRequest();
 					req.setId(null);
 					usersClient.setLastAccessApplicant(req);
@@ -470,6 +478,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						requests.add(workingCapitalParameterService.getWorkingCapitalParameter(master.getId()));
 					} else if (master.getProductId() == 2) {
 						requests.add(termLoanParameterService.getTermLoanParameterRequest(master.getId()));
+					} else if (master.getProductId() == 15) {
+						requests.add(unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId()));
 					}
 				}
 			}
@@ -519,6 +529,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return termLoanParameterService.saveOrUpdate(loanParameterRequest);
+				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
+					UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					return unsecuredLoanParameterService.saveOrUpdate(unsecuredLoanParameterRequest);
 				}
 			}
 		}
@@ -584,39 +599,36 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						ChatDetails chatDetails = new ChatDetails();
 						ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
 								(LinkedHashMap<String, Object>) linkedHashMap, ProposalMappingRequest.class);
-						
+
 						ProductMaster productMaster = productMasterRepository
 								.findOne(proposalMappingRequest.getFpProductId());
 						chatDetails.setProposalId(proposalMappingRequest.getId());
 						chatDetails.setAppAndFpMappingId(proposalMappingRequest.getFpProductId());
 						chatDetails.setIsAppFpProdActive(isProductActive(proposalMappingRequest.getFpProductId()));
 						chatDetails.setName(productMaster.getFpName());
-			
-						//set profile pic
-						 DocumentRequest documentRequest = new DocumentRequest();
-						 documentRequest.setUserType(DocumentAlias.UERT_TYPE_USER);
-						 documentRequest.setUserId(productMaster.getUserId());
-						 documentRequest.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
-						  try {
-						        DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-						        if(!CommonUtils.isObjectNullOrEmpty(documentResponse))
-						        {
-						        	if(!CommonUtils.isListNullOrEmpty(documentResponse.getDataList()))
-						        	{
-						        		StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper.getObjectFromMap(
-												(LinkedHashMap<String, Object>) documentResponse.getDataList().get(0),
-												StorageDetailsResponse.class);
-						        		if(!CommonUtils.isObjectNullOrEmpty(storageDetailsResponse))
-						        		{
-						        			chatDetails.setProfile(storageDetailsResponse.getFilePath());
-						        		}
-						        	}
-						        }
-						    } catch (DocumentException e) {
-						        e.printStackTrace();
-						        throw new DocumentException(e.getMessage());
-						    	}
-						
+
+						// set profile pic
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setUserType(DocumentAlias.UERT_TYPE_USER);
+						documentRequest.setUserId(productMaster.getUserId());
+						documentRequest.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
+						try {
+							DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+							if (!CommonUtils.isObjectNullOrEmpty(documentResponse)) {
+								if (!CommonUtils.isListNullOrEmpty(documentResponse.getDataList())) {
+									StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper
+											.getObjectFromMap((LinkedHashMap<String, Object>) documentResponse
+													.getDataList().get(0), StorageDetailsResponse.class);
+									if (!CommonUtils.isObjectNullOrEmpty(storageDetailsResponse)) {
+										chatDetails.setProfile(storageDetailsResponse.getFilePath());
+									}
+								}
+							}
+						} catch (DocumentException e) {
+							e.printStackTrace();
+							throw new DocumentException(e.getMessage());
+						}
+
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
@@ -638,11 +650,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public boolean isProductActive(Long productId) {
 		Long count = productMasterRepository.getActiveProductsById(productId);
-		if(!CommonUtils.isObjectNullOrEmpty(count) && (count > 0)){
+		if (!CommonUtils.isObjectNullOrEmpty(count) && (count > 0)) {
 			return true;
 		}
 		return false;
 	}
-
 
 }

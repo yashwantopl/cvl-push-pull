@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +62,27 @@ public class GuarantorsCorporateDetail implements Serializable {
 
 	@Column(name="property_type")
 	private String propertyType;
+	
+	@Column(name="industry_list")
+	private Integer industrylist;
+
+	@Column(name="sector_list")
+	private Integer sectorlist;
+	
+	@Column(name = "constitution_id")
+	private Integer constitutionId;
+	
+	@Column(name = "pan")
+	private String panNo;
+	
+	@Column(name = "profit_after_tax")
+	private String profitAfterTax;
+	
+	@Column(name = "address")
+	private String address;
+	
+	@Column(name = "contact_number")
+	private String contactNumber;
 
 	public GuarantorsCorporateDetail() {
 	}
@@ -152,4 +175,62 @@ public class GuarantorsCorporateDetail implements Serializable {
 		this.propertyType = propertyType;
 	}
 
+	public Integer getIndustrylist() {
+		return industrylist;
+	}
+
+	public void setIndustrylist(Integer industrylist) {
+		this.industrylist = industrylist;
+	}
+
+	public Integer getSectorlist() {
+		return sectorlist;
+	}
+
+	public void setSectorlist(Integer sectorlist) {
+		this.sectorlist = sectorlist;
+	}
+
+	public Integer getConstitutionId() {
+		return constitutionId;
+	}
+
+	public void setConstitutionId(Integer constitutionId) {
+		this.constitutionId = constitutionId;
+	}
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
+	}
+
+	public String getProfitAfterTax() {
+		return profitAfterTax;
+	}
+
+	public void setProfitAfterTax(String profitAfterTax) {
+		this.profitAfterTax = profitAfterTax;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getContactNumber() {
+		return contactNumber;
+	}
+
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
+
+	
+	
 }

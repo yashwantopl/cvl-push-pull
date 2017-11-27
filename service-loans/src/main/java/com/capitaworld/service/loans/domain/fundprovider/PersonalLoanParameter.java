@@ -97,6 +97,52 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	/*//FP NEW REQUIREMENT
+	@Column(name="employment_id")
+	private Integer employmentId;
+	
+	@Column(name="employment_place_id")
+	private Integer employmentPlaceId;
+	
+	@Column(name="min_current_job_experience")
+	private Integer mincurrentJobExperience;
+	
+	@Column(name="max_current_job_experience")
+	private Integer maxCurrentJobExperience;
+	
+	@Column(name="min_total_job_experience")
+	private Integer minTotalJobExperience;
+	
+	@Column(name="max_total_job_experience")
+	private Integer maxTotalJobExperience;
+	
+	@Column(name="foir")
+	private Double foir;
+	
+	@Column(name="is_employment_type_display")
+	private Boolean isEmploymentTypeDisplay=false;
+
+	@Column(name="is_employment_type_mandatory")
+	private Boolean isEmploymentTypeMandatory=false;
+	
+	@Column(name="is_employment_place_display")
+	private Boolean isEmploymentPlaceDisplay=false;
+
+	@Column(name="is_employment_place_mandatory")
+	private Boolean isEmploymentPlaceMandatory=false;
+	
+	@Column(name="is_current_job_experience_display")
+	private Boolean isCurrentJobExperienceDisplay=false;
+
+	@Column(name="is_current_job_experience_mandatory")
+	private Boolean isCurrentJobExperienceMandatory=false;
+	
+	@Column(name="is_total_job_experience_display")
+	private Boolean isTotalJobExperienceDisplay=false;
+
+	@Column(name="is_total_job_experience_mandatory")
+	private Boolean isTotalJobExperienceMandatory=false;*/
 
 	public PersonalLoanParameter() {
 	}
@@ -301,4 +347,125 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 		this.modifiedDate = modifiedDate;
 	}
 
+	/*public Integer getEmploymentId() {
+		return employmentId;
+	}
+
+	public void setEmploymentId(Integer employmentId) {
+		this.employmentId = employmentId;
+	}
+
+	public Integer getEmploymentPlaceId() {
+		return employmentPlaceId;
+	}
+
+	public void setEmploymentPlaceId(Integer employmentPlaceId) {
+		this.employmentPlaceId = employmentPlaceId;
+	}
+
+	public Integer getMincurrentJobExperience() {
+		return mincurrentJobExperience;
+	}
+
+	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
+		this.mincurrentJobExperience = mincurrentJobExperience;
+	}
+
+	public Integer getMaxCurrentJobExperience() {
+		return maxCurrentJobExperience;
+	}
+
+	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
+		this.maxCurrentJobExperience = maxCurrentJobExperience;
+	}
+
+	public Integer getMinTotalJobExperience() {
+		return minTotalJobExperience;
+	}
+
+	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
+		this.minTotalJobExperience = minTotalJobExperience;
+	}
+
+	public Integer getMaxTotalJobExperience() {
+		return maxTotalJobExperience;
+	}
+
+	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
+		this.maxTotalJobExperience = maxTotalJobExperience;
+	}
+
+	public Double getFoir() {
+		return foir;
+	}
+
+	public void setFoir(Double foir) {
+		this.foir = foir;
+	}
+
+	public Boolean getIsEmploymentTypeDisplay() {
+		return isEmploymentTypeDisplay;
+	}
+
+	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
+		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
+	}
+
+	public Boolean getIsEmploymentTypeMandatory() {
+		return isEmploymentTypeMandatory;
+	}
+
+	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
+		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
+	}
+
+	public Boolean getIsEmploymentPlaceDisplay() {
+		return isEmploymentPlaceDisplay;
+	}
+
+	public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay) {
+		this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay;
+	}
+
+	public Boolean getIsEmploymentPlaceMandatory() {
+		return isEmploymentPlaceMandatory;
+	}
+
+	public void setIsEmploymentPlaceMandatory(Boolean isEmploymentPlaceMandatory) {
+		this.isEmploymentPlaceMandatory = isEmploymentPlaceMandatory;
+	}
+
+	public Boolean getIsCurrentJobExperienceDisplay() {
+		return isCurrentJobExperienceDisplay;
+	}
+
+	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
+		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
+	}
+
+	public Boolean getIsCurrentJobExperienceMandatory() {
+		return isCurrentJobExperienceMandatory;
+	}
+
+	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
+		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
+	}
+
+	public Boolean getIsTotalJobExperienceDisplay() {
+		return isTotalJobExperienceDisplay;
+	}
+
+	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
+		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
+	}
+
+	public Boolean getIsTotalJobExperienceMandatory() {
+		return isTotalJobExperienceMandatory;
+	}
+
+	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
+		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
+	}*/
+
+	
 }

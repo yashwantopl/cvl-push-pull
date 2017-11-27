@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -29,8 +32,13 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 @RequestMapping("/proposal")
 public class ProposalController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(ProposalController.class.getName());
+	
 	@Autowired
 	ProposalService proposalService;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
 	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -43,6 +51,7 @@ public class ProposalController {
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
+		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
 		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
 		
@@ -117,6 +126,7 @@ public class ProposalController {
 	public ResponseEntity<ProposalMappingResponse> sendRequest(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		Long userId = null;
 		Long userType = null;
+		Integer loginUserType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
 				.intValue()) {
 			userId = clientId;
@@ -127,7 +137,18 @@ public class ProposalController {
 		}
 		request.setUserId(userId);
 		request.setUserType(userType.longValue());
-		return new ResponseEntity<ProposalMappingResponse>(proposalService.sendRequest(request),HttpStatus.OK);
+		ProposalMappingResponse response = proposalService.sendRequest(request);
+		if(response.getStatus() == HttpStatus.OK.value()) {
+			if(CommonUtils.UserType.FUND_PROVIDER == loginUserType) {
+				logger.info("ProposalController, FP send request to fund seeker and sent mail");
+				if(!CommonUtils.isObjectNullOrEmpty(request.getFpProductId()) && !CommonUtils.isObjectNullOrEmpty(request.getFpProductId())) {
+					asyncComponent.sentMailWhenFPSentFSDirectREquest(userId,request.getFpProductId(),request.getApplicationId());	
+				} else {
+					logger.info("ProposalController, FP ProductId or application id null or empty");	
+				}
+			}
+		}
+		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}
 	
 	

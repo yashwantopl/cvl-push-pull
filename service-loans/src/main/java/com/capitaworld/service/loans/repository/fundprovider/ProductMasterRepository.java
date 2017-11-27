@@ -27,7 +27,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMaster> getUserProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2)")
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15)")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId not in (1,2)")

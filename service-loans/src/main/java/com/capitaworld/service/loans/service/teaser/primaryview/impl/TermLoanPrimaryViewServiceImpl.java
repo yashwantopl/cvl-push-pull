@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,11 +36,6 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
@@ -108,9 +105,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
 
 	@Autowired
-	private PastFinancialEstiamateDetailsService pastFinancialEstiamateDetailsService;
-
-	@Autowired
 	private FutureFinancialEstimatesDetailsService futureFinancialEstimatesDetailsService;
 
 	@Autowired
@@ -141,9 +135,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Autowired
-	private ProductMasterService productMasterService;
-
-	@Autowired
 	private DMSClient dmsClient;
 
 	@Autowired
@@ -151,6 +142,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -500,8 +494,11 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 		// get value of Past Financial and set in response
 		try {
-			termLoanPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(
-					pastFinancialEstiamateDetailsService.getFinancialListData(userId, toApplicationId));
+			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
+			if (pastFinancialEstimatesDetailRequestList.size()>4){
+				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
+			}
+			termLoanPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Past Financial {}", e);
 		}
