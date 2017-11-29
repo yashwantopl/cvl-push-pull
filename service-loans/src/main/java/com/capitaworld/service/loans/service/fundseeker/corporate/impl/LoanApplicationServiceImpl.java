@@ -2167,7 +2167,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws Exception {
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type,MobileLoanRequest loanRequest) throws Exception {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -2186,8 +2186,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (UsersRequest obj : listOfObjects) {
 			userIds.add(obj.getId());
 		}
-		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository
-				.getLoanDetailsForAdminPanel(userIds);
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,loanRequest.getFromDate(),loanRequest.getToDate());
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
