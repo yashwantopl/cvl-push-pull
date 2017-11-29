@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -2057,6 +2058,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY,23);
+		cal.set(Calendar.MINUTE,59);
+		cal.set(Calendar.SECOND,0);
+		logger.info("GetUsersRegisteredLoanDetails, from and todate for admin panel --------> "+cal.getTime());
+		loanRequest.setToDate(cal.getTime());
 		UserResponse userResponse = userClient.getRegisterdUserList(new MobileUserRequest(loanRequest.getUserType(), loanRequest.getFromDate(), loanRequest.getToDate()));
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
@@ -2186,6 +2194,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (UsersRequest obj : listOfObjects) {
 			userIds.add(obj.getId());
 		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY,23);
+		cal.set(Calendar.MINUTE,59);
+		cal.set(Calendar.SECOND,0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> "+cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+		
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,loanRequest.getFromDate(),loanRequest.getToDate());
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
