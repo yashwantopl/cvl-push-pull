@@ -2063,6 +2063,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY,23);
 		cal.set(Calendar.MINUTE,59);
 		cal.set(Calendar.SECOND,0);
+		logger.info("GetUsersRegisteredLoanDetails, from and todate for admin panel --------> "+cal.getTime());
+		loanRequest.setToDate(cal.getTime());
 		UserResponse userResponse = userClient.getRegisterdUserList(new MobileUserRequest(loanRequest.getUserType(), loanRequest.getFromDate(), loanRequest.getToDate()));
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
@@ -2197,6 +2199,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY,23);
 		cal.set(Calendar.MINUTE,59);
 		cal.set(Calendar.SECOND,0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> "+cal.getTime());
+		loanRequest.setToDate(cal.getTime());
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository
 				.getLoanDetailsForAdminPanel(userIds,loanRequest.getFromDate(),loanRequest.getToDate());
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
