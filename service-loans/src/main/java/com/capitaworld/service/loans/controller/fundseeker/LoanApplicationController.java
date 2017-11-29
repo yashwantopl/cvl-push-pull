@@ -827,13 +827,13 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getLoanDetailsForAdminPanel", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getLoanDetailsForAdminPanel() {
+	@RequestMapping(value = "/getLoanDetailsForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanDetailsForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(1));
+			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(1,loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForAdminPanel==>", e);
@@ -844,13 +844,13 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getFilledLoanDetailsForAdminPanel", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFilledLoanDetailsForAdminPanel() {
+	@RequestMapping(value = "/getFilledLoanDetailsForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFilledLoanDetailsForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getFilledLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(2));
+			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(2,loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getFilledLoanDetailsForAdminPanel==>", e);
