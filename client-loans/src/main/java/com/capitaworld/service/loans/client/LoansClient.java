@@ -328,13 +328,13 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getLoanDetailsForAdminPanel() throws LoansException {
+	public LoansResponse getLoanDetailsForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -342,13 +342,13 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getFilledLoanDetailsForAdminPanel() throws LoansException {
+	public LoansResponse getFilledLoanDetailsForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
 		String url = loansBaseUrl.concat(GET_FILLED_LOAN_DETAILS_ADMIN_PANEL);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<Long> entity = new HttpEntity<Long>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
 			e.printStackTrace();
