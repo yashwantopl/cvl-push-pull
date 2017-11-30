@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -142,8 +143,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int setFinalFilledCount(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("finalFilledCount") String finalFilledCount);
 	
-	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true")
-	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds);
+	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true and (lm.createdDate BETWEEN :fromDate and :toDate)")
+	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 
 	
 	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
