@@ -95,6 +95,7 @@ public interface LoanApplicationService {
 	
 	public Long getUserIdByApplicationId(Long applicationId);
 	
+	public boolean saveFromCampaign(Long userId, Long clientId, Integer productId) throws Exception;
 
 	
 }
