@@ -234,7 +234,7 @@ public class CommonController {
 		if (userType == CommonUtils.UserType.FUND_SEEKER || userType == CommonUtils.UserType.FUND_PROVIDER) {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				if(CommonUtils.isObjectNullOrEmpty(response.getData())) {
+				if(!CommonUtils.isObjectNullOrEmpty(response.getData())) {
 					UsersRequest uReq = (UsersRequest)response.getData();
 					obj.put("lastAccessId", uReq.getLastAccessApplicantId());
 					obj.put("campaignCode", uReq.getCampaignCode());
