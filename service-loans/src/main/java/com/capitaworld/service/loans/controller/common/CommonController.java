@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -41,6 +42,9 @@ public class CommonController {
 
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private LoanApplicationService applicationService;
 
 	@RequestMapping(value = "/save_lat_long", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest,
@@ -236,10 +240,11 @@ public class CommonController {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
 				if (!CommonUtils.isObjectNullOrEmpty(response.getData())) {
-					UsersRequest uReq = (UsersRequest) MultipleJSONObjectHelper
-							.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(), UsersRequest.class);
-					obj.put("lastAccessId", uReq.getLastAccessApplicantId());
-					obj.put("campaignCode", uReq.getCampaignCode());
+					obj.put("lastAccessId", response.getId());
+					if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+						obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
+						obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -256,7 +261,7 @@ public class CommonController {
 			 * productMasterlist.get(0).getId() : null); }
 			 */ else if (userType == CommonUtils.UserType.SERVICE_PROVIDER) {
 			obj.put("productId", null);
-			obj.put("lastAccessId", null);
+			obj.put("lastAccessAppId", null);
 		}
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, "Successfully get data", HttpStatus.OK.value()),
