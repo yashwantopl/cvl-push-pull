@@ -50,6 +50,13 @@ public class DashboardController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
+			if(CommonUtils.isObjectNullOrEmpty(userType) || (userType != CommonUtils.UserType.FUND_SEEKER && userType != CommonUtils.UserType.FUND_PROVIDER)){
+				logger.warn("Application Id or UserType must not be Empty");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
 			if (userType == CommonUtils.UserType.FUND_SEEKER) {
 				if (CommonUtils.isObjectNullOrEmpty(data.getId())) {
 					logger.warn("Application Id must not be Empty");
@@ -57,13 +64,6 @@ public class DashboardController {
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
-			}
-			
-			if(CommonUtils.isObjectNullOrEmpty(userType) || (userType != CommonUtils.UserType.FUND_SEEKER && userType != CommonUtils.UserType.FUND_PROVIDER)){
-				logger.warn("Application Id or UserType must not be Empty");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-						HttpStatus.OK);
 			}
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value());			

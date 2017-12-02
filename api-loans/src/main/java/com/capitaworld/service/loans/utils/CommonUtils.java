@@ -35,7 +35,7 @@ public class CommonUtils {
 	public static final Long CORPORATE_USER = 4L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
-	
+
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
@@ -86,7 +86,8 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14),UNSECURED_LOAN(15);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(
+				14), UNSECURED_LOAN(15);
 		private int value;
 
 		private LoanType(int value) {
@@ -379,11 +380,11 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured Loan";
-		default :
+		default:
 			return null;
 		}
 	}
-	
+
 	public static String getLoanNameForMail(Integer x) {
 		switch (x) {
 		case 1:
@@ -402,7 +403,29 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured ";
-		default :
+		default:
+			return null;
+		}
+	}
+
+	public static Integer getProductIdByLoanCode(String x) {
+		if ("WL".equalsIgnoreCase(x)) {
+			return LoanType.WORKING_CAPITAL.getValue();
+		} else if ("TL".equalsIgnoreCase(x)) {
+			return LoanType.TERM_LOAN.getValue();
+		} else if ("HL".equalsIgnoreCase(x)) {
+			return LoanType.HOME_LOAN.getValue();
+		} else if ("CL".equalsIgnoreCase(x)) {
+			return LoanType.CAR_LOAN.getValue();
+		} else if ("PL".equalsIgnoreCase(x)) {
+			return LoanType.PERSONAL_LOAN.getValue();
+		} else if ("LAP".equalsIgnoreCase(x)) {
+			return LoanType.LAP_LOAN.getValue();
+		} else if ("LAS".equalsIgnoreCase(x)) {
+			return LoanType.LAS_LOAN.getValue();
+		} else if ("UL".equalsIgnoreCase(x)) {
+			return LoanType.UNSECURED_LOAN.getValue();
+		} else {
 			return null;
 		}
 	}
