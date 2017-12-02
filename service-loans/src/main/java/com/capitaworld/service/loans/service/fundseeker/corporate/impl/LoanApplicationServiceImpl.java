@@ -192,8 +192,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setUserId(finalUserId);
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
-			applicationMaster.setModifiedBy(userId);
-			applicationMaster.setModifiedDate(new Date());
 			applicationMaster
 					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			applicationMaster = loanApplicationRepository.save(applicationMaster);

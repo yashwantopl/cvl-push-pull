@@ -1025,6 +1025,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start createLoanFromCampaign()");
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
+			
 			Integer productId = CommonUtils.getProductIdByLoanCode(code);
 			loanApplicationService.saveFromCampaign(userId, null, productId);
 			logger.info("end createLoanFromCampaign()");
