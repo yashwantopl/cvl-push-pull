@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -234,12 +235,14 @@ public class CommonController {
 		if (userType == CommonUtils.UserType.FUND_SEEKER || userType == CommonUtils.UserType.FUND_PROVIDER) {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				if(!CommonUtils.isObjectNullOrEmpty(response.getData())) {
-					UsersRequest uReq = (UsersRequest)response.getData();
+				if (!CommonUtils.isObjectNullOrEmpty(response.getData())) {
+					UsersRequest uReq = (UsersRequest) MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) response.getData(), UsersRequest.class);
 					obj.put("lastAccessId", uReq.getLastAccessApplicantId());
 					obj.put("campaignCode", uReq.getCampaignCode());
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.warn("Error While Get Last access application id");
 				return new ResponseEntity<UserResponse>(
 						new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
