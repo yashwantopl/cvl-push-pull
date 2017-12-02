@@ -71,6 +71,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
 		request.setAttribute("userType", authResponse.getUserType().intValue());
+		request.setAttribute("userOrgId", authResponse.getUserOrgId());
 		return true;
 	}
 

@@ -153,7 +153,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(AddProductRequest addProductRequest) {
+	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long  userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 
 		List<ProductMaster> masters = new ArrayList<>();
@@ -210,6 +210,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setIsParameterFilled(false);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
+				productMaster.setUserOrgId(userOrgId);
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
 				productMasterRepository.save(productMaster);

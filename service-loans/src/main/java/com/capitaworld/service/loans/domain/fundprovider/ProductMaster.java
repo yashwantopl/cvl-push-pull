@@ -74,6 +74,14 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name = "is_matched")
 	private Boolean isMatched = false;
 
+	@Column(name = "user_org_id")
+	private Long userOrgId;
+	
+	@Column(name = "score_model_id")
+	private Long scoreModelId;
+	
+
+	
 	public ProductMaster() {
 	}
 
@@ -196,6 +204,23 @@ public abstract class ProductMaster implements Serializable {
 	public void setIsMatched(Boolean isMatched) {
 		this.isMatched = isMatched;
 	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Long getScoreModelId() {
+		return scoreModelId;
+	}
+
+	public void setScoreModelId(Long scoreModelId) {
+		this.scoreModelId = scoreModelId;
+	}
+	
 	
 	
 
