@@ -234,7 +234,11 @@ public class CommonController {
 		if (userType == CommonUtils.UserType.FUND_SEEKER || userType == CommonUtils.UserType.FUND_PROVIDER) {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				obj.put("lastAccessId", response.getId());
+				if(CommonUtils.isObjectNullOrEmpty(response.getData())) {
+					UsersRequest uReq = (UsersRequest)response.getData();
+					obj.put("lastAccessId", uReq.getLastAccessApplicantId());
+					obj.put("campaignCode", uReq.getCampaignCode());
+				}
 			} catch (Exception e) {
 				logger.warn("Error While Get Last access application id");
 				return new ResponseEntity<UserResponse>(
@@ -249,7 +253,7 @@ public class CommonController {
 			 * productMasterlist.get(0).getId() : null); }
 			 */ else if (userType == CommonUtils.UserType.SERVICE_PROVIDER) {
 			obj.put("productId", null);
-			obj.put("lastAccessAppId", null);
+			obj.put("lastAccessId", null);
 		}
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, "Successfully get data", HttpStatus.OK.value()),
