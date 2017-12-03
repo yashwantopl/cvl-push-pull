@@ -347,6 +347,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		applicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
 		applicationRequest.setProductId(applicationMaster.getProductId());
 		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+		applicationRequest.setAmount(applicationMaster.getAmount());
+		applicationRequest.setDenominationId(applicationMaster.getDenominationId());
 		return applicationRequest;
 	}
 
