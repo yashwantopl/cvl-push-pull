@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.simple.JSONObject;
@@ -462,4 +465,28 @@ public class CorporateUploadController {
 		}
 	}
 
+	
+	@RequestMapping(value = "/uploadDocumentList/get/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public  ResponseEntity<LoansResponse> getOtherDocReport(@PathVariable("applicationId") Long applicationId, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {	
+			CommonDocumentUtils.startHook(logger, "getOtherDocReport");
+			Long userId = null;
+			
+			LoansResponse loansResponse = new LoansResponse();
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
+			}
+			Map<String, Map<Long, Boolean>> response = corporateUploadService.getOtherDocReport(applicationId,userId);
+			
+			loansResponse.setMapData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while fetching doc==>" + e);
+			return null;
+		}
+	}
 }
