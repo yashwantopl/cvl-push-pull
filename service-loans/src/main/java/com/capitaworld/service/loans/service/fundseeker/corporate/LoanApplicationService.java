@@ -71,7 +71,7 @@ public interface LoanApplicationService {
 	
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest);
 	
-	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type) throws IOException, Exception;
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type,MobileLoanRequest loanRequest) throws IOException, Exception;
 	
 	public List<ChatDetails> getChatListByApplicationId(Long fpMappingId);
 
@@ -95,6 +95,7 @@ public interface LoanApplicationService {
 	
 	public Long getUserIdByApplicationId(Long applicationId);
 	
+	public boolean saveFromCampaign(Long userId, Long clientId, Integer productId) throws Exception;
 
 	
 }

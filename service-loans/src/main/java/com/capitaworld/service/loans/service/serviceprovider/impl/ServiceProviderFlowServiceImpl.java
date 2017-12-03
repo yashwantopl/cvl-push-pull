@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.service.serviceprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +11,6 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,8 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.SpClientListing;
 import com.capitaworld.service.loans.model.SpSysNotifyResponse;
+import com.capitaworld.service.loans.model.common.NotificationPageRequest;
 import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
@@ -460,7 +460,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 	}
 
 	@Override
-	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId) throws Exception {
+	public List<SpSysNotifyResponse> spClientAllNotifications(Long spId, NotificationPageRequest notificationPageRequest) throws Exception {
 		String[] userTypeIds = {"fs","fp"};
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
 		List<SpSysNotifyResponse> spSysNotifResponse = new ArrayList<SpSysNotifyResponse>();
@@ -481,7 +481,10 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 							NotificationRequest notificationRequestSpFS = new NotificationRequest();
 							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
 							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
-							NotificationResponse responseSpFsCount = notificationClient.getAllNotificationByAppId(notificationRequestSpFS);
+							notificationRequestSpFS.setClientId(clientResponse.getClientId());
+			                notificationRequestSpFS.setPageIndex(notificationPageRequest.getPageIndex());
+			                notificationRequestSpFS.setSize(notificationPageRequest.getSize());
+							NotificationResponse responseSpFsCount = notificationClient.getAllSPNotificationByAppId(notificationRequestSpFS);
 							List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 							
 							
@@ -516,7 +519,10 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 						NotificationRequest notificationRequestSpFp = new NotificationRequest();
 						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
 						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
-						NotificationResponse responseSpFsCount = notificationClient.getAllNotificationByProdId(notificationRequestSpFp);
+						notificationRequestSpFp.setClientId(clientResponse.getClientId());
+						notificationRequestSpFp.setPageIndex(notificationPageRequest.getPageIndex());
+						notificationRequestSpFp.setSize(notificationPageRequest.getSize());
+						NotificationResponse responseSpFsCount = notificationClient.getAllSPNotificationByProdId(notificationRequestSpFp);
 						List<SysNotifyResponse> sysNotificationSpFs = responseSpFsCount.getSysNotification();
 
 						productDetailsForSp.setSysNotifyResponse(new ArrayList<SpSysNotifyResponse>());
@@ -534,7 +540,82 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				}
 			}
 			}
-			return spSysNotifResponse;
+			List<SpSysNotifyResponse> spSysNotifResponses = new ArrayList<SpSysNotifyResponse>();
+			spSysNotifResponses = getPages(spSysNotifResponse,notificationPageRequest.getPageIndex(), notificationPageRequest.getSize());
+			return spSysNotifResponses;
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new Exception("Error while getting client list.");
+		}
+		
+	
+	}
+
+	@Override
+	public Long spClientAllNotificationsCount(Long spId, NotificationPageRequest notificationPageRequest) throws Exception{
+		String[] userTypeIds = {"fs","fp"};
+		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
+		Long totalCount = 0L;
+		try {
+			for(String userTpyeId : userTypeIds){
+			UserResponse userResponse = usersClient.getSpUserIdClientMappingList(0,Integer.MAX_VALUE,spId, userTpyeId);
+			List<Map<String, Object>> spClientResponseList = (List<Map<String, Object>>) userResponse.getData();
+			for (int i = 0; i < spClientResponseList.size(); i++) {
+				SpClientResponse clientResponse = MultipleJSONObjectHelper.getObjectFromMap(spClientResponseList.get(i),
+						SpClientResponse.class);
+				
+				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
+					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
+					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
+					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
+						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
+							//code for sp fs notification
+							NotificationRequest notificationRequestSpFS = new NotificationRequest();
+							notificationRequestSpFS.setApplicationId(applicationDetailsForSp.getId());
+							notificationRequestSpFS.setClientRefId(clientResponse.getClientId().toString());
+							notificationRequestSpFS.setClientId(clientResponse.getClientId());
+							notificationRequestSpFS.setUserType("fs2");
+			                notificationRequestSpFS.setPageIndex(notificationPageRequest.getPageIndex());
+			                notificationRequestSpFS.setSize(notificationPageRequest.getSize());
+							NotificationResponse responseSpFsCount = notificationClient.getNotificationCount(notificationRequestSpFS);
+							Long sysNotificationSpFs = responseSpFsCount.getCount();
+							totalCount = totalCount+sysNotificationSpFs;
+							
+						}else{
+							applicationDetailsForSp.setProductName("NA");
+						}
+					}
+					
+
+				} 
+				
+				
+				else if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDPROVIDER)) {
+
+					
+					List<ProductDetailsForSp> fpClientDetails = productMasterService.getProductDetailsByUserIdList(clientResponse.getClientId());
+					for(ProductDetailsForSp productDetailsForSp : fpClientDetails){
+						if(CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getName())){
+							productDetailsForSp.setName(!CommonUtils.isObjectNullOrEmpty(productDetailsForSp.getProductId()) ? LoanType.getById(productDetailsForSp.getProductId()).getValue() : "NA");
+						}
+						//code for sp fp notification
+						NotificationRequest notificationRequestSpFp = new NotificationRequest();
+						notificationRequestSpFp.setProductId(productDetailsForSp.getId());
+						notificationRequestSpFp.setClientRefId(clientResponse.getClientId().toString());
+						notificationRequestSpFp.setClientId(clientResponse.getClientId());
+						notificationRequestSpFp.setUserType("fp2");
+						notificationRequestSpFp.setPageIndex(notificationPageRequest.getPageIndex());
+						notificationRequestSpFp.setSize(notificationPageRequest.getSize());
+						NotificationResponse responseSpFsCount = notificationClient.getNotificationCount(notificationRequestSpFp);
+						Long sysNotificationSpFs = responseSpFsCount.getCount();
+						totalCount=totalCount+sysNotificationSpFs;
+					}
+				}
+			}
+			}
+			return totalCount;
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -544,4 +625,19 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 		
 	
 	}	
+	
+	public static <T> List<T> getPages(Collection<T> c, Integer index, Integer pageSize) {
+	    if (c == null)
+	        return Collections.emptyList();
+	    List<T> list = new ArrayList<T>(c);
+	    if (pageSize == null || pageSize <= 0 || pageSize > list.size())
+	        pageSize = list.size();
+	    int numPages = (int) Math.ceil((double)list.size() / (double)pageSize);
+	    List<List<T>> pages = new ArrayList<List<T>>(numPages);
+	    for (int pageNum = 0; pageNum < numPages;){
+	        pages.add(list.subList(pageNum * pageSize, Math.min(++pageNum * pageSize, list.size())));
+	    	}
+	    return pages.get(index);
+	}
+	
 }
