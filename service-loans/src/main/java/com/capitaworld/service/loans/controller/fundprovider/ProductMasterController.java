@@ -56,6 +56,7 @@ public class ProductMasterController {
 			// request must not be null
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			addProductRequest.setUserId(userId);
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()) {
@@ -75,7 +76,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			Boolean response = productMasterService.saveOrUpdate(addProductRequest);
+			Boolean response = productMasterService.saveOrUpdate(addProductRequest,userOrgId);
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
