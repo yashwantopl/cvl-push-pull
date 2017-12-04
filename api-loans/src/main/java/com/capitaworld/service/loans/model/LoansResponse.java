@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class LoansResponse implements Serializable{
 
@@ -20,6 +21,19 @@ public class LoansResponse implements Serializable{
 	private Object data;
 	
 	private List<?> listData = Collections.emptyList();
+	
+	private Map<String ,Map<Long, Boolean>> mapData;
+	
+	
+	
+
+	public Map<String, Map<Long, Boolean>> getMapData() {
+		return mapData;
+	}
+
+	public void setMapData(Map<String, Map<Long, Boolean>> mapData) {
+		this.mapData = mapData;
+	}
 
 	public LoansResponse() {
 		super();
@@ -42,6 +56,7 @@ public class LoansResponse implements Serializable{
 		this.status = status;
 		this.data = data;
 	}
+
 
 	public Long getId() {
 		return id;
