@@ -119,7 +119,7 @@ public class ProposalController {
 		}
 		
 		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
-			request.setOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
