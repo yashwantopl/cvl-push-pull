@@ -1047,6 +1047,7 @@ public class LoanApplicationController {
 					json.put("id", response.getId());
 					json.put("productId", loanApplicationService.getProductIdByApplicationId(response.getId(), userId));
 				}
+				loansResponse.setData(json);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			loansResponse.setData(loanApplicationService.saveFromCampaign(userId, clientId, campaignCode));
