@@ -29,6 +29,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 
 @RestController
@@ -1019,15 +1020,23 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/create_loan_from_campaign/{userId}/{loanCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> createLoanFromCampaign(@PathVariable("userId") Long userId,
-			@PathVariable("loanCode") String code) {
+	@RequestMapping(value = "/create_loan_from_campaign/{campaignCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> createLoanFromCampaign(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId,
+			@PathVariable("campaignCode") String campaignCode) {
 		try {
 			logger.info("start createLoanFromCampaign()");
+			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
-			
-			Integer productId = CommonUtils.getProductIdByLoanCode(code);
-			loanApplicationService.saveFromCampaign(userId, null, productId);
+			boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
+			if (campaignCodeExist) {
+				logger.info("Campaign code is already Exists==>" + campaignCode);
+				logger.info("end createLoanFromCampaign()");
+				loansResponse.setData(true);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+			loansResponse.setData(loanApplicationService.saveFromCampaign(userId, clientId, campaignCode));
 			logger.info("end createLoanFromCampaign()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {

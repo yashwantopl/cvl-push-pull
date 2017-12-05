@@ -409,22 +409,23 @@ public class CommonUtils {
 		}
 	}
 
-	public static Integer getProductIdByLoanCode(String x) {
-		if ("WL".equalsIgnoreCase(x)) {
+	public static Integer getProductIdByLoanCode(String code) {
+		code = code.toUpperCase();
+		if ("WL".equalsIgnoreCase(code)) {
 			return LoanType.WORKING_CAPITAL.getValue();
-		} else if ("TL".equalsIgnoreCase(x)) {
+		} else if ("TL".equalsIgnoreCase(code)) {
 			return LoanType.TERM_LOAN.getValue();
-		} else if ("HL".equalsIgnoreCase(x)) {
+		} else if ("HL".equalsIgnoreCase(code)) {
 			return LoanType.HOME_LOAN.getValue();
-		} else if ("CL".equalsIgnoreCase(x)) {
+		} else if ("CL".equalsIgnoreCase(code)) {
 			return LoanType.CAR_LOAN.getValue();
-		} else if ("PL".equalsIgnoreCase(x)) {
+		} else if ("PL".equalsIgnoreCase(code)) {
 			return LoanType.PERSONAL_LOAN.getValue();
-		} else if ("LAP".equalsIgnoreCase(x)) {
+		} else if ("LAP".equalsIgnoreCase(code)) {
 			return LoanType.LAP_LOAN.getValue();
-		} else if ("LAS".equalsIgnoreCase(x)) {
+		} else if ("LAS".equalsIgnoreCase(code)) {
 			return LoanType.LAS_LOAN.getValue();
-		} else if ("UL".equalsIgnoreCase(x)) {
+		} else if ("UL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN.getValue();
 		} else {
 			return null;

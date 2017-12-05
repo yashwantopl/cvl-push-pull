@@ -180,26 +180,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean saveFromCampaign(Long userId, Long clientId, Integer productId) throws Exception {
+	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception {
 		try {
+			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
+			Integer productId = CommonUtils.getProductIdByLoanCode(loanCode);
 			LoanApplicationMaster applicationMaster = null;
 			LoanType type = CommonUtils.LoanType.getType(productId);
 			if (type == null) {
-				return false;
+				return null;
 			}
+			LoanApplicationRequest request = new LoanApplicationRequest(); 
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			applicationMaster = getLoanByType(type);
 			applicationMaster.setUserId(finalUserId);
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
+			applicationMaster.setCampaignCode(campaignCode);
 			applicationMaster
 					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			applicationMaster = loanApplicationRepository.save(applicationMaster);
+			BeanUtils.copyProperties(applicationMaster, request);
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setLastAccessApplicantId(applicationMaster.getId());
 			usersRequest.setId(finalUserId);
 			userClient.setLastAccessApplicant(usersRequest);
-			return true;
+			return request;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details From Campaign:-");
 			e.printStackTrace();
@@ -2600,6 +2605,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Long getUserIdByApplicationId(Long applicationId) {
 		return loanApplicationRepository.getUserIdByApplicationId(applicationId);
+	}
+
+	@Override
+	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws Exception {
+		try {
+			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
+			Long long1 = loanApplicationRepository.getApplicantCountByCode(finalUserId, code);
+			return long1 > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Checking Code is Exists or not");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public String getCampaignCodeByApplicationId(Long applicationId) throws Exception {
+		try {
+			return loanApplicationRepository.getCampaignCodeByApplicationId(applicationId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while getting Code by Application Id");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	private LoanApplicationMaster getLoanByType(LoanType type) {
