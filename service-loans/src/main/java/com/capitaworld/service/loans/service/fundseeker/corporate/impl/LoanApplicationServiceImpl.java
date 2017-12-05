@@ -193,6 +193,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			applicationMaster = getLoanByType(type);
 			applicationMaster.setUserId(finalUserId);
+			applicationMaster.setProductId(productId);
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
 			applicationMaster.setCampaignCode(campaignCode);
