@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @RestController
 @RequestMapping("/loan_application")
@@ -43,6 +44,9 @@ public class LoanApplicationController {
 
 	@Autowired
 	private AsyncComponent asyncComponent;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -1020,6 +1024,7 @@ public class LoanApplicationController {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/create_loan_from_campaign/{campaignCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> createLoanFromCampaign(HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId,
@@ -1031,9 +1036,17 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
 			if (campaignCodeExist) {
+				
 				logger.info("Campaign code is already Exists==>" + campaignCode);
 				logger.info("end createLoanFromCampaign()");
-				loansResponse.setData(true);
+				UsersRequest usersRequest = new UsersRequest();
+				usersRequest.setId(userId);
+				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
+				JSONObject json = new JSONObject();
+				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+					json.put("id", response.getId());
+					json.put("productId", loanApplicationService.getProductIdByApplicationId(response.getId(), userId));
+				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			loansResponse.setData(loanApplicationService.saveFromCampaign(userId, clientId, campaignCode));

@@ -239,12 +239,10 @@ public class CommonController {
 		if (userType == CommonUtils.UserType.FUND_SEEKER || userType == CommonUtils.UserType.FUND_PROVIDER) {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				if (!CommonUtils.isObjectNullOrEmpty(response.getData())) {
-					obj.put("lastAccessId", response.getId());
-					if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
-						obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
-						obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
-					}
+				obj.put("lastAccessId", response.getId());
+				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+					obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
+					obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
