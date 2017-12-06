@@ -107,6 +107,8 @@ public class LoansClient {
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
 
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
+	
+	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
 
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -1116,6 +1118,19 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
+		}
+	}
+	public LoansResponse getFullHLPrimaryDetails(Long applicationId,Long userId) throws Exception {
+		String url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL).concat("/" + applicationId + "/" + userId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 }
