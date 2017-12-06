@@ -98,6 +98,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				finalViewCommonResponse.setReligion("-");
 			}
 			finalViewCommonResponse.setBirthPlace(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBirthPlace()) ? applicantDetail.getBirthPlace() : "-");
+			finalViewCommonResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBirthDate()) ? applicantDetail.getBirthDate().toString() : "-");
 			finalViewCommonResponse.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFatherName()) ? applicantDetail.getFatherName() : "-");
 			finalViewCommonResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMotherName()) ? applicantDetail.getMotherName() : "-");
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())){
