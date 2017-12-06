@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
@@ -19,23 +20,26 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 	@Autowired
 	private HomeLoanFinalViewService homeLoanFinalViewService;
 
+	@Autowired
+	private RetailApplicantService retailApplicantService; 
+	
+	
 	@Override
 	public Map getHomeLoanDetails(Long applicantId) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, Object> map = new HashMap<String, Object>();
 		HomeLoanFinalViewResponse finalViewResponse = homeLoanFinalViewService.getHomeLoanFinalViewDetails(applicantId);
+		map.put("purpose", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType());
 		map.put("loanAmount", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
 		map.put("tennure", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getTenure());
 		map.put("name", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getFirstName()
 				+ finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getLastName());
 		map.put("fatherName", finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getFatherFullName());
-		map.put("relationshipWithApplicant", finalViewResponse.getHomeLoanPrimaryViewResponse()
-				.getPersonalProfileRespoonse().getRelationshipWithApplicant());
 		map.put("panNo", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getPan());
-		// map.put("aadharNo",
-		// finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().get);
-		// map.put("birthDate",
-		// finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getAge());
+		 map.put("aadharNo",
+		 finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getAadharNumber());
+		 map.put("birthDate",
+		 finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBirthDate());
 		map.put("age", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getAge());
 		map.put("gender", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getGender());
 		map.put("maritalStatus",
@@ -69,7 +73,15 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState()
 				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress()
 						.getCountry();
-		map.put("presentAddress", permanentAddress);
+		map.put("permanentAddress", permanentAddress);
+		//mobile and email
+		//map.put("mobile", presentAddress);
+		//map.put("email", presentAddress);
+		//end mobile and email
+		
+		map.put("companyName",
+				finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getCompanyName());
+		
 		map.put("occupation",
 				finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOccupation());
 
@@ -100,8 +112,8 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 						.getCoApplicantResponse().get(i).getRelationshipWithApplicant());
 				map.put("coappPanNo" + j,
 						finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPan());
-				// map.put("aadharNo",
-				// finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().get);
+				 map.put("aadharNo",
+						 finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getAadharNumber());
 				// map.put("birthDate",
 				// finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getAge());
 				map.put("coappAge" + j,

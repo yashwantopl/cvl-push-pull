@@ -14,6 +14,7 @@ public class RetailProfileViewResponse {
 	private String title;
 	private String gender;
 	private String pan;
+	private String aadharNumber;
 	private String maritalStatus;
 	private String natureOfOccupation;
 	private Integer natureOfOccupationId;
@@ -352,6 +353,15 @@ public class RetailProfileViewResponse {
 	public void setRemunerationCurrentYear(String remunerationCurrentYear) {
 		this.remunerationCurrentYear = remunerationCurrentYear;
 	}
+
+	public String getAadharNumber() {
+		return aadharNumber;
+	}
+
+	public void setAadharNumber(String aadharNumber) {
+		this.aadharNumber = aadharNumber;
+	}
 	
+
 	
 }

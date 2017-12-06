@@ -23,6 +23,7 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	private String religion;
 	private String religionOther;
 	private String birthPlace;
+	private String birthDate;
 	
 	private String fatherFullName;
 	private String motherName;
@@ -656,6 +657,13 @@ public class RetailFinalViewCommonResponse implements Serializable{
 	public void setRelationShipWithApplicant(String relationShipWithApplicant) {
 		this.relationShipWithApplicant = relationShipWithApplicant;
 	}
+	public String getBirthDate() {
+		return birthDate;
+	}
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
+	}
+
 	
 	
 }
