@@ -72,6 +72,15 @@ public class GuarantorRequest {
 	private Double otherIncome;
 	private Double otherInvestment;
 	private Double taxPaidLastYear;
+	
+	private Integer highestQualification;
+	private String institute;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date qualifyingYear;
+	private Double residingYear;
+	private Double residingMonth;
+	private String spouseName;
+	private Boolean isSpouseEmployed;
 
 	public Long getId() {
 		return id;
@@ -537,6 +546,63 @@ public class GuarantorRequest {
 	public void setTaxPaidLastYear(Double taxPaidLastYear) {
 		this.taxPaidLastYear = taxPaidLastYear;
 	}
+
+	public Integer getHighestQualification() {
+		return highestQualification;
+	}
+
+	public void setHighestQualification(Integer highestQualification) {
+		this.highestQualification = highestQualification;
+	}
+
+	public String getInstitute() {
+		return institute;
+	}
+
+	public void setInstitute(String institute) {
+		this.institute = institute;
+	}
+
+	public Date getQualifyingYear() {
+		return qualifyingYear;
+	}
+
+	public void setQualifyingYear(Date qualifyingYear) {
+		this.qualifyingYear = qualifyingYear;
+	}
+
+	public Double getResidingYear() {
+		return residingYear;
+	}
+
+	public void setResidingYear(Double residingYear) {
+		this.residingYear = residingYear;
+	}
+
+	public Double getResidingMonth() {
+		return residingMonth;
+	}
+
+	public void setResidingMonth(Double residingMonth) {
+		this.residingMonth = residingMonth;
+	}
+
+	public String getSpouseName() {
+		return spouseName;
+	}
+
+	public void setSpouseName(String spouseName) {
+		this.spouseName = spouseName;
+	}
+
+	public Boolean getIsSpouseEmployed() {
+		return isSpouseEmployed;
+	}
+
+	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
+		this.isSpouseEmployed = isSpouseEmployed;
+	}
+
 
 	
 	
