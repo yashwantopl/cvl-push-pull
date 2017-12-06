@@ -67,6 +67,11 @@ public class GuarantorRequest {
 	private Double remunerationCurrentYear;
 	private Double annualTurnover;
 
+	private Double bonusPerAnnum;
+	private Double incentivePerAnnum;
+	private Double otherIncome;
+	private Double otherInvestment;
+	private Double taxPaidLastYear;
 
 	public Long getId() {
 		return id;
@@ -492,6 +497,47 @@ public class GuarantorRequest {
 	public void setAnnualTurnover(Double annualTurnover) {
 		this.annualTurnover = annualTurnover;
 	}
+
+	public Double getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+
+	public void setBonusPerAnnum(Double bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+
+	public Double getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+
+	public void setIncentivePerAnnum(Double incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
+	}
+
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+
+	public Double getOtherInvestment() {
+		return otherInvestment;
+	}
+
+	public void setOtherInvestment(Double otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+
+	public Double getTaxPaidLastYear() {
+		return taxPaidLastYear;
+	}
+
+	public void setTaxPaidLastYear(Double taxPaidLastYear) {
+		this.taxPaidLastYear = taxPaidLastYear;
+	}
+
 	
 	
 
