@@ -77,6 +77,12 @@ public class RetailApplicantRequest implements Serializable {
 	
 	private Boolean isApplicantDetailsFilled;
 	private String detailsFilledCount;
+	
+	private Double bonusPerAnnum;
+	private Double incentivePerAnnum;
+	private Double otherIncome;
+	private Double otherInvestment;
+	private Double taxPaidLastYear;
 
 	public RetailApplicantRequest() {
 	}
@@ -513,6 +519,47 @@ public class RetailApplicantRequest implements Serializable {
 	public void setTotalExperienceYear(Integer totalExperienceYear) {
 		this.totalExperienceYear = totalExperienceYear;
 	}
+
+	public Double getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+
+	public void setBonusPerAnnum(Double bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+
+	public Double getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+
+	public void setIncentivePerAnnum(Double incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
+	}
+
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+
+	public Double getOtherInvestment() {
+		return otherInvestment;
+	}
+
+	public void setOtherInvestment(Double otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+
+	public Double getTaxPaidLastYear() {
+		return taxPaidLastYear;
+	}
+
+	public void setTaxPaidLastYear(Double taxPaidLastYear) {
+		this.taxPaidLastYear = taxPaidLastYear;
+	}
+
 	
 	
 }

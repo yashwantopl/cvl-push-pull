@@ -361,6 +361,21 @@ public class RetailApplicantDetail implements Serializable {
 	
 	@Column(name = "remuneration_current_year")
 	private Double remunerationCurrentYear;
+	
+	@Column(name = "bonus_per_annum")
+	private Double bonusPerAnnum;
+	
+	@Column(name = "incentive_per_annum")
+	private Double incentivePerAnnum;
+	
+	@Column(name = "other_income")
+	private Double otherIncome;
+	
+	@Column(name = "other_investment")
+	private Double otherInvestment;
+	
+	@Column(name = "tax_paid_last_year")
+	private Double taxPaidLastYear;
 
 	public RetailApplicantDetail() {
 	}
@@ -1253,7 +1268,48 @@ public class RetailApplicantDetail implements Serializable {
 	public void setRemunerationCurrentYear(Double remunerationCurrentYear) {
 		this.remunerationCurrentYear = remunerationCurrentYear;
 	}
+
+	public Double getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+
+	public void setBonusPerAnnum(Double bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+
+	public Double getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+
+	public void setIncentivePerAnnum(Double incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
+	}
+
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+
+	public Double getOtherInvestment() {
+		return otherInvestment;
+	}
+
+	public void setOtherInvestment(Double otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+
+	public Double getTaxPaidLastYear() {
+		return taxPaidLastYear;
+	}
+
+	public void setTaxPaidLastYear(Double taxPaidLastYear) {
+		this.taxPaidLastYear = taxPaidLastYear;
+	}
 	
+
 	
 	
 	
