@@ -78,7 +78,7 @@ public class LoansClient {
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
-	private static final String STRING_TO_BINARY_ARRAY = "/ConvertToByteArray";
+	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
 
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
 	private static final String MOBILE_GET_APPLICANT = "/mobile/getApplicantDetails";
@@ -108,6 +108,10 @@ public class LoansClient {
 
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
 	
+	private static final String FS_DETAILS_FOR_PDF = "/fsDetailsForPdf/getDataMap";
+	
+	private static final String GET_OTHER_DOC_REPORT = "/corporate_upload/uploadDocumentList/get";
+
 	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
 	
@@ -1105,7 +1109,7 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse ConvertToByteArrayFile(Long applicantId) throws LoansException {
+	public LoansResponse convertToByteArrayFile(Long applicantId) throws LoansException {
 		String url = loansBaseUrl.concat(STRING_TO_BINARY_ARRAY).concat("/" + applicantId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1121,6 +1125,34 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available");
 		}
 	}
+	
+	
+	public LoansResponse getDataMap(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FS_DETAILS_FOR_PDF) + "/" + applicationId;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not availables");
+		}
+	}
+	
+	
+	public LoansResponse getOtherDocReport(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_OTHER_DOC_REPORT) + "/" + applicationId;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not availables");
+		}
+		}
 	public LoansResponse getFullHLPrimaryDetails(Long applicationId,Long userId) throws Exception {
 		String url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL).concat("/" + applicationId + "/" + userId);
 		try {

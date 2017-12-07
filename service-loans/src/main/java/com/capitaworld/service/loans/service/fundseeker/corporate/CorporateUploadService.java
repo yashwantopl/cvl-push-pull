@@ -19,5 +19,5 @@ public interface CorporateUploadService {
 	
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
 	
-	public Map<String, Map<Long, Boolean>> getOtherDocReport(Long applicationId, Long userId) throws Exception ;
+	public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception ;
 }
