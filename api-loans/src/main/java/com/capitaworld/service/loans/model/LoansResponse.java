@@ -22,16 +22,36 @@ public class LoansResponse implements Serializable{
 	
 	private List<?> listData = Collections.emptyList();
 	
-	private Map<String ,Map<Long, Boolean>> mapData;
+	private Map<String ,Map<String, Object>> mapData;
+	
+	private Map map;
+	
+	private byte[] contentInBytes;
 	
 	
 	
 
-	public Map<String, Map<Long, Boolean>> getMapData() {
+	public byte[] getContentInBytes() {
+		return contentInBytes;
+	}
+
+	public void setContentInBytes(byte[] contentInBytes) {
+		this.contentInBytes = contentInBytes;
+	}
+
+	public Map getMap() {
+		return map;
+	}
+
+	public void setMap(Map map) {
+		this.map = map;
+	}
+
+	public Map<String, Map<String, Object>> getMapData() {
 		return mapData;
 	}
 
-	public void setMapData(Map<String, Map<Long, Boolean>> mapData) {
+	public void setMapData(Map<String, Map<String, Object>> mapData) {
 		this.mapData = mapData;
 	}
 

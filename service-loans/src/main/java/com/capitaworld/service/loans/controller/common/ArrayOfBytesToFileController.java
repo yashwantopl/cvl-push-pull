@@ -28,8 +28,8 @@ public class ArrayOfBytesToFileController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ArrayOfBytesToFileController.class);
 	
-	@RequestMapping(value = "/ConvertToByteArray/{applicantId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> ConvertToByteArrayFile(@PathVariable("applicantId")String applicantId,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+	@RequestMapping(value = "/convertToByteArray/{applicantId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> convertToByteArrayFile(@PathVariable("applicantId")String applicantId,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		if(CommonUtils.isObjectNullOrEmpty(applicantId)){
 			return new ResponseEntity<LoansResponse>(
@@ -40,7 +40,7 @@ public class ArrayOfBytesToFileController {
 			byte[] stringToBytes = arrayOfBytesToFileService.createByteFileFromMap(Long.valueOf(applicantId));
 			LoansResponse loansResponse = new LoansResponse("Data Found",
 					HttpStatus.OK.value());
-			loansResponse.setData(stringToBytes);
+			loansResponse.setContentInBytes(stringToBytes);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
 			// TODO: handle exception

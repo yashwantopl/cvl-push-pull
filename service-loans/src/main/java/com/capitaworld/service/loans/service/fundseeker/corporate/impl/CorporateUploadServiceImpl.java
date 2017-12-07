@@ -135,8 +135,10 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	// New UBI Requirement
 	@Override
-	public Map<String, Map<Long, Boolean>> getOtherDocReport(Long applicationId, Long userId) throws Exception {
+	public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception {
 		try {
+			
+			Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 			List<Long> proIdList = new ArrayList<>();
 			List<Long> co_app_proIdList = new ArrayList<>();
 			List<Long> gua_proIdList = new ArrayList<>();
@@ -146,8 +148,8 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			proIdList.addAll((List<Long>) Arrays.asList(applicantArray));
 			co_app_proIdList.addAll((List<Long>) Arrays.asList(co_appArray));
 			gua_proIdList.addAll((List<Long>) Arrays.asList(guarantorArray));
-			Map<String, Map<Long, Boolean>> maps = new HashMap<String, Map<Long,Boolean>>();
-			Map<Long, Boolean> map = new HashMap<Long, Boolean>();
+			Map<String, Map<String, Object>> maps = new HashMap<String, Map<String,Object>>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			for (Long id : proIdList) {
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(applicationId);
@@ -155,17 +157,45 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 				dmsClient.listProductDocument(documentRequest);
 				if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
-					map.put(id, true);
+					if(id.equals(55L) || id.equals(56L)){
+						map.put("identity_proof", true);
+					}
+					else if(id.equals(61L)){
+						map.put("bank_statement", true);
+					}
+					else if(id.equals(63L)){
+						map.put("itr", true);
+					}
+					else if(id.equals(64L)){
+						map.put("audited_annual_report", true);
+					}
+					else if(id.equals(65L)){
+						map.put("address_proof", true);
+					}
 				} else {
-					map.put(id, false);
+					if(id.equals(55L) || id.equals(56L)){
+						map.put("identity_proof", false);
+					}
+					else if(id.equals(61L)){
+						map.put("bank_statement", false);
+					}
+					else if(id.equals(63L)){
+						map.put("itr", false);
+					}
+					else if(id.equals(64L)){
+						map.put("audited_annual_report", false);
+					}
+					else if(id.equals(65L)){
+						map.put("address_proof", false);
+					}
 				}
 			}
 			maps.put("app",map);
 			List<Long> ids = coApplicantService.getCoAppIds(userId, applicationId);
-			Map<Long, Boolean> mapCoApp = null;
+			Map<String, Object> mapCoApp = null;
 			int i =1;
 			for (Long coappid : ids) {
-				mapCoApp = new HashMap<Long, Boolean>();
+				mapCoApp = new HashMap<String, Object>();
 				for (Long id : co_app_proIdList) {
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setCoApplicantId(coappid);
@@ -173,9 +203,40 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 					documentRequest.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
 					dmsClient.listProductDocument(documentRequest);
 					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
-						mapCoApp.put(id, true);
+						if(id.equals(57L) || id.equals(58L)){
+							map.put("identity_proof", true);
+						}
+						else if(id.equals(59L)){
+							map.put("bank_statement", true);
+						}
+						else if(id.equals(71L)){
+							map.put("itr", true);
+						}
+						else if(id.equals(72L)){
+							map.put("audited_annual_report", true);
+						}
+						else if(id.equals(73L)){
+							map.put("address_proof", true);
+						}
 					} else {
-						mapCoApp.put(id, false);
+						if(id.equals(57L) || id.equals(58L)){
+							map.put("identity_proof", false);
+						}
+						else if(id.equals(58L)){
+							map.put("identity_proof", false);
+						}
+						else if(id.equals(59L)){
+							map.put("bank_statement", false);
+						}
+						else if(id.equals(71L)){
+							map.put("itr", false);
+						}
+						else if(id.equals(72L)){
+							map.put("audited_annual_report", false);
+						}
+						else if(id.equals(73L)){
+							map.put("address_proof", false);
+						}
 					}
 				}
 				maps.put("coApp "+i,mapCoApp);
@@ -185,10 +246,10 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			
 			
 			List<Long> gua_ids = guarantorService.getGuarantorIds(userId, applicationId);
-			Map<Long, Boolean> mapGua = null;
+			Map<String, Object> mapGua = null;
 			int j = 1;
 			for (Long guaId : gua_ids) {
-				 mapGua = new HashMap<Long, Boolean>();
+				 mapGua = new HashMap<String, Object>();
 			for (Long id : gua_proIdList) {
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setGuarantorId(guaId);
@@ -196,9 +257,37 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
 				dmsClient.listProductDocument(documentRequest);
 				if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
-					mapGua.put(id, true);
+					if(id.equals(59L) || id.equals(60L)){
+						map.put("identity_proof", true);
+					}
+					else if(id.equals(77L)){
+						map.put("bank_statement", true);
+					}
+					else if(id.equals(79L)){
+						map.put("itr", true);
+					}
+					else if(id.equals(80L)){
+						map.put("audited_annual_report", true);
+					}
+					else if(id.equals(81L)){
+						map.put("address_proof", true);
+					}
 				} else {
-					mapGua.put(id, false);
+					if(id.equals(59L) || id.equals(60L)){
+						map.put("identity_proof", false);
+					}
+					else if(id.equals(77L)){
+						map.put("bank_statement", false);
+					}
+					else if(id.equals(79L)){
+						map.put("itr", false);
+					}
+					else if(id.equals(80L)){
+						map.put("audited_annual_report", false);
+					}
+					else if(id.equals(81L)){
+						map.put("address_proof", false);
+					}
 				}
 			}
 			maps.put("Guar "+j, mapGua);
