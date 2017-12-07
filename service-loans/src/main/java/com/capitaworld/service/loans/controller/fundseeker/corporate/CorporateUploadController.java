@@ -470,15 +470,14 @@ public class CorporateUploadController {
 	public  ResponseEntity<LoansResponse> getOtherDocReport(@PathVariable("applicationId") Long applicationId, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {	
 			CommonDocumentUtils.startHook(logger, "getOtherDocReport");
-			Long userId = null;
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) ) {
+				logger.warn("applicationId Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			
 			LoansResponse loansResponse = new LoansResponse();
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
-				userId = clientId;
-			} else {
-				userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			}
-			Map<String, Map<Long, Boolean>> response = corporateUploadService.getOtherDocReport(applicationId,userId);
+			Map<String, Map<String, Object>> response = corporateUploadService.getOtherDocReport(applicationId);
 			
 			loansResponse.setMapData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
