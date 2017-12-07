@@ -54,6 +54,9 @@ public class HomeLoanResponse implements Serializable {
     private String loanType;
     private String loanAmount;
     
+    private String propertyUse;
+	private String rentalIncome;
+    
     private List<Object> profileImage;
     
 	public List<Object> getProfileImage() {
@@ -249,5 +252,19 @@ public class HomeLoanResponse implements Serializable {
 	public void setTenure(String tenure) {
 		this.tenure = tenure;
 	}
+	public String getPropertyUse() {
+		return propertyUse;
+	}
+	public void setPropertyUse(String propertyUse) {
+		this.propertyUse = propertyUse;
+	}
+	public String getRentalIncome() {
+		return rentalIncome;
+	}
+	public void setRentalIncome(String rentalIncome) {
+		this.rentalIncome = rentalIncome;
+	}
+	
+	
 
 }

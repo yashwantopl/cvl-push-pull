@@ -79,6 +79,10 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 	
 	private Double marketValProp;
 	
+	private Integer propertyUsed;
+	
+	private Double estimatedRentalIncome;
+	
 	public Double getArea() {
 		return area;
 	}
@@ -318,6 +322,23 @@ public class PrimaryHomeLoanDetailRequest extends LoanApplicationRequest impleme
 	public void setMarketValProp(Double marketValProp) {
 		this.marketValProp = marketValProp;
 	}
+
+	public Integer getPropertyUsed() {
+		return propertyUsed;
+	}
+
+	public void setPropertyUsed(Integer propertyUsed) {
+		this.propertyUsed = propertyUsed;
+	}
+
+	public Double getEstimatedRentalIncome() {
+		return estimatedRentalIncome;
+	}
+
+	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
+		this.estimatedRentalIncome = estimatedRentalIncome;
+	}
+
 
 	
 	

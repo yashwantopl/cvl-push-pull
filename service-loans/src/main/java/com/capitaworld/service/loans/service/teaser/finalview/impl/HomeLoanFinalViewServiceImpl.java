@@ -229,8 +229,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                 } catch (Exception e) {
 
                 }
-				homeLoanFinalViewResponse.setPropertyUse(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyUsed()) ? PropertyUsedSubType.getById(finalHomeLoanDetails.getPropertyUsed()).getValue() : null);
-				homeLoanFinalViewResponse.setRentalIncome(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getEstimatedRentalIncome()) ? finalHomeLoanDetails.getEstimatedRentalIncome().toString() : null);
+				
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting HL final details");
