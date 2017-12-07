@@ -136,15 +136,15 @@ public class CommonUtils {
 				"previousJobMonth", "previousJobYear", "totalExperienceMonth", "totalExperienceYear",
 				"monthlyLoanObligation", "previousEmployersAddress", "previousEmployersName", "annualTurnover",
 				"businessStartDate", "patPreviousYear", "patCurrentYear", "depreciationPreviousYear",
-				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear" };
+				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear","highestQualification", "qualifyingYear", "institute","residingYear","residingMonth", "spouseName", "isSpouseEmployed"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
-				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
-				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
+				"fatherName", "motherName", "noChildren", "noDependent",
+				 "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
-				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth",
-				"residingYear", "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", 
+				 "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
 				"tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 

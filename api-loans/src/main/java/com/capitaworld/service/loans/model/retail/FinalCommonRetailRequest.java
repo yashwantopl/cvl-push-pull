@@ -24,16 +24,11 @@ public class FinalCommonRetailRequest {
 	private String birthPlace;
 	private String fatherName;
 	private String motherName;
-	private String spouseName;
-	private Boolean isSpouseEmployed;
 	private Integer noChildren;
 	private Integer noDependent;
-	private Integer highestQualification;
 	private String highestQualificationOther;
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
-	private Date qualifyingYear;
-	private String institute;
+	
 	private Integer residenceType;
 	private Double annualRent;
 	private Double annualTurnover;
@@ -62,8 +57,6 @@ public class FinalCommonRetailRequest {
 	private String rainFed;
 	private Integer repaymentCycle;
 	private Integer repaymentMode;
-	private Double residingMonth;
-	private Double residingYear;
 	private String seasonalIrrigated;
 	private String shareHolding;
 	private Integer totalExperienceMonth;
@@ -165,21 +158,6 @@ public class FinalCommonRetailRequest {
 		this.motherName = motherName;
 	}
 
-	public String getSpouseName() {
-		return spouseName;
-	}
-
-	public void setSpouseName(String spouseName) {
-		this.spouseName = spouseName;
-	}
-
-	public Boolean getIsSpouseEmployed() {
-		return isSpouseEmployed;
-	}
-
-	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
-		this.isSpouseEmployed = isSpouseEmployed;
-	}
 
 	public Integer getNoChildren() {
 		return noChildren;
@@ -197,13 +175,6 @@ public class FinalCommonRetailRequest {
 		this.noDependent = noDependent;
 	}
 
-	public Integer getHighestQualification() {
-		return highestQualification;
-	}
-
-	public void setHighestQualification(Integer highestQualification) {
-		this.highestQualification = highestQualification;
-	}
 
 	public String getHighestQualificationOther() {
 		return highestQualificationOther;
@@ -213,21 +184,7 @@ public class FinalCommonRetailRequest {
 		this.highestQualificationOther = highestQualificationOther;
 	}
 
-	public Date getQualifyingYear() {
-		return qualifyingYear;
-	}
-
-	public void setQualifyingYear(Date qualifyingYear) {
-		this.qualifyingYear = qualifyingYear;
-	}
-
-	public String getInstitute() {
-		return institute;
-	}
-
-	public void setInstitute(String institute) {
-		this.institute = institute;
-	}
+	
 
 	public Integer getResidenceType() {
 		return residenceType;
@@ -437,21 +394,6 @@ public class FinalCommonRetailRequest {
 		this.repaymentMode = repaymentMode;
 	}
 
-	public Double getResidingMonth() {
-		return residingMonth;
-	}
-
-	public void setResidingMonth(Double residingMonth) {
-		this.residingMonth = residingMonth;
-	}
-
-	public Double getResidingYear() {
-		return residingYear;
-	}
-
-	public void setResidingYear(Double residingYear) {
-		this.residingYear = residingYear;
-	}
 
 	public String getSeasonalIrrigated() {
 		return seasonalIrrigated;
