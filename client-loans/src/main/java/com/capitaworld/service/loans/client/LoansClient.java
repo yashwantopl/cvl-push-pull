@@ -32,6 +32,7 @@ import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 
 public class LoansClient {
 
@@ -1168,14 +1169,14 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
-	public LoansResponse getFullProfileDetail(Long applicationId,Long userId) throws Exception {
+	public RetailApplicantRequest getFullProfileDetail(Long applicationId,Long userId) throws Exception {
 		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId + "/" + userId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
