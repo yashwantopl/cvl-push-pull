@@ -438,6 +438,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 			homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "-");
 		}
 		homeLoanResponse.setLoanType(LoanType.getById(applicationMaster.getProductId()).getValue());
+		
+		homeLoanResponse.setPropertyUse(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsed()) ? PropertyUsedSubType.getById(loanDetail.getPropertyUsed()).getValue() : null);
+		homeLoanResponse.setRentalIncome(!CommonUtils.isObjectNullOrEmpty(loanDetail.getEstimatedRentalIncome()) ? loanDetail.getEstimatedRentalIncome().toString() : null);
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
 
 		// setting co-application details

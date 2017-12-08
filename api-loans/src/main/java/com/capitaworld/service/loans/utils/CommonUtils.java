@@ -13,6 +13,7 @@ public class CommonUtils {
 
 	public static final String USER_ID = "userId";
 	public static final String USER_TYPE = "userType";
+	public static final String USER_ORG_ID = "userOrgId";
 	public static final int USER_TYPE_SERVICEPROVIDER = 3;
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
@@ -35,7 +36,25 @@ public class CommonUtils {
 	public static final Long CORPORATE_USER = 4L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
+	public static final Long TL_LESS_TWO = 20000000L;
+
 	
+	public interface DenominationInAmount  {
+		public static final Long  LAKHS =100000l;
+		public static final Long MILLIONS = 1000000l;
+		public static final Long CRORES = 10000000l;
+		public static final Long BILLIONS=100000000l;
+		public static final Long ABSOLUTE=1l;
+	}
+	public interface  DenominationId  {
+		public static final Integer LAKHS = 1;
+		public static final Integer MILLIONS = 2;
+		public static final Integer CRORES = 3;
+		public static final Integer BILLIONS=4;
+		public static final Integer ABSOLUTE=5;
+	}
+	
+
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
@@ -86,7 +105,8 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14),UNSECURED_LOAN(15);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(
+				14), UNSECURED_LOAN(15);
 		private int value;
 
 		private LoanType(int value) {
@@ -134,15 +154,15 @@ public class CommonUtils {
 				"previousJobMonth", "previousJobYear", "totalExperienceMonth", "totalExperienceYear",
 				"monthlyLoanObligation", "previousEmployersAddress", "previousEmployersName", "annualTurnover",
 				"businessStartDate", "patPreviousYear", "patCurrentYear", "depreciationPreviousYear",
-				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear" };
+				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear","highestQualification", "qualifyingYear", "institute","residingYear","residingMonth", "spouseName", "isSpouseEmployed"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
-				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
-				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
+				"fatherName", "motherName", "noChildren", "noDependent",
+				 "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
-				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth",
-				"residingYear", "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", 
+				 "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
 				"tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 
@@ -379,11 +399,11 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured Loan";
-		default :
+		default:
 			return null;
 		}
 	}
-	
+
 	public static String getLoanNameForMail(Integer x) {
 		switch (x) {
 		case 1:
@@ -402,7 +422,62 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured ";
-		default :
+		default:
+			return null;
+		}
+	}
+
+	public static Integer getProductIdByLoanCode(String code) {
+		code = code.toUpperCase();
+		if ("WL".equalsIgnoreCase(code)) {
+			return LoanType.WORKING_CAPITAL.getValue();
+		} else if ("TL".equalsIgnoreCase(code)) {
+			return LoanType.TERM_LOAN.getValue();
+		} else if ("HL".equalsIgnoreCase(code)) {
+			return LoanType.HOME_LOAN.getValue();
+		} else if ("CL".equalsIgnoreCase(code)) {
+			return LoanType.CAR_LOAN.getValue();
+		} else if ("PL".equalsIgnoreCase(code)) {
+			return LoanType.PERSONAL_LOAN.getValue();
+		} else if ("LAP".equalsIgnoreCase(code)) {
+			return LoanType.LAP_LOAN.getValue();
+		} else if ("LAS".equalsIgnoreCase(code)) {
+			return LoanType.LAS_LOAN.getValue();
+		} else if ("UL".equalsIgnoreCase(code)) {
+			return LoanType.UNSECURED_LOAN.getValue();
+		} else {
+			return null;
+		}
+	}
+	
+	public static Boolean isTermLoanLessThanLimit(Integer denomination,Double amount)
+	{
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return false;
+		}
+		if(convertDenominationToValue(denomination,amount)<TL_LESS_TWO)
+			return true;
+		else
+			return false;
+		
+	}
+
+	private static Long convertDenominationToValue(Integer denomination, Double amount) {
+		// TODO Auto-generated method stub
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return null;
+		}
+		if(denomination==DenominationId.LAKHS){
+			return 	(long) (DenominationInAmount.LAKHS* amount);
+		}else if(denomination==DenominationId.MILLIONS){
+			return 	(long) (DenominationInAmount.MILLIONS * amount);	
+		}else if(denomination==DenominationId.CRORES){
+			return 	(long) (DenominationInAmount.CRORES * amount);
+		}else if(denomination==DenominationId.BILLIONS){
+			return 	(long) (DenominationInAmount.BILLIONS* amount);
+		}else if(denomination==DenominationId.ABSOLUTE){
+			return 	(long) (DenominationInAmount.ABSOLUTE* amount);
+		}else{
 			return null;
 		}
 	}

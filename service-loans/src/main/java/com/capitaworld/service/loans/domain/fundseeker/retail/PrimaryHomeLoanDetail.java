@@ -95,7 +95,32 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 
 	@Column(name="renovation_type")
 	private Integer renovationType;
+	
+	@Column(name="loan_type")
+	private Integer loanType;
 
+	@Column(name="old_prop_month")
+	private Integer oldPropMonth;
+	
+	@Column(name="old_prop_year")
+	private Integer oldPropYear;
+	
+	@Column(name="original_val_prop")
+	private Double originalValProp;
+	
+	@Column(name="reg_val_prop")
+	private Double regValProp;
+	
+	@Column(name="market_val_prop")
+	private Double marketValProp;
+	
+	@Column(name="property_used")
+	private Integer propertyUsed;
+	
+	@Column(name="estimated_rental_income")
+	private Double estimatedRentalIncome;
+
+	
 	public LoanApplicationMaster getApplicationId() {
 		return applicationId;
 	}
@@ -287,6 +312,72 @@ public class PrimaryHomeLoanDetail extends LoanApplicationMaster implements Seri
 	public void setRenovationType(Integer renovationType) {
 		this.renovationType = renovationType;
 	}
+
+	public Integer getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(Integer loanType) {
+		this.loanType = loanType;
+	}
+
+	public Integer getOldPropMonth() {
+		return oldPropMonth;
+	}
+
+	public void setOldPropMonth(Integer oldPropMonth) {
+		this.oldPropMonth = oldPropMonth;
+	}
+
+	public Integer getOldPropYear() {
+		return oldPropYear;
+	}
+
+	public void setOldPropYear(Integer oldPropYear) {
+		this.oldPropYear = oldPropYear;
+	}
+
+	public Double getOriginalValProp() {
+		return originalValProp;
+	}
+
+	public void setOriginalValProp(Double originalValProp) {
+		this.originalValProp = originalValProp;
+	}
+
+	public Double getRegValProp() {
+		return regValProp;
+	}
+
+	public void setRegValProp(Double regValProp) {
+		this.regValProp = regValProp;
+	}
+
+	public Double getMarketValProp() {
+		return marketValProp;
+	}
+
+	public void setMarketValProp(Double marketValProp) {
+		this.marketValProp = marketValProp;
+	}
+
+	public Integer getPropertyUsed() {
+		return propertyUsed;
+	}
+
+	public void setPropertyUsed(Integer propertyUsed) {
+		this.propertyUsed = propertyUsed;
+	}
+
+	public Double getEstimatedRentalIncome() {
+		return estimatedRentalIncome;
+	}
+
+	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
+		this.estimatedRentalIncome = estimatedRentalIncome;
+	}
+
+	
 
 	
 

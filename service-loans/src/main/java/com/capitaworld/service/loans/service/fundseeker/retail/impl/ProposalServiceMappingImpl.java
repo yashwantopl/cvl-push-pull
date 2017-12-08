@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.ProposalService;
+import com.capitaworld.service.loans.service.common.NotificationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -50,6 +54,8 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -58,6 +64,7 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.OrganisationBranchData;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -93,7 +100,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private ProposalDetailsClient proposalDetailsClient;
 	
 	@Autowired
+	private UsersClient usersClient; 
+	
+	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private NotificationService notificationService;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	DecimalFormat df = new DecimalFormat("#");
 	
@@ -505,7 +521,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
-
+		
 		ProposalDetailsClient client = new ProposalDetailsClient(
 				environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
