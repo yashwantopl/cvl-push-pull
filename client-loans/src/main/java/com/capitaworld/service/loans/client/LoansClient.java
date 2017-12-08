@@ -117,8 +117,6 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
 	
-	private static final String GET_COAPPS = "/fs_retail_profile/get_coapplicants";
-	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
 	private String loansBaseUrl;
@@ -1198,19 +1196,5 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not availables");
 		}
 		}
-	
-	public List<CoApplicantRequest> getCoApplicants(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_COAPPS).concat("/" + applicationId + "/" + userId);
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.set("req_auth", "true");
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<?> entity = new HttpEntity<Object>(null, headers);
-			return (List<CoApplicantRequest>) restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Loans service is not available");
-		}
-	}
 	
 }
