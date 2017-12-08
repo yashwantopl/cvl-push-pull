@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.retail;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -286,6 +287,17 @@ public class RetailApplicantController {
 			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/get_coapplicants/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<CoApplicantRequest> getCoApplicantsClient(@PathVariable("applicationId") Long applicationId,@PathVariable("userId") Long userId) {
+		// request must not be null
+		try {
+			return applicantService.getCoApplicants(userId, applicationId);
+		} catch (Exception e) {
+			logger.error("Error while getting Retail Co-Applicant Profile Details==>", e);
+			return Collections.emptyList();
 		}
 	}
 
