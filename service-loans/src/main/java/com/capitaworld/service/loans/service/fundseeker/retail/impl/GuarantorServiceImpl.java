@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
@@ -14,7 +16,12 @@ import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.retail.*;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -71,6 +79,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
 
 	@Override
 	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
@@ -438,7 +449,154 @@ public class GuarantorServiceImpl implements GuarantorService {
 							break;
 						}
 					}
+					//start of set address
+					// set office address
+					AddressResponse officeAddress = new AddressResponse();
+					try {
+						List<Long> officeCity = new ArrayList<Long>(1);
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOfficeCityId())) {
+							officeCity.add((long)guarantorDetail.getOfficeCityId());
+							OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
+							MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) formResponse.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(data)) {
+								officeAddress.setCity(data.getValue());
+							} else {
+								officeAddress.setCity("-");
+							}
+						} else {
+							officeAddress.setCity("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						List<Long> officeCountry = new ArrayList<Long>(1);
+						Long officeCountryLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOfficeCountryId())) {
+							officeCountryLong = Long.valueOf(guarantorDetail.getOfficeCountryId().toString());
 
+							officeCountry.add(officeCountryLong);
+							OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
+							MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())) {
+								officeAddress.setCountry(dataCountry.getValue());
+							} else {
+								officeAddress.setCountry("-");
+							}
+						} else {
+							officeAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+
+					}
+					try {
+						List<Long> officeState = new ArrayList<Long>(1);
+						Long officeStateLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOfficeStateId())) {
+							officeStateLong = Long.valueOf(guarantorDetail.getOfficeStateId().toString());
+
+							officeState.add(officeStateLong);
+							OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
+							MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
+							if (!CommonUtil.isObjectNullOrEmpty(dataState)) {
+								officeAddress.setState(dataState.getValue());
+							} else {
+								officeAddress.setState("-");
+							}
+						} else {
+							officeAddress.setState("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					officeAddress.setLandMark(guarantorDetail.getOfficeLandMark() != null ? guarantorDetail.getOfficeLandMark() :"");
+					officeAddress.setPincode(guarantorDetail.getOfficePincode() != null ? guarantorDetail.getOfficePincode().toString() : "");
+					officeAddress.setPremiseNumber(guarantorDetail.getOfficePremiseNumberName() != null ? guarantorDetail.getOfficePremiseNumberName() : "");
+					officeAddress.setStreetName(guarantorDetail.getOfficeStreetName() !=null ? guarantorDetail.getOfficeStreetName() : "");
+					profileViewPLResponse.setContactNo(guarantorDetail.getContactNo() !=null ? guarantorDetail.getContactNo() : "");
+					profileViewPLResponse.setFirstAddress(officeAddress);
+					
+					// set permanent address
+					AddressResponse permanentAddress = new AddressResponse();
+					try {
+						List<Long> permanentCity = new ArrayList<Long>(1);
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPermanentCityId())) {
+							permanentCity.add((long)guarantorDetail.getPermanentCityId());
+							OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
+							MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCity)) {
+								permanentAddress.setCity(dataCity.getValue());
+							} else {
+								permanentAddress.setCity("-");
+							}
+						} else {
+							permanentAddress.setCity("-");
+						}
+					} catch (Exception e) {
+
+					}
+					try {
+						List<Long> permanentCountry = new ArrayList<Long>(1);
+						Long permanentCountryLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPermanentCountryId())) {
+							permanentCountryLong = Long.valueOf(guarantorDetail.getPermanentCountryId().toString());
+							permanentCountry.add(permanentCountryLong);
+							OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
+							MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) countryPermanent.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCountry)) {
+								permanentAddress.setCountry(dataCountry.getValue());
+							} else {
+								permanentAddress.setCountry("-");
+							}
+						} else {
+							permanentAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+
+					}
+					try {
+						List<Long> permanentState = new ArrayList<Long>(1);
+						Long permanentStateLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPermanentStateId())) {
+							permanentStateLong = Long.valueOf(guarantorDetail.getPermanentStateId().toString());
+							permanentState.add(permanentStateLong);
+							OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
+							MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) statePermanent.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataState)) {
+								permanentAddress.setState(dataState.getValue());
+							} else {
+								permanentAddress.setCountry("-");
+							}
+						} else {
+							permanentAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+
+					}
+					permanentAddress.setLandMark(guarantorDetail.getPermanentLandMark() !=null ? guarantorDetail.getPermanentLandMark() : "");
+					permanentAddress.setPincode(guarantorDetail.getPermanentPincode() != null ? guarantorDetail.getPermanentPincode().toString() :"");
+					permanentAddress.setPremiseNumber(guarantorDetail.getPermanentPremiseNumberName() !=null ? guarantorDetail.getPermanentPremiseNumberName() :"");
+					permanentAddress.setStreetName(guarantorDetail.getPermanentStreetName() !=null ? guarantorDetail.getPermanentStreetName() :"");
+					profileViewPLResponse.setContactNo(guarantorDetail.getContactNo() !=null ? guarantorDetail.getContactNo() :"");
+					profileViewPLResponse.setSecondAddress(permanentAddress);
+					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherIncome()) ? guarantorDetail.getOtherIncome().toString() : ""));
+					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherInvestment()) ? guarantorDetail.getOtherInvestment().toString() : ""));
+					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTaxPaidLastYear()) ? guarantorDetail.getTaxPaidLastYear().toString() : ""));
+					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBonusPerAnnum()) ? guarantorDetail.getBonusPerAnnum().toString() : ""));
+					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIncentivePerAnnum()) ? guarantorDetail.getIncentivePerAnnum().toString() : ""));
+					profileViewPLResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBirthDate()) ? guarantorDetail.getBirthDate().toString() : "-");
+					//end of set address
 					// set pan car
 					profileViewPLResponse
 							.setPan(guarantorDetail.getPan() != null ? guarantorDetail.getPan().toUpperCase() : null);
