@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.AddressResponse;
+
 /**
  * @author Sanket
  *
@@ -15,6 +17,7 @@ public class RetailProfileViewResponse {
 	private String gender;
 	private String pan;
 	private String aadharNumber;
+	private String birthDate;
 	private String maritalStatus;
 	private String natureOfOccupation;
 	private Integer natureOfOccupationId;
@@ -30,7 +33,13 @@ public class RetailProfileViewResponse {
 	private String industryType;
 	private String landSize;
 	private String alliedActivity;
-	
+	private String contactNo;
+	private String otherIncome;
+	private String taxPaid;
+	private String otherInvestment;
+	private String bonusPerAnnum;
+	private String incentivePerAnnum;
+
 	//new requirement cw-384
 	private String yearsInCurrentJob;
 	private String monthsInCurrentJob;
@@ -49,6 +58,8 @@ public class RetailProfileViewResponse {
 	private String depreciationCurrentYear;
 	private String remunerationPreviousYear;
 	private String remunerationCurrentYear;
+	private AddressResponse firstAddress;
+	private AddressResponse secondAddress;
 
 	public String getFirstName() {
 		return firstName;
@@ -361,7 +372,75 @@ public class RetailProfileViewResponse {
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
 	}
-	
 
+	public AddressResponse getFirstAddress() {
+		return firstAddress;
+	}
+
+	public void setFirstAddress(AddressResponse firstAddress) {
+		this.firstAddress = firstAddress;
+	}
+
+	public AddressResponse getSecondAddress() {
+		return secondAddress;
+	}
+
+	public void setSecondAddress(AddressResponse secondAddress) {
+		this.secondAddress = secondAddress;
+	}
+
+	public String getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
+	}
+	public String getContactNo() {
+		return contactNo;
+	}
+
+	public void setContactNo(String contactNo) {
+		this.contactNo = contactNo;
+	}
+	public String getOtherIncome() {
+		return otherIncome;
+	}
+
+	public void setOtherIncome(String otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+
+	public String getTaxPaid() {
+		return taxPaid;
+	}
+
+	public void setTaxPaid(String taxPaid) {
+		this.taxPaid = taxPaid;
+	}
+
+	public String getOtherInvestment() {
+		return otherInvestment;
+	}
+
+	public void setOtherInvestment(String otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+
+	public String getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+
+	public void setBonusPerAnnum(String bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+
+	public String getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+
+	public void setIncentivePerAnnum(String incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
+	}
 	
 }

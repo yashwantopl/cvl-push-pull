@@ -23,6 +23,8 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,7 +201,12 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setMonthlyIncome(
 						(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
 								? String.format("%.2f", applicantDetail.getMonthlyIncome()) : "0"));
-
+				profileViewHLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : ""));
+				profileViewHLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : ""));
+				profileViewHLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : ""));
+				profileViewHLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? applicantDetail.getBonusPerAnnum().toString() : ""));
+				profileViewHLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? applicantDetail.getIncentivePerAnnum().toString() : ""));
+				
 				// set office address
 				AddressResponse officeAddress = new AddressResponse();
 				try {
@@ -270,6 +277,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
 				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
 				homeLoanResponse.setOfficeAddress(officeAddress);
+				profileViewHLResponse.setFirstAddress(officeAddress);
 
 				// set permanent address
 				AddressResponse permanentAddress = new AddressResponse();
@@ -340,7 +348,8 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
 				permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
 				homeLoanResponse.setPermanentAddress(permanentAddress);
-
+				
+				profileViewHLResponse.setContactNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getContactNo()) ?  applicantDetail.getContactNo() : "-");
 				profileViewHLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
 				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 

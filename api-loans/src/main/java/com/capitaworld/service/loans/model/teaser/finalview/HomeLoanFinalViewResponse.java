@@ -36,6 +36,24 @@ public class HomeLoanFinalViewResponse implements Serializable{
 	private String sellerCountry;
 	private String propertyUse;
 	private String rentalIncome;
+	private String downPayment;
+	private Integer propertyUsedType;
+
+	public Integer getPropertyUsedType() {
+		return propertyUsedType;
+	}
+
+	public void setPropertyUsedType(Integer propertyUsedType) {
+		this.propertyUsedType = propertyUsedType;
+	}
+
+	public String getDownPayment() {
+		return downPayment;
+	}
+
+	public void setDownPayment(String downPayment) {
+		this.downPayment = downPayment;
+	}
 
 	public String getPropPremiseNo() {
 		return propPremiseNo;
