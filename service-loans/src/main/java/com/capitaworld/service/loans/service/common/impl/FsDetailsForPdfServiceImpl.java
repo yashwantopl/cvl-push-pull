@@ -439,7 +439,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			for (int i = 0; i < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().size(); i++) {
 				int j=i+1;
 				Map<String, Object> guaExistingLoanMap = new HashMap<>();
-				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getExistingLoanDetailRequest().size(); k++) {
+				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getExistingLoanDetailRequest().size(); k++) {
 					int l=k+1;
 					guaExistingLoanMap.put("guaLoanBankName" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getExistingLoanDetailRequest().get(k).getBankOrFinancerName());
 					guaExistingLoanMap.put("guaLoanEmi" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getExistingLoanDetailRequest().get(k).getEmiAmount());
