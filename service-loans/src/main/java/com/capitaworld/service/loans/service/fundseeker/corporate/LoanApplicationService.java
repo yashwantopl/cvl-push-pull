@@ -101,6 +101,8 @@ public interface LoanApplicationService {
 	
 	public String getCampaignCodeByApplicationId(Long applicationId) throws Exception;
 	
+	public Boolean isTermLoanLessThanLimit(Long applicationId);
+	
 	
 
 	

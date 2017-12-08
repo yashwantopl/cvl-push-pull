@@ -36,6 +36,24 @@ public class CommonUtils {
 	public static final Long CORPORATE_USER = 4L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
+	public static final Long TL_LESS_TWO = 20000000L;
+
+	
+	public interface DenominationInAmount  {
+		public static final Long  LAKHS =100000l;
+		public static final Long MILLIONS = 1000000l;
+		public static final Long CRORES = 10000000l;
+		public static final Long BILLIONS=100000000l;
+		public static final Long ABSOLUTE=1l;
+	}
+	public interface  DenominationId  {
+		public static final Integer LAKHS = 1;
+		public static final Integer MILLIONS = 2;
+		public static final Integer CRORES = 3;
+		public static final Integer BILLIONS=4;
+		public static final Integer ABSOLUTE=5;
+	}
+	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -428,6 +446,38 @@ public class CommonUtils {
 		} else if ("UL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN.getValue();
 		} else {
+			return null;
+		}
+	}
+	
+	public static Boolean isTermLoanLessThanLimit(Integer denomination,Double amount)
+	{
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return false;
+		}
+		if(convertDenominationToValue(denomination,amount)<TL_LESS_TWO)
+			return true;
+		else
+			return false;
+		
+	}
+
+	private static Long convertDenominationToValue(Integer denomination, Double amount) {
+		// TODO Auto-generated method stub
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return null;
+		}
+		if(denomination==DenominationId.LAKHS){
+			return 	(long) (DenominationInAmount.LAKHS* amount);
+		}else if(denomination==DenominationId.MILLIONS){
+			return 	(long) (DenominationInAmount.MILLIONS * amount);	
+		}else if(denomination==DenominationId.CRORES){
+			return 	(long) (DenominationInAmount.CRORES * amount);
+		}else if(denomination==DenominationId.BILLIONS){
+			return 	(long) (DenominationInAmount.BILLIONS* amount);
+		}else if(denomination==DenominationId.ABSOLUTE){
+			return 	(long) (DenominationInAmount.ABSOLUTE* amount);
+		}else{
 			return null;
 		}
 	}

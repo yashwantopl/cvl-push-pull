@@ -2663,4 +2663,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return applicationMaster;
 	}
+
+	@Override
+	public Boolean isTermLoanLessThanLimit(Long applicationId) {
+		// TODO Auto-generated method stub
+		LoanApplicationMaster applicationMaster=loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
+		{
+			return null;
+		}
+		else
+		{
+			return CommonUtils.isTermLoanLessThanLimit(applicationMaster.getDenominationId(), applicationMaster.getAmount());
+		}
+		
+	}
 }

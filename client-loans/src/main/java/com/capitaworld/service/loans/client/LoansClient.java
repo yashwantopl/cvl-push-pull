@@ -115,6 +115,8 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
 	
+	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
+	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -1179,5 +1181,18 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse isTermLoanLessThanLimit(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(IS_TERM_LOAN_LESS_THAN_LIMIT) + "/" + applicationId;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not availables");
+		}
+		}
 	
 }
