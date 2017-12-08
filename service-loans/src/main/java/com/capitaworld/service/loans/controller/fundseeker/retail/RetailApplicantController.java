@@ -275,21 +275,17 @@ public class RetailApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "${profile}/get_profile/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,@PathVariable("userId") Long userId) {
+	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("userId") Long userId) {
 		// request must not be null
 		try {
-			RetailApplicantRequest response = applicantService.get(userId, applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setData(response);
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
+			return applicantService.get(userId, applicationId);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
 		}
 	}
 
