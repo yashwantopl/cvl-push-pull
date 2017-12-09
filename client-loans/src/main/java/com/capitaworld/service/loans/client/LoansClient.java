@@ -1176,7 +1176,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
+			HttpEntity<?> entity = new HttpEntity<Object>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
