@@ -11,3 +11,5 @@ CREATE TABLE `loan_applications`.org_branch_audit (
   	is_active BIT(1) DEFAULT NULL,
  	PRIMARY KEY  (id)
 ) ENGINE=INNODB DEFAULT CHARSET=latin1;
+
+ALTER TABLE loan_application.`org_branch_audit` ADD COLUMN  user_org_id BIGINT(20) DEFAULT NULL;
