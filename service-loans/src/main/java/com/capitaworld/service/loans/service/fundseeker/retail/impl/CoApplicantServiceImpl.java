@@ -222,6 +222,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			for (CoApplicantDetail detail : details) {
 				CoApplicantRequest request = new CoApplicantRequest();
 				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getBirthDate())) {
+					logger.info("Birthdate==>" + detail.getBirthDate().toString());					
+				}
+				Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(detail.getBirthDate());
+				logger.info("Date in Loan==>" + saperatedTime[0]);
+				logger.info("Month in Loan==>" + saperatedTime[1]);
+				logger.info("Year in Loan==>" + saperatedTime[2]);
+				request.setDate(saperatedTime[0]);
+				request.setMonth(saperatedTime[1]);
+				request.setYear(saperatedTime[2]);
 				requests.add(request);
 			}
 			return requests;
