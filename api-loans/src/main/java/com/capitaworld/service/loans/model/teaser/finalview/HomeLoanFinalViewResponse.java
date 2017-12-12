@@ -38,6 +38,9 @@ public class HomeLoanFinalViewResponse implements Serializable{
 	private String rentalIncome;
 	private String downPayment;
 	private Integer propertyUsedType;
+	private String loanPurpose;
+	private String PropertyType;
+	
 
 	public Integer getPropertyUsedType() {
 		return propertyUsedType;
@@ -230,6 +233,24 @@ public class HomeLoanFinalViewResponse implements Serializable{
 	public void setHomeLoanPrimaryViewResponse(HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse) {
 		this.homeLoanPrimaryViewResponse = homeLoanPrimaryViewResponse;
 	}
+
+	public String getLoanPurpose() {
+		return loanPurpose;
+	}
+
+	public void setLoanPurpose(String loanPurpose) {
+		this.loanPurpose = loanPurpose;
+	}
+
+	public String getPropertyType() {
+		return PropertyType;
+	}
+
+	public void setPropertyType(String propertyType) {
+		PropertyType = propertyType;
+	}
+
+	
 	
 	
 
