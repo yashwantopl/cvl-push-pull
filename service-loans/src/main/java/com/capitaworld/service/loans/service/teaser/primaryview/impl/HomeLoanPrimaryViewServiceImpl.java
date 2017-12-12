@@ -271,11 +271,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-				officeAddress.setPincode(applicantDetail.getOfficePincode() != null
-						? applicantDetail.getOfficePincode().toString() : null);
-				officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
-				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
+				officeAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeLandMark())?"-":applicantDetail.getOfficeLandMark());
+				officeAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficePincode())?"-":applicantDetail.getOfficePincode().toString());
+				officeAddress.setPremiseNumber(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficePremiseNumberName())?"-":applicantDetail.getOfficePremiseNumberName());
+				officeAddress.setStreetName(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStreetName())?"-":applicantDetail.getOfficeStreetName());
 				homeLoanResponse.setOfficeAddress(officeAddress);
 				profileViewHLResponse.setFirstAddress(officeAddress);
 
@@ -342,11 +341,10 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				} catch (Exception e) {
 
 				}
-				permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null
-						? applicantDetail.getPermanentPincode().toString() : null);
-				permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
-				permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
+				permanentAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentLandMark())?"-":applicantDetail.getPermanentLandMark());
+				permanentAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())?"-":applicantDetail.getPermanentPincode().toString());
+				permanentAddress.setPremiseNumber(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPremiseNumberName())?"-":applicantDetail.getPermanentPremiseNumberName());
+				permanentAddress.setStreetName(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStreetName())?"-":applicantDetail.getPermanentStreetName());
 				homeLoanResponse.setPermanentAddress(permanentAddress);
 				
 				profileViewHLResponse.setContactNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getContactNo()) ?  applicantDetail.getContactNo() : "-");
