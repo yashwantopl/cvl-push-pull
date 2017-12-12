@@ -41,3 +41,6 @@ ADD COLUMN `user_score` double NULL AFTER `user_org_id`;
 
 ALTER TABLE `loan_applications`.`org_branch_audit` 
 ADD COLUMN  `user_org_id` BIGINT(20) DEFAULT NULL;
+
+ALTER TABLE `loan_applications`.`fs_loan_application_master` 
+ADD COLUMN `campaign_code`  VARCHAR(45) NULL DEFAULT NULL;
