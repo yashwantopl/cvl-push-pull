@@ -1199,7 +1199,7 @@ public class LoansClient {
 		}
 		}
 	
-	public RetailApplicantRequest setEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
+	public Integer setEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
 		String url = loansBaseUrl.concat(SET_ELIGIBILITY_AMOUNT);
 		System.out.println("Eligibility update client URL==>"  + url);
 		try {
@@ -1207,7 +1207,7 @@ public class LoansClient {
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(applicationRequest, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, RetailApplicantRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.POST, entity, Integer.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
