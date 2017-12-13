@@ -65,4 +65,18 @@ public class LogServiceImpl implements LogService {
 		return false;
 	}
 
+	@Override
+	public Date getDateByLogType(Long applicationId, Integer logType) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getDateByLogType");
+		try {
+			return logDetailsRepository.getDateByLogType(applicationId, logType);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.toString());
+		}
+		CommonDocumentUtils.endHook(logger, "getDateByLogType");
+		return null;
+	}
+
 }
