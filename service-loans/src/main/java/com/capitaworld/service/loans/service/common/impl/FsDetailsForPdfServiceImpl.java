@@ -589,7 +589,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			for (int i = 0; i < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().size(); i++) {
 				int j=i+1;
 				 Map<String, Object> guaOtherCurrentAsset = new HashMap<>();
-				 for (int k = 0; k < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getAssetDetailResponseList().size(); k++) {
+				 for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getAssetDetailResponseList().size(); k++) {
 					 int l=k+1;
 					 guaOtherCurrentAsset.put("guaCurrentAssetType" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getAssetDetailResponseList().get(k).getAssetType());
 				}
