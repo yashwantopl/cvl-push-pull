@@ -1199,7 +1199,7 @@ public class LoansClient {
 		}
 		}
 	
-	public RetailApplicantRequest getEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
+	public RetailApplicantRequest setEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
 		String url = loansBaseUrl.concat(SET_ELIGIBILITY_AMOUNT);
 		System.out.println("Eligibility update client URL==>"  + url);
 		try {
