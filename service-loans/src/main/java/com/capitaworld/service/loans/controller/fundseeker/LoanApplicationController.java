@@ -1170,4 +1170,15 @@ public class LoanApplicationController {
 		}
 	}
 
+	@RequestMapping(value = "/set_eligibility_amount", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
+	public Integer setEligibilityAmount(@RequestBody LoanApplicationRequest loanRequest) {
+		try {
+			CommonDocumentUtils.startHook(logger, "setEligibilityAmount");
+			return loanApplicationService.setEligibleLoanAmount(loanRequest);
+		} catch (Exception e) {
+			logger.error("Error while updating Eligibility Amount==>", e);
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
