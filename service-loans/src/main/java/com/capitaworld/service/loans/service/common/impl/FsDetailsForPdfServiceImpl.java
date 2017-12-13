@@ -50,7 +50,21 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 		map.put("loanPurpose", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType());
 		map.put("loanAmount", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
-		map.put("tennure", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getTenure());
+		//amount in words
+		try {
+			if (!CommonUtils.isObjectNullOrEmptyOrDash(
+					finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount())) {
+				map.put("loanAmountInWords", CommonUtils.amountInWords((long)Double.parseDouble(
+						finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount())));
+			} else {
+				map.put("loanAmountInWords",
+						finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
+			}
+		} catch (Exception e) {
+			map.put("loanAmountInWords",
+					finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
+		}
+		map.put("tennure", CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getTenure())?"":Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getTenure())*12);
 		//APPLICANT DETAILS
 		map.put("name",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTitle()+" "+finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getFirstName()+" "+finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getLastName());
 		map.put("fatherName", finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getFatherFullName());
@@ -65,23 +79,25 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		map.put("cast", finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCaste());
 		map.put("city", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCity());
 		String presentAddress = "";
-		presentAddress +=finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPremiseNumber()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getStreetName()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getLandMark()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCity()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo();
+		presentAddress +=(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPremiseNumber())
+                +" "+(CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getStreetName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getStreetName())
+                +" "+(CommonUtils.isObjectNullOrEmpty(  finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getLandMark())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getLandMark())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCity())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCity())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPincode())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPincode())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo());
 		map.put("presentAddress", presentAddress);
 		map.put("presentAccommodation",finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getResidenceType());
 		String permanentAddress = "";
-		permanentAddress += finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getPremiseNumber()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getStreetName()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getLandMark()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCity()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getState()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCountry()
-				+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo();
+		permanentAddress += (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getPremiseNumber())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getStreetName())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getStreetName())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getLandMark())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getLandMark())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCity())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCity())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getState())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCountry())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getCountry())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getPincode())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPermanentAddress().getPincode())
+                +" "+ (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getContactNo());
 		map.put("permanentAddress", permanentAddress);
 		Long userId=loanApplicationRepository.getUserIdByApplicationId(applicantId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -112,25 +128,25 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		Double grossAnnualIncome=(double) 0;
 		
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 2){
-			grossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome());
-								grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getBonusPerAnnum());
-								grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome());
-		map.put("grossAnnualIncome",grossAnnualIncome);
+			grossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome().replaceAll(",", ""));
+								grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getBonusPerAnnum().replaceAll(",", ""));
+								grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome().replaceAll(",", ""));
+		map.put("grossAnnualIncome",grossAnnualIncome*12);
 		}
 		
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 3 || finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 4){
 			
-			grossAnnualIncome = CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getPatCurrentYear());
-			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getDepreciationCurrentYear());
-			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getRemunerationCurrentYear());
-			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome());
-			map.put("grossAnnualIncome",grossAnnualIncome);
+			grossAnnualIncome = CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getPatCurrentYear().replaceAll(",", ""));
+			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getDepreciationCurrentYear().replaceAll(",", ""));
+			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getRemunerationCurrentYear().replaceAll(",", ""));
+			grossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome().replaceAll(",", ""));
+			map.put("grossAnnualIncome",grossAnnualIncome*12);
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 7){
 			
-			grossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome());
-			grossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome());
-			map.put("grossAnnualIncome",grossAnnualIncome);
+			grossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getMonthlyIncome().replaceAll(",", ""));
+			grossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherIncome().replaceAll(",", ""));
+			map.put("grossAnnualIncome",grossAnnualIncome*12);
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 2 || finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 7){
 			map.put("taxPaid",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid());
@@ -156,16 +172,16 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			// TODO: handle exception
 		}
 		//surplus
-		Double surplus=grossAnnualIncome;
-		surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid());
-		surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment());
+		Double surplus=grossAnnualIncome*12;
+		surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid().replaceAll(",", ""));
+		surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment().replaceAll(",", ""));
 		map.put("surplus", surplus);
 		
 		//COAPPLICANT DETAILS
 		if (!CommonUtils.isObjectListNull(finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails())) {
 			for (int i = 0; i < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().size(); i++) {
 				int j=i+1;
-				map.put("coappName" + j,finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTitle()+" "+finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstName()+" "+finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getLastName());
+				 map.put("coappName" + j,(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTitle())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTitle())+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstName())+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getLastName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getLastName()));
 				map.put("coappFatherName" + j, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getFatherFullName());
 				map.put("coappRelationshipWithApplicant" + j, finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getRelationshipWithApplicant());
 				map.put("coappPanNo" + j,finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPan());
@@ -179,22 +195,23 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				map.put("coappCast" +j,finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCaste());
 				map.put("coappCity" +j,finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCity());
 				String coAppPresentAddress = "";
-				coAppPresentAddress += finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getPremiseNumber()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getStreetName()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getLandMark()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCity()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getState()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCountry()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo();
+				coAppPresentAddress += (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getPremiseNumber())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getStreetName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getStreetName())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getLandMark())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getLandMark())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCity())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCity())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getState())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCountry())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getSecondAddress().getCountry())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo())
+                        ;
 				map.put("coAppPresentAddress" + j, coAppPresentAddress);
 				String coAppPermanantAddress = "";
-				coAppPermanantAddress += finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getPremiseNumber()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getStreetName()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getLandMark()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCity()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getState()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCountry()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo();
+				coAppPermanantAddress += (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getPremiseNumber())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getStreetName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getStreetName())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getLandMark())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getLandMark())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCity())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCity())
+                        +" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getState())
+                        +" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCountry())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getFirstAddress().getCountry())
+                        +" "+(CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo());
 				map.put("coAppPermanantAddress" + j, coAppPermanantAddress);
 				map.put("coappPresentAccommodation" + j, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getResidenceType());
 				map.put("coappMobile"+ j, finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getContactNo());
@@ -221,24 +238,24 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				Double coappGrossAnnualIncome=(double) 0;
 				
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 2){
-					coappGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome());
-					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getBonusPerAnnum());
-					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome());
-				map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome);
+					coappGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome().replaceAll(",", ""));
+					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getBonusPerAnnum().replaceAll(",", ""));
+					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome().replaceAll(",", ""));
+				map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome*12);
 				}
 				
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 3 || finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 4){
 					
-					coappGrossAnnualIncome = CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPatCurrentYear());
-					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getDepreciationCurrentYear());
-					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getRemunerationCurrentYear());
+					coappGrossAnnualIncome = CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getPatCurrentYear().replaceAll(",", ""));
+					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getDepreciationCurrentYear().replaceAll(",", ""));
+					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getRemunerationCurrentYear().replaceAll(",", ""));
 					coappGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome());
-					map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome);
+					map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome*12);
 				}
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 7){
-					coappGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome());
-					coappGrossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome());
-					map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome);
+					coappGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getMonthlyIncome().replaceAll(",", ""));
+					coappGrossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherIncome().replaceAll(",", ""));
+					map.put("coappGrossAnnualIncome" + j,coappGrossAnnualIncome*12);
 				}
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 2 || finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getNatureOfOccupationId() == 7){
 					map.put("coappTaxPaid",finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTaxPaid());
@@ -247,12 +264,11 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				
 				
 				//surplus
-				Double coappsurplus=coappGrossAnnualIncome;
-				coappsurplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTaxPaid());
-				coappsurplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherInvestment());
+				Double coappsurplus=coappGrossAnnualIncome*12;
+				coappsurplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getTaxPaid().replaceAll(",", ""));
+				coappsurplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getCoApplicantResponse().get(i).getOtherInvestment().replaceAll(",", ""));
 				map.put("coappsurplus" + j, coappsurplus);
 				map.put("coappReligion" +j,finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getReligion());
-				i++;
 			}
 		}
 		//GUARANTOR DETAILS
@@ -264,13 +280,14 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				map.put("guaPanNo" + j,finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getPan());
 				map.put("guaAadhaarNo" + j,finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getAadharNumber());
 				String guaResidentialAddress = "";
-				guaResidentialAddress += finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getPremiseNumber()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getStreetName()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getLandMark()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCity()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getState()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCountry()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo();
+				guaResidentialAddress += (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getPremiseNumber())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getStreetName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getStreetName())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getLandMark())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getLandMark())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCity())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCity())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getState())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCountry())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCountry())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getPincode())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getPincode())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo());
 				map.put("guaResidentialAddress" + j, guaResidentialAddress);
 				map.put("guaOccupation" + j, finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupation());
 				map.put("guaMobile"+ j, finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo());
@@ -283,26 +300,26 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 2){
 					
-					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome());
-					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getBonusPerAnnum());
-					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome());
+					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome().replaceAll(",", ""));
+					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getBonusPerAnnum())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getBonusPerAnnum().replaceAll(",", ""));
+					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome().replaceAll(",", ""));
 
-				map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome);
+				map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome*12);
 				}
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 3 || finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 4){
 					
-					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getPatCurrentYear());
-					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getDepreciationCurrentYear());
-					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getRemunerationCurrentYear());
-					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome());
+					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getPatCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getPatCurrentYear().replaceAll(",", ""));
+					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getDepreciationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getDepreciationCurrentYear().replaceAll(",", ""));
+					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getRemunerationCurrentYear())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getRemunerationCurrentYear().replaceAll(",", ""));
+					guaGrossAnnualIncome+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome().replaceAll(",", ""));
 
-					map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome);
+					map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome*12);
 				}
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 7){
 					
-					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome());
-					guaGrossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome());
-					map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome);
+					guaGrossAnnualIncome += CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMonthlyIncome().replaceAll(",", ""));
+					guaGrossAnnualIncome +=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherIncome().replaceAll(",", ""));
+					map.put("guaGrossAnnualIncome"+ j,guaGrossAnnualIncome*12);
 				}
 				if(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 2 || finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getNatureOfOccupationId() == 7){
 					map.put("guaTaxPaid"+ j,finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getTaxPaid());
@@ -311,20 +328,22 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				
 				
 				//surplus
-				Double guasurplus=guaGrossAnnualIncome;
-				surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getTaxPaid());
-				surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherInvestment());
+				Double guasurplus=guaGrossAnnualIncome*12;
+				surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getTaxPaid())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getTaxPaid().replaceAll(",", ""));
+				surplus-=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherInvestment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getOtherInvestment().replaceAll(",", ""));
 				map.put("guasurplus"+ j, guasurplus);
 				map.put("guaMaritalStatus" + j, finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getMaritalStatus());
 				map.put("guaDependents" + j, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getNoOfDependents());
 				map.put("guaCast" + j,finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCaste());
 				String guaPermanantAddress = "";
-				guaPermanantAddress += finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getPremiseNumber()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getStreetName()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getLandMark()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCity()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getState()
-						+" "+ finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCountry();
+				guaPermanantAddress += (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getPremiseNumber())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getPremiseNumber())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getStreetName())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getStreetName())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getLandMark())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getLandMark())
+						+" "+(CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCity())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCity())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getState())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getState())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCountry())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getCountry())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getPincode())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getFirstAddress().getPincode())
+						+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo())?"":finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getContactNo());
 				map.put("guaPermanantAddress", guaPermanantAddress);
 				map.put("guaPresentAccommodation" + j,finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getResidenceType());
 				String guaOfficeAddress = "";
@@ -334,49 +353,55 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				map.put("guaYearsInPresentEmployment" + j, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getYearsInCurrentJob());
 				map.put("guaCity" + j, finalViewResponse.getHomeLoanPrimaryViewResponse().getGarantorResponse().get(i).getSecondAddress().getCity());
 				map.put("guaReligion" +j,finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getReligion());
-				i++;
 
 			}
 		}
 		//PRIMARY HOME LOAN DETAILS
 		map.put("nameOfSeller", finalViewResponse.getSellerName());
 		String propertyAddress = "";
-		propertyAddress += finalViewResponse.getPropPremiseNo() +" "+ finalViewResponse.getPropStreetName()
-				+" "+ finalViewResponse.getPropLandmark() + finalViewResponse.getPropCity()
-				+" "+ finalViewResponse.getPropState() + finalViewResponse.getPropCountry()
-				+" "+ finalViewResponse.getPropPinCode();
+		propertyAddress += (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropPremiseNo())?"":finalViewResponse.getPropPremiseNo()) 
+				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropStreetName())?"":finalViewResponse.getPropStreetName())
+				+" "+(CommonUtils.isObjectNullOrEmpty( finalViewResponse.getPropLandmark() )?"":finalViewResponse.getPropLandmark() )
+				+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropCity())?"":finalViewResponse.getPropCity())
+				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropState())?"":finalViewResponse.getPropState()) 
+				+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropCountry())?"":finalViewResponse.getPropCountry())
+				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropPinCode())?"":finalViewResponse.getPropPinCode());
 		map.put("propertyAddress", propertyAddress);
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("areaOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getArea());
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("builtUpArea", finalViewResponse.getBuiltUpArea());
 			map.put("carpetUpArea", finalViewResponse.getCarpetArea());
 		}
 		Double requirementTotal = (double) 0,sourceTotal=(double) 0;
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
-			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
+			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
-			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
+			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice());
-			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice());
+			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost());
-			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost());
+			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost());
-			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost());
+			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost().replaceAll(",", ""));
 		}
 		
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyUse() == "Renting"){
 			map.put("rentedout", "Yes");
+		}
+		else
+		{
+			map.put("rentedout", "No");
 		}
 		
 		map.put("requirementTotal", requirementTotal);
@@ -385,8 +410,8 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		map.put("loanAmountRequested", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
 		
 		
-		sourceTotal+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment());
-		sourceTotal+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
+		sourceTotal+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment().replaceAll(",", ""));
+		sourceTotal+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount().replaceAll(",", ""));
 		map.put("sourceTotal", sourceTotal);
 		//REFERENCE DETAILS FRAME APPLICANT
 		Map<String, Object> referenceMap = new HashMap<>();
