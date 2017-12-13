@@ -103,7 +103,10 @@ public interface LoanApplicationService {
 	
 	public Boolean isTermLoanLessThanLimit(Long applicationId);
 	
+	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception;
 	
 
 	
 }
+
+

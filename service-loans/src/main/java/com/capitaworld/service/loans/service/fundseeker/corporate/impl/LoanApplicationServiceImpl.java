@@ -189,7 +189,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (type == null) {
 				return null;
 			}
-			LoanApplicationRequest request = new LoanApplicationRequest(); 
+			LoanApplicationRequest request = new LoanApplicationRequest();
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			applicationMaster = getLoanByType(type);
 			applicationMaster.setUserId(finalUserId);
@@ -2667,15 +2667,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Boolean isTermLoanLessThanLimit(Long applicationId) {
 		// TODO Auto-generated method stub
-		LoanApplicationMaster applicationMaster=loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
-		{
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return null;
+		} else {
+			return CommonUtils.isTermLoanLessThanLimit(applicationMaster.getDenominationId(),
+					applicationMaster.getAmount());
 		}
-		else
-		{
-			return CommonUtils.isTermLoanLessThanLimit(applicationMaster.getDenominationId(), applicationMaster.getAmount());
-		}
-		
+
 	}
+
+	@Override
+	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception {
+		logger.info("Entry in setEligibleLoanAmount()");
+		try {
+			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicationRequest.getClientId())
+					? applicationRequest.getUserId()
+					: applicationRequest.getClientId();
+			int i = loanApplicationRepository.setEligibleAmount(applicationRequest.getId(), finalUserId, applicationRequest.getAmount());
+			logger.info("No Of updated row in Eligible Amount===>" + i);
+			logger.info("Exit from setEligibleLoanAmount()");
+			return i;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while updating Eligibility Amount");
+			logger.info("Exit from setEligibleLoanAmount()");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 }

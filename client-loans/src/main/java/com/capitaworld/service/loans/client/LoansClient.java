@@ -119,6 +119,8 @@ public class LoansClient {
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
+	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
+	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -1196,5 +1198,20 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not availables");
 		}
 		}
+	
+	public RetailApplicantRequest getEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
+		String url = loansBaseUrl.concat(SET_ELIGIBILITY_AMOUNT);
+		System.out.println("Eligibility update client URL==>"  + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(applicationRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, RetailApplicantRequest.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
 	
 }
