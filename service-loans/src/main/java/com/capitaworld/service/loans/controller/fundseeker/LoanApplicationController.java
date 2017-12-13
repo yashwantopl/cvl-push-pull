@@ -1134,8 +1134,8 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/isTermLoanLessThanLimit", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> isTermLoanLessThanLimit(HttpServletRequest request, @RequestBody Long applicationId,
+	@RequestMapping(value = "/isTermLoanLessThanLimit/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> isTermLoanLessThanLimit(HttpServletRequest request, @PathVariable Long applicationId,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, "isTermLoanLessThanLimit");

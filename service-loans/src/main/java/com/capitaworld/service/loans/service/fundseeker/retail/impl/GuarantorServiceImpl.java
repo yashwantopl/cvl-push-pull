@@ -601,15 +601,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 					profileViewPLResponse
 							.setPan(guarantorDetail.getPan() != null ? guarantorDetail.getPan().toUpperCase() : null);
 					profileViewPLResponse.setTitle(guarantorDetail.getTitleId() != null
-							? Title.getById(guarantorDetail.getTitleId()).getValue() : null);
+							? Title.getById(guarantorDetail.getTitleId()).getValue() : "");
 					profileViewPLResponse.setAge(guarantorDetail.getBirthDate() != null
 							? CommonUtils.getAgeFromBirthDate(guarantorDetail.getBirthDate()).toString() : null);
 					profileViewPLResponse.setFirstName(
-							guarantorDetail.getFirstName() != null ? guarantorDetail.getFirstName() : null);
+							guarantorDetail.getFirstName() != null ? guarantorDetail.getFirstName() : "");
 					profileViewPLResponse.setGender(guarantorDetail.getGenderId() != null
 							? Gender.getById(guarantorDetail.getGenderId()).getValue() : null);
 					profileViewPLResponse
-							.setLastName(guarantorDetail.getLastName() != null ? guarantorDetail.getLastName() : null);
+							.setLastName(guarantorDetail.getLastName() != null ? guarantorDetail.getLastName() : "");
 					profileViewPLResponse.setMaritalStatus(guarantorDetail.getStatusId() != null
 							? MaritalStatus.getById(guarantorDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(

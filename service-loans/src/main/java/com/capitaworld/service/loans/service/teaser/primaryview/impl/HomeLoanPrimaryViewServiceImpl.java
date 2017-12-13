@@ -189,11 +189,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					profileViewHLResponse.setNatureOfOccupation("-");
 				}
 				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName())
-						? applicantDetail.getFirstName() : null));
+						? applicantDetail.getFirstName() : ""));
 				profileViewHLResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())
-						? applicantDetail.getMiddleName() : null));
+						? applicantDetail.getMiddleName() : ""));
 				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName())
-						? applicantDetail.getLastName() : null));
+						? applicantDetail.getLastName() : ""));
 				profileViewHLResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())
 						? Gender.getById(applicantDetail.getGenderId()).getValue() : "-"));
 				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())
@@ -348,7 +348,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				homeLoanResponse.setPermanentAddress(permanentAddress);
 				
 				profileViewHLResponse.setContactNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getContactNo()) ?  applicantDetail.getContactNo() : "-");
-				profileViewHLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
+				profileViewHLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : "");
 				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null
