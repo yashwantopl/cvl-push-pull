@@ -547,6 +547,27 @@ public class CommonUtils {
 		    return numNames[number] + " hundred" + soFar;
 		  }
 
+		  public static BigDecimal convertInBigDecimal(Object obj)
+		  {
+			  if(obj instanceof String)
+			  {
+				  return   new BigDecimal((String)obj); 
+			  }
+			  if(obj instanceof Double)
+			  {
+				  return   new BigDecimal((Double)obj); 
+			  }
+			  if(obj instanceof Long)
+			  {
+				  return   new BigDecimal((Long)obj); 
+			  }
+			  if(obj instanceof Integer)
+			  {
+				  return   new BigDecimal((Integer)obj); 
+			  }
+			  return new BigDecimal(0);
+			
+		  }
 
 		  public static String amountInWords(long number) {
 		    // 0 to 999 999 999 999
