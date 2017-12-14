@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -40,6 +41,9 @@ public class CommonController {
 
 	@Autowired
 	private UsersClient usersClient;
+
+	@Autowired
+	private LoanApplicationService applicationService;
 
 	@RequestMapping(value = "/save_lat_long", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLatLong(@RequestBody LongitudeLatitudeRequest longLatrequest,
@@ -235,7 +239,12 @@ public class CommonController {
 			try {
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
 				obj.put("lastAccessId", response.getId());
+				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+					obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
+					obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
+				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.warn("Error While Get Last access application id");
 				return new ResponseEntity<UserResponse>(
 						new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),

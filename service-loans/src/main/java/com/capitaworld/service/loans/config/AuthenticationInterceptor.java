@@ -70,7 +70,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return false;
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
-		request.setAttribute("userType", authResponse.getUserType().intValue());
+		request.setAttribute(CommonUtils.USER_TYPE, authResponse.getUserType().intValue());
+		request.setAttribute(CommonUtils.USER_ORG_ID, authResponse.getUserOrgId());
 		return true;
 	}
 

@@ -1,20 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.*;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
-import com.capitaworld.service.loans.service.fundseeker.retail.*;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.oneform.enums.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,10 +14,64 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.service.dms.util.CommonUtil;
+import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AddressResponse;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
+import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
+import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CreditCardsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ExistingLoanDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherIncomeDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AlliedActivity;
+import com.capitaworld.service.oneform.enums.Assets;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmployeeWith;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IncomeDetails;
+import com.capitaworld.service.oneform.enums.IndustryType;
+import com.capitaworld.service.oneform.enums.LandSize;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.Occupation;
+import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
+import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
+import com.capitaworld.service.oneform.enums.RelationshipType;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 
 @Service
 @Transactional
@@ -71,6 +116,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
 
 	@Override
 	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
@@ -174,6 +222,16 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			for (CoApplicantDetail detail : details) {
 				CoApplicantRequest request = new CoApplicantRequest();
 				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getBirthDate())) {
+					logger.info("Birthdate==>" + detail.getBirthDate().toString());					
+				}
+				Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(detail.getBirthDate());
+				logger.info("Date in Loan==>" + saperatedTime[0]);
+				logger.info("Month in Loan==>" + saperatedTime[1]);
+				logger.info("Year in Loan==>" + saperatedTime[2]);
+				request.setDate(saperatedTime[0]);
+				request.setMonth(saperatedTime[1]);
+				request.setYear(saperatedTime[2]);
 				requests.add(request);
 			}
 			return requests;
@@ -430,6 +488,152 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						}
 					}
 
+					//start of set address
+					// set office address
+					AddressResponse officeAddress = new AddressResponse();
+					try {
+						List<Long> officeCity = new ArrayList<Long>(1);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeCityId())) {
+							officeCity.add((long)coApplicantDetail.getOfficeCityId());
+							OneFormResponse formResponse = oneFormClient.getCityByCityListId(officeCity);
+							MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) formResponse.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(data)) {
+								officeAddress.setCity(data.getValue());
+							} else {
+								officeAddress.setCity("-");
+							}
+						} else {
+							officeAddress.setCity("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						List<Long> officeCountry = new ArrayList<Long>(1);
+						Long officeCountryLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeCountryId())) {
+							officeCountryLong = Long.valueOf(coApplicantDetail.getOfficeCountryId().toString());
+
+							officeCountry.add(officeCountryLong);
+							OneFormResponse country = oneFormClient.getCountryByCountryListId(officeCountry);
+							MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) country.getListData().get(0), MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCountry.getValue())) {
+								officeAddress.setCountry(dataCountry.getValue());
+							} else {
+								officeAddress.setCountry("-");
+							}
+						} else {
+							officeAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+
+					}
+					try {
+						List<Long> officeState = new ArrayList<Long>(1);
+						Long officeStateLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOfficeStateId())) {
+							officeStateLong = Long.valueOf(coApplicantDetail.getOfficeStateId().toString());
+
+							officeState.add(officeStateLong);
+							OneFormResponse state = oneFormClient.getStateByStateListId(officeState);
+							MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) state.getListData().get(0), MasterResponse.class);
+							if (!CommonUtil.isObjectNullOrEmpty(dataState)) {
+								officeAddress.setState(dataState.getValue());
+							} else {
+								officeAddress.setState("-");
+							}
+						} else {
+							officeAddress.setState("-");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					officeAddress.setLandMark(coApplicantDetail.getOfficeLandMark() !=null ? coApplicantDetail.getOfficeLandMark() : "");
+					officeAddress.setPincode(coApplicantDetail.getOfficePincode() != null? coApplicantDetail.getOfficePincode().toString() : "");
+					officeAddress.setPremiseNumber(coApplicantDetail.getOfficePremiseNumberName() != null ? coApplicantDetail.getOfficePremiseNumberName() : "");
+					officeAddress.setStreetName(coApplicantDetail.getOfficeStreetName() != null ? coApplicantDetail.getOfficeStreetName() : "");
+					profileViewPLResponse.setFirstAddress(officeAddress);
+					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherIncome()) ? coApplicantDetail.getOtherIncome().toString() : ""));
+					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherInvestment()) ? coApplicantDetail.getOtherInvestment().toString() : ""));
+					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTaxPaidLastYear()) ? coApplicantDetail.getTaxPaidLastYear().toString() : ""));
+					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBonusPerAnnum()) ? coApplicantDetail.getBonusPerAnnum().toString() : ""));
+					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIncentivePerAnnum()) ? coApplicantDetail.getIncentivePerAnnum().toString() : ""));
+					// set permanent address
+					AddressResponse permanentAddress = new AddressResponse();
+					try {
+						List<Long> permanentCity = new ArrayList<Long>(1);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPermanentCityId())) {
+							permanentCity.add((long)coApplicantDetail.getPermanentCityId());
+							OneFormResponse formResponsePermanentCity = oneFormClient.getCityByCityListId(permanentCity);
+							MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCity)) {
+								permanentAddress.setCity(dataCity.getValue());
+							} else {
+								permanentAddress.setCity("-");
+							}
+						} else {
+							permanentAddress.setCity("-");
+						}
+					} catch (Exception e) {
+
+					}
+					try {
+						List<Long> permanentCountry = new ArrayList<Long>(1);
+						Long permanentCountryLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPermanentCountryId())) {
+							permanentCountryLong = Long.valueOf(coApplicantDetail.getPermanentCountryId().toString());
+							permanentCountry.add(permanentCountryLong);
+							OneFormResponse countryPermanent = oneFormClient.getCountryByCountryListId(permanentCountry);
+							MasterResponse dataCountry = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) countryPermanent.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataCountry)) {
+								permanentAddress.setCountry(dataCountry.getValue());
+							} else {
+								permanentAddress.setCountry("-");
+							}
+						} else {
+							permanentAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+
+					}
+					try {
+						List<Long> permanentState = new ArrayList<Long>(1);
+						Long permanentStateLong = null;
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPermanentStateId())) {
+							permanentStateLong = Long.valueOf(coApplicantDetail.getPermanentStateId().toString());
+							permanentState.add(permanentStateLong);
+							OneFormResponse statePermanent = oneFormClient.getStateByStateListId(permanentState);
+							MasterResponse dataState = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) statePermanent.getListData().get(0),
+									MasterResponse.class);
+							if (!CommonUtils.isObjectNullOrEmpty(dataState)) {
+								permanentAddress.setState(dataState.getValue());
+							} else {
+								permanentAddress.setCountry("-");
+							}
+						} else {
+							permanentAddress.setCountry("-");
+						}
+					} catch (Exception e) {
+
+					}
+					permanentAddress.setLandMark(coApplicantDetail.getPermanentLandMark() != null ? coApplicantDetail.getPermanentLandMark() : "");
+					permanentAddress.setPincode(coApplicantDetail.getPermanentPincode() != null ? coApplicantDetail.getPermanentPincode().toString() : "");
+					permanentAddress.setPremiseNumber(coApplicantDetail.getPermanentPremiseNumberName() !=null ? coApplicantDetail.getPermanentPremiseNumberName() : "");
+					permanentAddress.setStreetName(coApplicantDetail.getPermanentStreetName() !=null ? coApplicantDetail.getPermanentStreetName() : "");
+					profileViewPLResponse.setSecondAddress(permanentAddress);
+					
+					//end of set address
+					
 					profileViewPLResponse.setRelationshipWithApplicant(
 							coApplicantDetail.getRelationshipWithApplicant() != null ? RelationshipType
 									.getById(coApplicantDetail.getRelationshipWithApplicant()).getValue() : null);
@@ -437,21 +641,22 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					profileViewPLResponse.setPan(
 							coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
 					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null
-							? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
+							? Title.getById(coApplicantDetail.getTitleId()).getValue() : "");
 					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null
 							? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
 					profileViewPLResponse.setFirstName(
-							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "");
 					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null
 							? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
 					profileViewPLResponse.setLastName(
-							coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
+							coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : "");
 					profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null
 							? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(
 							coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
 					profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null
 							? String.format("%.2f", coApplicantDetail.getMonthlyIncome()) : 0));
+					profileViewPLResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate()) ? coApplicantDetail.getBirthDate().toString() : "-");
 					// set uploads
 					switch (productId) {
 					case 3:// HOME LOAN
@@ -537,6 +742,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					}
 					finalViewResponse.setBirthPlace(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthPlace())
 							? coApplicantDetail.getBirthPlace() : null);
+					finalViewResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate()) ? coApplicantDetail.getBirthDate().toString() : "-");
 					finalViewResponse
 							.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFatherName())
 									? coApplicantDetail.getFatherName() : null);

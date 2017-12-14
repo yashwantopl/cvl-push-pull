@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class CommonUtils {
 
 	public static final String USER_ID = "userId";
 	public static final String USER_TYPE = "userType";
+	public static final String USER_ORG_ID = "userOrgId";
 	public static final int USER_TYPE_SERVICEPROVIDER = 3;
 	public static final String INVALID_REQUEST = "Invalid Request !";
 	public static final String SOMETHING_WENT_WRONG = "Something went wrong !";
@@ -35,7 +37,25 @@ public class CommonUtils {
 	public static final Long CORPORATE_USER = 4L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
+	public static final Long TL_LESS_TWO = 20000000L;
+
 	
+	public interface DenominationInAmount  {
+		public static final Long  LAKHS =100000l;
+		public static final Long MILLIONS = 1000000l;
+		public static final Long CRORES = 10000000l;
+		public static final Long BILLIONS=100000000l;
+		public static final Long ABSOLUTE=1l;
+	}
+	public interface  DenominationId  {
+		public static final Integer LAKHS = 1;
+		public static final Integer MILLIONS = 2;
+		public static final Integer CRORES = 3;
+		public static final Integer BILLIONS=4;
+		public static final Integer ABSOLUTE=5;
+	}
+	
+
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
 	}
@@ -54,6 +74,14 @@ public class CommonUtils {
 								|| "undefined".equals(value))
 						: false));
 	}
+	
+	public static boolean isObjectNullOrEmptyOrDash(Object value) {
+		  return (value == null
+		    || (value instanceof String
+		      ? (((String) value).isEmpty() || "".equals(((String) value).trim()) || "null".equals(value)|| "-".equals(value)
+		        || "undefined".equals(value))
+		      : false));
+		 }
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
 
@@ -86,7 +114,8 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(14),UNSECURED_LOAN(15);
+		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(
+				14), UNSECURED_LOAN(15);
 		private int value;
 
 		private LoanType(int value) {
@@ -134,15 +163,15 @@ public class CommonUtils {
 				"previousJobMonth", "previousJobYear", "totalExperienceMonth", "totalExperienceYear",
 				"monthlyLoanObligation", "previousEmployersAddress", "previousEmployersName", "annualTurnover",
 				"businessStartDate", "patPreviousYear", "patCurrentYear", "depreciationPreviousYear",
-				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear" };
+				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear","highestQualification", "qualifyingYear", "institute","residingYear","residingMonth", "spouseName", "isSpouseEmployed"};
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
-				"fatherName", "motherName", "spouseName", "isSpouseEmployed", "noChildren", "noDependent",
-				"highestQualification", "highestQualificationOther", "qualifyingYear", "institute", "residenceType",
+				"fatherName", "motherName", "noChildren", "noDependent",
+				 "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
-				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", "residingMonth",
-				"residingYear", "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", 
+				 "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
 				"tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
 	}
 
@@ -379,11 +408,11 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured Loan";
-		default :
+		default:
 			return null;
 		}
 	}
-	
+
 	public static String getLoanNameForMail(Integer x) {
 		switch (x) {
 		case 1:
@@ -402,9 +431,214 @@ public class CommonUtils {
 			return "Loan Against Securities & Shares";
 		case 15:
 			return "Unsecured ";
-		default :
+		default:
 			return null;
 		}
 	}
+
+	public static Integer getProductIdByLoanCode(String code) {
+		code = code.toUpperCase();
+		if ("WL".equalsIgnoreCase(code)) {
+			return LoanType.WORKING_CAPITAL.getValue();
+		} else if ("TL".equalsIgnoreCase(code)) {
+			return LoanType.TERM_LOAN.getValue();
+		} else if ("HL".equalsIgnoreCase(code)) {
+			return LoanType.HOME_LOAN.getValue();
+		} else if ("CL".equalsIgnoreCase(code)) {
+			return LoanType.CAR_LOAN.getValue();
+		} else if ("PL".equalsIgnoreCase(code)) {
+			return LoanType.PERSONAL_LOAN.getValue();
+		} else if ("LAP".equalsIgnoreCase(code)) {
+			return LoanType.LAP_LOAN.getValue();
+		} else if ("LAS".equalsIgnoreCase(code)) {
+			return LoanType.LAS_LOAN.getValue();
+		} else if ("UL".equalsIgnoreCase(code)) {
+			return LoanType.UNSECURED_LOAN.getValue();
+		} else {
+			return null;
+		}
+	}
+	
+	public static Boolean isTermLoanLessThanLimit(Integer denomination,Double amount)
+	{
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return false;
+		}
+		if(convertDenominationToValue(denomination,amount)<TL_LESS_TWO)
+			return true;
+		else
+			return false;
+		
+	}
+
+	private static Long convertDenominationToValue(Integer denomination, Double amount) {
+		// TODO Auto-generated method stub
+		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+			return null;
+		}
+		if(denomination==DenominationId.LAKHS){
+			return 	(long) (DenominationInAmount.LAKHS* amount);
+		}else if(denomination==DenominationId.MILLIONS){
+			return 	(long) (DenominationInAmount.MILLIONS * amount);	
+		}else if(denomination==DenominationId.CRORES){
+			return 	(long) (DenominationInAmount.CRORES * amount);
+		}else if(denomination==DenominationId.BILLIONS){
+			return 	(long) (DenominationInAmount.BILLIONS* amount);
+		}else if(denomination==DenominationId.ABSOLUTE){
+			return 	(long) (DenominationInAmount.ABSOLUTE* amount);
+		}else{
+			return null;
+		}
+	}
+	
+	private static final String[] tensNames = {
+		    "",
+		    " ten",
+		    " twenty",
+		    " thirty",
+		    " forty",
+		    " fifty",
+		    " sixty",
+		    " seventy",
+		    " eighty",
+		    " ninety"
+		  };
+
+		  private static final String[] numNames = {
+		    "",
+		    " one",
+		    " two",
+		    " three",
+		    " four",
+		    " five",
+		    " six",
+		    " seven",
+		    " eight",
+		    " nine",
+		    " ten",
+		    " eleven",
+		    " twelve",
+		    " thirteen",
+		    " fourteen",
+		    " fifteen",
+		    " sixteen",
+		    " seventeen",
+		    " eighteen",
+		    " nineteen"
+		  };
+
+		
+
+		  private static String convertLessThanOneThousand(int number) {
+		    String soFar;
+
+		    if (number % 100 < 20){
+		      soFar = numNames[number % 100];
+		      number /= 100;
+		    }
+		    else {
+		      soFar = numNames[number % 10];
+		      number /= 10;
+
+		      soFar = tensNames[number % 10] + soFar;
+		      number /= 10;
+		    }
+		    if (number == 0) return soFar;
+		    return numNames[number] + " hundred" + soFar;
+		  }
+
+		  public static BigDecimal convertInBigDecimal(Object obj)
+		  {
+			  if(obj instanceof String)
+			  {
+				  return   new BigDecimal((String)obj); 
+			  }
+			  if(obj instanceof Double)
+			  {
+				  return   new BigDecimal((Double)obj); 
+			  }
+			  if(obj instanceof Long)
+			  {
+				  return   new BigDecimal((Long)obj); 
+			  }
+			  if(obj instanceof Integer)
+			  {
+				  return   new BigDecimal((Integer)obj); 
+			  }
+			  return new BigDecimal(0);
+			
+		  }
+
+		  public static String amountInWords(long number) {
+		    // 0 to 999 999 999 999
+		    if (number == 0) { return "zero"; }
+
+		    String snumber = Long.toString(number);
+
+		    // pad with "0"
+		    String mask = "000000000000";
+		    DecimalFormat df = new DecimalFormat(mask);
+		    snumber = df.format(number);
+
+		    // XXXnnnnnnnnn
+		    int billions = Integer.parseInt(snumber.substring(0,3));
+		    // nnnXXXnnnnnn
+		    int millions  = Integer.parseInt(snumber.substring(3,6));
+		    // nnnnnnXXXnnn
+		    int hundredThousands = Integer.parseInt(snumber.substring(6,9));
+		    // nnnnnnnnnXXX
+		    int thousands = Integer.parseInt(snumber.substring(9,12));
+
+		    String tradBillions;
+		    switch (billions) {
+		    case 0:
+		      tradBillions = "";
+		      break;
+		    case 1 :
+		      tradBillions = convertLessThanOneThousand(billions)
+		      + " billion ";
+		      break;
+		    default :
+		      tradBillions = convertLessThanOneThousand(billions)
+		      + " billion ";
+		    }
+		    String result =  tradBillions;
+
+		    String tradMillions;
+		    switch (millions) {
+		    case 0:
+		      tradMillions = "";
+		      break;
+		    case 1 :
+		      tradMillions = convertLessThanOneThousand(millions)
+		         + " million ";
+		      break;
+		    default :
+		      tradMillions = convertLessThanOneThousand(millions)
+		         + " million ";
+		    }
+		    result =  result + tradMillions;
+
+		    String tradHundredThousands;
+		    switch (hundredThousands) {
+		    case 0:
+		      tradHundredThousands = "";
+		      break;
+		    case 1 :
+		      tradHundredThousands = "one thousand ";
+		      break;
+		    default :
+		      tradHundredThousands = convertLessThanOneThousand(hundredThousands)
+		         + " thousand ";
+		    }
+		    result =  result + tradHundredThousands;
+
+		    String tradThousand;
+		    tradThousand = convertLessThanOneThousand(thousands);
+		    result =  result + tradThousand;
+
+		    // remove extra spaces!
+		    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+		  }
 
 }

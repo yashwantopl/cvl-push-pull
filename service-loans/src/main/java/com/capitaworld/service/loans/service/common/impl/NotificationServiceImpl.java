@@ -229,5 +229,20 @@ public class NotificationServiceImpl implements NotificationService{
 		}
 		
 	}
+	
+	@Override
+	public void createEmailNotificationForUBI(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId, Long fromUserId,
+			Map<String, Object> parameters, Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,String fpName){
+		NotificationRequest request = new NotificationRequest();
+		request.setClientRefId(fromUserId.toString());
+		request.addNotification(createEmailNotification(toIds, fromUserId, fromUserTypeId,templateId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
+		try {
+			notificationClient.send(request);
+			logger.info("Successfully sent notification and email for primary or final view");
+		} catch (NotificationException e) {
+			e.printStackTrace();
+		}
+		CommonDocumentUtils.endHook(logger, "sendViewNotification");
+	} 
 
 }

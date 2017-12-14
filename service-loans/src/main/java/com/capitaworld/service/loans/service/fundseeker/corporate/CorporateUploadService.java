@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.util.Map;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -16,4 +18,6 @@ public interface CorporateUploadService {
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
 	
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
+	
+	public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception ;
 }

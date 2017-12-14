@@ -1,0 +1,28 @@
+ALTER TABLE `loan_applications`.`fs_retail_applicant_details`
+ ADD COLUMN bonus_per_annum DECIMAL(19,2), ADD COLUMN incentive_per_annum DECIMAL(19,2), ADD COLUMN other_income DECIMAL(19,2), 
+ ADD COLUMN other_investment DECIMAL(19,2),ADD COLUMN tax_paid_last_year DECIMAL(19,2);
+ 
+ ALTER TABLE `loan_applications`.`fs_retail_co_applicant_details`
+ ADD COLUMN bonus_per_annum DECIMAL(19,2), ADD COLUMN incentive_per_annum DECIMAL(19,2), ADD COLUMN other_income DECIMAL(19,2), 
+ ADD COLUMN other_investment DECIMAL(19,2),ADD COLUMN tax_paid_last_year DECIMAL(19,2);
+ 
+  ALTER TABLE `loan_applications`.`fs_retail_guarantor_details`
+ ADD COLUMN bonus_per_annum DECIMAL(19,2), ADD COLUMN incentive_per_annum DECIMAL(19,2), ADD COLUMN other_income DECIMAL(19,2), 
+ ADD COLUMN other_investment DECIMAL(19,2),ADD COLUMN tax_paid_last_year DECIMAL(19,2);
+ 
+ 
+  ALTER TABLE `loan_applications`.`fs_retail_primary_home_loan_details`
+ ADD COLUMN loan_type int(2), ADD COLUMN old_prop_month int(2), ADD COLUMN old_prop_year int(2), 
+ ADD COLUMN original_val_prop DECIMAL(19,2),ADD COLUMN reg_val_prop DECIMAL(19,2),ADD COLUMN market_val_prop DECIMAL(19,2);
+ 
+   ALTER TABLE `loan_applications`.`fs_retail_primary_home_loan_details`
+ ADD COLUMN property_used VARCHAR(200),ADD COLUMN estimated_rental_income DECIMAL(19,2);
+ 
+
+
+
+UPDATE 
+`loan_applications`.`fs_retail_primary_home_loan_details` A INNER JOIN `loan_applications`.`fs_retail_final_home_loan_details` b ON A.application_id = b.application_id
+SET A.property_used = b.property_used,A.estimated_rental_income=b.`estimated_rental_income`;
+/*added by dhaval for eligibility amount added in loan application master table*/
+ALTER TABLE `loan_applications`.`fs_loan_application_master` ADD COLUMN eligible_amnt DECIMAL(19,2);

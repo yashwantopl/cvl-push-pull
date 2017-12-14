@@ -103,10 +103,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 			//Home Loan final details
 			FinalHomeLoanDetail finalHomeLoanDetails = finalHomeLoanRepository.getByApplicationAndUserId(applicantId, applicationMaster.getUserId());
 			try {
-				homeLoanFinalViewResponse.setPropPremiseNo(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPremise()) ? finalHomeLoanDetails.getPropertyAddressPremise() : null);
-				homeLoanFinalViewResponse.setPropLandmark(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressLandmark()) ? finalHomeLoanDetails.getPropertyAddressLandmark() : null);
-				homeLoanFinalViewResponse.setPropStreetName(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressStreet()) ? finalHomeLoanDetails.getPropertyAddressStreet() : null);
-				homeLoanFinalViewResponse.setPropPinCode(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPincode()) ? finalHomeLoanDetails.getPropertyAddressPincode().toString() : null);
+				homeLoanFinalViewResponse.setPropPremiseNo(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPremise()) ? finalHomeLoanDetails.getPropertyAddressPremise() : "-");
+				homeLoanFinalViewResponse.setPropLandmark(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressLandmark()) ? finalHomeLoanDetails.getPropertyAddressLandmark() : "-");
+				homeLoanFinalViewResponse.setPropStreetName(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressStreet()) ? finalHomeLoanDetails.getPropertyAddressStreet() : "-");
+				homeLoanFinalViewResponse.setPropPinCode(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyAddressPincode()) ? finalHomeLoanDetails.getPropertyAddressPincode().toString() : "-");
 				
                 try {
                     List<Long> permanentCity = new ArrayList<Long>(1);
@@ -117,10 +117,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	homeLoanFinalViewResponse.setPropCity(dataCity.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setPropCity(null);
+                        	homeLoanFinalViewResponse.setPropCity("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setPropCity(null);
+                    	homeLoanFinalViewResponse.setPropCity("-");
                     }
                 } catch (Exception e) {
 
@@ -136,10 +136,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	homeLoanFinalViewResponse.setPropCountry(dataCountry.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setPropCountry(null);
+                        	homeLoanFinalViewResponse.setPropCountry("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setPropCountry(null);
+                    	homeLoanFinalViewResponse.setPropCountry("-");
                     }
                 } catch (Exception e) {
 
@@ -155,10 +155,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	homeLoanFinalViewResponse.setPropState(dataState.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setPropState(null);
+                        	homeLoanFinalViewResponse.setPropState("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setPropState(null);
+                    	homeLoanFinalViewResponse.setPropState("-");
                     }
                 } catch (Exception e) {
 
@@ -182,10 +182,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCity)){
                         	homeLoanFinalViewResponse.setSellerCity(dataCity.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setSellerCity(null);
+                        	homeLoanFinalViewResponse.setSellerCity("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setSellerCity(null);
+                    	homeLoanFinalViewResponse.setSellerCity("-");
                     }
                 } catch (Exception e) {
 
@@ -201,10 +201,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if (!CommonUtils.isObjectNullOrEmpty(dataState)){
                         	homeLoanFinalViewResponse.setSellerState(dataState.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setSellerState(null);
+                        	homeLoanFinalViewResponse.setSellerState("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setSellerState(null);
+                    	homeLoanFinalViewResponse.setSellerState("-");
                     }
                 } catch (Exception e) {
 
@@ -221,16 +221,15 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
                         if(!CommonUtils.isObjectNullOrEmpty(dataCountry)){
                         	homeLoanFinalViewResponse.setSellerCountry(dataCountry.getValue());
                         }else{
-                        	homeLoanFinalViewResponse.setSellerCountry(null);
+                        	homeLoanFinalViewResponse.setSellerCountry("-");
                         }
                     }else{
-                    	homeLoanFinalViewResponse.setSellerCountry(null);
+                    	homeLoanFinalViewResponse.setSellerCountry("-");
                     }
                 } catch (Exception e) {
 
                 }
-				homeLoanFinalViewResponse.setPropertyUse(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getPropertyUsed()) ? PropertyUsedSubType.getById(finalHomeLoanDetails.getPropertyUsed()).getValue() : null);
-				homeLoanFinalViewResponse.setRentalIncome(!CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetails.getEstimatedRentalIncome()) ? finalHomeLoanDetails.getEstimatedRentalIncome().toString() : null);
+				
 			} catch (Exception e) {
 				// TODO: handle exception
 				logger.error("error while getting HL final details");

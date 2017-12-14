@@ -156,4 +156,14 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm.userId from LoanApplicationMaster lm where lm.id =:applicationId")
 	public Long getUserIdByApplicationId(@Param("applicationId") Long applicationId);
 	
+	@Query("select count(*) from LoanApplicationMaster lm where lm.userId =:userId and lm.campaignCode =:campaignCode and lm.isActive = true")
+	public Long getApplicantCountByCode(@Param("userId") Long userId,@Param("campaignCode") String campaignCode);
+	
+	@Query("select lm.campaignCode from LoanApplicationMaster lm where lm.id =:applicationId")
+	public String getCampaignCodeByApplicationId(@Param("applicationId") Long applicationId);
+
+	@Modifying
+	@Query("update LoanApplicationMaster lm set lm.eligibleAmnt =:eligibleAmnt,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
+	public int setEligibleAmount(@Param("id") Long id, @Param("userId") Long userId,
+			@Param("eligibleAmnt") Double amount);
 }

@@ -95,6 +95,18 @@ public interface LoanApplicationService {
 	
 	public Long getUserIdByApplicationId(Long applicationId);
 	
+	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception;
+	
+	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws Exception;
+	
+	public String getCampaignCodeByApplicationId(Long applicationId) throws Exception;
+	
+	public Boolean isTermLoanLessThanLimit(Long applicationId);
+	
+	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception;
+	
 
 	
 }
+
+

@@ -276,4 +276,17 @@ public class RetailApplicantController {
 		}
 	}
 
+	@RequestMapping(value = "${profile}/get_profile/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId,
+			@PathVariable("userId") Long userId) {
+		// request must not be null
+		try {
+			return applicantService.get(userId, applicationId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while getting Retail Applicant Profile Details==>", e);
+			return null;
+		}
+	}
+
 }

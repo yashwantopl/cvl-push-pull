@@ -167,6 +167,11 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "isMsmeScoreRequired")
 	private Boolean isMsmeScoreRequired;
 	
+	@Column(name = "campaign_code")
+	private String campaignCode;
+	
+	@Column(name="eligible_amnt")
+	private Double eligibleAmnt;
 	
 	public Boolean getIsMsmeScoreRequired() {
 		return isMsmeScoreRequired;
@@ -516,6 +521,21 @@ public class LoanApplicationMaster implements Serializable {
 		this.finalFilledCount = finalFilledCount;
 	}
 	
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
+	}
+
+	public Double getEligibleAmnt() {
+		return eligibleAmnt;
+	}
+
+	public void setEligibleAmnt(Double eligibleAmnt) {
+		this.eligibleAmnt = eligibleAmnt;
+	}
 
 	@Override
 	public String toString() {

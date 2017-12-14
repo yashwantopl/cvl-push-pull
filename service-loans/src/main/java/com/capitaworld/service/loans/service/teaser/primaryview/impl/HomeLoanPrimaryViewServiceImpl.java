@@ -23,6 +23,8 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,11 +189,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					profileViewHLResponse.setNatureOfOccupation("-");
 				}
 				profileViewHLResponse.setFirstName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFirstName())
-						? applicantDetail.getFirstName() : null));
+						? applicantDetail.getFirstName() : ""));
 				profileViewHLResponse.setMiddleName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMiddleName())
-						? applicantDetail.getMiddleName() : null));
+						? applicantDetail.getMiddleName() : ""));
 				profileViewHLResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName())
-						? applicantDetail.getLastName() : null));
+						? applicantDetail.getLastName() : ""));
 				profileViewHLResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId())
 						? Gender.getById(applicantDetail.getGenderId()).getValue() : "-"));
 				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())
@@ -199,7 +201,12 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				profileViewHLResponse.setMonthlyIncome(
 						(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
 								? String.format("%.2f", applicantDetail.getMonthlyIncome()) : "0"));
-
+				profileViewHLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : ""));
+				profileViewHLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : ""));
+				profileViewHLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : ""));
+				profileViewHLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? applicantDetail.getBonusPerAnnum().toString() : ""));
+				profileViewHLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? applicantDetail.getIncentivePerAnnum().toString() : ""));
+				
 				// set office address
 				AddressResponse officeAddress = new AddressResponse();
 				try {
@@ -264,12 +271,12 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
-				officeAddress.setPincode(applicantDetail.getOfficePincode() != null
-						? applicantDetail.getOfficePincode().toString() : null);
-				officeAddress.setPremiseNumber(applicantDetail.getOfficePremiseNumberName());
-				officeAddress.setStreetName(applicantDetail.getOfficeStreetName());
+				officeAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeLandMark())?"-":applicantDetail.getOfficeLandMark());
+				officeAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficePincode())?"-":applicantDetail.getOfficePincode().toString());
+				officeAddress.setPremiseNumber(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficePremiseNumberName())?"-":applicantDetail.getOfficePremiseNumberName());
+				officeAddress.setStreetName(CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStreetName())?"-":applicantDetail.getOfficeStreetName());
 				homeLoanResponse.setOfficeAddress(officeAddress);
+				profileViewHLResponse.setFirstAddress(officeAddress);
 
 				// set permanent address
 				AddressResponse permanentAddress = new AddressResponse();
@@ -334,14 +341,14 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				} catch (Exception e) {
 
 				}
-				permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
-				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null
-						? applicantDetail.getPermanentPincode().toString() : null);
-				permanentAddress.setPremiseNumber(applicantDetail.getPermanentPremiseNumberName());
-				permanentAddress.setStreetName(applicantDetail.getPermanentStreetName());
+				permanentAddress.setLandMark(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentLandMark())?"-":applicantDetail.getPermanentLandMark());
+				permanentAddress.setPincode(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())?"-":applicantDetail.getPermanentPincode().toString());
+				permanentAddress.setPremiseNumber(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPremiseNumberName())?"-":applicantDetail.getPermanentPremiseNumberName());
+				permanentAddress.setStreetName(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStreetName())?"-":applicantDetail.getPermanentStreetName());
 				homeLoanResponse.setPermanentAddress(permanentAddress);
-
-				profileViewHLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : null);
+				
+				profileViewHLResponse.setContactNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getContactNo()) ?  applicantDetail.getContactNo() : "-");
+				profileViewHLResponse.setTitle(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTitleId()) ? Title.getById(applicantDetail.getTitleId()).getValue() : "");
 				profileViewHLResponse.setAge(applicantDetail.getBirthDate() != null ? CommonUtils.getAgeFromBirthDate(applicantDetail.getBirthDate()).toString() : null);
 
 				homeLoanResponse.setCurrency(applicantDetail.getCurrencyId() != null
@@ -438,6 +445,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 			homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "-");
 		}
 		homeLoanResponse.setLoanType(LoanType.getById(applicationMaster.getProductId()).getValue());
+		
+		homeLoanResponse.setPropertyUse(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsed()) ? PropertyUsedSubType.getById(loanDetail.getPropertyUsed()).getValue() : null);
+		homeLoanResponse.setRentalIncome(!CommonUtils.isObjectNullOrEmpty(loanDetail.getEstimatedRentalIncome()) ? loanDetail.getEstimatedRentalIncome().toString() : null);
 		homeLoanPrimaryViewResponse.setHomeLoanResponse(homeLoanResponse);
 
 		// setting co-application details

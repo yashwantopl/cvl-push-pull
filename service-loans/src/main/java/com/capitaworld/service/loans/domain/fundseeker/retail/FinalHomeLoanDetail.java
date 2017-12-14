@@ -47,9 +47,7 @@ public class FinalHomeLoanDetail implements Serializable {
 	@Column(name="created_date")
 	private Date createdDate;
 
-	@Column(name="estimated_rental_income")
-	private Double estimatedRentalIncome;
-
+	
 	@Column(name="is_active")
 	private Boolean isActive;
 
@@ -83,9 +81,6 @@ public class FinalHomeLoanDetail implements Serializable {
 
 	@Column(name="property_address_street")
 	private String propertyAddressStreet;
-
-	@Column(name="property_used")
-	private Integer propertyUsed;
 
 	@Column(name="seller_name")
 	private String sellerName;
@@ -162,13 +157,6 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public Double getEstimatedRentalIncome() {
-		return estimatedRentalIncome;
-	}
-
-	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
-		this.estimatedRentalIncome = estimatedRentalIncome;
-	}
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -258,14 +246,6 @@ public class FinalHomeLoanDetail implements Serializable {
 		this.propertyAddressStreet = propertyAddressStreet;
 	}
 
-
-	public Integer getPropertyUsed() {
-		return propertyUsed;
-	}
-
-	public void setPropertyUsed(Integer propertyUsed) {
-		this.propertyUsed = propertyUsed;
-	}
 
 	public String getSellerName() {
 		return sellerName;

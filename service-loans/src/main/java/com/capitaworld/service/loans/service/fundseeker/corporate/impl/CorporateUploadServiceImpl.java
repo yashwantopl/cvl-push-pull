@@ -1,5 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +18,12 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
+import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
+import com.capitaworld.service.loans.service.fundseeker.retail.impl.CoApplicantServiceImpl;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -22,15 +32,21 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadServiceImpl.class);
 
-//	@Autowired
-//	private Environment environment;
-	
+	// @Autowired
+	// private Environment environment;
+
 	@Autowired
 	private DMSClient dmsClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	CoApplicantService coApplicantService;
 	
+	@Autowired
+	GuarantorService guarantorService;
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName, String userType,
@@ -117,9 +133,148 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	}
 
+	// New UBI Requirement
+		@Override
+		public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception {
+			try {
+				
+				Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+				List<Long> proIdList = new ArrayList<>();
+				List<Long> co_app_proIdList = new ArrayList<>();
+				List<Long> gua_proIdList = new ArrayList<>();
+				Long applicantArray[] = { 55L, 56L, 61L, 63L, 64L, 65L, 243L, 248L };
+				Long co_appArray[] = { 57L, 58L, 69L, 71L, 72L, 73L, 254L, 259L };
+				Long guarantorArray[] = { 59L, 60L, 77L, 79L, 80L, 81L, 264L, 269L };
+				proIdList.addAll((List<Long>) Arrays.asList(applicantArray));
+				co_app_proIdList.addAll((List<Long>) Arrays.asList(co_appArray));
+				gua_proIdList.addAll((List<Long>) Arrays.asList(guarantorArray));
+				Map<String, Map<String, Object>> maps = new HashMap<String, Map<String,Object>>();
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("identity_proof", false);
+				map.put("bank_statement", false);
+				map.put("itr", false);
+				map.put("audited_annual_report", false);
+				map.put("address_proof", false);
+				for (Long id : proIdList) {
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setApplicationId(applicationId);
+					documentRequest.setProductDocumentMappingId(id);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+					dmsClient.listProductDocument(documentRequest);
+								
+					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
+						if(id.equals(55L) || id.equals(56L)){
+							map.put("identity_proof", true);
+						}
+						else if(id.equals(61L)){
+							map.put("bank_statement", true);
+						}
+						else if(id.equals(63L) || id.equals(243L) || id.equals(248L)){
+							map.put("itr", true);
+						}
+						else if(id.equals(64L)){
+							map.put("audited_annual_report", true);
+						}
+						else if(id.equals(65L)){
+							map.put("address_proof", true);
+						}
+					}
+				}
+				maps.put("app",map);
+				List<Long> ids = coApplicantService.getCoAppIds(userId, applicationId);
+				
+				int i =1;
+				
+				for (Long coappid : ids) {
+					Map<String, Object> mapCoApp = new HashMap<String, Object>();
+					mapCoApp.put("identity_proof", false);
+					mapCoApp.put("bank_statement", false);
+					mapCoApp.put("itr", false);
+					mapCoApp.put("audited_annual_report", false);
+					mapCoApp.put("address_proof", false);
+					for (Long id : co_app_proIdList) {
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setCoApplicantId(coappid);
+						documentRequest.setProductDocumentMappingId(id);
+						documentRequest.setUserType(DocumentAlias.UERT_TYPE_CO_APPLICANT);
+						dmsClient.listProductDocument(documentRequest);
+								
+						if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
+							if(id.equals(57L) || id.equals(58L)){
+								mapCoApp.put("identity_proof", true);
+							}
+							else if(id.equals(69L)){
+								mapCoApp.put("bank_statement", true);
+							}
+							else if(id.equals(71L) || id.equals(254L) || id.equals(259L)){
+								mapCoApp.put("itr", true);
+							}
+							else if(id.equals(72L)){
+								mapCoApp.put("audited_annual_report", true);
+							}
+							else if(id.equals(73L)){
+								mapCoApp.put("address_proof", true);
+							}
+						} 
+					}
+					maps.put("coApp "+i,mapCoApp);
+					i++;
+				}
+				
+				
+				
+				List<Long> gua_ids = guarantorService.getGuarantorIds(userId, applicationId);
+				
+				int j = 1;
+				for (Long guaId : gua_ids) {
+					Map<String, Object> mapGua = new HashMap<String, Object>();
+						mapGua.put("identity_proof", false);
+						mapGua.put("bank_statement", false);
+						mapGua.put("itr", false);
+						mapGua.put("audited_annual_report", false);
+						mapGua.put("address_proof", false);
+				for (Long id : gua_proIdList) {
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setGuarantorId(guaId);
+					documentRequest.setProductDocumentMappingId(id);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_GUARANTOR);
+					dmsClient.listProductDocument(documentRequest);
+						
+					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
+						if(id.equals(59L) || id.equals(60L)){
+							mapGua.put("identity_proof", true);
+						}
+						else if(id.equals(77L)){
+							mapGua.put("bank_statement", true);
+						}
+						else if(id.equals(79L) || id.equals(264L) || id.equals(269L)){
+							mapGua.put("itr", true);
+						}
+						else if(id.equals(80L)){
+							mapGua.put("audited_annual_report", true);
+						}
+						else if(id.equals(81L)){
+							mapGua.put("address_proof", true);
+						}
+					} 
+				}
+				maps.put("Guar "+j, mapGua);
+				j++;
+				}
+				
+				return maps;
+			} catch (DocumentException e) {
+				// TODO Auto-generated catch block
+				logger.error("Error while getting Corporate Other Documents");
+				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			}
+
+		}
+		// end New UBI Requirement
+		
 	@Override
-	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,String filledCount)
-			throws Exception {
+	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,
+			String filledCount) throws Exception {
 		try {
 			switch (tabType) {
 			case CommonUtils.TabType.PRIMARY_UPLOAD:

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.SpClientListing;
 import com.capitaworld.service.loans.model.SpSysNotifyResponse;
+import com.capitaworld.service.loans.model.common.NotificationPageRequest;
 import com.capitaworld.service.loans.service.serviceprovider.ServiceProviderFlowService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.model.UserResponse;
@@ -132,15 +133,15 @@ public class ServiceProviderController {
 	}
 	
 	
-	@RequestMapping(value = "/client/allNotifications",method = RequestMethod.GET,produces=MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserResponse> spClientAllNotifications(HttpServletRequest request){
+	@RequestMapping(value = "/client/allNotifications",method = RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserResponse> spClientAllNotifications(HttpServletRequest request, @RequestBody NotificationPageRequest notificationPageRequest){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		try {
-			List<SpSysNotifyResponse> clientotification = serviceProviderFlowService.spClientAllNotifications(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()));
+			List<SpSysNotifyResponse> clientotification = serviceProviderFlowService.spClientAllNotifications(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()),notificationPageRequest);
 
 			if(clientotification != null){
 				logger.info("Serivce provider's client list");
@@ -164,5 +165,37 @@ public class ServiceProviderController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/client/allNotificationsCount",method = RequestMethod.POST,produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<UserResponse> spClientAllNotificationsCount(HttpServletRequest request, @RequestBody NotificationPageRequest notificationPageRequest){
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		try {
+			Long clientotification = serviceProviderFlowService.spClientAllNotificationsCount(Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()),notificationPageRequest);
+
+			if(clientotification != null){
+				logger.info("Serivce provider's client list");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse(null,clientotification,"Serivce provider's client list", HttpStatus.OK.value()),
+						HttpStatus.OK);
+			}else{
+				logger.info("Something went wrong..!");
+				return new ResponseEntity<UserResponse>(
+						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error("Something went wrong..!");
+			return new ResponseEntity<UserResponse>(
+					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
 	
 	}
