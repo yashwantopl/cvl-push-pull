@@ -367,36 +367,36 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropCountry())?"":finalViewResponse.getPropCountry())
 				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropPinCode())?"":finalViewResponse.getPropPinCode());
 		map.put("propertyAddress", propertyAddress);
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
 			map.put("areaOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getArea());
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of ready flat/tenament/row house") || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Repairing/Renovation of flat/tenament") || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
 			map.put("builtUpArea", finalViewResponse.getBuiltUpArea());
 			map.put("carpetUpArea", finalViewResponse.getCarpetArea());
 		}
 		Double requirementTotal = (double) 0,sourceTotal=(double) 0;
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Construction of bunglow/tenament")){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of ready flat/tenament/row house")){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Construction of bunglow/tenament")){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Repairing/Renovation of flat/tenament")){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost().replaceAll(",", ""));
 		}
 		
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyUse() == "Renting"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyUse().equals("Renting")){
 			map.put("rentedout", "Yes");
 		}
 		else
@@ -458,7 +458,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		for (int i = 0; i < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().size(); i++) {
 			int j=i+1;
 			creditCardsMap.put("cardNo" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getCardNumber());
-			creditCardsMap.put("cardBank" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getIssuingBank());
+			creditCardsMap.put("cardBank" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getIssuerName());
 			creditCardsMap.put("cardLimit" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getCardLimit());
 			creditCardsMap.put("cardExpiry" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getYearOfExpiry());
 			creditCardsMap.put("cardOutstanding" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getCreditCardsDetailResponse().get(i).getOutstandingBalance());
@@ -519,7 +519,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().size(); k++) {
 					int l=k+1;
 					coappCreditCardsMap.put("coppCardNo" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getCardNumber());
-					coappCreditCardsMap.put("coappCardBank" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getIssuingBank());
+					coappCreditCardsMap.put("coappCardBank" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getIssuerName());
 					coappCreditCardsMap.put("coappCardLimit" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getCardLimit());
 					coappCreditCardsMap.put("coappCardExpiry" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getYearOfExpiry());
 					coappCreditCardsMap.put("coappCardOutstanding" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getOutstandingBalance());
@@ -589,7 +589,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().size(); k++) {
 					int l=k+1;
 					guaCreditCardsMap.put("guaCardNo" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getCardNumber());
-					guaCreditCardsMap.put("guaCardBank" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getIssuingBank());
+					guaCreditCardsMap.put("guaCardBank" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getIssuerName());
 					guaCreditCardsMap.put("guaCardLimit" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getCardLimit());
 					guaCreditCardsMap.put("guaCardExpiry" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getYearOfExpiry());
 					guaCreditCardsMap.put("guaCardOutstanding" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getCreditCardsDetailResponse().get(k).getOutstandingBalance());
