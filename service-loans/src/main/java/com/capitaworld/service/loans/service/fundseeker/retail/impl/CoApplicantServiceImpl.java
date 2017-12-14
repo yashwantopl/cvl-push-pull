@@ -641,15 +641,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					profileViewPLResponse.setPan(
 							coApplicantDetail.getPan() != null ? coApplicantDetail.getPan().toUpperCase() : null);
 					profileViewPLResponse.setTitle(coApplicantDetail.getTitleId() != null
-							? Title.getById(coApplicantDetail.getTitleId()).getValue() : null);
+							? Title.getById(coApplicantDetail.getTitleId()).getValue() : "");
 					profileViewPLResponse.setAge(coApplicantDetail.getBirthDate() != null
 							? CommonUtils.getAgeFromBirthDate(coApplicantDetail.getBirthDate()).toString() : null);
 					profileViewPLResponse.setFirstName(
-							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : null);
+							coApplicantDetail.getFirstName() != null ? coApplicantDetail.getFirstName() : "");
 					profileViewPLResponse.setGender(coApplicantDetail.getGenderId() != null
 							? Gender.getById(coApplicantDetail.getGenderId()).getValue() : null);
 					profileViewPLResponse.setLastName(
-							coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : null);
+							coApplicantDetail.getLastName() != null ? coApplicantDetail.getLastName() : "");
 					profileViewPLResponse.setMaritalStatus(coApplicantDetail.getStatusId() != null
 							? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(
