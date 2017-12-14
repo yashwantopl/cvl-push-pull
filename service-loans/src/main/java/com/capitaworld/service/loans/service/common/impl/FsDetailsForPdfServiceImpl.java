@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,7 +432,8 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 					.getReferenceRetailDetailsRequest().get(i).getEmail());
 		}
 		map.put("reference", referenceMap);
-
+		
+				
 		//BANK ACCOUNT HELD DETAILS APPLICANT
 		Map<String, Object> bankAccountHeldMap = new HashMap<>();
 		for (int i = 0; i < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().size(); i++) {
@@ -470,6 +473,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		for (int i = 0; i < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getFixedDepositsDetailsRequest().size(); i++) {
 			int j=i+1;
 			fixedDepositeMap.put("fixedDepositeBankName" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getFixedDepositsDetailsRequest().get(i).getBankName());
+			fixedDepositeMap.put("fixedDepositeAmount" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getFixedDepositsDetailsRequest().get(i).getAmount());
 		}
 		map.put("fixedDepositeMap", fixedDepositeMap);
 		
@@ -478,6 +482,8 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		for (int i = 0; i < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getAssetDetailResponseList().size(); i++) {
 			int j=i+1;
 			otherCurrentAssetTypeMap.put("assetType" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getAssetDetailResponseList().get(i).getAssetType());
+			otherCurrentAssetTypeMap.put("assetValue" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getAssetDetailResponseList().get(i).getAssetValue());
+			
 		}
 		map.put("otherCurrentAssetTypeMap", otherCurrentAssetTypeMap);
 		
@@ -527,6 +533,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				map.put("coappCreditCardsMap"+ j, coappCreditCardsMap);
 			}
 		}
+		Double coappAccValue = (double) 0;
 		//FIXED ASSET BANK NAME COAPPLICANT
 		if (!CommonUtils.isObjectListNull(finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails())) {
 			for (int i = 0; i < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().size(); i++) {
@@ -535,6 +542,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getCreditCardsDetailResponse().size(); k++) {
 					int l=k+1;
 					coappFixedAssetBankName.put("coppBankName" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getFixedDepositsDetailsRequest().get(k).getBankName());
+					coappFixedAssetBankName.put("coppBankAmount" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getFixedDepositsDetailsRequest().get(k).getAmount());
 				}
 				map.put("coappFixedAssetBankName"+ j, coappFixedAssetBankName);
 			}
@@ -547,6 +555,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				 for (int k = 0; k < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getAssetDetailResponseList().size(); k++) {
 				 int l=k+1;
 				 coappOtherCurrentAsset.put("coppOtherCurrentAsset" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getAssetDetailResponseList().get(k).getAssetType());
+				 coappOtherCurrentAsset.put("coppOtherCurrentAssetValue" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getAssetDetailResponseList().get(k).getAssetValue());
 			}
 			map.put("coappOtherCurrentAsset"+ j, coappOtherCurrentAsset);
 		}
@@ -605,6 +614,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getFixedDepositsDetailsRequest().size(); k++) {
 					int l=k+1;
 					guaFixedAssetBankName.put("guaBankName" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getFixedDepositsDetailsRequest().get(k).getBankName());
+					guaFixedAssetBankName.put("guaBankAccount" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getFixedDepositsDetailsRequest().get(k).getAmount());
 				}
 				map.put("guaFixedAssetBankName"+ j, guaFixedAssetBankName);
 				}
@@ -617,6 +627,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				 for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getAssetDetailResponseList().size(); k++) {
 					 int l=k+1;
 					 guaOtherCurrentAsset.put("guaCurrentAssetType" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getAssetDetailResponseList().get(k).getAssetType());
+					 guaOtherCurrentAsset.put("guaCurrentAssetValue" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getAssetDetailResponseList().get(k).getAssetValue());
 				}
 				map.put("guaOtherCurrentAsset"+ j, guaOtherCurrentAsset);
 				}
