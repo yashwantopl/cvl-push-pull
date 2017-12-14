@@ -367,36 +367,36 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropCountry())?"":finalViewResponse.getPropCountry())
 				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropPinCode())?"":finalViewResponse.getPropPinCode());
 		map.put("propertyAddress", propertyAddress);
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("areaOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getArea());
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of ready flat/tenament/row house") || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Repairing/Renovation of flat/tenament") || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("builtUpArea", finalViewResponse.getBuiltUpArea());
 			map.put("carpetUpArea", finalViewResponse.getCarpetArea());
 		}
 		Double requirementTotal = (double) 0,sourceTotal=(double) 0;
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Construction of bunglow/tenament")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of Plot")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
 			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Purchase of ready flat/tenament/row house")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Construction of bunglow/tenament")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType().equals("Repairing/Renovation of flat/tenament")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament"){
 			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost());
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost().replaceAll(",", ""));
 		}
 		
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyUse().equals("Renting")){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyUse() == "Renting"){
 			map.put("rentedout", "Yes");
 		}
 		else
