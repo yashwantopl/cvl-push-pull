@@ -146,6 +146,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.isActive = true and (lm.createdDate BETWEEN :fromDate and :toDate)")
 	public List<LoanApplicationMaster> getLoanDetailsForAdminPanel(@Param("userIds") List<Long> userIds,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 
+	@Query("select lm from LoanApplicationMaster lm where lm.userId IN (:userIds) and lm.id IN(:appIds) and lm.isActive = true and (lm.createdDate BETWEEN :fromDate and :toDate)")
+	public List<LoanApplicationMaster> getLoanDetailsForAdminPanelUbi(@Param("userIds") List<Long> userIds,@Param("appIds") List<Long> appIds,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 	
 	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getMCACompanyIdByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);

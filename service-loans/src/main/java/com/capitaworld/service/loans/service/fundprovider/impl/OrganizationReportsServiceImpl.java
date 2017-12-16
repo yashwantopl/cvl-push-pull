@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -127,5 +128,48 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
         organizationPieChartResponse.setUnderProcessAmount(getSumOfAmountProposalInInboxAndPrimary(organization_id));
         organizationPieChartResponse.setBranchPieResponce(getBranchPieDetails(organization_id));
         return organizationPieChartResponse;
+    }
+
+    @Override
+    public List<List<Long>> getApplicationIdAndUserId() {
+        List<Long> applicationId = new ArrayList<>();
+        List<Long> userId = new ArrayList<>();
+        List<List<Long>> master = new ArrayList<>();
+        List<Objects[]> objectsList = null;
+        try {
+            objectsList = entityManager
+                    .createNativeQuery("SELECT application_id,user_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM loan_applications.proposal_details WHERE loan_applications.proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=4 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM loan_applications.fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
+                    .getResultList();
+            for (Object[] a : objectsList) {
+                applicationId.add(Long.valueOf(a[0].toString()));
+                userId.add(Long.valueOf(a[1].toString()));
+            }
+        } catch (Exception e) {
+            master = null;
+        }
+        master.add(applicationId);
+        master.add(userId);
+        return master;
+    }
+    @Override
+    public List<List<Long>> getApplicationIdAndUserIdForAdminPanel() {
+        List<Long> applicationId = new ArrayList<>();
+        List<Long> userId = new ArrayList<>();
+        List<List<Long>> master = new ArrayList<>();
+        List<Objects[]> objectsList = null;
+        try {
+            objectsList = entityManager
+                    .createNativeQuery("SELECT application_id,user_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM loan_applications.proposal_details WHERE loan_applications.proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=5 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM loan_applications.fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
+                    .getResultList();
+            for (Object[] a : objectsList) {
+                applicationId.add(Long.valueOf(a[0].toString()));
+                userId.add(Long.valueOf(a[1].toString()));
+            }
+        } catch (Exception e) {
+            master = null;
+        }
+        master.add(applicationId);
+        master.add(userId);
+        return master;
     }
 }

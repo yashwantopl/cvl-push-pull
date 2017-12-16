@@ -30,8 +30,15 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private String finalLocked;
 	private String lastUpdatedDate;
 	private String currency;
-	
-	
+	private String mobile;
+	private String lastLoginDate;
+	private String pincode;
+	private Double applicantMonthlyIncome;
+	private String incomeType;
+	private String coApplicantName;
+	private Integer coApplicantAge;
+	private Double coApplicantMonthlyIncome;
+
 	public String getApplicationId() {
 		return applicationId;
 	}
@@ -171,7 +178,68 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
-	
-	
-	
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(String lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
+	}
+
+	public String getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+
+	public Double getApplicantMonthlyIncome() {
+		return applicantMonthlyIncome;
+	}
+
+	public void setApplicantMonthlyIncome(Double applicantMonthlyIncome) {
+		this.applicantMonthlyIncome = applicantMonthlyIncome;
+	}
+
+	public String getIncomeType() {
+		return incomeType;
+	}
+
+	public void setIncomeType(String incomeType) {
+		this.incomeType = incomeType;
+	}
+
+	public String getCoApplicantName() {
+		return coApplicantName;
+	}
+
+	public void setCoApplicantName(String coApplicantName) {
+		this.coApplicantName = coApplicantName;
+	}
+
+	public Integer getCoApplicantAge() {
+		return coApplicantAge;
+	}
+
+	public void setCoApplicantAge(Integer coApplicantAge) {
+		this.coApplicantAge = coApplicantAge;
+	}
+
+	public Double getCoApplicantMonthlyIncome() {
+		return coApplicantMonthlyIncome;
+	}
+
+	public void setCoApplicantMonthlyIncome(Double coApplicantMonthlyIncome) {
+		this.coApplicantMonthlyIncome = coApplicantMonthlyIncome;
+	}
 }
