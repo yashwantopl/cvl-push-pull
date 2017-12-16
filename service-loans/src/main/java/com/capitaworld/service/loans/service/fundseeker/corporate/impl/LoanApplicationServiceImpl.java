@@ -2102,7 +2102,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (CommonUtils.CW_SP_USER_ID.equals(users.getUserId())) {
 				continue;
 			}
-			if (!users.getIsOtpVerified()) {
+			if (!users.getIsOtpVerified() || !users.getIsEmailVerified()) {
 				response.add(users);
 				continue;
 			}
