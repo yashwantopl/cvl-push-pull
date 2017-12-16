@@ -2076,6 +2076,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(loanRequest.getToDate());
+
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
@@ -2083,6 +2084,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanRequest.setToDate(cal.getTime());
 		UserResponse userResponse = userClient.getRegisterdUserList(
 				new MobileUserRequest(loanRequest.getUserType(), loanRequest.getFromDate(), loanRequest.getToDate()));
+
 		List userList = (List) userResponse.getData();
 		List<RegisteredUserResponse> response = new ArrayList<>();
 		for (Object user : userList) {
@@ -2100,7 +2102,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (CommonUtils.CW_SP_USER_ID.equals(users.getUserId())) {
 				continue;
 			}
-			if (!users.getIsOtpVerified()) {
+			if (!users.getIsOtpVerified() || !users.getIsEmailVerified()) {
 				response.add(users);
 				continue;
 			}
@@ -2199,6 +2201,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type, MobileLoanRequest loanRequest)
 			throws Exception {
+
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -2227,6 +2230,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
+
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
