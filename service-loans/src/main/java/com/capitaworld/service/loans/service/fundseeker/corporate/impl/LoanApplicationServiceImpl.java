@@ -2608,7 +2608,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			//code for got eligibility
 			if (loanApplicationMaster.getEligibleAmnt()!=null) {
-				if (!loanApplicationMaster.getIsFinalLocked()) {
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())) {
 					AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 					UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
@@ -2625,7 +2625,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					//pincode
 					if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-						if(corporateApplicantDetail!=null) {
+						if (corporateApplicantDetail != null) {
 							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
 								response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
 							}
@@ -2633,15 +2633,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
 						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 						if (retailApplicantDetail != null) {
-							String applicantName="";
-							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
-								applicantName+=retailApplicantDetail.getFirstName();
+							String applicantName = "";
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())) {
+								applicantName += retailApplicantDetail.getFirstName();
 							}
-							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
-								applicantName+=" "+retailApplicantDetail.getMiddleName();
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())) {
+								applicantName += " " + retailApplicantDetail.getMiddleName();
 							}
-							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
-								applicantName+=" "+retailApplicantDetail.getLastName();
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())) {
+								applicantName += " " + retailApplicantDetail.getLastName();
 							}
 							response.setName(applicantName);
 							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
@@ -2657,10 +2657,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
 							}
 						}
-
+						responseList.add(response);
 					}
-					responseList.add(response);
 				}
+
 			}
 		}
 		System.out.println(responseList);
