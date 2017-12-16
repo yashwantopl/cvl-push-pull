@@ -2,12 +2,14 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import com.capitaworld.service.loans.model.reports.OrganizationPieChartResponse;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,6 +23,10 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private Environment environment;
+    private static final String PROPERTY_NAME_DATABASE_NAME = "capitaworld.loans.db.name";
 
     @Override
     public String getCountOfProposalInInboxAndPrimary(Long organization_id) {
@@ -132,13 +138,14 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
 
     @Override
     public List<List<Long>> getApplicationIdAndUserId() {
+        String dbName = environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
         List<Long> applicationId = new ArrayList<>();
         List<Long> userId = new ArrayList<>();
         List<List<Long>> master = new ArrayList<>();
         List<Objects[]> objectsList = null;
         try {
             objectsList = entityManager
-                    .createNativeQuery("SELECT application_id,user_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM loan_applications.proposal_details WHERE loan_applications.proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=4 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM loan_applications.fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
+                    .createNativeQuery("SELECT application_id,user_id FROM "+ dbName +".fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM "+ dbName +".proposal_details WHERE "+ dbName +".proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM "+ dbName +".fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=4 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM "+ dbName +".fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
                     .getResultList();
             for (Object[] a : objectsList) {
                 applicationId.add(Long.valueOf(a[0].toString()));
@@ -153,13 +160,14 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
     }
     @Override
     public List<List<Long>> getApplicationIdAndUserIdForAdminPanel() {
+        String dbName = environment.getRequiredProperty(PROPERTY_NAME_DATABASE_NAME);
         List<Long> applicationId = new ArrayList<>();
         List<Long> userId = new ArrayList<>();
         List<List<Long>> master = new ArrayList<>();
         List<Objects[]> objectsList = null;
         try {
             objectsList = entityManager
-                    .createNativeQuery("SELECT application_id,user_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM loan_applications.proposal_details WHERE loan_applications.proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM loan_applications.fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=5 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM loan_applications.fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
+                    .createNativeQuery("SELECT application_id,user_id FROM "+ dbName +".fs_loan_application_master WHERE fs_loan_application_master.application_id IN (SELECT application_id FROM "+ dbName +".proposal_details WHERE "+ dbName +".proposal_details.application_id IN (SELECT fs_loan_application_master.application_id FROM "+ dbName +".fs_loan_application_master WHERE fs_loan_application_master.user_id IN(SELECT campaign_details.user_id FROM users.campaign_details WHERE campaign_details.is_active = TRUE) AND fs_loan_application_master.is_active = TRUE) AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=5 AND proposal_details.fp_product_id IN (SELECT fp_product_master.fp_product_id FROM "+ dbName +".fp_product_master WHERE fp_product_master.user_id IN (SELECT users.user_id FROM users.users WHERE users.user_type_id=2 AND users.user_org_id = 1 AND users.is_self_active = TRUE)))")
                     .getResultList();
             for (Object[] a : objectsList) {
                 applicationId.add(Long.valueOf(a[0].toString()));
