@@ -967,14 +967,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
-						logger.info(i + "------------> FP Product Id -------------> "+connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
 						if(!CommonUtils.isObjectNullOrEmpty(master)) {
-							if(userOgList.contains(master.getUserOrgId())) {
-								logger.info("Found same user org id ------------------------->" +master.getUserOrgId());
-								continue;
+							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+								if(userOgList.contains(master.getUserOrgId())) {
+									logger.info("Found same user org id ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+									continue;
+								}
+								userOgList.add(master.getUserOrgId());	
 							}
-							userOgList.add(master.getUserOrgId());
+							
 						}
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
