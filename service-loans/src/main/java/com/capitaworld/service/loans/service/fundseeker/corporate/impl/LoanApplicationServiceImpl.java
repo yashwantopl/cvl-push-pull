@@ -2416,8 +2416,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
-			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
-			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2504,8 +2504,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(loanApplicationMaster.getEligibleAmnt()==null) {
 				AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 				UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
-				response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
-				response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+				response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
+				response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 				response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2615,8 +2615,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!loanApplicationMaster.getIsFinalLocked()) {
 					AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 					UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
-					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
-					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
+					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 					response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2710,8 +2710,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
-			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
-			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2823,8 +2823,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
-			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
-			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
