@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import com.capitaworld.service.oneform.enums.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,10 +77,6 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 //import com.capitaworld.service.matchengine.model.ProposalStatusList;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.Currency;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -145,6 +143,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
+
+	@Autowired
+	private OrganizationReportsService organizationReportsService;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -2374,6 +2375,522 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			responseList.add(response);
 		}
+		return responseList;
+	}
+
+	//report1
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanel(MobileLoanRequest loanRequest) throws IOException, Exception {
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if (CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
+			listOfObjects.add(userRequest);
+		}
+		List<Long> userIds = new ArrayList<>();
+		for (UsersRequest obj : listOfObjects) {
+			userIds.add(obj.getId());
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds, loanRequest.getFromDate(), loanRequest.getToDate());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+
+			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+			response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+			response.setAbsoluteDisplayAmount(absoluteAmount);
+			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			//pincode
+			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15){//
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if(corporateApplicantDetail!=null) {
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
+					}
+				}
+			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if(retailApplicantDetail!=null) {
+					String applicantName="";
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
+						applicantName+=retailApplicantDetail.getFirstName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
+						applicantName+=" "+retailApplicantDetail.getMiddleName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
+						applicantName+=" "+retailApplicantDetail.getLastName();
+					}
+					response.setName(applicantName);
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
+						response.setPincode(retailApplicantDetail.getPermanentPincode().toString());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+						response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+						response.setApplicantMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOccupationId())) {
+						response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
+					}
+				}
+
+			}
+			responseList.add(response);
+		}
+		System.out.println(responseList);
+		return responseList;
+	}
+
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfNotEligibility(MobileLoanRequest loanRequest) throws Exception {
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if (CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
+			listOfObjects.add(userRequest);
+		}
+		List<Long> userIds = new ArrayList<>();
+		for (UsersRequest obj : listOfObjects) {
+			userIds.add(obj.getId());
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds, loanRequest.getFromDate(), loanRequest.getToDate());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			if(loanApplicationMaster.getEligibleAmnt()==null) {
+				AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+				UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+				response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+				response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+				response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+
+				response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+				response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+				response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+				Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+				response.setAbsoluteDisplayAmount(absoluteAmount);
+				response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+				//pincode
+				if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if(corporateApplicantDetail!=null) {
+						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+							response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
+						}
+					}
+				} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if (retailApplicantDetail != null) {
+						String applicantName="";
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
+							applicantName+=retailApplicantDetail.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
+							applicantName+=" "+retailApplicantDetail.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
+							applicantName+=" "+retailApplicantDetail.getLastName();
+						}
+						response.setName(applicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
+							response.setPincode(retailApplicantDetail.getPermanentPincode().toString());
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+							response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+							response.setApplicantMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOccupationId())) {
+							response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
+						}
+					}
+					List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
+						CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+						String coApplicantName="";
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
+							coApplicantName+=coApplicantDetail.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
+							coApplicantName+=" "+coApplicantDetail.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
+							coApplicantName+=" "+coApplicantDetail.getLastName();
+						}
+						response.setCoApplicantName(coApplicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+							response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+							response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+						}
+					}
+				}
+				responseList.add(response);
+			}
+		}
+		System.out.println(responseList);
+		return responseList;
+	}
+
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfEligibility(MobileLoanRequest loanRequest) throws Exception {
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if (CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
+			listOfObjects.add(userRequest);
+		}
+		List<Long> userIds = new ArrayList<>();
+		for (UsersRequest obj : listOfObjects) {
+			userIds.add(obj.getId());
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds, loanRequest.getFromDate(), loanRequest.getToDate());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			//code for got eligibility
+			if (loanApplicationMaster.getEligibleAmnt()!=null) {
+				if (!loanApplicationMaster.getIsFinalLocked()) {
+					AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+					UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+					response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+
+					response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+					response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+					response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+					Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+					response.setAbsoluteDisplayAmount(absoluteAmount);
+					response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+					//pincode
+					if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
+						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+						if(corporateApplicantDetail!=null) {
+							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+								response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
+							}
+						}
+					} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
+						RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+						if (retailApplicantDetail != null) {
+							String applicantName="";
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
+								applicantName+=retailApplicantDetail.getFirstName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
+								applicantName+=" "+retailApplicantDetail.getMiddleName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
+								applicantName+=" "+retailApplicantDetail.getLastName();
+							}
+							response.setName(applicantName);
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
+								response.setPincode(retailApplicantDetail.getPermanentPincode().toString());
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+								response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+								response.setApplicantMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOccupationId())) {
+								response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
+							}
+						}
+
+					}
+					responseList.add(response);
+				}
+			}
+		}
+		System.out.println(responseList);
+		return responseList;
+	}
+
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(MobileLoanRequest loanRequest) throws IOException {
+
+		List<List<Long>>master = organizationReportsService.getApplicationIdAndUserId();
+		List<Long> userId = null;
+		List<Long> applicationId = null;
+		if (master!=null) {
+			applicationId = master.get(0);
+			userId = master.get(1);
+		}
+		UsersRequest uRequest = new UsersRequest();
+		uRequest.setIds(userId);
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getDetailsOfUsersForAdminPanel(uRequest);
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if (CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
+			listOfObjects.add(userRequest);
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+
+			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+			response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+			response.setAbsoluteDisplayAmount(absoluteAmount);
+			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			//pincode
+			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if(corporateApplicantDetail!=null) {
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
+					}
+				}
+			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if (retailApplicantDetail != null) {
+					String applicantName="";
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
+						applicantName+=retailApplicantDetail.getFirstName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
+						applicantName+=" "+retailApplicantDetail.getMiddleName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
+						applicantName+=" "+retailApplicantDetail.getLastName();
+					}
+					response.setName(applicantName);
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
+						response.setPincode(retailApplicantDetail.getPermanentPincode().toString());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+						response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+						response.setApplicantMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOccupationId())) {
+						response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
+					}
+				}
+				List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+				if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
+					CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+					String coApplicantName="";
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
+						coApplicantName+=coApplicantDetail.getFirstName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
+						coApplicantName+=" "+coApplicantDetail.getMiddleName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
+						coApplicantName+=" "+coApplicantDetail.getLastName();
+					}
+					response.setCoApplicantName(coApplicantName);
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+						response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+						response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+					}
+				}
+			}
+			responseList.add(response);
+
+		}
+		System.out.println(responseList);
+		return responseList;
+	}
+
+	@Override
+	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfApprovedByUbi(MobileLoanRequest loanRequest) throws IOException, Exception {
+		List<List<Long>>master = organizationReportsService.getApplicationIdAndUserIdForAdminPanel();
+		List<Long> userId = null;
+		List<Long> applicationId = null;
+		if (master!=null) {
+			applicationId = master.get(0);
+			userId = master.get(1);
+		}
+		UsersRequest uRequest = new UsersRequest();
+		uRequest.setIds(userId);
+		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
+		UserResponse userResponse = userClient.getDetailsOfUsersForAdminPanel(uRequest);
+		if (userResponse.getStatus() != HttpStatus.OK.value()) {
+			return null;
+		}
+		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
+		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
+		for (LinkedHashMap<String, Object> data : dataList) {
+			UsersRequest userRequest = MultipleJSONObjectHelper.getObjectFromMap(data, UsersRequest.class);
+			if (CommonUtils.CW_SP_USER_ID.equals(userRequest.getId())) {
+				continue;
+			}
+			listOfObjects.add(userRequest);
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(loanRequest.getToDate());
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 0);
+		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		loanRequest.setToDate(cal.getTime());
+
+		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
+			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
+			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
+			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
+			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getMobile() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
+
+			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
+			response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
+			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
+			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
+			response.setAbsoluteDisplayAmount(absoluteAmount);
+			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			//pincode
+			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if(corporateApplicantDetail!=null) {
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
+					}
+				}
+			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12 || loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13 || loanApplicationMaster.getProductId() == 14) {
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if (retailApplicantDetail != null) {
+					String applicantName="";
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())){
+						applicantName+=retailApplicantDetail.getFirstName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMiddleName())){
+						applicantName+=" "+retailApplicantDetail.getMiddleName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName())){
+						applicantName+=" "+retailApplicantDetail.getLastName();
+					}
+					response.setName(applicantName);
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentPincode())) {
+						response.setPincode(retailApplicantDetail.getPermanentPincode().toString());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+						response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+						response.setApplicantMonthlyIncome(retailApplicantDetail.getMonthlyIncome());
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOccupationId())) {
+						response.setIncomeType(OccupationNature.getById(retailApplicantDetail.getOccupationId()).toString());
+					}
+				}
+				List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+				if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
+					CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+					String coApplicantName="";
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
+						coApplicantName+=coApplicantDetail.getFirstName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
+						coApplicantName+=" "+coApplicantDetail.getMiddleName();
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
+						coApplicantName+=" "+coApplicantDetail.getLastName();
+					}
+					response.setCoApplicantName(coApplicantName);
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+						response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+						response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+					}
+				}
+			}
+			responseList.add(response);
+
+		}
+		System.out.println(responseList);
 		return responseList;
 	}
 

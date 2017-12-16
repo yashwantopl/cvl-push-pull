@@ -53,6 +53,11 @@ public class LoansClient {
 	private static final String USER_ID_BY_PRODUCT_ID = "/product_master/getUserIdByProductId";
 	private static final String REGISTERD_USERS_DETAILS = "/loan_application/getUsersRegisteredLoanDetails";
 	private static final String GET_LOAN_DETAILS_ADMIN_PANEL = "/loan_application/getLoanDetailsForAdminPanel";
+	private static final String GET_UBI_REPORT_1 = "/loan_application/getUbiReport1ForAdminPanel";
+	private static final String GET_UBI_REPORT_2 = "/loan_application/getUbiReport2ForAdminPanel";
+	private static final String GET_UBI_REPORT_3 = "/loan_application/getUbiReport3ForAdminPanel";
+	private static final String GET_UBI_REPORT_4 = "/loan_application/getUbiReport4ForAdminPanel";
+	private static final String GET_UBI_REPORT_5 = "/loan_application/getUbiReport5ForAdminPanel";
 	private static final String GET_FILLED_LOAN_DETAILS_ADMIN_PANEL = "/loan_application/getFilledLoanDetailsForAdminPanel";
 	private static final String GET_CHATLIST_BY_FP_MAPPING = "/loan_application/getChatListByFpMappingId";
 	private static final String GET_CHATLIST_BY_APPLICATION_ID = "/product_master/getChatListByApplicationId";
@@ -343,6 +348,71 @@ public class LoansClient {
 
 	public LoansResponse getLoanDetailsForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS_ADMIN_PANEL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	public LoansResponse getUbiReport1ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(GET_UBI_REPORT_1);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	public LoansResponse getUbiReport2ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(GET_UBI_REPORT_2);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	public LoansResponse getUbiReport3ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(GET_UBI_REPORT_3);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	public LoansResponse getUbiReport4ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(GET_UBI_REPORT_4);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+		}
+	}
+	public LoansResponse getUbiReport5ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(GET_UBI_REPORT_5);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
