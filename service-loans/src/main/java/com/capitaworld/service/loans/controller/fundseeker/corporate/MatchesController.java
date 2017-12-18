@@ -190,6 +190,18 @@ public class MatchesController {
 		   }
 		matchRequest.setUserId(userId);
 		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			if(!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				logger.info("Found User Org Id, So we can't process matches more ! ------------->" + userOrgId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("This is UBI fundprovider, So we can't process matches more !", HttpStatus.OK.value()), HttpStatus.OK);
+			}
+		}
+		
+		
+		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
 			logger.warn("matchRequest must not be empty ==>" + matchRequest);
 			return new ResponseEntity<LoansResponse>(
