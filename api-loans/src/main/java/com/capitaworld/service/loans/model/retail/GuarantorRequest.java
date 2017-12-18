@@ -75,8 +75,8 @@ public class GuarantorRequest {
 	
 	private Integer highestQualification;
 	private String institute;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
-	private Date qualifyingYear;
+	private Integer qualifyingYear;
+	private Integer qualifyingMonth;
 	private Double residingYear;
 	private Double residingMonth;
 	private String spouseName;
@@ -563,12 +563,22 @@ public class GuarantorRequest {
 		this.institute = institute;
 	}
 
-	public Date getQualifyingYear() {
+	
+
+	public Integer getQualifyingYear() {
 		return qualifyingYear;
 	}
 
-	public void setQualifyingYear(Date qualifyingYear) {
+	public void setQualifyingYear(Integer qualifyingYear) {
 		this.qualifyingYear = qualifyingYear;
+	}
+
+	public Integer getQualifyingMonth() {
+		return qualifyingMonth;
+	}
+
+	public void setQualifyingMonth(Integer qualifyingMonth) {
+		this.qualifyingMonth = qualifyingMonth;
 	}
 
 	public Double getResidingYear() {

@@ -116,6 +116,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 						guarantorRequest.getMonth(), guarantorRequest.getYear());
 				guarantorDetails.setBirthDate(birthDate);
 			}
+			if (guarantorRequest.getQualifyingMonth() != null && guarantorRequest.getQualifyingYear() != null) {
+				Date qualifyingYear = CommonUtils.getDateByDateMonthYear(1,guarantorRequest.getQualifyingMonth(), guarantorRequest.getQualifyingYear());
+				guarantorDetails.setQualifyingYear(qualifyingYear);
+			}
 			guarantorDetailsRepository.save(guarantorDetails);
 
 			// setting Guarantor Details filled flag
@@ -175,6 +179,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 			guaRequest.setDate(saperatedTime[0]);
 			guaRequest.setMonth(saperatedTime[1]);
 			guaRequest.setYear(saperatedTime[2]);
+			Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(guarantorDetail.getQualifyingYear());
+			guaRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+			guaRequest.setQualifyingYear(saperatedQualifyingYear[2]);
 			guaRequest.setDetailsFilledCount(guarantorDetail.getApplicationId().getDetailsFilledCount());
 			return guaRequest;
 		} catch (Exception e) {
