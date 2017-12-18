@@ -960,13 +960,24 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 				
 				//set connection without matches
-				
+				List<Long> userOgList = new ArrayList<>();
+				logger.info("Total FP found for fs connection list ---------------------> "+connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
+						if(!CommonUtils.isObjectNullOrEmpty(master)) {
+							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+								if(userOgList.contains(master.getUserOrgId())) {
+									logger.info("Found same user org id ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+									continue;
+								}
+								userOgList.add(master.getUserOrgId());	
+							}
+							
+						}
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
 

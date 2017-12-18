@@ -87,6 +87,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						applicantRequest.getMonth(), applicantRequest.getYear());
 				applicantDetail.setBirthDate(birthDate);
 			}
+			if (applicantRequest.getQualifyingMonth() != null && applicantRequest.getQualifyingYear() != null) {
+				Date qualifyingYear = CommonUtils.getDateByDateMonthYear(1,applicantRequest.getQualifyingMonth(), applicantRequest.getQualifyingYear());
+				applicantDetail.setQualifyingYear(qualifyingYear);
+			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
@@ -150,6 +154,9 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
+			applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+			applicantRequest.setQualifyingYear(saperatedQualifyingYear[2]);
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
