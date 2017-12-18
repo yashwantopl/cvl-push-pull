@@ -149,6 +149,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						applicantRequest.getMonth(), applicantRequest.getYear());
 				coDetails.setBirthDate(birthDate);
 			}
+			if (applicantRequest.getQualifyingMonth() != null && applicantRequest.getQualifyingYear() != null) {
+				Date qualifyingYear = CommonUtils.getDateByDateMonthYear(1,applicantRequest.getQualifyingMonth(), applicantRequest.getQualifyingYear());
+				coDetails.setQualifyingYear(qualifyingYear);
+			}
 			coApplicantDetailRepository.save(coDetails);
 
 			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicationId, finalUserId);
@@ -203,6 +207,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
+			Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
+			applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+			applicantRequest.setQualifyingYear(saperatedQualifyingYear[2]);
 			applicantRequest.setCurrencyId(retailApplicantDetailRepository.getCurrency(userId, applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
