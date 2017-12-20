@@ -47,8 +47,8 @@ public class GuarantorRequest {
 	
 	private String detailsFilledCount;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	private Date businessStartDate;
+	private Integer businessStartYear;
+	private Integer businessStartMonth;
 	private Integer currentJobMonth;
 	private Integer currentJobYear;
 	private String previousEmployersAddress;
@@ -371,12 +371,21 @@ public class GuarantorRequest {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public Date getBusinessStartDate() {
-		return businessStartDate;
+	
+	public Integer getBusinessStartYear() {
+		return businessStartYear;
 	}
 
-	public void setBusinessStartDate(Date businessStartDate) {
-		this.businessStartDate = businessStartDate;
+	public void setBusinessStartYear(Integer businessStartYear) {
+		this.businessStartYear = businessStartYear;
+	}
+
+	public Integer getBusinessStartMonth() {
+		return businessStartMonth;
+	}
+
+	public void setBusinessStartMonth(Integer businessStartMonth) {
+		this.businessStartMonth = businessStartMonth;
 	}
 
 	public Integer getCurrentJobMonth() {
