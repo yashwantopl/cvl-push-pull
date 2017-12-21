@@ -2414,6 +2414,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
+			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2502,6 +2503,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 				response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 				response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
+				response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 				response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2548,23 +2550,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 					if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
-						CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
-						String coApplicantName="";
-						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
-							coApplicantName+=coApplicantDetail.getFirstName();
+						String coApplicantName = "";
+						if(coApplicantDetails.size()>0) {
+							CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())) {
+								coApplicantName += coApplicantDetail.getFirstName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())) {
+								coApplicantName += " " + coApplicantDetail.getMiddleName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())) {
+								coApplicantName += " " + coApplicantDetail.getLastName();
+							}
+							response.setCoApplicant1Name(coApplicantName);
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+								response.setCoApplicant1Age(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+								response.setCoApplicant1MonthlyIncome(coApplicantDetail.getMonthlyIncome());
+							}
 						}
-						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
-							coApplicantName+=" "+coApplicantDetail.getMiddleName();
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
-							coApplicantName+=" "+coApplicantDetail.getLastName();
-						}
-						response.setCoApplicantName(coApplicantName);
-						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
-							response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
-						}
-						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
-							response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+						if(coApplicantDetails.size()>2) {
+							CoApplicantDetail coApplicantDetail1 = coApplicantDetails.get(1);
+							coApplicantName = "";
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getFirstName())) {
+								coApplicantName += coApplicantDetail1.getFirstName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMiddleName())) {
+								coApplicantName += " " + coApplicantDetail1.getMiddleName();
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getLastName())) {
+								coApplicantName += " " + coApplicantDetail1.getLastName();
+							}
+							response.setCoApplicant2Name(coApplicantName);
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getBirthDate())) {
+								response.setCoApplicant2Age(CommonUtils.calculateAge(coApplicantDetail1.getBirthDate()));
+							}
+							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMonthlyIncome())) {
+								response.setCoApplicant2MonthlyIncome(coApplicantDetail1.getMonthlyIncome());
+							}
 						}
 					}
 				}
@@ -2613,6 +2637,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
+					response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 					response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2708,6 +2733,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
+			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2754,23 +2780,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
 				if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
-					CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
 					String coApplicantName="";
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
-						coApplicantName+=coApplicantDetail.getFirstName();
+					if(coApplicantDetails.size()>0) {
+						CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())) {
+							coApplicantName += coApplicantDetail.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())) {
+							coApplicantName += " " + coApplicantDetail.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())) {
+							coApplicantName += " " + coApplicantDetail.getLastName();
+						}
+						response.setCoApplicant1Name(coApplicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+							response.setCoApplicant1Age(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+							response.setCoApplicant1MonthlyIncome(coApplicantDetail.getMonthlyIncome());
+						}
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
-						coApplicantName+=" "+coApplicantDetail.getMiddleName();
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
-						coApplicantName+=" "+coApplicantDetail.getLastName();
-					}
-					response.setCoApplicantName(coApplicantName);
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
-						response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
-						response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+					if(coApplicantDetails.size()>2) {
+						CoApplicantDetail coApplicantDetail1 = coApplicantDetails.get(1);
+						coApplicantName = "";
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getFirstName())) {
+							coApplicantName += coApplicantDetail1.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMiddleName())) {
+							coApplicantName += " " + coApplicantDetail1.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getLastName())) {
+							coApplicantName += " " + coApplicantDetail1.getLastName();
+						}
+						response.setCoApplicant2Name(coApplicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getBirthDate())) {
+							response.setCoApplicant2Age(CommonUtils.calculateAge(coApplicantDetail1.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMonthlyIncome())) {
+							response.setCoApplicant2MonthlyIncome(coApplicantDetail1.getMonthlyIncome());
+						}
 					}
 				}
 			}
@@ -2784,6 +2832,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfApprovedByUbi(MobileLoanRequest loanRequest) throws IOException, Exception {
 		List<List<Long>>master = organizationReportsService.getApplicationIdAndUserIdForAdminPanel();
+
+
 		List<Long> userId = null;
 		List<Long> applicationId = null;
 		if (master!=null) {
@@ -2806,6 +2856,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			listOfObjects.add(userRequest);
 		}
+
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(loanRequest.getToDate());
 		cal.set(Calendar.HOUR_OF_DAY, 23);
@@ -2821,6 +2872,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			UsersRequest usersRequest = listOfObjects.stream().filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
+			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
@@ -2867,23 +2919,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
 				if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
-					CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
 					String coApplicantName="";
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())){
-						coApplicantName+=coApplicantDetail.getFirstName();
+					if(coApplicantDetails.size()>0) {
+						CoApplicantDetail coApplicantDetail = coApplicantDetails.get(0);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getFirstName())) {
+							coApplicantName += coApplicantDetail.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())) {
+							coApplicantName += " " + coApplicantDetail.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())) {
+							coApplicantName += " " + coApplicantDetail.getLastName();
+						}
+						response.setCoApplicant1Name(coApplicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
+							response.setCoApplicant1Age(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
+							response.setCoApplicant1MonthlyIncome(coApplicantDetail.getMonthlyIncome());
+						}
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMiddleName())){
-						coApplicantName+=" "+coApplicantDetail.getMiddleName();
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLastName())){
-						coApplicantName+=" "+coApplicantDetail.getLastName();
-					}
-					response.setCoApplicantName(coApplicantName);
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate())) {
-						response.setCoApplicantAge(CommonUtils.calculateAge(coApplicantDetail.getBirthDate()));
-					}
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyIncome())) {
-						response.setCoApplicantMonthlyIncome(coApplicantDetail.getMonthlyIncome());
+					if(coApplicantDetails.size()>2) {
+						CoApplicantDetail coApplicantDetail1 = coApplicantDetails.get(1);
+						coApplicantName = "";
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getFirstName())) {
+							coApplicantName += coApplicantDetail1.getFirstName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMiddleName())) {
+							coApplicantName += " " + coApplicantDetail1.getMiddleName();
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getLastName())) {
+							coApplicantName += " " + coApplicantDetail1.getLastName();
+						}
+						response.setCoApplicant2Name(coApplicantName);
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getBirthDate())) {
+							response.setCoApplicant2Age(CommonUtils.calculateAge(coApplicantDetail1.getBirthDate()));
+						}
+						if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail1.getMonthlyIncome())) {
+							response.setCoApplicant2MonthlyIncome(coApplicantDetail1.getMonthlyIncome());
+						}
 					}
 				}
 			}

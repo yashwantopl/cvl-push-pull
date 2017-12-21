@@ -35,9 +35,13 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private String pincode;
 	private Double applicantMonthlyIncome;
 	private String incomeType;
-	private String coApplicantName;
-	private Integer coApplicantAge;
-	private Double coApplicantMonthlyIncome;
+	private String coApplicant1Name;
+	private Integer coApplicant1Age;
+	private Double coApplicant1MonthlyIncome;
+	private String coApplicant2Name;
+	private Integer coApplicant2Age;
+	private Double coApplicant2MonthlyIncome;
+	private String campaignCode;
 
 	public String getApplicationId() {
 		return applicationId;
@@ -219,27 +223,59 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 		this.incomeType = incomeType;
 	}
 
-	public String getCoApplicantName() {
-		return coApplicantName;
+	public String getCoApplicant1Name() {
+		return coApplicant1Name;
 	}
 
-	public void setCoApplicantName(String coApplicantName) {
-		this.coApplicantName = coApplicantName;
+	public void setCoApplicant1Name(String coApplicant1Name) {
+		this.coApplicant1Name = coApplicant1Name;
 	}
 
-	public Integer getCoApplicantAge() {
-		return coApplicantAge;
+	public Integer getCoApplicant1Age() {
+		return coApplicant1Age;
 	}
 
-	public void setCoApplicantAge(Integer coApplicantAge) {
-		this.coApplicantAge = coApplicantAge;
+	public void setCoApplicant1Age(Integer coApplicant1Age) {
+		this.coApplicant1Age = coApplicant1Age;
 	}
 
-	public Double getCoApplicantMonthlyIncome() {
-		return coApplicantMonthlyIncome;
+	public Double getCoApplicant1MonthlyIncome() {
+		return coApplicant1MonthlyIncome;
 	}
 
-	public void setCoApplicantMonthlyIncome(Double coApplicantMonthlyIncome) {
-		this.coApplicantMonthlyIncome = coApplicantMonthlyIncome;
+	public void setCoApplicant1MonthlyIncome(Double coApplicant1MonthlyIncome) {
+		this.coApplicant1MonthlyIncome = coApplicant1MonthlyIncome;
+	}
+
+	public String getCoApplicant2Name() {
+		return coApplicant2Name;
+	}
+
+	public void setCoApplicant2Name(String coApplicant2Name) {
+		this.coApplicant2Name = coApplicant2Name;
+	}
+
+	public Integer getCoApplicant2Age() {
+		return coApplicant2Age;
+	}
+
+	public void setCoApplicant2Age(Integer coApplicant2Age) {
+		this.coApplicant2Age = coApplicant2Age;
+	}
+
+	public Double getCoApplicant2MonthlyIncome() {
+		return coApplicant2MonthlyIncome;
+	}
+
+	public void setCoApplicant2MonthlyIncome(Double coApplicant2MonthlyIncome) {
+		this.coApplicant2MonthlyIncome = coApplicant2MonthlyIncome;
+	}
+
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
 	}
 }

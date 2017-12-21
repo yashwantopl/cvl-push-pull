@@ -16,5 +16,5 @@ public interface OrganizationReportsService {
     public List<List<Long>> getApplicationIdAndUserId();
     public List<List<Long>> getApplicationIdAndUserIdForAdminPanel();
     public OrganizationPieChartResponse getDetails(Long organization_id);
-
+    public List<List<Long>> getFpProductMappingId();
 }
