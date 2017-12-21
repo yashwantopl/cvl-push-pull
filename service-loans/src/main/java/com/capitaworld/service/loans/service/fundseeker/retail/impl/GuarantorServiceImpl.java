@@ -116,6 +116,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 						guarantorRequest.getMonth(), guarantorRequest.getYear());
 				guarantorDetails.setBirthDate(birthDate);
 			}
+			if (guarantorRequest.getQualifyingMonth() != null && guarantorRequest.getQualifyingYear() != null) {
+				Date qualifyingYear = CommonUtils.getDateByDateMonthYear(1,guarantorRequest.getQualifyingMonth(), guarantorRequest.getQualifyingYear());
+				guarantorDetails.setQualifyingYear(qualifyingYear);
+			}
+			if (guarantorRequest.getBusinessStartMonth() != null && guarantorRequest.getBusinessStartYear() != null) {
+				Date businessStartDate = CommonUtils.getDateByDateMonthYear(1,guarantorRequest.getBusinessStartMonth(), guarantorRequest.getBusinessStartYear());
+				guarantorDetails.setBusinessStartDate(businessStartDate);
+			}
 			guarantorDetailsRepository.save(guarantorDetails);
 
 			// setting Guarantor Details filled flag
@@ -175,6 +183,17 @@ public class GuarantorServiceImpl implements GuarantorService {
 			guaRequest.setDate(saperatedTime[0]);
 			guaRequest.setMonth(saperatedTime[1]);
 			guaRequest.setYear(saperatedTime[2]);
+			if(guarantorDetail.getQualifyingYear() != null){
+				Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(guarantorDetail.getQualifyingYear());
+				guaRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+				guaRequest.setQualifyingYear(saperatedQualifyingYear[2]);
+			}
+			if(guarantorDetail.getBusinessStartDate() != null){
+				Integer[] saperatedBusinessStartDate = CommonUtils.saperateDayMonthYearFromDate(guarantorDetail.getBusinessStartDate());
+				guaRequest.setBusinessStartMonth(saperatedBusinessStartDate[1]);
+				guaRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
+			}
+			
 			guaRequest.setDetailsFilledCount(guarantorDetail.getApplicationId().getDetailsFilledCount());
 			return guaRequest;
 		} catch (Exception e) {

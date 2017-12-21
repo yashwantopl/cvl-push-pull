@@ -844,6 +844,7 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(1, loanRequest));
+
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForAdminPanel==>", e);
@@ -861,6 +862,7 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "getFilledLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(2, loanRequest));
+
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getFilledLoanDetailsForAdminPanel==>", e);

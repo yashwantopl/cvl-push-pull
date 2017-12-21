@@ -48,8 +48,8 @@ public class CoApplicantRequest {
 
 	private String detailsFilledCount;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	private Date businessStartDate;
+	private Integer businessStartYear;
+	private Integer businessStartMonth;
 	private Integer currentJobMonth;
 	private Integer currentJobYear;
 	private String previousEmployersAddress;
@@ -76,8 +76,8 @@ public class CoApplicantRequest {
 	
 	private Integer highestQualification;
 	private String institute;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
-	private Date qualifyingYear;
+	private Integer qualifyingYear;
+	private Integer qualifyingMonth;
 	private Double residingYear;
 	private Double residingMonth;
 	private String spouseName;
@@ -379,12 +379,22 @@ public class CoApplicantRequest {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public Date getBusinessStartDate() {
-		return businessStartDate;
+	
+
+	public Integer getBusinessStartYear() {
+		return businessStartYear;
 	}
 
-	public void setBusinessStartDate(Date businessStartDate) {
-		this.businessStartDate = businessStartDate;
+	public void setBusinessStartYear(Integer businessStartYear) {
+		this.businessStartYear = businessStartYear;
+	}
+
+	public Integer getBusinessStartMonth() {
+		return businessStartMonth;
+	}
+
+	public void setBusinessStartMonth(Integer businessStartMonth) {
+		this.businessStartMonth = businessStartMonth;
 	}
 
 	public Integer getCurrentJobMonth() {
@@ -571,12 +581,21 @@ public class CoApplicantRequest {
 		this.institute = institute;
 	}
 
-	public Date getQualifyingYear() {
+	
+	public Integer getQualifyingYear() {
 		return qualifyingYear;
 	}
 
-	public void setQualifyingYear(Date qualifyingYear) {
+	public void setQualifyingYear(Integer qualifyingYear) {
 		this.qualifyingYear = qualifyingYear;
+	}
+
+	public Integer getQualifyingMonth() {
+		return qualifyingMonth;
+	}
+
+	public void setQualifyingMonth(Integer qualifyingMonth) {
+		this.qualifyingMonth = qualifyingMonth;
 	}
 
 	public Double getResidingYear() {
