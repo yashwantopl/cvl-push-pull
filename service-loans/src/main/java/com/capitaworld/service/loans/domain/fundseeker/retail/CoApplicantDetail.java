@@ -364,6 +364,9 @@ public class CoApplicantDetail implements Serializable {
 	
 	@Column(name = "tax_paid_last_year")
 	private Double taxPaidLastYear;
+	
+	@Column(name = "address_same_as_applicant")
+	private Boolean addressSameAsApplicant;
 
 	public CoApplicantDetail() {
 	}
@@ -1273,7 +1276,12 @@ public class CoApplicantDetail implements Serializable {
 		this.taxPaidLastYear = taxPaidLastYear;
 	}
 
-	
-	
+	public Boolean getAddressSameAsApplicant() {
+		return addressSameAsApplicant;
+	}
+
+	public void setAddressSameAsApplicant(Boolean addressSameAsApplicant) {
+		this.addressSameAsApplicant = addressSameAsApplicant;
+	}
 
 }
