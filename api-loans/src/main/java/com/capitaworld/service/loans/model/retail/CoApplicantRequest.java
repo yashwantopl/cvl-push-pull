@@ -82,6 +82,8 @@ public class CoApplicantRequest {
 	private Double residingMonth;
 	private String spouseName;
 	private Boolean isSpouseEmployed;
+	
+	private Boolean addressSameAsApplicant;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -629,8 +631,13 @@ public class CoApplicantRequest {
 	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
 		this.isSpouseEmployed = isSpouseEmployed;
 	}
-	
 
-	
+	public Boolean getAddressSameAsApplicant() {
+		return addressSameAsApplicant;
+	}
 
+	public void setAddressSameAsApplicant(Boolean addressSameAsApplicant) {
+		this.addressSameAsApplicant = addressSameAsApplicant;
+	}
+	
 }
