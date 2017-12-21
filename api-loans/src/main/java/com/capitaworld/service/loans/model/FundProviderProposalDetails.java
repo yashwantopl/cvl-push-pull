@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model;
 
+
 public class FundProviderProposalDetails {
 
 	
@@ -18,6 +19,13 @@ public class FundProviderProposalDetails {
 	private Long productId;
 	
 	private Long proposalMappingId;
+	
+	private Double elAmount;
+	
+	private Double elTenure;
+	
+	private Double elRoi;
+	
 
 	
 	
@@ -83,6 +91,30 @@ public class FundProviderProposalDetails {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Double getElAmount() {
+		return elAmount;
+	}
+
+	public void setElAmount(Double elAmount) {
+		this.elAmount = elAmount;
+	}
+
+	public Double getElTenure() {
+		return elTenure;
+	}
+
+	public void setElTenure(Double elTenure) {
+		this.elTenure = elTenure;
+	}
+
+	public Double getElRoi() {
+		return elRoi;
+	}
+
+	public void setElRoi(Double elRoi) {
+		this.elRoi = elRoi;
 	}
 	
 	
