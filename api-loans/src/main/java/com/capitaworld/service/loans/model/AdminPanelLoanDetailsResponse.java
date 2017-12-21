@@ -42,6 +42,7 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private Integer coApplicant2Age;
 	private Double coApplicant2MonthlyIncome;
 	private String campaignCode;
+	private Date lastApprovedDate;
 
 	public String getApplicationId() {
 		return applicationId;
@@ -277,5 +278,13 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 
 	public void setCampaignCode(String campaignCode) {
 		this.campaignCode = campaignCode;
+	}
+
+	public Date getLastApprovedDate() {
+		return lastApprovedDate;
+	}
+
+	public void setLastApprovedDate(Date lastApprovedDate) {
+		this.lastApprovedDate = lastApprovedDate;
 	}
 }

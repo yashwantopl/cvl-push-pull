@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.reports.OrganizationPieChartResponse;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface OrganizationReportsService {
     public List<List<Long>> getApplicationIdAndUserId();
     public List<List<Long>> getApplicationIdAndUserIdForAdminPanel();
     public OrganizationPieChartResponse getDetails(Long organization_id);
-    public List<List<Long>> getFpProductMappingId();
+    public List<ReportResponse> getFpProductMappingId();
 }

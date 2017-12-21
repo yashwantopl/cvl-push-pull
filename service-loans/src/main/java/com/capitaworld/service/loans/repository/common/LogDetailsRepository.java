@@ -12,6 +12,6 @@ public interface LogDetailsRepository extends JpaRepository<LogDetails, Long>{
 	@Query("select lm.createdDate from LogDetails lm where lm.loanApplicationMasterId =:id and lm.dateTypeMasterId =:dateType")
 	public Date getDateByLogType(@Param("id") Long applicationId, @Param("dateType") Integer dateType);
 
-	@Query("select lm.createdDate from LogDetails lm where lm.loanApplicationMasterId =:id and lm.dateTypeMasterId =:dateType and lm.productMappingId =:fpProductId ORDER BY lm.createdDate DESC")
-	public Date getDateByADFForAdminPanel(@Param("id") Long applicationId, @Param("fpProductId") Long fpProductId,@Param("dateType") Integer dateType);
+	@Query(value = "SELECT log_details.created_date FROM log_details WHERE log_details.loan_application_master_id=:applicationId AND log_details.product_mapping_id=:fpProductId AND log_details.date_type_master_id='13' ORDER BY log_details.created_date DESC LIMIT 1", nativeQuery = true)
+	public Date getDateByADFForAdminPanel(@Param("applicationId") Long applicationId, @Param("fpProductId") Long fpProductId);
 }

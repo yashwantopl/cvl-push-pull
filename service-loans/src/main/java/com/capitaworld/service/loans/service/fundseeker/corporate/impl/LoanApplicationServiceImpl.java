@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.oneform.enums.*;
 import org.json.simple.JSONObject;
@@ -38,13 +40,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.CommonResponse;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
@@ -146,6 +141,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private OrganizationReportsService organizationReportsService;
+
+	@Autowired
+	private LogDetailsRepository logDetailsRepository;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -2835,14 +2833,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfApprovedByUbi(MobileLoanRequest loanRequest) throws IOException, Exception {
-		List<List<Long>>master = organizationReportsService.getApplicationIdAndUserIdForAdminPanel();
-
-
-		List<Long> userId = null;
-		List<Long> applicationId = null;
-		if (master!=null) {
-			applicationId = master.get(0);
-			userId = master.get(1);
+		List<ReportResponse> master = organizationReportsService.getFpProductMappingId();
+		List<Long> userId = new ArrayList<>();
+		List<Long> applicationId = new ArrayList<>();
+		for (ReportResponse reportResponse : master) {
+			applicationId.add(reportResponse.getApplicationId());
+			userId.add(reportResponse.getUserId());
 		}
 		UsersRequest uRequest = new UsersRequest();
 		uRequest.setIds(userId);
@@ -2879,7 +2875,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
 			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
-
+			ReportResponse reportResponse = master.stream().filter(x -> x.getApplicationId().equals(loanApplicationMaster.getId())).findFirst().orElse(null);
+			response.setLastApprovedDate(logDetailsRepository.getDateByADFForAdminPanel(loanApplicationMaster.getId(), reportResponse.getFpProductId()));
 			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
 			response.setPrimaryCount(CommonUtils.getBowlCount(loanApplicationMaster.getPrimaryFilledCount(), null));
 			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
