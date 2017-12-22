@@ -31,7 +31,7 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	private String lastUpdatedDate;
 	private String currency;
 	private String mobile;
-	private String lastLoginDate;
+	private Date lastLoginDate;
 	private String pincode;
 	private Double applicantMonthlyIncome;
 	private String incomeType;
@@ -192,11 +192,11 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 		this.mobile = mobile;
 	}
 
-	public String getLastLoginDate() {
+	public Date getLastLoginDate() {
 		return lastLoginDate;
 	}
 
-	public void setLastLoginDate(String lastLoginDate) {
+	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
 	}
 

@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.reports.OrganizationPieChartResponse;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -27,10 +29,13 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
 
     @Autowired
     private Environment environment;
+
+    private static final Logger logger = LoggerFactory.getLogger(OrganizationReportsServiceImpl.class);
     private static final String PROPERTY_NAME_DATABASE_NAME = "capitaworld.loans.db.name";
 
     @Override
     public String getCountOfProposalInInboxAndPrimary(Long organization_id) {
+        logger.info("Enter in getCountOfProposalInInboxAndPrimary() methods param",organization_id);
         String count = null;
         try {
             count = entityManager
@@ -40,12 +45,15 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .setParameter("organization_id", organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
+            logger.error("Error while getting data getCountOfProposalInInboxAndPrimary() methods ", e);
         }
+        logger.info("response getCountOfProposalInInboxAndPrimary() methods ",count);
         return count;
     }
 
     @Override
     public String getCountOfAdvance(Long organization_id) {
+        logger.info("Enter in getCountOfAdvance() methods param",organization_id);
         String count = null;
         try {
             count = entityManager
@@ -55,12 +63,15 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .setParameter("organization_id", organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
+            logger.error("Error while getting data getCountOfAdvance() methods ", e);
         }
+        logger.info("response getCountOfAdvance() methods ",count);
         return count;
     }
 
     @Override
     public String getSumOfAmountProposalInInboxAndPrimary(Long organization_id) {
+        logger.info("Enter in getSumOfAmountProposalInInboxAndPrimary() methods param",organization_id);
         String count = null;
         try {
             count = entityManager
@@ -79,12 +90,15 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .setParameter("organization_id", organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
+            logger.error("Error while getting data getCountOfAdvance() methods ", e);
         }
+        logger.info("response getCountOfAdvance() methods ",count);
         return count;
     }
 
     @Override
     public String getSumOfAmountProposalInAdvance(Long organization_id) {
+        logger.info("Enter in getSumOfAmountProposalInAdvance() methods param",organization_id);
         String count = null;
         try {
             count = entityManager
@@ -103,12 +117,15 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .setParameter("organization_id", organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
+            logger.error("Error while getting data getSumOfAmountProposalInAdvance() methods ", e);
         }
+        logger.info("response getSumOfAmountProposalInAdvance() methods ",count);
         return count;
     }
 
     @Override
     public String getBranchPieDetails(Long organizationId) {
+        logger.info("Enter in getBranchPieDetails() methods param",organizationId);
         String count = "[";
         List<Objects[]> objectsList = null;
         try {
@@ -120,9 +137,11 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
             }
         } catch (Exception e) {
             count = "null";
+            logger.error("Error while getting data getBranchPieDetails() methods ", e);
         }
         count = count.substring(0,(count.length()-1));
         count+="]";
+        logger.info("response getBranchPieDetails() methods ",count);
         return count;
     }
 
