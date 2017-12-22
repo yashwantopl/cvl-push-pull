@@ -472,6 +472,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setImagePath(imagePath);
 				fundProviderProposalDetails.setProductId(productId);
 				fundProviderProposalDetails.setProposalMappingId(proposalrequest.getId());
+				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
+				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
+				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
 				proposalDetailsList.add(fundProviderProposalDetails);
 			}
 		} catch (Exception e) {
