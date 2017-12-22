@@ -91,6 +91,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				Date qualifyingYear = CommonUtils.getDateByDateMonthYear(1,applicantRequest.getQualifyingMonth(), applicantRequest.getQualifyingYear());
 				applicantDetail.setQualifyingYear(qualifyingYear);
 			}
+			if (applicantRequest.getBusinessStartMonth() != null && applicantRequest.getBusinessStartYear() != null) {
+				Date businessStartDate = CommonUtils.getDateByDateMonthYear(1,applicantRequest.getBusinessStartMonth(), applicantRequest.getBusinessStartYear());
+				applicantDetail.setBusinessStartDate(businessStartDate);
+			}
 			applicantDetail = applicantRepository.save(applicantDetail);
 			for (CoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
@@ -154,9 +158,16 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
 			applicantRequest.setYear(saperatedTime[2]);
-			Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
-			applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
-			applicantRequest.setQualifyingYear(saperatedQualifyingYear[2]);
+			if(applicantDetail.getQualifyingYear() != null){
+				Integer[] saperatedQualifyingYear = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getQualifyingYear());
+				applicantRequest.setQualifyingMonth(saperatedQualifyingYear[1]);
+				applicantRequest.setQualifyingYear(saperatedQualifyingYear[2]);
+			}
+			if(applicantDetail.getBusinessStartDate() != null){
+				Integer[] saperatedBusinessStartDate = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBusinessStartDate());
+				applicantRequest.setBusinessStartMonth(saperatedBusinessStartDate[1]);
+				applicantRequest.setBusinessStartYear(saperatedBusinessStartDate[2]);
+			}			
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {

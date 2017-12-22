@@ -48,8 +48,8 @@ public class CoApplicantRequest {
 
 	private String detailsFilledCount;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	private Date businessStartDate;
+	private Integer businessStartYear;
+	private Integer businessStartMonth;
 	private Integer currentJobMonth;
 	private Integer currentJobYear;
 	private String previousEmployersAddress;
@@ -82,6 +82,8 @@ public class CoApplicantRequest {
 	private Double residingMonth;
 	private String spouseName;
 	private Boolean isSpouseEmployed;
+	
+	private Boolean addressSameAsApplicant;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -379,12 +381,22 @@ public class CoApplicantRequest {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public Date getBusinessStartDate() {
-		return businessStartDate;
+	
+
+	public Integer getBusinessStartYear() {
+		return businessStartYear;
 	}
 
-	public void setBusinessStartDate(Date businessStartDate) {
-		this.businessStartDate = businessStartDate;
+	public void setBusinessStartYear(Integer businessStartYear) {
+		this.businessStartYear = businessStartYear;
+	}
+
+	public Integer getBusinessStartMonth() {
+		return businessStartMonth;
+	}
+
+	public void setBusinessStartMonth(Integer businessStartMonth) {
+		this.businessStartMonth = businessStartMonth;
 	}
 
 	public Integer getCurrentJobMonth() {
@@ -619,8 +631,13 @@ public class CoApplicantRequest {
 	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
 		this.isSpouseEmployed = isSpouseEmployed;
 	}
-	
 
-	
+	public Boolean getAddressSameAsApplicant() {
+		return addressSameAsApplicant;
+	}
 
+	public void setAddressSameAsApplicant(Boolean addressSameAsApplicant) {
+		this.addressSameAsApplicant = addressSameAsApplicant;
+	}
+	
 }
