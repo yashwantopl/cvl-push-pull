@@ -31,14 +31,14 @@ public class ArrayOfBytesToFileServiceImpl implements ArrayOfBytesToFileService 
                 	Iterator innerIt = innerMap.entrySet().iterator();
                 	while(innerIt.hasNext()){
                 		Map.Entry pair1 = (Map.Entry)innerIt.next();
-                		if(!CommonUtils.isObjectNullOrEmpty(pair1.getValue())){
+                		if(!CommonUtils.isObjectNullOrEmptyOrDash(pair1.getValue())){
                 			mapValues+=pair1.getValue()+"|";	
                 		}else{
                 			mapValues+="|";	
                 		}
                 	}
                 }else{
-                	if(!CommonUtils.isObjectNullOrEmpty(pair.getValue())){
+                	if(!CommonUtils.isObjectNullOrEmptyOrDash(pair.getValue())){
                 		mapValues+=pair.getValue()+"|";
                     }else{
                     	mapValues+="|";
