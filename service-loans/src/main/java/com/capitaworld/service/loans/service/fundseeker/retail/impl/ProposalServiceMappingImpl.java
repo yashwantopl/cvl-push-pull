@@ -907,12 +907,27 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				
 			} else {
 
+				List<Long> userOrgSuggetionByMatchesList = new ArrayList<>();
+				logger.info("Total FP found for fs connection Suggetion By Matches list ---------------------> "+connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
+						
+						if(!CommonUtils.isObjectNullOrEmpty(master)) {
+							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+								if(userOrgSuggetionByMatchesList.contains(master.getUserOrgId())) {
+									logger.info("Found same user org id in connection suggestion by matches list ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+									continue;
+								}
+								userOrgSuggetionByMatchesList.add(master.getUserOrgId());	
+							}
+							
+						}
+						
+						
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
 
@@ -964,7 +979,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				
 				//set connection without matches
 				List<Long> userOgList = new ArrayList<>();
-				logger.info("Total FP found for fs connection list ---------------------> "+connectionResponse.getSuggetionList().size());
+				logger.info("Total FP found for fs connection Suggetion List ---------------------> "+connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
@@ -974,7 +989,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						if(!CommonUtils.isObjectNullOrEmpty(master)) {
 							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
 								if(userOgList.contains(master.getUserOrgId())) {
-									logger.info("Found same user org id ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+									logger.info("Found same user org id in connection suggestion list ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
 									continue;
 								}
 								userOgList.add(master.getUserOrgId());	
