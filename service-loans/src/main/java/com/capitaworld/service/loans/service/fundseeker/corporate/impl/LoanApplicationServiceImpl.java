@@ -2417,7 +2417,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
-			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
 			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -2506,7 +2506,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 				response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 				response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
-				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate() : null);
 				response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
 				response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -2640,7 +2640,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 					response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
-					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate() : null);
 					response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
 					response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -2736,7 +2736,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
-			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 
 			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -2873,7 +2873,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
 			response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode()) ? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
-			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate().toString() : null);
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.getLoanName(loanApplicationMaster.getProductId()));
 			ReportResponse reportResponse = master.stream().filter(x -> x.getApplicationId().equals(loanApplicationMaster.getId())).findFirst().orElse(null);
 			response.setLastApprovedDate(logDetailsRepository.getDateByADFForAdminPanel(loanApplicationMaster.getId(), reportResponse.getFpProductId()));
