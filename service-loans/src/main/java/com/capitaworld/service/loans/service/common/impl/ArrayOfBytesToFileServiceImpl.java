@@ -21,7 +21,7 @@ public class ArrayOfBytesToFileServiceImpl implements ArrayOfBytesToFileService 
 	@Override
 	public byte[] createByteFileFromMap(Long applicantId) {
 		try {
-			Map<String, Object> map = fsDetailsForPdfService.getHomeLoanDetails(applicantId);
+			Map<String, Object> map = fsDetailsForPdfService.getSortedMapForUbi(applicantId);
 			Iterator it = map.entrySet().iterator();
 			String mapValues = "";
             while (it.hasNext()) {
