@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,9 +152,9 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			map.put("grossAnnualIncome",CommonUtils.convertInBigDecimal(grossAnnualIncome*12));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 2 || finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 7){
-			map.put("taxPaid",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid());
+			map.put("taxPaid",CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTaxPaid()));
 		}
-		map.put("otherAnnualExpenditure",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment());
+		map.put("otherAnnualExpenditure",CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getOtherInvestment()));
 		map.put("religion", finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getReligion());
 		//put primary lock date
 		try
@@ -378,23 +379,23 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		}
 		Double requirementTotal = (double) 0,sourceTotal=(double) 0;
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
-			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
+			map.put("costOfLand", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
-			map.put("costOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost());
+			map.put("costOfLand", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house"){
-			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice());
+			map.put("purchasePrice",CommonUtils.convertInBigDecimal( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyPrice().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Construction of bunglow/tenament"){
-			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost());
+			map.put("purchasePrice", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getConstructionCost().replaceAll(",", ""));
 		}
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament"){
-			map.put("purchasePrice", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost());
+			map.put("purchasePrice", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getRenovationCost().replaceAll(",", ""));
 		}
 		
@@ -408,8 +409,8 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		
 		map.put("requirementTotal", CommonUtils.convertInBigDecimal(requirementTotal));
 		map.put("propertyUse", finalViewResponse.getPropertyUse());
-		map.put("downPayment", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment());
-		map.put("loanAmountRequested", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount());
+		map.put("downPayment", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment()));
+		map.put("loanAmountRequested", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLoanAmount()));
 		
 		
 		sourceTotal+=CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getDownPayment().replaceAll(",", ""));
@@ -635,5 +636,151 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		
 		return map;
 	}
+
+	@Override
+	public Map getSortedMapForUbi(Long applicantId) throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			HomeLoanFinalViewResponse finalViewResponse = homeLoanFinalViewService.getHomeLoanFinalViewDetails(applicantId);
+			Map<String, Object> map = getHomeLoanDetails(applicantId);
+			Map<String, Object> dataMap=new LinkedHashMap<String, Object>(); 
+			
+			dataMap.put("Loan Id ", null);
+			dataMap.put("Sol Id ", null);
+			dataMap.put("CustId ", null);
+			dataMap.put("GLSubHead Code  ", null);
+			dataMap.put("Scheme Code  ", null);
+			dataMap.put("Scheme Type  ", null);
+			dataMap.put("Cust Title", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTitle());
+			dataMap.put("Cust Name ", map.get("name"));
+			dataMap.put("Cust Status  ", null);
+			dataMap.put("Cust Occupation ", map.get("occupation"));
+			dataMap.put("Constitution ", null);
+			dataMap.put("Gender ", map.get("gender"));
+			dataMap.put("Addrs Type", null);
+			dataMap.put("Addrs  ", map.get("presentAddress"));
+			dataMap.put("City", (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCity())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCity()));
+			dataMap.put("State  ", (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getState()));
+			dataMap.put("Postal Code  ", (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPincode())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getPincode()));
+			dataMap.put("Community Code  ", null);
+			dataMap.put("Caste Code", map.get("cast"));
+			dataMap.put("Taxslab", map.get("taxPaid"));
+			dataMap.put("Operation Mode  ", null);
+			dataMap.put("Loan Amt", map.get("loanAmount"));
+			dataMap.put("Loan Frequency", null);
+			dataMap.put("Loan Period", map.get("tennure"));
+			dataMap.put("Payment Method", null);
+			dataMap.put("Operating Account", null);
+			dataMap.put("No Of Flows", null);
+			dataMap.put("Loan Start Date", null);
+			dataMap.put("Sector Code", null);
+			dataMap.put("Purpose Advance", map.get("loanPurpose"));
+			dataMap.put("Nature Advance", null);
+			dataMap.put("Sub Sector Code", null);
+			dataMap.put("Ex-Serviceman/Physically Handicapped/Free Code 6", null);
+			dataMap.put("Free Code7", null);
+			dataMap.put("Sanction Level", null);
+			dataMap.put("Sanction Authority", null);
+			dataMap.put("Sanction Ref No", null);
+			dataMap.put("Sanction Date", null);
+			dataMap.put("Limit Expiry Date", null);
+			dataMap.put("Document Date", null);
+			dataMap.put("Drawing Pwr Indicator ", null);
+			dataMap.put("Interest Rate", null);
+			dataMap.put("Loan Account No", null);
+			dataMap.put("Facility Srl No", null);
+			dataMap.put("Addrs2", map.get("permanentAddress"));
+			dataMap.put("Borrower Code", null);
+			dataMap.put("Mode of Advance", null);
+			dataMap.put("Type of Advance", null);
+			dataMap.put("Industry Type", null);
+			dataMap.put("Occupation", map.get("occupation"));
+			dataMap.put("PAN Number", map.get("panNo"));
+			dataMap.put("Date of Birth", map.get("birthDate"));
+			dataMap.put("Customer Employee Number ", null);
+			dataMap.put("Marital Status", map.get("maritalStatus"));
+			dataMap.put("Country Code", (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry()));
+			dataMap.put("Acct Label Code ", null);
+			dataMap.put("Is Corporate?", null);
+			dataMap.put("Cust Occp Code", null);
+			dataMap.put("Annual Income", map.get("grossAnnualIncome"));
+			dataMap.put("Country of Residence", (CommonUtils.isObjectNullOrEmpty( finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry())?"": finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getOfficeAddress().getCountry()));
+			dataMap.put("Form 60/61", null);
+			dataMap.put("Form 60/61 Ref  ", null);
+			dataMap.put("ID Proof", null);
+			dataMap.put("ID Proof Ref", null);
+			dataMap.put("Res Proof Type", null);
+			dataMap.put("Res ID Reference", null);
+			dataMap.put("Source of Income", null);
+			dataMap.put("Networth", null);
+			dataMap.put("Annual Turnover", null);
+			dataMap.put("Annual Turnover EST", null);
+			dataMap.put("Pooled Account", null);
+			dataMap.put("Activity Type", null);
+			dataMap.put("OFAC", null);
+			dataMap.put("Foreign IW Remittance", null);
+			dataMap.put("Remit Country Code", null);
+			dataMap.put("Client Name - 1", null);
+			dataMap.put("Client Location - 1", null);
+			dataMap.put("Client City Code - 1", null);
+			dataMap.put("Client Country Code - 1", null);
+			dataMap.put("Client Name - 2", null);
+			dataMap.put("Client Location - 2", null);
+			dataMap.put("Client City Code - 2", null);
+			dataMap.put("Client Country Code - 2", null);
+			dataMap.put("Client Name - 3", null);
+			dataMap.put("Client Location - 3", null);
+			dataMap.put("Client City Code - 3", null);
+			dataMap.put("Client Country Code - 3", null);
+			dataMap.put("Risk Category", null);
+			dataMap.put("Customer Type", null);
+			dataMap.put("Health Code", null);
+			dataMap.put("Free Code 5 ", null);
+			dataMap.put("Hash Code ", null);
+			dataMap.put("Sleeping Partner", null);
+			dataMap.put("Political Exposed ", null);
+			dataMap.put("Family Share", null);
+			dataMap.put("Village Code", null);
+			dataMap.put("Commencement of commercial Date", null);
+			dataMap.put("Commencement of commercial Revised Date ", null);
+			dataMap.put("Guardian Code", null);
+			dataMap.put("Guardian Name", map.get("guaName1"));
+			dataMap.put("Applicant Mobil", map.get("mobile"));
+			dataMap.put("Applicant E-mail", map.get("email"));
+			dataMap.put("Application Process Fees", null);
+			dataMap.put("Margin", null);
+			dataMap.put("Networth", null);
+			dataMap.put("Rating", null);
+			dataMap.put("Rating Date", null);
+			dataMap.put("FATCA_DEC_FLG", null);
+			dataMap.put("FATHER_NAME", null);
+			dataMap.put("FATCA_FLG", null);
+			dataMap.put("BIRTH_PLACE", null);
+			dataMap.put("BIRTH_CNTRY", null);
+			dataMap.put("FATCA_NATIONALITY", null);
+			dataMap.put("SPOUSE_NAME", null);
+			dataMap.put("CNTRY_TAX_RES1", null);
+			dataMap.put("TIN1", null);
+			dataMap.put("TIN_CNTRY1", null);
+			dataMap.put("DOC_COL_DT1", null);
+			dataMap.put("CNTRY_TAX_RES2  ", null);
+			dataMap.put("TIN2", null);
+			dataMap.put("TIN_CNTRY2", null);
+			dataMap.put("DOC_COL_DT2", null);
+			dataMap.put("CNTRY_TAX_RES3", null);
+			dataMap.put("TIN3", null);
+			dataMap.put("TIN_CNTRY3", null);
+			dataMap.put("DOC_COL_DT3", null);
+			dataMap.put("REMARKS", null);
+			
+			return dataMap;
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 
 }

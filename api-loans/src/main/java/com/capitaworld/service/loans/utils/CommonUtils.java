@@ -549,9 +549,12 @@ public class CommonUtils {
 
 		  public static BigDecimal convertInBigDecimal(Object obj)
 		  {
+			 
+			  if(!CommonUtils.isObjectNullOrEmpty(obj))
+			  {
 			  if(obj instanceof String)
 			  {
-				  return   new BigDecimal((String)obj); 
+				  return   new BigDecimal((String)obj.toString().replaceAll(",", "")); 
 			  }
 			  if(obj instanceof Double)
 			  {
@@ -564,6 +567,7 @@ public class CommonUtils {
 			  if(obj instanceof Integer)
 			  {
 				  return   new BigDecimal((Integer)obj); 
+			  }
 			  }
 			  return new BigDecimal(0);
 			
