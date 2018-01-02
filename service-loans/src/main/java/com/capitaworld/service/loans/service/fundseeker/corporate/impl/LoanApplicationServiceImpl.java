@@ -3285,5 +3285,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public void updateFlow(Long applicationId, Long clientId, Long userId) throws Exception {
+		logger.info("Entry in updateFlow()");
+		try {
+			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
+					finalUserId);
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+				logger.info("applicationMaster found null in updateFlow");
+				logger.info("Exit from updateFlow()");
+				return;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getCampaignCode())) {
+				logger.info("Campaign Code is already null so no need to re update the row.");
+			} else {
+				applicationMaster.setCampaignCode(null);
+				applicationMaster.setModifiedBy(userId);
+				applicationMaster.setModifiedDate(new Date());
+				loanApplicationRepository.save(applicationMaster);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Coverting UBI flow to Normal");
+			logger.info("Exit from updateFlow()");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
 
 }
