@@ -808,7 +808,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
+				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 				String promotorName = "";
 				if (promotorBackgroundDetailRequest.getSalutationId() != null){
 					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
@@ -923,7 +923,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			for (GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest: guarantorsCorporateDetailRequestList) {
 				GuarantorsCorporateDetailResponse guarantorsCorporateDetailResponse= new GuarantorsCorporateDetailResponse();
 				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetailResponse);
-				
+				guarantorsCorporateDetailResponse.setPanNo(guarantorsCorporateDetailRequest.getPanNo()!=null? guarantorsCorporateDetailRequest.getPanNo().toUpperCase(): null);
 				//set industry
 				if(!CommonUtils.isObjectListNull(guarantorsCorporateDetailRequest.getIndustrylist()))
 				{
