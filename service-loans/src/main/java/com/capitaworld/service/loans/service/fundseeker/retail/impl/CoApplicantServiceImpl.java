@@ -576,11 +576,11 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					officeAddress.setPremiseNumber(coApplicantDetail.getOfficePremiseNumberName() != null ? coApplicantDetail.getOfficePremiseNumberName() : "");
 					officeAddress.setStreetName(coApplicantDetail.getOfficeStreetName() != null ? coApplicantDetail.getOfficeStreetName() : "");
 					profileViewPLResponse.setFirstAddress(officeAddress);
-					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherIncome()) ? coApplicantDetail.getOtherIncome().toString() : ""));
-					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherInvestment()) ? coApplicantDetail.getOtherInvestment().toString() : ""));
-					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTaxPaidLastYear()) ? coApplicantDetail.getTaxPaidLastYear().toString() : ""));
-					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBonusPerAnnum()) ? coApplicantDetail.getBonusPerAnnum().toString() : ""));
-					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIncentivePerAnnum()) ? coApplicantDetail.getIncentivePerAnnum().toString() : ""));
+					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(coApplicantDetail.getOtherIncome().toString()) : ""));
+					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(coApplicantDetail.getOtherInvestment().toString()) : ""));
+					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(coApplicantDetail.getTaxPaidLastYear().toString()) : ""));
+					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(coApplicantDetail.getBonusPerAnnum().toString()) : ""));
+					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(coApplicantDetail.getIncentivePerAnnum().toString()) : ""));
 					// set permanent address
 					AddressResponse permanentAddress = new AddressResponse();
 					try {
@@ -809,13 +809,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						if (coApplicantDetail.getResidenceType() == 2) {
 							finalViewResponse
 									.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
-											? coApplicantDetail.getAnnualRent().toString() : null);
+											? CommonUtils.CurrencyFormat(coApplicantDetail.getAnnualRent().toString()) : null);
 						}
 					} else {
 						finalViewResponse.setResidenceType(null);
 					}
 					finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualRent())
-							? coApplicantDetail.getAnnualRent().toString() : "-");
+							? CommonUtils.CurrencyFormat(coApplicantDetail.getAnnualRent().toString()) : "-");
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getResidingYear())
 									? coApplicantDetail.getResidingYear().toString() : null);
@@ -914,7 +914,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 											? coApplicantDetail.getShareHolding() : null);
 							finalViewResponse.setAnnualTurnover(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getAnnualTurnover())
-											? coApplicantDetail.getAnnualTurnover().toString() : null);
+											? CommonUtils.CurrencyFormat(coApplicantDetail.getAnnualTurnover().toString()) : null);
 							finalViewResponse.setTradeLicenseNo(
 									!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getTradeLicenseNumber())
 											? coApplicantDetail.getTradeLicenseNumber() : null);
@@ -957,7 +957,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 												: null);
 						cardsDetailResponse.setOutstandingBalance(
 								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
-										? cardsDetailRequest.getOutstandingBalance().toString() : null);
+										? CommonUtils.CurrencyFormat(cardsDetailRequest.getOutstandingBalance().toString()) : null);
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
@@ -981,7 +981,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 										? assetDetailRequest.getAssetDescription() : null);
 						assetDetailResponse
 								.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue())
-										? assetDetailRequest.getAssetValue().toString() : null);
+										? CommonUtils.CurrencyFormat(assetDetailRequest.getAssetValue().toString()) : null);
 						assetDetailResponseList.add(assetDetailResponse);
 					}
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
@@ -997,9 +997,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead())
 								? detailRequest.getIncomeHead() : null);
 						detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome())
-								? detailRequest.getGrossIncome().toString() : null);
+								? CommonUtils.CurrencyFormat(detailRequest.getGrossIncome().toString()) : null);
 						detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome())
-								? detailRequest.getNetIncome().toString() : null);
+								? CommonUtils.CurrencyFormat(detailRequest.getNetIncome().toString()) : null);
 						incomeDetailResponseList.add(detailResponse);
 					}
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);

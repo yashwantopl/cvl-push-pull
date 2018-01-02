@@ -609,11 +609,11 @@ public class GuarantorServiceImpl implements GuarantorService {
 					permanentAddress.setStreetName(guarantorDetail.getPermanentStreetName() !=null ? guarantorDetail.getPermanentStreetName() :"");
 					profileViewPLResponse.setContactNo(guarantorDetail.getContactNo() !=null ? guarantorDetail.getContactNo() :"");
 					profileViewPLResponse.setSecondAddress(permanentAddress);
-					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherIncome()) ? guarantorDetail.getOtherIncome().toString() : ""));
-					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherInvestment()) ? guarantorDetail.getOtherInvestment().toString() : ""));
-					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTaxPaidLastYear()) ? guarantorDetail.getTaxPaidLastYear().toString() : ""));
-					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBonusPerAnnum()) ? guarantorDetail.getBonusPerAnnum().toString() : ""));
-					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIncentivePerAnnum()) ? guarantorDetail.getIncentivePerAnnum().toString() : ""));
+					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherIncome().toString()) : ""));
+					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherInvestment().toString()) : ""));
+					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(guarantorDetail.getTaxPaidLastYear().toString()) : ""));
+					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getBonusPerAnnum().toString()) : ""));
+					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getIncentivePerAnnum().toString()) : ""));
 					profileViewPLResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBirthDate()) ? guarantorDetail.getBirthDate().toString() : "-");
 					//end of set address
 					// set pan car
@@ -769,13 +769,13 @@ public class GuarantorServiceImpl implements GuarantorService {
 						if (guarantorDetail.getResidenceType() == 2) {
 							finalViewResponse
 									.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualRent())
-											? guarantorDetail.getAnnualRent().toString() : null);
+											? CommonUtils.CurrencyFormat(guarantorDetail.getAnnualRent().toString()) : null);
 						}
 					} else {
 						finalViewResponse.setResidenceType(null);
 					}
 					finalViewResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getAnnualRent())
-							? guarantorDetail.getAnnualRent().toString() : "-");
+							? CommonUtils.CurrencyFormat(guarantorDetail.getAnnualRent().toString()) : "-");
 					finalViewResponse.setYearAtCurrentResident(
 							!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getResidingYear())
 									? guarantorDetail.getResidingYear().toString() : null);
@@ -913,7 +913,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 												: null);
 						cardsDetailResponse.setOutstandingBalance(
 								!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance())
-										? cardsDetailRequest.getOutstandingBalance().toString() : null);
+										? CommonUtils.CurrencyFormat(cardsDetailRequest.getOutstandingBalance().toString()) : null);
 						creditCardsDetailResponseList.add(cardsDetailResponse);
 					}
 					finalViewResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
@@ -936,7 +936,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 										? assetDetailRequest.getAssetDescription() : null);
 						assetDetailResponse
 								.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue())
-										? assetDetailRequest.getAssetValue().toString() : null);
+										? CommonUtils.CurrencyFormat(assetDetailRequest.getAssetValue().toString()) : null);
 						assetDetailResponseList.add(assetDetailResponse);
 					}
 					finalViewResponse.setAssetDetailResponseList(assetDetailResponseList);
@@ -952,9 +952,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 						detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead())
 								? detailRequest.getIncomeHead() : null);
 						detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome())
-								? detailRequest.getGrossIncome().toString() : null);
+								? CommonUtils.CurrencyFormat(detailRequest.getGrossIncome().toString()) : null);
 						detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome())
-								? detailRequest.getNetIncome().toString() : null);
+								? CommonUtils.CurrencyFormat(detailRequest.getNetIncome().toString()) : null);
 						incomeDetailResponseList.add(detailResponse);
 					}
 					finalViewResponse.setIncomeDetailResponseList(incomeDetailResponseList);

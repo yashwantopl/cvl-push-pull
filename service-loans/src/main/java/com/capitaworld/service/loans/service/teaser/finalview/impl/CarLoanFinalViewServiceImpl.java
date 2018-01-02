@@ -88,12 +88,12 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 				clFinalViewResponse.setColor(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarColour()) ? finalCLDetails.getCarColour() : "-" );
 				clFinalViewResponse.setSupplier(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarSupplier()) ? finalCLDetails.getCarSupplier() : "-");
 				clFinalViewResponse.setRegistrationNumber(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getCarRegistrationNumber()) ? finalCLDetails.getCarRegistrationNumber() : "-");
-				clFinalViewResponse.setVehicleCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getVehicleCost()) ? finalCLDetails.getVehicleCost().toString() : "-");
-				clFinalViewResponse.setInsuaranceCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getInsuranceCost()) ? finalCLDetails.getInsuranceCost().toString() : "-");
-				clFinalViewResponse.setAccessoriesCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getAccessoriesCost()) ? finalCLDetails.getAccessoriesCost().toString() : "-");
-				clFinalViewResponse.setRoadTaxCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getRoadTax()) ? finalCLDetails.getRoadTax().toString() : "-");
-				clFinalViewResponse.setOtherCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getOthersCost()) ? finalCLDetails.getOthersCost().toString() : "-");
-				clFinalViewResponse.setTotalCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getLoanTotalCost()) ? finalCLDetails.getLoanTotalCost().toString() : "-");
+				clFinalViewResponse.setVehicleCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getVehicleCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getVehicleCost().toString()) : "-");
+				clFinalViewResponse.setInsuaranceCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getInsuranceCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getInsuranceCost().toString()) : "-");
+				clFinalViewResponse.setAccessoriesCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getAccessoriesCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getAccessoriesCost().toString()) : "-");
+				clFinalViewResponse.setRoadTaxCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getRoadTax()) ? CommonUtils.CurrencyFormat(finalCLDetails.getRoadTax().toString()) : "-");
+				clFinalViewResponse.setOtherCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getOthersCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getOthersCost().toString()) : "-");
+				clFinalViewResponse.setTotalCost(!CommonUtils.isObjectNullOrEmpty(finalCLDetails.getLoanTotalCost()) ? CommonUtils.CurrencyFormat(finalCLDetails.getLoanTotalCost().toString()) : "-");
 				
            
 			} catch (Exception e) {
