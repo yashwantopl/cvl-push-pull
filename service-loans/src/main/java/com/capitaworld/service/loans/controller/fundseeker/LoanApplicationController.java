@@ -24,7 +24,6 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
-import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -1247,6 +1246,26 @@ public class LoanApplicationController {
 			logger.error("Error while updating Eligibility Amount==>", e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/update_flow/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateFlow(HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId,
+			@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("start updateFlow()");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			loanApplicationService.updateFlow(applicationId, clientId, userId);
+			logger.info("end updateFlow()");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Success", HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Flow from UBI to Normal==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
