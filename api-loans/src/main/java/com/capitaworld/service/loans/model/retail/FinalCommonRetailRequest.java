@@ -77,6 +77,17 @@ public class FinalCommonRetailRequest {
 	private Boolean isGuarantor2FinalFilled;
 	
 	private String finalFilledCount;
+	
+	//Added by bihag for UBI - HL
+		private String ownershipTypeOthers;
+
+		public String getOwnershipTypeOthers() {
+			return ownershipTypeOthers;
+		}
+
+		public void setOwnershipTypeOthers(String ownershipTypeOthers) {
+			this.ownershipTypeOthers = ownershipTypeOthers;
+		}
 
 	public Long getId() {
 		return id;

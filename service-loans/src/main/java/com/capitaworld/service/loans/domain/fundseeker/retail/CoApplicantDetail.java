@@ -214,7 +214,10 @@ public class CoApplicantDetail implements Serializable {
 	private Integer ownershipType;
 
 	private String pan;
-
+	
+	@Column(name = "ownership_type_others")
+	private String ownershipTypeOthers;
+	
 	@Column(name = "partners_name")
 	private String partnersName;
 
@@ -1282,6 +1285,13 @@ public class CoApplicantDetail implements Serializable {
 
 	public void setAddressSameAsApplicant(Boolean addressSameAsApplicant) {
 		this.addressSameAsApplicant = addressSameAsApplicant;
+	}
+	public String getOwnershipTypeOthers() {
+		return ownershipTypeOthers;
+	}
+
+	public void setOwnershipTypeOthers(String ownershipTypeOthers) {
+		this.ownershipTypeOthers = ownershipTypeOthers;
 	}
 
 }
