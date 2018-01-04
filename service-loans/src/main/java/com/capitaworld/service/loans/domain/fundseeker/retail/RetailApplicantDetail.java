@@ -226,6 +226,9 @@ public class RetailApplicantDetail implements Serializable {
 	private Integer ownershipType;
 
 	private String pan;
+	
+	@Column(name = "ownership_type_others")
+	private String ownershipTypeOthers;
 
 	@Column(name = "partners_name")
 	private String partnersName;
@@ -1308,7 +1311,13 @@ public class RetailApplicantDetail implements Serializable {
 	public void setTaxPaidLastYear(Double taxPaidLastYear) {
 		this.taxPaidLastYear = taxPaidLastYear;
 	}
-	
+	public String getOwnershipTypeOthers() {
+		return ownershipTypeOthers;
+	}
+
+	public void setOwnershipTypeOthers(String ownershipTypeOthers) {
+		this.ownershipTypeOthers = ownershipTypeOthers;
+	}
 
 	
 	
