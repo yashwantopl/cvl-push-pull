@@ -115,7 +115,7 @@ public interface LoanApplicationService {
 	
 	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception;
 	
-
+	public void updateFlow(Long applicationId,Long clientId,Long userId) throws Exception ;
 	
 }
 

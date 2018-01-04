@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CommonUtils {
 
@@ -386,8 +388,15 @@ public class CommonUtils {
 	}
 
 	public static String CurrencyFormat(String value) {
-		NumberFormat nf = NumberFormat.getInstance();
-		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";
+		
+		Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
+		return  format.format(new BigDecimal(value)).substring(4);
+		
+		/*Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
+		return format.format(new BigDecimal(value));*/
+		
+		/*NumberFormat nf = NumberFormat.getInstance();
+		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";*/
 	}
 
 	public static String getLoanName(Integer x) {
