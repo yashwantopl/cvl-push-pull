@@ -217,6 +217,9 @@ public class GuarantorDetails implements Serializable {
 
 	@Column(name = "ownership_type")
 	private Integer ownershipType;
+	
+	@Column(name = "ownership_type_others")
+	private String ownershipTypeOthers;
 
 	private String pan;
 
@@ -1265,7 +1268,13 @@ public class GuarantorDetails implements Serializable {
 	public void setTaxPaidLastYear(Double taxPaidLastYear) {
 		this.taxPaidLastYear = taxPaidLastYear;
 	}
+	public String getOwnershipTypeOthers() {
+		return ownershipTypeOthers;
+	}
 
+	public void setOwnershipTypeOthers(String ownershipTypeOthers) {
+		this.ownershipTypeOthers = ownershipTypeOthers;
+	}
 	
 	
 
