@@ -46,7 +46,7 @@ public class ProposalController {
 		// request must not be null
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue()) { 
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
