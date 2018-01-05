@@ -260,6 +260,23 @@ public class CommonController {
 			obj.put("productId", null);
 			obj.put("lastAccessAppId", null);
 		}
+		//CHECK EMAIL VERIFIED OR NOT
+		obj.put("emailVerified", false);
+		if (userType == CommonUtils.UserType.FUND_SEEKER){
+			try {
+				logger.info("Call Users Module for check user email verfied or not");
+				UserResponse response = usersClient.checkEmailVerified(usersRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(response)){
+					if(!CommonUtils.isObjectNullOrEmpty(response.getData())){
+						obj.put("emailVerified", ((Boolean) response.getData()));
+					}
+				}
+			} catch(Exception e){
+				logger.info("Throw exception while check email verified or not");
+				e.printStackTrace();
+			}
+		}
+		
 		CommonDocumentUtils.endHook(logger, "user_verification");
 		return new ResponseEntity<UserResponse>(new UserResponse(obj, "Successfully get data", HttpStatus.OK.value()),
 				HttpStatus.OK);
