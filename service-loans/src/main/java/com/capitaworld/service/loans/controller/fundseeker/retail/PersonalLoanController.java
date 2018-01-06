@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -96,4 +97,27 @@ public class PersonalLoanController {
 		}
 	}
 
+	
+	//For Client
+			@RequestMapping(value = "${primary}/get_primary_info/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+			public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId,@PathVariable("userId") Long userId) {
+				// request must not be null
+				try {
+					PrimaryPersonalLoanRequest response = primaryPersonalLoanService.get(applicationId, userId);
+					if (response != null) {
+						LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+						loansResponse.setData(response);
+						return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+					} else {
+						return new ResponseEntity<LoansResponse>(
+								new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+								HttpStatus.OK);
+					}
+				} catch (Exception e) {
+					logger.error("Error while getting Primary home loan Details from Client==>", e);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
 }

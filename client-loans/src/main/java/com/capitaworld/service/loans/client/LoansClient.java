@@ -30,10 +30,11 @@ import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 public class LoansClient {
 
@@ -120,6 +121,8 @@ public class LoansClient {
 	private static final String GET_OTHER_DOC_REPORT = "/corporate_upload/uploadDocumentList/get";
 
 	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
+	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
+	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
@@ -1229,8 +1232,23 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not availables");
 		}
 		}
-	public LoansResponse getFullHLPrimaryDetails(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL).concat("/" + applicationId + "/" + userId);
+	public LoansResponse getFullPrimaryDetails(Long applicationId,Long userId,Integer productId) throws Exception {
+		String url = null;
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+		case HOME_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL);			
+			break;
+		case PERSONAL_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_PL);			
+			break;
+		case LAP_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_LAP);			
+			break;
+		default:
+			break;
+		}
+		url = url.concat("/" + applicationId + "/" + userId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
