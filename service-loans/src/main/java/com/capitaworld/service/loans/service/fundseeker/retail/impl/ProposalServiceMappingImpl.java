@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -43,7 +43,6 @@ import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -54,8 +53,6 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
-import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -64,7 +61,6 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.OrganisationBranchData;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -114,6 +110,89 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	DecimalFormat df = new DecimalFormat("#");
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
+	
+	
+	@Override
+	public List getApprovedFs(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+
+		List proposalDetailsList = new ArrayList();
+
+		try {
+
+			// calling MATCHENGINE for getting proposal list
+
+			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
+
+			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
+			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
+				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
+						ProposalMappingRequest.class);
+
+				Long applicationId = proposalrequest.getApplicationId();
+				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+
+				if(!loanApplicationMaster.getIsActive()) {
+					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
+					continue;
+				}
+				
+				ProposalMappingRequest proposalMappingRequest=new ProposalMappingRequest();
+				BeanUtils.copyProperties(proposalrequest, proposalMappingRequest);
+
+				String loanTypeAndName=CommonUtils.LoanType.getText(loanApplicationMaster.getProductId().intValue());
+				
+				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
+						.getUserMainType(loanApplicationMaster.getProductId())) {
+
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+
+					if (corporateApplicantDetail == null)
+						continue;
+
+					if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+						proposalMappingRequest.setName("NA"+loanTypeAndName);
+					else
+						proposalMappingRequest.setName(corporateApplicantDetail.getOrganisationName()+loanTypeAndName);
+
+					proposalDetailsList.add(proposalMappingRequest);
+				} else {
+					Long fpProductId = request.getFpProductId();
+
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+
+					if (retailApplicantDetail == null)
+						continue;
+					
+					String name = "";
+
+					if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+						name += "NA";
+					else
+						name += retailApplicantDetail.getFirstName();
+
+					if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
+						name += " NA";
+					else
+						name += " " + retailApplicantDetail.getLastName();
+
+					proposalMappingRequest.setName(name+loanTypeAndName);
+
+					proposalDetailsList.add(proposalMappingRequest);
+				}
+
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return proposalDetailsList;
+	}
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {

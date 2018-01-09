@@ -2237,9 +2237,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
 			response.setApplicationId(loanApplicationMaster.getApplicationCode());
-			response.setCreateDate(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())
-					? dt.format(loanApplicationMaster.getCreatedDate())
-					: null);
+			response.setCreateDate(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate()) ? loanApplicationMaster.getCreatedDate() : null);
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
 			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
 			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
@@ -2425,7 +2423,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
 			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(absoluteAmount);
-			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			response.setCreateDate(loanApplicationMaster.getCreatedDate());
 			//pincode
 			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15){//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
@@ -2514,7 +2512,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
 				Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 				response.setAbsoluteDisplayAmount(absoluteAmount);
-				response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+				response.setCreateDate(loanApplicationMaster.getCreatedDate());
 				//pincode
 				if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
@@ -2648,7 +2646,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
 					Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 					response.setAbsoluteDisplayAmount(absoluteAmount);
-					response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+					response.setCreateDate(loanApplicationMaster.getCreatedDate());
 					//pincode
 					if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
@@ -2744,7 +2742,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
 			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(absoluteAmount);
-			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			response.setCreateDate(loanApplicationMaster.getCreatedDate());
 			//pincode
 			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
@@ -2882,7 +2880,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setFinalCount(CommonUtils.getBowlCount(loanApplicationMaster.getFinalFilledCount(), null));
 			Double absoluteAmount = CommonDocumentUtils.convertAmountInAbsolute(loanApplicationMaster.getDenominationId(), loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(absoluteAmount);
-			response.setCreateDate(loanApplicationMaster.getCreatedDate().toString());
+			response.setCreateDate(loanApplicationMaster.getCreatedDate());
 			//pincode
 			if (loanApplicationMaster.getProductId() == 1 || loanApplicationMaster.getProductId() == 2 || loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
@@ -3286,6 +3284,35 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Exit from setEligibleLoanAmount()");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	@Override
+	public void updateFlow(Long applicationId, Long clientId, Long userId) throws Exception {
+		logger.info("Entry in updateFlow()");
+		try {
+			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
+					finalUserId);
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+				logger.info("applicationMaster found null in updateFlow");
+				logger.info("Exit from updateFlow()");
+				return;
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getCampaignCode())) {
+				logger.info("Campaign Code is already null so no need to re update the row.");
+			} else {
+				applicationMaster.setCampaignCode(null);
+				applicationMaster.setModifiedBy(userId);
+				applicationMaster.setModifiedDate(new Date());
+				loanApplicationRepository.save(applicationMaster);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Coverting UBI flow to Normal");
+			logger.info("Exit from updateFlow()");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
 	}
 
 }

@@ -40,13 +40,57 @@ public class ProposalController {
 	@Autowired
 	private AsyncComponent asyncComponent;
 	
+	@RequestMapping(value = "/get_approved_fs", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List> getApprovedFs(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		// request must not be null
+		Long userId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) { 
+			userId = clientId;
+		} else {
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+		}
+		request.setUserId(userId);
+		List proposalDetailsList=proposalService.getApprovedFs(request);
+		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
+		
+	}
+	
+	
+	@RequestMapping(value = "/setDisbursed", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> setDisbursed(@RequestBody List<ProposalMappingRequest> requestList,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+		Long userId = null;
+		Long userType = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue()) {
+			userId = clientId;
+			userType = clientUserType;
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		
+		for(ProposalMappingRequest request:requestList)
+		{
+			request.setLastActionPerformedBy(userType);
+			request.setUserId(userId);
+			request.setUserType(userType);
+			proposalService.changeStatus(request);
+		}
+		
+		ProposalMappingResponse proposalResponse = new ProposalMappingResponse("proposals are successfully disbursed",
+				HttpStatus.OK.value());
+		return new ResponseEntity<ProposalMappingResponse>(proposalResponse,HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue()) { 
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -119,7 +163,7 @@ public class ProposalController {
 		}
 		
 		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
-			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);

@@ -9,7 +9,7 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	
 	private String applicationId;
 	private String email;
-	private String createDate;
+	private Date createDate;
 	private String name;
 	private String productName;
 	private String subProduct;
@@ -50,12 +50,15 @@ public class AdminPanelLoanDetailsResponse implements Serializable{
 	public void setApplicationId(String applicationId) {
 		this.applicationId = applicationId;
 	}
-	public String getCreateDate() {
+
+	public Date getCreateDate() {
 		return createDate;
 	}
-	public void setCreateDate(String createDate) {
+
+	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
 	}
+
 	public String getName() {
 		return name;
 	}

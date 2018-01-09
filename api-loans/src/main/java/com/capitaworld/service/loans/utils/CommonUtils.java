@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class CommonUtils {
 
@@ -148,6 +150,27 @@ public class CommonUtils {
 			return null;
 		}
 
+		public static String getText(Integer integer) {
+	       	   switch (integer.intValue()) {
+	       	   case 1:
+	       	    return " > Corporate > Working Capital";
+	       	   case 2:
+	       	    return " > Corporate > Term Capital";
+	       	   case 3:
+	       		   return " > Retail > Home Loan";
+	       	   case 12:
+	       		   return " > Retail > Car Loan";
+	       	   case 7:
+	       		   return " > Retail > Personal Loan";
+	       	   case 13:
+	       		   return " > Retail > LAP";
+	       	   case 14:
+	       		   return " > Retail > LAS";
+	       	   case 15:
+	       		   return " > Retail > Unsecured Loan";
+	       	   }
+	       	   return null;
+	       	  }
 	}
 
 	public interface IgnorableCopy {
@@ -386,8 +409,15 @@ public class CommonUtils {
 	}
 
 	public static String CurrencyFormat(String value) {
-		NumberFormat nf = NumberFormat.getInstance();
-		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";
+		
+		Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
+		return  format.format(new BigDecimal(value)).substring(4);
+		
+		/*Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
+		return format.format(new BigDecimal(value));*/
+		
+		/*NumberFormat nf = NumberFormat.getInstance();
+		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";*/
 	}
 
 	public static String getLoanName(Integer x) {
