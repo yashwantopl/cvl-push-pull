@@ -353,8 +353,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
 			retailApplicantDetail.setApplicationId(applicationMaster);
 			retailApplicantDetail.setOccupationId(loanEligibilityRequest.getEmploymentType());
-			retailApplicantDetail.setBirthDate(loanEligibilityRequest.getDateOfBirth());
+			if(retailApplicantDetail.getOccupationId() == 2 || retailApplicantDetail.getOccupationId() == 7){
+				retailApplicantDetail.setBirthDate(loanEligibilityRequest.getDateOfBirth());
+			}
 			retailApplicantDetail.setMonthlyIncome(loanEligibilityRequest.getIncome());
+			//VALUES ADDED FROM ADDITIONAL VALIDATION FOR LAP SHEET
+			retailApplicantDetail.setMonthlyLoanObligation(loanEligibilityRequest.getObligation());
+			if(retailApplicantDetail.getOccupationId() == 3 || retailApplicantDetail.getOccupationId() == 4 ||
+			   retailApplicantDetail.getOccupationId() == 5 || retailApplicantDetail.getOccupationId() == 6){
+				retailApplicantDetail.setBusinessStartDate(loanEligibilityRequest.getDateOfBirth());
+			}
 			retailApplicantDetail.setIsActive(true);
 			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
 			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());

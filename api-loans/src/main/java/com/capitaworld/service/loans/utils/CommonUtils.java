@@ -388,8 +388,12 @@ public class CommonUtils {
 	}
 
 	public static String CurrencyFormat(String value) {
+		
 		Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
-		return format.format(new BigDecimal(value));
+		return  format.format(new BigDecimal(value)).substring(4);
+		
+		/*Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
+		return format.format(new BigDecimal(value));*/
 		
 		/*NumberFormat nf = NumberFormat.getInstance();
 		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";*/
