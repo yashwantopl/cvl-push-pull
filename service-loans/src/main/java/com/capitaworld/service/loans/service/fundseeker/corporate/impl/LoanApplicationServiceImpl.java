@@ -282,8 +282,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * case LAS_LOAN: applicationMaster = new PrimaryLasLoanDetail(); break;
 				 */
 				case LAP_LOAN:
-					PrimaryLapLoanDetail lapLoanDetail = primaryLapLoanDetailRepository
-							.findOne(applicationMaster.getId());
+					PrimaryLapLoanDetail lapLoanDetail = primaryLapLoanDetailRepository.findOne(applicationMaster.getId());
 					lapLoanDetail.setPropertyValue(loanEligibilityRequest.getMarketValue());
 					lapLoanDetail.setPropertyType(loanEligibilityRequest.getPropertyType());
 					primaryLapLoanDetailRepository.save(lapLoanDetail);
@@ -293,14 +292,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					break;
 				case PERSONAL_LOAN:
 					// create record in fs retail applicant
+					RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
+					retailApplicantDetail.setEmployedWithId(loanEligibilityRequest.getEmploymentType());
 					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
 				case HOME_LOAN:
-					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository
-							.findOne(applicationMaster.getId());
-					primaryHomeLoanDetail.setPropertyPrice(loanEligibilityRequest.getMarketValue());
+					PrimaryHomeLoanDetail primaryHomeLoanDetail = primaryHomeLoanDetailRepository.findOne(applicationMaster.getId());
+					if(primaryHomeLoanDetail.getPropertyUsedType() == 3){
+						primaryHomeLoanDetail.setPropertyPrice(loanEligibilityRequest.getMarketValue());
+					}
+					if(primaryHomeLoanDetail.getPropertyType() == 6){
+						primaryHomeLoanDetail.setLandPlotCost(loanEligibilityRequest.getMarketValue());
+					}
 					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
-
 					// create record in fs retail applicant
 					saveRetailApplicantDetailFromLoanEligibility(applicationMaster, loanEligibilityRequest);
 					break;
@@ -328,6 +332,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailApplicantDetail.setOccupationId(loanEligibilityRequest.getEmploymentType());
 			retailApplicantDetail.setBirthDate(loanEligibilityRequest.getDateOfBirth());
 			retailApplicantDetail.setMonthlyIncome(loanEligibilityRequest.getIncome());
+			retailApplicantDetail.setMonthlyLoanObligation(loanEligibilityRequest.getObligation());
 			retailApplicantDetail.setIsActive(true);
 			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
 			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
