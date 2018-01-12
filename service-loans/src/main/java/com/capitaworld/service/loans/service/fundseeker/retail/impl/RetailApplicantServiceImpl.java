@@ -256,6 +256,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	@Override
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
 		try {
+			logger.info("start getProfile() method");
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 			if (applicantDetail == null) {
@@ -296,9 +297,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				cibilFullFillOfferRequest.setEmail(request.getEmail());
 				cibilFullFillOfferRequest.setPhoneNumber(request.getMobile());
 			}
+			logger.info("End getProfile() method with Success Execution");
 			return cibilFullFillOfferRequest;
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Error while getting Basic profile for CIBIL.");
+			logger.info("End getProfile() method with FAILURE Execution");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
