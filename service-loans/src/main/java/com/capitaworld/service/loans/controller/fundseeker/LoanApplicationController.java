@@ -1255,6 +1255,32 @@ public class LoanApplicationController {
 		}
 	}
 	
+	
+	@RequestMapping(value = "/getLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanDetails(@RequestBody Long applicationId,HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "getLoanDetails");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getLoanBasicDetails(applicationId,userId));
+			CommonDocumentUtils.endHook(logger, "getLoanDetails");
+			return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanDetails==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@RequestMapping(value = "/update_flow/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateFlow(HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId,
