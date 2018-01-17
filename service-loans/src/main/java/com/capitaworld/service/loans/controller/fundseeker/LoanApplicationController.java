@@ -1096,32 +1096,38 @@ public class LoanApplicationController {
 	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/create_loan_from_campaign/{campaignCode}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/create_loan_from_campaign", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> createLoanFromCampaign(HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId,
-			@PathVariable("campaignCode") String campaignCode) {
+			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
+			JSONObject json = new JSONObject();
 			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
-			boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
-			if (campaignCodeExist) {
-				
-				logger.info("Campaign code is already Exists==>" + campaignCode);
-				logger.info("end createLoanFromCampaign()");
+			for(String campaignCode : campaignCodes) {
+				boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
+				if (campaignCodeExist) {
+					logger.info("Campaign code is already Exists==>" + campaignCode);
+				}else {
+					LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId, campaignCode);
+					json.put("id", request2.getId());
+					json.put("productId", request2.getProductId());
+				}
+			}
+			
+			if(json.isEmpty()) {
 				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(userId);
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				JSONObject json = new JSONObject();
 				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
 					json.put("id", response.getId());
 					json.put("productId", loanApplicationService.getProductIdByApplicationId(response.getId(), userId));
-				}
-				loansResponse.setData(json);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}				
 			}
-			loansResponse.setData(loanApplicationService.saveFromCampaign(userId, clientId, campaignCode));
+			loansResponse.setData(json);
+			
 			logger.info("end createLoanFromCampaign()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -1246,6 +1252,32 @@ public class LoanApplicationController {
 			logger.error("Error while updating Eligibility Amount==>", e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	
+	@RequestMapping(value = "/getLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getLoanDetails(@RequestBody Long applicationId,HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId){
+		try {
+			CommonDocumentUtils.startHook(logger, "getLoanDetails");
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getLoanBasicDetails(applicationId,userId));
+			CommonDocumentUtils.endHook(logger, "getLoanDetails");
+			return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanDetails==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
