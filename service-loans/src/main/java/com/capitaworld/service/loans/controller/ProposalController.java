@@ -44,6 +44,9 @@ public class ProposalController {
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
+		logger.info("request.getPageIndex()::"+request.getPageIndex());
+		logger.info("request.getSize()::"+request.getSize());
+		
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
 				.intValue()) {
