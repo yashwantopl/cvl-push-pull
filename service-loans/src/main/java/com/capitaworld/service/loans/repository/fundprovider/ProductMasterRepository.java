@@ -65,4 +65,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query("select count(fpProductId) from ProductMaster pm where pm.id=:productId and pm.isActive = true")
 	public Long getActiveProductsById(@Param("productId") Long productId);
+	
+	@Query(value = "SELECT name FROM fp_product_master WHERE fp_product_id=:fpProductId", nativeQuery=true)
+	public String getFpProductName(@Param("fpProductId")Long fpProductId);
 }

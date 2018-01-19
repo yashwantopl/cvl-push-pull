@@ -6,14 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
-import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
-import com.capitaworld.service.oneform.enums.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
@@ -40,12 +38,23 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
@@ -58,6 +67,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
+import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -70,10 +80,24 @@ import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.model.Notification;
+import com.capitaworld.service.notification.model.NotificationRequest;
+import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationType;
 //import com.capitaworld.service.matchengine.model.ProposalStatusList;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CampaignCode;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
+import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -144,7 +168,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LogDetailsRepository logDetailsRepository;
-
+	
+	@Autowired
+	private NotificationClient notificationClient;
+	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -573,6 +600,85 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			applicationMaster.setIsFinalLocked(flag);
 			loanApplicationRepository.save(applicationMaster);
+			
+			//send FP notification
+			ProposalMappingRequest request = new ProposalMappingRequest();
+			request.setApplicationId(applicationId);
+			request.setProposalStatusId(MatchConstant.ProposalStatus.ACCEPT);
+			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
+			NotificationRequest notificationRequest = new NotificationRequest();
+			notificationRequest.setClientRefId(userId.toString());
+			for (int i = 0; i < response.getDataList().size(); i++) {
+				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) response.getDataList().get(i),
+						ProposalMappingRequest.class);
+
+				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+				if(!master.getIsActive()) {
+					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
+					continue;
+				}
+				UsersRequest userRequest = new UsersRequest();
+				userRequest.setId(master.getUserId());
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				// calling USER for getting fp details
+				UserResponse userResponse = userClient.getFPDetails(userRequest);
+
+//				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+//						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+//					fundProviderDetailsRequest.get
+				try {
+					if(CommonUtils.isObjectNullOrEmpty(getApplicantName(applicationId)))
+					{
+						parameters.put("fs_name", "NA");
+					}
+					else
+					{
+						parameters.put("fs_name", getApplicantName(applicationId));
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+					parameters.put("fs_name", "NA");
+				}
+//				String fpName = "";
+//				try {
+//					Object[] name = getFPName(proposalrequest.getFpProductId());
+//					if (!CommonUtils.isObjectNullOrEmpty(name[1])) {
+//						fpName = name[1].toString();
+//					} else {
+//						fpName = "NA";
+//					}
+//					
+//					parameters.put("fp_name", CommonUtils.isObjectNullOrEmpty(fpName) ? "NA" : fpName);
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//					e.printStackTrace();
+//					parameters.put("fp_name", "NA");
+//				}
+//				try {
+//					String fpPName = productMasterRepository.getFpProductName(proposalrequest.getFpProductId());
+//					if(CommonUtils.isObjectNullOrEmpty(fpPName))
+//					{
+//						parameters.put("fp_pname", "NA");
+//					}
+//					else
+//					{
+//						parameters.put("fp_pname", fpPName);
+//					}
+//					
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//					e.printStackTrace();
+//					parameters.put("fp_pname", "NA");
+//				}
+//				
+				String[] a = {master.getUserId().toString()};
+				notificationRequest.addNotification(createNotification(a, userId, 0L,NotificationAlias.SYS_FS_FINAL_LOCK, parameters, applicationId, proposalrequest.getFpProductId()));
+			}
+			notificationClient.send(notificationRequest);
+			//send FP notification end
+			
 			// create log when teaser submit
 			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 			return true;
@@ -582,6 +688,42 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
+	}
+	
+	private Object[] getFPName(Long fpMappingId){
+		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
+		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
+		return (pm != null && !pm.isEmpty()) ? pm.get(0) : null;
+	}
+	
+	private String getApplicantName(long applicationId) throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			String applicantName = getFsApplicantName(applicationId);
+			return applicantName;
+		} catch (LoansException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return "NA";
+		}
+	}
+	
+	private static Notification createNotification(String[] toIds, Long fromId, Long fromUserTypeId, Long templateId,
+			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
+
+ 		Notification notification = new Notification();
+
+		notification.setTo(toIds);
+		notification.setType(NotificationType.SYSTEM);
+		notification.setTemplateId(templateId);
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setParameters(parameters);
+		notification.setFrom(fromId.toString());
+		notification.setProductId(fpProductId);
+		notification.setApplicationId(applicationId);
+
+		return notification;
+
 	}
 
 	@Override
