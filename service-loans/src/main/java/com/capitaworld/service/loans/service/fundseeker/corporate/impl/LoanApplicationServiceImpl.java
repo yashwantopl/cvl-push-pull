@@ -602,44 +602,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.save(applicationMaster);
 			
 			//send FP notification
-//			ProposalMappingRequest request = new ProposalMappingRequest();
-//			request.setApplicationId(applicationId);
-//			request.setProposalStatusId(MatchConstant.ProposalStatus.ACCEPT);
-//			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
-//			NotificationRequest notificationRequest = new NotificationRequest();
-//			for (int i = 0; i < response.getDataList().size(); i++) {
-//				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
-//						(LinkedHashMap<String, Object>) response.getDataList().get(i),
-//						ProposalMappingRequest.class);
-//
-//				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
-//				if(!master.getIsActive()) {
-//					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
-//					continue;
-//				}
-//				UsersRequest userRequest = new UsersRequest();
-//				userRequest.setId(master.getUserId());
-//				Map<String, Object> parameters = new HashMap<String, Object>();
-//				// calling USER for getting fp details
-//				UserResponse userResponse = userClient.getFPDetails(userRequest);
-//
-////				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-////						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
-////					fundProviderDetailsRequest.get
-//				try {
-//					if(CommonUtils.isObjectNullOrEmpty(getApplicantName(applicationId)))
-//					{
-//						parameters.put("fs_name", "NA");
-//					}
-//					else
-//					{
-//						parameters.put("fs_name", getApplicantName(applicationId));
-//					}
-//
-//				} catch (Exception e) {
-//					// TODO: handle exception
-//					parameters.put("fs_name", "NA");
-//				}
+			ProposalMappingRequest request = new ProposalMappingRequest();
+			request.setApplicationId(applicationId);
+			request.setProposalStatusId(MatchConstant.ProposalStatus.ACCEPT);
+			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
+			NotificationRequest notificationRequest = new NotificationRequest();
+			notificationRequest.setClientRefId(userId.toString());
+			for (int i = 0; i < response.getDataList().size(); i++) {
+				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) response.getDataList().get(i),
+						ProposalMappingRequest.class);
+
+				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+				if(!master.getIsActive()) {
+					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
+					continue;
+				}
+				UsersRequest userRequest = new UsersRequest();
+				userRequest.setId(master.getUserId());
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				// calling USER for getting fp details
+				UserResponse userResponse = userClient.getFPDetails(userRequest);
+
+//				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+//						(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+//					fundProviderDetailsRequest.get
+				try {
+					if(CommonUtils.isObjectNullOrEmpty(getApplicantName(applicationId)))
+					{
+						parameters.put("fs_name", "NA");
+					}
+					else
+					{
+						parameters.put("fs_name", getApplicantName(applicationId));
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+					parameters.put("fs_name", "NA");
+				}
 //				String fpName = "";
 //				try {
 //					Object[] name = getFPName(proposalrequest.getFpProductId());
@@ -672,10 +673,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //					parameters.put("fp_pname", "NA");
 //				}
 //				
-//				String[] a = {master.getUserId().toString()};
-//				notificationRequest.addNotification(createNotification(a, userId, 0L,NotificationAlias.SYS_FS_ACCEPT_PUBLISHED, parameters, applicationId, proposalrequest.getFpProductId()));
-//			}
-//			notificationClient.send(notificationRequest);
+				String[] a = {master.getUserId().toString()};
+				notificationRequest.addNotification(createNotification(a, userId, 0L,NotificationAlias.SYS_FS_FINAL_LOCK, parameters, applicationId, proposalrequest.getFpProductId()));
+			}
+			notificationClient.send(notificationRequest);
 			//send FP notification end
 			
 			// create log when teaser submit
