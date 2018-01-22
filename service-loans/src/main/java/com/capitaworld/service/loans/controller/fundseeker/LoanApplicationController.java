@@ -1114,6 +1114,7 @@ public class LoanApplicationController {
 					LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId, campaignCode);
 					json.put("id", request2.getId());
 					json.put("productId", request2.getProductId());
+					json.put("isNew", true);
 				}
 			}
 			
@@ -1124,6 +1125,7 @@ public class LoanApplicationController {
 				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
 					json.put("id", response.getId());
 					json.put("productId", loanApplicationService.getProductIdByApplicationId(response.getId(), userId));
+					json.put("isNew", false);
 				}				
 			}
 			loansResponse.setData(json);
