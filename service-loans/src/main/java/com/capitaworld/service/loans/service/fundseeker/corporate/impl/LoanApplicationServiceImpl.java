@@ -46,7 +46,6 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -97,7 +96,6 @@ import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -213,6 +211,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanApplicationMaster applicationMaster = null;
 			LoanType type = CommonUtils.LoanType.getType(productId);
 			if (type == null) {
+				logger.warn("Loan Type is NULL while Creating new Loan From Campaign================>");
 				return null;
 			}
 			LoanApplicationRequest request = new LoanApplicationRequest();
@@ -222,6 +221,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setProductId(productId);
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
+			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
 			applicationMaster
 					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
