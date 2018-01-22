@@ -213,6 +213,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanApplicationMaster applicationMaster = null;
 			LoanType type = CommonUtils.LoanType.getType(productId);
 			if (type == null) {
+				logger.warn("Loan Type is NULL while Creating new Loan From Campaign================>");
 				return null;
 			}
 			LoanApplicationRequest request = new LoanApplicationRequest();
