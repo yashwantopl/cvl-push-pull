@@ -276,7 +276,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(commonRequest.getUserId());
 				applicationMaster.setModifiedDate(new Date());
-				
+				applicationMaster.setName(loanApplicationRequest.getName());
 				
 				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getTenure())) {
 					applicationMaster.setTenure(loanApplicationRequest.getTenure() * 12);
@@ -288,6 +288,31 @@ public class MobileLoanServiceImpl implements MobileService {
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
+				
+				
+				//SAVE PROFILE DETAILS
+				
+				if(CommonUtils.getUserMainType(type.getValue()) == CommonUtils.UserMainType.RETAIL) {
+					RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
+					retailApplicantDetail.setApplicationId(applicationMaster);
+					retailApplicantDetail.setOccupationId(loanApplicationRequest.getOccupationId());
+					retailApplicantDetail.setMonthlyIncome(loanApplicationRequest.getMonthlyIncome());
+					retailApplicantDetail.setAnnualTurnover(loanApplicationRequest.getAnnualTurnover());
+					retailApplicantDetail.setMonthlyLoanObligation(loanApplicationRequest.getMonthlyLoanObligation());
+					retailApplicantDetail.setBonusPerAnnum(loanApplicationRequest.getBonusPerAnnum());
+					retailApplicantDetail.setIncentivePerAnnum(loanApplicationRequest.getIncentivePerAnnum());
+					retailApplicantDetail.setOtherIncome(loanApplicationRequest.getOtherIncome());
+					retailApplicantDetail.setOtherInvestment(loanApplicationRequest.getOtherInvestment());
+					retailApplicantDetail.setTaxPaidLastYear(loanApplicationRequest.getTaxPaidLastYear());
+					retailApplicantDetail.setPermanentPincode(loanApplicationRequest.getPermanentPincode());
+					retailApplicantDetail.setEmployedWithId(loanApplicationRequest.getEmployedWithId());
+					retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
+					retailApplicantDetail.setCreatedDate(new Date());
+					retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
+					retailApplicantDetail.setModifiedDate(new Date());
+					retailApplicantDetailRepository.save(retailApplicantDetail);
+				}
+				
 				
 				
 				// for save primary details
@@ -314,8 +339,15 @@ public class MobileLoanServiceImpl implements MobileService {
 					primaryHomeLoanDetail.setPropertyPrice(loanApplicationRequest.getMarketValue());
 					primaryHomeLoanDetail.setPropertyType(loanApplicationRequest.getPropertyType());
 					primaryHomeLoanDetail.setProjectCity(loanApplicationRequest.getPropertyLocation());
+					primaryHomeLoanDetail.setLoanType(loanApplicationRequest.getLoanType());
+					primaryHomeLoanDetail.setDownPayment(loanApplicationRequest.getDownPayment());
+					primaryHomeLoanDetail.setBunglowCost(loanApplicationRequest.getBunglowCost());
+					primaryHomeLoanDetail.setConstructionCost(loanApplicationRequest.getConstructionCost());
+					primaryHomeLoanDetail.setRenovationType(loanApplicationRequest.getRenovationType());
+					primaryHomeLoanDetail.setIsLoanTaken(loanApplicationRequest.getIsLoanTaken());
+					primaryHomeLoanDetail.setMarketValProp(loanApplicationRequest.getMarketValProp());
+					primaryHomeLoanDetail.setPropertyPrice(loanApplicationRequest.getPropertyPrice());
 					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
-
 					// create record in fs retail applicant
 					saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);
 					break;
