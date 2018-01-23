@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
@@ -90,10 +91,10 @@ public class MobileLoanController {
 	}
 	
 	@RequestMapping(value="/saveApplicantDetails",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveApplicantDetails(@RequestBody MRetailApplicantResponse mRetailApplicantResponse){
+	public ResponseEntity<LoansResponse> saveApplicantDetails(@RequestBody MApplicantProfileResponse mApplicantProfileResponse){
 		logger.info("Enter in save applicant details for mobile app");
 		try {
-			Long id = mobileService.saveApplicantDetails(mRetailApplicantResponse);
+			Long id = mobileService.saveApplicantDetails(mApplicantProfileResponse);
 			logger.info("Successfully save applicant details for mobile app");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value(),id),HttpStatus.OK);
 		} catch(Exception e) {

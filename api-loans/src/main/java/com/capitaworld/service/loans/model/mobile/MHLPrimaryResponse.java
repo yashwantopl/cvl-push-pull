@@ -1,8 +1,9 @@
 package com.capitaworld.service.loans.model.mobile;
 
 
-public class MHLPrimaryResponse extends MApplicantProfileResponse {
+public class MHLPrimaryResponse{
 
+	private static final long serialVersionUID = 1L;
 	
 	private Double downPayment;
 
@@ -25,6 +26,29 @@ public class MHLPrimaryResponse extends MApplicantProfileResponse {
 	private Integer propertyUsed;
 	
 	private Double estimatedRentalIncome;
+	
+	private Double propertyPrice;
+	
+	private Integer propertyType;
+	
+	private Object data;
+	
+
+	public Integer getPropertyType() {
+		return propertyType;
+	}
+
+	public void setPropertyType(Integer propertyType) {
+		this.propertyType = propertyType;
+	}
+
+	public Double getPropertyPrice() {
+		return propertyPrice;
+	}
+
+	public void setPropertyPrice(Double propertyPrice) {
+		this.propertyPrice = propertyPrice;
+	}
 
 	public Double getDownPayment() {
 		return downPayment;
@@ -112,6 +136,14 @@ public class MHLPrimaryResponse extends MApplicantProfileResponse {
 
 	public void setEstimatedRentalIncome(Double estimatedRentalIncome) {
 		this.estimatedRentalIncome = estimatedRentalIncome;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
 	}
 	
 	
