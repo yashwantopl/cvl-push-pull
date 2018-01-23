@@ -10,7 +10,7 @@ public interface MobileService {
 
 	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception;
 	
-	public Long saveApplicantDetails(MApplicantProfileResponse mApplicantProfileResponse) throws Exception; 
+	public Long saveApplicantDetails(MRetailApplicantResponse mApplicantProfileResponse) throws Exception; 
 	
 	public MRetailCoAppGuarResponse getGuarantorDetails(MobileLoanRequest mobileUserRequest);
 	

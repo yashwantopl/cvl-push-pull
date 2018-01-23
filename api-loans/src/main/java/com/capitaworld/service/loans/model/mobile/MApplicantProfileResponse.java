@@ -35,9 +35,6 @@ public class MApplicantProfileResponse extends MobileLoanRequest{
 	private Double landSize;
 	private Integer alliedActivityId;
 	
-	private MPLPrimaryResponse mplPrimaryResponse;
-	private MLAPPrimaryResponse mlapPrimaryResponse;
-	private MHLPrimaryResponse mhlPrimaryResponse;
 	
 	private Object data;
 	
@@ -167,24 +164,6 @@ public class MApplicantProfileResponse extends MobileLoanRequest{
 	public void setIncentivePerAnnum(Double incentivePerAnnum) {
 		this.incentivePerAnnum = incentivePerAnnum;
 	}
-	public MPLPrimaryResponse getMplPrimaryResponse() {
-		return mplPrimaryResponse;
-	}
-	public void setMplPrimaryResponse(MPLPrimaryResponse mplPrimaryResponse) {
-		this.mplPrimaryResponse = mplPrimaryResponse;
-	}
-	public MLAPPrimaryResponse getMlapPrimaryResponse() {
-		return mlapPrimaryResponse;
-	}
-	public void setMlapPrimaryResponse(MLAPPrimaryResponse mlapPrimaryResponse) {
-		this.mlapPrimaryResponse = mlapPrimaryResponse;
-	}
-	public MHLPrimaryResponse getMhlPrimaryResponse() {
-		return mhlPrimaryResponse;
-	}
-	public void setMhlPrimaryResponse(MHLPrimaryResponse mhlPrimaryResponse) {
-		this.mhlPrimaryResponse = mhlPrimaryResponse;
-	}
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -245,6 +224,7 @@ public class MApplicantProfileResponse extends MobileLoanRequest{
 	public void setData(Object data) {
 		this.data = data;
 	}
+	
 	
 	
 

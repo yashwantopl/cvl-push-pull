@@ -1,9 +1,11 @@
 package com.capitaworld.service.loans.model.mobile;
 
+import java.io.Serializable;
 
-public class MHLPrimaryResponse{
+public class MHLPrimaryResponse extends MobileLoanRequest implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+	
 	
 	private Double downPayment;
 
@@ -145,6 +147,7 @@ public class MHLPrimaryResponse{
 	public void setData(Object data) {
 		this.data = data;
 	}
+
 	
 	
 	

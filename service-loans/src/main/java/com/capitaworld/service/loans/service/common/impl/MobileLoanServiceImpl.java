@@ -121,39 +121,39 @@ public class MobileLoanServiceImpl implements MobileService {
 	}
 	
 	@Override
-	public Long saveApplicantDetails(MApplicantProfileResponse mApplicantProfileResponse) throws Exception {
+	public Long saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws Exception {
 		logger.info("Save Applicant Details...");
 		RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
-		if(!CommonUtils.isObjectNullOrEmpty(mApplicantProfileResponse.getId())) {
-			retailApplicantDetail = retailApplicantDetailRepository.findOne(mApplicantProfileResponse.getId());
+		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getId())) {
+			retailApplicantDetail = retailApplicantDetailRepository.findOne(mRetailApplicantResponse.getId());
+		} else {
+			retailApplicantDetail.setApplicationId(loanApplicationRepository.findOne(mRetailApplicantResponse.getApplicationId()));
 		}
-		BeanUtils.copyProperties(mApplicantProfileResponse, retailApplicantDetail,"applicationId","userId","data");
+		BeanUtils.copyProperties(mRetailApplicantResponse, retailApplicantDetail,"applicationId","userId","data");
 		retailApplicantDetail.setModifiedDate(new Date());
-		retailApplicantDetail.setModifiedBy(mApplicantProfileResponse.getUserId());
+		retailApplicantDetail.setModifiedBy(mRetailApplicantResponse.getUserId());
 		retailApplicantDetail = retailApplicantDetailRepository.save(retailApplicantDetail);
-		if(!CommonUtils.isObjectNullOrEmpty(mApplicantProfileResponse.getProductId()) && !CommonUtils.isObjectNullOrEmpty(mApplicantProfileResponse.getData())) {
-			LoanType loantype = CommonUtils.LoanType.getType(mApplicantProfileResponse.getProductId());
+		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getProductId()) && !CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getData())) {
+			LoanType loantype = CommonUtils.LoanType.getType(mRetailApplicantResponse.getProductId());
 			if(loantype.getValue() == LoanType.HOME_LOAN.getValue()) {
 				logger.info("Start Save Applicant Home Loan Primary Details...");
-				MHLPrimaryResponse mhlPrimaryResponse = new MHLPrimaryResponse();
-				PrimaryHomeLoanDetailRequest homeLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mhlPrimaryResponse.getData(), PrimaryHomeLoanDetailRequest.class);
-				BeanUtils.copyProperties(mhlPrimaryResponse, homeLoanRequest);
-				primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mApplicantProfileResponse.getUserId());
+				PrimaryHomeLoanDetailRequest homeLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(), PrimaryHomeLoanDetailRequest.class);
+				primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mRetailApplicantResponse.getUserId());
 				
 			} else if(loantype.getValue() == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Start Save Applicant Personal Loan Primary Details...");
-				PrimaryPersonalLoanRequest personalLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mApplicantProfileResponse.getData(),PrimaryPersonalLoanRequest.class);
-				primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mApplicantProfileResponse.getUserId());
+				PrimaryPersonalLoanRequest personalLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryPersonalLoanRequest.class);
+				primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
 				
 			} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
 				logger.info("Start Save Applicant Car Loan Primary Details...");
-				PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mApplicantProfileResponse.getData(),PrimaryCarLoanDetailRequest.class);
-				primaryCarLoanService.saveOrUpdate(carLoanRequest, mApplicantProfileResponse.getUserId());
+				PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
+				primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
 				
 			} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 				logger.info("Start Save Applicant LAP Loan Primary Details...");
-				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mApplicantProfileResponse.getData(),PrimaryLapLoanDetailRequest.class);;
-				primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mApplicantProfileResponse.getUserId());
+				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);;
+				primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
 			}
 		}
 		logger.info("Saved Successfully All Profile And Primary Data For Mobile App...");

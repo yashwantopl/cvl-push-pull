@@ -91,10 +91,10 @@ public class MobileLoanController {
 	}
 	
 	@RequestMapping(value="/saveApplicantDetails",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveApplicantDetails(@RequestBody MApplicantProfileResponse mApplicantProfileResponse){
+	public ResponseEntity<LoansResponse> saveApplicantDetails(@RequestBody MRetailApplicantResponse mRetailApplicantResponse){
 		logger.info("Enter in save applicant details for mobile app");
 		try {
-			Long id = mobileService.saveApplicantDetails(mApplicantProfileResponse);
+			Long id = mobileService.saveApplicantDetails(mRetailApplicantResponse);
 			logger.info("Successfully save applicant details for mobile app");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value(),id),HttpStatus.OK);
 		} catch(Exception e) {

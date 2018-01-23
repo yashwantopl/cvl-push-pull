@@ -547,12 +547,12 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse saveApplicantDetails(MApplicantProfileResponse mApplicantProfileResponse) throws LoansException {
+	public LoansResponse saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_SAVE_APPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<MApplicantProfileResponse> entity = new HttpEntity<MApplicantProfileResponse>(mApplicantProfileResponse, headers);
+			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(mRetailApplicantResponse, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
