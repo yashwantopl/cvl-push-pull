@@ -9,7 +9,6 @@ public class MRetailApplicantResponse extends MobileLoanRequest implements Seria
 
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
 	private Integer titleId;
 	private String firstName;
 	private String middleName;
@@ -38,17 +37,25 @@ public class MRetailApplicantResponse extends MobileLoanRequest implements Seria
 	//agriculture
 	private Double landSize;
 	private Integer alliedActivityId;
+
+	//EXTRA FIELDS
+	private String spouseName;
+	private Boolean isSpouseEmployed;
+	private Integer highestQualification;
+	private String highestQualificationOther;
+	private Integer qualifyingYear;
+	private Double residingYear;
+	private Double residingMonth;
+	private Double otherIncome;
+	private Double otherInvestment;
+	private Double taxPaidLastYear;
+	private Double bonusPerAnnum;
+	private Double incentivePerAnnum;
 	
 	private Object data;
 	
 	
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public Integer getTitleId() {
 		return titleId;
 	}
@@ -163,6 +170,78 @@ public class MRetailApplicantResponse extends MobileLoanRequest implements Seria
 	}
 	public void setAadharNumber(String aadharNumber) {
 		this.aadharNumber = aadharNumber;
+	}
+	public String getSpouseName() {
+		return spouseName;
+	}
+	public void setSpouseName(String spouseName) {
+		this.spouseName = spouseName;
+	}
+	public Boolean getIsSpouseEmployed() {
+		return isSpouseEmployed;
+	}
+	public void setIsSpouseEmployed(Boolean isSpouseEmployed) {
+		this.isSpouseEmployed = isSpouseEmployed;
+	}
+	public Integer getHighestQualification() {
+		return highestQualification;
+	}
+	public void setHighestQualification(Integer highestQualification) {
+		this.highestQualification = highestQualification;
+	}
+	public String getHighestQualificationOther() {
+		return highestQualificationOther;
+	}
+	public void setHighestQualificationOther(String highestQualificationOther) {
+		this.highestQualificationOther = highestQualificationOther;
+	}
+	public Integer getQualifyingYear() {
+		return qualifyingYear;
+	}
+	public void setQualifyingYear(Integer qualifyingYear) {
+		this.qualifyingYear = qualifyingYear;
+	}
+	public Double getResidingYear() {
+		return residingYear;
+	}
+	public void setResidingYear(Double residingYear) {
+		this.residingYear = residingYear;
+	}
+	public Double getResidingMonth() {
+		return residingMonth;
+	}
+	public void setResidingMonth(Double residingMonth) {
+		this.residingMonth = residingMonth;
+	}
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+	public Double getOtherInvestment() {
+		return otherInvestment;
+	}
+	public void setOtherInvestment(Double otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+	public Double getTaxPaidLastYear() {
+		return taxPaidLastYear;
+	}
+	public void setTaxPaidLastYear(Double taxPaidLastYear) {
+		this.taxPaidLastYear = taxPaidLastYear;
+	}
+	public Double getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+	public void setBonusPerAnnum(Double bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+	public Double getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+	public void setIncentivePerAnnum(Double incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
 	}
 	
 	

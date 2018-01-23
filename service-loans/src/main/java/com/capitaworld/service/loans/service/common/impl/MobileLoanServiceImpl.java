@@ -22,6 +22,8 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
+import com.capitaworld.service.loans.model.mobile.MHLPrimaryResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFrameDetailsRequest;
@@ -124,6 +126,8 @@ public class MobileLoanServiceImpl implements MobileService {
 		RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
 		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getId())) {
 			retailApplicantDetail = retailApplicantDetailRepository.findOne(mRetailApplicantResponse.getId());
+		} else {
+			retailApplicantDetail.setApplicationId(loanApplicationRepository.findOne(mRetailApplicantResponse.getApplicationId()));
 		}
 		BeanUtils.copyProperties(mRetailApplicantResponse, retailApplicantDetail,"applicationId","userId","data");
 		retailApplicantDetail.setModifiedDate(new Date());

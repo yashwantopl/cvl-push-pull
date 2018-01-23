@@ -1,10 +1,9 @@
 package com.capitaworld.service.loans.model.mobile;
 
 
-public class MApplicantProfileResponse {
+public class MApplicantProfileResponse extends MobileLoanRequest{
+	private static final long serialVersionUID = 1L;
 	
-	private Long id;
-	private Long applicationId;
 	private Integer titleId;
 	private String firstName;
 	private String middleName;
@@ -14,25 +13,31 @@ public class MApplicantProfileResponse {
 	private String spouseName;
 	private Boolean isSpouseEmployed;
 	private Integer highestQualification;
+	private String highestQualificationOther;
 	private Integer qualifyingYear;
 	private Integer occupationId;
 	private String pan;
 	private String aadharNumber;
 	private Double residingYear;
 	private Double residingMonth;
+	private Double otherIncome;
+	private Double otherInvestment;
+	private Double taxPaidLastYear;
+	private Double bonusPerAnnum;
+	private Double incentivePerAnnum;
+	private String companyName;
+	private Long employedWithId;
+	private String entityName;
+	private Integer industryTypeId;
+	private String industryTypeOther;
+	private Integer selfEmployedOccupationId;
+	private String selfEmployedOccupationOther;
+	private Double landSize;
+	private Integer alliedActivityId;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Long getApplicationId() {
-		return applicationId;
-	}
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
-	}
+	
+	private Object data;
+	
 	public Integer getTitleId() {
 		return titleId;
 	}
@@ -123,9 +128,102 @@ public class MApplicantProfileResponse {
 	public void setResidingMonth(Double residingMonth) {
 		this.residingMonth = residingMonth;
 	}
-	
-	
-	
+	public String getHighestQualificationOther() {
+		return highestQualificationOther;
+	}
+	public void setHighestQualificationOther(String highestQualificationOther) {
+		this.highestQualificationOther = highestQualificationOther;
+	}
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
+	}
+	public Double getOtherInvestment() {
+		return otherInvestment;
+	}
+	public void setOtherInvestment(Double otherInvestment) {
+		this.otherInvestment = otherInvestment;
+	}
+	public Double getTaxPaidLastYear() {
+		return taxPaidLastYear;
+	}
+	public void setTaxPaidLastYear(Double taxPaidLastYear) {
+		this.taxPaidLastYear = taxPaidLastYear;
+	}
+	public Double getBonusPerAnnum() {
+		return bonusPerAnnum;
+	}
+	public void setBonusPerAnnum(Double bonusPerAnnum) {
+		this.bonusPerAnnum = bonusPerAnnum;
+	}
+	public Double getIncentivePerAnnum() {
+		return incentivePerAnnum;
+	}
+	public void setIncentivePerAnnum(Double incentivePerAnnum) {
+		this.incentivePerAnnum = incentivePerAnnum;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public Long getEmployedWithId() {
+		return employedWithId;
+	}
+	public void setEmployedWithId(Long employedWithId) {
+		this.employedWithId = employedWithId;
+	}
+	public String getEntityName() {
+		return entityName;
+	}
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+	public Integer getIndustryTypeId() {
+		return industryTypeId;
+	}
+	public void setIndustryTypeId(Integer industryTypeId) {
+		this.industryTypeId = industryTypeId;
+	}
+	public String getIndustryTypeOther() {
+		return industryTypeOther;
+	}
+	public void setIndustryTypeOther(String industryTypeOther) {
+		this.industryTypeOther = industryTypeOther;
+	}
+	public Integer getSelfEmployedOccupationId() {
+		return selfEmployedOccupationId;
+	}
+	public void setSelfEmployedOccupationId(Integer selfEmployedOccupationId) {
+		this.selfEmployedOccupationId = selfEmployedOccupationId;
+	}
+	public String getSelfEmployedOccupationOther() {
+		return selfEmployedOccupationOther;
+	}
+	public void setSelfEmployedOccupationOther(String selfEmployedOccupationOther) {
+		this.selfEmployedOccupationOther = selfEmployedOccupationOther;
+	}
+	public Double getLandSize() {
+		return landSize;
+	}
+	public void setLandSize(Double landSize) {
+		this.landSize = landSize;
+	}
+	public Integer getAlliedActivityId() {
+		return alliedActivityId;
+	}
+	public void setAlliedActivityId(Integer alliedActivityId) {
+		this.alliedActivityId = alliedActivityId;
+	}
+	public Object getData() {
+		return data;
+	}
+	public void setData(Object data) {
+		this.data = data;
+	}
 	
 	
 	
