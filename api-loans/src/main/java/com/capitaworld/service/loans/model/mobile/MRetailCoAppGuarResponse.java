@@ -5,7 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MRetailCoAppGuarResponse extends MRetailApplicantResponse{
+public class MRetailCoAppGuarResponse extends MApplicantProfileResponse{
 
 	private static final long serialVersionUID = 1L;
 	
