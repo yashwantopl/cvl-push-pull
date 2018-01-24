@@ -1,8 +1,10 @@
 package com.capitaworld.service.loans.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
@@ -10,7 +12,7 @@ import java.io.Serializable;
  * 
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PromotorBackgroundDetailRequest implements Serializable {
+public class DirectorBackgroundDetailRequest implements Serializable {
 
 	/**
 	 * 
@@ -30,10 +32,17 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	private Long applicationId;
 
 	private Integer salutationId;
+	
+	private Double din;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date appointmentDate;
+	
+	private String designation;
 
 	private String panNo;
 
-	private String promotorsName;
+	private String directorsName;
 
 	private String qualification;
 
@@ -52,7 +61,7 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public PromotorBackgroundDetailRequest() {
+	public DirectorBackgroundDetailRequest() {
 	}
 
 	public Long getId() {
@@ -111,12 +120,14 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 		this.panNo = panNo;
 	}
 
-	public String getPromotorsName() {
-		return this.promotorsName;
+	
+
+	public String getDirectorsName() {
+		return directorsName;
 	}
 
-	public void setPromotorsName(String promotorsName) {
-		this.promotorsName = promotorsName;
+	public void setDirectorsName(String directorsName) {
+		this.directorsName = directorsName;
 	}
 
 	public String getQualification() {
@@ -142,6 +153,31 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
+
+	public Double getDin() {
+		return din;
+	}
+
+	public void setDin(Double din) {
+		this.din = din;
+	}
+
+	public Date getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
 	
 	
 
