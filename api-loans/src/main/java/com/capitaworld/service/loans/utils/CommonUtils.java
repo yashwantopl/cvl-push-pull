@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.utils;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.Format;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -150,27 +149,6 @@ public class CommonUtils {
 			return null;
 		}
 
-		public static String getText(Integer integer) {
-	       	   switch (integer.intValue()) {
-	       	   case 1:
-	       	    return " > Corporate > Working Capital";
-	       	   case 2:
-	       	    return " > Corporate > Term Capital";
-	       	   case 3:
-	       		   return " > Retail > Home Loan";
-	       	   case 12:
-	       		   return " > Retail > Car Loan";
-	       	   case 7:
-	       		   return " > Retail > Personal Loan";
-	       	   case 13:
-	       		   return " > Retail > LAP";
-	       	   case 14:
-	       		   return " > Retail > LAS";
-	       	   case 15:
-	       		   return " > Retail > Unsecured Loan";
-	       	   }
-	       	   return null;
-	       	  }
 	}
 
 	public interface IgnorableCopy {

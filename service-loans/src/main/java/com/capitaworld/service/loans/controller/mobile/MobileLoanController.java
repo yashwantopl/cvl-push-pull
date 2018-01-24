@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
@@ -34,6 +35,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.enums.ProductServicesPerse;
 
 
@@ -305,6 +307,29 @@ public class MobileLoanController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
+	}
+	
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> changeStatus(@RequestBody MobileFPMatchesRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+		logger.info("Enter in mobile change status API");
+		try {
+			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+			proposalMappingRequest.setId(request.getId());
+			proposalMappingRequest.setProposalStatusId(request.getProposalStatusId());
+			proposalMappingRequest.setLastActionPerformedBy(request.getUserType());
+			proposalMappingRequest.setUserId(request.getUserType());
+			ProposalMappingResponse changeStatus = proposalService.changeStatus(proposalMappingRequest);
+			LoansResponse response = new LoansResponse(changeStatus.getMessage(), changeStatus.getStatus(), changeStatus.getData());
+			logger.info("Successfully response from match-engine");
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.warn("Error While change mobile matches status");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
 	}
 	
 	

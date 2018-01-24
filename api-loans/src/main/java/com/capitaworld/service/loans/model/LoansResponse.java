@@ -28,6 +28,7 @@ public class LoansResponse implements Serializable{
 	
 	private byte[] contentInBytes;
 	
+	private Boolean flag;
 	
 	
 
@@ -117,5 +118,15 @@ public class LoansResponse implements Serializable{
 	public void setListData(List<?> listData) {
 		this.listData = listData;
 	}
+
+	public Boolean getFlag() {
+		return flag;
+	}
+
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
+	}
+	
+	
 	
 }
