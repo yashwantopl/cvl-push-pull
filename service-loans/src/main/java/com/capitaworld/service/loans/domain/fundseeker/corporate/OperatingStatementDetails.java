@@ -184,6 +184,29 @@ public class OperatingStatementDetails implements Serializable {
 	
 	@Column(name="storage_details_id")
 	private Long storageDetailsId;
+	
+	@Column(name="selling_distribution_exp")
+	private Double sellingDistributionExp;
+	
+	@Column(name="general_admin_exp")
+	private Double generalAdminExp;
+
+
+	public Double getSellingDistributionExp() {
+		return sellingDistributionExp;
+	}
+
+	public Double getGeneralAdminExp() {
+		return generalAdminExp;
+	}
+
+	public void setSellingDistributionExp(Double sellingDistributionExp) {
+		this.sellingDistributionExp = sellingDistributionExp;
+	}
+
+	public void setGeneralAdminExp(Double generalAdminExp) {
+		this.generalAdminExp = generalAdminExp;
+	}
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne

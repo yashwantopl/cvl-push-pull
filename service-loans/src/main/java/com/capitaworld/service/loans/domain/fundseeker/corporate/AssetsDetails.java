@@ -177,6 +177,30 @@ public class AssetsDetails implements Serializable {
 
 	@Column(name="total_term_liability")
 	private Double totalTermLiability;
+	
+	@Column(name="land_building")
+	private Double landBuilding;
+	
+	@Column(name="plant_machines")
+	private Double plantMachines;
+
+	
+	
+	public Double getLandBuilding() {
+		return landBuilding;
+	}
+
+	public Double getPlantMachines() {
+		return plantMachines;
+	}
+
+	public void setLandBuilding(Double landBuilding) {
+		this.landBuilding = landBuilding;
+	}
+
+	public void setPlantMachines(Double plantMachines) {
+		this.plantMachines = plantMachines;
+	}
 
 	private String year;
 	
