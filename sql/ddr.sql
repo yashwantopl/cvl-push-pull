@@ -81,6 +81,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_creditors_details` (
 `fs_ddr_form_id`  bigint(20) NOT NULL,
 `name`  varchar(255) DEFAULT NULL,
 `amount`  double DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -92,6 +96,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_office_details` (
 `area_in_sqft` varchar(255) DEFAULT NULL,
 `no_employee` int(20) DEFAULT NULL,
 `any_other_showroom` varchar(255) DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
 `office_type` int(20) DEFAULT NULL,
  PRIMARY KEY  (`id`)
@@ -105,6 +113,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_authorized_sign_details` (
 `name` varchar(255) DEFAULT NULL,
 `designation` varchar(255) DEFAULT NULL,
 `document_obtained` varchar(255) DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -116,6 +128,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_vehicles_owned_details` (
 `bank_name` varchar(255) DEFAULT NULL,
 `vehicles_owned` double DEFAULT NULL,
 `reference_no` varchar(255) DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -128,6 +144,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_rel_with_dbs_details` (
 `type_of_rel` varchar(255) DEFAULT NULL,
 `reference_no` double DEFAULT NULL,
 `comment` TEXT DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -140,6 +160,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_other_bank_loan_details` (
 `type_of_rel` varchar(255) DEFAULT NULL,
 `reference_no` double DEFAULT NULL,
 `comment` TEXT DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -152,6 +176,10 @@ CREATE TABLE `loan_applications`.`fs_ddr_credit_card_details` (
 `bank_name` varchar(255) DEFAULT NULL,
 `credit_card` double DEFAULT NULL,
 `reference_no` varchar(255) DEFAULT NULL,
+`created_by`  bigint(20) DEFAULT NULL,
+`created_date`  datetime DEFAULT NULL,
+`modify_by` bigint(20) DEFAULT NULL,
+`modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
