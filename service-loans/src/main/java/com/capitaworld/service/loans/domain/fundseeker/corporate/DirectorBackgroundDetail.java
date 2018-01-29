@@ -23,8 +23,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  * 
  */
 @Entity
-@Table(name="fs_corporate_promotor_background_details")
-public class PromotorBackgroundDetail implements Serializable {
+@Table(name="fs_corporate_director_background_details")
+public class DirectorBackgroundDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -38,6 +38,9 @@ public class PromotorBackgroundDetail implements Serializable {
 	private String address;
 
 	private Double age;
+	
+	private Double din;
+
 
 	private Double networth;
 	
@@ -61,15 +64,22 @@ public class PromotorBackgroundDetail implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="appointment_date")
+	private Date appointmentDate;
 
 	@Column(name="salutation_id")
 	private Integer salutationId;
 
 	@Column(name="pan_no")
 	private String panNo;
+	
+	@Column(name="designation")
+	private String designation;
 
-	@Column(name="promotors_name")
-	private String promotorsName;
+	@Column(name="directors_name")
+	private String directorsName;
 
 	@Lob
 	private String qualification;
@@ -77,7 +87,7 @@ public class PromotorBackgroundDetail implements Serializable {
 	@Column(name="total_experience")
 	private Double totalExperience;
 
-	public PromotorBackgroundDetail() {
+	public DirectorBackgroundDetail() {
 	}
 
 	public Long getId() {
@@ -176,12 +186,13 @@ public class PromotorBackgroundDetail implements Serializable {
 		this.panNo = panNo;
 	}
 
-	public String getPromotorsName() {
-		return this.promotorsName;
+
+	public String getDirectorsName() {
+		return directorsName;
 	}
 
-	public void setPromotorsName(String promotorsName) {
-		this.promotorsName = promotorsName;
+	public void setDirectorsName(String directorsName) {
+		this.directorsName = directorsName;
 	}
 
 	public String getQualification() {
@@ -207,6 +218,32 @@ public class PromotorBackgroundDetail implements Serializable {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
+
+	public Double getDin() {
+		return din;
+	}
+
+	public void setDin(Double din) {
+		this.din = din;
+	}
+
+	public Date getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	
 	
 	
 

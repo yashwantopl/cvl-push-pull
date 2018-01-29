@@ -34,6 +34,8 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	private Double pat;
 
 	private Double sales;
+	
+	private Double contingentLiability;
 
 	private Boolean isActive = true;
 
@@ -154,5 +156,15 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	public void setSales(Double sales) {
 		this.sales = sales;
 	}
+
+	public Double getContingentLiability() {
+		return contingentLiability;
+	}
+
+	public void setContingentLiability(Double contingentLiability) {
+		this.contingentLiability = contingentLiability;
+	}
+	
+	
 
 }

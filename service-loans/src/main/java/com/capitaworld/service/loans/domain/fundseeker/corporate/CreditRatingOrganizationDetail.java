@@ -56,6 +56,13 @@ public class CreditRatingOrganizationDetail implements Serializable {
 	@Lob
 	@Column(name="facility_name")
 	private String facilityName;
+	
+	@Column(name="entity_name")
+	private String entityName;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "rating_date")
+	private Date ratingDate;
 
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -178,5 +185,23 @@ public class CreditRatingOrganizationDetail implements Serializable {
 	public void setRatingAgencyId(Integer ratingAgencyId) {
 		this.ratingAgencyId = ratingAgencyId;
 	}
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+
+	public Date getRatingDate() {
+		return ratingDate;
+	}
+
+	public void setRatingDate(Date ratingDate) {
+		this.ratingDate = ratingDate;
+	}
+	
+	
 
 }

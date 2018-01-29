@@ -249,6 +249,127 @@ public class BalanceSheetDetail implements Serializable {
 
 	@Column(name="unsecured_loans_from_promoters")
 	private double unsecuredLoansFromPromoters;
+	
+	@Column(name="money_received_against_share_warrants")
+	private double moneyReceivedAgainstShareWarrants;
+	
+	@Column(name="minority_interest")
+	private double minorityInterest;
+	
+	@Column(name="term_loans_secured")
+	private double termLoansSecured;
+	
+	@Column(name="term_loans_unsecured")
+	private double termLoansUnsecured;
+	
+	@Column(name="unsecured_loans_from_others")
+	private double unsecuredLoansFromOthers;
+	
+	@Column(name="current_liabilities_secured")
+	private double currentLiabilitiesSecured;
+	
+	@Column(name="current_liabilities_unsecured")
+	private double currentLiabilitiesUnsecured;
+	
+	@Column(name="impairments_of_assests")
+	private double impairmentsOfAssests;
+	
+	@Column(name="pre_operative_expenses_pending")
+	private double preOperativeExpensesPending;
+	
+	@Column(name="assets_in_transit")
+	private double assetsInTransit;
+	
+	@Column(name="cash_and_cash_equivalents")
+	private double cashAndCashEquivalents;
+	
+	public double getMoneyReceivedAgainstShareWarrants() {
+		return moneyReceivedAgainstShareWarrants;
+	}
+
+	public double getMinorityInterest() {
+		return minorityInterest;
+	}
+
+	public double getTermLoansSecured() {
+		return termLoansSecured;
+	}
+
+	public double getTermLoansUnsecured() {
+		return termLoansUnsecured;
+	}
+
+	public double getUnsecuredLoansFromOthers() {
+		return unsecuredLoansFromOthers;
+	}
+
+	public double getCurrentLiabilitiesSecured() {
+		return currentLiabilitiesSecured;
+	}
+
+	public double getCurrentLiabilitiesUnsecured() {
+		return currentLiabilitiesUnsecured;
+	}
+
+	public double getImpairmentsOfAssests() {
+		return impairmentsOfAssests;
+	}
+
+	public double getPreOperativeExpensesPending() {
+		return preOperativeExpensesPending;
+	}
+
+	public double getAssetsInTransit() {
+		return assetsInTransit;
+	}
+
+	public double getCashAndCashEquivalents() {
+		return cashAndCashEquivalents;
+	}
+
+	public void setMoneyReceivedAgainstShareWarrants(double moneyReceivedAgainstShareWarrants) {
+		this.moneyReceivedAgainstShareWarrants = moneyReceivedAgainstShareWarrants;
+	}
+
+	public void setMinorityInterest(double minorityInterest) {
+		this.minorityInterest = minorityInterest;
+	}
+
+	public void setTermLoansSecured(double termLoansSecured) {
+		this.termLoansSecured = termLoansSecured;
+	}
+
+	public void setTermLoansUnsecured(double termLoansUnsecured) {
+		this.termLoansUnsecured = termLoansUnsecured;
+	}
+
+	public void setUnsecuredLoansFromOthers(double unsecuredLoansFromOthers) {
+		this.unsecuredLoansFromOthers = unsecuredLoansFromOthers;
+	}
+
+	public void setCurrentLiabilitiesSecured(double currentLiabilitiesSecured) {
+		this.currentLiabilitiesSecured = currentLiabilitiesSecured;
+	}
+
+	public void setCurrentLiabilitiesUnsecured(double currentLiabilitiesUnsecured) {
+		this.currentLiabilitiesUnsecured = currentLiabilitiesUnsecured;
+	}
+
+	public void setImpairmentsOfAssests(double impairmentsOfAssests) {
+		this.impairmentsOfAssests = impairmentsOfAssests;
+	}
+
+	public void setPreOperativeExpensesPending(double preOperativeExpensesPending) {
+		this.preOperativeExpensesPending = preOperativeExpensesPending;
+	}
+
+	public void setAssetsInTransit(double assetsInTransit) {
+		this.assetsInTransit = assetsInTransit;
+	}
+
+	public void setCashAndCashEquivalents(double cashAndCashEquivalents) {
+		this.cashAndCashEquivalents = cashAndCashEquivalents;
+	}
 
 	private String year;
 	
