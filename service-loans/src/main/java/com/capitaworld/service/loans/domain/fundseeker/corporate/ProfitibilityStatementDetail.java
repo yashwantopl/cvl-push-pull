@@ -193,6 +193,15 @@ public class ProfitibilityStatementDetail implements Serializable {
 
 	@Column(name="store_and_spares_indeigenous")
 	private double storeAndSparesIndeigenous;
+	
+	@Column(name="general_admin_expenses")
+	private double generalAdminExpenses;
+
+	@Column(name="selling_distribution_expenses")
+	private double sellingDistributionExpenses;
+
+	@Column(name="expenses_capitalised")
+	private double expensesCapitalised;
 
 	private String year;
 	
