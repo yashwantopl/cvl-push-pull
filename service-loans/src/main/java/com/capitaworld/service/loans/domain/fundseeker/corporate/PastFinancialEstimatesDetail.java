@@ -69,6 +69,9 @@ public class PastFinancialEstimatesDetail implements Serializable {
 
 	@Column(name="net_worth")
 	private Double netWorth;
+	
+	@Column(name="contingent_liability")
+	private Double contingentLiability;
 
 	private Double pat;
 
@@ -204,5 +207,15 @@ public class PastFinancialEstimatesDetail implements Serializable {
 	public void setSales(Double sales) {
 		this.sales = sales;
 	}
+
+	public Double getContingentLiability() {
+		return contingentLiability;
+	}
+
+	public void setContingentLiability(Double contingentLiability) {
+		this.contingentLiability = contingentLiability;
+	}
+	
+	
 
 }
