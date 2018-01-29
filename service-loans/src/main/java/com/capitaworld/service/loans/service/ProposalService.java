@@ -30,6 +30,4 @@ public interface ProposalService {
 	
 	public Integer getPendingProposalCount(Long applicationId);
 	
-	public List getApprovedFs(ProposalMappingRequest request);
-	
 }

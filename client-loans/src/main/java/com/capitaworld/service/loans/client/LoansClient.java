@@ -25,15 +25,17 @@ import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 public class LoansClient {
 
@@ -107,6 +109,7 @@ public class LoansClient {
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
 	private static final String MOBILE_GET_FS_MATCHES_LIST = "/mobile/fundSeekerProposal";
+	private static final String MOBILE_CHANGE_STATUS = "/mobile/changeStatus";
 
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
@@ -120,6 +123,8 @@ public class LoansClient {
 	private static final String GET_OTHER_DOC_REPORT = "/corporate_upload/uploadDocumentList/get";
 
 	private static final String GET_FULL_PRIMARY_HL = "/home/primary/get_primary_info";
+	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
+	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
@@ -542,12 +547,12 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse saveApplicantDetails(MRetailApplicantResponse response) throws LoansException {
+	public LoansResponse saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_SAVE_APPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(response, headers);
+			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(mRetailApplicantResponse, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
@@ -1171,6 +1176,19 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
 		}
 	}
+	
+	public LoansResponse changeStatus(MobileFPMatchesRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_CHANGE_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+		}
+	}
 
 	public LoansResponse getCreateCampaignLoan(Long userId, String code) throws ExcelException {
 		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "/" + userId + "/" + code;
@@ -1229,8 +1247,23 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not availables");
 		}
 		}
-	public LoansResponse getFullHLPrimaryDetails(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL).concat("/" + applicationId + "/" + userId);
+	public LoansResponse getFullPrimaryDetails(Long applicationId,Long userId,Integer productId) throws Exception {
+		String url = null;
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+		case HOME_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_HL);			
+			break;
+		case PERSONAL_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_PL);			
+			break;
+		case LAP_LOAN:
+			url = loansBaseUrl.concat(GET_FULL_PRIMARY_LAP);			
+			break;
+		default:
+			break;
+		}
+		url = url.concat("/" + applicationId + "/" + userId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
