@@ -28,6 +28,12 @@ public class PrimaryUnsecuredLoanDetail extends LoanApplicationMaster implements
 	@Lob
 	@Column(name = "purpose_of_loan")
 	private String purposeOfLoan;
+	
+	@Column(name = "share_price_face_value")
+	private Double sharePriceFace;
+	
+	@Column(name = "share_price_market_value")
+	private Double sharePriceMarket;
 
 	public LoanApplicationMaster getApplicationId() {
 		return applicationId;
@@ -51,6 +57,22 @@ public class PrimaryUnsecuredLoanDetail extends LoanApplicationMaster implements
 
 	public void setPurposeOfLoan(String purposeOfLoan) {
 		this.purposeOfLoan = purposeOfLoan;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
 	}
 
 	

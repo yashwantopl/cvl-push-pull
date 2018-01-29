@@ -22,6 +22,9 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 	private Double totalCostOfEstimate;
 	private Double totalMeansOfFinance;
 	private Double totalCollateralDetails;
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
+	
 	private List<Long> negativeList=Collections.emptyList();
 	
 	public PrimaryTermLoanRequest() {
@@ -83,4 +86,21 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 		this.negativeList = negativeList;
 	}
 
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+	
+	
 }
