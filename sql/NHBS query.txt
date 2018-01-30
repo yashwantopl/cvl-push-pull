@@ -1,0 +1,79 @@
+ALTER TABLE `loan_applications`.`fs_corporate_promotor_background_details`
+ADD COLUMN networth DOUBLE;
+
+DROP TABLE IF EXISTS `loan_applications`.`fs_corporate_director_background_details`;
+
+CREATE TABLE `loan_applications`.`fs_corporate_director_background_details` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `pan_no` varchar(10) DEFAULT NULL,
+  `address` text,
+  `age` double DEFAULT NULL,
+  `directors_name` varchar(50) DEFAULT NULL,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `qualification` text,
+  `total_experience` double DEFAULT NULL,
+  `achivements` text,
+  `salutation_id` int(2) unsigned DEFAULT NULL,
+  `created_date` datetime NOT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT b'1',
+  `networth` double DEFAULT NULL,
+  `din` double DEFAULT NULL,
+  `designation` varchar(20) DEFAULT NULL,
+  `appointment_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  CONSTRAINT `fs_corporate_director_background_details_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_past_financial_estimates_details`
+ADD COLUMN contingent_liability DOUBLE;
+
+DROP TABLE IF EXISTS `one_form`.`loan_type_nature_facility`;
+
+CREATE TABLE `one_form`.`loan_type_nature_facility` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `value` varchar(100) DEFAULT NULL,
+  `credit_rating_fund` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `credit_rating_fund` (`credit_rating_fund`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+/*Data for the table `loan_type_nature_facility` */
+
+insert  into `one_form`.`loan_type_nature_facility`(`id`,`value`,`credit_rating_fund`) values (1,'Term Loan',2),(2,'Working Capital – CC',2),(3,'Working Capital - OD',2),(4,'Unsecured Loan',2),(5,'Demand Loan',2),(6,'Bank Guarantee',3),(7,'Letter of Credit',3),(8,'Export Credit',3),(9,'Packing Credit\r\n',3),(10,'Bill Discounting\r\n',3);
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_current_financial_arrangements_details`
+ADD COLUMN loan_date DATETIME,
+ADD COLUMN loan_type INT(2),
+ADD COLUMN lender_type INT(2),
+ADD COLUMN outstanding_amount DOUBLE,
+ADD COLUMN security_details VARCHAR(100),
+ADD COLUMN relationship_since INT(4)
+;
+
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_credit_rating_organization_details`
+ADD COLUMN rating_date DATETIME,
+
+ADD COLUMN entity_name VARCHAR(100)
+
+;
+
+
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_associated_concern_details` ADD name_of_director VARCHAR(255);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_wc_loan_details` ADD share_price_face_value DOUBLE(25,2);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_wc_loan_details` ADD share_price_market_value DOUBLE(25,2);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_term_loan_details` ADD share_price_face_value DOUBLE(25,2);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_term_loan_details` ADD share_price_market_value DOUBLE(25,2);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_unsecured_loan_details` ADD share_price_face_value DOUBLE(25,2);
+ALTER TABLE `loan_applications`.`fs_corporate_primary_unsecured_loan_details` ADD share_price_market_value DOUBLE(25,2);
