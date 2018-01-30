@@ -183,9 +183,112 @@ public class AssetsDetails implements Serializable {
 	
 	@Column(name="plant_machines")
 	private Double plantMachines;
+	
+	
+	@Column(name="impairment_asset")
+	private Double impairmentAsset;
+	
+	@Column(name="others_pre_operative_expenses_pending")
+	private Double othersPreOperativeExpensesPending;
+	
+	@Column(name="others_assets_in_transit")
+	private Double othersAssetsInTransit;
+	
+	
+	@Column(name="others_other")
+	private Double othersOther;
+	
 
+	@Column(name="total_other_nca_patent")
+	private Double totalOtherNcaPatent;
+	
+	@Column(name="total_other_nca_goodwill")
+	private Double totalOtherNcaGoodwill;
+	
+	@Column(name="total_other_nca_prelimnary_expenses")
+	private Double totalOtherNcaPrelimnaryExpenses;
+	
+	@Column(name="total_other_nca_bad_expenses")
+	private Double totalOtherNcaBadExpenses;
+	
+	@Column(name="total_other_nca_other")
+	private Double totalOtherNcaOther;
 	
 	
+	
+	
+	public Double getImpairmentAsset() {
+		return impairmentAsset;
+	}
+
+	public Double getOthersPreOperativeExpensesPending() {
+		return othersPreOperativeExpensesPending;
+	}
+
+	public Double getOthersAssetsInTransit() {
+		return othersAssetsInTransit;
+	}
+
+	public Double getOthersOther() {
+		return othersOther;
+	}
+
+	public Double getTotalOtherNcaPatent() {
+		return totalOtherNcaPatent;
+	}
+
+	public Double getTotalOtherNcaGoodwill() {
+		return totalOtherNcaGoodwill;
+	}
+
+	public Double getTotalOtherNcaPrelimnaryExpenses() {
+		return totalOtherNcaPrelimnaryExpenses;
+	}
+
+	public Double getTotalOtherNcaBadExpenses() {
+		return totalOtherNcaBadExpenses;
+	}
+
+	public Double getTotalOtherNcaOther() {
+		return totalOtherNcaOther;
+	}
+
+	public void setImpairmentAsset(Double impairmentAsset) {
+		this.impairmentAsset = impairmentAsset;
+	}
+
+	public void setOthersPreOperativeExpensesPending(Double othersPreOperativeExpensesPending) {
+		this.othersPreOperativeExpensesPending = othersPreOperativeExpensesPending;
+	}
+
+	public void setOthersAssetsInTransit(Double othersAssetsInTransit) {
+		this.othersAssetsInTransit = othersAssetsInTransit;
+	}
+
+	public void setOthersOther(Double othersOther) {
+		this.othersOther = othersOther;
+	}
+
+	public void setTotalOtherNcaPatent(Double totalOtherNcaPatent) {
+		this.totalOtherNcaPatent = totalOtherNcaPatent;
+	}
+
+	public void setTotalOtherNcaGoodwill(Double totalOtherNcaGoodwill) {
+		this.totalOtherNcaGoodwill = totalOtherNcaGoodwill;
+	}
+
+	public void setTotalOtherNcaPrelimnaryExpenses(Double totalOtherNcaPrelimnaryExpenses) {
+		this.totalOtherNcaPrelimnaryExpenses = totalOtherNcaPrelimnaryExpenses;
+	}
+
+	public void setTotalOtherNcaBadExpenses(Double totalOtherNcaBadExpenses) {
+		this.totalOtherNcaBadExpenses = totalOtherNcaBadExpenses;
+	}
+
+	public void setTotalOtherNcaOther(Double totalOtherNcaOther) {
+		this.totalOtherNcaOther = totalOtherNcaOther;
+	}
+
 	public Double getLandBuilding() {
 		return landBuilding;
 	}
