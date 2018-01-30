@@ -116,6 +116,104 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "is_technology_tied")
 	private boolean whetherTechnologyIsTied;
 
+	@Column(name = "technology_risk_id")
+	private Integer technologyRiskId;
+	
+
+	@Column(name = "customer_quality")
+	private Integer customerQuality;
+	
+	@Column(name = "supplier_quality")
+	private Integer supplierQuality;
+	
+	@Column(name = "sustainability_product")
+	private Integer sustainabilityProduct;
+	
+	@Column(name = "order_book_position")
+	private Integer orderBookPosition;
+	
+	@Column(name = "employee_relations")
+	private Integer employeeRelations;
+	
+	@Column(name = "product_seasonality")
+	private Integer productSeasonality;
+	
+	@Column(name = "impact_on_operating_margins")
+	private Integer impactOnOperatingMargins;
+	
+	@Column(name = "environmental_impact")
+	private Integer environmentalImpact;
+	
+	@Column(name = "accounting_quality")
+	private Integer accountingQuality;
+	
+	@Column(name = "financial_restructuring_history ")
+	private Integer financialRestructuringHistory;
+	
+	@Column(name = "integrity")
+	private Integer integrity;
+	
+	@Column(name = "business_commitment")
+	private Integer businessCommitment;
+	
+	@Column(name = "management_competence")
+	private Integer managementCompetence;
+	
+	@Column(name = "business_experience")
+	private Integer businessExperience;
+	
+	@Column(name = "succession_	planning")
+	private Integer successionPlanning;
+	
+	@Column(name = "financial_strength")
+	private Integer financialStrength;
+	
+	@Column(name = "ability_to_raise_funds")
+	private Integer abilityToRaiseFunds;
+	
+	@Column(name = "intra_company")
+	private Integer IntraCompany;
+	
+	@Column(name = "internal_control")
+	private Integer internalControl;
+	
+	@Column(name = "credittrack_record")
+	private Integer creditTrackRecord;
+	
+	@Column(name = "status_of_project_clearances")
+	private Integer statusOfProjectClearances;
+	
+	
+	@Column(name = "status_of_financial_closure")
+	private Integer statusOfFinancialClosure;
+	
+	@Column(name = "infrastructure_availability")
+	private Integer infrastructureAvailability;
+	
+	@Column(name = "construction_contract")
+	private Integer constructionContract;
+	
+	@Column(name = "number_of_cheques")
+	private Integer numberOfCheques;
+	
+	@Column(name = "number_of_times_dp")
+	private Integer numberOfTimes_Dp;
+	
+	@Column(name = "cumulative_no_of_days_dp")
+	private Integer cumulativeNoOfDaysDp;
+	
+	@Column(name = "compliance_with_sanctioned")
+	private Integer complianceWithSanctioned;
+	
+	@Column(name = "delay_in_receipt")
+	private Integer delayInReceipt;
+	
+	@Column(name = "delay_in_submission")
+	private Integer delayInSubmission;
+	
+	@Column(name = "number_of_lc")
+	private Integer numberOfLc;
+
 
 	public FinalTermLoanDetail() {
 	}
@@ -327,4 +425,262 @@ public class FinalTermLoanDetail implements Serializable {
 	public void setWhetherTechnologyIsTied(boolean whetherTechnologyIsTied) {
 		this.whetherTechnologyIsTied = whetherTechnologyIsTied;
 	}
+
+	public Integer getTechnologyRiskId() {
+		return technologyRiskId;
+	}
+
+	public void setTechnologyRiskId(Integer technologyRiskId) {
+		this.technologyRiskId = technologyRiskId;
+	}
+
+	public Integer getCustomerQuality() {
+		return customerQuality;
+	}
+
+	public void setCustomerQuality(Integer customerQuality) {
+		this.customerQuality = customerQuality;
+	}
+
+	public Integer getSupplierQuality() {
+		return supplierQuality;
+	}
+
+	public void setSupplierQuality(Integer supplierQuality) {
+		this.supplierQuality = supplierQuality;
+	}
+
+	public Integer getSustainabilityProduct() {
+		return sustainabilityProduct;
+	}
+
+	public void setSustainabilityProduct(Integer sustainabilityProduct) {
+		this.sustainabilityProduct = sustainabilityProduct;
+	}
+
+	public Integer getOrderBookPosition() {
+		return orderBookPosition;
+	}
+
+	public void setOrderBookPosition(Integer orderBookPosition) {
+		this.orderBookPosition = orderBookPosition;
+	}
+
+	public Integer getEmployeeRelations() {
+		return employeeRelations;
+	}
+
+	public void setEmployeeRelations(Integer employeeRelations) {
+		this.employeeRelations = employeeRelations;
+	}
+
+	public Integer getProductSeasonality() {
+		return productSeasonality;
+	}
+
+	public void setProductSeasonality(Integer productSeasonality) {
+		this.productSeasonality = productSeasonality;
+	}
+
+	public Integer getImpactOnOperatingMargins() {
+		return impactOnOperatingMargins;
+	}
+
+	public void setImpactOnOperatingMargins(Integer impactOnOperatingMargins) {
+		this.impactOnOperatingMargins = impactOnOperatingMargins;
+	}
+
+	public Integer getEnvironmentalImpact() {
+		return environmentalImpact;
+	}
+
+	public void setEnvironmentalImpact(Integer environmentalImpact) {
+		this.environmentalImpact = environmentalImpact;
+	}
+
+	public Integer getAccountingQuality() {
+		return accountingQuality;
+	}
+
+	public void setAccountingQuality(Integer accountingQuality) {
+		this.accountingQuality = accountingQuality;
+	}
+
+	public Integer getFinancialRestructuringHistory() {
+		return financialRestructuringHistory;
+	}
+
+	public void setFinancialRestructuringHistory(Integer financialRestructuringHistory) {
+		this.financialRestructuringHistory = financialRestructuringHistory;
+	}
+
+	public Integer getIntegrity() {
+		return integrity;
+	}
+
+	public void setIntegrity(Integer integrity) {
+		this.integrity = integrity;
+	}
+
+	public Integer getBusinessCommitment() {
+		return businessCommitment;
+	}
+
+	public void setBusinessCommitment(Integer businessCommitment) {
+		this.businessCommitment = businessCommitment;
+	}
+
+	public Integer getManagementCompetence() {
+		return managementCompetence;
+	}
+
+	public void setManagementCompetence(Integer managementCompetence) {
+		this.managementCompetence = managementCompetence;
+	}
+
+	public Integer getBusinessExperience() {
+		return businessExperience;
+	}
+
+	public void setBusinessExperience(Integer businessExperience) {
+		this.businessExperience = businessExperience;
+	}
+
+	public Integer getSuccessionPlanning() {
+		return successionPlanning;
+	}
+
+	public void setSuccessionPlanning(Integer successionPlanning) {
+		this.successionPlanning = successionPlanning;
+	}
+
+	public Integer getFinancialStrength() {
+		return financialStrength;
+	}
+
+	public void setFinancialStrength(Integer financialStrength) {
+		this.financialStrength = financialStrength;
+	}
+
+	public Integer getAbilityToRaiseFunds() {
+		return abilityToRaiseFunds;
+	}
+
+	public void setAbilityToRaiseFunds(Integer abilityToRaiseFunds) {
+		this.abilityToRaiseFunds = abilityToRaiseFunds;
+	}
+
+	public Integer getIntraCompany() {
+		return IntraCompany;
+	}
+
+	public void setIntraCompany(Integer intraCompany) {
+		IntraCompany = intraCompany;
+	}
+
+	public Integer getInternalControl() {
+		return internalControl;
+	}
+
+	public void setInternalControl(Integer internalControl) {
+		this.internalControl = internalControl;
+	}
+
+	public Integer getCreditTrackRecord() {
+		return creditTrackRecord;
+	}
+
+	public void setCreditTrackRecord(Integer creditTrackRecord) {
+		this.creditTrackRecord = creditTrackRecord;
+	}
+
+	public Integer getStatusOfProjectClearances() {
+		return statusOfProjectClearances;
+	}
+
+	public void setStatusOfProjectClearances(Integer statusOfProjectClearances) {
+		this.statusOfProjectClearances = statusOfProjectClearances;
+	}
+
+	public Integer getStatusOfFinancialClosure() {
+		return statusOfFinancialClosure;
+	}
+
+	public void setStatusOfFinancialClosure(Integer statusOfFinancialClosure) {
+		this.statusOfFinancialClosure = statusOfFinancialClosure;
+	}
+
+	public Integer getInfrastructureAvailability() {
+		return infrastructureAvailability;
+	}
+
+	public void setInfrastructureAvailability(Integer infrastructureAvailability) {
+		this.infrastructureAvailability = infrastructureAvailability;
+	}
+
+	public Integer getConstructionContract() {
+		return constructionContract;
+	}
+
+	public void setConstructionContract(Integer constructionContract) {
+		this.constructionContract = constructionContract;
+	}
+
+	public Integer getNumberOfCheques() {
+		return numberOfCheques;
+	}
+
+	public void setNumberOfCheques(Integer numberOfCheques) {
+		this.numberOfCheques = numberOfCheques;
+	}
+
+	public Integer getNumberOfTimes_Dp() {
+		return numberOfTimes_Dp;
+	}
+
+	public void setNumberOfTimes_Dp(Integer numberOfTimes_Dp) {
+		this.numberOfTimes_Dp = numberOfTimes_Dp;
+	}
+
+	public Integer getCumulativeNoOfDaysDp() {
+		return cumulativeNoOfDaysDp;
+	}
+
+	public void setCumulativeNoOfDaysDp(Integer cumulativeNoOfDaysDp) {
+		this.cumulativeNoOfDaysDp = cumulativeNoOfDaysDp;
+	}
+
+	public Integer getComplianceWithSanctioned() {
+		return complianceWithSanctioned;
+	}
+
+	public void setComplianceWithSanctioned(Integer complianceWithSanctioned) {
+		this.complianceWithSanctioned = complianceWithSanctioned;
+	}
+
+	public Integer getDelayInReceipt() {
+		return delayInReceipt;
+	}
+
+	public void setDelayInReceipt(Integer delayInReceipt) {
+		this.delayInReceipt = delayInReceipt;
+	}
+
+	public Integer getDelayInSubmission() {
+		return delayInSubmission;
+	}
+
+	public void setDelayInSubmission(Integer delayInSubmission) {
+		this.delayInSubmission = delayInSubmission;
+	}
+
+	public Integer getNumberOfLc() {
+		return numberOfLc;
+	}
+
+	public void setNumberOfLc(Integer numberOfLc) {
+		this.numberOfLc = numberOfLc;
+	}
+	
+	
 }
