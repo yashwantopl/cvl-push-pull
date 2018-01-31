@@ -5,6 +5,7 @@ import java.util.List;
 import com.capitaworld.service.loans.model.AchievementDetailRequest;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
@@ -15,8 +16,8 @@ import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.UnsecuredCoApplicantDetail;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 public class UnsecuredLoanPrimaryViewResponse {
 	
@@ -47,6 +48,8 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private Double amount;
 	private Double totalCostOfEstimate;
 	private List<?> matchesList;
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
@@ -58,7 +61,8 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
 	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
-
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 
@@ -489,4 +493,40 @@ public class UnsecuredLoanPrimaryViewResponse {
 		this.officeAddress = officeAddress;
 	}
 
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+	
+	
+	
+	
 }

@@ -214,9 +214,19 @@ public class AssetsDetails implements Serializable {
 	@Column(name="total_other_nca_other")
 	private Double totalOtherNcaOther;
 	
+	@Column(name = "other_nca_other_capital_work_inprogress")
+	private Double otherNcaOtherCapitalWorkInprogress;
 	
 	
 	
+	public Double getOtherNcaOtherCapitalWorkInprogress() {
+		return otherNcaOtherCapitalWorkInprogress;
+	}
+
+	public void setOtherNcaOtherCapitalWorkInprogress(Double otherNcaOtherCapitalWorkInprogress) {
+		this.otherNcaOtherCapitalWorkInprogress = otherNcaOtherCapitalWorkInprogress;
+	}
+
 	public Double getImpairmentAsset() {
 		return impairmentAsset;
 	}
