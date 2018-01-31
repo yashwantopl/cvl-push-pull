@@ -213,6 +213,21 @@ public class FinalTermLoanDetail implements Serializable {
 	
 	@Column(name = "number_of_lc")
 	private Integer numberOfLc;
+	
+	@Column(name = "unhedged_foreign_currency")
+	private Integer unhedgedForeignCurrency;
+	
+	@Column(name = "projected_debt_service")
+	private Integer projectedDebtService;
+	
+	@Column(name = "internal_rate_return")
+	private Integer internalRateReturn;
+	
+	@Column(name = "sensititivity_analysis")
+	private Integer sensititivityAnalysis;
+	
+	@Column(name = "variance_in_projected_sales")
+	private Integer varianceInProjectedSales;
 
 
 	public FinalTermLoanDetail() {
@@ -681,6 +696,47 @@ public class FinalTermLoanDetail implements Serializable {
 	public void setNumberOfLc(Integer numberOfLc) {
 		this.numberOfLc = numberOfLc;
 	}
+
+	public Integer getUnhedgedForeignCurrency() {
+		return unhedgedForeignCurrency;
+	}
+
+	public void setUnhedgedForeignCurrency(Integer unhedgedForeignCurrency) {
+		this.unhedgedForeignCurrency = unhedgedForeignCurrency;
+	}
+
+	public Integer getProjectedDebtService() {
+		return projectedDebtService;
+	}
+
+	public void setProjectedDebtService(Integer projectedDebtService) {
+		this.projectedDebtService = projectedDebtService;
+	}
+
+	public Integer getInternalRateReturn() {
+		return internalRateReturn;
+	}
+
+	public void setInternalRateReturn(Integer internalRateReturn) {
+		this.internalRateReturn = internalRateReturn;
+	}
+
+	public Integer getSensititivityAnalysis() {
+		return sensititivityAnalysis;
+	}
+
+	public void setSensititivityAnalysis(Integer sensititivityAnalysis) {
+		this.sensititivityAnalysis = sensititivityAnalysis;
+	}
+
+	public Integer getVarianceInProjectedSales() {
+		return varianceInProjectedSales;
+	}
+
+	public void setVarianceInProjectedSales(Integer varianceInProjectedSales) {
+		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+
 	
 	
 }
