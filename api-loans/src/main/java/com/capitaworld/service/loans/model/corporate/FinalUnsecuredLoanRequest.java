@@ -64,6 +64,13 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 	private Integer delayInReceipt;
 	private Integer delayInSubmission;
 	private Integer numberOfLc;
+	
+	private Integer unhedgedForeignCurrency;
+	private Integer projectedDebtService;
+	private Integer internalRateReturn;
+	private Integer sensititivityAnalysis;
+	private Integer varianceInProjectedSales;
+	
 	private Boolean whetherTechnologyIsTied;
 	private String finalFilledCount;
 	private Long userId;
@@ -544,6 +551,47 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 	public Boolean getWhetherTechnologyIsTied() {
 		return whetherTechnologyIsTied;
 	}
+
+	public Integer getUnhedgedForeignCurrency() {
+		return unhedgedForeignCurrency;
+	}
+
+	public void setUnhedgedForeignCurrency(Integer unhedgedForeignCurrency) {
+		this.unhedgedForeignCurrency = unhedgedForeignCurrency;
+	}
+
+	public Integer getProjectedDebtService() {
+		return projectedDebtService;
+	}
+
+	public void setProjectedDebtService(Integer projectedDebtService) {
+		this.projectedDebtService = projectedDebtService;
+	}
+
+	public Integer getInternalRateReturn() {
+		return internalRateReturn;
+	}
+
+	public void setInternalRateReturn(Integer internalRateReturn) {
+		this.internalRateReturn = internalRateReturn;
+	}
+
+	public Integer getSensititivityAnalysis() {
+		return sensititivityAnalysis;
+	}
+
+	public void setSensititivityAnalysis(Integer sensititivityAnalysis) {
+		this.sensititivityAnalysis = sensititivityAnalysis;
+	}
+
+	public Integer getVarianceInProjectedSales() {
+		return varianceInProjectedSales;
+	}
+
+	public void setVarianceInProjectedSales(Integer varianceInProjectedSales) {
+		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+
 	
 	
 	
