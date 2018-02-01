@@ -186,6 +186,39 @@ CREATE TABLE `loan_applications`.`fs_ddr_credit_card_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `loan_applications`.`fs_ddr_financial_summary` (
+  `id` BIGINT(20) unsigned NOT NULL auto_increment,
+  `fs_ddr_form_id` BIGINT(20) NULL,
+  `perc_of_sales_of_anchor_pro` VARCHAR(45) NULL,
+  `sales_of_anchor_pro` VARCHAR(45) NULL,
+  `financial_year` VARCHAR(45) NULL,
+  `created_by` BIGINT(20) NULL,
+  `created_date` datetime NULL,
+  `modify_by` BIGINT(20) NULL,
+  `modify_date` datetime NULL,
+  `is_active` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+CREATE TABLE `loan_applications`.`fs_ddr_family_directors_details` (
+  `id` BIGINT(20) unsigned NOT NULL auto_increment,
+  `fs_ddr_form_id` BIGINT(20) NULL,
+  `background_id`BIGINT(20) NULL,	
+  `name` VARCHAR(45) NULL,
+  `marital_status` INT NULL,
+  `is_house_owned` VARCHAR(45) NULL,
+  `address_of_other_property` VARCHAR(45) NULL,
+  `name_occupation_of_spouse` VARCHAR(45) NULL,
+  `created_by` BIGINT(20) NULL,
+  `created_date` DATETIME NULL,
+  `modify_by` BIGINT(20) NULL,
+  `modify_date` DATETIME NULL,
+  `is_active` bit(1) DEFAULT b'0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 
