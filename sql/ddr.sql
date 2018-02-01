@@ -72,7 +72,8 @@ CREATE TABLE `loan_applications`.`fs_ddr_form_details` (
 `modify_by` bigint(20) DEFAULT NULL,
 `modify_date` datetime DEFAULT NULL,
 `is_active` bit(1) DEFAULT b'0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+UNIQUE KEY `application_id` (`application_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
