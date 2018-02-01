@@ -31,6 +31,8 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private Integer relationshipSince;
     
+    private String relationshipSinceInYear;
+    
     private String loanType;
 
     public Double getAmount() {
@@ -97,16 +99,20 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 		this.relationshipSince = relationshipSince;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
 	public String getLoanType() {
 		return loanType;
 	}
 
 	public void setLoanType(String loanType) {
 		this.loanType = loanType;
+	}
+
+	public String getRelationshipSinceInYear() {
+		return relationshipSinceInYear;
+	}
+
+	public void setRelationshipSinceInYear(String relationshipSinceInYear) {
+		this.relationshipSinceInYear = relationshipSinceInYear;
 	}
 
 	
