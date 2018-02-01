@@ -161,7 +161,7 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "business_experience")
 	private Integer businessExperience;
 	
-	@Column(name = "succession_	planning")
+	@Column(name = "succession_planning")
 	private Integer successionPlanning;
 	
 	@Column(name = "financial_strength")
