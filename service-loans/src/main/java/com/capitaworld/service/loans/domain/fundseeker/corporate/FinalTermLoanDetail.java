@@ -49,14 +49,14 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "created_date")
 	private Date createdDate;
 
-	// @Column(name = "credit_rating_id")
-	// private Long creditRatingId;
+	//@Column(name = "credit_rating_id")
+	//private Long creditRatingId;
 
-	// @Column(name = "currency_id")
-	// private Integer currencyId;
-	//
-	// @Column(name = "denomination_id")
-	// private Integer denominationId;
+    //@Column(name = "currency_id")
+	//private Integer currencyId;
+	
+	//@Column(name = "denomination_id")
+    //private Integer denominationId;
 
 	@Column(name = "distribution_and_marketing_tie_ups_id")
 	private Integer distributionAndMarketingTieUpsId;
@@ -119,7 +119,6 @@ public class FinalTermLoanDetail implements Serializable {
 	@Column(name = "technology_risk_id")
 	private Integer technologyRiskId;
 	
-
 	@Column(name = "customer_quality")
 	private Integer customerQuality;
 	
@@ -172,7 +171,7 @@ public class FinalTermLoanDetail implements Serializable {
 	private Integer abilityToRaiseFunds;
 	
 	@Column(name = "intra_company")
-	private Integer IntraCompany;
+	private Integer intraCompany;
 	
 	@Column(name = "internal_control")
 	private Integer internalControl;
@@ -182,7 +181,6 @@ public class FinalTermLoanDetail implements Serializable {
 	
 	@Column(name = "status_of_project_clearances")
 	private Integer statusOfProjectClearances;
-	
 	
 	@Column(name = "status_of_financial_closure")
 	private Integer statusOfFinancialClosure;
@@ -197,13 +195,16 @@ public class FinalTermLoanDetail implements Serializable {
 	private Integer numberOfCheques;
 	
 	@Column(name = "number_of_times_dp")
-	private Integer numberOfTimes_Dp;
+	private Integer numberOfTimesDp;
 	
 	@Column(name = "cumulative_no_of_days_dp")
 	private Integer cumulativeNoOfDaysDp;
 	
 	@Column(name = "compliance_with_sanctioned")
 	private Integer complianceWithSanctioned;
+	
+	@Column(name = "progress_reports")
+	private Integer progressReports;
 	
 	@Column(name = "delay_in_receipt")
 	private Integer delayInReceipt;
@@ -584,13 +585,14 @@ public class FinalTermLoanDetail implements Serializable {
 	public void setAbilityToRaiseFunds(Integer abilityToRaiseFunds) {
 		this.abilityToRaiseFunds = abilityToRaiseFunds;
 	}
-
+	
+	
 	public Integer getIntraCompany() {
-		return IntraCompany;
+		return intraCompany;
 	}
 
 	public void setIntraCompany(Integer intraCompany) {
-		IntraCompany = intraCompany;
+		this.intraCompany = intraCompany;
 	}
 
 	public Integer getInternalControl() {
@@ -649,12 +651,12 @@ public class FinalTermLoanDetail implements Serializable {
 		this.numberOfCheques = numberOfCheques;
 	}
 
-	public Integer getNumberOfTimes_Dp() {
-		return numberOfTimes_Dp;
+	public Integer getNumberOfTimesDp() {
+		return numberOfTimesDp;
 	}
 
-	public void setNumberOfTimes_Dp(Integer numberOfTimes_Dp) {
-		this.numberOfTimes_Dp = numberOfTimes_Dp;
+	public void setNumberOfTimesDp(Integer numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
 	}
 
 	public Integer getCumulativeNoOfDaysDp() {
@@ -737,6 +739,13 @@ public class FinalTermLoanDetail implements Serializable {
 		this.varianceInProjectedSales = varianceInProjectedSales;
 	}
 
+	public Integer getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(Integer progressReports) {
+		this.progressReports = progressReports;
+	}	
 	
 	
 }
