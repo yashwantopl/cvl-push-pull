@@ -131,7 +131,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		Long userId = ddrFormDetailsRequest.getUserId();
 		
 		try {
-			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndIsActive(ddrFormDetailsRequest.getId());
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndAppIdAndIsActive(ddrFormDetailsRequest.getId(),ddrFormDetailsRequest.getApplicationId());
 			if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				logger.info("New DDR Form Saving ------------------------->");
 				dDRFormDetails = new DDRFormDetails();
@@ -173,9 +173,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * GET DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 */
 	@Override
-	public DDRFormDetailsRequest get(Long id) {
+	public DDRFormDetailsRequest get(Long appId) {
 		DDRFormDetailsRequest dDRFormDetailsRequest = null;
-		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndIsActive(id);
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
 		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			Long ddrFormId = dDRFormDetails.getId();
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();

@@ -44,12 +44,10 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-
-		Long userId = 1954L;
-		/*Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 			userId = clientId;
-		}*/
+		}
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
@@ -75,11 +73,11 @@ public class DDRFormController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
-		logger.info("Enter in DDR Form Get Method -------------------------->");
+	@RequestMapping(value = "/get/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable("appId") Long appId) {
+		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
 		try {
-			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(id);
+			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(),dDRFormDetailsRequest), HttpStatus.OK);
