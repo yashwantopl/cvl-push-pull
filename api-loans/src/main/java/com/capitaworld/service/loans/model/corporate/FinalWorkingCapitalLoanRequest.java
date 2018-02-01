@@ -51,7 +51,7 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer successionPlanning;
 	private Integer financialStrength;
 	private Integer abilityToRaiseFunds;
-	private Integer IntraCompany;
+	private Integer intraCompany;
 	private Integer internalControl;
 	private Integer creditTrackRecord;
 	private Integer statusOfProjectClearances;
@@ -59,9 +59,10 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Integer infrastructureAvailability;
 	private Integer constructionContract;
 	private Integer numberOfCheques;
-	private Integer numberOfTimes_Dp;
+	private Integer numberOfTimesDp;
 	private Integer cumulativeNoOfDaysDp;
 	private Integer complianceWithSanctioned;
+	private Integer progressReports;
 	private Integer delayInReceipt;
 	private Integer delayInSubmission;
 	private Integer numberOfLc;
@@ -433,14 +434,6 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 		this.abilityToRaiseFunds = abilityToRaiseFunds;
 	}
 
-	public Integer getIntraCompany() {
-		return IntraCompany;
-	}
-
-	public void setIntraCompany(Integer intraCompany) {
-		IntraCompany = intraCompany;
-	}
-
 	public Integer getInternalControl() {
 		return internalControl;
 	}
@@ -495,14 +488,6 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 
 	public void setNumberOfCheques(Integer numberOfCheques) {
 		this.numberOfCheques = numberOfCheques;
-	}
-
-	public Integer getNumberOfTimes_Dp() {
-		return numberOfTimes_Dp;
-	}
-
-	public void setNumberOfTimes_Dp(Integer numberOfTimes_Dp) {
-		this.numberOfTimes_Dp = numberOfTimes_Dp;
 	}
 
 	public Integer getCumulativeNoOfDaysDp() {
@@ -585,6 +570,29 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 		this.varianceInProjectedSales = varianceInProjectedSales;
 	}
 
+	public Integer getIntraCompany() {
+		return intraCompany;
+	}
+
+	public void setIntraCompany(Integer intraCompany) {
+		this.intraCompany = intraCompany;
+	}
+
+	public Integer getNumberOfTimesDp() {
+		return numberOfTimesDp;
+	}
+
+	public void setNumberOfTimesDp(Integer numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
+	}
+
+	public Integer getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(Integer progressReports) {
+		this.progressReports = progressReports;
+	}
 	
 	
 	

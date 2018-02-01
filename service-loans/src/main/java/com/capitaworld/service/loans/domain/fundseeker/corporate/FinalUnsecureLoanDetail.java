@@ -162,7 +162,7 @@ public class FinalUnsecureLoanDetail implements Serializable {
 	@Column(name = "business_experience")
 	private Integer businessExperience;
 	
-	@Column(name = "succession_	planning")
+	@Column(name = "succession_planning")
 	private Integer successionPlanning;
 	
 	@Column(name = "financial_strength")
@@ -172,7 +172,7 @@ public class FinalUnsecureLoanDetail implements Serializable {
 	private Integer abilityToRaiseFunds;
 	
 	@Column(name = "intra_company")
-	private Integer IntraCompany;
+	private Integer intraCompany;
 	
 	@Column(name = "internal_control")
 	private Integer internalControl;
@@ -197,13 +197,16 @@ public class FinalUnsecureLoanDetail implements Serializable {
 	private Integer numberOfCheques;
 	
 	@Column(name = "number_of_times_dp")
-	private Integer numberOfTimes_Dp;
+	private Integer numberOfTimesDp;
 	
 	@Column(name = "cumulative_no_of_days_dp")
 	private Integer cumulativeNoOfDaysDp;
 	
 	@Column(name = "compliance_with_sanctioned")
 	private Integer complianceWithSanctioned;
+	
+	@Column(name = "progress_reports")
+	private Integer progressReports;
 	
 	@Column(name = "delay_in_receipt")
 	private Integer delayInReceipt;
@@ -586,14 +589,6 @@ public class FinalUnsecureLoanDetail implements Serializable {
 		this.abilityToRaiseFunds = abilityToRaiseFunds;
 	}
 
-	public Integer getIntraCompany() {
-		return IntraCompany;
-	}
-
-	public void setIntraCompany(Integer intraCompany) {
-		IntraCompany = intraCompany;
-	}
-
 	public Integer getInternalControl() {
 		return internalControl;
 	}
@@ -648,14 +643,6 @@ public class FinalUnsecureLoanDetail implements Serializable {
 
 	public void setNumberOfCheques(Integer numberOfCheques) {
 		this.numberOfCheques = numberOfCheques;
-	}
-
-	public Integer getNumberOfTimes_Dp() {
-		return numberOfTimes_Dp;
-	}
-
-	public void setNumberOfTimes_Dp(Integer numberOfTimes_Dp) {
-		this.numberOfTimes_Dp = numberOfTimes_Dp;
 	}
 
 	public Integer getCumulativeNoOfDaysDp() {
@@ -738,6 +725,30 @@ public class FinalUnsecureLoanDetail implements Serializable {
 		this.varianceInProjectedSales = varianceInProjectedSales;
 	}
 
+	public Integer getIntraCompany() {
+		return intraCompany;
+	}
+
+	public void setIntraCompany(Integer intraCompany) {
+		this.intraCompany = intraCompany;
+	}
+
+	public Integer getNumberOfTimesDp() {
+		return numberOfTimesDp;
+	}
+
+	public void setNumberOfTimesDp(Integer numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
+	}
+
+	public Integer getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(Integer progressReports) {
+		this.progressReports = progressReports;
+	}
+	
 	
 	
 }

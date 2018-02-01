@@ -652,5 +652,51 @@ public class CommonUtils {
 		    // remove extra spaces!
 		    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
 		  }
+		  
+		  
+		  public enum DDRFrames {
+				AUTHORIZED_SIGN_DETAILS(1), 
+				CREDIT_CARD_DETAILS(2),
+				CREDITORS_DETAILS(3),
+				REGISTERED_OFFICE(4),
+				OPERATING_OFFICE(5),
+				OTHER_BANK_LOAN_DETAILS(6),
+				REL_WITH_DBS_DETAILS(7),
+				VEHICLES_OWNED_DETAILS(8);
+	
+			  	private int value;
+
+				private DDRFrames(int value) {
+					this.value = value;
+				}
+
+				public int getValue() {
+					return value;
+				}
+
+				public static DDRFrames getType(Integer x) {
+					switch (x) {
+					case 1:
+						return AUTHORIZED_SIGN_DETAILS;
+					case 2:
+						return CREDIT_CARD_DETAILS;
+					case 3:
+						return CREDIT_CARD_DETAILS;
+					case 4:
+						return REGISTERED_OFFICE;
+					case 5:
+						return OPERATING_OFFICE;
+					case 6:
+						return OTHER_BANK_LOAN_DETAILS;
+					case 7:
+						return REL_WITH_DBS_DETAILS;
+					case 8:
+						return VEHICLES_OWNED_DETAILS;
+					default :
+						return null;
+					}
+				}
+
+			}
 
 }
