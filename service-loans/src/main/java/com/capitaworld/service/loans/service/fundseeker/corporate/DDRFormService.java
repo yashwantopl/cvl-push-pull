@@ -4,8 +4,9 @@ import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 
 public interface DDRFormService {
 
-	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest);
+	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception;
 	
 	public DDRFormDetailsRequest get(Long id);
+	
 	
 }

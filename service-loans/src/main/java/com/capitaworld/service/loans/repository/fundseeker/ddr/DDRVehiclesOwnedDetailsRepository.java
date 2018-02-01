@@ -10,10 +10,10 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetai
 
 public interface DDRVehiclesOwnedDetailsRepository extends JpaRepository<DDRVehiclesOwnedDetails,Long> {
 
-	@Query("select * from DDRVehiclesOwnedDetails where id =:id and isActive = true")
+	@Query("select dd from DDRVehiclesOwnedDetails dd where dd.id =:id and dd.isActive = true")
 	public DDRVehiclesOwnedDetails getByIdAndIsActive(@Param("id") Long id);
 	
-	@Query("select * from DDRVehiclesOwnedDetails where ddrFormId =:ddrFormId and isActive = true")
+	@Query("select dd from DDRVehiclesOwnedDetails dd where dd.ddrFormId =:ddrFormId and dd.isActive = true")
 	public List<DDRVehiclesOwnedDetails> getListByDDRFormId(@Param("ddrFormId") Long ddrFormId);
 	
 }

@@ -37,9 +37,6 @@ public class DDRCreditCardDetails implements Serializable {
 	
 	@Column(name ="credit_card")
 	private Double creditCard;
-
-	@Column(name ="any_other_showroom")
-	private String anyOtherShowroom;
 	
 	@Column(name ="reference_no")
 	private String referenceNo;
@@ -93,13 +90,6 @@ public class DDRCreditCardDetails implements Serializable {
 		this.creditCard = creditCard;
 	}
 
-	public String getAnyOtherShowroom() {
-		return anyOtherShowroom;
-	}
-
-	public void setAnyOtherShowroom(String anyOtherShowroom) {
-		this.anyOtherShowroom = anyOtherShowroom;
-	}
 
 	public String getReferenceNo() {
 		return referenceNo;
@@ -152,7 +142,7 @@ public class DDRCreditCardDetails implements Serializable {
 	@Override
 	public String toString() {
 		return "DDRCreditCardDetails [id=" + id + ", ddrFormId=" + ddrFormId + ", bankName=" + bankName
-				+ ", creditCard=" + creditCard + ", anyOtherShowroom=" + anyOtherShowroom + ", referenceNo="
+				+ ", creditCard=" + creditCard +  ", referenceNo="
 				+ referenceNo + ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
 				+ ", modifyDate=" + modifyDate + ", isActive=" + isActive + "]";
 	}

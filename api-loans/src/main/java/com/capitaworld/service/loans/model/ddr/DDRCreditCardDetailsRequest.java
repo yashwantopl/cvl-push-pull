@@ -18,8 +18,6 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 	
 	private Double creditCard;
 
-	private String anyOtherShowroom;
-	
 	private String referenceNo;
 	
 	private Boolean isActive;
@@ -56,14 +54,6 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 		this.creditCard = creditCard;
 	}
 
-	public String getAnyOtherShowroom() {
-		return anyOtherShowroom;
-	}
-
-	public void setAnyOtherShowroom(String anyOtherShowroom) {
-		this.anyOtherShowroom = anyOtherShowroom;
-	}
-
 	public String getReferenceNo() {
 		return referenceNo;
 	}
@@ -83,7 +73,7 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 	@Override
 	public String toString() {
 		return "DDRCreditCardDetailsRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", bankName=" + bankName
-				+ ", creditCard=" + creditCard + ", anyOtherShowroom=" + anyOtherShowroom + ", referenceNo="
+				+ ", creditCard=" + creditCard  + ", referenceNo="
 				+ referenceNo + ", isActive=" + isActive + "]";
 	}
 	

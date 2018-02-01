@@ -1,7 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
@@ -45,12 +44,12 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+		Long userId = 1954L;
+		/*Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 			userId = clientId;
-		}
-		
+		}*/
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
@@ -76,7 +75,7 @@ public class DDRFormController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/get", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
 		logger.info("Enter in DDR Form Get Method -------------------------->");
 		try {
@@ -91,4 +90,5 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
+	
 }

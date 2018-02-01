@@ -10,10 +10,10 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRCreditorsDetails;
 
 public interface DDRCreditorsDetailsRepository extends JpaRepository<DDRCreditorsDetails, Long>{
 
-	@Query("select * from DDRCreditorsDetails where id =:id and isActive = true")
+	@Query("select dd from DDRCreditorsDetails dd where dd.id =:id and dd.isActive = true")
 	public DDRCreditorsDetails getByIdAndIsActive(@Param("id") Long id);
 	
-	@Query("select * from DDRCreditorsDetails where ddrFormId =:ddrFormId and isActive = true")
+	@Query("select dd from DDRCreditorsDetails dd where dd.ddrFormId =:ddrFormId and dd.isActive = true")
 	public List<DDRCreditorsDetails> getListByDDRFormId(@Param("ddrFormId") Long ddrFormId);
 	
 }

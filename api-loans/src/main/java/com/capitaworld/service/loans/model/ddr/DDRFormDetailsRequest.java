@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.model.ddr;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -78,6 +80,18 @@ public class DDRFormDetailsRequest implements Serializable {
 	private Integer listOfShareholdersAndShareHoldingPatter;
 	private String summaryOfBservations;
 	private Boolean isActive;
+	
+	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
+	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();
+	List<DDRCreditorsDetailsRequest> dDRCreditorsDetailsList = new ArrayList<DDRCreditorsDetailsRequest>();
+	List<DDROfficeDetailsRequest> dDRRegisteredOfficeList = new ArrayList<DDROfficeDetailsRequest>();
+	List<DDROfficeDetailsRequest> dDROperatingOfficeList = new ArrayList<DDROfficeDetailsRequest>();
+	List<DDROtherBankLoanDetailsRequest> dDROtherBankLoanDetailsList = new ArrayList<DDROtherBankLoanDetailsRequest>();
+	List<DDRRelWithDbsDetailsRequest> dDRRelWithDbsDetailsList = new ArrayList<DDRRelWithDbsDetailsRequest>();
+	List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList = new ArrayList<DDRVehiclesOwnedDetailsRequest>();
+	
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -486,6 +500,63 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+	
+	public List<DDRAuthorizedSignDetailsRequest> getdDRAuthSignDetailsList() {
+		return dDRAuthSignDetailsList;
+	}
+	public void setdDRAuthSignDetailsList(List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList) {
+		this.dDRAuthSignDetailsList = dDRAuthSignDetailsList;
+	}
+	public List<DDRCreditCardDetailsRequest> getdDRCreditCardDetailsList() {
+		return dDRCreditCardDetailsList;
+	}
+	public void setdDRCreditCardDetailsList(List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList) {
+		this.dDRCreditCardDetailsList = dDRCreditCardDetailsList;
+	}
+	public List<DDRCreditorsDetailsRequest> getdDRCreditorsDetailsList() {
+		return dDRCreditorsDetailsList;
+	}
+	public void setdDRCreditorsDetailsList(List<DDRCreditorsDetailsRequest> dDRCreditorsDetailsList) {
+		this.dDRCreditorsDetailsList = dDRCreditorsDetailsList;
+	}
+	
+	public List<DDROtherBankLoanDetailsRequest> getdDROtherBankLoanDetailsList() {
+		return dDROtherBankLoanDetailsList;
+	}
+	public void setdDROtherBankLoanDetailsList(List<DDROtherBankLoanDetailsRequest> dDROtherBankLoanDetailsList) {
+		this.dDROtherBankLoanDetailsList = dDROtherBankLoanDetailsList;
+	}
+	public List<DDRRelWithDbsDetailsRequest> getdDRRelWithDbsDetailsList() {
+		return dDRRelWithDbsDetailsList;
+	}
+	public void setdDRRelWithDbsDetailsList(List<DDRRelWithDbsDetailsRequest> dDRRelWithDbsDetailsList) {
+		this.dDRRelWithDbsDetailsList = dDRRelWithDbsDetailsList;
+	}
+	public List<DDRVehiclesOwnedDetailsRequest> getdDRVehiclesOwnedDetailsRequest() {
+		return dDRVehiclesOwnedDetailsList;
+	}
+	public void setdDRVehiclesOwnedDetailsRequest(List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsRequest) {
+		this.dDRVehiclesOwnedDetailsList = dDRVehiclesOwnedDetailsRequest;
+	}
+	
+	public List<DDROfficeDetailsRequest> getdDRRegisteredOfficeList() {
+		return dDRRegisteredOfficeList;
+	}
+	public void setdDRRegisteredOfficeList(List<DDROfficeDetailsRequest> dDRRegisteredOfficeList) {
+		this.dDRRegisteredOfficeList = dDRRegisteredOfficeList;
+	}
+	public List<DDROfficeDetailsRequest> getdDROperatingOfficeList() {
+		return dDROperatingOfficeList;
+	}
+	public void setdDROperatingOfficeList(List<DDROfficeDetailsRequest> dDROperatingOfficeList) {
+		this.dDROperatingOfficeList = dDROperatingOfficeList;
+	}
+	public List<DDRVehiclesOwnedDetailsRequest> getdDRVehiclesOwnedDetailsList() {
+		return dDRVehiclesOwnedDetailsList;
+	}
+	public void setdDRVehiclesOwnedDetailsList(List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList) {
+		this.dDRVehiclesOwnedDetailsList = dDRVehiclesOwnedDetailsList;
 	}
 	@Override
 	public String toString() {

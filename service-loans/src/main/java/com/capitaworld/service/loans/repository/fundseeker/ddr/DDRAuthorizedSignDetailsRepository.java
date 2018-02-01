@@ -10,9 +10,9 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRAuthorizedSignDeta
 
 public interface DDRAuthorizedSignDetailsRepository extends JpaRepository<DDRAuthorizedSignDetails,Long>{
 
-	@Query("select * from DDRAuthorizedSignDetails where id =:id and isActive = true")
+	@Query("select dd from DDRAuthorizedSignDetails dd where dd.id =:id and dd.isActive = true")
 	public DDRAuthorizedSignDetails getByIdAndIsActive(@Param("id") Long id);
 	
-	@Query("select * from DDRAuthorizedSignDetails where ddrFormId =:ddrFormId and isActive = true")
+	@Query("select dd from DDRAuthorizedSignDetails dd where dd.ddrFormId =:ddrFormId and dd.isActive = true")
 	public List<DDRAuthorizedSignDetails> getListByDDRFormId(@Param("ddrFormId") Long ddrFormId);
 }
