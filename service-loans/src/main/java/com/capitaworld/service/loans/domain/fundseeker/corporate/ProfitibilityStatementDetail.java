@@ -209,6 +209,30 @@ public class ProfitibilityStatementDetail implements Serializable {
 	private Long storageDetailsId;
 	
 
+	public double getGeneralAdminExpenses() {
+		return generalAdminExpenses;
+	}
+
+	public void setGeneralAdminExpenses(double generalAdminExpenses) {
+		this.generalAdminExpenses = generalAdminExpenses;
+	}
+
+	public double getSellingDistributionExpenses() {
+		return sellingDistributionExpenses;
+	}
+
+	public void setSellingDistributionExpenses(double sellingDistributionExpenses) {
+		this.sellingDistributionExpenses = sellingDistributionExpenses;
+	}
+
+	public double getExpensesCapitalised() {
+		return expensesCapitalised;
+	}
+
+	public void setExpensesCapitalised(double expensesCapitalised) {
+		this.expensesCapitalised = expensesCapitalised;
+	}
+
 	public Long getStorageDetailsId() {
 		return storageDetailsId;
 	}
