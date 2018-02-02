@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -81,6 +84,22 @@ public class DDRFormController {
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(),dDRFormDetailsRequest), HttpStatus.OK);
+		} catch(Exception e) {
+			logger.error("Error while getting DDR Form Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/getFinancial/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId) {
+		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
+		try {
+			List<DDRCMACalculationResponse> cmAandCOActDetails = ddrFormService.getCMAandCOActDetails(appId);
+			logger.info("DDR Form Get Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully get data", HttpStatus.OK.value(),cmAandCOActDetails), HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error while getting DDR Form Details ==>", e);
 			e.printStackTrace();

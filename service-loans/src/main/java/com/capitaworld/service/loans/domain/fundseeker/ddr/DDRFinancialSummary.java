@@ -32,14 +32,20 @@ public class DDRFinancialSummary implements Serializable {
 	@Column(name = "fs_ddr_form_id")
 	private Long ddrFormId;
 	
-	@Column(name = "perc_of_sales_of_anchor_pro")
-	private String percOfSalesOfAnchorPro;
+	@Column(name = "perticularName")
+	private String perticular_name;
 	
-	@Column(name = "sales_of_anchor_pro")
-	private String salesOfAnchorPro;
+	@Column(name = "provisionalYear")
+	private Double provisional_year;
 	
-	@Column(name = "financial_year")
-	private String financialYear;
+	@Column(name = "last_year")
+	private Double lastYear;
+	
+	@Column(name = "last_to_last_year")
+	private Double lastToLastYear;
+	
+	@Column(name = "diff_of_prvsnl_and_last_year")
+	private Double diffPfPrvsnlAndLastYear;
 	
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -66,6 +72,7 @@ public class DDRFinancialSummary implements Serializable {
 		this.id = id;
 	}
 
+
 	public Long getDdrFormId() {
 		return ddrFormId;
 	}
@@ -74,28 +81,44 @@ public class DDRFinancialSummary implements Serializable {
 		this.ddrFormId = ddrFormId;
 	}
 
-	public String getPercOfSalesOfAnchorPro() {
-		return percOfSalesOfAnchorPro;
+	public String getPerticular_name() {
+		return perticular_name;
 	}
 
-	public void setPercOfSalesOfAnchorPro(String percOfSalesOfAnchorPro) {
-		this.percOfSalesOfAnchorPro = percOfSalesOfAnchorPro;
+	public void setPerticular_name(String perticular_name) {
+		this.perticular_name = perticular_name;
 	}
 
-	public String getSalesOfAnchorPro() {
-		return salesOfAnchorPro;
+	public Double getProvisional_year() {
+		return provisional_year;
 	}
 
-	public void setSalesOfAnchorPro(String salesOfAnchorPro) {
-		this.salesOfAnchorPro = salesOfAnchorPro;
+	public void setProvisional_year(Double provisional_year) {
+		this.provisional_year = provisional_year;
 	}
 
-	public String getFinancialYear() {
-		return financialYear;
+	public Double getLastYear() {
+		return lastYear;
 	}
 
-	public void setFinancialYear(String financialYear) {
-		this.financialYear = financialYear;
+	public void setLastYear(Double lastYear) {
+		this.lastYear = lastYear;
+	}
+
+	public Double getLastToLastYear() {
+		return lastToLastYear;
+	}
+
+	public void setLastToLastYear(Double lastToLastYear) {
+		this.lastToLastYear = lastToLastYear;
+	}
+
+	public Double getDiffPfPrvsnlAndLastYear() {
+		return diffPfPrvsnlAndLastYear;
+	}
+
+	public void setDiffPfPrvsnlAndLastYear(Double diffPfPrvsnlAndLastYear) {
+		this.diffPfPrvsnlAndLastYear = diffPfPrvsnlAndLastYear;
 	}
 
 	public Long getCreatedBy() {
@@ -138,13 +161,7 @@ public class DDRFinancialSummary implements Serializable {
 		this.isActive = isActive;
 	}
 
-	@Override
-	public String toString() {
-		return "DDRFinancialSummary [id=" + id + ", ddrFormId=" + ddrFormId + ", percOfSalesOfAnchorPro="
-				+ percOfSalesOfAnchorPro + ", salesOfAnchorPro=" + salesOfAnchorPro + ", financialYear=" + financialYear
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
-				+ ", modifyDate=" + modifyDate + ", isActive=" + isActive + "]";
-	}
+	
 	
 	
 	
