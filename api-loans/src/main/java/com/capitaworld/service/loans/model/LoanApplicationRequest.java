@@ -62,9 +62,27 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private Boolean isMca;
 	
+	private Long npUserId;
+	
+	private Long npAssigneeId;
 	
 	
-	
+
+	public Long getNpAssigneeId() {
+		return npAssigneeId;
+	}
+
+	public void setNpAssigneeId(Long npAssigneeId) {
+		this.npAssigneeId = npAssigneeId;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
 
 	public Boolean getIsMca() {
 		return isMca;
