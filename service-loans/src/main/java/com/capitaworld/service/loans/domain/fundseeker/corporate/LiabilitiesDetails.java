@@ -153,6 +153,28 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name="other_ncl_others")
 	private Double otherNclOthers;
 	
+	@Column(name="other_ncl_unsecured_loans_from_promoters")
+	private Double otherNclUnsecuredLoansFromPromoters;
+	
+	@Column(name="other_ncl")
+	private Double otherNcl;
+	
+	public Double getOtherNcl() {
+		return otherNcl;
+	}
+
+	public void setOtherNcl(Double otherNcl) {
+		this.otherNcl = otherNcl;
+	}
+
+	public Double getOtherNclUnsecuredLoansFromPromoters() {
+		return otherNclUnsecuredLoansFromPromoters;
+	}
+
+	public void setOtherNclUnsecuredLoansFromPromoters(Double otherNclUnsecuredLoansFromPromoters) {
+		this.otherNclUnsecuredLoansFromPromoters = otherNclUnsecuredLoansFromPromoters;
+	}
+
 	public Double getTermLiabilitiesSecured() {
 		return termLiabilitiesSecured;
 	}

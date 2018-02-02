@@ -33,6 +33,8 @@ public class FinancialArrangementsDetailRequest {
 	
 	private String securityDetails;
 	
+	private String address;
+	
 	
 
 	private Boolean isActive = true;
@@ -169,6 +171,19 @@ public class FinancialArrangementsDetailRequest {
 		this.isActive = isActive;
 	}
 
+
+
+	public String getAddress() {
+		return address;
+	}
+
+
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	
 	
 
 }

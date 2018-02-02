@@ -9,12 +9,24 @@ ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD C
 	ALTER TABLE loan_applications.fs_corporate_cma_liabilities_details ADD COLUMN other_ncl_unsecured_loans_from_other DOUBLE DEFAULT NULL;
 	ALTER TABLE loan_applications.fs_corporate_cma_liabilities_details ADD COLUMN other_ncl_long_term_provisions DOUBLE DEFAULT NULL;
 	ALTER TABLE loan_applications.fs_corporate_cma_liabilities_details ADD COLUMN other_ncl_others DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_liabilities_details ADD COLUMN other_ncl DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_liabilities_details ADD COLUMN other_ncl_unsecured_loans_from_promoters DOUBLE DEFAULT NULL;
 	
 	
 
 	
 	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN land_building DOUBLE DEFAULT NULL;
 	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN plant_machines DOUBLE DEFAULT NULL;
+	
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN impairment_asset DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN others_pre_operative_expenses_pending DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN others_assets_in_transit DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN others_other DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN total_other_nca_patent DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN total_other_nca_goodwill DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN total_other_nca_prelimnary_expenses DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN total_other_nca_bad_expenses DOUBLE DEFAULT NULL;
+	ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN total_other_nca_other DOUBLE DEFAULT NULL;
 
 
 
