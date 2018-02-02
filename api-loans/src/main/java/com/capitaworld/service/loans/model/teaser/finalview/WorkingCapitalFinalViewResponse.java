@@ -1,10 +1,23 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 /**
  * @author Sanket
@@ -61,6 +74,7 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
 	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
 
 	/**
 	 * DPR Data Fields
@@ -128,6 +142,10 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	private String marketingPositioning;
 	private String existingShareHolder;
 	private String productServicesPerse;
+	
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
 
 	/**
 	 * Working Capital DPR, CMA, BS Formate
@@ -914,6 +932,42 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.addOfficestate = addOfficestate;
 	}
 
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+
+
+	
+	
 	
 	
 }

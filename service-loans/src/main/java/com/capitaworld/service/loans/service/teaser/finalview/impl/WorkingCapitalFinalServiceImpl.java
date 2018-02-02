@@ -9,10 +9,12 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingC
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -152,6 +154,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
@@ -588,6 +596,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
+            response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+            response.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 		}
 
 		// get value of proposed product and set in response
@@ -687,7 +697,48 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		} catch (Exception e) {
 			e.printStackTrace();
         }
-
+        
+        try {
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+				directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String directorName = "";
+				if (directorBackgroundDetailRequest.getSalutationId() != null){
+					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+				directorBackgroundDetailResponse.setDirectorsName(directorName);
+				directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+			}
+			response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+        }
+			catch (Exception e) {
+				logger.error("Problem to get Data of Director's Background {}", e);
+			}
+        
+      //references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		response.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
+        
         // get value of Ownership Details and set in response
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
