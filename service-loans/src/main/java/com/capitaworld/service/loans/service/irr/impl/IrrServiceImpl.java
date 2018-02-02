@@ -1771,18 +1771,247 @@ public class IrrServiceImpl implements IrrService{
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+		case WORKING_CAPITAL:
+			// set 
+			qualitativeInputSheetServRequest = setWCServiceQualitativeInput(aplicationId);
+			break;
+		case TERM_LOAN:
+			qualitativeInputSheetServRequest = setTLServiceQualitativeInput(aplicationId);
+			break;
+		case UNSECURED_LOAN :
+			qualitativeInputSheetServRequest= setUSLServiceQualitativeInput(aplicationId);
+			break;
+				
+		}
 		return qualitativeInputSheetServRequest;
 	}
 
+	public QualitativeInputSheetServRequest setWCServiceQualitativeInput(Long aplicationId){
+		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
+		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetServRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetServRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetServRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetServRequest.setProductSeasonality(finalWorkingCapitalLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetServRequest.setImpactOnOperatingMargins(finalWorkingCapitalLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetServRequest.setEnvironmentImpact(finalWorkingCapitalLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetServRequest.setIntegrity(finalWorkingCapitalLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetServRequest.setBusinessCommitment(finalWorkingCapitalLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetServRequest.setManagementCompetence(finalWorkingCapitalLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetServRequest.setBusinessExperience(finalWorkingCapitalLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetServRequest.setSuccsessionPlanning(finalWorkingCapitalLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetServRequest.setFinancialStrength(finalWorkingCapitalLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetServRequest.setInternalControl(finalWorkingCapitalLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetServRequest.setCreditTrackRecord(finalWorkingCapitalLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetServRequest.setNumberCheckReturned(finalWorkingCapitalLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetServRequest.setNumberTimesDpLimits(finalWorkingCapitalLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetServRequest.setCumulativeDaysDpLimits(finalWorkingCapitalLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetServRequest.setCompliancesWithSancationed(finalWorkingCapitalLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetServRequest.setSubmissionProgressReport(finalWorkingCapitalLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetServRequest.setDelayInReceiptPrincipal(finalWorkingCapitalLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetServRequest.setDelayInSubmissionAudited(finalWorkingCapitalLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetServRequest;		
+	}
+	
+	public QualitativeInputSheetServRequest setTLServiceQualitativeInput(Long aplicationId){
+		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		FinalTermLoanDetail finalTermLoanDetail = null;
+		finalTermLoanDetail = finalTermLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetServRequest.setAccountingQuality(finalTermLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetServRequest.setCustomerQuality(finalTermLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetServRequest.setSupplierQuality(finalTermLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalTermLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetServRequest.setProductSeasonality(finalTermLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetServRequest.setImpactOnOperatingMargins(finalTermLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetServRequest.setEnvironmentImpact(finalTermLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetServRequest.setIntegrity(finalTermLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetServRequest.setBusinessCommitment(finalTermLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetServRequest.setManagementCompetence(finalTermLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetServRequest.setBusinessExperience(finalTermLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetServRequest.setSuccsessionPlanning(finalTermLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetServRequest.setFinancialStrength(finalTermLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetServRequest.setInternalControl(finalTermLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetServRequest.setCreditTrackRecord(finalTermLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetServRequest.setNumberCheckReturned(finalTermLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetServRequest.setNumberTimesDpLimits(finalTermLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetServRequest.setCumulativeDaysDpLimits(finalTermLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetServRequest.setCompliancesWithSancationed(finalTermLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetServRequest.setSubmissionProgressReport(finalTermLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetServRequest.setDelayInReceiptPrincipal(finalTermLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetServRequest.setDelayInSubmissionAudited(finalTermLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalTermLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalTermLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetServRequest;		
+	}
+	
+	public QualitativeInputSheetServRequest setUSLServiceQualitativeInput(Long aplicationId){
+		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		FinalUnsecureLoanDetail finalUnsecureLoanDetail = null;
+		finalUnsecureLoanDetail = finalUnsecuredLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetServRequest.setAccountingQuality(finalUnsecureLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetServRequest.setCustomerQuality(finalUnsecureLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetServRequest.setSupplierQuality(finalUnsecureLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalUnsecureLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetServRequest.setProductSeasonality(finalUnsecureLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetServRequest.setImpactOnOperatingMargins(finalUnsecureLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetServRequest.setEnvironmentImpact(finalUnsecureLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetServRequest.setIntegrity(finalUnsecureLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetServRequest.setBusinessCommitment(finalUnsecureLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetServRequest.setManagementCompetence(finalUnsecureLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetServRequest.setBusinessExperience(finalUnsecureLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetServRequest.setSuccsessionPlanning(finalUnsecureLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetServRequest.setFinancialStrength(finalUnsecureLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetServRequest.setInternalControl(finalUnsecureLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetServRequest.setCreditTrackRecord(finalUnsecureLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetServRequest.setNumberCheckReturned(finalUnsecureLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetServRequest.setNumberTimesDpLimits(finalUnsecureLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetServRequest.setCumulativeDaysDpLimits(finalUnsecureLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetServRequest.setCompliancesWithSancationed(finalUnsecureLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetServRequest.setSubmissionProgressReport(finalUnsecureLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetServRequest.setDelayInReceiptPrincipal(finalUnsecureLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetServRequest.setDelayInSubmissionAudited(finalUnsecureLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalUnsecureLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalUnsecureLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetServRequest;		
+	}
 	@Override
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Integer productId)
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+		case WORKING_CAPITAL:
+			// set 
+			qualitativeInputSheetTradRequest = setWCTradingQualitativeInput(aplicationId);
+			break;
+		case TERM_LOAN:
+			qualitativeInputSheetTradRequest = setTLTradingQualitativeInput(aplicationId);
+			break;
+		case UNSECURED_LOAN :
+			qualitativeInputSheetTradRequest= setUSLTradingQualitativeInput(aplicationId);
+			break;
+				
+		}
 		return qualitativeInputSheetTradRequest;
 	}
 
+	public QualitativeInputSheetTradRequest setWCTradingQualitativeInput(Long aplicationId){
+		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
+		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetTradRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetTradRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetTradRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetTradRequest.setProductSeasonality(finalWorkingCapitalLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetTradRequest.setImpactOnOperatingMargins(finalWorkingCapitalLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetTradRequest.setEnvironmentImpact(finalWorkingCapitalLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetTradRequest.setIntegrity(finalWorkingCapitalLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetTradRequest.setBusinessCommitment(finalWorkingCapitalLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetTradRequest.setManagementCompetence(finalWorkingCapitalLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetTradRequest.setBusinessExperience(finalWorkingCapitalLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetTradRequest.setSuccsessionPlanning(finalWorkingCapitalLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetTradRequest.setFinancialStrength(finalWorkingCapitalLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetTradRequest.setInternalControl(finalWorkingCapitalLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetTradRequest.setCreditTrackRecord(finalWorkingCapitalLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetTradRequest.setNumberCheckReturned(finalWorkingCapitalLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetTradRequest.setNumberTimesDpLimits(finalWorkingCapitalLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetTradRequest.setCumulativeDaysDpLimits(finalWorkingCapitalLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetTradRequest.setCompliancesWithSancationed(finalWorkingCapitalLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetTradRequest.setSubmissionProgressReport(finalWorkingCapitalLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetTradRequest.setDelayInReceiptPrincipal(finalWorkingCapitalLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetTradRequest.setDelayInSubmissionAudited(finalWorkingCapitalLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetTradRequest;		
+	}
 	
+	public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId){
+		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		FinalTermLoanDetail finalTermLoanDetail = null;
+		finalTermLoanDetail = finalTermLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetTradRequest.setAccountingQuality(finalTermLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetTradRequest.setCustomerQuality(finalTermLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetTradRequest.setSupplierQuality(finalTermLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalTermLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetTradRequest.setProductSeasonality(finalTermLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetTradRequest.setImpactOnOperatingMargins(finalTermLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetTradRequest.setEnvironmentImpact(finalTermLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetTradRequest.setIntegrity(finalTermLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetTradRequest.setBusinessCommitment(finalTermLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetTradRequest.setManagementCompetence(finalTermLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetTradRequest.setBusinessExperience(finalTermLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetTradRequest.setSuccsessionPlanning(finalTermLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetTradRequest.setFinancialStrength(finalTermLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetTradRequest.setInternalControl(finalTermLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetTradRequest.setCreditTrackRecord(finalTermLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetTradRequest.setNumberCheckReturned(finalTermLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetTradRequest.setNumberTimesDpLimits(finalTermLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetTradRequest.setCumulativeDaysDpLimits(finalTermLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetTradRequest.setCompliancesWithSancationed(finalTermLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetTradRequest.setSubmissionProgressReport(finalTermLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetTradRequest.setDelayInReceiptPrincipal(finalTermLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetTradRequest.setDelayInSubmissionAudited(finalTermLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalTermLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalTermLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetTradRequest;		
+	}
+	
+	public QualitativeInputSheetTradRequest setUSLTradingQualitativeInput(Long aplicationId){
+		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		FinalUnsecureLoanDetail finalUnsecureLoanDetail = null;
+		finalUnsecureLoanDetail = finalUnsecuredLoanDetailRepository.findOne(aplicationId);
+		
+		qualitativeInputSheetTradRequest.setAccountingQuality(finalUnsecureLoanDetail.getAccountingQuality().longValue());
+		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
+		qualitativeInputSheetTradRequest.setCustomerQuality(finalUnsecureLoanDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetTradRequest.setSupplierQuality(finalUnsecureLoanDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalUnsecureLoanDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetTradRequest.setProductSeasonality(finalUnsecureLoanDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetTradRequest.setImpactOnOperatingMargins(finalUnsecureLoanDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetTradRequest.setEnvironmentImpact(finalUnsecureLoanDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetTradRequest.setIntegrity(finalUnsecureLoanDetail.getIntegrity().longValue());
+		qualitativeInputSheetTradRequest.setBusinessCommitment(finalUnsecureLoanDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetTradRequest.setManagementCompetence(finalUnsecureLoanDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetTradRequest.setBusinessExperience(finalUnsecureLoanDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetTradRequest.setSuccsessionPlanning(finalUnsecureLoanDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetTradRequest.setFinancialStrength(finalUnsecureLoanDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetTradRequest.setInternalControl(finalUnsecureLoanDetail.getInternalControl().longValue());
+		qualitativeInputSheetTradRequest.setCreditTrackRecord(finalUnsecureLoanDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetTradRequest.setNumberCheckReturned(finalUnsecureLoanDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetTradRequest.setNumberTimesDpLimits(finalUnsecureLoanDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetTradRequest.setCumulativeDaysDpLimits(finalUnsecureLoanDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetTradRequest.setCompliancesWithSancationed(finalUnsecureLoanDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetTradRequest.setSubmissionProgressReport(finalUnsecureLoanDetail.getProgressReports().longValue());
+		qualitativeInputSheetTradRequest.setDelayInReceiptPrincipal(finalUnsecureLoanDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetTradRequest.setDelayInSubmissionAudited(finalUnsecureLoanDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalUnsecureLoanDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalUnsecureLoanDetail.getNumberOfLc().longValue());
+		
+		return qualitativeInputSheetTradRequest;		
+	}
 	
 
 }
