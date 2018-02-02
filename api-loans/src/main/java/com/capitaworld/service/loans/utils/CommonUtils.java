@@ -212,6 +212,15 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 
+	public interface ApplicationStatus {
+		public static final Long OPEN = 1l;
+		public static final Long ASSIGNED = 2l;
+		public static final Long SUBMITTED = 3l;
+		public static final Long SUBMITTED_TO_APPROVER = 4l;
+		public static final Long APPROVED = 5l;
+		public static final Long REVERTED = 6l;
+	}
+	
 	public interface UserType {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
