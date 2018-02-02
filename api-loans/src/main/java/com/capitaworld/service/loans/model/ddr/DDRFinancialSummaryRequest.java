@@ -14,11 +14,15 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	
 	private Long ddrFormId;
 	
-	private String percOfSalesOfAnchorPro;
+	private String perticularName;
 	
-	private String salesOfAnchorPro;
+	private Double provisionalYear;
 	
-	private String financialYear;
+	private Double lastYear;
+	
+	private Double lastToLastYear;
+	
+	private Double diffPfPrvsnlAndLastYear;
 	
 	private Long createdBy;
 	
@@ -46,28 +50,46 @@ public class DDRFinancialSummaryRequest implements Serializable {
 		this.ddrFormId = ddrFormId;
 	}
 
-	public String getPercOfSalesOfAnchorPro() {
-		return percOfSalesOfAnchorPro;
+
+
+	public String getPerticularName() {
+		return perticularName;
 	}
 
-	public void setPercOfSalesOfAnchorPro(String percOfSalesOfAnchorPro) {
-		this.percOfSalesOfAnchorPro = percOfSalesOfAnchorPro;
+	public void setPerticularName(String perticularName) {
+		this.perticularName = perticularName;
 	}
 
-	public String getSalesOfAnchorPro() {
-		return salesOfAnchorPro;
+	public Double getProvisionalYear() {
+		return provisionalYear;
 	}
 
-	public void setSalesOfAnchorPro(String salesOfAnchorPro) {
-		this.salesOfAnchorPro = salesOfAnchorPro;
+	public void setProvisionalYear(Double provisionalYear) {
+		this.provisionalYear = provisionalYear;
 	}
 
-	public String getFinancialYear() {
-		return financialYear;
+	public Double getLastYear() {
+		return lastYear;
 	}
 
-	public void setFinancialYear(String financialYear) {
-		this.financialYear = financialYear;
+	public void setLastYear(Double lastYear) {
+		this.lastYear = lastYear;
+	}
+
+	public Double getLastToLastYear() {
+		return lastToLastYear;
+	}
+
+	public void setLastToLastYear(Double lastToLastYear) {
+		this.lastToLastYear = lastToLastYear;
+	}
+
+	public Double getDiffPfPrvsnlAndLastYear() {
+		return diffPfPrvsnlAndLastYear;
+	}
+
+	public void setDiffPfPrvsnlAndLastYear(Double diffPfPrvsnlAndLastYear) {
+		this.diffPfPrvsnlAndLastYear = diffPfPrvsnlAndLastYear;
 	}
 
 	public Long getCreatedBy() {
@@ -112,11 +134,14 @@ public class DDRFinancialSummaryRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "DDRFinancialSummaryRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", percOfSalesOfAnchorPro="
-				+ percOfSalesOfAnchorPro + ", salesOfAnchorPro=" + salesOfAnchorPro + ", financialYear=" + financialYear
+		return "DDRFinancialSummaryRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", perticularName="
+				+ perticularName + ", provisionalYear=" + provisionalYear + ", lastYear=" + lastYear
+				+ ", lastToLastYear=" + lastToLastYear + ", diffPfPrvsnlAndLastYear=" + diffPfPrvsnlAndLastYear
 				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
 				+ ", modifyDate=" + modifyDate + ", isActive=" + isActive + "]";
 	}
+
+	
 	
 	
 	

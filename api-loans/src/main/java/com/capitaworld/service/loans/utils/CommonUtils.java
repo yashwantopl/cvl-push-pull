@@ -707,5 +707,59 @@ public class CommonUtils {
 				}
 
 			}
+		  
+		  
+		  public enum DDRFinancialSummaryFields {
+				FIRST_TOTAL_SALES(1,"Total Sales"), 
+				INTEREST_COST(2,"Interest Cost"),
+				PROFIT_BEFORE_TAX(3,"Profit Before Tax (PBT)"),
+				PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"),
+				NET_WORTH(5,"Net Worth"),
+				ADJUSTED_NET_WORTH(6,"Adjusted Net Work(Treating unsecured loan as quasi capital)"),
+				TOTAL_DEBT(7,"Total Debt"),
+				SECURE_LOAN(8,"Secure Loan"),
+			  	UNSECURE_LOAN(9,"Unsecure Loan"),
+			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends & Relatives treated ad Qausi"),
+			  	CAPITAL(11,"Capital"),
+			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
+			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
+			  	TOTAL_LIABILITY(14,"Total Liabilities (TOL)"),
+			  	LEVERAGE(15,"Leverage (TOL/TNW)"),
+			  	ADJUSTED_LEVERAGE(16, "Adjusted Leverage (TOL/Adjusted TNW)"),
+			  	CAPITAL_EMPLOYED(17,"Capital Employed"),
+			  	GEARING(18,"Gearing (Total Debt/TNW)"),
+			  	ADJUSTED_GEARING(19,"Adjusted Gearing (Total Debt/Adjusted TNW)"),
+			  	CURRENT_RATIO(20,"Current Ratio"),
+			  	INVENTORY_TURNOVER(21,"Inventory Turnover(Days)"),
+			  	LAST_TOTAL_SALES(22,"Total Sales"),
+			  	WORKING_CAPITAL_CYCLE(23, "Working Capital Cycle(Days)");
+			  
+	
+			  	private int id;
+			  	private String value;
+
+				private DDRFinancialSummaryFields(int id,String value) {
+					this.id = id;
+					this.value = value;
+				}
+				
+				public int getId() {
+					return id;
+				}
+
+				public String getValue() {
+					return value;
+				}
+				
+				public static DDRFinancialSummaryFields[] getAll() {
+					return DDRFinancialSummaryFields.values();
+				}
+				
+
+			}
+		  
+		  public static double checkDouble(Double value) {
+			  return isObjectNullOrEmpty(value) ? 0.0 : value;
+		  }
 
 }

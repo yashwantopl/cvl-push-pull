@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,8 @@ public interface BalanceSheetDetailRepository extends JpaRepository<BalanceSheet
 	
 	@Query("from BalanceSheetDetail b where b.applicationId = :appId and b.year = :yr and b.isActive = true")
 	public BalanceSheetDetail getBalanceSheetDetail(@Param("appId") Long applicationId, @Param("yr") String year);
+	
+	
+	@Query("select o from BalanceSheetDetail o where o.applicationId.id = :applicationId and o.isActive = true")
+	public List<BalanceSheetDetail> getByApplicationId(@Param("applicationId") Long applicationId);
 }
