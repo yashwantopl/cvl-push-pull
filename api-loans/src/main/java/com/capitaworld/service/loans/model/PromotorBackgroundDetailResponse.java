@@ -91,6 +91,7 @@ public class PromotorBackgroundDetailResponse implements Serializable{
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
+	
     
     
 }
