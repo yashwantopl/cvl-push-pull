@@ -1,4 +1,3 @@
-
 package com.capitaworld.service.loans.domain.fundseeker;
 
 import java.io.Serializable;
@@ -11,22 +10,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-/**
- * The persistent class for the fs_loan_application_master database table.
- * 
- */
 @Entity
-@Table(name = "fs_loan_application_master")
+@Table(name = "application_status_audit")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQuery(name = "LoanApplicationMaster.findAll", query = "SELECT f FROM LoanApplicationMaster f")
-public class LoanApplicationMaster implements Serializable {
+@NamedQuery(name = "ApplicationStatusAudit.findAll", query = "SELECT f FROM ApplicationStatusAudit f")
+public class ApplicationStatusAudit implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -164,9 +157,6 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "is_mca")
 	private Boolean isMca;
 	
-	@Column(name = "isMsmeScoreRequired")
-	private Boolean isMsmeScoreRequired;
-	
 	@Column(name = "campaign_code")
 	private String campaignCode;
 	
@@ -179,14 +169,6 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
 	
-	public Boolean getIsMsmeScoreRequired() {
-		return isMsmeScoreRequired;
-	}
-
-	public void setIsMsmeScoreRequired(Boolean isMsmeScoreRequired) {
-		this.isMsmeScoreRequired = isMsmeScoreRequired;
-	}
-
 	public Boolean getIsMca() {
 		return isMca;
 	}
@@ -203,17 +185,8 @@ public class LoanApplicationMaster implements Serializable {
 		this.mcaCompanyId = mcaCompanyId;
 	}
 
-	// bi-directional many-to-one association to ApplicationStatusMaster
-	@ManyToOne
-	@JoinColumn(name = "status")
-	private ApplicationStatusMaster applicationStatusMaster;
-	
-	public LoanApplicationMaster() {
-	}
-
-	public LoanApplicationMaster(Long id) {
-		this.id = id;
-	}
+	@Column(name = "status")
+	private Long applicationStatusMaster;
 
 	public Long getId() {
 		return this.id;
@@ -311,11 +284,11 @@ public class LoanApplicationMaster implements Serializable {
 		this.userId = userId;
 	}
 
-	public ApplicationStatusMaster getApplicationStatusMaster() {
+	public Long getApplicationStatusMaster() {
 		return this.applicationStatusMaster;
 	}
 
-	public void setApplicationStatusMaster(ApplicationStatusMaster applicationStatusMaster) {
+	public void setApplicationStatusMaster(Long applicationStatusMaster) {
 		this.applicationStatusMaster = applicationStatusMaster;
 	}
 
@@ -558,11 +531,6 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setNpUserId(Long npUserId) {
 		this.npUserId = npUserId;
-	}
-
-	@Override
-	public String toString() {
-		return "LoanApplicationMaster [id=" + id + "]";
 	}
 
 }
