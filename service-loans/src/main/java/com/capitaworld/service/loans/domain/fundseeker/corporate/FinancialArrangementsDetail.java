@@ -58,6 +58,9 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	@Column(name="financial_institution_name")
 	private String financialInstitutionName;
+	
+	@Column(name="address")
+	private String address;
 
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -210,7 +213,16 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setSecurityDetails(String securityDetails) {
 		this.securityDetails = securityDetails;
 	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 	
+
 	
 	
 	

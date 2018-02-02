@@ -125,3 +125,10 @@ ADD COLUMN financial_strength INT(2),ADD COLUMN ability_to_raise_funds INT(2),AD
 ADD COLUMN credittrack_record INT(2),ADD COLUMN status_of_project_clearances INT(2),ADD COLUMN status_of_financial_closure INT(2),ADD COLUMN infrastructure_availability INT(2),
 ADD COLUMN construction_contract INT(2),ADD COLUMN number_of_cheques INT(2),ADD COLUMN number_of_times_dp INT(2),ADD COLUMN cumulative_no_of_days_dp INT(2),
 ADD COLUMN compliance_with_sanctioned INT(2),ADD COLUMN delay_in_receipt INT(2),ADD COLUMN delay_in_submission INT(2),ADD COLUMN number_of_lc INT(2);
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_current_financial_arrangements_details`
+
+ADD COLUMN address VARCHAR(100)
+;

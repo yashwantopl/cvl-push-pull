@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
@@ -33,6 +34,7 @@ public class DDROneFormResponse  implements Serializable{
 	
 	List<ProposedProductDetailRequest> proposedProductDetailList = new ArrayList<ProposedProductDetailRequest>();
 	List<ExistingProductDetailRequest> existingProductDetailList = new ArrayList<ExistingProductDetailRequest>();
+	List<AssociatedConcernDetailRequest> associatedConcernDetailList = new ArrayList<AssociatedConcernDetailRequest>(); 
 	
 	
 	public String getNameOfBorrower() {
@@ -112,6 +114,12 @@ public class DDROneFormResponse  implements Serializable{
 	}
 	public void setExistingProductDetailList(List<ExistingProductDetailRequest> existingProductDetailList) {
 		this.existingProductDetailList = existingProductDetailList;
+	}
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailList() {
+		return associatedConcernDetailList;
+	}
+	public void setAssociatedConcernDetailList(List<AssociatedConcernDetailRequest> associatedConcernDetailList) {
+		this.associatedConcernDetailList = associatedConcernDetailList;
 	}
 	
 	

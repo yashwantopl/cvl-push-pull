@@ -338,6 +338,46 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setInternalAudit(finalTermLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalTermLoanRequest.getInternalAuditId()).getValue() : null);
 			response.setCompetence(finalTermLoanRequest.getCompetenceId() != null ? Competence.getById(finalTermLoanRequest.getCompetenceId()).getValue() : null);
 			response.setExistingShareHolder(finalTermLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalTermLoanRequest.getExistingShareHoldersId()).getValue() : null);
+			response.setTechnologyRiskId(finalTermLoanRequest.getTechnologyRiskId() != null ? TechnologyRisk.getById(finalTermLoanRequest.getTechnologyRiskId()).getValue() : null);
+			response.setCustomerQuality(finalTermLoanRequest.getCustomerQuality() != null ? CustomerQuality.getById(finalTermLoanRequest.getCustomerQuality()).getValue() : null);
+			response.setSupplierQuality(finalTermLoanRequest.getSupplierQuality() != null ? SupplierQuality.getById(finalTermLoanRequest.getSupplierQuality()).getValue() : null);
+			response.setSustainabilityProduct(finalTermLoanRequest.getSustainabilityProduct() != null ? SustainabilityProduct.getById(finalTermLoanRequest.getSustainabilityProduct()).getValue() : null);
+			response.setEmployeeRelations(finalTermLoanRequest.getEmployeeRelations() != null ? IndustrialRelations.getById(finalTermLoanRequest.getEmployeeRelations()).getValue() : null);
+			response.setProductSeasonality(finalTermLoanRequest.getProductSeasonality() != null ? ProductSeasonality.getById(finalTermLoanRequest.getProductSeasonality()).getValue() : null);
+			response.setImpactOnOperatingMargins(finalTermLoanRequest.getImpactOnOperatingMargins() != null ? OperatingMargins.getById(finalTermLoanRequest.getImpactOnOperatingMargins()).getValue() : null);
+			response.setOrderBookPosition(finalTermLoanRequest.getOrderBookPosition() != null ? OrderBook.getById(finalTermLoanRequest.getOrderBookPosition()).getValue() : null);
+			response.setEnvironmentalImpact(finalTermLoanRequest.getEnvironmentalImpact() != null ? EnvironmentalImpact.getById(finalTermLoanRequest.getEnvironmentalImpact()).getValue() : null);
+			response.setAccountingQuality(finalTermLoanRequest.getAccountingQuality() != null ? AccountingQuality.getById(finalTermLoanRequest.getAccountingQuality()).getValue() : null);
+			response.setFinancialRestructuringHistory(finalTermLoanRequest.getFinancialRestructuringHistory() != null ? FinancialRestructuring.getById(finalTermLoanRequest.getFinancialRestructuringHistory()).getValue() : null);
+			response.setIntegrity(finalTermLoanRequest.getIntegrity() != null ? Integrity.getById(finalTermLoanRequest.getIntegrity()).getValue() : null);
+			response.setBusinessCommitment(finalTermLoanRequest.getBusinessCommitment() != null ? BusinessCommitment.getById(finalTermLoanRequest.getBusinessCommitment()).getValue() : null);
+			response.setManagementCompetence(finalTermLoanRequest.getManagementCompetence() != null ? ManagementCompetence.getById(finalTermLoanRequest.getManagementCompetence()).getValue() : null);
+			response.setBusinessExperience(finalTermLoanRequest.getBusinessExperience() != null ? BusinessExperience.getById(finalTermLoanRequest.getBusinessExperience()).getValue() : null);
+			response.setSuccessionPlanning(finalTermLoanRequest.getSuccessionPlanning() != null ? SuccessionPlanning.getById(finalTermLoanRequest.getSuccessionPlanning()).getValue() : null);
+			response.setFinancialStrength(finalTermLoanRequest.getFinancialStrength() != null ? FinancialSupport.getById(finalTermLoanRequest.getFinancialStrength()).getValue() : null);
+			response.setAbilityToRaiseFunds(finalTermLoanRequest.getAbilityToRaiseFunds() != null ? AbilityRaiseFunds.getById(finalTermLoanRequest.getAbilityToRaiseFunds()).getValue() : null);
+			response.setIntraCompany(finalTermLoanRequest.getIntraCompany() != null ? CompanyConflicts.getById(finalTermLoanRequest.getIntraCompany()).getValue() : null);
+			response.setInternalControl(finalTermLoanRequest.getInternalControl() != null ? InternalControl.getById(finalTermLoanRequest.getInternalControl()).getValue() : null);
+			response.setCreditTrackRecord(finalTermLoanRequest.getCreditTrackRecord() != null ? CreditRecord.getById(finalTermLoanRequest.getCreditTrackRecord()).getValue() : null);
+			response.setStatusOfProjectClearances(finalTermLoanRequest.getStatusOfProjectClearances() != null ? StatusClearances.getById(finalTermLoanRequest.getStatusOfProjectClearances()).getValue() : null);
+			response.setStatusOfFinancialClosure(finalTermLoanRequest.getStatusOfFinancialClosure() != null ? StatusFinancialClosure.getById(finalTermLoanRequest.getStatusOfFinancialClosure()).getValue() : null);
+			response.setInfrastructureAvailability(finalTermLoanRequest.getInfrastructureAvailability() != null ? InfrastructureAvailability.getById(finalTermLoanRequest.getInfrastructureAvailability()).getValue() : null);
+			response.setConstructionContract(finalTermLoanRequest.getConstructionContract() != null ? ConstructionContract.getById(finalTermLoanRequest.getConstructionContract()).getValue() : null);
+			response.setNumberOfCheques(finalTermLoanRequest.getNumberOfCheques() != null ? ChequesReturned.getById(finalTermLoanRequest.getNumberOfCheques()).getValue() : null);
+			response.setNumberOfTimesDp(finalTermLoanRequest.getNumberOfTimesDp() != null ? LimitOverdrawn.getById(finalTermLoanRequest.getNumberOfTimesDp()).getValue() : null);
+			response.setCumulativeNoOfDaysDp(finalTermLoanRequest.getCumulativeNoOfDaysDp() != null ? CumulativeOverdrawn.getById(finalTermLoanRequest.getCumulativeNoOfDaysDp()).getValue() : null);
+			response.setComplianceWithSanctioned(finalTermLoanRequest.getComplianceWithSanctioned() != null ? ComplianceConditions.getById(finalTermLoanRequest.getComplianceWithSanctioned()).getValue() : null);
+			response.setProgressReports(finalTermLoanRequest.getProgressReports() != null ? SubmissionReports.getById(finalTermLoanRequest.getProgressReports()).getValue() : null);
+			response.setDelayInReceipt(finalTermLoanRequest.getDelayInReceipt() != null ? DelayInstalments.getById(finalTermLoanRequest.getDelayInReceipt()).getValue() : null);
+			response.setDelayInSubmission(finalTermLoanRequest.getDelayInSubmission() != null ? DelaySubmission.getById(finalTermLoanRequest.getDelayInSubmission()).getValue() : null);
+			response.setNumberOfLc(finalTermLoanRequest.getNumberOfLc() != null ? BorrowerInvoked.getById(finalTermLoanRequest.getNumberOfLc()).getValue() : null);
+			response.setUnhedgedForeignCurrency(finalTermLoanRequest.getUnhedgedForeignCurrency() != null ? UnhedgedCurrency.getById(finalTermLoanRequest.getUnhedgedForeignCurrency()).getValue() : null);
+			response.setProjectedDebtService(finalTermLoanRequest.getProjectedDebtService() != null ? ProjectedRatio.getById(finalTermLoanRequest.getProjectedDebtService()).getValue() : null);
+			response.setInternalRateReturn(finalTermLoanRequest.getInternalRateReturn() != null ? InternalReturn.getById(finalTermLoanRequest.getInternalRateReturn()).getValue() : null);
+			response.setSensititivityAnalysis(finalTermLoanRequest.getSensititivityAnalysis() != null ? SensititivityAnalysis.getById(finalTermLoanRequest.getSensititivityAnalysis()).getValue() : null);
+			response.setVarianceInProjectedSales(finalTermLoanRequest.getVarianceInProjectedSales() != null ? VarianceSales.getById(finalTermLoanRequest.getVarianceInProjectedSales()).getValue() : null);
+			
+			
 
 			if (finalTermLoanRequest.getIsDependsMajorlyOnGovernment()) {
 				response.setMajorlyOnGovernment("Yes");
