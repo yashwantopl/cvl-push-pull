@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
@@ -22,17 +23,21 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalUnsecuredLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
+import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetManuRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetServRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetTradRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
 import com.ibm.icu.util.Calendar;
 
 @Service
@@ -68,6 +73,57 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Autowired
 	FinalUnsecuredLoanDetailRepository finalUnsecuredLoanDetailRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	private CorporateApplicantService applicantService;
+	
+	
+	@Override
+	public RatingResponse calculateIrrRating(Long appId, Long userId) {
+		// TODO Auto-generated method stub
+		Integer businessTypeId=null;
+
+		IrrRequest irrRequest = new IrrRequest();
+		LoanApplicationMaster applicationMaster = null;
+		try {
+			applicationMaster = loanApplicationRepository.findOne(appId);
+			irrRequest.setApplicationId(appId);
+			//irrRequest.setCompanyName(applicationMaster.getMcaCompanyId());
+			irrRequest.setBusinessTypeId(businessTypeId);
+		
+			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
+			{
+				//---- Manufacturing
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, applicationMaster.getProductId()));
+			}
+			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
+			{
+				//---- Service
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, applicationMaster.getProductId()));
+			}
+			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId)
+			{
+				//---- Trading
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, applicationMaster.getProductId()));
+			}
+			
+			// if CMA filled
+			irrRequest.setFinancialInputRequest(cmaIrrMappingService(appId));
+			
+			// if coAct filled
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(appId));
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 	
 	@Override
 	public FinancialInputRequest cmaIrrMappingService(Long aplicationId) throws Exception {
@@ -2012,6 +2068,4 @@ public class IrrServiceImpl implements IrrService{
 		
 		return qualitativeInputSheetTradRequest;		
 	}
-	
-
 }
