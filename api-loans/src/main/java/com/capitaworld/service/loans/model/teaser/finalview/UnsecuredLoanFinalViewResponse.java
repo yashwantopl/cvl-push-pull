@@ -142,6 +142,46 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
     private String marketPositioningTop;
     private String marketShareTurnover;
     
+    //NEW MCQ FOR NHBS
+    private String technologyRiskId;
+    private String customerQuality;
+    private String supplierQuality;
+    private String sustainabilityProduct;
+    private String employeeRelations;
+    private String productSeasonality;
+    private String impactOnOperatingMargins;
+    private String orderBookPosition;
+    private String environmentalImpact;
+    private String accountingQuality;
+    private String financialRestructuringHistory;
+    private String integrity;
+    private String businessCommitment;
+    private String managementCompetence;
+    private String businessExperience;
+    private String successionPlanning;
+    private String financialStrength;
+    private String abilityToRaiseFunds;
+    private String intraCompany;
+    private String internalControl;
+    private String creditTrackRecord;
+    private String statusOfProjectClearances;
+    private String statusOfFinancialClosure;
+    private String infrastructureAvailability;
+    private String constructionContract;
+    private String numberOfCheques;
+    private String numberOfTimesDp;
+    private String cumulativeNoOfDaysDp;
+    private String complianceWithSanctioned;
+    private String progressReports;
+    private String delayInReceipt;
+    private String delayInSubmission;
+    private String numberOfLc;
+    private String unhedgedForeignCurrency;
+    private String projectedDebtService;
+    private String internalRateReturn;
+    private String sensititivityAnalysis;
+    private String varianceInProjectedSales;
+    
     public String getMajorlyOnGovernment() {
 		return majorlyOnGovernment;
 	}
@@ -1048,4 +1088,309 @@ public class UnsecuredLoanFinalViewResponse implements Serializable{
 		getCoApplicantList().add(corporateCoApplicantRequest);
 		return corporateCoApplicantRequest;
 	}
+
+	public String getTechnologyRiskId() {
+		return technologyRiskId;
+	}
+
+	public void setTechnologyRiskId(String technologyRiskId) {
+		this.technologyRiskId = technologyRiskId;
+	}
+
+	public String getCustomerQuality() {
+		return customerQuality;
+	}
+
+	public void setCustomerQuality(String customerQuality) {
+		this.customerQuality = customerQuality;
+	}
+
+	public String getSupplierQuality() {
+		return supplierQuality;
+	}
+
+	public void setSupplierQuality(String supplierQuality) {
+		this.supplierQuality = supplierQuality;
+	}
+
+	public String getSustainabilityProduct() {
+		return sustainabilityProduct;
+	}
+
+	public void setSustainabilityProduct(String sustainabilityProduct) {
+		this.sustainabilityProduct = sustainabilityProduct;
+	}
+
+	public String getEmployeeRelations() {
+		return employeeRelations;
+	}
+
+	public void setEmployeeRelations(String employeeRelations) {
+		this.employeeRelations = employeeRelations;
+	}
+
+	public String getProductSeasonality() {
+		return productSeasonality;
+	}
+
+	public void setProductSeasonality(String productSeasonality) {
+		this.productSeasonality = productSeasonality;
+	}
+
+	public String getImpactOnOperatingMargins() {
+		return impactOnOperatingMargins;
+	}
+
+	public void setImpactOnOperatingMargins(String impactOnOperatingMargins) {
+		this.impactOnOperatingMargins = impactOnOperatingMargins;
+	}
+
+	public String getOrderBookPosition() {
+		return orderBookPosition;
+	}
+
+	public void setOrderBookPosition(String orderBookPosition) {
+		this.orderBookPosition = orderBookPosition;
+	}
+
+	public String getEnvironmentalImpact() {
+		return environmentalImpact;
+	}
+
+	public void setEnvironmentalImpact(String environmentalImpact) {
+		this.environmentalImpact = environmentalImpact;
+	}
+
+	public String getAccountingQuality() {
+		return accountingQuality;
+	}
+
+	public void setAccountingQuality(String accountingQuality) {
+		this.accountingQuality = accountingQuality;
+	}
+
+	public String getFinancialRestructuringHistory() {
+		return financialRestructuringHistory;
+	}
+
+	public void setFinancialRestructuringHistory(String financialRestructuringHistory) {
+		this.financialRestructuringHistory = financialRestructuringHistory;
+	}
+
+	public String getIntegrity() {
+		return integrity;
+	}
+
+	public void setIntegrity(String integrity) {
+		this.integrity = integrity;
+	}
+
+	public String getBusinessCommitment() {
+		return businessCommitment;
+	}
+
+	public void setBusinessCommitment(String businessCommitment) {
+		this.businessCommitment = businessCommitment;
+	}
+
+	public String getManagementCompetence() {
+		return managementCompetence;
+	}
+
+	public void setManagementCompetence(String managementCompetence) {
+		this.managementCompetence = managementCompetence;
+	}
+
+	public String getBusinessExperience() {
+		return businessExperience;
+	}
+
+	public void setBusinessExperience(String businessExperience) {
+		this.businessExperience = businessExperience;
+	}
+
+	public String getSuccessionPlanning() {
+		return successionPlanning;
+	}
+
+	public void setSuccessionPlanning(String successionPlanning) {
+		this.successionPlanning = successionPlanning;
+	}
+
+	public String getFinancialStrength() {
+		return financialStrength;
+	}
+
+	public void setFinancialStrength(String financialStrength) {
+		this.financialStrength = financialStrength;
+	}
+
+	public String getAbilityToRaiseFunds() {
+		return abilityToRaiseFunds;
+	}
+
+	public void setAbilityToRaiseFunds(String abilityToRaiseFunds) {
+		this.abilityToRaiseFunds = abilityToRaiseFunds;
+	}
+
+	public String getIntraCompany() {
+		return intraCompany;
+	}
+
+	public void setIntraCompany(String intraCompany) {
+		this.intraCompany = intraCompany;
+	}
+
+	public String getInternalControl() {
+		return internalControl;
+	}
+
+	public void setInternalControl(String internalControl) {
+		this.internalControl = internalControl;
+	}
+
+	public String getCreditTrackRecord() {
+		return creditTrackRecord;
+	}
+
+	public void setCreditTrackRecord(String creditTrackRecord) {
+		this.creditTrackRecord = creditTrackRecord;
+	}
+
+	public String getStatusOfProjectClearances() {
+		return statusOfProjectClearances;
+	}
+
+	public void setStatusOfProjectClearances(String statusOfProjectClearances) {
+		this.statusOfProjectClearances = statusOfProjectClearances;
+	}
+
+	public String getStatusOfFinancialClosure() {
+		return statusOfFinancialClosure;
+	}
+
+	public void setStatusOfFinancialClosure(String statusOfFinancialClosure) {
+		this.statusOfFinancialClosure = statusOfFinancialClosure;
+	}
+
+	public String getInfrastructureAvailability() {
+		return infrastructureAvailability;
+	}
+
+	public void setInfrastructureAvailability(String infrastructureAvailability) {
+		this.infrastructureAvailability = infrastructureAvailability;
+	}
+
+	public String getConstructionContract() {
+		return constructionContract;
+	}
+
+	public void setConstructionContract(String constructionContract) {
+		this.constructionContract = constructionContract;
+	}
+
+	public String getNumberOfCheques() {
+		return numberOfCheques;
+	}
+
+	public void setNumberOfCheques(String numberOfCheques) {
+		this.numberOfCheques = numberOfCheques;
+	}
+
+	public String getNumberOfTimesDp() {
+		return numberOfTimesDp;
+	}
+
+	public void setNumberOfTimesDp(String numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
+	}
+
+	public String getCumulativeNoOfDaysDp() {
+		return cumulativeNoOfDaysDp;
+	}
+
+	public void setCumulativeNoOfDaysDp(String cumulativeNoOfDaysDp) {
+		this.cumulativeNoOfDaysDp = cumulativeNoOfDaysDp;
+	}
+
+	public String getComplianceWithSanctioned() {
+		return complianceWithSanctioned;
+	}
+
+	public void setComplianceWithSanctioned(String complianceWithSanctioned) {
+		this.complianceWithSanctioned = complianceWithSanctioned;
+	}
+
+	public String getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(String progressReports) {
+		this.progressReports = progressReports;
+	}
+
+	public String getDelayInReceipt() {
+		return delayInReceipt;
+	}
+
+	public void setDelayInReceipt(String delayInReceipt) {
+		this.delayInReceipt = delayInReceipt;
+	}
+
+	public String getDelayInSubmission() {
+		return delayInSubmission;
+	}
+
+	public void setDelayInSubmission(String delayInSubmission) {
+		this.delayInSubmission = delayInSubmission;
+	}
+
+	public String getNumberOfLc() {
+		return numberOfLc;
+	}
+
+	public void setNumberOfLc(String numberOfLc) {
+		this.numberOfLc = numberOfLc;
+	}
+
+	public String getUnhedgedForeignCurrency() {
+		return unhedgedForeignCurrency;
+	}
+
+	public void setUnhedgedForeignCurrency(String unhedgedForeignCurrency) {
+		this.unhedgedForeignCurrency = unhedgedForeignCurrency;
+	}
+
+	public String getProjectedDebtService() {
+		return projectedDebtService;
+	}
+
+	public void setProjectedDebtService(String projectedDebtService) {
+		this.projectedDebtService = projectedDebtService;
+	}
+
+	public String getInternalRateReturn() {
+		return internalRateReturn;
+	}
+
+	public void setInternalRateReturn(String internalRateReturn) {
+		this.internalRateReturn = internalRateReturn;
+	}
+
+	public String getSensititivityAnalysis() {
+		return sensititivityAnalysis;
+	}
+
+	public void setSensititivityAnalysis(String sensititivityAnalysis) {
+		this.sensititivityAnalysis = sensititivityAnalysis;
+	}
+
+	public String getVarianceInProjectedSales() {
+		return varianceInProjectedSales;
+	}
+
+	public void setVarianceInProjectedSales(String varianceInProjectedSales) {
+		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+	
 }
