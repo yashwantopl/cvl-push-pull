@@ -329,6 +329,45 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
 				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
 				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
+				//NEW MCQ FOR NHBS
+				response.setTechnologyRiskId(finalWorkingCapitalLoanRequest.getTechnologyRiskId() != null ? TechnologyRisk.getById(finalWorkingCapitalLoanRequest.getTechnologyRiskId()).getValue() : null);
+				response.setCustomerQuality(finalWorkingCapitalLoanRequest.getCustomerQuality() != null ? CustomerQuality.getById(finalWorkingCapitalLoanRequest.getCustomerQuality()).getValue() : null);
+				response.setSupplierQuality(finalWorkingCapitalLoanRequest.getSupplierQuality() != null ? SupplierQuality.getById(finalWorkingCapitalLoanRequest.getSupplierQuality()).getValue() : null);
+				response.setSustainabilityProduct(finalWorkingCapitalLoanRequest.getSustainabilityProduct() != null ? SustainabilityProduct.getById(finalWorkingCapitalLoanRequest.getSustainabilityProduct()).getValue() : null);
+				response.setEmployeeRelations(finalWorkingCapitalLoanRequest.getEmployeeRelations() != null ? IndustrialRelations.getById(finalWorkingCapitalLoanRequest.getEmployeeRelations()).getValue() : null);
+				response.setProductSeasonality(finalWorkingCapitalLoanRequest.getProductSeasonality() != null ? ProductSeasonality.getById(finalWorkingCapitalLoanRequest.getProductSeasonality()).getValue() : null);
+				response.setImpactOnOperatingMargins(finalWorkingCapitalLoanRequest.getImpactOnOperatingMargins() != null ? OperatingMargins.getById(finalWorkingCapitalLoanRequest.getImpactOnOperatingMargins()).getValue() : null);
+				response.setOrderBookPosition(finalWorkingCapitalLoanRequest.getOrderBookPosition() != null ? OrderBook.getById(finalWorkingCapitalLoanRequest.getOrderBookPosition()).getValue() : null);
+				response.setEnvironmentalImpact(finalWorkingCapitalLoanRequest.getEnvironmentalImpact() != null ? EnvironmentalImpact.getById(finalWorkingCapitalLoanRequest.getEnvironmentalImpact()).getValue() : null);
+				response.setAccountingQuality(finalWorkingCapitalLoanRequest.getAccountingQuality() != null ? AccountingQuality.getById(finalWorkingCapitalLoanRequest.getAccountingQuality()).getValue() : null);
+				response.setFinancialRestructuringHistory(finalWorkingCapitalLoanRequest.getFinancialRestructuringHistory() != null ? FinancialRestructuring.getById(finalWorkingCapitalLoanRequest.getFinancialRestructuringHistory()).getValue() : null);
+				response.setIntegrity(finalWorkingCapitalLoanRequest.getIntegrity() != null ? Integrity.getById(finalWorkingCapitalLoanRequest.getIntegrity()).getValue() : null);
+				response.setBusinessCommitment(finalWorkingCapitalLoanRequest.getBusinessCommitment() != null ? BusinessCommitment.getById(finalWorkingCapitalLoanRequest.getBusinessCommitment()).getValue() : null);
+				response.setManagementCompetence(finalWorkingCapitalLoanRequest.getManagementCompetence() != null ? ManagementCompetence.getById(finalWorkingCapitalLoanRequest.getManagementCompetence()).getValue() : null);
+				response.setBusinessExperience(finalWorkingCapitalLoanRequest.getBusinessExperience() != null ? BusinessExperience.getById(finalWorkingCapitalLoanRequest.getBusinessExperience()).getValue() : null);
+				response.setSuccessionPlanning(finalWorkingCapitalLoanRequest.getSuccessionPlanning() != null ? SuccessionPlanning.getById(finalWorkingCapitalLoanRequest.getSuccessionPlanning()).getValue() : null);
+				response.setFinancialStrength(finalWorkingCapitalLoanRequest.getFinancialStrength() != null ? FinancialSupport.getById(finalWorkingCapitalLoanRequest.getFinancialStrength()).getValue() : null);
+				response.setAbilityToRaiseFunds(finalWorkingCapitalLoanRequest.getAbilityToRaiseFunds() != null ? AbilityRaiseFunds.getById(finalWorkingCapitalLoanRequest.getAbilityToRaiseFunds()).getValue() : null);
+				response.setIntraCompany(finalWorkingCapitalLoanRequest.getIntraCompany() != null ? CompanyConflicts.getById(finalWorkingCapitalLoanRequest.getIntraCompany()).getValue() : null);
+				response.setInternalControl(finalWorkingCapitalLoanRequest.getInternalControl() != null ? InternalControl.getById(finalWorkingCapitalLoanRequest.getInternalControl()).getValue() : null);
+				response.setCreditTrackRecord(finalWorkingCapitalLoanRequest.getCreditTrackRecord() != null ? CreditRecord.getById(finalWorkingCapitalLoanRequest.getCreditTrackRecord()).getValue() : null);
+				response.setStatusOfProjectClearances(finalWorkingCapitalLoanRequest.getStatusOfProjectClearances() != null ? StatusClearances.getById(finalWorkingCapitalLoanRequest.getStatusOfProjectClearances()).getValue() : null);
+				response.setStatusOfFinancialClosure(finalWorkingCapitalLoanRequest.getStatusOfFinancialClosure() != null ? StatusFinancialClosure.getById(finalWorkingCapitalLoanRequest.getStatusOfFinancialClosure()).getValue() : null);
+				response.setInfrastructureAvailability(finalWorkingCapitalLoanRequest.getInfrastructureAvailability() != null ? InfrastructureAvailability.getById(finalWorkingCapitalLoanRequest.getInfrastructureAvailability()).getValue() : null);
+				response.setConstructionContract(finalWorkingCapitalLoanRequest.getConstructionContract() != null ? ConstructionContract.getById(finalWorkingCapitalLoanRequest.getConstructionContract()).getValue() : null);
+				response.setNumberOfCheques(finalWorkingCapitalLoanRequest.getNumberOfCheques() != null ? ChequesReturned.getById(finalWorkingCapitalLoanRequest.getNumberOfCheques()).getValue() : null);
+				response.setNumberOfTimesDp(finalWorkingCapitalLoanRequest.getNumberOfTimesDp() != null ? LimitOverdrawn.getById(finalWorkingCapitalLoanRequest.getNumberOfTimesDp()).getValue() : null);
+				response.setCumulativeNoOfDaysDp(finalWorkingCapitalLoanRequest.getCumulativeNoOfDaysDp() != null ? CumulativeOverdrawn.getById(finalWorkingCapitalLoanRequest.getCumulativeNoOfDaysDp()).getValue() : null);
+				response.setComplianceWithSanctioned(finalWorkingCapitalLoanRequest.getComplianceWithSanctioned() != null ? ComplianceConditions.getById(finalWorkingCapitalLoanRequest.getComplianceWithSanctioned()).getValue() : null);
+				response.setProgressReports(finalWorkingCapitalLoanRequest.getProgressReports() != null ? SubmissionReports.getById(finalWorkingCapitalLoanRequest.getProgressReports()).getValue() : null);
+				response.setDelayInReceipt(finalWorkingCapitalLoanRequest.getDelayInReceipt() != null ? DelayInstalments.getById(finalWorkingCapitalLoanRequest.getDelayInReceipt()).getValue() : null);
+				response.setDelayInSubmission(finalWorkingCapitalLoanRequest.getDelayInSubmission() != null ? DelaySubmission.getById(finalWorkingCapitalLoanRequest.getDelayInSubmission()).getValue() : null);
+				response.setNumberOfLc(finalWorkingCapitalLoanRequest.getNumberOfLc() != null ? BorrowerInvoked.getById(finalWorkingCapitalLoanRequest.getNumberOfLc()).getValue() : null);
+				response.setUnhedgedForeignCurrency(finalWorkingCapitalLoanRequest.getUnhedgedForeignCurrency() != null ? UnhedgedCurrency.getById(finalWorkingCapitalLoanRequest.getUnhedgedForeignCurrency()).getValue() : null);
+				response.setProjectedDebtService(finalWorkingCapitalLoanRequest.getProjectedDebtService() != null ? ProjectedRatio.getById(finalWorkingCapitalLoanRequest.getProjectedDebtService()).getValue() : null);
+				response.setInternalRateReturn(finalWorkingCapitalLoanRequest.getInternalRateReturn() != null ? InternalReturn.getById(finalWorkingCapitalLoanRequest.getInternalRateReturn()).getValue() : null);
+				response.setSensititivityAnalysis(finalWorkingCapitalLoanRequest.getSensititivityAnalysis() != null ? SensititivityAnalysis.getById(finalWorkingCapitalLoanRequest.getSensititivityAnalysis()).getValue() : null);
+				response.setVarianceInProjectedSales(finalWorkingCapitalLoanRequest.getVarianceInProjectedSales() != null ? VarianceSales.getById(finalWorkingCapitalLoanRequest.getVarianceInProjectedSales()).getValue() : null);
 				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
 					response.setIsIsoCertified("Yes");
 				} else {
