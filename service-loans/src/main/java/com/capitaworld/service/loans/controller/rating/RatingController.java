@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IrrRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
 
 
 /*
@@ -210,49 +211,20 @@ public class RatingController {
 	
 private static final Logger logger = LoggerFactory.getLogger(RatingController.class);
 	
-	
-	@Autowired
-	private RatingClient ratingClient;
-	
 	@Autowired
 	private IrrService irrService;
 	
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-	
-	@Autowired
-	private CorporateApplicantService applicantService;
-	
 	@RequestMapping(value = "/calculate_irr_Rating", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public void calculateIrrRating(@RequestBody Long appId,HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
-		IrrRequest irrRequest = new IrrRequest();
-		LoanApplicationMaster applicationMaster = null;
-		try {
-			applicationMaster = loanApplicationRepository.findOne(appId);
-			irrRequest.setApplicationId(appId);
-			//irrRequest.setCompanyName(applicationMaster.getMcaCompanyId());
-			
-			//---- Manufacturing
-			irrRequest.setQualitativeInputSheetManuRequest(irrService.qualitativeInputServiceManu(appId, applicationMaster.getProductId()));
-			//---- Service
-			irrRequest.setQualitativeInputSheetServRequest(irrService.qualitativeInputServiceService(appId, applicationMaster.getProductId()));
-			//---- Trading
-			irrRequest.setQualitativeInputSheetTradRequest(irrService.qualitativeInputServiceTrading(appId, applicationMaster.getProductId()));
-			
-			
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
-				irrRequest.setUserId(clientId);
-			}
-			// if CMA filled
-			irrRequest.setFinancialInputRequest(irrService.cmaIrrMappingService(appId));
-			// if coAct filled
-			irrRequest.setFinancialInputRequest(irrService.coActIrrMappingService(appId));
-			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RatingException("Ratings Service is not available");
+	public RatingResponse calculateIrrRating(@RequestBody Long appId,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+		
+		Long userId = null;
+		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+		   userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
+		
+		return irrService.calculateIrrRating(appId, userId);
 	}
 }
