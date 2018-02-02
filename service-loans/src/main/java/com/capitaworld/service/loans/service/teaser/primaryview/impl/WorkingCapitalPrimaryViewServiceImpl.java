@@ -402,7 +402,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		//references
         List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
 		try {
-			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

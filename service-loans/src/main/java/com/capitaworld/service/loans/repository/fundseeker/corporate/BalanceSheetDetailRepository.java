@@ -17,6 +17,6 @@ public interface BalanceSheetDetailRepository extends JpaRepository<BalanceSheet
 	@Query("update BalanceSheetDetail b set b.isActive = false where b.storageDetailsId= :sId")
 	public void inActiveBalanceSheetDetail(@Param("sId") Long storageDetailsId);
 	
-	@Query("select BalanceSheetDetail b where b.application_id = :appId and b.year = :yr and b.isActive = true")
+	@Query("from BalanceSheetDetail b where b.applicationId = :appId and b.year = :yr and b.isActive = true")
 	public BalanceSheetDetail getBalanceSheetDetail(@Param("appId") Long applicationId, @Param("yr") String year);
 }
