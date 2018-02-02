@@ -89,6 +89,8 @@ public class DDRFormDetailsRequest implements Serializable {
 	List<DDROtherBankLoanDetailsRequest> dDROtherBankLoanDetailsList = new ArrayList<DDROtherBankLoanDetailsRequest>();
 	List<DDRRelWithDbsDetailsRequest> dDRRelWithDbsDetailsList = new ArrayList<DDRRelWithDbsDetailsRequest>();
 	List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList = new ArrayList<DDRVehiclesOwnedDetailsRequest>();
+	List<DDRFinancialSummaryRequest> dDRFinancialSummaryList = new ArrayList<DDRFinancialSummaryRequest>();
+	List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList = new ArrayList<DDRFamilyDirectorsDetailsRequest>();
 	
 	
 	
@@ -557,6 +559,20 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 	public void setdDRVehiclesOwnedDetailsList(List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList) {
 		this.dDRVehiclesOwnedDetailsList = dDRVehiclesOwnedDetailsList;
+	}
+	public List<DDRFinancialSummaryRequest> getdDRFinancialSummaryList() {
+		return dDRFinancialSummaryList;
+	}
+	public void setdDRFinancialSummaryList(List<DDRFinancialSummaryRequest> dDRFinancialSummaryList) {
+		this.dDRFinancialSummaryList = dDRFinancialSummaryList;
+	}
+	
+	
+	public List<DDRFamilyDirectorsDetailsRequest> getdDRFamilyDirectorsList() {
+		return dDRFamilyDirectorsList;
+	}
+	public void setdDRFamilyDirectorsList(List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList) {
+		this.dDRFamilyDirectorsList = dDRFamilyDirectorsList;
 	}
 	@Override
 	public String toString() {
