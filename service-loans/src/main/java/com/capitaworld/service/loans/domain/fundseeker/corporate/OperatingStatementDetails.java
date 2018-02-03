@@ -185,24 +185,32 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name="storage_details_id")
 	private Long storageDetailsId;
 	
-	@Column(name="selling_distribution_exp")
-	private Double sellingDistributionExp;
+	/*@Column(name="selling_distribution_exp")
+	private Double sellingDistributionExp;*/
 	
 	@Column(name="general_admin_exp")
 	private Double generalAdminExp;
+	
+	@Column(name="selling_distribution_exp")
+	private Double SellingAndDistributionExpenses;
+	
+	
 
 
-	public Double getSellingDistributionExp() {
-		return sellingDistributionExp;
+	public Double getSellingAndDistributionExpenses() {
+		return SellingAndDistributionExpenses;
 	}
+
+	public void setSellingAndDistributionExpenses(Double sellingAndDistributionExpenses) {
+		SellingAndDistributionExpenses = sellingAndDistributionExpenses;
+	}
+
+	
 
 	public Double getGeneralAdminExp() {
 		return generalAdminExp;
 	}
 
-	public void setSellingDistributionExp(Double sellingDistributionExp) {
-		this.sellingDistributionExp = sellingDistributionExp;
-	}
 
 	public void setGeneralAdminExp(Double generalAdminExp) {
 		this.generalAdminExp = generalAdminExp;
