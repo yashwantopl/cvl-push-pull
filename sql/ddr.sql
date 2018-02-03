@@ -3,6 +3,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_form_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `application_id`  bigint(20) NOT NULL,
 `user_id` bigint(20) NOT NULL,
+`reference_no`  varchar(255) DEFAULT NULL,
 `godown_stockyard`  varchar(255) DEFAULT NULL,
 `company_success_plan`  Text DEFAULT NULL,
 `details_of_banking_arrangement` Text DEFAULT NULL,
@@ -189,6 +190,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_credit_card_details` (
 CREATE TABLE `loan_applications`.`fs_ddr_financial_summary` (
   `id` BIGINT(20) unsigned NOT NULL auto_increment,
   `fs_ddr_form_id` BIGINT(20) NULL,
+  `perticular_id` int(20) DEFAULT NULL,
   `perticular_name` VARCHAR(45) NULL,
   `provisional_year` double DEFAULT NULL,
   `last_year` double DEFAULT NULL,

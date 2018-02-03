@@ -2,8 +2,10 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
-import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
+import org.json.simple.JSONObject;
+
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
+import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 
 public interface DDRFormService {
 
@@ -11,7 +13,11 @@ public interface DDRFormService {
 	
 	public DDRFormDetailsRequest get(Long id);
 	
-	public List<DDRCMACalculationResponse> getCMAandCOActDetails(Long applicationId);
+	public List<JSONObject> getFinancialSummaryFieldsList();
+	
+	public List<JSONObject> getFinancialSummaryToBeFieldsList();
+	
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId);
 	
 	
 }
