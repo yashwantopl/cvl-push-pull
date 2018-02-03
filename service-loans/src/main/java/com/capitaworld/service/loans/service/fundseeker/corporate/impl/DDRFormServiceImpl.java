@@ -30,6 +30,7 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROfficeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -48,6 +49,7 @@ import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDROtherBankLoanDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDRRelWithDbsDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDRVehiclesOwnedDetailsRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -64,6 +66,7 @@ import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROfficeDetailsR
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROtherBankLoanDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRRelWithDbsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRVehiclesOwnedDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
@@ -165,6 +168,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	@Autowired
 	private BalanceSheetDetailRepository balanceSheetDetailRepository;
+	
+	@Autowired
+	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 	
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
@@ -797,10 +803,24 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
+		
+		
+		try {
+			List<ReferencesRetailDetail> referencesRetailList = referenceRetailDetailsRepository.listReferencesRetailFromAppId(applicationId);
+			List<ReferenceRetailDetailsRequest> referencesResponseList = new ArrayList<>(referencesRetailList.size());
+			ReferenceRetailDetailsRequest referencesResponse = null;
+			for(ReferencesRetailDetail referencesRetail : referencesRetailList) {
+				referencesResponse = new ReferenceRetailDetailsRequest();
+				referencesResponse.setName(referencesRetail.getName());
+				referencesResponse.setMobile(referencesRetail.getMobile());
+				referencesResponseList.add(referencesResponse);
+			}
+			response.setReferencesResponseList(referencesResponseList);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Reference Details in DDR OneForm");
+			e.printStackTrace();
+		}
 		return response; 
-		
-
-		
 	}
 	
 	@SuppressWarnings("unchecked")
