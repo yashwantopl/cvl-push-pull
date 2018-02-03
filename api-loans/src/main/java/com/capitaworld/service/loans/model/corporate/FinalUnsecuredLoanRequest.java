@@ -31,6 +31,47 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 	private Integer technologyPatentedId;
 	private Integer technologyRequiresUpgradationId;
 	private Integer technologyTypeId;
+	//new fields for nhbs
+	private Integer technologyRiskId;
+	private Integer customerQuality;
+	private Integer supplierQuality;
+	private Integer sustainabilityProduct;
+	private Integer orderBookPosition;
+	private Integer employeeRelations;
+	private Integer productSeasonality;
+	private Integer impactOnOperatingMargins;
+	private Integer environmentalImpact;
+	private Integer accountingQuality;
+	private Integer financialRestructuringHistory;
+	private Integer integrity;
+	private Integer businessCommitment;
+	private Integer managementCompetence;
+	private Integer businessExperience;
+	private Integer successionPlanning;
+	private Integer financialStrength;
+	private Integer abilityToRaiseFunds;
+	private Integer intraCompany;
+	private Integer internalControl;
+	private Integer creditTrackRecord;
+	private Integer statusOfProjectClearances;
+	private Integer statusOfFinancialClosure;
+	private Integer infrastructureAvailability;
+	private Integer constructionContract;
+	private Integer numberOfCheques;
+	private Integer numberOfTimesDp;
+	private Integer cumulativeNoOfDaysDp;
+	private Integer complianceWithSanctioned;
+	private Integer progressReports;
+	private Integer delayInReceipt;
+	private Integer delayInSubmission;
+	private Integer numberOfLc;
+	
+	private Integer unhedgedForeignCurrency;
+	private Integer projectedDebtService;
+	private Integer internalRateReturn;
+	private Integer sensititivityAnalysis;
+	private Integer varianceInProjectedSales;
+	
 	private Boolean whetherTechnologyIsTied;
 	private String finalFilledCount;
 	private Long userId;
@@ -251,6 +292,317 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 	public void setFinalFilledCount(String finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
+
+	public Integer getTechnologyRiskId() {
+		return technologyRiskId;
+	}
+
+	public void setTechnologyRiskId(Integer technologyRiskId) {
+		this.technologyRiskId = technologyRiskId;
+	}
+
+	public Integer getCustomerQuality() {
+		return customerQuality;
+	}
+
+	public void setCustomerQuality(Integer customerQuality) {
+		this.customerQuality = customerQuality;
+	}
+
+	public Integer getSupplierQuality() {
+		return supplierQuality;
+	}
+
+	public void setSupplierQuality(Integer supplierQuality) {
+		this.supplierQuality = supplierQuality;
+	}
+
+	public Integer getSustainabilityProduct() {
+		return sustainabilityProduct;
+	}
+
+	public void setSustainabilityProduct(Integer sustainabilityProduct) {
+		this.sustainabilityProduct = sustainabilityProduct;
+	}
+
+	public Integer getOrderBookPosition() {
+		return orderBookPosition;
+	}
+
+	public void setOrderBookPosition(Integer orderBookPosition) {
+		this.orderBookPosition = orderBookPosition;
+	}
+
+	public Integer getEmployeeRelations() {
+		return employeeRelations;
+	}
+
+	public void setEmployeeRelations(Integer employeeRelations) {
+		this.employeeRelations = employeeRelations;
+	}
+
+	public Integer getProductSeasonality() {
+		return productSeasonality;
+	}
+
+	public void setProductSeasonality(Integer productSeasonality) {
+		this.productSeasonality = productSeasonality;
+	}
+
+	public Integer getImpactOnOperatingMargins() {
+		return impactOnOperatingMargins;
+	}
+
+	public void setImpactOnOperatingMargins(Integer impactOnOperatingMargins) {
+		this.impactOnOperatingMargins = impactOnOperatingMargins;
+	}
+
+	public Integer getEnvironmentalImpact() {
+		return environmentalImpact;
+	}
+
+	public void setEnvironmentalImpact(Integer environmentalImpact) {
+		this.environmentalImpact = environmentalImpact;
+	}
+
+	public Integer getAccountingQuality() {
+		return accountingQuality;
+	}
+
+	public void setAccountingQuality(Integer accountingQuality) {
+		this.accountingQuality = accountingQuality;
+	}
+
+	public Integer getFinancialRestructuringHistory() {
+		return financialRestructuringHistory;
+	}
+
+	public void setFinancialRestructuringHistory(Integer financialRestructuringHistory) {
+		this.financialRestructuringHistory = financialRestructuringHistory;
+	}
+
+	public Integer getIntegrity() {
+		return integrity;
+	}
+
+	public void setIntegrity(Integer integrity) {
+		this.integrity = integrity;
+	}
+
+	public Integer getBusinessCommitment() {
+		return businessCommitment;
+	}
+
+	public void setBusinessCommitment(Integer businessCommitment) {
+		this.businessCommitment = businessCommitment;
+	}
+
+	public Integer getManagementCompetence() {
+		return managementCompetence;
+	}
+
+	public void setManagementCompetence(Integer managementCompetence) {
+		this.managementCompetence = managementCompetence;
+	}
+
+	public Integer getBusinessExperience() {
+		return businessExperience;
+	}
+
+	public void setBusinessExperience(Integer businessExperience) {
+		this.businessExperience = businessExperience;
+	}
+
+	public Integer getSuccessionPlanning() {
+		return successionPlanning;
+	}
+
+	public void setSuccessionPlanning(Integer successionPlanning) {
+		this.successionPlanning = successionPlanning;
+	}
+
+	public Integer getFinancialStrength() {
+		return financialStrength;
+	}
+
+	public void setFinancialStrength(Integer financialStrength) {
+		this.financialStrength = financialStrength;
+	}
+
+	public Integer getAbilityToRaiseFunds() {
+		return abilityToRaiseFunds;
+	}
+
+	public void setAbilityToRaiseFunds(Integer abilityToRaiseFunds) {
+		this.abilityToRaiseFunds = abilityToRaiseFunds;
+	}
+
+	public Integer getInternalControl() {
+		return internalControl;
+	}
+
+	public void setInternalControl(Integer internalControl) {
+		this.internalControl = internalControl;
+	}
+
+	public Integer getCreditTrackRecord() {
+		return creditTrackRecord;
+	}
+
+	public void setCreditTrackRecord(Integer creditTrackRecord) {
+		this.creditTrackRecord = creditTrackRecord;
+	}
+
+	public Integer getStatusOfProjectClearances() {
+		return statusOfProjectClearances;
+	}
+
+	public void setStatusOfProjectClearances(Integer statusOfProjectClearances) {
+		this.statusOfProjectClearances = statusOfProjectClearances;
+	}
+
+	public Integer getStatusOfFinancialClosure() {
+		return statusOfFinancialClosure;
+	}
+
+	public void setStatusOfFinancialClosure(Integer statusOfFinancialClosure) {
+		this.statusOfFinancialClosure = statusOfFinancialClosure;
+	}
+
+	public Integer getInfrastructureAvailability() {
+		return infrastructureAvailability;
+	}
+
+	public void setInfrastructureAvailability(Integer infrastructureAvailability) {
+		this.infrastructureAvailability = infrastructureAvailability;
+	}
+
+	public Integer getConstructionContract() {
+		return constructionContract;
+	}
+
+	public void setConstructionContract(Integer constructionContract) {
+		this.constructionContract = constructionContract;
+	}
+
+	public Integer getNumberOfCheques() {
+		return numberOfCheques;
+	}
+
+	public void setNumberOfCheques(Integer numberOfCheques) {
+		this.numberOfCheques = numberOfCheques;
+	}
+	public Integer getCumulativeNoOfDaysDp() {
+		return cumulativeNoOfDaysDp;
+	}
+
+	public void setCumulativeNoOfDaysDp(Integer cumulativeNoOfDaysDp) {
+		this.cumulativeNoOfDaysDp = cumulativeNoOfDaysDp;
+	}
+
+	public Integer getComplianceWithSanctioned() {
+		return complianceWithSanctioned;
+	}
+
+	public void setComplianceWithSanctioned(Integer complianceWithSanctioned) {
+		this.complianceWithSanctioned = complianceWithSanctioned;
+	}
+
+	public Integer getDelayInReceipt() {
+		return delayInReceipt;
+	}
+
+	public void setDelayInReceipt(Integer delayInReceipt) {
+		this.delayInReceipt = delayInReceipt;
+	}
+
+	public Integer getDelayInSubmission() {
+		return delayInSubmission;
+	}
+
+	public void setDelayInSubmission(Integer delayInSubmission) {
+		this.delayInSubmission = delayInSubmission;
+	}
+
+	public Integer getNumberOfLc() {
+		return numberOfLc;
+	}
+
+	public void setNumberOfLc(Integer numberOfLc) {
+		this.numberOfLc = numberOfLc;
+	}
+
+	public Boolean getWhetherTechnologyIsTied() {
+		return whetherTechnologyIsTied;
+	}
+
+	public Integer getUnhedgedForeignCurrency() {
+		return unhedgedForeignCurrency;
+	}
+
+	public void setUnhedgedForeignCurrency(Integer unhedgedForeignCurrency) {
+		this.unhedgedForeignCurrency = unhedgedForeignCurrency;
+	}
+
+	public Integer getProjectedDebtService() {
+		return projectedDebtService;
+	}
+
+	public void setProjectedDebtService(Integer projectedDebtService) {
+		this.projectedDebtService = projectedDebtService;
+	}
+
+	public Integer getInternalRateReturn() {
+		return internalRateReturn;
+	}
+
+	public void setInternalRateReturn(Integer internalRateReturn) {
+		this.internalRateReturn = internalRateReturn;
+	}
+
+	public Integer getSensititivityAnalysis() {
+		return sensititivityAnalysis;
+	}
+
+	public void setSensititivityAnalysis(Integer sensititivityAnalysis) {
+		this.sensititivityAnalysis = sensititivityAnalysis;
+	}
+
+	public Integer getVarianceInProjectedSales() {
+		return varianceInProjectedSales;
+	}
+
+	public void setVarianceInProjectedSales(Integer varianceInProjectedSales) {
+		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+
+	public Integer getIntraCompany() {
+		return intraCompany;
+	}
+
+	public void setIntraCompany(Integer intraCompany) {
+		this.intraCompany = intraCompany;
+	}
+
+	public Integer getNumberOfTimesDp() {
+		return numberOfTimesDp;
+	}
+
+	public void setNumberOfTimesDp(Integer numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
+	}
+
+	public Integer getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(Integer progressReports) {
+		this.progressReports = progressReports;
+	}
+	
+
+	
+	
 	
 
 }

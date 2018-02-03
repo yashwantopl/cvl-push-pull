@@ -9,10 +9,12 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingC
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -152,6 +154,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
@@ -329,6 +337,45 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				response.setInternalAudit(finalWorkingCapitalLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalWorkingCapitalLoanRequest.getInternalAuditId()).getValue() : null);
 				response.setCompetence(finalWorkingCapitalLoanRequest.getCompetenceId() != null ? Competence.getById(finalWorkingCapitalLoanRequest.getCompetenceId()).getValue() : null);
 				response.setExistingShareHolder(finalWorkingCapitalLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalWorkingCapitalLoanRequest.getExistingShareHoldersId()).getValue() : null);
+				//NEW MCQ FOR NHBS
+				response.setTechnologyRiskId(finalWorkingCapitalLoanRequest.getTechnologyRiskId() != null ? TechnologyRisk.getById(finalWorkingCapitalLoanRequest.getTechnologyRiskId()).getValue() : null);
+				response.setCustomerQuality(finalWorkingCapitalLoanRequest.getCustomerQuality() != null ? CustomerQuality.getById(finalWorkingCapitalLoanRequest.getCustomerQuality()).getValue() : null);
+				response.setSupplierQuality(finalWorkingCapitalLoanRequest.getSupplierQuality() != null ? SupplierQuality.getById(finalWorkingCapitalLoanRequest.getSupplierQuality()).getValue() : null);
+				response.setSustainabilityProduct(finalWorkingCapitalLoanRequest.getSustainabilityProduct() != null ? SustainabilityProduct.getById(finalWorkingCapitalLoanRequest.getSustainabilityProduct()).getValue() : null);
+				response.setEmployeeRelations(finalWorkingCapitalLoanRequest.getEmployeeRelations() != null ? IndustrialRelations.getById(finalWorkingCapitalLoanRequest.getEmployeeRelations()).getValue() : null);
+				response.setProductSeasonality(finalWorkingCapitalLoanRequest.getProductSeasonality() != null ? ProductSeasonality.getById(finalWorkingCapitalLoanRequest.getProductSeasonality()).getValue() : null);
+				response.setImpactOnOperatingMargins(finalWorkingCapitalLoanRequest.getImpactOnOperatingMargins() != null ? OperatingMargins.getById(finalWorkingCapitalLoanRequest.getImpactOnOperatingMargins()).getValue() : null);
+				response.setOrderBookPosition(finalWorkingCapitalLoanRequest.getOrderBookPosition() != null ? OrderBook.getById(finalWorkingCapitalLoanRequest.getOrderBookPosition()).getValue() : null);
+				response.setEnvironmentalImpact(finalWorkingCapitalLoanRequest.getEnvironmentalImpact() != null ? EnvironmentalImpact.getById(finalWorkingCapitalLoanRequest.getEnvironmentalImpact()).getValue() : null);
+				response.setAccountingQuality(finalWorkingCapitalLoanRequest.getAccountingQuality() != null ? AccountingQuality.getById(finalWorkingCapitalLoanRequest.getAccountingQuality()).getValue() : null);
+				response.setFinancialRestructuringHistory(finalWorkingCapitalLoanRequest.getFinancialRestructuringHistory() != null ? FinancialRestructuring.getById(finalWorkingCapitalLoanRequest.getFinancialRestructuringHistory()).getValue() : null);
+				response.setIntegrity(finalWorkingCapitalLoanRequest.getIntegrity() != null ? Integrity.getById(finalWorkingCapitalLoanRequest.getIntegrity()).getValue() : null);
+				response.setBusinessCommitment(finalWorkingCapitalLoanRequest.getBusinessCommitment() != null ? BusinessCommitment.getById(finalWorkingCapitalLoanRequest.getBusinessCommitment()).getValue() : null);
+				response.setManagementCompetence(finalWorkingCapitalLoanRequest.getManagementCompetence() != null ? ManagementCompetence.getById(finalWorkingCapitalLoanRequest.getManagementCompetence()).getValue() : null);
+				response.setBusinessExperience(finalWorkingCapitalLoanRequest.getBusinessExperience() != null ? BusinessExperience.getById(finalWorkingCapitalLoanRequest.getBusinessExperience()).getValue() : null);
+				response.setSuccessionPlanning(finalWorkingCapitalLoanRequest.getSuccessionPlanning() != null ? SuccessionPlanning.getById(finalWorkingCapitalLoanRequest.getSuccessionPlanning()).getValue() : null);
+				response.setFinancialStrength(finalWorkingCapitalLoanRequest.getFinancialStrength() != null ? FinancialSupport.getById(finalWorkingCapitalLoanRequest.getFinancialStrength()).getValue() : null);
+				response.setAbilityToRaiseFunds(finalWorkingCapitalLoanRequest.getAbilityToRaiseFunds() != null ? AbilityRaiseFunds.getById(finalWorkingCapitalLoanRequest.getAbilityToRaiseFunds()).getValue() : null);
+				response.setIntraCompany(finalWorkingCapitalLoanRequest.getIntraCompany() != null ? CompanyConflicts.getById(finalWorkingCapitalLoanRequest.getIntraCompany()).getValue() : null);
+				response.setInternalControl(finalWorkingCapitalLoanRequest.getInternalControl() != null ? InternalControl.getById(finalWorkingCapitalLoanRequest.getInternalControl()).getValue() : null);
+				response.setCreditTrackRecord(finalWorkingCapitalLoanRequest.getCreditTrackRecord() != null ? CreditRecord.getById(finalWorkingCapitalLoanRequest.getCreditTrackRecord()).getValue() : null);
+				response.setStatusOfProjectClearances(finalWorkingCapitalLoanRequest.getStatusOfProjectClearances() != null ? StatusClearances.getById(finalWorkingCapitalLoanRequest.getStatusOfProjectClearances()).getValue() : null);
+				response.setStatusOfFinancialClosure(finalWorkingCapitalLoanRequest.getStatusOfFinancialClosure() != null ? StatusFinancialClosure.getById(finalWorkingCapitalLoanRequest.getStatusOfFinancialClosure()).getValue() : null);
+				response.setInfrastructureAvailability(finalWorkingCapitalLoanRequest.getInfrastructureAvailability() != null ? InfrastructureAvailability.getById(finalWorkingCapitalLoanRequest.getInfrastructureAvailability()).getValue() : null);
+				response.setConstructionContract(finalWorkingCapitalLoanRequest.getConstructionContract() != null ? ConstructionContract.getById(finalWorkingCapitalLoanRequest.getConstructionContract()).getValue() : null);
+				response.setNumberOfCheques(finalWorkingCapitalLoanRequest.getNumberOfCheques() != null ? ChequesReturned.getById(finalWorkingCapitalLoanRequest.getNumberOfCheques()).getValue() : null);
+				response.setNumberOfTimesDp(finalWorkingCapitalLoanRequest.getNumberOfTimesDp() != null ? LimitOverdrawn.getById(finalWorkingCapitalLoanRequest.getNumberOfTimesDp()).getValue() : null);
+				response.setCumulativeNoOfDaysDp(finalWorkingCapitalLoanRequest.getCumulativeNoOfDaysDp() != null ? CumulativeOverdrawn.getById(finalWorkingCapitalLoanRequest.getCumulativeNoOfDaysDp()).getValue() : null);
+				response.setComplianceWithSanctioned(finalWorkingCapitalLoanRequest.getComplianceWithSanctioned() != null ? ComplianceConditions.getById(finalWorkingCapitalLoanRequest.getComplianceWithSanctioned()).getValue() : null);
+				response.setProgressReports(finalWorkingCapitalLoanRequest.getProgressReports() != null ? SubmissionReports.getById(finalWorkingCapitalLoanRequest.getProgressReports()).getValue() : null);
+				response.setDelayInReceipt(finalWorkingCapitalLoanRequest.getDelayInReceipt() != null ? DelayInstalments.getById(finalWorkingCapitalLoanRequest.getDelayInReceipt()).getValue() : null);
+				response.setDelayInSubmission(finalWorkingCapitalLoanRequest.getDelayInSubmission() != null ? DelaySubmission.getById(finalWorkingCapitalLoanRequest.getDelayInSubmission()).getValue() : null);
+				response.setNumberOfLc(finalWorkingCapitalLoanRequest.getNumberOfLc() != null ? BorrowerInvoked.getById(finalWorkingCapitalLoanRequest.getNumberOfLc()).getValue() : null);
+				response.setUnhedgedForeignCurrency(finalWorkingCapitalLoanRequest.getUnhedgedForeignCurrency() != null ? UnhedgedCurrency.getById(finalWorkingCapitalLoanRequest.getUnhedgedForeignCurrency()).getValue() : null);
+				response.setProjectedDebtService(finalWorkingCapitalLoanRequest.getProjectedDebtService() != null ? ProjectedRatio.getById(finalWorkingCapitalLoanRequest.getProjectedDebtService()).getValue() : null);
+				response.setInternalRateReturn(finalWorkingCapitalLoanRequest.getInternalRateReturn() != null ? InternalReturn.getById(finalWorkingCapitalLoanRequest.getInternalRateReturn()).getValue() : null);
+				response.setSensititivityAnalysis(finalWorkingCapitalLoanRequest.getSensititivityAnalysis() != null ? SensititivityAnalysis.getById(finalWorkingCapitalLoanRequest.getSensititivityAnalysis()).getValue() : null);
+				response.setVarianceInProjectedSales(finalWorkingCapitalLoanRequest.getVarianceInProjectedSales() != null ? VarianceSales.getById(finalWorkingCapitalLoanRequest.getVarianceInProjectedSales()).getValue() : null);
 				if (finalWorkingCapitalLoanRequest.getIsIsoCertified()) {
 					response.setIsIsoCertified("Yes");
 				} else {
@@ -588,6 +635,8 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
+            response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+            response.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 		}
 
 		// get value of proposed product and set in response
@@ -687,7 +736,48 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 		} catch (Exception e) {
 			e.printStackTrace();
         }
-
+        
+        try {
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+				directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String directorName = "";
+				if (directorBackgroundDetailRequest.getSalutationId() != null){
+					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+				directorBackgroundDetailResponse.setDirectorsName(directorName);
+				directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+			}
+			response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+        }
+			catch (Exception e) {
+				logger.error("Problem to get Data of Director's Background {}", e);
+			}
+        
+      //references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		response.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
+        
         // get value of Ownership Details and set in response
 		try {
 			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
@@ -769,11 +859,16 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-                financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				financialArrangementsDetailResponse
-						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setFacilityNature(
-						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);

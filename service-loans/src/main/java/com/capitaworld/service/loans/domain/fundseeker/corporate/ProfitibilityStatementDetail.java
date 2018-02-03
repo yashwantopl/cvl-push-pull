@@ -193,12 +193,45 @@ public class ProfitibilityStatementDetail implements Serializable {
 
 	@Column(name="store_and_spares_indeigenous")
 	private double storeAndSparesIndeigenous;
+	
+	@Column(name="general_admin_expenses")
+	private double generalAdminExpenses;
+
+	@Column(name="selling_distribution_expenses")
+	private double sellingDistributionExpenses;
+
+	@Column(name="expenses_capitalised")
+	private double expensesCapitalised;
 
 	private String year;
 	
 	@Column(name="storage_details_id")
 	private Long storageDetailsId;
 	
+
+	public double getGeneralAdminExpenses() {
+		return generalAdminExpenses;
+	}
+
+	public void setGeneralAdminExpenses(double generalAdminExpenses) {
+		this.generalAdminExpenses = generalAdminExpenses;
+	}
+
+	public double getSellingDistributionExpenses() {
+		return sellingDistributionExpenses;
+	}
+
+	public void setSellingDistributionExpenses(double sellingDistributionExpenses) {
+		this.sellingDistributionExpenses = sellingDistributionExpenses;
+	}
+
+	public double getExpensesCapitalised() {
+		return expensesCapitalised;
+	}
+
+	public void setExpensesCapitalised(double expensesCapitalised) {
+		this.expensesCapitalised = expensesCapitalised;
+	}
 
 	public Long getStorageDetailsId() {
 		return storageDetailsId;

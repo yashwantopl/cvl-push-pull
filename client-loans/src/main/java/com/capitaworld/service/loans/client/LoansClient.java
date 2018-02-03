@@ -131,6 +131,8 @@ public class LoansClient {
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
 	
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -1314,6 +1316,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
 		}
 	}
 	

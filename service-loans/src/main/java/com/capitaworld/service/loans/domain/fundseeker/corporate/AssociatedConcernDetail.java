@@ -76,6 +76,9 @@ public class AssociatedConcernDetail implements Serializable {
 
 	@Column(name="turn_over_third_year")
 	private Double turnOverThirdYear;
+	
+	@Column(name="name_of_director")
+	private String nameOfDirector;
 
 	public AssociatedConcernDetail() {
 	}
@@ -231,5 +234,14 @@ public class AssociatedConcernDetail implements Serializable {
 	public void setTurnOverThirdYear(Double turnOverThirdYear) {
 		this.turnOverThirdYear = turnOverThirdYear;
 	}
+
+	public String getNameOfDirector() {
+		return nameOfDirector;
+	}
+
+	public void setNameOfDirector(String nameOfDirector) {
+		this.nameOfDirector = nameOfDirector;
+	}
+	
 
 }

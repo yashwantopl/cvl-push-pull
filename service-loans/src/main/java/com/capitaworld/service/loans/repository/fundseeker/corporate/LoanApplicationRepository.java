@@ -169,4 +169,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("update LoanApplicationMaster lm set lm.eligibleAmnt =:eligibleAmnt,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
 	public int setEligibleAmount(@Param("id") Long id, @Param("userId") Long userId,
 			@Param("eligibleAmnt") Double amount);
+	
+	//nhbs
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.isActive = true ")
+	public List<LoanApplicationMaster> getProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
+	//nhbs	
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 }

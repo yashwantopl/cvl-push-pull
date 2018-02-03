@@ -26,6 +26,10 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 
 	private Double totalCollateralDetails;
 	
+	private Double sharePriceFace;
+	
+	private Double sharePriceMarket;
+	
 	private List<Long> negativeList=Collections.emptyList();
 
 	public PrimaryWorkingCapitalLoanRequest() {
@@ -79,5 +83,22 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 		this.negativeList = negativeList;
 	}
 
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+	
+	
 	
 }
