@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -215,7 +216,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	private IrrService irrService;
 	
 	@RequestMapping(value = "/calculate_irr_Rating", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RatingResponse calculateIrrRating(@RequestBody Long appId,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+	public ResponseEntity<RatingResponse> calculateIrrRating(@RequestBody Long appId,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
