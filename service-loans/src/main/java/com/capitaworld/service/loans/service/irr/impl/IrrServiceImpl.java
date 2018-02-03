@@ -3,13 +3,18 @@ package com.capitaworld.service.loans.service.irr.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalUnsecureLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
@@ -19,6 +24,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilitySt
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalUnsecuredLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
@@ -80,18 +86,35 @@ public class IrrServiceImpl implements IrrService{
 	@Autowired
 	private CorporateApplicantService applicantService;
 	
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	
+	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
+	
 	
 	@Override
-	public RatingResponse calculateIrrRating(Long appId, Long userId) {
+	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
-		Integer businessTypeId=null;
+		Integer businessTypeId=null; // get from irr-cw industry mapping
 
 		IrrRequest irrRequest = new IrrRequest();
 		LoanApplicationMaster applicationMaster = null;
+		CorporateApplicantDetail corporateApplicantDetail=null;
 		try {
+			
 			applicationMaster = loanApplicationRepository.findOne(appId);
+			
+			if(!(true == applicationMaster.getIsFinalLocked()))
+			{
+				log.info("final section is not locked");	
+				return new ResponseEntity<RatingResponse>(
+						new RatingResponse("Submit your final one form section for MSME score", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			corporateApplicantDetail=corporateApplicantDetailRepository.findOne(appId);
+			
 			irrRequest.setApplicationId(appId);
-			//irrRequest.setCompanyName(applicationMaster.getMcaCompanyId());
+			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
 		
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
@@ -119,6 +142,21 @@ public class IrrServiceImpl implements IrrService{
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			
+			log.info("Error while mapping irr request and qualitative input from db");	
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		try {
+			ratingClient.calculateIrrRating(irrRequest);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			
+			log.info("Error while callling rating client");	
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		return null;
 	}
