@@ -128,6 +128,44 @@ ADD COLUMN compliance_with_sanctioned INT(2),ADD COLUMN delay_in_receipt INT(2),
 
 
 
+ALTER TABLE `loan_applications`.`fs_corporate_final_term_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_wc_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_term_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_wc_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+
+
 ALTER TABLE `loan_applications`.`fs_corporate_current_financial_arrangements_details`
 
 ADD COLUMN address VARCHAR(100)

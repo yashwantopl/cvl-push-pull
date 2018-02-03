@@ -14,6 +14,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	
 	private Long id;
 	private Long applicationId;
+	private String referenceNo;
 	private Long userId;
 	private String godownStockyard;
 	private String companySuccessPlan;
@@ -94,6 +95,12 @@ public class DDRFormDetailsRequest implements Serializable {
 	
 	
 	
+	public String getReferenceNo() {
+		return referenceNo;
+	}
+	public void setReferenceNo(String referenceNo) {
+		this.referenceNo = referenceNo;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -576,7 +583,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "DDRFormDetailsRequest [id=" + id + ", applicationId=" + applicationId + ", userId=" + userId
+		return "DDRFormDetailsRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", userId=" + userId
 				+ ", godownStockyard=" + godownStockyard + ", companySuccessPlan=" + companySuccessPlan
 				+ ", detailsOfBankingArrangement=" + detailsOfBankingArrangement + ", salesOfAutomobileDivision="
 				+ salesOfAutomobileDivision + ", othersSales=" + othersSales + ", totalConsolidatedSales="

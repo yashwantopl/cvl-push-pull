@@ -56,7 +56,6 @@ public class NhbsController {
 	public ResponseEntity<LoansResponse> getAssignedProposals(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userId = 504l;
 			if(CommonUtils.isObjectNullOrEmpty(userId) || 
 					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) ||
 					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleId())){

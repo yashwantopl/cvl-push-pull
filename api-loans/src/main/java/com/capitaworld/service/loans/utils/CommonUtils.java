@@ -758,6 +758,49 @@ public class CommonUtils {
 
 			}
 		  
+		  public enum DDRFinancialSummaryToBeFields {
+				PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"), 
+				SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
+				RECEIVAVLES_TURNOVER(3,"Receivables turnover (Days)"),
+				CREDITORS_TURNOVER(4, "Creditors Turnover (Days)");		  
+	
+			  	private int id;
+			  	private String value;
+
+				private DDRFinancialSummaryToBeFields(int id,String value) {
+					this.id = id;
+					this.value = value;
+				}
+				
+				public int getId() {
+					return id;
+				}
+
+				public String getValue() {
+					return value;
+				}
+				public static DDRFinancialSummaryToBeFields getType(Integer x) {
+					switch (x) {
+					case 1:
+						return PER_OF_SALES_OF_ANCHORE_PRODUCT;
+					case 2:
+						return SALES_OF_ANCHOR_PODUCTS;
+					case 3:
+						return RECEIVAVLES_TURNOVER;
+					case 4:
+						return CREDITORS_TURNOVER;
+					default :
+						return null;
+					}
+				}
+				
+				public static DDRFinancialSummaryFields[] getAll() {
+					return DDRFinancialSummaryFields.values();
+				}
+				
+
+			}
+		  
 		  public static double checkDouble(Double value) {
 			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }

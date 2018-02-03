@@ -130,8 +130,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Override
 	public List<NhbsApplicationsResponse> getListOfAssignedProposals(NhbsApplicationRequest request) {
 		logger.info("entry in getListOfAssignedProposals()");
-		Long assigneeId = request.getUserId();
-		List<LoanApplicationMaster> applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(request.getApplicationStatusId(), assigneeId);
+		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(request.getApplicationStatusId(), request.getUserId());	
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserId(request.getApplicationStatusId(), request.getUserId());
+		}else{
+			applicationMastersList = null;
+		}
+		
 		List<NhbsApplicationsResponse> nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
 		if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 			for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
@@ -175,7 +182,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 					
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), request.getApplicationStatusId(), assigneeId);
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), request.getApplicationStatusId(), request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationMastersList.get(0).getModifiedDate());
 					}
