@@ -176,4 +176,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//nhbs	
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+	//nhbs	
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
+	public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 }
