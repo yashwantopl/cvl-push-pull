@@ -32,11 +32,14 @@ public class DDRFinancialSummary implements Serializable {
 	@Column(name = "fs_ddr_form_id")
 	private Long ddrFormId;
 	
-	@Column(name = "perticularName")
-	private String perticular_name;
+	@Column(name = "perticular_id")
+	private Integer perticularId;
 	
-	@Column(name = "provisionalYear")
-	private Double provisional_year;
+	@Column(name = "perticular_name")
+	private String perticularName;
+	
+	@Column(name = "provisional_year")
+	private Double provisionalYear;
 	
 	@Column(name = "last_year")
 	private Double lastYear;
@@ -81,20 +84,20 @@ public class DDRFinancialSummary implements Serializable {
 		this.ddrFormId = ddrFormId;
 	}
 
-	public String getPerticular_name() {
-		return perticular_name;
+	public String getPerticularName() {
+		return perticularName;
 	}
 
-	public void setPerticular_name(String perticular_name) {
-		this.perticular_name = perticular_name;
+	public void setPerticularName(String perticularName) {
+		this.perticularName = perticularName;
 	}
 
-	public Double getProvisional_year() {
-		return provisional_year;
+	public Double getProvisionalYear() {
+		return provisionalYear;
 	}
 
-	public void setProvisional_year(Double provisional_year) {
-		this.provisional_year = provisional_year;
+	public void setProvisionalYear(Double provisionalYear) {
+		this.provisionalYear = provisionalYear;
 	}
 
 	public Double getLastYear() {
@@ -159,6 +162,14 @@ public class DDRFinancialSummary implements Serializable {
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public Integer getPerticularId() {
+		return perticularId;
+	}
+
+	public void setPerticularId(Integer perticularId) {
+		this.perticularId = perticularId;
 	}
 
 	

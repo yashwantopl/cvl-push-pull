@@ -10,6 +10,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -35,7 +36,9 @@ public class DDROneFormResponse  implements Serializable{
 	List<ProposedProductDetailRequest> proposedProductDetailList = new ArrayList<ProposedProductDetailRequest>();
 	List<ExistingProductDetailRequest> existingProductDetailList = new ArrayList<ExistingProductDetailRequest>();
 	List<AssociatedConcernDetailRequest> associatedConcernDetailList = new ArrayList<AssociatedConcernDetailRequest>(); 
+	List<DDRCMACalculationResponse> dDRCMACalculationList = new ArrayList<DDRCMACalculationResponse>(); 
 	
+	List<ReferenceRetailDetailsRequest> referencesResponseList = new ArrayList<ReferenceRetailDetailsRequest>();
 	
 	public String getNameOfBorrower() {
 		return nameOfBorrower;
@@ -121,6 +124,19 @@ public class DDROneFormResponse  implements Serializable{
 	public void setAssociatedConcernDetailList(List<AssociatedConcernDetailRequest> associatedConcernDetailList) {
 		this.associatedConcernDetailList = associatedConcernDetailList;
 	}
+	public List<DDRCMACalculationResponse> getdDRCMACalculationList() {
+		return dDRCMACalculationList;
+	}
+	public void setdDRCMACalculationList(List<DDRCMACalculationResponse> dDRCMACalculationList) {
+		this.dDRCMACalculationList = dDRCMACalculationList;
+	}
+	public List<ReferenceRetailDetailsRequest> getReferencesResponseList() {
+		return referencesResponseList;
+	}
+	public void setReferencesResponseList(List<ReferenceRetailDetailsRequest> referencesResponseList) {
+		this.referencesResponseList = referencesResponseList;
+	}
+	
 	
 	
 	
