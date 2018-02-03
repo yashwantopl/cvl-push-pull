@@ -30,6 +30,7 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROfficeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
+import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -48,6 +49,7 @@ import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDROtherBankLoanDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDRRelWithDbsDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDRVehiclesOwnedDetailsRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -64,6 +66,7 @@ import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROfficeDetailsR
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROtherBankLoanDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRRelWithDbsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRVehiclesOwnedDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
@@ -165,6 +168,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	@Autowired
 	private BalanceSheetDetailRepository balanceSheetDetailRepository;
+	
+	@Autowired
+	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
 	
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
@@ -797,10 +803,24 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
+		
+		
+		try {
+			List<ReferencesRetailDetail> referencesRetailList = referenceRetailDetailsRepository.listReferencesRetailFromAppId(applicationId);
+			List<ReferenceRetailDetailsRequest> referencesResponseList = new ArrayList<>(referencesRetailList.size());
+			ReferenceRetailDetailsRequest referencesResponse = null;
+			for(ReferencesRetailDetail referencesRetail : referencesRetailList) {
+				referencesResponse = new ReferenceRetailDetailsRequest();
+				referencesResponse.setName(referencesRetail.getName());
+				referencesResponse.setMobile(referencesRetail.getMobile());
+				referencesResponseList.add(referencesResponse);
+			}
+			response.setReferencesResponseList(referencesResponseList);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Reference Details in DDR OneForm");
+			e.printStackTrace();
+		}
 		return response; 
-		
-
-		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -924,11 +944,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 		LiabilitiesDetails cma2018Liabilities = null;
 		LiabilitiesDetails cma2017Liabilities = null;
 		LiabilitiesDetails cma2016Liabilities = null;
+		LiabilitiesDetails cma2015Liabilities = null;
 		if(isCMAUpload) {
 			liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
 			cma2018Liabilities = liabilitiesDetailsList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
 			cma2017Liabilities = liabilitiesDetailsList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
 			cma2016Liabilities = liabilitiesDetailsList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+			cma2015Liabilities = liabilitiesDetailsList.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
 		}
 		
 		List<BalanceSheetDetail> balanceSheetDetailList = null;
@@ -1232,17 +1254,24 @@ public class DDRFormServiceImpl implements DDRFormService{
         DDRCMACalculationResponse workingCapitalCycle = new DDRCMACalculationResponse();
         workingCapitalCycle.setKeyId(DDRFinancialSummaryFields.WORKING_CAPITAL_CYCLE.getId());
         workingCapitalCycle.setKeyName(DDRFinancialSummaryFields.WORKING_CAPITAL_CYCLE.getValue());
-        double proPriviousCal = totalCurrentAsset.getProvisionalYear() - totalCurrentLiability.getProvisionalYear();
-    	double provisionalYear = totalSalesResponse.getProvisionalYear() > 0 ? proPriviousCal  /totalSalesResponse.getProvisionalYear() : 0.0;
-        workingCapitalCycle.setProvisionalYear(provisionalYear * 365);
-        
-        double lastCal = totalCurrentAsset.getLastYear() - totalCurrentLiability.getLastYear();
-    	double lastYear = totalSalesResponse.getLastYear() > 0 ? lastCal  /totalSalesResponse.getLastYear() : 0.0;
-        workingCapitalCycle.setLastYear(lastYear / 2);
-        
-        double lastToLastCal = totalCurrentAsset.getLastToLastYear() - totalCurrentLiability.getLastToLastYear();
-    	double lastToLastYear = totalSalesResponse.getLastToLastYear() > 0 ? lastToLastCal / totalSalesResponse.getLastToLastYear() : 0.0;
-        workingCapitalCycle.setLastToLastYear(lastToLastYear / 2);
+    	
+        double workingCapital2018 = totalCurrentAsset.getProvisionalYear() - totalCurrentLiability.getProvisionalYear();
+    	double workingCapital2017 = totalCurrentAsset.getLastYear() - totalCurrentLiability.getLastYear();
+    	double workingCapital2016 = totalCurrentAsset.getLastToLastYear() - totalCurrentLiability.getLastToLastYear();
+    	double totalCurrentAsset2015 = isCMAUpload ? CommonUtils.checkDouble(cma2015AssetDetails.getTotalCurrentAssets())  : CommonUtils.checkDouble(coAct2015BalanceSheet.getOthersCurrentAssets());
+    	double totalCurrentLiability2015 = isCMAUpload ? CommonUtils.checkDouble(cma2015Liabilities.getTotalCurrentLiabilities()) : CommonUtils.checkDouble(coAct2015BalanceSheet.getOthersCurrentLiability());
+    	double workingCapital2015 = totalCurrentAsset2015 - totalCurrentLiability2015;
+    	
+    	double avgWorkingCapital2018 = (workingCapital2018  + workingCapital2017) / 2;
+    	double avgWorkingCapital2017 = (workingCapital2017  + workingCapital2016) / 2;
+    	double avgWorkingCapital2016 = (workingCapital2016  + workingCapital2015) / 2;
+    	
+        workingCapitalCycle.setProvisionalYear(totalSalesResponse.getProvisionalYear() > 0 
+        		? (avgWorkingCapital2018 / totalSalesResponse.getProvisionalYear()) * 356 : 0.0);
+        workingCapitalCycle.setLastYear(totalSalesResponse.getLastYear() > 0 
+        		? (avgWorkingCapital2017 / totalSalesResponse.getLastYear()) * 356 : 0.0);
+        workingCapitalCycle.setLastToLastYear(totalSalesResponse.getLastToLastYear() > 0 
+        		? (avgWorkingCapital2016 / totalSalesResponse.getLastToLastYear()) * 356 : 0.0);
         workingCapitalCycle.setDiffPvsnlAndLastYear(calculateFinancialSummary(workingCapitalCycle.getProvisionalYear(),workingCapitalCycle.getLastYear()));
         responseList.add(workingCapitalCycle);
 		
