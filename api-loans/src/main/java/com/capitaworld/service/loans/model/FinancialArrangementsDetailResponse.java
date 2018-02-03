@@ -34,6 +34,8 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     private String relationshipSinceInYear;
     
     private String loanType;
+    
+    private String address;
 
     public Double getAmount() {
         return amount;
@@ -113,6 +115,14 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 
 	public void setRelationshipSinceInYear(String relationshipSinceInYear) {
 		this.relationshipSinceInYear = relationshipSinceInYear;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 	
