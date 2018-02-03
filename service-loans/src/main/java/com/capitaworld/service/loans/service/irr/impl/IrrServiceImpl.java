@@ -222,9 +222,9 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails.setGeneralAdminExp(0.0);
 		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getGeneralAdminExp());
 		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingDistributionExp()))
-			operatingStatementDetails.setSellingDistributionExp(0.0);
-		financialInputRequest.setSellingAndDistriExpeTy(operatingStatementDetails.getSellingDistributionExp());
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+		financialInputRequest.setSellingAndDistriExpeTy(operatingStatementDetails.getSellingAndDistributionExpenses());
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
 			operatingStatementDetails.setExpensesAmortised(0.0);
@@ -479,9 +479,9 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails.setGeneralAdminExp(0.0);
 		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getGeneralAdminExp());
 		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingDistributionExp()))
-			operatingStatementDetails.setSellingDistributionExp(0.0);
-		financialInputRequest.setSellingAndDistriExpeSy(operatingStatementDetails.getSellingDistributionExp());
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+		financialInputRequest.setSellingAndDistriExpeSy(operatingStatementDetails.getSellingAndDistributionExpenses());
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
 			operatingStatementDetails.setExpensesAmortised(0.0);
@@ -737,9 +737,9 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails.setGeneralAdminExp(0.0);
 		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getGeneralAdminExp());
 		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingDistributionExp()))
-			operatingStatementDetails.setSellingDistributionExp(0.0);
-		financialInputRequest.setSellingAndDistriExpeFy(operatingStatementDetails.getSellingDistributionExp());
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+		financialInputRequest.setSellingAndDistriExpeFy(operatingStatementDetails.getSellingAndDistributionExpenses());
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
 			operatingStatementDetails.setExpensesAmortised(0.0);

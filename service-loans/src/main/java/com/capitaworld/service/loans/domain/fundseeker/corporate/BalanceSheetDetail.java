@@ -249,6 +249,138 @@ public class BalanceSheetDetail implements Serializable {
 
 	@Column(name="unsecured_loans_from_promoters")
 	private double unsecuredLoansFromPromoters;
+
+	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
+	
+	
+	@Column(name = "others_1")
+	private Double Others1;
+
+	@Column(name = "others_2")
+	private Double Others2;
+
+	@Column(name = "others_3")
+	private Double Others3;
+
+	@Column(name = "others_4")
+	private Double Others4;
+
+	@Column(name = "others_5")
+	private Double Others5;
+
+	// others_liabilities
+
+	@Column(name = "others_liabilities_1")
+	private Double OthersLiabilities1;
+
+	@Column(name = "others_liabilities_2")
+	private Double OthersLiabilities2;
+
+	@Column(name = "others_liabilities_3")
+	private Double OthersLiabilities3;
+
+	// others_totals
+
+	@Column(name = "others_totals_1")
+	private Double OthersTotals1;
+
+	@Column(name = "others_totals_2")
+	private Double OthersTotals2;
+
+	@Column(name = "others_totals_3")
+	private Double OthersTotals3;
+
+	@Column(name = "others_totals_4")
+	private Double OthersTotals4;
+
+	@Column(name = "others_totals_5")
+	private Double OthersTotals5;
+
+	// intangible_assets
+
+	@Column(name = "intangible_assets_1")
+	private Double IntangibleAssets1;
+
+	@Column(name = "intangible_assets_2")
+	private Double IntangibleAssets2;
+
+	@Column(name = "intangible_assets_3")
+	private Double IntangibleAssets3;
+
+	@Column(name = "intangible_assets_4")
+	private Double IntangibleAssets4;
+
+	@Column(name = "intangible_assets_5")
+	private Double IntangibleAssets5;
+	
+	@Column(name = "intangible_assets_6")
+	private Double IntangibleAssets6;
+
+	// assets_in_transit
+
+	@Column(name = "assets_in_transit_1")
+	private Double AssetsInTransit1;
+
+	@Column(name = "assets_in_transit_2")
+	private Double AssetsInTransit2;
+
+	@Column(name = "assets_in_transit_3")
+	private Double AssetsInTransit3;
+
+	@Column(name = "assets_in_transit_4")
+	private Double AssetsInTransit4;
+
+	// others_investment
+	@Column(name = "others_investment_1")
+	private Double OthersInvestment1;
+
+	@Column(name = "others_investment_2")
+	private Double OthersInvestment2;
+
+	@Column(name = "others_investment_3")
+	private Double OthersInvestment3;
+
+	@Column(name = "others_investment_4")
+	private Double OthersInvestment4;
+
+	@Column(name = "others_investment_5")
+	private Double OthersInvestment5;
+
+	// short_term
+
+	@Column(name = "short_term_1")
+	private Double ShortTerm1;
+
+	@Column(name = "short_term_2")
+	private Double ShortTerm2;
+
+	@Column(name = "short_term_3")
+	private Double ShortTerm3;
+
+	@Column(name = "short_term_4")
+	private Double ShortTerm4;
+
+	// other_details
+
+	@Column(name = "other_details_1")
+	private Double OtherDetails1;
+
+	@Column(name = "other_details_2")
+	private Double OtherDetails2;
+
+	@Column(name = "other_details_3")
+	private Double OtherDetails3;
+
+	@Column(name = "other_details_4")
+	private Double OtherDetails4;
+
+	@Column(name = "other_details_5")
+	private Double OtherDetails5;
+	
+	//latest1-2
 	
 	@Column(name="money_received_against_share_warrants")
 	private double moneyReceivedAgainstShareWarrants;
@@ -265,6 +397,7 @@ public class BalanceSheetDetail implements Serializable {
 	@Column(name="unsecured_loans_from_others")
 	private double unsecuredLoansFromOthers;
 	
+	
 	@Column(name="current_liabilities_secured")
 	private double currentLiabilitiesSecured;
 	
@@ -273,7 +406,7 @@ public class BalanceSheetDetail implements Serializable {
 	
 	@Column(name="impairments_of_assests")
 	private double impairmentsOfAssests;
-	
+
 	@Column(name="pre_operative_expenses_pending")
 	private double preOperativeExpensesPending;
 	
@@ -283,98 +416,21 @@ public class BalanceSheetDetail implements Serializable {
 	@Column(name="cash_and_cash_equivalents")
 	private double cashAndCashEquivalents;
 	
-	public double getMoneyReceivedAgainstShareWarrants() {
-		return moneyReceivedAgainstShareWarrants;
-	}
+	@Column(name="other_term_liability")
+	private double OtherTermLiability;
 
-	public double getMinorityInterest() {
-		return minorityInterest;
-	}
-
-	public double getTermLoansSecured() {
-		return termLoansSecured;
-	}
-
-	public double getTermLoansUnsecured() {
-		return termLoansUnsecured;
-	}
-
-	public double getUnsecuredLoansFromOthers() {
-		return unsecuredLoansFromOthers;
-	}
-
-	public double getCurrentLiabilitiesSecured() {
-		return currentLiabilitiesSecured;
-	}
-
-	public double getCurrentLiabilitiesUnsecured() {
-		return currentLiabilitiesUnsecured;
-	}
-
-	public double getImpairmentsOfAssests() {
-		return impairmentsOfAssests;
-	}
-
-	public double getPreOperativeExpensesPending() {
-		return preOperativeExpensesPending;
-	}
-
-	public double getAssetsInTransit() {
-		return assetsInTransit;
-	}
-
-	public double getCashAndCashEquivalents() {
-		return cashAndCashEquivalents;
-	}
-
-	public void setMoneyReceivedAgainstShareWarrants(double moneyReceivedAgainstShareWarrants) {
-		this.moneyReceivedAgainstShareWarrants = moneyReceivedAgainstShareWarrants;
-	}
-
-	public void setMinorityInterest(double minorityInterest) {
-		this.minorityInterest = minorityInterest;
-	}
-
-	public void setTermLoansSecured(double termLoansSecured) {
-		this.termLoansSecured = termLoansSecured;
-	}
-
-	public void setTermLoansUnsecured(double termLoansUnsecured) {
-		this.termLoansUnsecured = termLoansUnsecured;
-	}
-
-	public void setUnsecuredLoansFromOthers(double unsecuredLoansFromOthers) {
-		this.unsecuredLoansFromOthers = unsecuredLoansFromOthers;
-	}
-
-	public void setCurrentLiabilitiesSecured(double currentLiabilitiesSecured) {
-		this.currentLiabilitiesSecured = currentLiabilitiesSecured;
-	}
-
-	public void setCurrentLiabilitiesUnsecured(double currentLiabilitiesUnsecured) {
-		this.currentLiabilitiesUnsecured = currentLiabilitiesUnsecured;
-	}
-
-	public void setImpairmentsOfAssests(double impairmentsOfAssests) {
-		this.impairmentsOfAssests = impairmentsOfAssests;
-	}
-
-	public void setPreOperativeExpensesPending(double preOperativeExpensesPending) {
-		this.preOperativeExpensesPending = preOperativeExpensesPending;
-	}
-
-	public void setAssetsInTransit(double assetsInTransit) {
-		this.assetsInTransit = assetsInTransit;
-	}
-
-	public void setCashAndCashEquivalents(double cashAndCashEquivalents) {
-		this.cashAndCashEquivalents = cashAndCashEquivalents;
-	}
-
-	private String year;
+	@Column(name="others_totals")
+	private double OthersTotals;
 	
-	@Column(name="storage_details_id")
-	private Long storageDetailsId;
+	@Column(name="others_assets_transit")
+	private double OthersAssetsTransit;
+	
+	@Column(name="other_investments")
+	private double OtherInvestments;
+	
+	@Column(name="other_details")
+	private double OtherDetails;
+	
 	
 	
 
@@ -989,6 +1045,435 @@ public class BalanceSheetDetail implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	public Double getOthers1() {
+		return Others1;
+	}
+
+	public void setOthers1(Double others1) {
+		Others1 = others1;
+	}
+
+	public Double getOthers2() {
+		return Others2;
+	}
+
+	public void setOthers2(Double others2) {
+		Others2 = others2;
+	}
+
+	public Double getOthers3() {
+		return Others3;
+	}
+
+	public void setOthers3(Double others3) {
+		Others3 = others3;
+	}
+
+	public Double getOthers4() {
+		return Others4;
+	}
+
+	public void setOthers4(Double others4) {
+		Others4 = others4;
+	}
+
+	public Double getOthers5() {
+		return Others5;
+	}
+
+	public void setOthers5(Double others5) {
+		Others5 = others5;
+	}
+
+	public Double getOthersLiabilities1() {
+		return OthersLiabilities1;
+	}
+
+	public void setOthersLiabilities1(Double othersLiabilities1) {
+		OthersLiabilities1 = othersLiabilities1;
+	}
+
+	public Double getOthersLiabilities2() {
+		return OthersLiabilities2;
+	}
+
+	public void setOthersLiabilities2(Double othersLiabilities2) {
+		OthersLiabilities2 = othersLiabilities2;
+	}
+
+	public Double getOthersLiabilities3() {
+		return OthersLiabilities3;
+	}
+
+	public void setOthersLiabilities3(Double othersLiabilities3) {
+		OthersLiabilities3 = othersLiabilities3;
+	}
+
+	public Double getOthersTotals1() {
+		return OthersTotals1;
+	}
+
+	public void setOthersTotals1(Double othersTotals1) {
+		OthersTotals1 = othersTotals1;
+	}
+
+	public Double getOthersTotals2() {
+		return OthersTotals2;
+	}
+
+	public void setOthersTotals2(Double othersTotals2) {
+		OthersTotals2 = othersTotals2;
+	}
+
+	public Double getOthersTotals3() {
+		return OthersTotals3;
+	}
+
+	public void setOthersTotals3(Double othersTotals3) {
+		OthersTotals3 = othersTotals3;
+	}
+
+	public Double getOthersTotals4() {
+		return OthersTotals4;
+	}
+
+	public void setOthersTotals4(Double othersTotals4) {
+		OthersTotals4 = othersTotals4;
+	}
+
+	public Double getOthersTotals5() {
+		return OthersTotals5;
+	}
+
+	public void setOthersTotals5(Double othersTotals5) {
+		OthersTotals5 = othersTotals5;
+	}
+
+	public Double getIntangibleAssets1() {
+		return IntangibleAssets1;
+	}
+
+	public void setIntangibleAssets1(Double intangibleAssets1) {
+		IntangibleAssets1 = intangibleAssets1;
+	}
+
+	public Double getIntangibleAssets2() {
+		return IntangibleAssets2;
+	}
+
+	public void setIntangibleAssets2(Double intangibleAssets2) {
+		IntangibleAssets2 = intangibleAssets2;
+	}
+
+	public Double getIntangibleAssets3() {
+		return IntangibleAssets3;
+	}
+
+	public void setIntangibleAssets3(Double intangibleAssets3) {
+		IntangibleAssets3 = intangibleAssets3;
+	}
+
+	public Double getIntangibleAssets4() {
+		return IntangibleAssets4;
+	}
+
+	public void setIntangibleAssets4(Double intangibleAssets4) {
+		IntangibleAssets4 = intangibleAssets4;
+	}
+
+	public Double getIntangibleAssets5() {
+		return IntangibleAssets5;
+	}
+
+	public void setIntangibleAssets5(Double intangibleAssets5) {
+		IntangibleAssets5 = intangibleAssets5;
+	}
+
+	
+	
+	
+	public Double getIntangibleAssets6() {
+		return IntangibleAssets6;
+	}
+
+	public void setIntangibleAssets6(Double intangibleAssets6) {
+		IntangibleAssets6 = intangibleAssets6;
+	}
+
+	public Double getAssetsInTransit1() {
+		return AssetsInTransit1;
+	}
+
+	public void setAssetsInTransit1(Double assetsInTransit1) {
+		AssetsInTransit1 = assetsInTransit1;
+	}
+
+	public Double getAssetsInTransit2() {
+		return AssetsInTransit2;
+	}
+
+	public void setAssetsInTransit2(Double assetsInTransit2) {
+		AssetsInTransit2 = assetsInTransit2;
+	}
+
+	public Double getAssetsInTransit3() {
+		return AssetsInTransit3;
+	}
+
+	public void setAssetsInTransit3(Double assetsInTransit3) {
+		AssetsInTransit3 = assetsInTransit3;
+	}
+
+	public Double getAssetsInTransit4() {
+		return AssetsInTransit4;
+	}
+
+	public void setAssetsInTransit4(Double assetsInTransit4) {
+		AssetsInTransit4 = assetsInTransit4;
+	}
+
+	public Double getOthersInvestment1() {
+		return OthersInvestment1;
+	}
+
+	public void setOthersInvestment1(Double othersInvestment1) {
+		OthersInvestment1 = othersInvestment1;
+	}
+
+	public Double getOthersInvestment2() {
+		return OthersInvestment2;
+	}
+
+	public void setOthersInvestment2(Double othersInvestment2) {
+		OthersInvestment2 = othersInvestment2;
+	}
+
+	public Double getOthersInvestment3() {
+		return OthersInvestment3;
+	}
+
+	public void setOthersInvestment3(Double othersInvestment3) {
+		OthersInvestment3 = othersInvestment3;
+	}
+
+	public Double getOthersInvestment4() {
+		return OthersInvestment4;
+	}
+
+	public void setOthersInvestment4(Double othersInvestment4) {
+		OthersInvestment4 = othersInvestment4;
+	}
+
+	public Double getOthersInvestment5() {
+		return OthersInvestment5;
+	}
+
+	public void setOthersInvestment5(Double othersInvestment5) {
+		OthersInvestment5 = othersInvestment5;
+	}
+
+	public Double getShortTerm1() {
+		return ShortTerm1;
+	}
+
+	public void setShortTerm1(Double shortTerm1) {
+		ShortTerm1 = shortTerm1;
+	}
+
+	public Double getShortTerm2() {
+		return ShortTerm2;
+	}
+
+	public void setShortTerm2(Double shortTerm2) {
+		ShortTerm2 = shortTerm2;
+	}
+
+	public Double getShortTerm3() {
+		return ShortTerm3;
+	}
+
+	public void setShortTerm3(Double shortTerm3) {
+		ShortTerm3 = shortTerm3;
+	}
+
+	public Double getShortTerm4() {
+		return ShortTerm4;
+	}
+
+	public void setShortTerm4(Double shortTerm4) {
+		ShortTerm4 = shortTerm4;
+	}
+
+	public Double getOtherDetails1() {
+		return OtherDetails1;
+	}
+
+	public void setOtherDetails1(Double otherDetails1) {
+		OtherDetails1 = otherDetails1;
+	}
+
+	public Double getOtherDetails2() {
+		return OtherDetails2;
+	}
+
+	public void setOtherDetails2(Double otherDetails2) {
+		OtherDetails2 = otherDetails2;
+	}
+
+	public Double getOtherDetails3() {
+		return OtherDetails3;
+	}
+
+	public void setOtherDetails3(Double otherDetails3) {
+		OtherDetails3 = otherDetails3;
+	}
+
+	public Double getOtherDetails4() {
+		return OtherDetails4;
+	}
+
+	public void setOtherDetails4(Double otherDetails4) {
+		OtherDetails4 = otherDetails4;
+	}
+
+	public Double getOtherDetails5() {
+		return OtherDetails5;
+	}
+
+	public void setOtherDetails5(Double otherDetails5) {
+		OtherDetails5 = otherDetails5;
+	}
+
+	public double getMoneyReceivedAgainstShareWarrants() {
+		return moneyReceivedAgainstShareWarrants;
+	}
+
+	public void setMoneyReceivedAgainstShareWarrants(double moneyReceivedAgainstShareWarrants) {
+		this.moneyReceivedAgainstShareWarrants = moneyReceivedAgainstShareWarrants;
+	}
+
+	public double getMinorityInterest() {
+		return minorityInterest;
+	}
+
+	public void setMinorityInterest(double minorityInterest) {
+		this.minorityInterest = minorityInterest;
+	}
+
+	public double getTermLoansSecured() {
+		return termLoansSecured;
+	}
+
+	public void setTermLoansSecured(double termLoansSecured) {
+		this.termLoansSecured = termLoansSecured;
+	}
+
+	public double getTermLoansUnsecured() {
+		return termLoansUnsecured;
+	}
+
+	public void setTermLoansUnsecured(double termLoansUnsecured) {
+		this.termLoansUnsecured = termLoansUnsecured;
+	}
+
+	public double getUnsecuredLoansFromOthers() {
+		return unsecuredLoansFromOthers;
+	}
+
+	public void setUnsecuredLoansFromOthers(double unsecuredLoansFromOthers) {
+		this.unsecuredLoansFromOthers = unsecuredLoansFromOthers;
+	}
+
+	public double getCurrentLiabilitiesSecured() {
+		return currentLiabilitiesSecured;
+	}
+
+	public void setCurrentLiabilitiesSecured(double currentLiabilitiesSecured) {
+		this.currentLiabilitiesSecured = currentLiabilitiesSecured;
+	}
+
+	public double getCurrentLiabilitiesUnsecured() {
+		return currentLiabilitiesUnsecured;
+	}
+
+	public void setCurrentLiabilitiesUnsecured(double currentLiabilitiesUnsecured) {
+		this.currentLiabilitiesUnsecured = currentLiabilitiesUnsecured;
+	}
+
+	public double getImpairmentsOfAssests() {
+		return impairmentsOfAssests;
+	}
+
+	public void setImpairmentsOfAssests(double impairmentsOfAssests) {
+		this.impairmentsOfAssests = impairmentsOfAssests;
+	}
+
+	public double getPreOperativeExpensesPending() {
+		return preOperativeExpensesPending;
+	}
+
+	public void setPreOperativeExpensesPending(double preOperativeExpensesPending) {
+		this.preOperativeExpensesPending = preOperativeExpensesPending;
+	}
+
+	public double getAssetsInTransit() {
+		return assetsInTransit;
+	}
+
+	public void setAssetsInTransit(double assetsInTransit) {
+		this.assetsInTransit = assetsInTransit;
+	}
+
+	public double getCashAndCashEquivalents() {
+		return cashAndCashEquivalents;
+	}
+
+	public void setCashAndCashEquivalents(double cashAndCashEquivalents) {
+		this.cashAndCashEquivalents = cashAndCashEquivalents;
+	}
+
+
+	public double getOthersTotals() {
+		return OthersTotals;
+	}
+
+	public void setOthersTotals(double othersTotals) {
+		OthersTotals = othersTotals;
+	}
+
+	public double getOthersAssetsTransit() {
+		return OthersAssetsTransit;
+	}
+
+	public void setOthersAssetsTransit(double othersAssetsTransit) {
+		OthersAssetsTransit = othersAssetsTransit;
+	}
+
+	public double getOtherInvestments() {
+		return OtherInvestments;
+	}
+
+	public void setOtherInvestments(double otherInvestments) {
+		OtherInvestments = otherInvestments;
+	}
+
+	public double getOtherDetails() {
+		return OtherDetails;
+	}
+
+	public void setOtherDetails(double otherDetails) {
+		OtherDetails = otherDetails;
+	}
+
+	public double getOtherTermLiability() {
+		return OtherTermLiability;
+	}
+
+	public void setOtherTermLiability(double otherTermLiability) {
+		OtherTermLiability = otherTermLiability;
+	}
+	
 	
 	
 
