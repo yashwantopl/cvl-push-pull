@@ -35,7 +35,7 @@ public class DDROneFormResponse  implements Serializable{
 	List<ProposedProductDetailRequest> proposedProductDetailList = new ArrayList<ProposedProductDetailRequest>();
 	List<ExistingProductDetailRequest> existingProductDetailList = new ArrayList<ExistingProductDetailRequest>();
 	List<AssociatedConcernDetailRequest> associatedConcernDetailList = new ArrayList<AssociatedConcernDetailRequest>(); 
-	
+	List<DDRCMACalculationResponse> dDRCMACalculationList = new ArrayList<DDRCMACalculationResponse>(); 
 	
 	public String getNameOfBorrower() {
 		return nameOfBorrower;
@@ -121,6 +121,13 @@ public class DDROneFormResponse  implements Serializable{
 	public void setAssociatedConcernDetailList(List<AssociatedConcernDetailRequest> associatedConcernDetailList) {
 		this.associatedConcernDetailList = associatedConcernDetailList;
 	}
+	public List<DDRCMACalculationResponse> getdDRCMACalculationList() {
+		return dDRCMACalculationList;
+	}
+	public void setdDRCMACalculationList(List<DDRCMACalculationResponse> dDRCMACalculationList) {
+		this.dDRCMACalculationList = dDRCMACalculationList;
+	}
+	
 	
 	
 	

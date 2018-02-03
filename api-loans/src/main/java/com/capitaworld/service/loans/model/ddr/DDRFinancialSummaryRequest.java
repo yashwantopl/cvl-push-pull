@@ -14,6 +14,8 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	
 	private Long ddrFormId;
 	
+	private Integer perticularId;
+	
 	private String perticularName;
 	
 	private Double provisionalYear;
@@ -131,10 +133,19 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+
+	public Integer getPerticularId() {
+		return perticularId;
+	}
+
+	public void setPerticularId(Integer perticularId) {
+		this.perticularId = perticularId;
+	}
 
 	@Override
 	public String toString() {
-		return "DDRFinancialSummaryRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", perticularName="
+		return "DDRFinancialSummaryRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", perticularId=" + perticularId + ", perticularName="
 				+ perticularName + ", provisionalYear=" + provisionalYear + ", lastYear=" + lastYear
 				+ ", lastToLastYear=" + lastToLastYear + ", diffPfPrvsnlAndLastYear=" + diffPfPrvsnlAndLastYear
 				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy

@@ -74,6 +74,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProduc
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
@@ -563,11 +564,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 				saveObj = new DDRFinancialSummary();
 				BeanUtils.copyProperties(reqObj, saveObj,"id","createdBy","createdDate","modifyBy","modifyDate","ddrFormId","isActive");
 				saveObj.setDdrFormId(ddrFormId);
+				saveObj.setPerticularName(DDRFinancialSummaryToBeFields.getType(reqObj.getPerticularId()).getValue());
 				saveObj.setCreatedBy(userId);
 				saveObj.setCreatedDate(new Date());
 				saveObj.setIsActive(true);
 			} else {
 				BeanUtils.copyProperties(reqObj, saveObj,"id","createdBy","createdDate","modifyBy","modifyDate","ddrFormId");
+				saveObj.setPerticularName(DDRFinancialSummaryToBeFields.getType(reqObj.getPerticularId()).getValue());
 				saveObj.setModifyBy(userId);
 				saveObj.setModifyDate(new Date());
 			}
@@ -619,7 +622,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	
 	@SuppressWarnings("unchecked")
-	public void getOneFormDetails(Long userId, Long applicationId) {
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
 
@@ -628,7 +631,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
-			return;
+			return response;
 		}
 		
 		//ORGANIZATION NAME :- LINENO:6
@@ -793,7 +796,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("Throw Exception While Get associates concern in DDR OneForm");
 			e.printStackTrace();
 		}
-		
+		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
+		return response; 
 		
 
 		
@@ -888,6 +892,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		if(CommonUtils.isObjectListNull(operatingStatementDetails)) {
 			profitibilityStatementList = profitibilityStatementDetailRepository.getByApplicationId(applicationId);
+			if(CommonUtils.isObjectListNull(profitibilityStatementList)) {
+				logger.info("User not filled CMA or CO Act Sheet");
+				return responseList;
+			}
 			coAct2018OSDetails = profitibilityStatementList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
 			coAct2017OSDetails = profitibilityStatementList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
 			coAct2016OSDetails = profitibilityStatementList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
@@ -903,11 +911,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 		AssetsDetails cma2018AssetDetails = null;
 		AssetsDetails cma2017AssetDetails = null;
 		AssetsDetails cma2016AssetDetails = null;
+		AssetsDetails cma2015AssetDetails = null;
 		if(isCMAUpload) {
 			cmaAssetsDetails = assetsDetailsRepository.getByApplicationId(applicationId);
 			cma2018AssetDetails = cmaAssetsDetails.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
 			cma2017AssetDetails = cmaAssetsDetails.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
 			cma2016AssetDetails = cmaAssetsDetails.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+			cma2015AssetDetails = cmaAssetsDetails.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
 		}
 		
 		List<LiabilitiesDetails> liabilitiesDetailsList = null;
@@ -925,11 +935,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 		BalanceSheetDetail coAct2018BalanceSheet = null;
 		BalanceSheetDetail coAct2017BalanceSheet = null;
 		BalanceSheetDetail coAct2016BalanceSheet = null;
+		BalanceSheetDetail coAct2015BalanceSheet = null;
 		if(!isCMAUpload) {
 			balanceSheetDetailList = balanceSheetDetailRepository.getByApplicationId(applicationId);
 			coAct2018BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
 			coAct2017BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
 			coAct2016BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+			coAct2015BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
 		}
 		
 		
@@ -1187,6 +1199,52 @@ public class DDRFormServiceImpl implements DDRFormService{
         }
         currentRatio.setDiffPvsnlAndLastYear(calculateFinancialSummary(currentRatio.getProvisionalYear(),currentRatio.getLastYear()));
         responseList.add(currentRatio);
+        
+        
+        DDRCMACalculationResponse inventoryTurnOver = new DDRCMACalculationResponse();
+        inventoryTurnOver.setKeyId(DDRFinancialSummaryFields.INVENTORY_TURNOVER.getId());
+        inventoryTurnOver.setKeyName(DDRFinancialSummaryFields.INVENTORY_TURNOVER.getValue());
+        if(isCMAUpload) {
+        	double proPriviousCal = CommonUtils.checkDouble(cma2018AssetDetails.getInventory()) + CommonUtils.checkDouble(cma2017AssetDetails.getInventory());
+        	double provisionalYear = proPriviousCal > 0 ? totalSalesResponse.getProvisionalYear() / proPriviousCal : 0.0;
+            inventoryTurnOver.setProvisionalYear(provisionalYear / 2);
+            double lastPriviousCal = CommonUtils.checkDouble(cma2017AssetDetails.getInventory()) + CommonUtils.checkDouble(cma2016AssetDetails.getInventory());
+        	double lastYear = lastPriviousCal > 0 ? totalSalesResponse.getLastYear() / lastPriviousCal : 0.0;
+            inventoryTurnOver.setLastYear(lastYear / 2);
+            double lastToLastPriviousCal = CommonUtils.checkDouble(cma2016AssetDetails.getInventory()) + CommonUtils.checkDouble(cma2015AssetDetails.getInventory());
+        	double lastToLastYear = lastToLastPriviousCal > 0 ? totalSalesResponse.getLastToLastYear() / lastToLastPriviousCal : 0.0;
+            inventoryTurnOver.setLastToLastYear(lastToLastYear / 2);
+        } else {
+        	double proPriviousCal = CommonUtils.checkDouble(coAct2018BalanceSheet.getInventory()) + CommonUtils.checkDouble(coAct2017BalanceSheet.getInventory());
+        	double provisionalYear = proPriviousCal > 0 ? totalSalesResponse.getProvisionalYear() / proPriviousCal : 0.0;
+            inventoryTurnOver.setProvisionalYear(provisionalYear / 2);
+            double lastPriviousCal = CommonUtils.checkDouble(coAct2017BalanceSheet.getInventory()) + CommonUtils.checkDouble(coAct2016BalanceSheet.getInventory());
+        	double lastYear = lastPriviousCal > 0 ? totalSalesResponse.getLastYear() / lastPriviousCal : 0.0;
+            inventoryTurnOver.setLastYear(lastYear / 2);
+            double lastToLastPriviousCal = CommonUtils.checkDouble(coAct2016BalanceSheet.getInventory()) + CommonUtils.checkDouble(coAct2015BalanceSheet.getInventory());
+        	double lastToLastYear = lastToLastPriviousCal > 0 ? totalSalesResponse.getLastToLastYear() / lastToLastPriviousCal : 0.0;
+            inventoryTurnOver.setLastToLastYear(lastToLastYear / 2);
+        }
+        inventoryTurnOver.setDiffPvsnlAndLastYear(calculateFinancialSummary(inventoryTurnOver.getProvisionalYear(),inventoryTurnOver.getLastYear()));
+        responseList.add(inventoryTurnOver);
+        
+        
+        DDRCMACalculationResponse workingCapitalCycle = new DDRCMACalculationResponse();
+        workingCapitalCycle.setKeyId(DDRFinancialSummaryFields.WORKING_CAPITAL_CYCLE.getId());
+        workingCapitalCycle.setKeyName(DDRFinancialSummaryFields.WORKING_CAPITAL_CYCLE.getValue());
+        double proPriviousCal = totalCurrentAsset.getProvisionalYear() - totalCurrentLiability.getProvisionalYear();
+    	double provisionalYear = totalSalesResponse.getProvisionalYear() > 0 ? proPriviousCal  /totalSalesResponse.getProvisionalYear() : 0.0;
+        workingCapitalCycle.setProvisionalYear(provisionalYear * 365);
+        
+        double lastCal = totalCurrentAsset.getLastYear() - totalCurrentLiability.getLastYear();
+    	double lastYear = totalSalesResponse.getLastYear() > 0 ? lastCal  /totalSalesResponse.getLastYear() : 0.0;
+        workingCapitalCycle.setLastYear(lastYear / 2);
+        
+        double lastToLastCal = totalCurrentAsset.getLastToLastYear() - totalCurrentLiability.getLastToLastYear();
+    	double lastToLastYear = totalSalesResponse.getLastToLastYear() > 0 ? lastToLastCal / totalSalesResponse.getLastToLastYear() : 0.0;
+        workingCapitalCycle.setLastToLastYear(lastToLastYear / 2);
+        workingCapitalCycle.setDiffPvsnlAndLastYear(calculateFinancialSummary(workingCapitalCycle.getProvisionalYear(),workingCapitalCycle.getLastYear()));
+        responseList.add(workingCapitalCycle);
 		
 		return responseList;
 	}
@@ -1202,9 +1260,23 @@ public class DDRFormServiceImpl implements DDRFormService{
     }
 	
 	@SuppressWarnings("unchecked")
-	public static List<JSONObject> getFinancialSummaryFieldsList() {
+	@Override
+	public List<JSONObject> getFinancialSummaryFieldsList() {
 		List<JSONObject> responseList = new ArrayList<>();
 		for(DDRFinancialSummaryFields dDRFinancialSummary : DDRFinancialSummaryFields.values()) {
+			JSONObject obj = new JSONObject();
+			obj.put("id", dDRFinancialSummary.getId());
+			obj.put("value", dDRFinancialSummary.getValue());
+			responseList.add(obj);
+		}
+		return responseList;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<JSONObject> getFinancialSummaryToBeFieldsList() {
+		List<JSONObject> responseList = new ArrayList<>();
+		for(DDRFinancialSummaryToBeFields dDRFinancialSummary : DDRFinancialSummaryToBeFields.values()) {
 			JSONObject obj = new JSONObject();
 			obj.put("id", dDRFinancialSummary.getId());
 			obj.put("value", dDRFinancialSummary.getValue());

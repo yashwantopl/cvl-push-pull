@@ -34,6 +34,9 @@ public class DDRFormDetails implements Serializable {
 	@Column(name = "application_id")
 	private Long applicationId;
 	
+	@Column(name = "reference_no")
+	private String referenceNo;
+	
 	@Column(name = "user_id")
 	private Long userId;
 	
@@ -821,10 +824,18 @@ public class DDRFormDetails implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+	public String getReferenceNo() {
+		return referenceNo;
+	}
+
+	public void setReferenceNo(String referenceNo) {
+		this.referenceNo = referenceNo;
+	}
 
 	@Override
 	public String toString() {
-		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", userId=" + userId
+		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", userId=" + userId
 				+ ", godownStockyard=" + godownStockyard + ", companySuccessPlan=" + companySuccessPlan
 				+ ", detailsOfBankingArrangement=" + detailsOfBankingArrangement + ", salesOfAutomobileDivision="
 				+ salesOfAutomobileDivision + ", othersSales=" + othersSales + ", totalConsolidatedSales="
