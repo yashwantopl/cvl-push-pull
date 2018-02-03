@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.irr;
 
+import org.springframework.http.ResponseEntity;
+
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetManuRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetServRequest;
@@ -18,5 +20,5 @@ public interface IrrService {
 	
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Integer productId) throws Exception;
 	
-	public RatingResponse calculateIrrRating(Long applicationId,Long userId);
+	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
 }
