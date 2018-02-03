@@ -1,10 +1,24 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 /**
  * Created by dhaval on 27-May-17.
@@ -158,6 +172,11 @@ public class TermLoanFinalViewResponse implements Serializable{
     private String internalRateReturn;
     private String sensititivityAnalysis;
     private String varianceInProjectedSales;
+    
+    private Double sharePriceFace;
+	private Double sharePriceMarket;
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+    private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
     public String getMajorlyOnGovernment() {
 		return majorlyOnGovernment;
 	}
@@ -1272,6 +1291,42 @@ public class TermLoanFinalViewResponse implements Serializable{
 	public void setEmployeeRelations(String employeeRelations) {
 		this.employeeRelations = employeeRelations;
 	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+
+	
+	
 	
 
 }
