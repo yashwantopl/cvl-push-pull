@@ -48,3 +48,11 @@ ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD C
 	ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN assets_in_transit DOUBLE DEFAULT NULL;
 	ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN cash_and_cash_equivalents DOUBLE DEFAULT NULL;
 
+
+
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN others_assets_transit DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN other_investments DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_6 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN other_term_liability DOUBLE DEFAULT NULL;
