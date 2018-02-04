@@ -14,7 +14,7 @@ public interface IrrService {
 	
 	public  FinancialInputRequest coActIrrMappingService(Long aplicationId) throws Exception;
 	
-	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Integer productId) throws Exception;
+	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded) throws Exception;
 	
 	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Integer productId) throws Exception;
 	
