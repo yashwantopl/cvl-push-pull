@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
@@ -20,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalUnsecureLo
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -31,7 +34,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkin
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
@@ -49,6 +54,9 @@ import com.ibm.icu.util.Calendar;
 @Service
 @Transactional
 public class IrrServiceImpl implements IrrService{
+	
+	@Autowired
+	private DocumentManagementService documentManagementService;
 	
 	@Autowired
 	RatingClient ratingClient;
@@ -89,6 +97,9 @@ public class IrrServiceImpl implements IrrService{
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
+	@Autowired
+	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
+	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
 	
@@ -117,10 +128,18 @@ public class IrrServiceImpl implements IrrService{
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
 		
+			Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
+			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());
+			if((false == isCmaUploaded) && (false == isCoActUploaded))
+			{
+				log.info("cma and coAct are not uploaded.");	
+				return new ResponseEntity<RatingResponse>(
+						new RatingResponse("Upload either of CMA Or Company's Act in final section.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
 			{
 				//---- Manufacturing
-				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, applicationMaster.getProductId()));
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
 			{
@@ -133,10 +152,14 @@ public class IrrServiceImpl implements IrrService{
 				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, applicationMaster.getProductId()));
 			}
 			
+		
+			
 			// if CMA filled
+			if(isCmaUploaded)			
 			irrRequest.setFinancialInputRequest(cmaIrrMappingService(appId));
 			
 			// if coAct filled
+			if(isCoActUploaded)
 			irrRequest.setFinancialInputRequest(coActIrrMappingService(appId));
 			
 			
@@ -159,6 +182,48 @@ public class IrrServiceImpl implements IrrService{
 					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		return null;
+	}
+	
+	private Boolean isCMAUploaded(Long appId, Integer productId) {
+		// TODO Auto-generated method stub
+		
+		try{
+			
+			LoanType type = CommonUtils.LoanType.getType(productId);
+			switch (type) {
+			case WORKING_CAPITAL:
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_CMA)).size()>0?true:false);
+			case TERM_LOAN:
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CMA)).size()>0?true:false);
+			case UNSECURED_LOAN :
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)).size()>0?true:false);
+			}
+		}catch(DocumentException e){
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	}
+	
+	private Boolean isCoActUploaded(Long appId, Integer productId) {
+		// TODO Auto-generated method stub
+		
+		try{
+			
+			LoanType type = CommonUtils.LoanType.getType(productId);
+			switch (type) {
+			case WORKING_CAPITAL:
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_COMPANY_ACT)).size()>0?true:false);
+			case TERM_LOAN:
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COMPANY_ACT)).size()>0?true:false);
+			case UNSECURED_LOAN :
+				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)).size()>0?true:false);
+			}
+		}catch(DocumentException e){
+			e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 	
 	
@@ -1101,13 +1166,13 @@ public class IrrServiceImpl implements IrrService{
 			balanceSheetDetail.setDeferredPaymentCredits(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 			balanceSheetDetail.setTermDeposits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-			balanceSheetDetail.setOthersPlsSpecify(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others 
+			balanceSheetDetail.setOthers(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 			balanceSheetDetail.setDebentures(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 			balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-		financialInputRequest.setOtherLongTermLiablitiesTy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others pls specify
+		financialInputRequest.setOtherLongTermLiablitiesTy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 			balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1125,7 +1190,9 @@ public class IrrServiceImpl implements IrrService{
 			balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 			balanceSheetDetail.setDepositsAndInstallments(0.0);
-		financialInputRequest.setOtherCurruntLiablitiesTy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments());
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
+			balanceSheetDetail.setOthersPlsSpecify(0.0);
+		financialInputRequest.setOtherCurruntLiablitiesTy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersPlsSpecify());
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 			balanceSheetDetail.setProvisionForTax(0.0);
@@ -1176,13 +1243,13 @@ public class IrrServiceImpl implements IrrService{
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 			balanceSheetDetail.setCapitalAdvance(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-			balanceSheetDetail.setOthersPlsSpecify(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
+			balanceSheetDetail.setOthersTotals(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 			balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 			balanceSheetDetail.setAssetsInTransit(0.0);
-		financialInputRequest.setOtheNonCurruntAssetTy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersPlsSpecify()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
+		financialInputRequest.setOtheNonCurruntAssetTy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 			balanceSheetDetail.setInventory(0.0);
@@ -1202,9 +1269,9 @@ public class IrrServiceImpl implements IrrService{
 			balanceSheetDetail.setDeferredTaxAsset(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getMiscExpences()))
 			balanceSheetDetail.setMiscExpences(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify()))// ------ others pls specify
-			balanceSheetDetail.setOthersPlsSpecify(0.0);
-		financialInputRequest.setOtherCurruntAssetTy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOthersPlsSpecify());// ------ others pls specify
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOtherDetails()))// ------ others details
+			balanceSheetDetail.setOtherDetails(0.0);
+		financialInputRequest.setOtherCurruntAssetTy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOtherDetails());// ------ others pls specify
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCashAndCashEquivalents()))
 			balanceSheetDetail.setCashAndCashEquivalents(0.0);
@@ -1346,13 +1413,13 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setDeferredPaymentCredits(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 					balanceSheetDetail.setTermDeposits(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others 
+					balanceSheetDetail.setOthers(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 					balanceSheetDetail.setDebentures(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 					balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-				financialInputRequest.setOtherLongTermLiablitiesSy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others pls specify
+				financialInputRequest.setOtherLongTermLiablitiesSy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 					balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1370,7 +1437,9 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 					balanceSheetDetail.setDepositsAndInstallments(0.0);
-				financialInputRequest.setOtherCurruntLiablitiesSy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments());
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
+					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				financialInputRequest.setOtherCurruntLiablitiesSy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersPlsSpecify());
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 					balanceSheetDetail.setProvisionForTax(0.0);
@@ -1421,13 +1490,13 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 					balanceSheetDetail.setCapitalAdvance(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
+					balanceSheetDetail.setOthersTotals(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 					balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 					balanceSheetDetail.setAssetsInTransit(0.0);
-				financialInputRequest.setOtheNonCurruntAssetSy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersPlsSpecify()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
+				financialInputRequest.setOtheNonCurruntAssetSy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 					balanceSheetDetail.setInventory(0.0);
@@ -1447,9 +1516,9 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setDeferredTaxAsset(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getMiscExpences()))
 					balanceSheetDetail.setMiscExpences(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify()))// ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
-				financialInputRequest.setOtherCurruntAssetSy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOthersPlsSpecify());// ------ others pls specify
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOtherDetails()))// ------ others details
+					balanceSheetDetail.setOtherDetails(0.0);
+				financialInputRequest.setOtherCurruntAssetSy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOtherDetails());// ------ others details
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCashAndCashEquivalents()))
 					balanceSheetDetail.setCashAndCashEquivalents(0.0);
@@ -1591,13 +1660,13 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setDeferredPaymentCredits(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 					balanceSheetDetail.setTermDeposits(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others
+					balanceSheetDetail.setOthers(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 					balanceSheetDetail.setDebentures(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 					balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-				financialInputRequest.setOtherLongTermLiablitiesFy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others pls specify
+				financialInputRequest.setOtherLongTermLiablitiesFy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others 
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 					balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1615,7 +1684,9 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 					balanceSheetDetail.setDepositsAndInstallments(0.0);
-				financialInputRequest.setOtherCurruntLiablitiesFy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments());
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others
+					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				financialInputRequest.setOtherCurruntLiablitiesFy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() +balanceSheetDetail.getOthersPlsSpecify());
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 					balanceSheetDetail.setProvisionForTax(0.0);
@@ -1666,13 +1737,13 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 					balanceSheetDetail.setCapitalAdvance(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
+					balanceSheetDetail.setOthersTotals(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 					balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 					balanceSheetDetail.setAssetsInTransit(0.0);
-				financialInputRequest.setOtheNonCurruntAssetFy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersPlsSpecify()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
+				financialInputRequest.setOtheNonCurruntAssetFy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 					balanceSheetDetail.setInventory(0.0);
@@ -1692,9 +1763,9 @@ public class IrrServiceImpl implements IrrService{
 					balanceSheetDetail.setDeferredTaxAsset(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getMiscExpences()))
 					balanceSheetDetail.setMiscExpences(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify()))// ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
-				financialInputRequest.setOtherCurruntAssetFy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOthersPlsSpecify());// ------ others pls specify
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOtherDetails()))// ------ others details
+					balanceSheetDetail.setOtherDetails(0.0);
+				financialInputRequest.setOtherCurruntAssetFy(balanceSheetDetail.getCurrentInvestments() + balanceSheetDetail.getDeferredTaxAsset() + balanceSheetDetail.getMiscExpences() + balanceSheetDetail.getOtherDetails());// ------ others details
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getShortTermLoansAndAdvances()))
 					balanceSheetDetail.setShortTermLoansAndAdvances(0.0);
@@ -1706,8 +1777,12 @@ public class IrrServiceImpl implements IrrService{
 		return financialInputRequest;
 	}
 
+	
+	
+	
+	
 	@Override
-	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Integer productId)
+	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded)
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
@@ -1718,7 +1793,7 @@ public class IrrServiceImpl implements IrrService{
 			qualitativeInputSheetManuRequest = setWCManufacturingQualitativeInput(aplicationId);
 			break;
 		case TERM_LOAN:
-			qualitativeInputSheetManuRequest = setTLManufacturingQualitativeInput(aplicationId);
+			qualitativeInputSheetManuRequest = setTLManufacturingQualitativeInput(aplicationId,isCmaUploaded,isCoActUploaded);
 			break;
 		case UNSECURED_LOAN :
 			qualitativeInputSheetManuRequest= setUSLManufacturingQualitativeInput(aplicationId);
@@ -1728,16 +1803,18 @@ public class IrrServiceImpl implements IrrService{
 		return qualitativeInputSheetManuRequest;
 	}
 
-	public QualitativeInputSheetManuRequest setWCManufacturingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetManuRequest setWCManufacturingQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
 		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.findOne(aplicationId);
 		
-		qualitativeInputSheetManuRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetManuRequest.setContingentLiabilities(contingentLiabilities);//-----formula based
+		qualitativeInputSheetManuRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());		
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(finalWorkingCapitalLoanDetail.getUnhedgedForeignCurrency().longValue());
 		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(finalWorkingCapitalLoanDetail.getFinancialRestructuringHistory().longValue());
-		//qualitativeInputSheetManuRequest.setIndustryRiskScore(finalTermLoanDetail.getri); //-----Industry mapping
+		//qualitativeInputSheetManuRequest.setIndustryRiskScore(finalTermLoanDetail.getri); //-----Industry mapping -- Remaining
 		qualitativeInputSheetManuRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetManuRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetManuRequest.setOrderBookPosition(finalWorkingCapitalLoanDetail.getOrderBookPosition().longValue());
@@ -1749,8 +1826,7 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setSuccsessionPlanning(finalWorkingCapitalLoanDetail.getSuccessionPlanning().longValue());
 		qualitativeInputSheetManuRequest.setFinancialStrength(finalWorkingCapitalLoanDetail.getFinancialStrength().longValue());
 		qualitativeInputSheetManuRequest.setAbilityToRaise(finalWorkingCapitalLoanDetail.getAbilityToRaiseFunds().longValue());
-		qualitativeInputSheetManuRequest.setIntraCompanyConflicts(finalWorkingCapitalLoanDetail.getIntraCompany().longValue());
-		//qualitativeInputSheetManuRequest.setProjectSize(finalTermLoanDetail.getpro);//----- formula based
+		qualitativeInputSheetManuRequest.setIntraCompanyConflicts(finalWorkingCapitalLoanDetail.getIntraCompany().longValue());		
 		qualitativeInputSheetManuRequest.setStatusProjectClearances(finalWorkingCapitalLoanDetail.getStatusOfProjectClearances().longValue());
 		qualitativeInputSheetManuRequest.setStatusFinancialClosure(finalWorkingCapitalLoanDetail.getStatusOfFinancialClosure().longValue());
 		qualitativeInputSheetManuRequest.setProjectDebtService(finalWorkingCapitalLoanDetail.getProjectedDebtService().longValue());
@@ -1769,16 +1845,30 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetManuRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());	
 		
+		//---Contigent Liabilities set
+		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+			qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+			qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+			qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else
+			qualitativeInputSheetManuRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+		//---project size 0.0 WC
+		qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+		
 		return qualitativeInputSheetManuRequest;
 	}
 	
-	public QualitativeInputSheetManuRequest setTLManufacturingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetManuRequest setTLManufacturingQualitativeInput(Long aplicationId, Boolean isCmaUploaded, Boolean isCoActUploaded) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalTermLoanDetail finalTermLoanDetail = null;
 		finalTermLoanDetail = finalTermLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetManuRequest.setAccountingQuality(finalTermLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetManuRequest.setContingentLiabilities(contingentLiabilities);//-----formula based
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(finalTermLoanDetail.getUnhedgedForeignCurrency().longValue());
 		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(finalTermLoanDetail.getFinancialRestructuringHistory().longValue());
 		//qualitativeInputSheetManuRequest.setIndustryRiskScore(finalTermLoanDetail.getri); //-----Industry mapping
@@ -1794,7 +1884,6 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setFinancialStrength(finalTermLoanDetail.getFinancialStrength().longValue());
 		qualitativeInputSheetManuRequest.setAbilityToRaise(finalTermLoanDetail.getAbilityToRaiseFunds().longValue());
 		qualitativeInputSheetManuRequest.setIntraCompanyConflicts(finalTermLoanDetail.getIntraCompany().longValue());
-		//qualitativeInputSheetManuRequest.setProjectSize(finalTermLoanDetail.getpro);//----- formula based
 		qualitativeInputSheetManuRequest.setStatusProjectClearances(finalTermLoanDetail.getStatusOfProjectClearances().longValue());
 		qualitativeInputSheetManuRequest.setStatusFinancialClosure(finalTermLoanDetail.getStatusOfFinancialClosure().longValue());
 		qualitativeInputSheetManuRequest.setProjectDebtService(finalTermLoanDetail.getProjectedDebtService().longValue());
@@ -1813,19 +1902,55 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setVarianceInProjectedSales(finalTermLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetManuRequest.setNumberOfLcBgIssuedInFavor(finalTermLoanDetail.getNumberOfLc().longValue());		
 		
+		//---Contigent Liabilities set
+			if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+			else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+			else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+			else
+				qualitativeInputSheetManuRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+		//---project size TL
+			PrimaryTermLoanDetail primaryTermLoanDetail = null;
+			primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);			
+			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+			
+			if(isCmaUploaded){
+				AssetsDetails assetsDetails = new AssetsDetails();
+				assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear+"");
+				if(CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getTotalCostOfEstimate()))
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+				else
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / assetsDetails.getTotalAssets()) * 100);//----- formula based
+			}else if(isCoActUploaded){
+				BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
+				balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear+"");
+				if(CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getTotalCostOfEstimate()))
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getGrandTotal()))
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+				else
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / balanceSheetDetail.getGrandTotal()) * 100);//----- formula based
+			}
+				
 		return qualitativeInputSheetManuRequest;
 	}
 	
-	public QualitativeInputSheetManuRequest setUSLManufacturingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetManuRequest setUSLManufacturingQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalUnsecureLoanDetail finalUnsecureLoanDetail = null;
 		finalUnsecureLoanDetail = finalUnsecuredLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetManuRequest.setAccountingQuality(finalUnsecureLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetManuRequest.setContingentLiabilities(contingentLiabilities);//-----formula based
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(finalUnsecureLoanDetail.getUnhedgedForeignCurrency().longValue());
 		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(finalUnsecureLoanDetail.getFinancialRestructuringHistory().longValue());
-		//qualitativeInputSheetManuRequest.setIndustryRiskScore(finalTermLoanDetail.getri); //-----Industry mapping
+		//qualitativeInputSheetManuRequest.setIndustryRiskScore(finalTermLoanDetail.getri); //-----Industry mapping-- Remaining
 		qualitativeInputSheetManuRequest.setCustomerQuality(finalUnsecureLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetManuRequest.setSupplierQuality(finalUnsecureLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetManuRequest.setOrderBookPosition(finalUnsecureLoanDetail.getOrderBookPosition().longValue());
@@ -1838,7 +1963,6 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setFinancialStrength(finalUnsecureLoanDetail.getFinancialStrength().longValue());
 		qualitativeInputSheetManuRequest.setAbilityToRaise(finalUnsecureLoanDetail.getAbilityToRaiseFunds().longValue());
 		qualitativeInputSheetManuRequest.setIntraCompanyConflicts(finalUnsecureLoanDetail.getIntraCompany().longValue());
-		//qualitativeInputSheetManuRequest.setProjectSize(finalTermLoanDetail.getpro);//----- formula based
 		qualitativeInputSheetManuRequest.setStatusProjectClearances(finalUnsecureLoanDetail.getStatusOfProjectClearances().longValue());
 		qualitativeInputSheetManuRequest.setStatusFinancialClosure(finalUnsecureLoanDetail.getStatusOfFinancialClosure().longValue());
 		qualitativeInputSheetManuRequest.setProjectDebtService(finalUnsecureLoanDetail.getProjectedDebtService().longValue());
@@ -1857,8 +1981,23 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setVarianceInProjectedSales(finalUnsecureLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetManuRequest.setNumberOfLcBgIssuedInFavor(finalUnsecureLoanDetail.getNumberOfLc().longValue());	
 		
+		//---Contigent Liabilities set
+		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);
+		else
+				qualitativeInputSheetManuRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+		//---project size 0.0 USL
+			qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+				
 		return qualitativeInputSheetManuRequest;
 	}
+	
+	
+	
 	
 	@Override
 	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Integer productId)
@@ -1882,13 +2021,15 @@ public class IrrServiceImpl implements IrrService{
 		return qualitativeInputSheetServRequest;
 	}
 
-	public QualitativeInputSheetServRequest setWCServiceQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetServRequest setWCServiceQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
 		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetServRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetServRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetServRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
@@ -1913,16 +2054,28 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+				if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+				else
+					qualitativeInputSheetServRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+				
 		return qualitativeInputSheetServRequest;		
 	}
 	
-	public QualitativeInputSheetServRequest setTLServiceQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetServRequest setTLServiceQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalTermLoanDetail finalTermLoanDetail = null;
 		finalTermLoanDetail = finalTermLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetServRequest.setAccountingQuality(finalTermLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetServRequest.setCustomerQuality(finalTermLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetServRequest.setSupplierQuality(finalTermLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalTermLoanDetail.getSustainabilityProduct().longValue());
@@ -1947,16 +2100,28 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalTermLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalTermLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else
+			qualitativeInputSheetServRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+
 		return qualitativeInputSheetServRequest;		
 	}
 	
-	public QualitativeInputSheetServRequest setUSLServiceQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetServRequest setUSLServiceQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalUnsecureLoanDetail finalUnsecureLoanDetail = null;
 		finalUnsecureLoanDetail = finalUnsecuredLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetServRequest.setAccountingQuality(finalUnsecureLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetServRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetServRequest.setCustomerQuality(finalUnsecureLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetServRequest.setSupplierQuality(finalUnsecureLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalUnsecureLoanDetail.getSustainabilityProduct().longValue());
@@ -1981,8 +2146,22 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalUnsecureLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalUnsecureLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+			qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
+		else
+			qualitativeInputSheetServRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+
 		return qualitativeInputSheetServRequest;		
 	}
+	
+	
+	
+	
 	@Override
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Integer productId)
 			throws Exception {
@@ -2005,13 +2184,15 @@ public class IrrServiceImpl implements IrrService{
 		return qualitativeInputSheetTradRequest;
 	}
 
-	public QualitativeInputSheetTradRequest setWCTradingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetTradRequest setWCTradingQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
 		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetTradRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetTradRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetTradRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
@@ -2036,16 +2217,28 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+		else
+			qualitativeInputSheetTradRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+
 		return qualitativeInputSheetTradRequest;		
 	}
 	
-	public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalTermLoanDetail finalTermLoanDetail = null;
 		finalTermLoanDetail = finalTermLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetTradRequest.setAccountingQuality(finalTermLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetTradRequest.setCustomerQuality(finalTermLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetTradRequest.setSupplierQuality(finalTermLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalTermLoanDetail.getSustainabilityProduct().longValue());
@@ -2070,16 +2263,28 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalTermLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalTermLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+				if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else
+					qualitativeInputSheetTradRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+
 		return qualitativeInputSheetTradRequest;		
 	}
 	
-	public QualitativeInputSheetTradRequest setUSLTradingQualitativeInput(Long aplicationId){
+	public QualitativeInputSheetTradRequest setUSLTradingQualitativeInput(Long aplicationId) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
+		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
+		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		
 		FinalUnsecureLoanDetail finalUnsecureLoanDetail = null;
 		finalUnsecureLoanDetail = finalUnsecuredLoanDetailRepository.findOne(aplicationId);
 		
 		qualitativeInputSheetTradRequest.setAccountingQuality(finalUnsecureLoanDetail.getAccountingQuality().longValue());
-		//qualitativeInputSheetTradRequest.setContingentLiabilities(contingentLiabilities); //-- formula based
 		qualitativeInputSheetTradRequest.setCustomerQuality(finalUnsecureLoanDetail.getCustomerQuality().longValue());
 		qualitativeInputSheetTradRequest.setSupplierQuality(finalUnsecureLoanDetail.getSupplierQuality().longValue());
 		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalUnsecureLoanDetail.getSustainabilityProduct().longValue());
@@ -2104,6 +2309,16 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalUnsecureLoanDetail.getVarianceInProjectedSales().longValue());
 		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalUnsecureLoanDetail.getNumberOfLc().longValue());
 		
+		//---Contigent Liabilities set
+				if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
+					qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
+				else
+					qualitativeInputSheetTradRequest.setContingentLiabilities(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth());//-----formula based
+
 		return qualitativeInputSheetTradRequest;		
 	}
 }
