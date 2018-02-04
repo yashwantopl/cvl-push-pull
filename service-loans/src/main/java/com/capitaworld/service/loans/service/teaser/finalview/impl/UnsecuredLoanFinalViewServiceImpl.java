@@ -941,7 +941,10 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
 				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				logger.info("Loan Type in financialArrangementsDetailResponse==>, {}",financialArrangementsDetailRequest.getLoanType());
+				if(CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLoanType())) {
+					financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());					
+				}
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
