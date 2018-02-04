@@ -469,7 +469,7 @@ public class CommonUtils {
 			return LoanType.LAP_LOAN.getValue();
 		} else if ("LAS".equalsIgnoreCase(code)) {
 			return LoanType.LAS_LOAN.getValue();
-		} else if ("UL".equalsIgnoreCase(code)) {
+		} else if ("USL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN.getValue();
 		} else {
 			return null;
