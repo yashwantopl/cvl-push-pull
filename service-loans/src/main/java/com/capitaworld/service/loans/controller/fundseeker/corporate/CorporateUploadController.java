@@ -268,6 +268,14 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					case DocumentAlias.USL_CMA: {
+						flag = excelExtractionService.readCMA(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
+					case DocumentAlias.USL_COMPANY_ACT: {
+						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
 					}
 
 				} catch (Exception e) {

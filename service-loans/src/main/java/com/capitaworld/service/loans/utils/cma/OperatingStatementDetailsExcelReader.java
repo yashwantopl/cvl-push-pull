@@ -20,70 +20,73 @@ public class OperatingStatementDetailsExcelReader {
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
             operatingStatementMappingList.clear();
+            operatingStatementMappingList.add("8");
             operatingStatementMappingList.add("9");
             operatingStatementMappingList.add("10");
             operatingStatementMappingList.add("11");
-            operatingStatementMappingList.add("12");
+            operatingStatementMappingList.add("13");
             operatingStatementMappingList.add("14");
             operatingStatementMappingList.add("15");
-            operatingStatementMappingList.add("16");
-            operatingStatementMappingList.add("18");
+            operatingStatementMappingList.add("17");
+            //19
+            operatingStatementMappingList.add("20");
             operatingStatementMappingList.add("21");
             operatingStatementMappingList.add("22");
-            operatingStatementMappingList.add("23");
+            operatingStatementMappingList.add("24");
             operatingStatementMappingList.add("25");
             operatingStatementMappingList.add("26");
-            operatingStatementMappingList.add("27");
-            operatingStatementMappingList.add("29");
-            operatingStatementMappingList.add("31");
-            operatingStatementMappingList.add("33");
-            operatingStatementMappingList.add("35");
-            operatingStatementMappingList.add("37");
-            operatingStatementMappingList.add("39");
-            operatingStatementMappingList.add("41");
-            operatingStatementMappingList.add("43");
-            operatingStatementMappingList.add("45");
-            operatingStatementMappingList.add("47");
-            operatingStatementMappingList.add("49");
-            operatingStatementMappingList.add("51");
-            operatingStatementMappingList.add("53");
-            operatingStatementMappingList.add("55");
-            operatingStatementMappingList.add("57");
-            operatingStatementMappingList.add("59");
-            operatingStatementMappingList.add("61");
-            operatingStatementMappingList.add("63");
-            operatingStatementMappingList.add("65");
+            operatingStatementMappingList.add("28");
+            operatingStatementMappingList.add("30");
+            operatingStatementMappingList.add("32");
+            operatingStatementMappingList.add("34");
+            operatingStatementMappingList.add("36");
+            operatingStatementMappingList.add("38");
+            operatingStatementMappingList.add("40");
+            operatingStatementMappingList.add("42");
+            operatingStatementMappingList.add("44");
+            operatingStatementMappingList.add("46");
+            operatingStatementMappingList.add("48");
+            operatingStatementMappingList.add("50");
+            operatingStatementMappingList.add("52");
+            operatingStatementMappingList.add("54");
+            operatingStatementMappingList.add("56");
+            operatingStatementMappingList.add("58");
+            operatingStatementMappingList.add("60");
+            operatingStatementMappingList.add("62");
+            operatingStatementMappingList.add("64");
             operatingStatementMappingList.add("66");
             operatingStatementMappingList.add("67");
             operatingStatementMappingList.add("68");
             operatingStatementMappingList.add("69");
             operatingStatementMappingList.add("70");
-            operatingStatementMappingList.add("72");
-            operatingStatementMappingList.add("74");
-            operatingStatementMappingList.add("76");
+            operatingStatementMappingList.add("71");
+            operatingStatementMappingList.add("73");
+            operatingStatementMappingList.add("75");
             operatingStatementMappingList.add("77");
-            operatingStatementMappingList.add("79");
-            operatingStatementMappingList.add("81");
-            operatingStatementMappingList.add("83");
-            operatingStatementMappingList.add("85");
+            operatingStatementMappingList.add("78");
+            operatingStatementMappingList.add("80");
+            operatingStatementMappingList.add("82");
+            operatingStatementMappingList.add("84");
+            operatingStatementMappingList.add("86");
 
             /*
               * this method extract data from excel associate column and row wise
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B","2014",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C","2015",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D","2016",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E","2017",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F","2018",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"G","2019",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"H","2020",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"I","2021",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"J","2022",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"K","2023",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"L","2024",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"M","2025",operatingStatementDetailsRepository);
-        
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B","2015",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C","2016",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D","2017",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E","2018",operatingStatementDetailsRepository);
+        if(loanApplicationMaster.getProductId()!=15){
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F","2019",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"G","2020",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"H","2021",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"I","2022",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"J","2023",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"K","2024",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"L","2025",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"M","2026",operatingStatementDetailsRepository);
+        }
 
     }
 
@@ -96,6 +99,7 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
+        
         System.out.println(nullCounter);
         if(!(nullCounter==45||nullCounter==46)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
@@ -132,12 +136,14 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setSubTotalDeductAndCostOfProduction(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setDeductClStockFg(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setTotalCostSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setSellingAndDistributionExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setSellingGenlAdmnExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setSubTotalCostSalesAndSelling(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setOpProfitBeforeIntrest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setInterest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setOpProfitAfterInterest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setAddOtherNonOpIncome(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            
             operatingStatementDetails.setSubTotalOfIncome(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setDeductOtherNonOpExp(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setSubTotalExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

@@ -212,6 +212,15 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 
+	public interface ApplicationStatus {
+		public static final Long OPEN = 1l;
+		public static final Long ASSIGNED = 2l;
+		public static final Long SUBMITTED = 3l;
+		public static final Long SUBMITTED_TO_APPROVER = 4l;
+		public static final Long APPROVED = 5l;
+		public static final Long REVERTED = 6l;
+	}
+	
 	public interface UserType {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
@@ -652,6 +661,149 @@ public class CommonUtils {
 
 		    // remove extra spaces!
 		    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+		  }
+		  
+		  
+		  public enum DDRFrames {
+				AUTHORIZED_SIGN_DETAILS(1), 
+				CREDIT_CARD_DETAILS(2),
+				CREDITORS_DETAILS(3),
+				REGISTERED_OFFICE(4),
+				OPERATING_OFFICE(5),
+				OTHER_BANK_LOAN_DETAILS(6),
+				REL_WITH_DBS_DETAILS(7),
+				VEHICLES_OWNED_DETAILS(8);
+	
+			  	private int value;
+
+				private DDRFrames(int value) {
+					this.value = value;
+				}
+
+				public int getValue() {
+					return value;
+				}
+
+				public static DDRFrames getType(Integer x) {
+					switch (x) {
+					case 1:
+						return AUTHORIZED_SIGN_DETAILS;
+					case 2:
+						return CREDIT_CARD_DETAILS;
+					case 3:
+						return CREDIT_CARD_DETAILS;
+					case 4:
+						return REGISTERED_OFFICE;
+					case 5:
+						return OPERATING_OFFICE;
+					case 6:
+						return OTHER_BANK_LOAN_DETAILS;
+					case 7:
+						return REL_WITH_DBS_DETAILS;
+					case 8:
+						return VEHICLES_OWNED_DETAILS;
+					default :
+						return null;
+					}
+				}
+
+			}
+		  
+		  
+		  public enum DDRFinancialSummaryFields {
+				FIRST_TOTAL_SALES(1,"Total Sales"), 
+				INTEREST_COST(2,"Interest Cost"),
+				PROFIT_BEFORE_TAX(3,"Profit Before Tax (PBT)"),
+				PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"),
+				NET_WORTH(5,"Net Worth"),
+				ADJUSTED_NET_WORTH(6,"Adjusted Net Work(Treating unsecured loan as quasi capital)"),
+				TOTAL_DEBT(7,"Total Debt"),
+				SECURE_LOAN(8,"Secure Loan"),
+			  	UNSECURE_LOAN(9,"Unsecure Loan"),
+			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends & Relatives treated ad Qausi"),
+			  	CAPITAL(11,"Capital"),
+			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
+			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
+			  	TOTAL_LIABILITY(14,"Total Liabilities (TOL)"),
+			  	LEVERAGE(15,"Leverage (TOL/TNW)"),
+			  	ADJUSTED_LEVERAGE(16, "Adjusted Leverage (TOL/Adjusted TNW)"),
+			  	CAPITAL_EMPLOYED(17,"Capital Employed"),
+			  	GEARING(18,"Gearing (Total Debt/TNW)"),
+			  	ADJUSTED_GEARING(19,"Adjusted Gearing (Total Debt/Adjusted TNW)"),
+			  	CURRENT_RATIO(20,"Current Ratio"),
+			  	INVENTORY_TURNOVER(21,"Inventory Turnover(Days)"),
+			  	LAST_TOTAL_SALES(22,"Total Sales"),
+			  	WORKING_CAPITAL_CYCLE(23, "Working Capital Cycle(Days)");
+			  
+	
+			  	private int id;
+			  	private String value;
+
+				private DDRFinancialSummaryFields(int id,String value) {
+					this.id = id;
+					this.value = value;
+				}
+				
+				public int getId() {
+					return id;
+				}
+
+				public String getValue() {
+					return value;
+				}
+				
+				public static DDRFinancialSummaryFields[] getAll() {
+					return DDRFinancialSummaryFields.values();
+				}
+				
+
+			}
+		  
+		  public enum DDRFinancialSummaryToBeFields {
+				PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"), 
+				SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
+				RECEIVAVLES_TURNOVER(3,"Receivables turnover (Days)"),
+				CREDITORS_TURNOVER(4, "Creditors Turnover (Days)");		  
+	
+			  	private int id;
+			  	private String value;
+
+				private DDRFinancialSummaryToBeFields(int id,String value) {
+					this.id = id;
+					this.value = value;
+				}
+				
+				public int getId() {
+					return id;
+				}
+
+				public String getValue() {
+					return value;
+				}
+				public static DDRFinancialSummaryToBeFields getType(Integer x) {
+					switch (x) {
+					case 1:
+						return PER_OF_SALES_OF_ANCHORE_PRODUCT;
+					case 2:
+						return SALES_OF_ANCHOR_PODUCTS;
+					case 3:
+						return RECEIVAVLES_TURNOVER;
+					case 4:
+						return CREDITORS_TURNOVER;
+					default :
+						return null;
+					}
+				}
+				
+				public static DDRFinancialSummaryFields[] getAll() {
+					return DDRFinancialSummaryFields.values();
+				}
+				
+
+			}
+		  
+		  public static double checkDouble(Double value) {
+			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }
 
 }

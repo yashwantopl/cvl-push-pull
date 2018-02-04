@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class TermLoanPrimaryViewResponse {
 	private Double amount;
 	private Double totalCostOfEstimate;
 	private List<?> matchesList;
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
@@ -45,7 +48,8 @@ public class TermLoanPrimaryViewResponse {
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
 	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
-
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 
@@ -435,6 +439,39 @@ public class TermLoanPrimaryViewResponse {
 		this.addOfficestate = addOfficestate;
 	}
 
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+	
 	
 	
 }

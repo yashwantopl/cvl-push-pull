@@ -77,3 +77,96 @@ ALTER TABLE `loan_applications`.`fs_corporate_primary_term_loan_details` ADD sha
 ALTER TABLE `loan_applications`.`fs_corporate_primary_term_loan_details` ADD share_price_market_value DOUBLE(25,2);
 ALTER TABLE `loan_applications`.`fs_corporate_primary_unsecured_loan_details` ADD share_price_face_value DOUBLE(25,2);
 ALTER TABLE `loan_applications`.`fs_corporate_primary_unsecured_loan_details` ADD share_price_market_value DOUBLE(25,2);
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_term_loan_details`
+ADD COLUMN technology_risk_id INT(2),
+ADD COLUMN customer_quality INT(2),
+ADD COLUMN supplier_quality INT(2),
+ADD COLUMN sustainability_product INT(2),ADD COLUMN order_book_position INT(2),ADD COLUMN employee_relations INT(2),ADD COLUMN product_seasonality INT(2),ADD COLUMN impact_on_operating_margins INT(2),
+ADD COLUMN environmental_impact INT(2),ADD COLUMN accounting_quality INT(2),ADD COLUMN financial_restructuring_history INT(2),ADD COLUMN integrity INT(2),
+ADD COLUMN business_commitment INT(2),ADD COLUMN management_competence INT(2),ADD COLUMN business_experience INT(2),ADD COLUMN succession_planning INT(2),
+ADD COLUMN financial_strength INT(2),ADD COLUMN ability_to_raise_funds INT(2),ADD COLUMN intra_company INT(2),ADD COLUMN internal_control INT(2),
+ADD COLUMN credittrack_record INT(2),ADD COLUMN status_of_project_clearances INT(2),ADD COLUMN status_of_financial_closure INT(2),ADD COLUMN infrastructure_availability INT(2),
+ADD COLUMN construction_contract INT(2),ADD COLUMN number_of_cheques INT(2),ADD COLUMN number_of_times_dp INT(2),ADD COLUMN cumulative_no_of_days_dp INT(2),
+ADD COLUMN compliance_with_sanctioned INT(2),ADD COLUMN delay_in_receipt INT(2),ADD COLUMN delay_in_submission INT(2),ADD COLUMN number_of_lc INT(2);
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_wc_loan_details`
+ADD COLUMN technology_risk_id INT(2),
+ADD COLUMN customer_quality INT(2),
+ADD COLUMN supplier_quality INT(2),
+ADD COLUMN sustainability_product INT(2),ADD COLUMN order_book_position INT(2),ADD COLUMN employee_relations INT(2),ADD COLUMN product_seasonality INT(2),ADD COLUMN impact_on_operating_margins INT(2),
+ADD COLUMN environmental_impact INT(2),ADD COLUMN accounting_quality INT(2),ADD COLUMN financial_restructuring_history INT(2),ADD COLUMN integrity INT(2),
+ADD COLUMN business_commitment INT(2),ADD COLUMN management_competence INT(2),ADD COLUMN business_experience INT(2),ADD COLUMN succession_planning INT(2),
+ADD COLUMN financial_strength INT(2),ADD COLUMN ability_to_raise_funds INT(2),ADD COLUMN intra_company INT(2),ADD COLUMN internal_control INT(2),
+ADD COLUMN credittrack_record INT(2),ADD COLUMN status_of_project_clearances INT(2),ADD COLUMN status_of_financial_closure INT(2),ADD COLUMN infrastructure_availability INT(2),
+ADD COLUMN construction_contract INT(2),ADD COLUMN number_of_cheques INT(2),ADD COLUMN number_of_times_dp INT(2),ADD COLUMN cumulative_no_of_days_dp INT(2),
+ADD COLUMN compliance_with_sanctioned INT(2),ADD COLUMN delay_in_receipt INT(2),ADD COLUMN delay_in_submission INT(2),ADD COLUMN number_of_lc INT(2);
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details`
+ADD COLUMN technology_risk_id INT(2),
+ADD COLUMN customer_quality INT(2),
+ADD COLUMN supplier_quality INT(2),
+ADD COLUMN sustainability_product INT(2),ADD COLUMN order_book_position INT(2),ADD COLUMN employee_relations INT(2),ADD COLUMN product_seasonality INT(2),ADD COLUMN impact_on_operating_margins INT(2),
+ADD COLUMN environmental_impact INT(2),ADD COLUMN accounting_quality INT(2),ADD COLUMN financial_restructuring_history INT(2),ADD COLUMN integrity INT(2),
+ADD COLUMN business_commitment INT(2),ADD COLUMN management_competence INT(2),ADD COLUMN business_experience INT(2),ADD COLUMN succession_planning INT(2),
+ADD COLUMN financial_strength INT(2),ADD COLUMN ability_to_raise_funds INT(2),ADD COLUMN intra_company INT(2),ADD COLUMN internal_control INT(2),
+ADD COLUMN credittrack_record INT(2),ADD COLUMN status_of_project_clearances INT(2),ADD COLUMN status_of_financial_closure INT(2),ADD COLUMN infrastructure_availability INT(2),
+ADD COLUMN construction_contract INT(2),ADD COLUMN number_of_cheques INT(2),ADD COLUMN number_of_times_dp INT(2),ADD COLUMN cumulative_no_of_days_dp INT(2),
+ADD COLUMN compliance_with_sanctioned INT(2),ADD COLUMN delay_in_receipt INT(2),ADD COLUMN delay_in_submission INT(2),ADD COLUMN number_of_lc INT(2);
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_term_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_wc_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details`
+ADD COLUMN unhedged_foreign_currency INT(2),
+ADD COLUMN projected_debt_service INT(2),
+ADD COLUMN internal_rate_return INT(2),
+ADD COLUMN sensititivity_analysis  INT(2),ADD COLUMN variance_in_projected_sales INT(2);
+
+
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_term_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_wc_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_final_unsecured_loan_details`
+ADD COLUMN progress_reports INT(2)
+;
+
+
+
+ALTER TABLE `loan_applications`.`fs_corporate_current_financial_arrangements_details`
+
+ADD COLUMN address VARCHAR(100)
+;

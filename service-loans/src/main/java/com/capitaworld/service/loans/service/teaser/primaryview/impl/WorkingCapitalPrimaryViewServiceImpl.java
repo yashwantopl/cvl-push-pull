@@ -10,9 +10,11 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -105,6 +107,12 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -361,6 +369,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			}
 				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 				workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
+				workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+				workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 				if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 					workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
 				workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
@@ -388,6 +398,16 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Achievement Details {}", e);
 		}
+		
+		//references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
 		// get value of Credit Rating and set in response
 		try {
@@ -415,6 +435,10 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				creditRatingOrganizationDetailResponse
 						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
+				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
+					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+				}
 			}
 			workingCapitalPrimaryViewResponse
 					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
@@ -483,8 +507,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 
 		// get value of Promotor Background and set in response
 		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService
-					.getPromotorBackgroundDetailList(toApplicationId, userId);
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
@@ -501,14 +524,46 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
 				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
 				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse
-						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			workingCapitalPrimaryViewResponse
 					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
+		}
+		
+		//get value of Director's Background and set in response
+		
+		try {
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+				directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String directorName = "";
+				if (directorBackgroundDetailRequest.getSalutationId() != null){
+					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+				directorBackgroundDetailResponse.setDirectorsName(directorName);
+				directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+			}
+			workingCapitalPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Director's Background {}", e);
 		}
 
 		// get value of Past Financial and set in response
@@ -546,15 +601,19 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				financialArrangementsDetailResponse
-						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setFacilityNature(
-						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
-			workingCapitalPrimaryViewResponse
-					.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+			workingCapitalPrimaryViewResponse.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);

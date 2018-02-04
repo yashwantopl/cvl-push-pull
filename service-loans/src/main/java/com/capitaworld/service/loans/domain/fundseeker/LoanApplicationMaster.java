@@ -173,6 +173,12 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name="eligible_amnt")
 	private Double eligibleAmnt;
 	
+	@Column(name = "np_user_id")
+	private Long npUserId;
+	
+	@Column(name = "np_assignee_id")
+	private Long npAssigneeId;
+	
 	public Boolean getIsMsmeScoreRequired() {
 		return isMsmeScoreRequired;
 	}
@@ -535,6 +541,23 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setEligibleAmnt(Double eligibleAmnt) {
 		this.eligibleAmnt = eligibleAmnt;
+	}
+
+	
+	public Long getNpAssigneeId() {
+		return npAssigneeId;
+	}
+
+	public void setNpAssigneeId(Long npAssigneeId) {
+		this.npAssigneeId = npAssigneeId;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
 	}
 
 	@Override

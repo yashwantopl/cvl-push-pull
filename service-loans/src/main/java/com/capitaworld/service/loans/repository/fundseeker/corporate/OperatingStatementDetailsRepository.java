@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +17,9 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	@Query("update OperatingStatementDetails o set o.isActive = false where o.storageDetailsId= :sId")
 	public void inActiveAssetsDetails(@Param("sId") Long storageDetailsId);
 
+	@Query("from OperatingStatementDetails o where o.loanApplicationMaster = :appId and o.year = :yr and o.isActive = true")
+	public OperatingStatementDetails getOperatingStatementDetails(@Param("appId") Long applicationId, @Param("yr") String year);
+	
+	@Query("select o from OperatingStatementDetails o where o.loanApplicationMaster.id = :applicationId and o.isActive = true")
+	public List<OperatingStatementDetails> getByApplicationId(@Param("applicationId") Long applicationId);
 }

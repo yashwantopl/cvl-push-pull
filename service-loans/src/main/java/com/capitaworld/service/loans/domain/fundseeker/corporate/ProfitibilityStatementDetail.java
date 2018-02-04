@@ -193,20 +193,84 @@ public class ProfitibilityStatementDetail implements Serializable {
 
 	@Column(name="store_and_spares_indeigenous")
 	private double storeAndSparesIndeigenous;
+
+	private String year;
+	
+	@Column(name="storage_details_id")
+	private Long storageDetailsId;
+	
+	@Column(name = "less_item_1")
+	private Double LessItem1;
+
+	@Column(name = "less_item_2")
+	private Double LessItem2;
+
+	@Column(name = "less_item_3")
+	private Double LessItem3;
+
+	@Column(name = "less_item_4")
+	private Double LessItem4;
+
+	@Column(name = "less_item_5")
+	private Double LessItem5;
+
+	// other_operating_revenue
+
+	@Column(name = "other_operating_revenue_1")
+	private Double OtherOperatingRevenue1;
+
+	@Column(name = "other_operating_revenue_2")
+	private Double OtherOperatingRevenue2;
+
+	@Column(name = "other_operating_revenue_3")
+	private Double OtherOperatingRevenue3;
+
+	@Column(name = "other_operating_revenue_4")
+	private Double OtherOperatingRevenue4;
+
+	@Column(name = "other_operating_revenue_5")
+	private Double OtherOperatingRevenue5;
+
+	// expense_capitalized
+
+	@Column(name = "expense_capitalized_1")
+	private Double ExpenseCapitalized1;
+
+	@Column(name = "expense_capitalized_2")
+	private Double ExpenseCapitalized2;
+
+	@Column(name = "expense_capitalized_3")
+	private Double ExpenseCapitalized3;
+
+	@Column(name = "expense_capitalized_4")
+	private Double ExpenseCapitalized4;
+
+	// extraordinary_items
+
+	@Column(name = "extraordinary_items_1")
+	private Double ExtraordinaryItems1;
+
+	@Column(name = "extraordinary_items_2")
+	private Double ExtraordinaryItems2;
+
+	@Column(name = "extraordinary_items_3")
+	private Double ExtraordinaryItems3;
+
+	@Column(name = "extraordinary_items_4")
+	private Double ExtraordinaryItems4;
+
+	@Column(name = "extraordinary_items_5")
+	private Double ExtraordinaryItems5;
 	
 	@Column(name="general_admin_expenses")
 	private double generalAdminExpenses;
 
 	@Column(name="selling_distribution_expenses")
 	private double sellingDistributionExpenses;
-
+	
 	@Column(name="expenses_capitalised")
 	private double expensesCapitalised;
-
-	private String year;
 	
-	@Column(name="storage_details_id")
-	private Long storageDetailsId;
 	
 
 	public Long getStorageDetailsId() {
@@ -668,6 +732,183 @@ public class ProfitibilityStatementDetail implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	public Double getLessItem1() {
+		return LessItem1;
+	}
+
+	public void setLessItem1(Double lessItem1) {
+		LessItem1 = lessItem1;
+	}
+
+	public Double getLessItem2() {
+		return LessItem2;
+	}
+
+	public void setLessItem2(Double lessItem2) {
+		LessItem2 = lessItem2;
+	}
+
+	public Double getLessItem3() {
+		return LessItem3;
+	}
+
+	public void setLessItem3(Double lessItem3) {
+		LessItem3 = lessItem3;
+	}
+
+	public Double getLessItem4() {
+		return LessItem4;
+	}
+
+	public void setLessItem4(Double lessItem4) {
+		LessItem4 = lessItem4;
+	}
+
+	public Double getLessItem5() {
+		return LessItem5;
+	}
+
+	public void setLessItem5(Double lessItem5) {
+		LessItem5 = lessItem5;
+	}
+
+	public Double getOtherOperatingRevenue1() {
+		return OtherOperatingRevenue1;
+	}
+
+	public void setOtherOperatingRevenue1(Double otherOperatingRevenue1) {
+		OtherOperatingRevenue1 = otherOperatingRevenue1;
+	}
+
+	public Double getOtherOperatingRevenue2() {
+		return OtherOperatingRevenue2;
+	}
+
+	public void setOtherOperatingRevenue2(Double otherOperatingRevenue2) {
+		OtherOperatingRevenue2 = otherOperatingRevenue2;
+	}
+
+	public Double getOtherOperatingRevenue3() {
+		return OtherOperatingRevenue3;
+	}
+
+	public void setOtherOperatingRevenue3(Double otherOperatingRevenue3) {
+		OtherOperatingRevenue3 = otherOperatingRevenue3;
+	}
+
+	public Double getOtherOperatingRevenue4() {
+		return OtherOperatingRevenue4;
+	}
+
+	public void setOtherOperatingRevenue4(Double otherOperatingRevenue4) {
+		OtherOperatingRevenue4 = otherOperatingRevenue4;
+	}
+
+	public Double getOtherOperatingRevenue5() {
+		return OtherOperatingRevenue5;
+	}
+
+	public void setOtherOperatingRevenue5(Double otherOperatingRevenue5) {
+		OtherOperatingRevenue5 = otherOperatingRevenue5;
+	}
+
+	public Double getExpenseCapitalized1() {
+		return ExpenseCapitalized1;
+	}
+
+	public void setExpenseCapitalized1(Double expenseCapitalized1) {
+		ExpenseCapitalized1 = expenseCapitalized1;
+	}
+
+	public Double getExpenseCapitalized2() {
+		return ExpenseCapitalized2;
+	}
+
+	public void setExpenseCapitalized2(Double expenseCapitalized2) {
+		ExpenseCapitalized2 = expenseCapitalized2;
+	}
+
+	public Double getExpenseCapitalized3() {
+		return ExpenseCapitalized3;
+	}
+
+	public void setExpenseCapitalized3(Double expenseCapitalized3) {
+		ExpenseCapitalized3 = expenseCapitalized3;
+	}
+
+	public Double getExpenseCapitalized4() {
+		return ExpenseCapitalized4;
+	}
+
+	public void setExpenseCapitalized4(Double expenseCapitalized4) {
+		ExpenseCapitalized4 = expenseCapitalized4;
+	}
+
+	public Double getExtraordinaryItems1() {
+		return ExtraordinaryItems1;
+	}
+
+	public void setExtraordinaryItems1(Double extraordinaryItems1) {
+		ExtraordinaryItems1 = extraordinaryItems1;
+	}
+
+	public Double getExtraordinaryItems2() {
+		return ExtraordinaryItems2;
+	}
+
+	public void setExtraordinaryItems2(Double extraordinaryItems2) {
+		ExtraordinaryItems2 = extraordinaryItems2;
+	}
+
+	public Double getExtraordinaryItems3() {
+		return ExtraordinaryItems3;
+	}
+
+	public void setExtraordinaryItems3(Double extraordinaryItems3) {
+		ExtraordinaryItems3 = extraordinaryItems3;
+	}
+
+	public Double getExtraordinaryItems4() {
+		return ExtraordinaryItems4;
+	}
+
+	public void setExtraordinaryItems4(Double extraordinaryItems4) {
+		ExtraordinaryItems4 = extraordinaryItems4;
+	}
+
+	public Double getExtraordinaryItems5() {
+		return ExtraordinaryItems5;
+	}
+
+	public void setExtraordinaryItems5(Double extraordinaryItems5) {
+		ExtraordinaryItems5 = extraordinaryItems5;
+	}
+
+	public double getGeneralAdminExpenses() {
+		return generalAdminExpenses;
+	}
+
+	public void setGeneralAdminExpenses(double generalAdminExpenses) {
+		this.generalAdminExpenses = generalAdminExpenses;
+	}
+
+	public double getSellingDistributionExpenses() {
+		return sellingDistributionExpenses;
+	}
+
+	public void setSellingDistributionExpenses(double sellingDistributionExpenses) {
+		this.sellingDistributionExpenses = sellingDistributionExpenses;
+	}
+
+	public double getExpensesCapitalised() {
+		return expensesCapitalised;
+	}
+
+	public void setExpensesCapitalised(double expensesCapitalised) {
+		this.expensesCapitalised = expensesCapitalised;
+	}
+	
 	
 	
 

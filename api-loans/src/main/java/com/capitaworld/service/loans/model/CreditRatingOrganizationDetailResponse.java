@@ -1,8 +1,10 @@
 package com.capitaworld.service.loans.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by dhaval on 21-May-17.
@@ -23,6 +25,13 @@ public class CreditRatingOrganizationDetailResponse implements Serializable {
     private String facilityName;
 
     private String ratingAgency;
+    
+    private String entityName;
+    
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date ratingDate;
+    
+    private Integer creditRatingTermId;
 
     public Double getAmount() {
         return amount;
@@ -71,4 +80,30 @@ public class CreditRatingOrganizationDetailResponse implements Serializable {
     public void setRatingAgency(String ratingAgency) {
         this.ratingAgency = ratingAgency;
     }
+
+	public String getEntityName() {
+		return entityName;
+	}
+
+	public void setEntityName(String entityName) {
+		this.entityName = entityName;
+	}
+
+	public Date getRatingDate() {
+		return ratingDate;
+	}
+
+	public void setRatingDate(Date ratingDate) {
+		this.ratingDate = ratingDate;
+	}
+
+	public Integer getCreditRatingTermId() {
+		return creditRatingTermId;
+	}
+
+	public void setCreditRatingTermId(Integer creditRatingTermId) {
+		this.creditRatingTermId = creditRatingTermId;
+	}
+    
+    
 }
