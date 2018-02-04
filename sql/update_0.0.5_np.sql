@@ -9,7 +9,7 @@ INSERT  INTO `loan_application`.`fs_application_status_master`(`id`,`status`,`co
 
 ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `np_user_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `np_assignee_id` BIGINT(20) DEFAULT NULL;
-
+ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `ddr_status_id` BIGINT(20) DEFAULT NULL;
 
 /*create table*/
 

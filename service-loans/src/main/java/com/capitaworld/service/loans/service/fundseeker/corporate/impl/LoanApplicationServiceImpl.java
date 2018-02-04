@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
@@ -191,6 +192,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				if(CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(loanApplicationRequest.getProductId())){
+					ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
+					applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
+					applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+				}
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
@@ -221,6 +227,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setProductId(productId);
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
+			if(CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)){
+				ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
+				applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
+				applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+			}
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
 			applicationMaster
