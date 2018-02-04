@@ -18,6 +18,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IrrRequest;
@@ -216,7 +217,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	private IrrService irrService;
 	
 	@RequestMapping(value = "/calculate_irr_Rating", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RatingResponse> calculateIrrRating(@RequestBody Long appId,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+	public ResponseEntity<RatingResponse> calculateIrrRating(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
@@ -226,6 +227,6 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		
-		return irrService.calculateIrrRating(appId, userId);
+		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
 	}
 }
