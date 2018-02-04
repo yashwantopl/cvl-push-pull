@@ -173,10 +173,32 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//nhbs
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.isActive = true ")
 	public List<LoanApplicationMaster> getProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
+	
+	//to get count of proposal based on application status
+	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.isActive = true ")
+	public int getCountOfProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
+	
 	//nhbs	
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+
+	//to get count of assigned proposals based on assignee id
+	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	public int getCountOfAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+	
 	//nhbs	
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+	
+	//to get count of proposal based on NpUserId
+	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
+	public int getCountOfAssignedProposalsByNpUserId(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+	
+	//nhbs
+	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
+	public List<LoanApplicationMaster> getProposalsByDdrStatus(@Param("id") Long ddrStatusId);
+	
+	//nhbs
+	@Query("select count(*) from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
+	public int getCountOfProposalsByDdrStatus(@Param("id") Long ddrStatusId);
 }
