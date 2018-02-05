@@ -811,8 +811,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			ReferenceRetailDetailsRequest referencesResponse = null;
 			for(ReferencesRetailDetail referencesRetail : referencesRetailList) {
 				referencesResponse = new ReferenceRetailDetailsRequest();
-				referencesResponse.setName(referencesRetail.getName());
-				referencesResponse.setMobile(referencesRetail.getMobile());
+				BeanUtils.copyProperties(referencesRetail, referencesResponse);
 				referencesResponseList.add(referencesResponse);
 			}
 			response.setReferencesResponseList(referencesResponseList);
