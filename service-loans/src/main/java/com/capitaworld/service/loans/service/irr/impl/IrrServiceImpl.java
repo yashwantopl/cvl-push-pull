@@ -911,7 +911,7 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
 					liabilitiesDetails.setShareWarrentsOutstanding(0.0);
-				financialInputRequest.setShareWarrantOutstandingsSy(liabilitiesDetails.getShareWarrentsOutstanding());
+				financialInputRequest.setShareWarrantOutstandingsFy(liabilitiesDetails.getShareWarrentsOutstanding());
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
 					liabilitiesDetails.setRevaluationReservse(0.0);
