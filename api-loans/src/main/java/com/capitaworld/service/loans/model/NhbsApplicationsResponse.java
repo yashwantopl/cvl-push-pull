@@ -29,7 +29,7 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private Long applicationId;
 	
-	private Boolean isOneFormFilled;
+	private String oneFormFilled;
 	
 	private String ddrStatus;
 	
@@ -91,12 +91,13 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.ddrStatus = ddrStatus;
 	}
 
-	public Boolean getIsOneFormFilled() {
-		return isOneFormFilled;
+	
+	public String getOneFormFilled() {
+		return oneFormFilled;
 	}
 
-	public void setIsOneFormFilled(Boolean isOneFormFilled) {
-		this.isOneFormFilled = isOneFormFilled;
+	public void setOneFormFilled(String oneFormFilled) {
+		this.oneFormFilled = oneFormFilled;
 	}
 
 	public List<Object> getClientProfilePic() {
