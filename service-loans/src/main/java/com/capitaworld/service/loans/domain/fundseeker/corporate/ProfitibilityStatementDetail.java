@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -18,187 +17,187 @@ import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
-
 /**
- * The persistent class for the fs_corporate_bs_profitibility_statement_details database table.
+ * The persistent class for the fs_corporate_bs_profitibility_statement_details
+ * database table.
  * 
  */
 @Entity
-@Table(name="fs_corporate_bs_profitibility_statement_details")
-@NamedQuery(name="ProfitibilityStatementDetail.findAll", query="SELECT f FROM ProfitibilityStatementDetail f")
+@Table(name = "fs_corporate_bs_profitibility_statement_details")
+@NamedQuery(name = "ProfitibilityStatementDetail.findAll", query = "SELECT f FROM ProfitibilityStatementDetail f")
 public class ProfitibilityStatementDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name="admin_and_selling_expenses")
+	@Column(name = "admin_and_selling_expenses")
 	private double adminAndSellingExpenses;
 
-	@Column(name="already_paid")
+	@Column(name = "already_paid")
 	private double alreadyPaid;
 
 	private double amortisation;
 
 	@ManyToOne
-	@JoinColumn(name="application_id")
+	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	@Column(name="bs_provision")
+	@Column(name = "bs_provision")
 	private double bsProvision;
 
-	@Column(name="closing_stock_fg")
+	@Column(name = "closing_stock_fg")
 	private double closingStockFg;
 
-	@Column(name="closing_stock_wip")
+	@Column(name = "closing_stock_wip")
 	private double closingStockWip;
 
-	@Column(name="cost_raw_material_consumed")
+	@Column(name = "cost_raw_material_consumed")
 	private double costRawMaterialConsumed;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="current_tax")
+	@Column(name = "current_tax")
 	private double currentTax;
 
-	@Column(name="deferred_tax")
+	@Column(name = "deferred_tax")
 	private double deferredTax;
 
 	private double depreciation;
 
-	@Column(name="depreciation_and_amortisation")
+	@Column(name = "depreciation_and_amortisation")
 	private double depreciationAndAmortisation;
 
 	private double dividend;
 
-	@Column(name="employee_benefit_expenses")
+	@Column(name = "employee_benefit_expenses")
 	private double employeeBenefitExpenses;
 
-	@Column(name="extraordinary_items")
+	@Column(name = "extraordinary_items")
 	private double extraordinaryItems;
 
-	@Column(name="factory_wages")
+	@Column(name = "factory_wages")
 	private double factoryWages;
 
-	@Column(name="finance_cost")
+	@Column(name = "finance_cost")
 	private double financeCost;
 
-	@Column(name="gross_operating_revenue")
+	@Column(name = "gross_operating_revenue")
 	private double grossOperatingRevenue;
 
-	@Column(name="increase_or_decrease_in_inventory_fg")
+	@Column(name = "increase_or_decrease_in_inventory_fg")
 	private double increaseOrDecreaseInInventoryFg;
 
-	@Column(name="increase_or_decrease_in_inventory_wip")
+	@Column(name = "increase_or_decrease_in_inventory_wip")
 	private double increaseOrDecreaseInInventoryWip;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="less_any_other_item")
+	@Column(name = "less_any_other_item")
 	private double lessAnyOtherItem;
 
-	@Column(name="less_excise_duty_or_vat_or_service_tax")
+	@Column(name = "less_excise_duty_or_vat_or_service_tax")
 	private double lessExciseDutyOrVatOrServiceTax;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
-	@Column(name="net_sales")
+	@Column(name = "net_sales")
 	private double netSales;
 
-	@Column(name="non_operating_expenses")
+	@Column(name = "non_operating_expenses")
 	private double nonOperatingExpenses;
 
-	@Column(name="non_operating_income")
+	@Column(name = "non_operating_income")
 	private double nonOperatingIncome;
 
-	@Column(name="opening_stock_of_fg")
+	@Column(name = "opening_stock_of_fg")
 	private double openingStockOfFg;
 
-	@Column(name="opening_stock_wip")
+	@Column(name = "opening_stock_wip")
 	private double openingStockWip;
 
-	@Column(name="operating_expenses")
+	@Column(name = "operating_expenses")
 	private double operatingExpenses;
 
-	@Column(name="operating_profit_before_depreciation")
+	@Column(name = "operating_profit_before_depreciation")
 	private double operatingProfitBeforeDepreciation;
 
-	@Column(name="operating_profit_before_interest_and_tax")
+	@Column(name = "operating_profit_before_interest_and_tax")
 	private double operatingProfitBeforeInterestAndTax;
 
-	@Column(name="operating_profit_before_tax")
+	@Column(name = "operating_profit_before_tax")
 	private double operatingProfitBeforeTax;
 
-	@Column(name="other_expenses")
+	@Column(name = "other_expenses")
 	private double otherExpenses;
 
-	@Column(name="other_operating_revenue")
+	@Column(name = "other_operating_revenue")
 	private double otherOperatingRevenue;
 
-	@Column(name="other_pls_specify")
+	@Column(name = "other_pls_specify")
 	private double otherPlsSpecify;
 
-	@Column(name="personnel_cost")
+	@Column(name = "personnel_cost")
 	private double personnelCost;
 
-	@Column(name="power_and_fuel")
+	@Column(name = "power_and_fuel")
 	private double powerAndFuel;
 
-	@Column(name="profit_after_tax")
+	@Column(name = "profit_after_tax")
 	private double profitAfterTax;
 
-	@Column(name="profit_before_tax")
+	@Column(name = "profit_before_tax")
 	private double profitBeforeTax;
 
-	@Column(name="provision_for_tax")
+	@Column(name = "provision_for_tax")
 	private double provisionForTax;
 
-	@Column(name="purchases_stock_tn_trade")
+	@Column(name = "purchases_stock_tn_trade")
 	private double purchasesStockTnTrade;
 
-	@Column(name="raw_material_imported")
+	@Column(name = "raw_material_imported")
 	private double rawMaterialImported;
 
-	@Column(name="raw_material_indigenous")
+	@Column(name = "raw_material_indigenous")
 	private double rawMaterialIndigenous;
 
-	@Column(name="retained_profit")
+	@Column(name = "retained_profit")
 	private double retainedProfit;
 
 	private double sales;
 
-	@Column(name="sales_domestic")
+	@Column(name = "sales_domestic")
 	private double salesDomestic;
 
-	@Column(name="sales_export")
+	@Column(name = "sales_export")
 	private double salesExport;
 
-	@Column(name="store_and_spares")
+	@Column(name = "store_and_spares")
 	private double storeAndSpares;
 
-	@Column(name="store_and_spares_imported")
+	@Column(name = "store_and_spares_imported")
 	private double storeAndSparesImported;
 
-	@Column(name="store_and_spares_indeigenous")
+	@Column(name = "store_and_spares_indeigenous")
 	private double storeAndSparesIndeigenous;
 
 	private String year;
-	
-	@Column(name="storage_details_id")
+
+	@Column(name = "storage_details_id")
 	private Long storageDetailsId;
-	
+
 	@Column(name = "less_item_1")
 	private Double LessItem1;
 
@@ -261,17 +260,15 @@ public class ProfitibilityStatementDetail implements Serializable {
 
 	@Column(name = "extraordinary_items_5")
 	private Double ExtraordinaryItems5;
-	
-	@Column(name="general_admin_expenses")
+
+	@Column(name = "general_admin_expenses")
 	private double generalAdminExpenses;
 
-	@Column(name="selling_distribution_expenses")
+	@Column(name = "selling_distribution_expenses")
 	private double sellingDistributionExpenses;
-	
-	@Column(name="expenses_capitalised")
+
+	@Column(name = "expenses_capitalised")
 	private double expensesCapitalised;
-	
-	
 
 	public Long getStorageDetailsId() {
 		return storageDetailsId;
@@ -908,8 +905,5 @@ public class ProfitibilityStatementDetail implements Serializable {
 	public void setExpensesCapitalised(double expensesCapitalised) {
 		this.expensesCapitalised = expensesCapitalised;
 	}
-	
-	
-	
 
 }
