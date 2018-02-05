@@ -93,7 +93,9 @@ public class PrimaryViewController {
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -114,7 +116,11 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
@@ -153,7 +159,9 @@ public class PrimaryViewController {
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -173,8 +181,11 @@ public class PrimaryViewController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -215,7 +226,9 @@ public class PrimaryViewController {
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -236,7 +249,11 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
@@ -277,7 +294,9 @@ public class PrimaryViewController {
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -298,7 +317,11 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
@@ -340,7 +363,9 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -361,7 +386,11 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
@@ -402,7 +431,9 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -423,7 +454,11 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
@@ -466,7 +501,9 @@ public class PrimaryViewController {
 			Long userId = null;
 			Integer userType = null;
 			
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 					//MEANS FS, FP VIEW
 					userId = clientId;
@@ -487,7 +524,11 @@ public class PrimaryViewController {
 								HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 					}
 				} else {
-					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+						userType = CommonUtils.UserType.SERVICE_PROVIDER;
+						}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+							userType = CommonUtils.UserType.NETWORK_PARTNER;
+							}
 				}
 				
 			} else {
@@ -531,7 +572,9 @@ public class PrimaryViewController {
 			Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 			
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				fromUserId = clientId;
 				fromUserTypeId = clientUserType;
 			} else {
@@ -575,7 +618,9 @@ public class PrimaryViewController {
 		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {
@@ -620,7 +665,9 @@ public class PrimaryViewController {
 		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {

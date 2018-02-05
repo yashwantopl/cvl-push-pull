@@ -75,7 +75,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -96,7 +98,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -137,7 +143,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -158,7 +166,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -199,7 +211,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -219,8 +233,12 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {						
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -261,7 +279,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -281,9 +301,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
-			}
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}}
 			
 		} else {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
@@ -323,7 +345,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -343,8 +367,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -385,7 +412,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -405,8 +434,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
@@ -447,7 +479,9 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -467,8 +501,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
