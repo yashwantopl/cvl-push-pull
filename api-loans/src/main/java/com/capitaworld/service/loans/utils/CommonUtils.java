@@ -221,6 +221,28 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 	}
 	
+	public static String getDdrStatusString(int ddrStatusId) {
+		if (isObjectNullOrEmpty(ddrStatusId)) {
+			return "NA";
+		}
+		switch (ddrStatusId) {
+		case 1:
+			return "Open";
+		case 2:
+			return "In Progress";
+		case 3:
+			return "Submitted";
+		case 4:
+			return "Submitted To Approver";
+		case 5:
+			return "Approved";
+		case 6:
+			return "Reverted";
+		default:
+			return "NA";
+		}
+	}
+	
 	public interface DdrStatus {
 		public static final Long OPEN = 1l;
 		public static final Long IN_PROGRESS = 2l;
@@ -234,6 +256,7 @@ public class CommonUtils {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
+		public static final int NETWORK_PARTNER = 4;
 	}
 
 	public interface UploadUserType {

@@ -55,7 +55,7 @@ public class MatchesController {
 		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -99,7 +99,7 @@ public class MatchesController {
 		CommonDocumentUtils.startHook(logger, "matchFSRetail");
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -141,7 +141,9 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFPCorporate");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				   CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -183,7 +185,9 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFPRetail");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				   CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -238,7 +242,9 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "saveSuggestionList");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				   CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);

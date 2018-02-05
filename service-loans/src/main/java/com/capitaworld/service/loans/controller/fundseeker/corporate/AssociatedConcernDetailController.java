@@ -71,7 +71,9 @@ public class AssociatedConcernDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()){
 				frameRequest.setClientId(clientId);
 			}
 
@@ -104,7 +106,9 @@ public class AssociatedConcernDetailController {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		   if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				   CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
 		    userId = clientId;
 		   } else {
 		    userId = (Long) request.getAttribute(CommonUtils.USER_ID);

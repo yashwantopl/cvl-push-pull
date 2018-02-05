@@ -23,6 +23,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCap
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
@@ -35,6 +37,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Liabilities
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -101,8 +105,13 @@ public class IrrServiceImpl implements IrrService{
 	@Autowired
 	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
 	
-	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
+	@Autowired
+	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
 	
+	@Autowired
+	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
+	
+	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
 	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
@@ -268,7 +277,26 @@ public class IrrServiceImpl implements IrrService{
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
 		
-		financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+		//---SHARE FACE VALUE SET-----
+		//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+		LoanApplicationMaster applicationMaster = null;
+		applicationMaster = loanApplicationRepository.findOne(aplicationId);
+		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
+		switch (type) {
+		case WORKING_CAPITAL:
+			PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = null;
+			primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.findOne(aplicationId);
+			financialInputRequest.setShareFaceValue(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+		case TERM_LOAN:
+			PrimaryTermLoanDetail primaryTermLoanDetail = null;
+			primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);
+			financialInputRequest.setShareFaceValue(primaryTermLoanDetail.getSharePriceFace());
+		case UNSECURED_LOAN :
+			PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetail = null;
+			primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
+			financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace());
+		}	
+	
 		financialInputRequest.setNoOfMonthTy(12.0);
 		financialInputRequest.setNoOfMonthSy(12.0);
 		financialInputRequest.setNoOfMonthFy(12.0);
@@ -883,7 +911,7 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
 					liabilitiesDetails.setShareWarrentsOutstanding(0.0);
-				financialInputRequest.setShareWarrantOutstandingsSy(liabilitiesDetails.getShareWarrentsOutstanding());
+				financialInputRequest.setShareWarrantOutstandingsFy(liabilitiesDetails.getShareWarrentsOutstanding());
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
 					liabilitiesDetails.setRevaluationReservse(0.0);
@@ -1065,7 +1093,26 @@ public class IrrServiceImpl implements IrrService{
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
 		
-		financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+		//---SHARE FACE VALUE SET-----
+				//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+				LoanApplicationMaster applicationMaster = null;
+				applicationMaster = loanApplicationRepository.findOne(aplicationId);
+				LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
+				switch (type) {
+				case WORKING_CAPITAL:
+					PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = null;
+					primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.findOne(aplicationId);
+					financialInputRequest.setShareFaceValue(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+				case TERM_LOAN:
+					PrimaryTermLoanDetail primaryTermLoanDetail = null;
+					primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);
+					financialInputRequest.setShareFaceValue(primaryTermLoanDetail.getSharePriceFace());
+				case UNSECURED_LOAN :
+					PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetail = null;
+					primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
+					financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace());
+				}
+
 		financialInputRequest.setNoOfMonthTy(12.0);
 		financialInputRequest.setNoOfMonthSy(12.0);
 		financialInputRequest.setNoOfMonthFy(12.0);
@@ -1827,17 +1874,17 @@ public class IrrServiceImpl implements IrrService{
 		switch (type) {
 		case WORKING_CAPITAL:
 			// set 
-			qualitativeInputSheetManuRequest = setWCManufacturingQualitativeInput(aplicationId,userId,industryRiskScore);
-			break;
+			return setWCManufacturingQualitativeInput(aplicationId,userId,industryRiskScore);
+			//break;
 		case TERM_LOAN:
-			qualitativeInputSheetManuRequest = setTLManufacturingQualitativeInput(aplicationId,userId,isCmaUploaded,isCoActUploaded,industryRiskScore);
-			break;
+			return setTLManufacturingQualitativeInput(aplicationId,userId,isCmaUploaded,isCoActUploaded,industryRiskScore);
+			//break;
 		case UNSECURED_LOAN :
-			qualitativeInputSheetManuRequest= setUSLManufacturingQualitativeInput(aplicationId,userId,industryRiskScore);
-			break;
+			return setUSLManufacturingQualitativeInput(aplicationId,userId,industryRiskScore);
+			//break;
 				
 		}
-		return qualitativeInputSheetManuRequest;
+		return null;
 	}
 
 	public QualitativeInputSheetManuRequest setWCManufacturingQualitativeInput(Long aplicationId,Long userId,Double industryRiskScore) throws Exception{
@@ -2044,18 +2091,13 @@ public class IrrServiceImpl implements IrrService{
 		LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
-			// set 
-			qualitativeInputSheetServRequest = setWCServiceQualitativeInput(aplicationId,userId);
-			break;
+			return setWCServiceQualitativeInput(aplicationId,userId);
 		case TERM_LOAN:
-			qualitativeInputSheetServRequest = setTLServiceQualitativeInput(aplicationId,userId);
-			break;
+			return setTLServiceQualitativeInput(aplicationId,userId);
 		case UNSECURED_LOAN :
-			qualitativeInputSheetServRequest= setUSLServiceQualitativeInput(aplicationId,userId);
-			break;
-				
+			return setUSLServiceQualitativeInput(aplicationId,userId);
 		}
-		return qualitativeInputSheetServRequest;
+		return null;
 	}
 
 	public QualitativeInputSheetServRequest setWCServiceQualitativeInput(Long aplicationId,Long userId) throws Exception{
@@ -2207,18 +2249,13 @@ public class IrrServiceImpl implements IrrService{
 		LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
-			// set 
-			qualitativeInputSheetTradRequest = setWCTradingQualitativeInput(aplicationId,userId);
-			break;
+			return setWCTradingQualitativeInput(aplicationId,userId);
 		case TERM_LOAN:
-			qualitativeInputSheetTradRequest = setTLTradingQualitativeInput(aplicationId,userId);
-			break;
+			return setTLTradingQualitativeInput(aplicationId,userId);
 		case UNSECURED_LOAN :
-			qualitativeInputSheetTradRequest= setUSLTradingQualitativeInput(aplicationId,userId);
-			break;
-				
+			return setUSLTradingQualitativeInput(aplicationId,userId);
 		}
-		return qualitativeInputSheetTradRequest;
+		return null;
 	}
 
 	public QualitativeInputSheetTradRequest setWCTradingQualitativeInput(Long aplicationId,Long userId) throws Exception{
