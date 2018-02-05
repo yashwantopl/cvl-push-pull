@@ -8,81 +8,81 @@ import java.io.Serializable;
  * Created by dhaval on 21-May-17.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PromotorBackgroundDetailResponse implements Serializable{
+public class PromotorBackgroundDetailResponse implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private String achievements;
+	private String achivements;
 
-    private String address;
+	private String address;
 
-    private Double age;
+	private Double age;
 
-    private String panNo;
+	private String panNo;
 
-    private String promotorsName;
+	private String promotorsName;
 
-    private String qualification;
+	private String qualification;
 
-    private Double totalExperience;
-    
-    private Double networth;
+	private Double totalExperience;
 
-    public String getAchievements() {
-        return achievements;
-    }
+	private Double networth;
 
-    public void setAchievements(String achievements) {
-        this.achievements = achievements;
-    }
+	public String getAchivements() {
+		return achivements;
+	}
 
-    public String getAddress() {
-        return address;
-    }
+	public void setAchivements(String achivements) {
+		this.achivements = achivements;
+	}
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+	public String getAddress() {
+		return address;
+	}
 
-    public Double getAge() {
-        return age;
-    }
+	public void setAddress(String address) {
+		this.address = address;
+	}
 
-    public void setAge(Double age) {
-        this.age = age;
-    }
+	public Double getAge() {
+		return age;
+	}
 
-    public String getPanNo() {
-        return panNo;
-    }
+	public void setAge(Double age) {
+		this.age = age;
+	}
 
-    public void setPanNo(String panNo) {
-        this.panNo = panNo;
-    }
+	public String getPanNo() {
+		return panNo;
+	}
 
-    public String getPromotorsName() {
-        return promotorsName;
-    }
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
+	}
 
-    public void setPromotorsName(String promotorsName) {
-        this.promotorsName = promotorsName;
-    }
+	public String getPromotorsName() {
+		return promotorsName;
+	}
 
-    public String getQualification() {
-        return qualification;
-    }
+	public void setPromotorsName(String promotorsName) {
+		this.promotorsName = promotorsName;
+	}
 
-    public void setQualification(String qualification) {
-        this.qualification = qualification;
-    }
+	public String getQualification() {
+		return qualification;
+	}
 
-    public Double getTotalExperience() {
-        return totalExperience;
-    }
+	public void setQualification(String qualification) {
+		this.qualification = qualification;
+	}
 
-    public void setTotalExperience(Double totalExperience) {
-        this.totalExperience = totalExperience;
-    }
+	public Double getTotalExperience() {
+		return totalExperience;
+	}
+
+	public void setTotalExperience(Double totalExperience) {
+		this.totalExperience = totalExperience;
+	}
 
 	public Double getNetworth() {
 		return networth;
@@ -91,7 +91,5 @@ public class PromotorBackgroundDetailResponse implements Serializable{
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
-	
-    
-    
+
 }
