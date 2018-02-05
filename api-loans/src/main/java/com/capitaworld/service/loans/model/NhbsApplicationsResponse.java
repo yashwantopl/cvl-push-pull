@@ -29,7 +29,7 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private Long applicationId;
 	
-	private Boolean isOneFormFilled;
+	private String oneFormFilled;
 	
 	private String ddrStatus;
 	
@@ -37,7 +37,36 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private String isPaymentDone;
 	
+	private String city;
+	
+	private String state;
+	
+	private String country;
 		
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
 	public String getPaymentMode() {
 		return paymentMode;
 	}
@@ -62,12 +91,13 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.ddrStatus = ddrStatus;
 	}
 
-	public Boolean getIsOneFormFilled() {
-		return isOneFormFilled;
+	
+	public String getOneFormFilled() {
+		return oneFormFilled;
 	}
 
-	public void setIsOneFormFilled(Boolean isOneFormFilled) {
-		this.isOneFormFilled = isOneFormFilled;
+	public void setOneFormFilled(String oneFormFilled) {
+		this.oneFormFilled = oneFormFilled;
 	}
 
 	public List<Object> getClientProfilePic() {

@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -23,9 +25,12 @@ public class ApplicationStatusAudit implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "application_id")
+	@Column(name = "audit_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(name = "application_id")
+	private Long applicationId;
 
 	private Double amount;
 
@@ -168,7 +173,23 @@ public class ApplicationStatusAudit implements Serializable{
 	
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
-	
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
 	public Boolean getIsMca() {
 		return isMca;
 	}
@@ -185,16 +206,9 @@ public class ApplicationStatusAudit implements Serializable{
 		this.mcaCompanyId = mcaCompanyId;
 	}
 
-	@Column(name = "status")
-	private Long applicationStatusMaster;
-
-	public Long getId() {
-		return this.id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	@ManyToOne
+	@JoinColumn(name = "status")
+	private ApplicationStatusMaster applicationStatusMaster;
 
 	public Double getAmount() {
 		return this.amount;
@@ -284,11 +298,11 @@ public class ApplicationStatusAudit implements Serializable{
 		this.userId = userId;
 	}
 
-	public Long getApplicationStatusMaster() {
-		return this.applicationStatusMaster;
+	public ApplicationStatusMaster getApplicationStatusMaster() {
+		return applicationStatusMaster;
 	}
 
-	public void setApplicationStatusMaster(Long applicationStatusMaster) {
+	public void setApplicationStatusMaster(ApplicationStatusMaster applicationStatusMaster) {
 		this.applicationStatusMaster = applicationStatusMaster;
 	}
 

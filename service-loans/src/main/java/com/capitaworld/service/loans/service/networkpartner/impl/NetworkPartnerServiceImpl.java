@@ -1,11 +1,13 @@
 package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
@@ -28,6 +31,7 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -54,6 +58,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Autowired
 	private UsersClient usersClient;
 	
+	@Autowired
+	private OneFormClient  oneFormClient;
+	
 	@Override
 	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request) {
 		logger.info("entry in getListOfProposals()");
@@ -61,7 +68,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 			applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+			applicationMastersList = loanApplicationRepository.getProposalsByDdrStatus(request.getDdrStatusId());
 		}else{
 			applicationMastersList = null;
 		}
@@ -90,7 +97,32 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
+					try {
+						// Setting City Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+							nhbsApplicationsResponse.setCity(
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+						}
+
+						// Setting State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+							nhbsApplicationsResponse.setState(CommonDocumentUtils
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+						}
+
+						// Country State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.error("error while fetching details from oneform client for city/state/country");
+						e.printStackTrace();
+					}
 				}
+				
+				
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(loanApplicationMaster.getId());
@@ -146,11 +178,34 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
-				nhbsApplicationsResponse.setDdrStatus(null);//need to set the ddr status 
+				nhbsApplicationsResponse.setDdrStatus(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId()) ? CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()) : "NA"); 
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
-					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
-				}
+					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+					try {
+						// Setting City Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+							nhbsApplicationsResponse.setCity(
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+						}
+
+						// Setting State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+							nhbsApplicationsResponse.setState(CommonDocumentUtils
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+						}
+
+						// Country State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.error("error while fetching details from oneform client for city/state/country");
+						e.printStackTrace();
+					}
+				}				
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(loanApplicationMaster.getId());
@@ -182,12 +237,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 					
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), request.getApplicationStatusId(), request.getUserId());
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-						nhbsApplicationsResponse.setApplicationDate(applicationMastersList.get(0).getModifiedDate());
+						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
-						nhbsApplicationsResponse.setIsOneFormFilled(loanApplicationMaster.getIsFinalLocked());	
+						nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -212,6 +267,50 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
+	}
+
+	@Override
+	public boolean setMaker(NhbsApplicationRequest request) {
+		logger.info("entry in setMaker()");
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
+		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
+			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
+			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.ASSIGNED);
+			applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+			applicationMaster.setNpUserId(request.getAssignedUserId());
+			applicationMaster.setNpAssigneeId(request.getUserId());
+			applicationMaster.setModifiedBy(request.getUserId());
+			applicationMaster.setModifiedDate(new Date());
+			loanApplicationRepository.save(applicationMaster);
+			logger.info("exit from setMaker()");
+			return true;
+		}
+		logger.info("exit from setMaker()");
+		return false;
+	}
+
+	@Override
+	public JSONObject getNhbsProposalCount(NhbsApplicationRequest nhbsApplicationRequest) {
+		logger.info("entry in getNhbsProposalCount()");
+		JSONObject countObj = new JSONObject();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == nhbsApplicationRequest.getUserRoleId()){
+			int allotedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByNpUserId(CommonUtils.ApplicationStatus.ASSIGNED, nhbsApplicationRequest.getUserId());
+			countObj.put("allotedPropsalCount", allotedPropsalCount);
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == nhbsApplicationRequest.getUserRoleId()){
+			int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
+			int assignedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, nhbsApplicationRequest.getUserId());
+			countObj.put("newProposals", newPropsalCount);
+			countObj.put("assignedProposals", assignedPropsalCount);
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == nhbsApplicationRequest.getUserRoleId()){
+			int ddrSubmittedToApproverCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER);
+			int ddrApprovedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.APPROVED);
+			int ddrRevertedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.REVERTED);
+			countObj.put("ddrSubmittedToApproverCount", ddrSubmittedToApproverCount);
+			countObj.put("ddrApprovedCount", ddrApprovedCount);
+			countObj.put("ddrRevertedCount", ddrRevertedCount);
+		}
+		logger.info("exit from getNhbsProposalCount()");
+		return countObj;
 	}
 
 }

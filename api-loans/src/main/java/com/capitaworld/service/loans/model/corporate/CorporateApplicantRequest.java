@@ -67,7 +67,9 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private Long userId;
 	
-	
+	private Long keyVerticalSector;
+ 	
+	private Long keyVerticalSubsector;
 
 	public Long getUserId() {
 		return userId;
@@ -271,5 +273,22 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setCoApplicants(List<CorporateCoApplicantRequest> coApplicants) {
 		this.coApplicants = coApplicants;
 	}
+
+	public Long getKeyVerticalSector() {
+		return keyVerticalSector;
+	}
+
+	public void setKeyVerticalSector(Long keyVerticalSector) {
+		this.keyVerticalSector = keyVerticalSector;
+	}
+
+	public Long getKeyVerticalSubsector() {
+		return keyVerticalSubsector;
+	}
+
+	public void setKeyVerticalSubsector(Long keyVerticalSubsector) {
+		this.keyVerticalSubsector = keyVerticalSubsector;
+	}
+	
 	
 }

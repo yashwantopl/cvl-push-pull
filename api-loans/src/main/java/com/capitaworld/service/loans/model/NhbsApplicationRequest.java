@@ -15,7 +15,36 @@ public class NhbsApplicationRequest implements Serializable{
 	
 	private Long userRoleId;
 
+	private Long assignedUserId;
 	
+	private Long applicationId;
+	
+	private Long ddrStatusId;
+		
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
+	public Long getAssignedUserId() {
+		return assignedUserId;
+	}
+
+	public void setAssignedUserId(Long assignedUserId) {
+		this.assignedUserId = assignedUserId;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
 	public Long getUserId() {
 		return userId;
 	}
