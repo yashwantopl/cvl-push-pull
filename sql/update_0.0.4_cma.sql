@@ -70,3 +70,20 @@ ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details AD
 
 ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD COLUMN selling_distribution_exp DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD COLUMN general_admin_exp DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_4 DOUBLE DEFAULT NULL;
