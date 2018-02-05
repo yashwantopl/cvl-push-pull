@@ -725,6 +725,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			for (PromotorBackgroundDetailRequest promBackReq : promoBackReqList) {
 				promoBackResp = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promBackReq, promoBackResp);
+				promoBackResp.setAchievements(promBackReq.getAchivements());
 				promoBackResp.setPanNo(promBackReq.getPanNo().toUpperCase());
 				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() : null )+ " " + promBackReq.getPromotorsName());
 				promoBackRespList.add(promoBackResp);
