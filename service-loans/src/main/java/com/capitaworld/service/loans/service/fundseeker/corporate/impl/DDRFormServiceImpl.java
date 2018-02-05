@@ -808,7 +808,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		try {
 			response.setDirectorBackgroundDetailList(backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId));
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
+			logger.info("Throw Exception While Get Primary Directory Backgoud Details in DDR OneForm");
 			e.printStackTrace();
 		}
 		
