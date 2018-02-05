@@ -26,6 +26,8 @@ public interface LoanApplicationService {
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
+	
+	public Long getIrrByApplicationId(Long id) throws Exception;
 
 	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception;
 
