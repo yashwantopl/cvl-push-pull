@@ -181,4 +181,20 @@ public class DDROneFormResponse implements Serializable {
 		this.referencesResponseList = referencesResponseList;
 	}
 
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailList() {
+		return securityCorporateDetailList;
+	}
+
+	public void setSecurityCorporateDetailList(List<SecurityCorporateDetailRequest> securityCorporateDetailList) {
+		this.securityCorporateDetailList = securityCorporateDetailList;
+	}
+
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
+		return directorBackgroundDetailList;
+	}
+
+	public void setDirectorBackgroundDetailList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailList) {
+		this.directorBackgroundDetailList = directorBackgroundDetailList;
+	}
+
 }

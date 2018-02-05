@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetai
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -69,16 +70,18 @@ import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRVehiclesOwnedD
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
@@ -171,6 +174,12 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	@Autowired
 	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService backgroundDetailsService;
 	
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
@@ -782,6 +791,24 @@ public class DDRFormServiceImpl implements DDRFormService{
 			response.setFincArrngDetailResList(fincArrngDetailResList);
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Current Financial Arangement Details in DDR OneForm");
+			e.printStackTrace();
+		}
+		
+		
+		//SECURITY DETAIL :- LINENO:12
+		try {
+			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
+			e.printStackTrace();
+		}
+		
+		
+		//DIRECTOR BACKGROUND  DETAIL :- LINENO:12
+		try {
+			response.setDirectorBackgroundDetailList(backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId));
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Primary Directory Backgoud Details in DDR OneForm");
 			e.printStackTrace();
 		}
 		
