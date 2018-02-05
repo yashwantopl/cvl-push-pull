@@ -42,6 +42,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWork
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -111,15 +112,19 @@ public class IrrServiceImpl implements IrrService{
 	@Autowired
 	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
 	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
 	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
 		Integer businessTypeId=null; // get from irr-cw industry mapping
-		businessTypeId=1;   // temp
+		//businessTypeId=1;   // temp
 		IrrRequest irrIndustryRequest=new IrrRequest();
-		Double industryRiskScore=8.5; //temp
+		Double industryRiskScore=0.0;;
+		//Double industryRiskScore=8.5; //temp
 		
 		IrrRequest irrRequest = new IrrRequest();
 		LoanApplicationMaster applicationMaster = null;
@@ -128,17 +133,39 @@ public class IrrServiceImpl implements IrrService{
 			
 			applicationMaster = loanApplicationRepository.findOne(appId);
 			
-			/*if(!(true == applicationMaster.getIsFinalLocked()))
+			if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
 			{
 				log.info("final section is not locked");	
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Submit your final one form section for MSME score", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}*/
+			}
+			Long irrId=null;
+			try {
+			
+				irrId=loanApplicationService.getIrrByApplicationId(appId);
+				
+				if(irrId==null)
+				{
+					log.error("error while getting irr id from one form");
+					return new ResponseEntity<RatingResponse>(
+							new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				log.error("error while getting irr id from one form");
+				e.printStackTrace();
+				
+				return new ResponseEntity<RatingResponse>(
+						new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				
+			}
+			
 			
 			// start getting irr industry and business type
-					/*	try {
+						try {
 										
-								irrIndustryRequest.setIrrIndustryId(1L);
+								irrIndustryRequest.setIrrIndustryId(irrId);
 								irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
 								IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
 								if(CommonUtils.isObjectNullOrEmpty(industryResponse))
@@ -153,10 +180,14 @@ public class IrrServiceImpl implements IrrService{
 										
 							} catch (Exception e) {
 									// TODO: handle exception
-									e.printStackTrace();
-							}*/
+								log.error("error while getting irr industry detail from rating");
+								e.printStackTrace();
+								
+								return new ResponseEntity<RatingResponse>(
+										new RatingResponse("error while getting irr industry detail from rating", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							}
 						
-						// end getting irr industry and business type
+			// end getting irr industry and business type
 			
 			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
 			
@@ -287,14 +318,17 @@ public class IrrServiceImpl implements IrrService{
 			PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = null;
 			primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.findOne(aplicationId);
 			financialInputRequest.setShareFaceValue(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+			break;
 		case TERM_LOAN:
 			PrimaryTermLoanDetail primaryTermLoanDetail = null;
 			primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);
 			financialInputRequest.setShareFaceValue(primaryTermLoanDetail.getSharePriceFace());
+			break;
 		case UNSECURED_LOAN :
 			PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetail = null;
 			primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 			financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace());
+			break;
 		}	
 	
 		financialInputRequest.setNoOfMonthTy(12.0);
@@ -1103,14 +1137,17 @@ public class IrrServiceImpl implements IrrService{
 					PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = null;
 					primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository.findOne(aplicationId);
 					financialInputRequest.setShareFaceValue(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+					break;
 				case TERM_LOAN:
 					PrimaryTermLoanDetail primaryTermLoanDetail = null;
 					primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);
 					financialInputRequest.setShareFaceValue(primaryTermLoanDetail.getSharePriceFace());
+					break;
 				case UNSECURED_LOAN :
 					PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetail = null;
 					primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 					financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace());
+					break;
 				}
 
 		financialInputRequest.setNoOfMonthTy(12.0);
