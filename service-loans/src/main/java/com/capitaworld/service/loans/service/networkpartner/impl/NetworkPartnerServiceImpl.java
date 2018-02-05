@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
@@ -56,6 +57,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private OneFormClient  oneFormClient;
 	
 	@Override
 	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request) {
@@ -93,7 +97,32 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
+					try {
+						// Setting City Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+							nhbsApplicationsResponse.setCity(
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+						}
+
+						// Setting State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+							nhbsApplicationsResponse.setState(CommonDocumentUtils
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+						}
+
+						// Country State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.error("error while fetching details from oneform client for city/state/country");
+						e.printStackTrace();
+					}
 				}
+				
+				
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
 				documentRequest.setApplicationId(loanApplicationMaster.getId());
@@ -153,6 +182,29 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
+				}
+				try {
+					// Setting City Value
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+						nhbsApplicationsResponse.setCity(
+								CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+					}
+
+					// Setting State Value
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+						nhbsApplicationsResponse.setState(CommonDocumentUtils
+								.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+					}
+
+					// Country State Value
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+						nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+								.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+					logger.error("error while fetching details from oneform client for city/state/country");
+					e.printStackTrace();
 				}
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
