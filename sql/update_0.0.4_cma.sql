@@ -56,3 +56,34 @@ ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN o
 ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_6 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_bs_balance_sheet_details ADD COLUMN other_term_liability DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN expense_capitalized_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN expense_capitalized_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN expense_capitalized_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN expense_capitalized_4 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN extraordinary_items_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN extraordinary_items_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN extraordinary_items_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN extraordinary_items_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN extraordinary_items_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD COLUMN selling_distribution_exp DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_operating_statement_details ADD COLUMN general_admin_exp DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN less_item_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_4 DOUBLE DEFAULT NULL;

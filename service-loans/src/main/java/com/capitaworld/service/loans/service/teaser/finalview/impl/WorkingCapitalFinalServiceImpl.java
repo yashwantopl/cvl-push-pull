@@ -865,7 +865,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
 				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());

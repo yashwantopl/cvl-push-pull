@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class NhbsController {
 			
 			if(CommonUtils.isObjectNullOrEmpty(applicationRequest) ||
 					CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserRoleId()) ||
-					CommonUtils.isObjectNullOrEmpty(applicationRequest.getApplicationStatusId())){
+					(CommonUtils.isObjectNullOrEmpty(applicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(applicationRequest.getDdrStatusId()))){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -44,7 +45,7 @@ public class NhbsController {
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);			
 		} catch (Exception e) {
-			logger.error("Error while getting proposals based on application status.", e);
+			logger.error("Error while getting proposals based on application or ddr status.", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -73,6 +74,77 @@ public class NhbsController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
 			logger.error("Error while getting assigned proposals ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/set/maker", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> setMaker(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(CommonUtils.isObjectNullOrEmpty(userId) || 
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationId()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getAssignedUserId())){
+				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn("applicationId  can not be empty ==>" + nhbsApplicationRequest.getApplicationId());
+				logger.warn("assignedUserId  can not be empty ==>" + nhbsApplicationRequest.getAssignedUserId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse();
+			boolean isDataUpdated = networkPartnerService.setMaker(nhbsApplicationRequest);
+			if(isDataUpdated){
+				logger.info("Data Updated.");
+				loansResponse.setMessage("Data Updated.");
+			}else{
+				logger.info("Data Not Updated.");
+				loansResponse.setMessage("Data Not Updated.");
+			}
+			loansResponse.setStatus(HttpStatus.OK.value());
+			loansResponse.setData(isDataUpdated);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Error while setting maker to proposals ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/get/nhbsProposalCount", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getNhbsProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(CommonUtils.isObjectNullOrEmpty(userId) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleId())){
+				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse();
+			
+			JSONObject jsonCountObj = networkPartnerService.getNhbsProposalCount(nhbsApplicationRequest);
+			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
+				logger.info("Data Found.");
+				loansResponse.setMessage("Data Found.");
+			}else{
+				logger.info("Data Not Found.");
+				loansResponse.setMessage("Data Not Found.");
+			}
+			loansResponse.setStatus(HttpStatus.OK.value());
+			loansResponse.setData(jsonCountObj);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Error while getting count of proposals ", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

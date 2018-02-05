@@ -14,11 +14,11 @@ public interface IrrService {
 	
 	public  FinancialInputRequest coActIrrMappingService(Long aplicationId) throws Exception;
 	
-	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded) throws Exception;
+	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore) throws Exception;
 	
-	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Integer productId) throws Exception;
+	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId, Long userId, Integer productId) throws Exception;
 	
-	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Integer productId) throws Exception;
+	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId) throws Exception;
 	
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
 }

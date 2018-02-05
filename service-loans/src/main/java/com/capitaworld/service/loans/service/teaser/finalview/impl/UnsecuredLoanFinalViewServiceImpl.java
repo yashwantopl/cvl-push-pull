@@ -39,7 +39,6 @@ import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.GuarantorsCorporateDetailResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.UnsecuredLoanFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
@@ -126,6 +125,7 @@ import com.capitaworld.service.oneform.enums.InternalReturn;
 import com.capitaworld.service.oneform.enums.LenderType;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
 import com.capitaworld.service.oneform.enums.MarketPosition;
 import com.capitaworld.service.oneform.enums.MarketPositioningTop;
@@ -162,7 +162,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalViewService{
@@ -941,7 +940,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
 				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(LoanType.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)

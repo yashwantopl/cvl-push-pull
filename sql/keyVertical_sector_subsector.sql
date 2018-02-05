@@ -1,0 +1,1 @@
+ALTER TABLE `loan_applications`.`fs_corporate_applicant_details` ADD (key_vertical_sector BIGINT(20), key_vertical_subsector BIGINT(20));
