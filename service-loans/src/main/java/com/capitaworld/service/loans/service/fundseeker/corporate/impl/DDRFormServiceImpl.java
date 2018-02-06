@@ -680,7 +680,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		DDROneFormResponse response = new DDROneFormResponse();
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
-		
+		logger.info("Before Call Corporate Profile UserId is :- " + userId);
 		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
