@@ -181,7 +181,7 @@ public class LoanApplicationController {
 			LoansResponse loansResponse =null;
 			if(response!=null)
 			{
-			 new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse= new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			CommonDocumentUtils.endHook(logger, "get");
 			}

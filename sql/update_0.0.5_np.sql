@@ -11,6 +11,8 @@ ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `np_user_
 ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `np_assignee_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `ddr_status_id` BIGINT(20) DEFAULT NULL;
 
+ALTER TABLE `loan_application`.`application_status_audit` ADD COLUMN `np_assignee_id` BIGINT(20) DEFAULT NULL;
+ALTER TABLE `loan_application`.`application_status_audit` ADD COLUMN `ddr_status_id` BIGINT(20) DEFAULT NULL;
 /*create table*/
 
 CREATE TABLE `loan_application`.`application_status_audit` (
@@ -77,7 +79,7 @@ CREATE TRIGGER `loan_application`.application_status_audit BEFORE UPDATE
     ON `loan_application`.`fs_loan_application_master`
     FOR EACH ROW BEGIN
 	IF NEW.`status` <> OLD.`status` THEN
-	INSERT INTO `loan_applications`.`application_status_audit` (  
+	INSERT INTO `loan_application`.`application_status_audit` (  
 	`application_id`,
 	`product_id`,
 	`currency_id`,
@@ -123,7 +125,8 @@ CREATE TRIGGER `loan_application`.application_status_audit BEFORE UPDATE
 	`is_mca`,
 	`eligible_amnt`,
 	`np_user_id`,
-	np_assignee_id
+	np_assignee_id,
+	ddr_status_id
 	) 
 	VALUES
 	(    
@@ -172,7 +175,8 @@ CREATE TRIGGER `loan_application`.application_status_audit BEFORE UPDATE
 	NEW.`is_mca`,
 	NEW.`eligible_amnt`,
 	NEW.`np_user_id`,
-	NEW.`np_assignee_id`
+	NEW.`np_assignee_id`,
+	NEW.`ddr_status_id`
          );
 	END IF;	
     END$$

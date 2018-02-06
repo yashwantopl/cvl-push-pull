@@ -54,6 +54,7 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -3492,7 +3493,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
 					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
 					
-					IrrBySectorAndSubSector res =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+					
+				//	IrrBySectorAndSubSector res =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+					IrrBySectorAndSubSector res = (IrrBySectorAndSubSector) MultipleJSONObjectHelper
+							.getObjectFromMap((Map<String, Object>)oneFormClient.getIrrBySectorAndSubSector(irr).getData(), IrrBySectorAndSubSector.class);
 					return res.getIrr();
 				}
 			} catch (Exception e) {
