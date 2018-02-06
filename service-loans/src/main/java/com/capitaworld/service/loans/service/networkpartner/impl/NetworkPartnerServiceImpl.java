@@ -218,6 +218,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					logger.error("error while getting profile image");
 					e.printStackTrace();
 				}
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
+					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
+				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 					nhbsApplicationsResponse.setPaymentMode(null);//need to set
 					nhbsApplicationsResponse.setIsPaymentDone(null);//need to set
@@ -240,10 +243,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
-						nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
-					}
+					}					
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpUserId());
