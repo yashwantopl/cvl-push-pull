@@ -135,12 +135,22 @@ public class IrrServiceImpl implements IrrService{
 			
 			applicationMaster = loanApplicationRepository.findOne(appId);
 			
-		/*	if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
+			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
+			
+			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+			{
+				log.error("error while getting industry,sector,subsector");
+				return new ResponseEntity<RatingResponse>(
+						new RatingResponse("Select key verticle sector and sub sector in profile section", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
 			{
 				log.info("final section is not locked");	
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Submit your final one form section for MSME score", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}*/
+			}
+			
 			Long irrId=null;
 			try {
 			
@@ -190,8 +200,6 @@ public class IrrServiceImpl implements IrrService{
 							}
 						
 			// end getting irr industry and business type
-			
-			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
 			
 			irrRequest.setApplicationId(appId);
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
