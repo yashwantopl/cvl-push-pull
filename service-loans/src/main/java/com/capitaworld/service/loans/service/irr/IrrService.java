@@ -10,9 +10,9 @@ import com.capitaworld.service.rating.model.RatingResponse;
 
 public interface IrrService {
 
-	public  FinancialInputRequest cmaIrrMappingService(Long aplicationId) throws Exception;
+	public  FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry) throws Exception;
 	
-	public  FinancialInputRequest coActIrrMappingService(Long aplicationId) throws Exception;
+	public  FinancialInputRequest coActIrrMappingService(Long aplicationId,String industry) throws Exception;
 	
 	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore) throws Exception;
 	

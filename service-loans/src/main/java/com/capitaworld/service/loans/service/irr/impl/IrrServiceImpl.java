@@ -121,10 +121,12 @@ public class IrrServiceImpl implements IrrService{
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
 		Integer businessTypeId=null; // get from irr-cw industry mapping
-		businessTypeId=2;   // temp
-		IrrRequest irrIndustryRequest=new IrrRequest();
+		//businessTypeId=3;   // temp
 		Double industryRiskScore=0.0;;
-		industryRiskScore=8.5; //temp
+		//industryRiskScore=8.5; //temp
+		String industry="";
+		//industry="E - Commerce";
+		IrrRequest irrIndustryRequest=new IrrRequest();
 		
 		IrrRequest irrRequest = new IrrRequest();
 		LoanApplicationMaster applicationMaster = null;
@@ -133,12 +135,12 @@ public class IrrServiceImpl implements IrrService{
 			
 			applicationMaster = loanApplicationRepository.findOne(appId);
 			
-			/*if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
+		/*	if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
 			{
 				log.info("final section is not locked");	
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Submit your final one form section for MSME score", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
+			}*/
 			Long irrId=null;
 			try {
 			
@@ -177,7 +179,7 @@ public class IrrServiceImpl implements IrrService{
 										
 								businessTypeId=industryResponse.getBusinessTypeId();
 								industryRiskScore=industryResponse.getScore();
-										
+								industry=industryResponse.getIndustry();
 							} catch (Exception e) {
 									// TODO: handle exception
 								log.error("error while getting irr industry detail from rating");
@@ -188,7 +190,7 @@ public class IrrServiceImpl implements IrrService{
 							}
 						
 			// end getting irr industry and business type
-*/			
+			
 			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
 			
 			irrRequest.setApplicationId(appId);
@@ -224,11 +226,12 @@ public class IrrServiceImpl implements IrrService{
 			
 			// if CMA filled
 			if(isCmaUploaded)			
-			irrRequest.setFinancialInputRequest(cmaIrrMappingService(appId));
+			irrRequest.setFinancialInputRequest(cmaIrrMappingService(appId,industry));
 			
 			// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(appId));
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(appId,industry));
+			
 			
 			
 		} catch (Exception e) {
@@ -239,9 +242,14 @@ public class IrrServiceImpl implements IrrService{
 					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
+		RatingResponse ratingResponse=new RatingResponse();
 		try {
+			 
+			 ratingResponse=ratingClient.calculateIrrRating(irrRequest);
+			 ratingResponse.setBusinessTypeId(businessTypeId);
+			 
 			return new ResponseEntity<RatingResponse>(
-					new RatingResponse(ratingClient.calculateIrrRating(irrRequest),"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
+					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
@@ -297,7 +305,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public FinancialInputRequest cmaIrrMappingService(Long aplicationId) throws Exception {
+	public FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry) throws Exception {
 		// TODO Auto-generated method stub
 		/*JSONObject jSONObject = new JSONObject();
 		IrrRequest irrRequest = new IrrRequest();*/
@@ -331,6 +339,9 @@ public class IrrServiceImpl implements IrrService{
 			break;
 		}	
 	
+		// set industry
+		financialInputRequest.setIndustry(industry);
+		
 		financialInputRequest.setNoOfMonthTy(12.0);
 		financialInputRequest.setNoOfMonthSy(12.0);
 		financialInputRequest.setNoOfMonthFy(12.0);
@@ -1116,7 +1127,7 @@ public class IrrServiceImpl implements IrrService{
 	}
 
 	@Override
-	public FinancialInputRequest coActIrrMappingService(Long aplicationId) throws Exception {
+	public FinancialInputRequest coActIrrMappingService(Long aplicationId,String industry) throws Exception {
 		// TODO Auto-generated method stub
 		/*JSONObject jSONObject = new JSONObject();
 		IrrRequest irrRequest = new IrrRequest();*/
@@ -1150,6 +1161,9 @@ public class IrrServiceImpl implements IrrService{
 					break;
 				}
 
+		// set industry
+		financialInputRequest.setIndustry(industry);
+				
 		financialInputRequest.setNoOfMonthTy(12.0);
 		financialInputRequest.setNoOfMonthSy(12.0);
 		financialInputRequest.setNoOfMonthFy(12.0);
