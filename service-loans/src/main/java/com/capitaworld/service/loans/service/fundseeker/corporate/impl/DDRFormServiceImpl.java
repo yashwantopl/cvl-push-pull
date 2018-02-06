@@ -249,7 +249,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
-			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId,appId,dDRFormDetails.getUserId()));
 		}
 		return dDRFormDetailsRequest;
 	}
@@ -556,11 +556,22 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 */
 	public List<DDRFinancialSummaryRequest> getFinancialSummary(Long ddrFormId){
 		List<DDRFinancialSummary> objList = financialSummaryRepository.getListByDDRFormId(ddrFormId);
-		List<DDRFinancialSummaryRequest> responseList = new ArrayList<>(objList.size());
+		List<DDRFinancialSummaryRequest> responseList = null;
 		if(!CommonUtils.isListNullOrEmpty(objList)) {
+			responseList = new ArrayList<>(objList.size());
 			for(DDRFinancialSummary obj : objList) {
 				DDRFinancialSummaryRequest response = new DDRFinancialSummaryRequest();
 				BeanUtils.copyProperties(obj, response);
+				responseList.add(response);
+			}
+		} else {
+			DDRFinancialSummaryToBeFields[] values = DDRFinancialSummaryToBeFields.values();
+			responseList = new ArrayList<>(values.length);
+			DDRFinancialSummaryRequest response = null;
+			for(int i = 0; i < values.length; i++) {
+				response = new DDRFinancialSummaryRequest();
+				response.setPerticularId(values[i].getId());
+				response.setPerticularName(values[i].getValue());
 				responseList.add(response);
 			}
 		}
@@ -598,14 +609,31 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * @param ddrFormId
 	 * @return
 	 */
-	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId){
+	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId, Long appId, Long userId){
 		List<DDRFamilyDirectorsDetails> objList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<DDRFamilyDirectorsDetailsRequest> responseList = new ArrayList<>(objList.size());
+		List<DDRFamilyDirectorsDetailsRequest> responseList = null;
 		if(!CommonUtils.isListNullOrEmpty(objList)) {
+			responseList = new ArrayList<>(objList.size());
+			DDRFamilyDirectorsDetailsRequest response = null;
 			for(DDRFamilyDirectorsDetails obj : objList) {
-				DDRFamilyDirectorsDetailsRequest response = new DDRFamilyDirectorsDetailsRequest();
+				response = new DDRFamilyDirectorsDetailsRequest();
 				BeanUtils.copyProperties(obj, response);
 				responseList.add(response);
+			}
+		} else {
+			try {
+				List<PromotorBackgroundDetailRequest> promoBackReqList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(appId, userId);
+				DDRFamilyDirectorsDetailsRequest response = null;
+				responseList = new ArrayList<>(promoBackReqList.size());
+				for(PromotorBackgroundDetailRequest promoBackReq : promoBackReqList) {
+					response = new DDRFamilyDirectorsDetailsRequest();
+					response.setBackgroundId(promoBackReq.getId());
+					response.setName(promoBackReq.getPromotorsName());
+					responseList.add(response);
+				}
+			} catch (Exception e) {
+				logger.info("Throw Exception While Get Background Details");
+				e.printStackTrace();
 			}
 		}
 		return responseList;

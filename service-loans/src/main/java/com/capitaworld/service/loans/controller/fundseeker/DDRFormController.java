@@ -97,10 +97,11 @@ public class DDRFormController {
 	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
-		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		/*Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
 			userId = clientId;
-		}
+		}*/
+		Long userId = 1771L;
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
