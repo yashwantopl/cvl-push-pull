@@ -121,10 +121,10 @@ public class IrrServiceImpl implements IrrService{
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
 		Integer businessTypeId=null; // get from irr-cw industry mapping
-		//businessTypeId=1;   // temp
+		businessTypeId=2;   // temp
 		IrrRequest irrIndustryRequest=new IrrRequest();
 		Double industryRiskScore=0.0;;
-		//Double industryRiskScore=8.5; //temp
+		industryRiskScore=8.5; //temp
 		
 		IrrRequest irrRequest = new IrrRequest();
 		LoanApplicationMaster applicationMaster = null;
@@ -133,7 +133,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			applicationMaster = loanApplicationRepository.findOne(appId);
 			
-			if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
+			/*if((CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalLocked())|| !(true == applicationMaster.getIsFinalLocked())))
 			{
 				log.info("final section is not locked");	
 				return new ResponseEntity<RatingResponse>(
@@ -188,7 +188,7 @@ public class IrrServiceImpl implements IrrService{
 							}
 						
 			// end getting irr industry and business type
-			
+*/			
 			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
 			
 			irrRequest.setApplicationId(appId);
