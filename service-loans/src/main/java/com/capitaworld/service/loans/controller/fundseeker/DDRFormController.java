@@ -78,10 +78,16 @@ public class DDRFormController {
 	 * @return
 	 */
 	@RequestMapping(value = "/get/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> get(@PathVariable("appId") Long appId) {
+	public ResponseEntity<LoansResponse> get(@PathVariable("appId") Long appId,HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
+		
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+			userId = clientId;
+		}
 		try {
-			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId);
+			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(),dDRFormDetailsRequest), HttpStatus.OK);
