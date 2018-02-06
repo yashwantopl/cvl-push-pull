@@ -95,6 +95,7 @@ import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -3471,6 +3472,40 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}
+
+	@Override
+	public Long getIrrByApplicationId(Long id) throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(id);
+			if (corporateApplicantDetail == null) {
+				throw new NullPointerException("Invalid Loan Application ID==>" + id );
+			}
+			
+			
+			try {
+				if(corporateApplicantDetail.getKeyVerticalSector()!=null&&corporateApplicantDetail.getKeyVerticalSubsector()!=null)
+				{
+					IrrBySectorAndSubSector irr =new IrrBySectorAndSubSector();
+					irr.setSectorId(corporateApplicantDetail.getKeyVerticalSector());
+					irr.setSubSectorId(corporateApplicantDetail.getKeyVerticalSubsector());
+					
+					IrrBySectorAndSubSector res =(IrrBySectorAndSubSector)oneFormClient.getIrrBySectorAndSubSector(irr).getData();
+					return res.getIrr();
+				}
+			} catch (Exception e) {
+				logger.error("Error while getting Status From Proposal Client");
+				e.printStackTrace();
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+		return null;
 	}
 
 }

@@ -73,7 +73,9 @@ public class CorporateApplicantController {
 			
 			//==============
 			
-			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())){
+			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && (CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString()) ||   
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue())){
 				applicantRequest.setClientId(clientId);
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}else{
@@ -137,7 +139,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "get");
 			Long id = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				id = clientId;
 			} else {
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -235,7 +239,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "getGraphs");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -267,7 +273,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "saveLatLon");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -299,7 +307,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "getLatLon");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -385,7 +395,9 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)) || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -414,7 +426,9 @@ public class CorporateApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)) || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
