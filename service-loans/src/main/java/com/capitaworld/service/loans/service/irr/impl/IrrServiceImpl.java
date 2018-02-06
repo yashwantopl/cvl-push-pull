@@ -244,7 +244,10 @@ public class IrrServiceImpl implements IrrService{
 		
 		RatingResponse ratingResponse=new RatingResponse();
 		try {
+			 
 			 ratingResponse=ratingClient.calculateIrrRating(irrRequest);
+			 ratingResponse.setBusinessTypeId(businessTypeId);
+			 
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
