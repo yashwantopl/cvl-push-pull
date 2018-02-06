@@ -139,7 +139,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 					try{
 						UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && userResponse.getData().equals("true")){
+						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && (boolean)userResponse.getData()){
 							nhbsApplicationsResponse.setClientSource("SP");	
 						}else{
 							nhbsApplicationsResponse.setClientSource("Direct");
