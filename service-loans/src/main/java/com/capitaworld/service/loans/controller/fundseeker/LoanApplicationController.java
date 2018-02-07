@@ -1423,7 +1423,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/save_payment_info", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/save_payment_info", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePaymentInfor(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
@@ -1444,7 +1444,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/update_payment_status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/update_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updatePaymentStatus(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
@@ -1465,7 +1465,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/get_payment_status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/get_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPaymentStatus(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
