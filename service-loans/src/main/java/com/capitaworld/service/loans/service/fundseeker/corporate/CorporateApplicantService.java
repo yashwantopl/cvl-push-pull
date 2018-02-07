@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -36,5 +37,7 @@ public interface CorporateApplicantService {
 	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
 	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
+	
+	public PaymentRequest getPaymentInfor(Long userId,Long applicationId) throws Exception;
 	
 }

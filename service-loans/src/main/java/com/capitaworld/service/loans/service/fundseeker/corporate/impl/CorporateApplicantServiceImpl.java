@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -20,6 +21,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEs
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -39,6 +41,10 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApp
 import com.capitaworld.service.loans.utils.CommonUtils;
 //import com.capitaworld.service.rating.model.CompanyDetails;
 //import com.capitaworld.service.rating.model.RatingResponse;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -70,13 +76,15 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private CorporateCoApplicantService coApplicantService;
-	
+
 	@Autowired
 	private CorporateCoApplicantService corporateCoApplicantService;
-	
+
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
-
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -110,13 +118,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
-			
-			//save co-applicant details
+
+			// save co-applicant details
 			for (CorporateCoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
 			}
-			
-			
+
 			// industry data save
 			saveIndustry(applicantDetail.getApplicationId().getId(), applicantRequest.getIndustrylist());
 			// Sector data save
@@ -167,13 +174,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	/*
-	 * @Override public void updateFinalCommonInformation(Long applicationId,
-	 * Long userId, Boolean flag) throws Exception { try {
-	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled(
-	 * applicationId, userId, flag); } catch (Exception e) {
+	 * @Override public void updateFinalCommonInformation(Long applicationId, Long
+	 * userId, Boolean flag) throws Exception { try {
+	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled( applicationId,
+	 * userId, flag); } catch (Exception e) {
 	 * logger.error("Error while updating final information flag");
-	 * e.printStackTrace(); throw new
-	 * Exception(CommonUtils.SOMETHING_WENT_WRONG); } }
+	 * e.printStackTrace(); throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
+	 * }
 	 */
 
 	private void saveIndustry(Long applicationId, List<Long> industrylist) {
@@ -327,9 +334,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		DecimalFormat decimalFormat = new DecimalFormat("#");
 		DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
 
-		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
-		if (pastEstimates.size()>4){
-			pastEstimates = pastEstimates.subList((pastEstimates.size()-4),pastEstimates.size());
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository
+				.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if (pastEstimates.size() > 4) {
+			pastEstimates = pastEstimates.subList((pastEstimates.size() - 4), pastEstimates.size());
 		}
 		if (!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1) {
 			graphResponse.setGraphAvailable(true);
@@ -437,7 +445,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
 			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
-			if(Double.isNaN(val)) {
+			if (Double.isNaN(val)) {
 				val = 0d;
 			}
 			currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
@@ -540,35 +548,35 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-		boolean msmeScoreRequired= false;
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(msmeScoreRequest.getApplicationId());
-			if(msmeScoreRequest.isMsmeScoreRequired()){
-				loanApplicationMaster.setIsMsmeScoreRequired(true);
-				msmeScoreRequired= true;
-			}
-			else{
-				loanApplicationMaster.setIsMsmeScoreRequired(false);
-				msmeScoreRequired= false;
-			}
+		boolean msmeScoreRequired = false;
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+				.findOne(msmeScoreRequest.getApplicationId());
+		if (msmeScoreRequest.isMsmeScoreRequired()) {
+			loanApplicationMaster.setIsMsmeScoreRequired(true);
+			msmeScoreRequired = true;
+		} else {
+			loanApplicationMaster.setIsMsmeScoreRequired(false);
+			msmeScoreRequired = false;
+		}
 		return msmeScoreRequired;
 	}
 
-/*	@Override
-	public CompanyDetails getCompanyDetails(Long applicationId, Long userId) throws Exception {
-		CorporateApplicantDetail corp = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-		CompanyDetails companyDetails = new CompanyDetails();
-		companyDetails.setCompanyName(corp.getOrganisationName());
-		companyDetails.setPan(corp.getPanNo());
-		companyDetails.setUserId(userId);
-		return companyDetails;
-	}*/
+	/*
+	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
+	 * userId) throws Exception { CorporateApplicantDetail corp =
+	 * corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+	 * CompanyDetails companyDetails = new CompanyDetails();
+	 * companyDetails.setCompanyName(corp.getOrganisationName());
+	 * companyDetails.setPan(corp.getPanNo()); companyDetails.setUserId(userId);
+	 * return companyDetails; }
+	 */
 
 	@Override
 	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
 			return false;
-		boolean msmeScoreRequired= loanApplicationMaster.getIsMsmeScoreRequired();
+		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
 		return msmeScoreRequired;
 	}
 
@@ -576,8 +584,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
 		try {
-			List<Long> coAppIds = coApplicantService.getCoAppIds( applicationId,userId);
-			
+			List<Long> coAppIds = coApplicantService.getCoAppIds(applicationId, userId);
+
 			JSONObject obj = new JSONObject();
 			obj.put("coAppIds", coAppIds);
 			return obj;
@@ -587,4 +595,47 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+	@Override
+	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws Exception {
+		try {
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+					.findOne(applicationId);
+			PaymentRequest paymentRequest = new PaymentRequest();
+			paymentRequest.setPaymentAmount(loanApplicationMaster.getPaymentAmount());
+			paymentRequest.setTypeOfPayment(loanApplicationMaster.getTypeOfPayment());
+			paymentRequest.setAppointmentDate(loanApplicationMaster.getAppointmentDate());
+			paymentRequest.setAppointmentTime(loanApplicationMaster.getAppointmentTime());
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+				Address address = new Address();
+				address.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+				address.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+				address.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+				address.setCountryId(corporateApplicantDetail.getAdministrativeCountryId());
+				address.setStateId(corporateApplicantDetail.getAdministrativeStateId());
+				address.setCityId(corporateApplicantDetail.getAdministrativeCityId());
+				paymentRequest.setAddress(address);
+			}
+			try {
+				UserResponse userResponse = usersClient.getEmailMobile(userId);
+				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+					UsersRequest request = MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+					paymentRequest.setEmailAddress(request.getEmail());
+					paymentRequest.setMobileNumber(request.getMobile());
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return paymentRequest;
+		} catch (Exception e) {
+			logger.error("Error while Getting Payment Related Info:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 }
