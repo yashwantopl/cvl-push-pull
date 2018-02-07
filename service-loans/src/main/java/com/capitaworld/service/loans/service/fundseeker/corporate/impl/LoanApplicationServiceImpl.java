@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +59,6 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -101,6 +101,11 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
+import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.rating.model.IndustryResponse;
+import com.capitaworld.service.rating.model.IrrRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -179,6 +184,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private NotificationClient notificationClient;
+	
+	@Autowired
+	private RatingClient ratingClient;
 	
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -3624,6 +3632,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	@Override
+	public Integer getIndustryIrrByApplication(Long applicationId) {
+		// TODO Auto-generated method stub
+		IrrRequest irrIndustryRequest=new IrrRequest();
+		
+		Long irrId=null;
+		 try {
+			irrId=getIrrByApplicationId(applicationId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		irrIndustryRequest.setIrrIndustryId(irrId);
+		try {
+			irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
+		} catch (RatingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
+		
+				
+		return industryResponse.getBusinessTypeId();
+		
 	}
 
 }

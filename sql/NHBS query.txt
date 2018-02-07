@@ -170,3 +170,7 @@ ALTER TABLE `loan_applications`.`fs_corporate_current_financial_arrangements_det
 
 ADD COLUMN address VARCHAR(100)
 ;
+
+
+UPDATE one_form.`loan_type_nature_facility` SET `credit_rating_fund`=9 WHERE id IN(1,2,3,4,5);
+UPDATE one_form.`loan_type_nature_facility` SET `credit_rating_fund`=10 WHERE id IN(6,7,8,9,10);
