@@ -836,5 +836,10 @@ public class CommonUtils {
 		  public static double checkDouble(Double value) {
 			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }
+		  public interface PaymentMode{
+			  public static final String ONLINE = "ONLINE";
+			  public static final String CHEQUE = "CHEQUE";
+			  public static final String CASH = "CASH";
+		  }
 
 }

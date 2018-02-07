@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
@@ -119,6 +121,11 @@ public interface LoanApplicationService {
 	
 	public void updateFlow(Long applicationId,Long clientId,Long userId) throws Exception ;
 	
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId, Long clientId) throws Exception;
+	
+	public String updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)throws Exception;
+	
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
 }
 
 
