@@ -117,6 +117,8 @@ public interface LoanApplicationService {
 	
 	public Boolean isTermLoanLessThanLimit(Long applicationId);
 	
+	public Integer getIndustryIrrByApplication(Long applicationId);
+	
 	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception;
 	
 	public void updateFlow(Long applicationId,Long clientId,Long userId) throws Exception ;
