@@ -87,7 +87,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
 						NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								NetworkPartnerDetailsRequest.class);
-						nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName());
+						nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
 					} catch (Exception e) {
 						logger.error("error while fetching network partner details");
 						e.printStackTrace();
@@ -147,6 +147,20 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}catch (Exception e) {
 						logger.error("error while calling users clients while calling checkUserUnderSp()");
 						e.printStackTrace();
+					}
+				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
+						UsersRequest usersRequest = new UsersRequest();
+						usersRequest.setId(loanApplicationMaster.getNpAssigneeId());
+						try {
+							UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
+							NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									NetworkPartnerDetailsRequest.class);
+							nhbsApplicationsResponse.setAssigneeName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error("error while fetching network partner details");
+							e.printStackTrace();
+						}
 					}
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
