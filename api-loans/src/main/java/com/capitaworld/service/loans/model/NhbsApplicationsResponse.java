@@ -33,6 +33,16 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private String ddrStatus;
 	
+	private int ddrStatusId;
+	
+	public int getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(int ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
 	private String paymentMode;
 	
 	private String isPaymentDone;

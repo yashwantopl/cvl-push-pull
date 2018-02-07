@@ -192,7 +192,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
-				nhbsApplicationsResponse.setDdrStatus(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId()) ? CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()) : "NA"); 
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
+					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
+					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+				}else{
+					nhbsApplicationsResponse.setDdrStatus("NA");
+				}
+				 
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
