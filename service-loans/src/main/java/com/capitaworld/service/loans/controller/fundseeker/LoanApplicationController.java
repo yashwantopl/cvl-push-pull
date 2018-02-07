@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
@@ -1400,6 +1402,69 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/save_payment_info", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> savePaymentInfor(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start save_payment_info()");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId, clientId);
+			logger.info("Response========>{}",applicationMaster);
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(applicationMaster);
+			logger.info("end save_payment_info()");
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while Saving Payment info==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/update_payment_status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updatePaymentStatus(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start updatePaymentStatus()");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			String paymentStatus = loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, userId, clientId);
+			logger.info("Response========>{}",paymentStatus);
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(paymentStatus);
+			logger.info("end updatePaymentStatus()");
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/get_payment_status", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPaymentStatus(@RequestBody PaymentRequest paymentRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start getPaymentStatus()");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			GatewayRequest paymentStatus = loanApplicationService.getPaymentStatus(paymentRequest, userId, clientId);
+			logger.info("Response========>{}",paymentStatus);
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(paymentStatus);
+			logger.info("end getPaymentStatus()");
+			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 }
