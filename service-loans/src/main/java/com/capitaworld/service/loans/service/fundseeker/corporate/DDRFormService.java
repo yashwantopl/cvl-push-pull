@@ -11,7 +11,7 @@ public interface DDRFormService {
 
 	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception;
 	
-	public DDRFormDetailsRequest get(Long id);
+	public DDRFormDetailsRequest get(Long id,Long userId);
 	
 	public List<JSONObject> getFinancialSummaryFieldsList();
 	

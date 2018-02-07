@@ -16,13 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.gateway.client.GatewayClient;
+import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -47,6 +51,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -54,7 +59,6 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -97,6 +101,11 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
+import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.rating.model.IndustryResponse;
+import com.capitaworld.service.rating.model.IrrRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -154,6 +163,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LogService logService;
+	
+	@Autowired
+	private GatewayClient gatewayClient;
 
 	@Autowired
 	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
@@ -172,6 +184,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private NotificationClient notificationClient;
+	
+	@Autowired
+	private RatingClient ratingClient;
+	
+	@Value("${capitaworld.service.gateway.product}")
+	private String product;
+	
+	@Value("${capitaworld.service.gateway.amount}")
+	private String amount;
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -3510,6 +3531,136 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return null;
+	}
+	
+	@Override
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId, Long clientId)
+			throws Exception {
+		logger.info("Start updateLoanApplicationMaster()");
+		try {
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+					.findOne(paymentRequest.getApplicationId());
+			loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
+			loanApplicationMaster.setPaymentAmount(paymentRequest.getPaymentAmount());
+			loanApplicationMaster.setAppointmentDate(paymentRequest.getAppointmentDate());
+			loanApplicationMaster.setAppointmentTime(paymentRequest.getAppointmentTime());
+			loanApplicationRepository.save(loanApplicationMaster);
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(paymentRequest.getApplicationId());
+
+			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				corporateApplicantDetail = new CorporateApplicantDetail();
+				corporateApplicantDetail.setApplicationId(loanApplicationMaster);
+				corporateApplicantDetail.setCreatedBy(userId);
+				corporateApplicantDetail.setCreatedDate(new Date());
+				corporateApplicantDetail.setIsActive(true);
+			}
+			corporateApplicantDetail.setOrganisationName(paymentRequest.getNameOfEntity());
+			corporateApplicantDetail.setAdministrativePremiseNumber(paymentRequest.getAddress().getPremiseNumber());
+			corporateApplicantDetail.setAdministrativeStreetName(paymentRequest.getAddress().getStreetName());
+			corporateApplicantDetail.setAdministrativeLandMark(paymentRequest.getAddress().getLandMark());
+			corporateApplicantDetail.setAdministrativeCountryId(paymentRequest.getAddress().getCountryId());
+			corporateApplicantDetail.setAdministrativeStateId(paymentRequest.getAddress().getStateId());
+			corporateApplicantDetail.setAdministrativeCityId(paymentRequest.getAddress().getCityId());
+			corporateApplicantDetail.setAdministrativePincode(paymentRequest.getAddress().getPincode());
+			corporateApplicantDetail.setModifiedBy(userId);
+			corporateApplicantDetail.setModifiedDate(new Date());
+			corporateApplicantDetailRepository.save(corporateApplicantDetail);
+			if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE()");
+				GatewayRequest gatewayRequest = new GatewayRequest();
+				try {
+					gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+					gatewayRequest.setEmail(paymentRequest.getEmailAddress());
+					gatewayRequest.setPhone(paymentRequest.getMobileNumber());
+					gatewayRequest.setAmount(Double.valueOf(amount));
+					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
+					gatewayRequest.setUserId(userId);
+					gatewayRequest.setProductInfo(product);
+					Object values = gatewayClient.payout(gatewayRequest);
+					System.out.println("Response for gateway is:- " + values);
+					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
+					return values;
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE");
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving payment information in Loan");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+		return paymentRequest.getTypeOfPayment();
+	}
+
+	@Override
+	public String updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
+			throws Exception {
+		logger.info("start updateLoanApplicationMasterPaymentStatus()");
+		try {
+			GatewayRequest gatewayRequest = new GatewayRequest();
+			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+			gatewayRequest.setUserId(userId);
+			gatewayRequest.setClientId(ClientId);
+			gatewayRequest.setStatus(paymentRequest.getStatus());
+			String updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			logger.info("Status===>{}" , updatePayment);
+			logger.info("End updateLoanApplicationMasterPaymentStatus() with success");
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
+		logger.info("start getPaymentStatus()");
+		try {
+			GatewayRequest gatewayRequest = new GatewayRequest();
+			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+			gatewayRequest.setStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+			gatewayRequest.setUserId(userId);
+			gatewayRequest.setClientId(ClientId);
+			logger.info("End getPaymentStatus() with success");
+			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
+			return paymentStatus;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public Integer getIndustryIrrByApplication(Long applicationId) {
+		// TODO Auto-generated method stub
+		IrrRequest irrIndustryRequest=new IrrRequest();
+		
+		Long irrId=null;
+		 try {
+			irrId=getIrrByApplicationId(applicationId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		irrIndustryRequest.setIrrIndustryId(irrId);
+		try {
+			irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
+		} catch (RatingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
+		
+				
+		return industryResponse.getBusinessTypeId();
+		
 	}
 
 }
