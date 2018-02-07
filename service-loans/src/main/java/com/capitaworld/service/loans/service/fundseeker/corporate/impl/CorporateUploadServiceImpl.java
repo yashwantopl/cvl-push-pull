@@ -283,6 +283,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				break;
 			case CommonUtils.TabType.FINAL_UPLOAD:
 				loanApplicationRepository.setIsFinalUploadMandatoryFilled(applicantId, userId, isFilled);
+				loanApplicationRepository.flush();
 				loanApplicationRepository.setFinalFilledCount(applicantId, userId, filledCount);
 				break;
 			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
