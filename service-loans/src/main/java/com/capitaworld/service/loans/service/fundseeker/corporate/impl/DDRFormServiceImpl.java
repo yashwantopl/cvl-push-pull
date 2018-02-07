@@ -31,7 +31,6 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetai
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -850,8 +849,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("Throw Exception While Get Primary Directory Backgoud Details in DDR OneForm");
 			e.printStackTrace();
 		}
-		
-		
 		
 		//PRODUCT DETAILS PROPOSED AND EXISTING (Description of Products) :- LINENO:111
 		try {
