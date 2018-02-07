@@ -1327,7 +1327,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/getIndustryIrrByApplication/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getIndustryIrrByApplication/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getIndustryIrrByApplication(HttpServletRequest request,
 			@PathVariable Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
