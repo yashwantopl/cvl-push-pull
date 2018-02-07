@@ -275,6 +275,10 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@Override
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,
 			String filledCount) throws Exception {
+		logger.info("In updateLoanApplicationFlag service method");
+		logger.info("appId----------->" + applicantId + "------userId------->" + userId + 
+				"---------tabtype------->"+tabType + "--------isFilled------->" + isFilled +
+				"----------FileCount----------"+filledCount);
 		try {
 			switch (tabType) {
 			case CommonUtils.TabType.PRIMARY_UPLOAD:
