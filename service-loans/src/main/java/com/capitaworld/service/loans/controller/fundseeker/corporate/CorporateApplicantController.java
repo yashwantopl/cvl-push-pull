@@ -42,9 +42,10 @@ public class CorporateApplicantController {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
-	
-	/*@Autowired
-	private RatingClient ratingClient;*/
+
+	/*
+	 * @Autowired private RatingClient ratingClient;
+	 */
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -58,44 +59,46 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "save");
 			// request must not be null
-			Long userId =null;
-			
-//			Long tempUserId =null;// (Long) request.getAttribute(CommonUtils.USER_ID);
-//			if(tempUserId != null){
-//				userId =tempUserId;
-//			}
-//			else if(applicantRequest.getUserId() !=null){
-//				userId = applicantRequest.getUserId();
-//			}
-//			else{
-//				userId = null;
-//			}
-			
-			//==============
-			
-			if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && (CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString()) ||   
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue())){
+			Long userId = null;
+
+			// Long tempUserId =null;// (Long) request.getAttribute(CommonUtils.USER_ID);
+			// if(tempUserId != null){
+			// userId =tempUserId;
+			// }
+			// else if(applicantRequest.getUserId() !=null){
+			// userId = applicantRequest.getUserId();
+			// }
+			// else{
+			// userId = null;
+			// }
+
+			// ==============
+
+			if ((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE)))
+					&& (CommonUtils.UserType.SERVICE_PROVIDER == Integer
+							.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())
+							|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request
+									.getAttribute(CommonUtils.USER_TYPE)).intValue())) {
 				applicantRequest.setClientId(clientId);
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}else{
-				   if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){ 
-					   userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				   }else if(!CommonUtils.isObjectNullOrEmpty( applicantRequest.getUserId())){
-					   userId= applicantRequest.getUserId();
-				   }else{
-				    logger.warn("Invalid request.");
-				    return new ResponseEntity<LoansResponse>(
-				      new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()),
-				      HttpStatus.OK);
-				   }
+			} else {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				} else if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getUserId())) {
+					userId = applicantRequest.getUserId();
+				} else {
+					logger.warn("Invalid request.");
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
 			}
-			
-// ==============
-//			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-//					.intValue()) {
-//				applicantRequest.setClientId(clientId);
-//			}
+
+			// ==============
+			// if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+			// request.getAttribute(CommonUtils.USER_TYPE))
+			// .intValue()) {
+			// applicantRequest.setClientId(clientId);
+			// }
 
 			if (applicantRequest == null) {
 				logger.warn("applicantRequest  can not be empty ==>", userId);
@@ -109,12 +112,14 @@ public class CorporateApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			applicantRequest.setUserId(userId);
-			//Checking Profile is Locked
+			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
-			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(applicantRequest.getApplicationId(), finalUserId);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()){
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(applicantRequest.getApplicationId(),
+					finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -139,9 +144,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "get");
 			Long id = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
 				id = clientId;
 			} else {
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -239,9 +244,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "getGraphs");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -273,9 +278,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "saveLatLon");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -307,9 +312,9 @@ public class CorporateApplicantController {
 			CommonDocumentUtils.startHook(logger, "getLatLon");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -332,62 +337,61 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	/*@RequestMapping(value = "/isMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveIsMsmeScoreREquired(@RequestBody MsmeScoreRequest request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
-				userId = clientId;
-			} else {
-				userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
-			}
-			if (CommonUtils.isObjectNullOrEmpty(request)) {
-				logger.warn("request cannot be empty");
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			else{
-				RatingResponse ratingResponse = new RatingResponse();
-				boolean response=applicantService.updateIsMsmeScoreRequired(request);
-				if(response)
-				{
-					CompanyDetails companyDetails=applicantService.getCompanyDetails(request.getApplicationId(),userId);
-					ratingResponse=ratingClient.getCompanyDetails(companyDetails);
-					if(CommonUtils.isObjectNullOrEmpty(ratingResponse.getCompanyDetails())){
-						ratingResponse=ratingClient.saveCompanyDetails(companyDetails);
-					}
-					LoansResponse loansResponse = new LoansResponse();
-					loansResponse.setData(response);
-					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-				}
-				LoansResponse loansResponse = new LoansResponse();
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			logger.error("Error while getting msme score==>", e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}*/
-	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+
+	/*
+	 * @RequestMapping(value = "/isMsmeScoreRequired", method = RequestMethod.POST,
+	 * produces = MediaType.APPLICATION_JSON_VALUE, consumes =
+	 * MediaType.APPLICATION_JSON_VALUE) public ResponseEntity<LoansResponse>
+	 * saveIsMsmeScoreREquired(@RequestBody MsmeScoreRequest request,
+	 * HttpServletRequest httpRequest, @RequestParam(value = "clientId", required =
+	 * false) Long clientId) { try { Long userId = null; if
+	 * (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+	 * httpRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) { userId =
+	 * clientId; } else { userId = (Long)
+	 * httpRequest.getAttribute(CommonUtils.USER_ID); } if
+	 * (CommonUtils.isObjectNullOrEmpty(request)) {
+	 * logger.warn("request cannot be empty"); return new
+	 * ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,
+	 * HttpStatus.BAD_REQUEST.value()), HttpStatus.OK); } else{ RatingResponse
+	 * ratingResponse = new RatingResponse(); boolean
+	 * response=applicantService.updateIsMsmeScoreRequired(request); if(response) {
+	 * CompanyDetails
+	 * companyDetails=applicantService.getCompanyDetails(request.getApplicationId(),
+	 * userId); ratingResponse=ratingClient.getCompanyDetails(companyDetails);
+	 * if(CommonUtils.isObjectNullOrEmpty(ratingResponse.getCompanyDetails())){
+	 * ratingResponse=ratingClient.saveCompanyDetails(companyDetails); }
+	 * LoansResponse loansResponse = new LoansResponse();
+	 * loansResponse.setData(response); return new
+	 * ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK); } LoansResponse
+	 * loansResponse = new LoansResponse(); loansResponse.setData(response); return
+	 * new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK); } } catch
+	 * (Exception e) { logger.error("Error while getting msme score==>", e); return
+	 * new ResponseEntity<LoansResponse>(new
+	 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
+	 * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+	 * } }
+	 */
+	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
+			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.warn("request cannot be empty");
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			else{
-				boolean response=applicantService.getIsMsmeScoreRequired(applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			} else {
+				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
 				LoansResponse loansResponse = new LoansResponse();
 				loansResponse.setData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting msme score==>", e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
@@ -395,9 +399,9 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)) || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -420,15 +424,15 @@ public class CorporateApplicantController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@RequestMapping(value = "${profile}/getCorpCoapIds/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoapAndGuarIds(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)) || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 			userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -452,6 +456,36 @@ public class CorporateApplicantController {
 		}
 
 	}
+
+	@RequestMapping(value = "${profile}/get_payment_info/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPaymentInfo(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in getCoapAndGuarIds for retail profile");
+		Long userId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		if (applicationId == null) {
+			logger.warn("ApplicationId Require to get Coap And Guar Ids. Application Id ==>" + applicationId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(applicantService.getPaymentInfor(userId, applicationId));
+			logger.info("Successfully get Paymnt Info");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Payment Info==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 }
-
-
