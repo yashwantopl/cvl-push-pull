@@ -531,6 +531,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	public void saveVehiclesOwnedDetails(List<DDRVehiclesOwnedDetailsRequest> requestList, Long userId, Long ddrFormId) {
+		logger.info("Enter in Save VehiclesOwnedDetails =======================>" +requestList.size());
 		for(DDRVehiclesOwnedDetailsRequest reqObj : requestList) {
 			DDRVehiclesOwnedDetails saveObj = null;
 			if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
