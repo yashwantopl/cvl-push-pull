@@ -17,6 +17,10 @@ public class DDRCreditorsDetailsRequest  implements Serializable{
 	private String name;
 	
 	private Double amount;
+	
+	private Double avgCreditorTurnoverPeriod;
+	
+	private String comment;
 
 	private Boolean isActive;
 
@@ -59,12 +63,31 @@ public class DDRCreditorsDetailsRequest  implements Serializable{
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+	public Double getAvgCreditorTurnoverPeriod() {
+		return avgCreditorTurnoverPeriod;
+	}
+
+	public void setAvgCreditorTurnoverPeriod(Double avgCreditorTurnoverPeriod) {
+		this.avgCreditorTurnoverPeriod = avgCreditorTurnoverPeriod;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 
 	@Override
 	public String toString() {
 		return "DDRCreditorsDetailsRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", name=" + name + ", amount="
-				+ amount + ", isActive=" + isActive + "]";
+				+ amount + ", avgCreditorTurnoverPeriod=" + avgCreditorTurnoverPeriod + ", comment=" + comment
+				+ ", isActive=" + isActive + "]";
 	}
+
+	
 	
 	
 	

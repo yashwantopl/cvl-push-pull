@@ -33,7 +33,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-		if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+		if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
 		   userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
