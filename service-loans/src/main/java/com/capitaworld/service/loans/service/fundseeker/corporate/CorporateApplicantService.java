@@ -40,4 +40,7 @@ public interface CorporateApplicantService {
 	
 	public PaymentRequest getPaymentInfor(Long userId,Long applicationId) throws Exception;
 	
+	public void saveIndustry(Long applicationId, List<Long> industrylist) ;
+	public void saveSector(Long applicationId, List<Long> sectorlist) ;
+	public void saveSubSector(Long applicationId, List<Long> subSectorlist) ;
 }
