@@ -636,7 +636,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								+ applicationMaster);
 			}
 			applicationMaster.setIsFinalLocked(flag);
-			applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster());
+			applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
 			loanApplicationRepository.save(applicationMaster);
 
 			// send FP notification

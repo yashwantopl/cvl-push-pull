@@ -13,42 +13,47 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 /**
  * The persistent class for the application_status_master database table.
  * 
  */
 @Entity
-@Table(name="fs_application_status_master")
-@NamedQuery(name="ApplicationStatusMaster.findAll", query="SELECT a FROM ApplicationStatusMaster a")
+@Table(name = "fs_application_status_master")
+@NamedQuery(name = "ApplicationStatusMaster.findAll", query = "SELECT a FROM ApplicationStatusMaster a")
 public class ApplicationStatusMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String code;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
 	private String status;
 
+	public ApplicationStatusMaster() {
+	}
+
+	public ApplicationStatusMaster(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return this.id;
