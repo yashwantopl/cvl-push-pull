@@ -187,12 +187,12 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int getCountOfAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 	
 	//nhbs	
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
-	public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+	@Query("select lm from LoanApplicationMaster lm where lm.npUserId=:npUserId and  lm.isActive = true ")
+	public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("npUserId") Long npUserId);
 	
 	//to get count of proposal based on NpUserId
-	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
-	public int getCountOfAssignedProposalsByNpUserId(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+	@Query("select count(*) from LoanApplicationMaster lm where lm.npUserId=:npUserId and  lm.isActive = true ")
+	public int getCountOfAssignedProposalsByNpUserId(@Param("npUserId") Long npUserId);
 	
 	//nhbs
 	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
