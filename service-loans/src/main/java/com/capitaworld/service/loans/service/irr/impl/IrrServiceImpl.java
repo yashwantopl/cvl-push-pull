@@ -358,6 +358,9 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);		
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+			operatingStatementDetails = new OperatingStatementDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
 			operatingStatementDetails.setDomesticSales(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
@@ -441,6 +444,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================LIABILITIES DETAIL 3 YR==================================================================
 		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
+			liabilitiesDetails = new LiabilitiesDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
 			liabilitiesDetails.setPreferencesShares(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
@@ -532,6 +538,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================ASSET DETAIL 3 YR==================================================================
 		assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
+			assetsDetails = new AssetsDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
 			assetsDetails.setGrossBlock(0.0);
 		financialInputRequest.setGrossBlockTy(assetsDetails.getGrossBlock());
@@ -615,6 +624,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+			operatingStatementDetails = new OperatingStatementDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
 			operatingStatementDetails.setDomesticSales(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
@@ -698,6 +710,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================LIABILITIES DETAIL 2 YR==================================================================
 		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-1+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
+			liabilitiesDetails = new LiabilitiesDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
 			liabilitiesDetails.setPreferencesShares(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
@@ -789,6 +804,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================ASSET DETAIL 3 YR==================================================================
 		assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
+			assetsDetails = new AssetsDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
 			assetsDetails.setGrossBlock(0.0);
 		financialInputRequest.setGrossBlockSy(assetsDetails.getGrossBlock());
@@ -873,6 +891,10 @@ public class IrrServiceImpl implements IrrService{
 		// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 1 YR========================================================
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
+		
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+			operatingStatementDetails = new OperatingStatementDetails();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
 			operatingStatementDetails.setDomesticSales(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
@@ -956,6 +978,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================LIABILITIES DETAIL 1 YR==================================================================
 				liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-2+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
+					liabilitiesDetails = new LiabilitiesDetails();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
 					liabilitiesDetails.setPreferencesShares(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
@@ -1047,6 +1072,9 @@ public class IrrServiceImpl implements IrrService{
 				//========= ===============================================ASSET DETAIL 3 YR==================================================================
 				assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-2+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
+					assetsDetails = new AssetsDetails();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
 					assetsDetails.setGrossBlock(0.0);
 				financialInputRequest.setGrossBlockFy(assetsDetails.getGrossBlock());
@@ -1179,6 +1207,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 3 YR========================================================
 		profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(aplicationId, currentYear+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)){
+			profitibilityStatementDetail = new ProfitibilityStatementDetail();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail.getSales()))
 			profitibilityStatementDetail.setSales(0.0);
 		financialInputRequest.setGrossSalesTy(profitibilityStatementDetail.getSales());
@@ -1259,6 +1290,9 @@ public class IrrServiceImpl implements IrrService{
 		//========= ==========================================LIABILITY(BS) DETAIL 3 YR========================================================
 		balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear+"");
 		
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail)){
+			balanceSheetDetail = new BalanceSheetDetail();
+		}
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOrdinaryShareCapital()))
 			balanceSheetDetail.setOrdinaryShareCapital(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreferenceShareCapital()))
@@ -1426,6 +1460,9 @@ public class IrrServiceImpl implements IrrService{
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 2 YR========================================================
 				profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(aplicationId, currentYear-1+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)){
+					profitibilityStatementDetail = new ProfitibilityStatementDetail();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail.getSales()))
 					profitibilityStatementDetail.setSales(0.0);
 				financialInputRequest.setGrossSalesSy(profitibilityStatementDetail.getSales());
@@ -1506,6 +1543,9 @@ public class IrrServiceImpl implements IrrService{
 				//========= ==========================================LIABILITY(BS) DETAIL 2 YR========================================================
 				balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear-1+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail)){
+					balanceSheetDetail = new BalanceSheetDetail();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOrdinaryShareCapital()))
 					balanceSheetDetail.setOrdinaryShareCapital(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreferenceShareCapital()))
@@ -1673,6 +1713,9 @@ public class IrrServiceImpl implements IrrService{
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 1 YR========================================================
 				profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(aplicationId, currentYear-2+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)){
+					profitibilityStatementDetail = new ProfitibilityStatementDetail();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail.getSales()))
 					profitibilityStatementDetail.setSales(0.0);
 				financialInputRequest.setGrossSalesFy(profitibilityStatementDetail.getSales());
@@ -1753,6 +1796,9 @@ public class IrrServiceImpl implements IrrService{
 				//========= ==========================================LIABILITY(BS) DETAIL 1 YR========================================================
 				balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear-2+"");
 				
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail)){
+					balanceSheetDetail = new BalanceSheetDetail();
+				}
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOrdinaryShareCapital()))
 					balanceSheetDetail.setOrdinaryShareCapital(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreferenceShareCapital()))
