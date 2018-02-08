@@ -3776,6 +3776,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 			applicationMaster.setDdrStatusId(statusId);
+			applicationMaster.setModifiedBy(userId);
+			applicationMaster.setModifiedDate(new Date());
 			loanApplicationRepository.save(applicationMaster);
 			return true;
 		} catch (Exception e) {

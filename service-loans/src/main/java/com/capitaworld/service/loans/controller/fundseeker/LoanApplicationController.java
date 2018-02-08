@@ -1490,7 +1490,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> updateDDRStatus(@PathVariable("applicationId") Long applicationId,@PathVariable("statusId") Long statusId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "lockFinal");
+			CommonDocumentUtils.startHook(logger, "updateDDRStatus");
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue() || 
@@ -1513,7 +1513,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			loanApplicationService.updateDDRStatus(applicationId, userId, clientId, statusId);
-			CommonDocumentUtils.endHook(logger, "lockFinal");
+			CommonDocumentUtils.endHook(logger, "updateDDRStatus");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
