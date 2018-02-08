@@ -270,6 +270,81 @@ public class ProfitibilityStatementDetail implements Serializable {
 	@Column(name = "expenses_capitalised")
 	private double expensesCapitalised;
 
+	
+	public ProfitibilityStatementDetail() {
+		super();
+		this.adminAndSellingExpenses  = 0.0;
+		this.alreadyPaid  = 0.0;
+		this.amortisation  = 0.0;
+		this.bsProvision  = 0.0;
+		this.closingStockFg  = 0.0;
+		this.closingStockWip  = 0.0;
+		this.costRawMaterialConsumed = 0.0;
+		this.currentTax  = 0.0;
+		this.deferredTax  = 0.0;
+		this.depreciation = 0.0;
+		this.depreciationAndAmortisation = 0.0;
+		this.dividend  = 0.0;
+		this.employeeBenefitExpenses  = 0.0;
+		this.extraordinaryItems  = 0.0;
+		this.factoryWages = 0.0;
+		this.financeCost  = 0.0;
+		this.grossOperatingRevenue  = 0.0;
+		this.increaseOrDecreaseInInventoryFg  = 0.0;
+		this.increaseOrDecreaseInInventoryWip  = 0.0;
+		this.lessAnyOtherItem  = 0.0;
+		this.lessExciseDutyOrVatOrServiceTax  = 0.0;
+		this.netSales = 0.0;
+		this.nonOperatingExpenses  = 0.0;
+		this.nonOperatingIncome  = 0.0;
+		this.openingStockOfFg = 0.0;
+		this.openingStockWip  = 0.0;
+		this.operatingExpenses  = 0.0;
+		this.operatingProfitBeforeDepreciation  = 0.0;
+		this.operatingProfitBeforeInterestAndTax  = 0.0;
+		this.operatingProfitBeforeTax  = 0.0;
+		this.otherExpenses  = 0.0;
+		this.otherOperatingRevenue = 0.0;
+		this.otherPlsSpecify  = 0.0;
+		this.personnelCost  = 0.0;
+		this.powerAndFuel = 0.0;
+		this.profitAfterTax  = 0.0;
+		this.profitBeforeTax = 0.0;
+		this.provisionForTax  = 0.0;
+		this.purchasesStockTnTrade  = 0.0;
+		this.rawMaterialImported  = 0.0;
+		this.rawMaterialIndigenous = 0.0;
+		this.sales  = 0.0;
+		this.salesDomestic  = 0.0;
+		this.salesExport  = 0.0;
+		this.storeAndSpares  = 0.0;
+		this.storeAndSparesImported  = 0.0;
+		this.storeAndSparesIndeigenous = 0.0;
+		this.LessItem1  = 0.0;
+		this.LessItem2  = 0.0;
+		this.LessItem3  = 0.0;
+		this.LessItem4  = 0.0;
+		this.LessItem5  = 0.0;
+		this.OtherOperatingRevenue1 = 0.0;
+		this.OtherOperatingRevenue2  = 0.0;
+		this.OtherOperatingRevenue3 = 0.0;
+		this.OtherOperatingRevenue4 = 0.0;
+		this.OtherOperatingRevenue5  = 0.0;
+		this.ExpenseCapitalized1  = 0.0;
+		this.ExpenseCapitalized2  = 0.0;
+		this.ExpenseCapitalized3  = 0.0;
+		this.ExpenseCapitalized4  = 0.0;
+		this.ExtraordinaryItems1  = 0.0;
+		this.ExtraordinaryItems2  = 0.0;
+		this.ExtraordinaryItems3  = 0.0;
+		this.ExtraordinaryItems4 = 0.0;
+		this.ExtraordinaryItems5  = 0.0;
+		this.generalAdminExpenses  = 0.0;
+		this.sellingDistributionExpenses  = 0.0;
+		this.expensesCapitalised  = 0.0;
+	}
+
+
 	public Long getStorageDetailsId() {
 		return storageDetailsId;
 	}

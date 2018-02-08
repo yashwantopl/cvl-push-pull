@@ -193,9 +193,57 @@ public class OperatingStatementDetails implements Serializable {
 	
 	@Column(name="selling_distribution_exp")
 	private Double SellingAndDistributionExpenses;
-	
-	
 
+	public OperatingStatementDetails() {
+		super();
+		this.addOperatingStock=0.0;
+		this.addOperatingStockFg=0.0;
+		this.addOtherNonOpIncome=0.0;
+		this.addOtherRevenueIncome=0.0;
+		this.deductClStockFg=0.0;
+		this.deductOtherItems=0.0;
+		this.deductOtherNonOpExp=0.0;
+		this.deductStockInProcess=0.0;
+		this.depreciation=0.0;
+		this.directLabour=0.0;
+		this.dividendRate=0.0;
+		this.domesticSales=0.0;
+		this.equityDeividendPaidAmt=0.0;
+		this.expensesAmortised =0.0;
+		this.exportSales=0.0;
+		this.interest=0.0;
+		this.lessExciseDuty =0.0;
+		this.netProfitOrLoss =0.0;
+		this.netSales =0.0;
+		this.netofNonOpIncomeOrExpenses=0.0;
+		this.opProfitAfterInterest=0.0;
+		this.opProfitBeforeIntrest=0.0;
+		this.otherMfgExpenses=0.0;
+		this.otherSpares =0.0;
+		this.otherSparesImported=0.0;
+		this.otherSparesIndigenous=0.0;
+		this.percentageRiseOrFall =0.0;
+		this.powerAndFuel =0.0;
+		this.productionCost =0.0;
+		this.profitBeforeTaxOrLoss=0.0;
+		this.provisionForDeferredTax=0.0;
+		this.provisionForTaxes =0.0;
+		this.rawMaterials =0.0;
+		this.rawMaterialsImported =0.0;
+		this.rawMaterialsIndigenous=0.0;
+		this.retainedProfit =0.0;
+		this.retainedProfitOrNetProfit=0.0;
+		this.sellingGenlAdmnExpenses =0.0;
+		this.subTotalCostSales =0.0;
+		this.subTotalCostSalesAndSelling =0.0;
+		this.subTotalDeductAndCostOfProduction=0.0;
+		this.subTotalExpenses =0.0;
+		this.subTotalOfCostSalesAndOperatingStock=0.0;
+		this.subTotalOfIncome =0.0;
+		this.totalCostSales =0.0;
+		this.totalGrossSales = 0.0;
+		this.generalAdminExp=0.0;
+	}
 
 	public Double getSellingAndDistributionExpenses() {
 		return SellingAndDistributionExpenses;
