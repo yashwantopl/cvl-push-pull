@@ -9,12 +9,16 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 
 public class OperatingStatementDetailsExcelReader {
+	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
     public static List<String> operatingStatementMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
@@ -101,7 +105,7 @@ public class OperatingStatementDetailsExcelReader {
         }
         
         System.out.println(nullCounter);
-        if(!(nullCounter==45||nullCounter==46)) {
+        if(!(nullCounter==46||nullCounter==47)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
             
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
@@ -172,6 +176,7 @@ public class OperatingStatementDetailsExcelReader {
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
+    	log.info("getNumericDataFromCell:"+cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());

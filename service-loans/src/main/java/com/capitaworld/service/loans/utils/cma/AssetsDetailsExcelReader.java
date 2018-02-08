@@ -10,16 +10,18 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 
-import ch.qos.logback.classic.Logger;
 
 
 public class AssetsDetailsExcelReader
 {
+	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
     public static List<String> assetsMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) {
@@ -194,6 +196,7 @@ public class AssetsDetailsExcelReader
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
+    	log.info("getNumericDataFromCell:"+cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());
