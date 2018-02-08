@@ -170,64 +170,64 @@ public class DDRFormDetails implements Serializable {
 	private String creaditCardHeldByCustComment;
 	
 	@Column(name = "field_audit_report")
-	private Integer fieldAuditReport;
+	private String fieldAuditReport;
 	
 	@Column(name = "audited_financials_for_last_3years")
-	private Integer auditedFinancialsForLast3years;
+	private String auditedFinancialsForLast3years;
 	
 	@Column(name = "provisional_financials_for_current_year")
-	private Integer provisionalFinancialsForCurrentYear;
+	private String provisionalFinancialsForCurrentYear;
 	
 	@Column(name = "itr_for_last_3years")
-	private Integer itrForLast3years;
+	private String itrForLast3years;
 	
 	@Column(name = "sanction_letter")
-	private Integer sanctionLetter;
+	private String sanctionLetter;
 	
 	@Column(name = "bank_statement_of_last_12months")
-	private Integer bankStatementOfLast12months;
+	private String bankStatementOfLast12months;
 	
 	@Column(name = "debtors_list")
-	private Integer debtorsList;
+	private String debtorsList;
 	
 	@Column(name = "financial_figures")
-	private Integer financialFigures;
+	private String financialFigures;
 	
 	@Column(name = "moa_of_the_company")
-	private Integer moaOfTheCompany;
+	private String moaOfTheCompany;
 	
 	@Column(name = "pan_card_of_the_company")
-	private Integer panCardOfTheCompany;
+	private String panCardOfTheCompany;
 	
 	@Column(name = "resolution_and_form_32for_addition_of_director")
-	private Integer resolutionAndForm32forAdditionOfDirector;
+	private String resolutionAndForm32forAdditionOfDirector;
 	
 	@Column(name = "central_sales_tax_registration_of_company")
-	private Integer centralSalesTaxRegistrationOfCompany;
+	private String centralSalesTaxRegistrationOfCompany;
 	
 	@Column(name = "central_excise_registration_of_company")
-	private Integer centralExciseRegistrationOfCompany;
+	private String centralExciseRegistrationOfCompany;
 	
 	@Column(name = "vat_registration_of_company")
-	private Integer vatRegistrationOfCompany;
+	private String vatRegistrationOfCompany;
 	
 	@Column(name = "letter_of_Intent_from_fund_providers")
-	private Integer letterOfIntentFromFundProviders;
+	private String letterOfIntentFromFundProviders;
 	
 	@Column(name = "pan_card_and_residence_add_proof_of_directors")
-	private Integer panCardAndResidenceAddProofOfDirectors;
+	private String panCardAndResidenceAddProofOfDirectors;
 	
 	@Column(name = "ca_certified_networth_Statement")
-	private Integer caCertifiedNetworthStatement;
+	private String caCertifiedNetworthStatement;
 	
 	@Column(name = "irr_of_all_directors_for_last_2years")
-	private Integer irrOfAllDirectorsForLast2years;
+	private String irrOfAllDirectorsForLast2years;
 	
 	@Column(name = "list_of_directors")
-	private Integer listOfDirectors;
+	private String listOfDirectors;
 	
 	@Column(name = "list_of_shareholders_and_share_holding_patter")
-	private Integer listOfShareholdersAndShareHoldingPatter;
+	private String listOfShareholdersAndShareHoldingPatter;
 	
 	@Column(name = "summary_of_bservations")
 	private String summaryOfBservations;
@@ -617,163 +617,164 @@ public class DDRFormDetails implements Serializable {
 		this.creaditCardHeldByCustComment = creaditCardHeldByCustComment;
 	}
 
-	public Integer getFieldAuditReport() {
+
+	public String getFieldAuditReport() {
 		return fieldAuditReport;
 	}
 
-	public void setFieldAuditReport(Integer fieldAuditReport) {
+	public void setFieldAuditReport(String fieldAuditReport) {
 		this.fieldAuditReport = fieldAuditReport;
 	}
 
-	public Integer getAuditedFinancialsForLast3years() {
+	public String getAuditedFinancialsForLast3years() {
 		return auditedFinancialsForLast3years;
 	}
 
-	public void setAuditedFinancialsForLast3years(Integer auditedFinancialsForLast3years) {
+	public void setAuditedFinancialsForLast3years(String auditedFinancialsForLast3years) {
 		this.auditedFinancialsForLast3years = auditedFinancialsForLast3years;
 	}
 
-	public Integer getProvisionalFinancialsForCurrentYear() {
+	public String getProvisionalFinancialsForCurrentYear() {
 		return provisionalFinancialsForCurrentYear;
 	}
 
-	public void setProvisionalFinancialsForCurrentYear(Integer provisionalFinancialsForCurrentYear) {
+	public void setProvisionalFinancialsForCurrentYear(String provisionalFinancialsForCurrentYear) {
 		this.provisionalFinancialsForCurrentYear = provisionalFinancialsForCurrentYear;
 	}
 
-	public Integer getItrForLast3years() {
+	public String getItrForLast3years() {
 		return itrForLast3years;
 	}
 
-	public void setItrForLast3years(Integer itrForLast3years) {
+	public void setItrForLast3years(String itrForLast3years) {
 		this.itrForLast3years = itrForLast3years;
 	}
 
-	public Integer getSanctionLetter() {
+	public String getSanctionLetter() {
 		return sanctionLetter;
 	}
 
-	public void setSanctionLetter(Integer sanctionLetter) {
+	public void setSanctionLetter(String sanctionLetter) {
 		this.sanctionLetter = sanctionLetter;
 	}
 
-	public Integer getBankStatementOfLast12months() {
+	public String getBankStatementOfLast12months() {
 		return bankStatementOfLast12months;
 	}
 
-	public void setBankStatementOfLast12months(Integer bankStatementOfLast12months) {
+	public void setBankStatementOfLast12months(String bankStatementOfLast12months) {
 		this.bankStatementOfLast12months = bankStatementOfLast12months;
 	}
 
-	public Integer getDebtorsList() {
+	public String getDebtorsList() {
 		return debtorsList;
 	}
 
-	public void setDebtorsList(Integer debtorsList) {
+	public void setDebtorsList(String debtorsList) {
 		this.debtorsList = debtorsList;
 	}
 
-	public Integer getFinancialFigures() {
+	public String getFinancialFigures() {
 		return financialFigures;
 	}
 
-	public void setFinancialFigures(Integer financialFigures) {
+	public void setFinancialFigures(String financialFigures) {
 		this.financialFigures = financialFigures;
 	}
 
-	public Integer getMoaOfTheCompany() {
+	public String getMoaOfTheCompany() {
 		return moaOfTheCompany;
 	}
 
-	public void setMoaOfTheCompany(Integer moaOfTheCompany) {
+	public void setMoaOfTheCompany(String moaOfTheCompany) {
 		this.moaOfTheCompany = moaOfTheCompany;
 	}
 
-	public Integer getPanCardOfTheCompany() {
+	public String getPanCardOfTheCompany() {
 		return panCardOfTheCompany;
 	}
 
-	public void setPanCardOfTheCompany(Integer panCardOfTheCompany) {
+	public void setPanCardOfTheCompany(String panCardOfTheCompany) {
 		this.panCardOfTheCompany = panCardOfTheCompany;
 	}
 
-	public Integer getResolutionAndForm32forAdditionOfDirector() {
+	public String getResolutionAndForm32forAdditionOfDirector() {
 		return resolutionAndForm32forAdditionOfDirector;
 	}
 
-	public void setResolutionAndForm32forAdditionOfDirector(Integer resolutionAndForm32forAdditionOfDirector) {
+	public void setResolutionAndForm32forAdditionOfDirector(String resolutionAndForm32forAdditionOfDirector) {
 		this.resolutionAndForm32forAdditionOfDirector = resolutionAndForm32forAdditionOfDirector;
 	}
 
-	public Integer getCentralSalesTaxRegistrationOfCompany() {
+	public String getCentralSalesTaxRegistrationOfCompany() {
 		return centralSalesTaxRegistrationOfCompany;
 	}
 
-	public void setCentralSalesTaxRegistrationOfCompany(Integer centralSalesTaxRegistrationOfCompany) {
+	public void setCentralSalesTaxRegistrationOfCompany(String centralSalesTaxRegistrationOfCompany) {
 		this.centralSalesTaxRegistrationOfCompany = centralSalesTaxRegistrationOfCompany;
 	}
 
-	public Integer getCentralExciseRegistrationOfCompany() {
+	public String getCentralExciseRegistrationOfCompany() {
 		return centralExciseRegistrationOfCompany;
 	}
 
-	public void setCentralExciseRegistrationOfCompany(Integer centralExciseRegistrationOfCompany) {
+	public void setCentralExciseRegistrationOfCompany(String centralExciseRegistrationOfCompany) {
 		this.centralExciseRegistrationOfCompany = centralExciseRegistrationOfCompany;
 	}
 
-	public Integer getVatRegistrationOfCompany() {
+	public String getVatRegistrationOfCompany() {
 		return vatRegistrationOfCompany;
 	}
 
-	public void setVatRegistrationOfCompany(Integer vatRegistrationOfCompany) {
+	public void setVatRegistrationOfCompany(String vatRegistrationOfCompany) {
 		this.vatRegistrationOfCompany = vatRegistrationOfCompany;
 	}
 
-	public Integer getLetterOfIntentFromFundProviders() {
+	public String getLetterOfIntentFromFundProviders() {
 		return letterOfIntentFromFundProviders;
 	}
 
-	public void setLetterOfIntentFromFundProviders(Integer letterOfIntentFromFundProviders) {
+	public void setLetterOfIntentFromFundProviders(String letterOfIntentFromFundProviders) {
 		this.letterOfIntentFromFundProviders = letterOfIntentFromFundProviders;
 	}
 
-	public Integer getPanCardAndResidenceAddProofOfDirectors() {
+	public String getPanCardAndResidenceAddProofOfDirectors() {
 		return panCardAndResidenceAddProofOfDirectors;
 	}
 
-	public void setPanCardAndResidenceAddProofOfDirectors(Integer panCardAndResidenceAddProofOfDirectors) {
+	public void setPanCardAndResidenceAddProofOfDirectors(String panCardAndResidenceAddProofOfDirectors) {
 		this.panCardAndResidenceAddProofOfDirectors = panCardAndResidenceAddProofOfDirectors;
 	}
 
-	public Integer getCaCertifiedNetworthStatement() {
+	public String getCaCertifiedNetworthStatement() {
 		return caCertifiedNetworthStatement;
 	}
 
-	public void setCaCertifiedNetworthStatement(Integer caCertifiedNetworthStatement) {
+	public void setCaCertifiedNetworthStatement(String caCertifiedNetworthStatement) {
 		this.caCertifiedNetworthStatement = caCertifiedNetworthStatement;
 	}
 
-	public Integer getIrrOfAllDirectorsForLast2years() {
+	public String getIrrOfAllDirectorsForLast2years() {
 		return irrOfAllDirectorsForLast2years;
 	}
 
-	public void setIrrOfAllDirectorsForLast2years(Integer irrOfAllDirectorsForLast2years) {
+	public void setIrrOfAllDirectorsForLast2years(String irrOfAllDirectorsForLast2years) {
 		this.irrOfAllDirectorsForLast2years = irrOfAllDirectorsForLast2years;
 	}
 
-	public Integer getListOfDirectors() {
+	public String getListOfDirectors() {
 		return listOfDirectors;
 	}
 
-	public void setListOfDirectors(Integer listOfDirectors) {
+	public void setListOfDirectors(String listOfDirectors) {
 		this.listOfDirectors = listOfDirectors;
 	}
 
-	public Integer getListOfShareholdersAndShareHoldingPatter() {
+	public String getListOfShareholdersAndShareHoldingPatter() {
 		return listOfShareholdersAndShareHoldingPatter;
 	}
 
-	public void setListOfShareholdersAndShareHoldingPatter(Integer listOfShareholdersAndShareHoldingPatter) {
+	public void setListOfShareholdersAndShareHoldingPatter(String listOfShareholdersAndShareHoldingPatter) {
 		this.listOfShareholdersAndShareHoldingPatter = listOfShareholdersAndShareHoldingPatter;
 	}
 

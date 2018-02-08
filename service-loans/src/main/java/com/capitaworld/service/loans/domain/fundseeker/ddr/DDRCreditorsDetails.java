@@ -36,6 +36,12 @@ public class DDRCreditorsDetails implements Serializable {
 	
 	private Double amount;
 	
+	@Column(name = "avg_creditor_turnover_period")
+	private Double avgCreditorTurnoverPeriod;
+	
+	@Column(name = "comment")
+	private String comment;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 	
@@ -123,6 +129,22 @@ public class DDRCreditorsDetails implements Serializable {
 
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public Double getAvgCreditorTurnoverPeriod() {
+		return avgCreditorTurnoverPeriod;
+	}
+
+	public void setAvgCreditorTurnoverPeriod(Double avgCreditorTurnoverPeriod) {
+		this.avgCreditorTurnoverPeriod = avgCreditorTurnoverPeriod;
 	}
 
 	@Override

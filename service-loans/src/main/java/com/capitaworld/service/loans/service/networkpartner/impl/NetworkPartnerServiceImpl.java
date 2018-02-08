@@ -87,7 +87,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
 						NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								NetworkPartnerDetailsRequest.class);
-						nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName());
+						nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
 					} catch (Exception e) {
 						logger.error("error while fetching network partner details");
 						e.printStackTrace();
@@ -139,7 +139,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 					try{
 						UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && userResponse.getData().equals("true")){
+						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && (boolean)userResponse.getData()){
 							nhbsApplicationsResponse.setClientSource("SP");	
 						}else{
 							nhbsApplicationsResponse.setClientSource("Direct");
@@ -147,6 +147,20 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}catch (Exception e) {
 						logger.error("error while calling users clients while calling checkUserUnderSp()");
 						e.printStackTrace();
+					}
+				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
+						UsersRequest usersRequest = new UsersRequest();
+						usersRequest.setId(loanApplicationMaster.getNpAssigneeId());
+						try {
+							UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
+							NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									NetworkPartnerDetailsRequest.class);
+							nhbsApplicationsResponse.setAssigneeName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error("error while fetching network partner details");
+							e.printStackTrace();
+						}
 					}
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
@@ -178,7 +192,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
-				nhbsApplicationsResponse.setDdrStatus(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId()) ? CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()) : "NA"); 
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
+					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
+					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+				}else{
+					nhbsApplicationsResponse.setDdrStatus("NA");
+				}
+				 
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
@@ -218,6 +238,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					logger.error("error while getting profile image");
 					e.printStackTrace();
 				}
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
+					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
+				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 					nhbsApplicationsResponse.setPaymentMode(null);//need to set
 					nhbsApplicationsResponse.setIsPaymentDone(null);//need to set
@@ -240,10 +263,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
-						nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
-					}
+					}					
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpUserId());

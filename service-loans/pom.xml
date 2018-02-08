@@ -123,6 +123,11 @@
 			<artifactId>client-rating</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		 <dependency>
+		 	<groupId>com.capitaworld.service.gateway</groupId>
+		 	<artifactId>client-gateway</artifactId>
+		 	<version>0.0.1</version>
+		 </dependency>
 	</dependencies>
 
 	<build>

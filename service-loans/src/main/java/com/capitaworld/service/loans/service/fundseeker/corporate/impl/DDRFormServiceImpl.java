@@ -31,7 +31,6 @@ import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetai
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -233,7 +232,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * GET DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 */
 	@Override
-	public DDRFormDetailsRequest get(Long appId) {
+	public DDRFormDetailsRequest get(Long appId,Long userId) {
 		DDRFormDetailsRequest dDRFormDetailsRequest = null;
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
 		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
@@ -249,7 +248,11 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
-			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId,appId,userId));
+		} else {
+			dDRFormDetailsRequest = new DDRFormDetailsRequest();
+			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null,appId,userId));
+			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
 		}
 		return dDRFormDetailsRequest;
 	}
@@ -527,6 +530,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	public void saveVehiclesOwnedDetails(List<DDRVehiclesOwnedDetailsRequest> requestList, Long userId, Long ddrFormId) {
+		logger.info("Enter in Save VehiclesOwnedDetails =======================>" +requestList.size());
 		for(DDRVehiclesOwnedDetailsRequest reqObj : requestList) {
 			DDRVehiclesOwnedDetails saveObj = null;
 			if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
@@ -555,14 +559,28 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * @return
 	 */
 	public List<DDRFinancialSummaryRequest> getFinancialSummary(Long ddrFormId){
-		List<DDRFinancialSummary> objList = financialSummaryRepository.getListByDDRFormId(ddrFormId);
-		List<DDRFinancialSummaryRequest> responseList = new ArrayList<>(objList.size());
-		if(!CommonUtils.isListNullOrEmpty(objList)) {
-			for(DDRFinancialSummary obj : objList) {
-				DDRFinancialSummaryRequest response = new DDRFinancialSummaryRequest();
-				BeanUtils.copyProperties(obj, response);
-				responseList.add(response);
-			}
+		
+		List<DDRFinancialSummaryRequest> responseList = null;
+		if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+			List<DDRFinancialSummary> objList = financialSummaryRepository.getListByDDRFormId(ddrFormId);
+			if(!CommonUtils.isListNullOrEmpty(objList)) {
+				responseList = new ArrayList<>(objList.size());
+				for(DDRFinancialSummary obj : objList) {
+					DDRFinancialSummaryRequest response = new DDRFinancialSummaryRequest();
+					BeanUtils.copyProperties(obj, response);
+					responseList.add(response);
+				}
+				return responseList;
+			}	
+		}
+		DDRFinancialSummaryToBeFields[] values = DDRFinancialSummaryToBeFields.values();
+		responseList = new ArrayList<>(values.length);
+		DDRFinancialSummaryRequest response = null;
+		for(int i = 0; i < values.length; i++) {
+			response = new DDRFinancialSummaryRequest();
+			response.setPerticularId(values[i].getId());
+			response.setPerticularName(values[i].getValue());
+			responseList.add(response);
 		}
 		return responseList;
 		
@@ -598,15 +616,35 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * @param ddrFormId
 	 * @return
 	 */
-	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId){
-		List<DDRFamilyDirectorsDetails> objList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
-		List<DDRFamilyDirectorsDetailsRequest> responseList = new ArrayList<>(objList.size());
-		if(!CommonUtils.isListNullOrEmpty(objList)) {
-			for(DDRFamilyDirectorsDetails obj : objList) {
-				DDRFamilyDirectorsDetailsRequest response = new DDRFamilyDirectorsDetailsRequest();
-				BeanUtils.copyProperties(obj, response);
+	public List<DDRFamilyDirectorsDetailsRequest> getFamilyDirectorsDetails(Long ddrFormId, Long appId, Long userId){
+		List<DDRFamilyDirectorsDetailsRequest> responseList = null;
+		if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+			List<DDRFamilyDirectorsDetails> objList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
+			if(!CommonUtils.isListNullOrEmpty(objList)) {
+				responseList = new ArrayList<>(objList.size());
+				DDRFamilyDirectorsDetailsRequest response = null;
+				for(DDRFamilyDirectorsDetails obj : objList) {
+					response = new DDRFamilyDirectorsDetailsRequest();
+					BeanUtils.copyProperties(obj, response);
+					responseList.add(response);
+				}
+				return responseList;
+			}	
+		}
+		
+		try {
+			List<PromotorBackgroundDetailRequest> promoBackReqList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(appId, userId);
+			DDRFamilyDirectorsDetailsRequest response = null;
+			responseList = new ArrayList<>(promoBackReqList.size());
+			for(PromotorBackgroundDetailRequest promoBackReq : promoBackReqList) {
+				response = new DDRFamilyDirectorsDetailsRequest();
+				response.setBackgroundId(promoBackReq.getId());
+				response.setName(promoBackReq.getPromotorsName());
 				responseList.add(response);
 			}
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Background Details");
+			e.printStackTrace();
 		}
 		return responseList;
 		
@@ -642,7 +680,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		DDROneFormResponse response = new DDROneFormResponse();
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
-		
+		logger.info("Before Call Corporate Profile UserId is :- " + userId);
 		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
@@ -811,8 +849,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("Throw Exception While Get Primary Directory Backgoud Details in DDR OneForm");
 			e.printStackTrace();
 		}
-		
-		
 		
 		//PRODUCT DETAILS PROPOSED AND EXISTING (Description of Products) :- LINENO:111
 		try {
