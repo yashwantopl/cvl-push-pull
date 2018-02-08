@@ -1127,9 +1127,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 		DDRCMACalculationResponse secureLoanResponse = new DDRCMACalculationResponse();
 		secureLoanResponse.setKeyId(DDRFinancialSummaryFields.SECURE_LOAN.getId());
 		secureLoanResponse.setKeyName(DDRFinancialSummaryFields.SECURE_LOAN.getValue());
-		secureLoanResponse.setProvisionalYear(isCMAUpload ? CommonUtils.checkDouble(cma2018Liabilities.getTermLoans())  : CommonUtils.checkDouble(coAct2018BalanceSheet.getTermLoansSecured()));
-		secureLoanResponse.setLastYear(isCMAUpload ? CommonUtils.checkDouble(cma2017Liabilities.getTermLoans()) : CommonUtils.checkDouble(coAct2017BalanceSheet.getTermLoansSecured()));
-		secureLoanResponse.setLastToLastYear(isCMAUpload ? CommonUtils.checkDouble(cma2016Liabilities.getTermLoans()) : CommonUtils.checkDouble(coAct2016BalanceSheet.getTermLoansSecured()));
+		secureLoanResponse.setProvisionalYear(isCMAUpload ? CommonUtils.checkDouble(cma2018Liabilities.getTermLiabilitiesSecured())  : CommonUtils.checkDouble(coAct2018BalanceSheet.getTermLoansSecured()));
+		secureLoanResponse.setLastYear(isCMAUpload ? CommonUtils.checkDouble(cma2017Liabilities.getTermLiabilitiesSecured()) : CommonUtils.checkDouble(coAct2017BalanceSheet.getTermLoansSecured()));
+		secureLoanResponse.setLastToLastYear(isCMAUpload ? CommonUtils.checkDouble(cma2016Liabilities.getTermLiabilitiesSecured()) : CommonUtils.checkDouble(coAct2016BalanceSheet.getTermLoansSecured()));
 		secureLoanResponse.setDiffPvsnlAndLastYear(calculateFinancialSummary(secureLoanResponse.getProvisionalYear(),secureLoanResponse.getLastYear()));
 		responseList.add(secureLoanResponse);
 		
@@ -1137,11 +1137,11 @@ public class DDRFormServiceImpl implements DDRFormService{
 		unsecureLoanResp.setKeyId(DDRFinancialSummaryFields.UNSECURE_LOAN.getId());
 		unsecureLoanResp.setKeyName(DDRFinancialSummaryFields.UNSECURE_LOAN.getValue());
 		if(isCMAUpload) {
-			unsecureLoanResp.setProvisionalYear(CommonUtils.checkDouble(cma2018Liabilities.getTermLoans()) + CommonUtils.checkDouble(cma2018Liabilities.getOtherNclUnsecuredLoansFromPromoters()) 
+			unsecureLoanResp.setProvisionalYear(CommonUtils.checkDouble(cma2018Liabilities.getTermLiabilitiesUnsecured()) + CommonUtils.checkDouble(cma2018Liabilities.getOtherNclUnsecuredLoansFromPromoters()) 
 					+ CommonUtils.checkDouble(cma2018Liabilities.getOtherNclUnsecuredLoansFromOther()));
-			unsecureLoanResp.setLastYear(CommonUtils.checkDouble(cma2017Liabilities.getTermLoans()) + CommonUtils.checkDouble(cma2017Liabilities.getOtherNclUnsecuredLoansFromPromoters())
+			unsecureLoanResp.setLastYear(CommonUtils.checkDouble(cma2017Liabilities.getTermLiabilitiesUnsecured()) + CommonUtils.checkDouble(cma2017Liabilities.getOtherNclUnsecuredLoansFromPromoters())
 					+ CommonUtils.checkDouble(cma2017Liabilities.getOtherNclUnsecuredLoansFromOther()));
-			unsecureLoanResp.setLastToLastYear(CommonUtils.checkDouble(cma2016Liabilities.getTermLoans()) + CommonUtils.checkDouble(cma2016Liabilities.getOtherNclUnsecuredLoansFromPromoters())
+			unsecureLoanResp.setLastToLastYear(CommonUtils.checkDouble(cma2016Liabilities.getTermLiabilitiesUnsecured()) + CommonUtils.checkDouble(cma2016Liabilities.getOtherNclUnsecuredLoansFromPromoters())
 					+ CommonUtils.checkDouble(cma2016Liabilities.getOtherNclUnsecuredLoansFromOther()));
 		} else {
 			unsecureLoanResp.setProvisionalYear(CommonUtils.checkDouble(coAct2018BalanceSheet.getTermLoansUnsecured()) + CommonUtils.checkDouble(coAct2018BalanceSheet.getUnsecuredLoansFromPromoters())
