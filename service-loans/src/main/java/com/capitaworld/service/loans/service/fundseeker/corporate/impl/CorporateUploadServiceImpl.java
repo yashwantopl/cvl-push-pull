@@ -289,7 +289,6 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				logger.info("Before setIsFinalUploadMandatoryFilled");
 				loanApplicationRepository.setIsFinalUploadMandatoryFilled(applicantId, userId, isFilled);
 				logger.info("After setIsFinalUploadMandatoryFilled");
-				loanApplicationRepository.flush();
 				logger.info("Before setFinalFilledCount");
 				loanApplicationRepository.setFinalFilledCount(applicantId, userId, filledCount);
 				logger.info("After setFinalFilledCount");
