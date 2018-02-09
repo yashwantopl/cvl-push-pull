@@ -181,7 +181,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("entry in getListOfAssignedProposals()");
 		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(request.getApplicationStatusId(), request.getUserId());	
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());	
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserId(request.getUserId());
 		}else{
