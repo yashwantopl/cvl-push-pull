@@ -249,6 +249,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId,appId,userId));
+			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
+			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
+			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
 		} else {
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null,appId,userId));
@@ -953,6 +956,21 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private Double getCMATotalSalesByAppIdAndYear(Long applicationId,String year) {
+		OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year);
+		if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
+			ProfitibilityStatementDetail profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(applicationId, year);
+			if(!CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)) {
+				return CommonUtils.checkDouble(profitibilityStatementDetail.getNetSales());
+			}
+		} else {
+			if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetSales())) {
+				return CommonUtils.checkDouble(operatingStatementDetails.getNetSales());
+			}
+		}
+		return 0.0;
 	}
 	
 	
