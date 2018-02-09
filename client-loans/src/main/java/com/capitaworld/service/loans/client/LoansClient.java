@@ -133,6 +133,8 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
 	
+	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
+	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -1330,6 +1332,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoanApplicationRequest.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
 		}
 	}
 	

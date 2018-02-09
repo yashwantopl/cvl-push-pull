@@ -1532,29 +1532,48 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/autofillForm/getFSDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFSDetails(@RequestBody AutoFillOneFormDetailRequest autoFillOneFormDetailRequest, @RequestParam(value = "clientId", required = false) Long clientId,
-			HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> getFSDetails(
+			@RequestBody AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
+			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		logger.info("=========== Enter in getFSDetails() ==============");
 		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()
 				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 						.intValue()) {
 			userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
-		
-		if(CommonUtils.isObjectListNull(autoFillOneFormDetailRequest.getFromApplicationId(),autoFillOneFormDetailRequest.getToApplicationId(), autoFillOneFormDetailRequest.getFromProductId(), autoFillOneFormDetailRequest.getToProductId() ) ) {
+
+		if (CommonUtils.isObjectListNull(autoFillOneFormDetailRequest.getFromApplicationId(),
+				autoFillOneFormDetailRequest.getToApplicationId(), autoFillOneFormDetailRequest.getFromProductId(),
+				autoFillOneFormDetailRequest.getToProductId())) {
 			logger.warn("All parameter must not be null");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-		autoFillOneFormDetailService.getAndSaveCorporateAutoFillOneFormDateils(userId,
-				autoFillOneFormDetailRequest);
+		autoFillOneFormDetailService.getAndSaveCorporateAutoFillOneFormDateils(userId, autoFillOneFormDetailRequest);
 		logger.info("==============Exit from getFSDetails()===============");
 		return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully loan copied", HttpStatus.OK.value()),
 				HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/get_client/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoanApplicationRequest> getClient(@PathVariable("id") Long id) {
+		// request must not be null
+		try {
+			if (id == null) {
+				logger.warn("ID Require to get Loan Application Details. ID==>" + id);
+				return null;
+			}
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoanApplicationRequest>(loanApplicationService.getFromClient(id), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Loan Application Details from Client==>", e);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
