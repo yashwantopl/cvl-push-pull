@@ -16,5 +16,10 @@ public interface FsNegativeFpListRepository extends JpaRepository<FsNegativeFpLi
 	
 	@Query("select fn.fpId from FsNegativeFpList fn where fn.applicationId = :applicationId and fn.isActive = true")
 	public List<Long> getListByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query("update FsNegativeFpList pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId =:applicationId and pm.isActive = true")
+	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
+
 
 }

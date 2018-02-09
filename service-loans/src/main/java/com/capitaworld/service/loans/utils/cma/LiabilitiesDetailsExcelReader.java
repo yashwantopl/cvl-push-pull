@@ -9,6 +9,8 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
@@ -16,6 +18,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Liabilities
 
 public class LiabilitiesDetailsExcelReader
 {
+	public static final Logger log = LoggerFactory.getLogger(LiabilitiesDetailsExcelReader.class);
     public static List<String> liabilitiesMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
@@ -171,6 +174,7 @@ public class LiabilitiesDetailsExcelReader
     }
     public static double getNumericDataFromCell(XSSFSheet sheet,String cellNumber)
     {
+    	log.info("getNumericDataFromCell:"+cellNumber );
         CellReference cellReference = new CellReference(cellNumber);
         Row row = sheet.getRow(cellReference.getRow());
         Cell cell = row.getCell(cellReference.getCol());

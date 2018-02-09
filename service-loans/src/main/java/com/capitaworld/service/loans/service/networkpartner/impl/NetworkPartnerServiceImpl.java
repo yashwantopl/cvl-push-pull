@@ -178,9 +178,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("entry in getListOfAssignedProposals()");
 		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(request.getApplicationStatusId(), request.getUserId());	
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());	
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserId(request.getApplicationStatusId(), request.getUserId());
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserId(request.getUserId());
 		}else{
 			applicationMastersList = null;
 		}
@@ -242,8 +242,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-					nhbsApplicationsResponse.setPaymentMode(null);//need to set
-					nhbsApplicationsResponse.setIsPaymentDone(null);//need to set
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
+						nhbsApplicationsResponse.setPaymentMode(loanApplicationMaster.getTypeOfPayment());
+						nhbsApplicationsResponse.setIsPaymentDone("Received");
+					}else{
+						nhbsApplicationsResponse.setIsPaymentDone("Not Received");
+					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpAssigneeId());
@@ -314,7 +318,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("entry in getNhbsProposalCount()");
 		JSONObject countObj = new JSONObject();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == nhbsApplicationRequest.getUserRoleId()){
-			int allotedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByNpUserId(CommonUtils.ApplicationStatus.ASSIGNED, nhbsApplicationRequest.getUserId());
+			int allotedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByNpUserId(nhbsApplicationRequest.getUserId());
 			countObj.put("allotedPropsalCount", allotedPropsalCount);
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == nhbsApplicationRequest.getUserRoleId()){
 			int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);

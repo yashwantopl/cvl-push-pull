@@ -66,7 +66,15 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private Long npAssigneeId;
 	
+	private String typeOfPayment;
 	
+	public String getTypeOfPayment() {
+		return typeOfPayment;
+	}
+
+	public void setTypeOfPayment(String typeOfPayment) {
+		this.typeOfPayment = typeOfPayment;
+	}
 
 	public Long getNpAssigneeId() {
 		return npAssigneeId;
