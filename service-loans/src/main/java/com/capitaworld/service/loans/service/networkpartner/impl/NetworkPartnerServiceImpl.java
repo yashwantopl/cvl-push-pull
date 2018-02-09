@@ -148,9 +148,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling users clients while calling checkUserUnderSp()");
 						e.printStackTrace();
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
-						nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
-					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -165,8 +162,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 					}
-					nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 				}
+				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
 		}else{
 			nhbsApplicationsResponseList = null;
