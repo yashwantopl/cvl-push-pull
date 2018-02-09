@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,7 +104,6 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
-import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
@@ -636,7 +634,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								+ applicationMaster);
 			}
 			applicationMaster.setIsFinalLocked(flag);
-			applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+			applicationMaster
+					.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
 			loanApplicationRepository.save(applicationMaster);
 
 			// send FP notification
@@ -3786,6 +3785,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}
+
+	@Override
+	public LoanApplicationRequest getFromClient(Long id) throws Exception {
+		try {
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			if (applicationMaster == null) {
+				throw new NullPointerException("Invalid Loan Application ID==>" + id);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			return applicationRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details For Client:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 }
