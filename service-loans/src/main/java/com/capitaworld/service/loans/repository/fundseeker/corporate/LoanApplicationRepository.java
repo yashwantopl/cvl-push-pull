@@ -179,11 +179,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int getCountOfProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
 	
 	//nhbs	
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 
 	//to get count of assigned proposals based on assignee id
-	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public int getCountOfAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 	
 	//nhbs	
