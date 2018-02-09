@@ -16,7 +16,7 @@ public class DDRRelWithDbsDetailsRequest implements Serializable {
 
 	private String typeOfRel;
 	
-	private Double referenceNo;
+	private String referenceNo;
 
 	private String comment;
 	
@@ -46,11 +46,11 @@ public class DDRRelWithDbsDetailsRequest implements Serializable {
 		this.typeOfRel = typeOfRel;
 	}
 
-	public Double getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Double referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 

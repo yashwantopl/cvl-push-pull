@@ -16,7 +16,7 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 
 	private String bankName;
 	
-	private Double creditCard;
+	private String creditCard;
 
 	private String referenceNo;
 	
@@ -46,11 +46,11 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 		this.bankName = bankName;
 	}
 
-	public Double getCreditCard() {
+	public String getCreditCard() {
 		return creditCard;
 	}
 
-	public void setCreditCard(Double creditCard) {
+	public void setCreditCard(String creditCard) {
 		this.creditCard = creditCard;
 	}
 

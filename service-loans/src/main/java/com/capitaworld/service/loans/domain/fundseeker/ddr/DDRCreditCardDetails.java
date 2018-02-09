@@ -36,7 +36,7 @@ public class DDRCreditCardDetails implements Serializable {
 	private String bankName;
 	
 	@Column(name ="credit_card")
-	private Double creditCard;
+	private String creditCard;
 	
 	@Column(name ="reference_no")
 	private String referenceNo;
@@ -82,11 +82,11 @@ public class DDRCreditCardDetails implements Serializable {
 		this.bankName = bankName;
 	}
 
-	public Double getCreditCard() {
+	public String getCreditCard() {
 		return creditCard;
 	}
 
-	public void setCreditCard(Double creditCard) {
+	public void setCreditCard(String creditCard) {
 		this.creditCard = creditCard;
 	}
 

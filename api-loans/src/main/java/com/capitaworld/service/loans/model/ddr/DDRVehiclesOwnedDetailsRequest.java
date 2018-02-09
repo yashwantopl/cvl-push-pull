@@ -14,7 +14,7 @@ public class DDRVehiclesOwnedDetailsRequest implements Serializable {
 
 	private String bankName;
 	
-	private Double vehiclesOwned;
+	private String vehiclesOwned;
 
 	private String referenceNo;
 	
@@ -44,11 +44,11 @@ public class DDRVehiclesOwnedDetailsRequest implements Serializable {
 		this.bankName = bankName;
 	}
 
-	public Double getVehiclesOwned() {
+	public String getVehiclesOwned() {
 		return vehiclesOwned;
 	}
 
-	public void setVehiclesOwned(Double vehiclesOwned) {
+	public void setVehiclesOwned(String vehiclesOwned) {
 		this.vehiclesOwned = vehiclesOwned;
 	}
 

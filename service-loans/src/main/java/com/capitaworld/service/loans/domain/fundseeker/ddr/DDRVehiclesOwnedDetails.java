@@ -36,7 +36,7 @@ public class DDRVehiclesOwnedDetails implements Serializable {
 	private String bankName;
 	
 	@Column(name ="vehicles_owned")
-	private Double vehiclesOwned;
+	private String vehiclesOwned;
 
 	@Column(name ="reference_no")
 	private String referenceNo;
@@ -82,11 +82,11 @@ public class DDRVehiclesOwnedDetails implements Serializable {
 		this.bankName = bankName;
 	}
 
-	public Double getVehiclesOwned() {
+	public String getVehiclesOwned() {
 		return vehiclesOwned;
 	}
 
-	public void setVehiclesOwned(Double vehiclesOwned) {
+	public void setVehiclesOwned(String vehiclesOwned) {
 		this.vehiclesOwned = vehiclesOwned;
 	}
 
