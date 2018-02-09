@@ -76,7 +76,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String panCardAndResidenceAddProofOfDirectors;
 	private String caCertifiedNetworthStatement;
 	private String irrOfAllDirectorsForLast2years;
-	private String listOfDirectors;
+	private String listOfDirectors; 
 	private String listOfShareholdersAndShareHoldingPatter;
 	private String summaryOfBservations;
 	private Double provisionalTotalSales = 0.0;
