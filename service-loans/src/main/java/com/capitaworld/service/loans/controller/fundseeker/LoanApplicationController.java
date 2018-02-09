@@ -1411,7 +1411,15 @@ public class LoanApplicationController {
 			@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("start updateFlow()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			loanApplicationService.updateFlow(applicationId, clientId, userId);
 			logger.info("end updateFlow()");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Success", HttpStatus.OK.value()),
@@ -1430,7 +1438,15 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start save_payment_info()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId,
 					clientId);
 			logger.info("Response========>{}", applicationMaster);
@@ -1452,12 +1468,18 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start updatePaymentStatus()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			String paymentStatus = loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
-					userId, clientId);
-			logger.info("Response========>{}", paymentStatus);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(paymentStatus);
+			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
+					userId, clientId));
 			logger.info("end updatePaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -1474,7 +1496,15 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start getPaymentStatus()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			GatewayRequest paymentStatus = loanApplicationService.getPaymentStatus(paymentRequest, userId, clientId);
 			logger.info("Response========>{}", paymentStatus);
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
