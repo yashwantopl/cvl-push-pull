@@ -49,14 +49,16 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
 		}
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
+		}  
+		
 		
 		try {
 			ddrFormDetailsRequest.setUserId(userId);
@@ -83,9 +85,11 @@ public class DDRFormController {
 		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
 		}
+		
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
@@ -103,10 +107,13 @@ public class DDRFormController {
 	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
+		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
 		}
+		
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
