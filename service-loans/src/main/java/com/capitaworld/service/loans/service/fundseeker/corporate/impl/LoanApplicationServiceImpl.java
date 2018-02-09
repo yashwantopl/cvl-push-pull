@@ -3708,6 +3708,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
+			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 			String updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			logger.info("Status===>{}", updatePayment);
 			logger.info("End updateLoanApplicationMasterPaymentStatus() with success");
@@ -3798,6 +3799,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			applicationRequest.setName(getFsApplicantName(id));
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
