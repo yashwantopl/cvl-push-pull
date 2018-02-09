@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -106,6 +107,7 @@ import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -3700,7 +3702,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
 			throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
@@ -3709,10 +3711,48 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
+			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 			String updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			loanRequest.setPaymentStatus(updatePayment);
 			logger.info("Status===>{}", updatePayment);
+			if(CommonUtils.isObjectNullOrEmpty(loanRequest)) {
+				logger.warn("Invalid Application Id in Updating Payment Status====>{}",paymentRequest.getApplicationId());
+				return null;
+			}
+			
+			try {
+				if(CommonUtils.isObjectNullOrEmpty(loanRequest.getNpUserId())) {
+					return loanRequest;
+				}
+				
+				UsersRequest usersRequest = new UsersRequest();
+				usersRequest.setId(loanRequest.getNpUserId());
+				UserResponse userResponse = userClient.getNPDetails(usersRequest);
+				if (CommonUtils.isObjectListNull(userResponse, userResponse.getData())) {
+					logger.warn("User Response or Data in UserResponse must not be null===>{}", userResponse);
+				}else {
+					NetworkPartnerDetailsRequest npRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) userResponse.getData(), NetworkPartnerDetailsRequest.class);
+					loanRequest.setProviderName(npRequest.getFirstName() + " " + npRequest.getLastName());					
+				}
+				
+				UserResponse emailMobile = userClient.getEmailMobile(loanRequest.getNpUserId());
+				if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+					logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+					return loanRequest;
+				}else {
+					UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+					loanRequest.setEmail(userEmailMobile.getEmail());
+					loanRequest.setMobile(userEmailMobile.getMobile());
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Getting Client Details from Users");
+			}
 			logger.info("End updateLoanApplicationMasterPaymentStatus() with success");
-			return null;
+			return loanRequest;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
@@ -3799,6 +3839,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			applicationRequest.setUserName(getFsApplicantName(id));
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");

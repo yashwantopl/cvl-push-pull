@@ -1411,7 +1411,15 @@ public class LoanApplicationController {
 			@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("start updateFlow()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			loanApplicationService.updateFlow(applicationId, clientId, userId);
 			logger.info("end updateFlow()");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Success", HttpStatus.OK.value()),
@@ -1430,7 +1438,15 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start save_payment_info()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId,
 					clientId);
 			logger.info("Response========>{}", applicationMaster);
@@ -1452,12 +1468,18 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start updatePaymentStatus()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			String paymentStatus = loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
-					userId, clientId);
-			logger.info("Response========>{}", paymentStatus);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(paymentStatus);
+			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
+					userId, clientId));
 			logger.info("end updatePaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -1474,7 +1496,15 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start getPaymentStatus()");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 			GatewayRequest paymentStatus = loanApplicationService.getPaymentStatus(paymentRequest, userId, clientId);
 			logger.info("Response========>{}", paymentStatus);
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
@@ -1531,31 +1561,42 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/autofillForm/getFSDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFSDetails(
+	@RequestMapping(value = "/copy_loan", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> copyOrImportLoan(
 			@RequestBody AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("=========== Enter in getFSDetails() ==============");
-		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()
-				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
-			userId = clientId;
-		} else {
-			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		logger.info("=========== Enter in copyOrImportLoan() ==============");
+		try {
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (CommonUtils.isObjectListNull(autoFillOneFormDetailRequest.getFromApplicationId(),
+					autoFillOneFormDetailRequest.getToApplicationId(), autoFillOneFormDetailRequest.getFromProductId(),
+					autoFillOneFormDetailRequest.getToProductId())) {
+				logger.warn("All parameter must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			autoFillOneFormDetailService.getAndSaveCorporateAutoFillOneFormDateils(userId,
+					autoFillOneFormDetailRequest);
+			logger.info("==============Exit from copyOrImportLoan()===============");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully loan copied", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Copyig Loan Information==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 
-		if (CommonUtils.isObjectListNull(autoFillOneFormDetailRequest.getFromApplicationId(),
-				autoFillOneFormDetailRequest.getToApplicationId(), autoFillOneFormDetailRequest.getFromProductId(),
-				autoFillOneFormDetailRequest.getToProductId())) {
-			logger.warn("All parameter must not be null");
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
-		autoFillOneFormDetailService.getAndSaveCorporateAutoFillOneFormDateils(userId, autoFillOneFormDetailRequest);
-		logger.info("==============Exit from getFSDetails()===============");
-		return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully loan copied", HttpStatus.OK.value()),
-				HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/get_client/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
