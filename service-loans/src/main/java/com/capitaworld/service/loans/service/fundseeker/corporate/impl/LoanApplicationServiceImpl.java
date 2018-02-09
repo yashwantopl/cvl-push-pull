@@ -218,6 +218,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 					applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 					applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+					applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 				}
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
