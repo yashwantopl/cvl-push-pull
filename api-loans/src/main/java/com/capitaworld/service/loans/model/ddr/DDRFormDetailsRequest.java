@@ -56,6 +56,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String otherSourceOfIncome;
 	private String otherBusinessInFamilyName;
 	private String operatingAddComment;
+	private String businessDetailsComment;
 	private String othersDetailsComment;
 	private String creaditCardHeldByCustComment;
 	private String fieldAuditReport;
@@ -1076,6 +1077,18 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setLastToLastYearTotalSales(Double lastToLastYearTotalSales) {
 		this.lastToLastYearTotalSales = lastToLastYearTotalSales;
+	}
+
+
+
+	public String getBusinessDetailsComment() {
+		return businessDetailsComment;
+	}
+
+
+
+	public void setBusinessDetailsComment(String businessDetailsComment) {
+		this.businessDetailsComment = businessDetailsComment;
 	}
 
 
