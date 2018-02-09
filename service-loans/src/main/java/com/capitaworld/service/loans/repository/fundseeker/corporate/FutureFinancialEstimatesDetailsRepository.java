@@ -22,6 +22,11 @@ public interface FutureFinancialEstimatesDetailsRepository extends JpaRepository
 	@Query("update FutureFinancialEstimatesDetail o set o.isActive = false where o.applicationId.id = :applicationId and o.isActive = true and o.id =:id")
 	public int inactiveByApplicationAndId(@Param("applicationId") Long applicationId, @Param("id") Long id);
 	
+	@Modifying
+	@Query("update FutureFinancialEstimatesDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
+	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
+
+	
 	//Queries For Graph 
 	
 	/*//Financial Years
