@@ -57,7 +57,7 @@ public class DDRFormController {
 			logger.info("Invalid Request, UserId is null or Empty");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
+		} 
 		
 		try {
 			ddrFormDetailsRequest.setUserId(userId);
