@@ -79,6 +79,9 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String listOfDirectors;
 	private String listOfShareholdersAndShareHoldingPatter;
 	private String summaryOfBservations;
+	private Double provisionalTotalSales = 0.0;
+	private Double lastYearTotalSales  = 0.0;
+	private Double lastToLastYearTotalSales  = 0.0;
 	private Boolean isActive;
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
@@ -1038,6 +1041,41 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setdDRFamilyDirectorsList(List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList) {
 		this.dDRFamilyDirectorsList = dDRFamilyDirectorsList;
+	}
+
+
+
+	public Double getProvisionalTotalSales() {
+		return provisionalTotalSales;
+	}
+
+
+
+	public void setProvisionalTotalSales(Double provisionalTotalSales) {
+		this.provisionalTotalSales = provisionalTotalSales;
+	}
+
+
+
+	public Double getLastYearTotalSales() {
+		return lastYearTotalSales;
+	}
+
+
+
+	public void setLastYearTotalSales(Double lastYearTotalSales) {
+		this.lastYearTotalSales = lastYearTotalSales;
+	}
+
+
+	public Double getLastToLastYearTotalSales() {
+		return lastToLastYearTotalSales;
+	}
+
+
+
+	public void setLastToLastYearTotalSales(Double lastToLastYearTotalSales) {
+		this.lastToLastYearTotalSales = lastToLastYearTotalSales;
 	}
 
 
