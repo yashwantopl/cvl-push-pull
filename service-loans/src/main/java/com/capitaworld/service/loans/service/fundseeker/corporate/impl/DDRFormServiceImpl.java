@@ -960,7 +960,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	private Double getCMATotalSalesByAppIdAndYear(Long applicationId,String year) {
 		OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year);
-		if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
 			ProfitibilityStatementDetail profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(applicationId, year);
 			if(!CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)) {
 				return CommonUtils.checkDouble(profitibilityStatementDetail.getNetSales());
