@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
-import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -3842,6 +3841,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(id));
+			
+			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
+			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+				logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+				return applicationRequest;
+			}else {
+				UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+				applicationRequest.setEmail(userEmailMobile.getEmail());
+				applicationRequest.setMobile(userEmailMobile.getMobile());
+			}
+			
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
