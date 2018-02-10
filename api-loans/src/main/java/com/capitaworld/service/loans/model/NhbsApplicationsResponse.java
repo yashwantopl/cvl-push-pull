@@ -13,7 +13,7 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private String clientName;
 	
-	private List<Object> clientProfilePic;
+	private String clientProfilePic;
 	
 	private Integer applicationType;
 	
@@ -110,14 +110,6 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.oneFormFilled = oneFormFilled;
 	}
 
-	public List<Object> getClientProfilePic() {
-		return clientProfilePic;
-	}
-
-	public void setClientProfilePic(List<Object> clientProfilePic) {
-		this.clientProfilePic = clientProfilePic;
-	}
-
 	public String getAssigneeName() {
 		return assigneeName;
 	}
@@ -158,8 +150,6 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.clientName = clientName;
 	}
 
-	
-
 	public Integer getApplicationType() {
 		return applicationType;
 	}
@@ -184,5 +174,14 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.clientSource = clientSource;
 	}
 
+	public String getClientProfilePic() {
+		return clientProfilePic;
+	}
+
+	public void setClientProfilePic(String clientProfilePic) {
+		this.clientProfilePic = clientProfilePic;
+	}
+	
+	
 	
 }

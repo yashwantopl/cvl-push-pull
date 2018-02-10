@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.networkpartner.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
@@ -130,8 +132,24 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					nhbsApplicationsResponse.setClientProfilePic(documentResponse.getDataList());
-				} catch (DocumentException e) {
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse StorsgeResponse = null;
+
+							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+								imagePath = StorsgeResponse.getFilePath();
+							else
+								imagePath=null;
+						}
+					}
+					nhbsApplicationsResponse.setClientProfilePic(imagePath);
+					
+				} catch (DocumentException | IOException e) {
 					logger.error("error while getting profile image");
 					e.printStackTrace();
 				}
@@ -233,8 +251,24 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-					nhbsApplicationsResponse.setClientProfilePic(documentResponse.getDataList());
-				} catch (DocumentException e) {
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse StorsgeResponse = null;
+
+							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+								imagePath = StorsgeResponse.getFilePath();
+							else
+								imagePath=null;
+						}
+					}
+					nhbsApplicationsResponse.setClientProfilePic(imagePath);
+					
+				} catch (DocumentException | IOException e) {
 					logger.error("error while getting profile image");
 					e.printStackTrace();
 				}
