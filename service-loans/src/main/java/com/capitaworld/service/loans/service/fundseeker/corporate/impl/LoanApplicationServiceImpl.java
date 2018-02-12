@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,9 +104,9 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
-import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -220,6 +219,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 					applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 					applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+					applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 				}
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
@@ -636,7 +636,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								+ applicationMaster);
 			}
 			applicationMaster.setIsFinalLocked(flag);
-			applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+			applicationMaster
+					.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
 			loanApplicationRepository.save(applicationMaster);
 
 			// send FP notification
@@ -3625,7 +3626,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return res.getIrr();
 				}
 			} catch (Exception e) {
-				logger.error("Error while getting Status From Proposal Client");
+				logger.error("Error while getting Status From Proposal Client,getKeyVerticalSector can not be null");
 				e.printStackTrace();
 				return null;
 			}
@@ -3700,7 +3701,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
 			throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
@@ -3709,10 +3710,50 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setUserId(userId);
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
-			String updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
+			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			logger.info("Status===>{}", updatePayment);
+			if(!CommonUtils.isObjectNullOrEmpty(updatePayment)) {
+				loanRequest.setPaymentStatus(updatePayment.toString());				
+			}
+			if(CommonUtils.isObjectNullOrEmpty(loanRequest)) {
+				logger.warn("Invalid Application Id in Updating Payment Status====>{}",paymentRequest.getApplicationId());
+				return null;
+			}
+			
+			try {
+				if(CommonUtils.isObjectNullOrEmpty(loanRequest.getNpUserId())) {
+					return loanRequest;
+				}
+				
+				UsersRequest usersRequest = new UsersRequest();
+				usersRequest.setId(loanRequest.getNpUserId());
+				UserResponse userResponse = userClient.getNPDetails(usersRequest);
+				if (CommonUtils.isObjectListNull(userResponse, userResponse.getData())) {
+					logger.warn("User Response or Data in UserResponse must not be null===>{}", userResponse);
+				}else {
+					NetworkPartnerDetailsRequest npRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) userResponse.getData(), NetworkPartnerDetailsRequest.class);
+					loanRequest.setProviderName(npRequest.getFirstName() + " " + npRequest.getLastName());					
+				}
+				
+				UserResponse emailMobile = userClient.getEmailMobile(loanRequest.getNpUserId());
+				if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+					logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+					return loanRequest;
+				}else {
+					UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+					loanRequest.setEmail(userEmailMobile.getEmail());
+					loanRequest.setMobile(userEmailMobile.getMobile());
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Getting Client Details from Users");
+			}
 			logger.info("End updateLoanApplicationMasterPaymentStatus() with success");
-			return null;
+			return loanRequest;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
@@ -3786,6 +3827,67 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}
+
+	@Override
+	public LoanApplicationRequest getFromClient(Long id) throws Exception {
+		try {
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			if (applicationMaster == null) {
+				throw new NullPointerException("Invalid Loan Application ID==>" + id);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
+			applicationRequest.setUserName(getFsApplicantName(id));
+			return applicationRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Individual Loan Details For Client:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception {
+		// TODO Auto-generated method stub
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			return false;
+		} else {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()) && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()))
+			{
+				try {
+
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					if (corporateApplicantDetail == null) {
+						throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+					}
+
+					try {
+						if (corporateApplicantDetail.getKeyVerticalSector() != null
+								&& corporateApplicantDetail.getKeyVerticalSubsector() != null) {
+														return true ;
+						}
+						else
+						{
+							return false ;
+						}
+					} catch (Exception e) {
+						logger.error("Error while getting Status From isApplicationEligibleForIrr");
+						e.printStackTrace();
+						return null;
+					}
+				} catch (Exception e) {
+					logger.error("Error while getting Individual Loan Details:-");
+					e.printStackTrace();
+					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				}
+			}
+		}
+		return false;
 	}
 
 }

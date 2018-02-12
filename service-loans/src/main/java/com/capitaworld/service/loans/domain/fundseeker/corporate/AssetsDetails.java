@@ -244,7 +244,71 @@ public class AssetsDetails implements Serializable {
 	private LoanApplicationMaster loanApplicationMaster;
 	
 	
-
+	public AssetsDetails() {
+		super();
+		this.advancePaymentTaxes = 0.0;
+		this.advanceToSupplierRawMaterials = 0.0;
+		this.advanceToSuppliersCapitalGoods = 0.0;
+		this.anyOther = 0.0;
+		this.badOrDoubtfulExpenses = 0.0;
+		this.cashAndBankBalance= 0.0;
+		this.currentRatio = 0.0;
+		this.deferredReceviables = 0.0;
+		this.deferredReceviablesOthers = 0.0;
+		this.deferredTaxAssets = 0.0;
+		this.depreciationToDate = 0.0;
+		this.exportReceivables = 0.0;
+		this.finishedGoods= 0.0;
+		this.fixedDepositsWithBanks = 0.0;
+		this.goodWill = 0.0;
+		this.governmentAndOtherTrustee = 0.0;
+		this.grossBlock = 0.0;
+		this.instalmentsDeferred= 0.0;
+		this.intangibleAssets = 0.0;
+		this.inventory = 0.0;
+		this.investments = 0.0;
+		this.investmentsInSubsidiary= 0.0;
+		this.investmentsOrBookDebts= 0.0;
+		this.netBlock= 0.0;
+		this.netWorkingCapital = 0.0;
+		this.nonConsumableStoreAndSpares= 0.0;
+		this.otherConsumableSpares = 0.0;
+		this.otherConsumableSparesImported = 0.0;
+		this.otherConsumableSparesIndegenous = 0.0;
+		this.otherCurrentAssets = 0.0;
+		this.otherNonCurrentAssets = 0.0;
+		this.others = 0.0;
+		this.patents = 0.0;
+		this.prelimExpenses= 0.0;
+		this.rawMaterial = 0.0;
+		this.rawMaterialImported = 0.0;
+		this.rawMaterialIndegenous = 0.0;
+		this.receivableOtherThanDefferred = 0.0;
+		this.stockInProcess = 0.0;
+		this.tangibleNetWorth = 0.0;
+		this.totalAssets = 0.0;
+		this.totalCurrentAssets = 0.0;
+		this.totalIntangibleAssets = 0.0;
+		this.totalOtherNonCurrentAssets = 0.0;
+		this.totalOutSideLiability = 0.0;
+		this.totalTermLiability = 0.0;
+		this.landBuilding= 0.0;
+		this.plantMachines = 0.0;
+		this.impairmentAsset = 0.0;
+		this.othersPreOperativeExpensesPending = 0.0;
+		this.othersAssetsInTransit = 0.0;
+		this.othersOther = 0.0;
+		this.totalOtherNcaPatent= 0.0;
+		this.totalOtherNcaGoodwill = 0.0;
+		this.totalOtherNcaPrelimnaryExpenses = 0.0;
+		this.totalOtherNcaBadExpenses = 0.0;
+		this.totalOtherNcaOther= 0.0;
+		this.otherNcaOtherCapitalWorkInprogress = 0.0;
+		this.GrossBlock1 = 0.0;
+		this.GrossBlock2 = 0.0;
+		this.GrossBlock3 = 0.0;
+		this.GrossBlock4 = 0.0;
+	}
 
 	public Long getStorageDetailsId() {
 		return storageDetailsId;

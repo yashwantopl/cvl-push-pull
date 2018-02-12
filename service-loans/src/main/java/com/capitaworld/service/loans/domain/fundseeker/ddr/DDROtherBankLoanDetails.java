@@ -36,7 +36,7 @@ public class DDROtherBankLoanDetails implements Serializable {
 	private String typeOfRel;
 	
 	@Column(name ="reference_no")
-	private Double referenceNo;
+	private String referenceNo;
 
 	private String comment;
 	
@@ -81,11 +81,11 @@ public class DDROtherBankLoanDetails implements Serializable {
 		this.typeOfRel = typeOfRel;
 	}
 
-	public Double getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Double referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 

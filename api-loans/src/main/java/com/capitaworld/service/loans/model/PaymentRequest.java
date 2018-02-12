@@ -13,6 +13,7 @@ public class PaymentRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = -6263829991337267320L;
 	private Long applicationId;
+	private String trxnId;
 	private String nameOfEntity;
 	private Address address;
 	private String typeOfPayment;
@@ -107,11 +108,19 @@ public class PaymentRequest implements Serializable {
 		this.status = status;
 	}
 
+	public String getTrxnId() {
+		return trxnId;
+	}
+
+	public void setTrxnId(String trxnId) {
+		this.trxnId = trxnId;
+	}
+
 	@Override
 	public String toString() {
-		return "PaymentRequest [applicationId=" + applicationId + ", nameOfEntity=" + nameOfEntity + ", address="
-				+ address + ", typeOfPayment=" + typeOfPayment + ", appointmentDate=" + appointmentDate
-				+ ", appointmentTime=" + appointmentTime + ", emailAddress=" + emailAddress + ", mobileNumber="
-				+ mobileNumber + ", paymentAmount=" + paymentAmount + ", status=" + status + "]";
+		return "PaymentRequest [applicationId=" + applicationId + ", trxnId=" + trxnId + ", nameOfEntity="
+				+ nameOfEntity + ", address=" + address + ", typeOfPayment=" + typeOfPayment + ", appointmentDate="
+				+ appointmentDate + ", appointmentTime=" + appointmentTime + ", emailAddress=" + emailAddress
+				+ ", mobileNumber=" + mobileNumber + ", paymentAmount=" + paymentAmount + ", status=" + status + "]";
 	}
 }

@@ -82,6 +82,9 @@ public class DDRFormDetails implements Serializable {
 	@Column(name = "negative_profit")
 	private String negativeProfit;
 	
+	@Column(name = "business_details_comment")
+	private String businessDetailsComment;
+	
 	@Column(name = "fall_in_profit")
 	private String fallInProfit;
 	
@@ -832,6 +835,15 @@ public class DDRFormDetails implements Serializable {
 
 	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
+	}
+	
+
+	public String getBusinessDetailsComment() {
+		return businessDetailsComment;
+	}
+
+	public void setBusinessDetailsComment(String businessDetailsComment) {
+		this.businessDetailsComment = businessDetailsComment;
 	}
 
 	@Override

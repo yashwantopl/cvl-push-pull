@@ -182,8 +182,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * e.printStackTrace(); throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
 	 * }
 	 */
-
-	private void saveIndustry(Long applicationId, List<Long> industrylist) {
+	@Override
+	public void saveIndustry(Long applicationId, List<Long> industrylist) {
 		IndustrySectorDetail industrySectorDetail = null;
 		for (Long id : industrylist) {
 			industrySectorDetail = new IndustrySectorDetail();
@@ -198,8 +198,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			industrySectorRepository.save(industrySectorDetail);
 		}
 	}
-
-	private void saveSector(Long applicationId, List<Long> sectorlist) {
+	@Override
+	public void saveSector(Long applicationId, List<Long> sectorlist) {
 		// sector data save
 		for (Long id : sectorlist) {
 			IndustrySectorDetail industrySectorDetail = new IndustrySectorDetail();
@@ -214,8 +214,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			industrySectorRepository.save(industrySectorDetail);
 		}
 	}
-
-	private void saveSubSector(Long applicationId, List<Long> subSectorlist) {
+	@Override
+	public void saveSubSector(Long applicationId, List<Long> subSectorlist) {
 		// sector data save
 		for (Long id : subSectorlist) {
 			SubsectorDetail subsectorDetail = new SubsectorDetail();
@@ -611,12 +611,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 				Address address = new Address();
-				address.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
-				address.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
-				address.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
-				address.setCountryId(corporateApplicantDetail.getAdministrativeCountryId());
-				address.setStateId(corporateApplicantDetail.getAdministrativeStateId());
-				address.setCityId(corporateApplicantDetail.getAdministrativeCityId());
+				address.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+				address.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+				address.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+				address.setCountryId(corporateApplicantDetail.getRegisteredCountryId());
+				address.setStateId(corporateApplicantDetail.getRegisteredStateId());
+				address.setCityId(corporateApplicantDetail.getRegisteredCityId());
 				paymentRequest.setAddress(address);
 			}
 			try {

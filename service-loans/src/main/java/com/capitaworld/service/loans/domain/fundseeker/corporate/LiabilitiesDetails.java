@@ -159,6 +159,51 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name="other_ncl")
 	private Double otherNcl;
 	
+	
+	public LiabilitiesDetails() {
+		super();
+		this.advancePaymentsFromCustomers = 0.0;
+		this.debentures = 0.0;
+		this.deferredPaymentsCredits  = 0.0;
+		this.deferredTaxLiability  = 0.0;
+		this.depositsOrInstalmentsOfTermLoans  = 0.0;
+		this.dividendPayable = 0.0;
+		this.fromApplicationBank  = 0.0;
+		this.fromOtherBanks  = 0.0;
+		this.generalReserve  = 0.0;
+		this.netWorth  = 0.0;
+		this.ordinarySharesCapital = 0.0;
+		this.otherCurrentLiability = 0.0;
+		this.otherReservse  = 0.0;
+		this.otherStatutoryLiability = 0.0;
+		this.otherTermLiabilies = 0.0;
+		this.others = 0.0;
+		this.preferencesShares  = 0.0;
+		this.provisionalForTaxation = 0.0;
+		this.revaluationReservse  = 0.0;
+		this.shortTermBorrowingFromOthers  = 0.0;
+		this.subTotalA  = 0.0;
+		this.subTotalB  = 0.0;
+		this.sundryCreditors  = 0.0;
+		this.surplusOrDeficit  = 0.0;
+		this.termDeposits  = 0.0;
+		this.termLoans  = 0.0;
+		this.totalCurrentLiabilities  = 0.0;
+		this.totalLiability  = 0.0;
+		this.totalOutsideLiabilities = 0.0;
+		this.totalTermLiabilities = 0.0;
+		this.whichBpAndBd  = 0.0;
+		this.termLiabilitiesSecured  = 0.0;
+		this.shareWarrentsOutstanding  = 0.0;
+		this.minorityInterest  = 0.0;
+		this.otherNclUnsecuredLoansFromOther  = 0.0;
+		this.otherNclLongTermProvisions = 0.0;
+		this.otherNclOthers  = 0.0;
+		this.otherNclUnsecuredLoansFromPromoters = 0.0;
+		this.otherNcl  = 0.0;
+		this.termLiabilitiesUnsecured = 0.0;
+	}
+
 	public Double getOtherNcl() {
 		return otherNcl;
 	}

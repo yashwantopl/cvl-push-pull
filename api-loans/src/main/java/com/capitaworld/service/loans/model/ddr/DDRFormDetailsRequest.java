@@ -56,6 +56,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String otherSourceOfIncome;
 	private String otherBusinessInFamilyName;
 	private String operatingAddComment;
+	private String businessDetailsComment;
 	private String othersDetailsComment;
 	private String creaditCardHeldByCustComment;
 	private String fieldAuditReport;
@@ -76,9 +77,13 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String panCardAndResidenceAddProofOfDirectors;
 	private String caCertifiedNetworthStatement;
 	private String irrOfAllDirectorsForLast2years;
-	private String listOfDirectors;
+	private String listOfDirectors; 
 	private String listOfShareholdersAndShareHoldingPatter;
 	private String summaryOfBservations;
+	private Double provisionalTotalSales;
+	private Double lastYearTotalSales;
+	private Double lastToLastYearTotalSales;
+	private String currency;
 	private Boolean isActive;
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
@@ -1038,6 +1043,53 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setdDRFamilyDirectorsList(List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList) {
 		this.dDRFamilyDirectorsList = dDRFamilyDirectorsList;
+	}
+
+
+
+	public Double getProvisionalTotalSales() {
+		return provisionalTotalSales;
+	}
+
+
+
+	public void setProvisionalTotalSales(Double provisionalTotalSales) {
+		this.provisionalTotalSales = provisionalTotalSales;
+	}
+
+
+
+	public Double getLastYearTotalSales() {
+		return lastYearTotalSales;
+	}
+
+
+	public void setLastYearTotalSales(Double lastYearTotalSales) {
+		this.lastYearTotalSales = lastYearTotalSales;
+	}
+	public Double getLastToLastYearTotalSales() {
+		return lastToLastYearTotalSales;
+	}
+
+	public void setLastToLastYearTotalSales(Double lastToLastYearTotalSales) {
+		this.lastToLastYearTotalSales = lastToLastYearTotalSales;
+	}
+
+	public String getBusinessDetailsComment() {
+		return businessDetailsComment;
+	}
+
+	public void setBusinessDetailsComment(String businessDetailsComment) {
+		this.businessDetailsComment = businessDetailsComment;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 

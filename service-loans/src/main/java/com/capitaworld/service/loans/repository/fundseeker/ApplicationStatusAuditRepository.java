@@ -13,4 +13,7 @@ public interface ApplicationStatusAuditRepository extends JpaRepository<Applicat
 
 	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public List<ApplicationStatusAudit> getApplicationByAssigneeIdBasedOnStatus(@Param("appId")Long applicationId,@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+	
+	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
+	public List<ApplicationStatusAudit> getApplicationByNpUserIdBasedOnStatus(@Param("appId")Long applicationId,@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 }

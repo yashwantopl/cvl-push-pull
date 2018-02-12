@@ -125,11 +125,15 @@ public interface LoanApplicationService {
 	
 	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId, Long clientId) throws Exception;
 	
-	public String updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)throws Exception;
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
 	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
+	
+	public LoanApplicationRequest getFromClient(Long id) throws Exception;
+
+	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception;
 }
 
 
