@@ -1396,6 +1396,7 @@ public class LoanApplicationController {
 		}
 	}
 
+
 	@RequestMapping(value = "/getLoanDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getLoanDetails(@RequestBody Long applicationId, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -1430,6 +1431,7 @@ public class LoanApplicationController {
 			@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("start updateFlow()");
+
 			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()
@@ -1439,6 +1441,7 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
+
 			loanApplicationService.updateFlow(applicationId, clientId, userId);
 			logger.info("end updateFlow()");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Success", HttpStatus.OK.value()),
@@ -1451,6 +1454,7 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 
 	@RequestMapping(value = "/save_payment_info", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> savePaymentInfor(@RequestBody PaymentRequest paymentRequest,
@@ -1635,5 +1639,6 @@ public class LoanApplicationController {
 			return null;
 		}
 	}
+
 
 }

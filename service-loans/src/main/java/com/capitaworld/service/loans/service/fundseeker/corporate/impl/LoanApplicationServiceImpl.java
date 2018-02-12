@@ -3579,7 +3579,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 					finalUserId);
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+
 				logger.info("applicationMaster found null in updateFlow");
+
 				logger.info("Exit from updateFlow()");
 				return;
 			}
@@ -3599,6 +3601,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 	}
+
 
 	@Override
 	public Long getIrrByApplicationId(Long id) throws Exception {
@@ -3901,5 +3904,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return false;
 	}
+
 
 }
