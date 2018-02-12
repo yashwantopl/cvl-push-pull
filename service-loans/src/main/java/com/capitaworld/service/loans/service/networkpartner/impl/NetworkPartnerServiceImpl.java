@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 			applicationMastersList = loanApplicationRepository.getProposalsByDdrStatus(request.getDdrStatusId());
+			applicationMastersList.sort(Comparator.comparing(LoanApplicationMaster::getModifiedDate));
 		}else{
 			applicationMastersList = null;
 		}
@@ -101,21 +103,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -196,7 +198,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("entry in getListOfAssignedProposals()");
 		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());	
+			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());
+			applicationMastersList.sort(Comparator.comparing(LoanApplicationMaster::getModifiedDate));
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserId(request.getUserId());
 		}else{
@@ -222,21 +225,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -274,6 +277,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
 					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");	
+				}else{
+					nhbsApplicationsResponse.setOneFormFilled("Unlocked");
+				}
+				List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+				if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+					nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
@@ -297,11 +306,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						
 					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-					
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
-					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
-					}					
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpUserId());
@@ -323,6 +327,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}else{
 			nhbsApplicationsResponseList = null;
 		}
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
+			//nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
+		}		
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
 	}

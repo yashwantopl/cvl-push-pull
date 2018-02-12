@@ -262,6 +262,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null,appId,userId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
+			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		}
 		return dDRFormDetailsRequest;
 	}
