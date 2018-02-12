@@ -87,3 +87,56 @@ ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_b
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_2 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_3 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_4 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_liabilities_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_liabilities_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_liabilities_3 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN assets_in_transit_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN assets_in_transit_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN assets_in_transit_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN assets_in_transit_4 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_investment_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_investment_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_investment_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_investment_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_investment_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN short_term_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN short_term_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN short_term_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN short_term_4 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details_1 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details_2 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details_3 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details_4 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details_5 DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_totals DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN others_assets_transit DOUBLE DEFAULT NULL;
+
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_investments DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_details DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN intangible_assets_6 DOUBLE DEFAULT NULL;
+ALTER TABLE loan_application.fs_corporate_bs_balance_sheet_details ADD COLUMN other_term_liability DOUBLE DEFAULT NULL;
+
