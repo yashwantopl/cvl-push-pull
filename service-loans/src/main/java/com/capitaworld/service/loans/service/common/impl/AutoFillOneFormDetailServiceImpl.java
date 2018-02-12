@@ -594,7 +594,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				throw new Exception();
 			}
 			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isPrimaryLocked","isFinalLocked");
+					"productId", "categoryCode", "applicationCode","isFinalLocked");
 			workingCapitalLoanDetailTo.setCreatedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 
