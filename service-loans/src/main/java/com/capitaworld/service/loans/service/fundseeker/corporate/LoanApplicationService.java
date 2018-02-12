@@ -132,8 +132,6 @@ public interface LoanApplicationService {
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
 	
 	public LoanApplicationRequest getFromClient(Long id) throws Exception;
-
-	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception;
 }
 
 

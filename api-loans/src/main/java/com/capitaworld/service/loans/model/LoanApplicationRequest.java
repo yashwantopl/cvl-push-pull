@@ -73,34 +73,10 @@ public class LoanApplicationRequest implements Serializable {
 	private String userName;
 
 	private String providerName;
-
+	
 	private String paymentStatus;
-
 	private String typeOfPayment;
-
-	private Date appointmentDate;
-
-	private String appointmentTime;
-
-	public LoanApplicationRequest() {
-	}
-
-	public LoanApplicationRequest(Long id) {
-		this.id = id;
-	}
-
-	public LoanApplicationRequest(Long id, Integer productId) {
-		super();
-		this.id = id;
-		this.productId = productId;
-	}
-
-	public LoanApplicationRequest(Long id, Long userId) {
-		super();
-		this.id = id;
-		this.userId = userId;
-	}
-
+	
 	public String getTypeOfPayment() {
 		return typeOfPayment;
 	}
@@ -139,6 +115,25 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setMcaCompanyId(String mcaCompanyId) {
 		this.mcaCompanyId = mcaCompanyId;
+	}
+
+	public LoanApplicationRequest() {
+	}
+
+	public LoanApplicationRequest(Long id) {
+		this.id = id;
+	}
+
+	public LoanApplicationRequest(Long id, Integer productId) {
+		super();
+		this.id = id;
+		this.productId = productId;
+	}
+
+	public LoanApplicationRequest(Long id, Long userId) {
+		super();
+		this.id = id;
+		this.userId = userId;
 	}
 
 	public Long getId() {
@@ -363,21 +358,5 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setPaymentStatus(String paymentStatus) {
 		this.paymentStatus = paymentStatus;
-	}
-
-	public Date getAppointmentDate() {
-		return appointmentDate;
-	}
-
-	public void setAppointmentDate(Date appointmentDate) {
-		this.appointmentDate = appointmentDate;
-	}
-
-	public String getAppointmentTime() {
-		return appointmentTime;
-	}
-
-	public void setAppointmentTime(String appointmentTime) {
-		this.appointmentTime = appointmentTime;
 	}
 }

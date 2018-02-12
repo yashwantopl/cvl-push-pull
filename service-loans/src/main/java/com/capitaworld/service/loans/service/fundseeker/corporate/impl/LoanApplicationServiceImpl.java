@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -3626,7 +3627,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return res.getIrr();
 				}
 			} catch (Exception e) {
-				logger.error("Error while getting Status From Proposal Client,getKeyVerticalSector can not be null");
+				logger.error("Error while getting Status From Proposal Client");
 				e.printStackTrace();
 				return null;
 			}
@@ -3841,65 +3842,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(id));
-			
-			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
-			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
-				logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
-				return applicationRequest;
-			}else {
-				UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
-				applicationRequest.setEmail(userEmailMobile.getEmail());
-				applicationRequest.setMobile(userEmailMobile.getMobile());
-			}
-			
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-	}
-
-	@Override
-	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
-		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
-			return false;
-		} else {
-			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()) && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()))
-			{
-				try {
-
-					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
-					if (corporateApplicantDetail == null) {
-						throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
-					}
-
-					try {
-						if (corporateApplicantDetail.getKeyVerticalSector() != null
-								&& corporateApplicantDetail.getKeyVerticalSubsector() != null) {
-														return true ;
-						}
-						else
-						{
-							return false ;
-						}
-					} catch (Exception e) {
-						logger.error("Error while getting Status From isApplicationEligibleForIrr");
-						e.printStackTrace();
-						return null;
-					}
-				} catch (Exception e) {
-					logger.error("Error while getting Individual Loan Details:-");
-					e.printStackTrace();
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
-				}
-			}
-		}
-		return false;
 	}
 
 }
