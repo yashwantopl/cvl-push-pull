@@ -1,0 +1,1 @@
+DELETE FROM `loan_application`.`proposal_details` WHERE is_active = 0;
