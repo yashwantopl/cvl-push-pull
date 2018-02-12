@@ -171,7 +171,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 			@Param("eligibleAmnt") Double amount);
 	
 	//nhbs
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
 	
 	//to get count of proposal based on application status
