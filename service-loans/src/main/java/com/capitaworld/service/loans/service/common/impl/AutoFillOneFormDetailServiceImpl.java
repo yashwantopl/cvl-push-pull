@@ -51,7 +51,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.BankAccountHeldDet
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
-import com.capitaworld.service.loans.repository.common.impl.LoanEligibilityCriteriaRepositoryImpl;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
@@ -556,7 +555,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				throw new Exception();
 			}
 			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isFinalLocked");
+					"productId", "categoryCode", "applicationCode","isPrimaryLocked","isFinalLocked");
 			workingCapitalLoanDetailTo.setCreatedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 
