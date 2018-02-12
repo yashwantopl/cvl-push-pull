@@ -28,6 +28,7 @@ public class DDROneFormResponse implements Serializable {
 	private String constitution;
 	private String establishMentYear;
 	private String aboutMe;
+	private String currency;
 
 	List<PromotorBackgroundDetailResponse> promoBackRespList = null;
 	List<OwnershipDetailResponse> ownershipRespList = null;
@@ -196,5 +197,14 @@ public class DDROneFormResponse implements Serializable {
 	public void setDirectorBackgroundDetailList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailList) {
 		this.directorBackgroundDetailList = directorBackgroundDetailList;
 	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+	
 
 }
