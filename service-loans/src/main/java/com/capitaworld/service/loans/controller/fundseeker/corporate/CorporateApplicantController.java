@@ -459,13 +459,18 @@ public class CorporateApplicantController {
 
 	@RequestMapping(value = "get_payment_info/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPaymentInfo(@PathVariable("applicationId") Long applicationId,
-			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "npUserId", required = false) Long npUserId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 						.intValue()) {
-			userId = clientId;
+			if(CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(npUserId)){
+				userId = npUserId;	
+			}else{
+				userId = clientId;
+			}
+			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}

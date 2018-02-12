@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +30,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConce
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingOrganizationDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ExistingProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalUnsecureLoanDetail;
@@ -53,10 +56,15 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDe
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalUnsecuredLoanDetailRepository;
@@ -66,7 +74,11 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialAr
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FutureFinancialEstimatesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.GuarantorsCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManagementDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.MonthlyTurnoverDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
@@ -76,6 +88,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWork
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankAccountHeldDetailRepository;
@@ -175,6 +188,36 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	@Autowired
 	private CreditCardsDetailRepository creditCardsDetailRepository;
 
+	@Autowired
+	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+
+	@Autowired
+	LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+
+	@Autowired
+	AssetsDetailsRepository assetsDetailsRepository;
+
+	@Autowired
+	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+
+	@Autowired
+	KeyManagementDetailRepository keyManagementDetailRepository;
+
+	@Autowired
+	EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository;
+
+	@Autowired
+	BalanceSheetDetailRepository balanceSheetDetailRepository;
+
+	@Autowired
+	private BoardOfDirectorsDetailRepository boardOfDirectorsDetailRepository;
+
+	@Autowired
+	private StrategicAlliancesDetailRepository strategicAlliancesDetailRepository;
+
 	private AutoFillOneFormDetailRequest autoFillOneFormDetailRequest = null;
 	private Long userId = null;
 	private CorporateApplicantDetail corporateApplicantDetailTo = null;
@@ -250,14 +293,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				// final mcq
 				saveFinalWCToTL(finalWorkingCapitalLoanDetailFrom);
 
-				// file upload
-				try {
-					getAndSaveFinalWCLToWCLAndTLDropAndModelFileUpload();
-				} catch (IOException | DocumentException e) {
-					logger.error(
-							"Error --- File uploding failed in getAndSaveFinalWCLToWCLAndTLDropAndModelFileUpload()");
-					e.printStackTrace();
-				}
 
 			} else if (CommonUtils.LoanType.UNSECURED_LOAN == CommonUtils.LoanType
 					.getType(autoFillOneFormDetailRequest.getToProductId().intValue())) {
@@ -284,8 +319,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 				// final information financial
 				getAndSaveFinalInformationFinancial();
+			}
 
-				// file upload
+			
 				try {
 					getAndSaveFinalWCLToWCLAndTLDropAndModelFileUpload();
 				} catch (IOException | DocumentException e) {
@@ -293,10 +329,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 							"Error - Final  Drop and Model ---------- file uploding fialed from WCL TO other (WCL and TL )");
 					e.printStackTrace();
 				}
-			}
 			try {
+				getAndSaveFinalWCLToWCLAndTLDropAndModelFileUpload();
 				getAndSaveFinalFileUploadWLToWLAndTLAndUSL();
-			} catch (DocumentException e1) {
+			} catch (DocumentException | IOException e1) {
 				logger.error(
 						"Error -  final upload ------------- file uploding fialed from WCL To other (WCL and TL and USl )");
 				e1.printStackTrace();
@@ -333,16 +369,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 				// final mcq
 				saveFinalTLToWL(finalTermLoanDetailFrom);
-
-				// file upload
-				try {
-
-					getAndSaveFinalTLToTLAndWCLDropAndModelFileUpload();
-				} catch (IOException | DocumentException e) {
-					logger.error(
-							"Error - Final  Drop and Model ---------- file uploding failed from  TL To other (TL and WCL)");
-					e.printStackTrace();
-				}
+			
 			} else if (CommonUtils.LoanType.UNSECURED_LOAN == CommonUtils.LoanType
 					.getType(autoFillOneFormDetailRequest.getToProductId().intValue())) {
 				// fund Requirement
@@ -369,15 +396,17 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				saveFinalTLToTL(finalTermLoanDetailFrom);
 
 				// all file upload
-				/*
-				 * try { getAndSaveFinalTLToTLAndWCLDropAndModelFileUpload(); } catch
-				 * (DocumentException | IOException e) { logger.
-				 * error("Error - Final  Drop and Model ---------- file uploding fialed from WCL TO other (WCL and TL  )"
-				 * );
-				 * 
-				 * e.printStackTrace(); }
-				 */
 
+				
+
+			}
+			try {
+				getAndSaveFinalTLToTLAndWCLDropAndModelFileUpload();
+			} catch (DocumentException | IOException e) {
+				logger.error(
+						"Error - Final  Drop and Model ---------- file uploding fialed from WCL TO other (WCL and TL  )");
+
+				e.printStackTrace();
 			}
 			try {
 				getAndSaveFinalFileUploadTLToTLAndWLAndUSL();
@@ -430,24 +459,33 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				// final file upload of co applicant
 				List<CorporateCoApplicantDetail> corporateCoApplicantDetailsList = coApplicantDetailRepository
 						.getList(autoFillOneFormDetailRequest.getFromApplicationId(), userId);// hjhh
-				/*
-				 * if(corporateCoApplicantDetailsList!=null) try {
-				 * //getAndSaveFinalFileUploadUSLCoApplicant(corporateCoApplicantDetailsList); }
-				 * catch (DocumentException e) { logger.
-				 * error("Error final upload ------------- co Applicant file uploding failed from USL To USl"
-				 * ); e.printStackTrace(); }
-				 */
-			}
-			try {
-				getAndSaveFinalFileUploadUSLToUSLAndTLAndWL();
-			} catch (DocumentException e1) {
-				logger.error(
-						"Error final upload ------------- file uploding failed from Tl To other (TL and WCL and USl )");
-				e1.printStackTrace();
-			}
 
-			break;
+				if (corporateCoApplicantDetailsList != null) {
+					try {
+						getAndSaveFinalFileUploadUSLCoApplicant(corporateCoApplicantDetailsList);
+					} catch (DocumentException e) {
+						logger.error(
+								"Error final upload ------------- co Applicant file uploding failed from USL To USl");
+						e.printStackTrace();
 
+					}
+
+				}
+
+				try {
+					// final  Financial model 
+					getAndSaveFinalWCLToWCLAndTLDropAndModelFileUpload();
+					//final file uploads
+					getAndSaveFinalFileUploadUSLToUSLAndTLAndWL();
+				} catch (DocumentException |IOException e1) {
+					logger.error(
+							"Error final upload ------------- file uploding failed from Tl To other (TL and WCL and USl )");
+					e1.printStackTrace();
+				}
+
+				break;
+
+			}
 		}
 
 		// Comapny and Project in all loan
@@ -460,7 +498,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		getAndSaveCreditRating();
 
 		// promopter for all loan
-		getAndSaveBackGround();
+		getAndSavePromotoresBackGround();
 		getAndSaveOwnerShip();
 
 		// naegative list in all loan
@@ -811,7 +849,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================= Exit From getAndSaveProductsProposed()================== ");
 	}
 
-	public void getAndSaveBackGround() {
+	public void getAndSavePromotoresBackGround() {
 		logger.info("================Enter in getAndSaveOwnerShip() ===========");
 		// save director / promoter
 		List<PromotorBackgroundDetail> promotorBackgroundDetailsFromList = promotorBackgroundDetailsRepository
@@ -842,6 +880,22 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			ownershipDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			ownershipDetailTo.setCreatedDate(new Date());
 			ownershipDetailsRepository.save(ownershipDetailTo);
+		}
+		logger.info("================= Exit From getAndSaveOwnerShip()================== ");
+	}
+
+	public void getAndSaveDirectorBackGround() {
+		logger.info("================Enter in getAndSaveOwnerShip() ===========");
+		// promoters
+		List<DirectorBackgroundDetail> directorBackgroundDetailsList = directorBackgroundDetailsRepository
+				.listPromotorBackgroundFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
+		directorBackgroundDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
+		for (DirectorBackgroundDetail directorBackgroundDetailFrom : directorBackgroundDetailsList) {
+			DirectorBackgroundDetail directorBackgroundDetailTo = new DirectorBackgroundDetail();
+			BeanUtils.copyProperties(directorBackgroundDetailFrom, directorBackgroundDetailTo, "id", "applicationId");
+			directorBackgroundDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			directorBackgroundDetailTo.setCreatedDate(new Date());
+			directorBackgroundDetailsRepository.save(directorBackgroundDetailTo);
 		}
 		logger.info("================= Exit From getAndSaveOwnerShip()================== ");
 	}
@@ -1005,7 +1059,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
 				logger.warn("Aplication Id not available in DB=====> saveFinalWCToWC()");
-				logger.trace("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
 						+ finalWorkingCapitalLoanDetailTo);
 				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
@@ -1032,7 +1086,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalTermLoanDetailTo == null) {
 				logger.warn("Aplication Id not available in DB=====> saveFinalWCToTL()");
-				logger.trace("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
 						+ finalTermLoanDetailTo);
 				finalTermLoanDetailTo = new FinalTermLoanDetail();
 
@@ -1058,7 +1112,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
 				logger.warn("Aplication Id not available in DB =====> saveFinalWCToUSL()");
-				logger.trace("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
 						+ finalUnsecureLoanDetailTo);
 				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 			}
@@ -1084,7 +1138,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalTermLoanDetailTo == null) {
 				logger.warn("Aplication Id not available in DB  =====> saveFinalTLToTL()");
-				logger.trace("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
 						+ finalTermLoanDetailTo);
 				finalTermLoanDetailTo = new FinalTermLoanDetail();
 			}
@@ -1108,7 +1162,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
-				logger.trace("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
 						+ finalWorkingCapitalLoanDetailTo);
 				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 			}
@@ -1134,7 +1188,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
 				logger.warn("applicationId not  available in DB in saveFinalTLToUSL () ");
-				logger.trace("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
 						+ finalUnsecureLoanDetailTo);
 				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 			}
@@ -1160,7 +1214,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
 				logger.warn("applicationid not available in  DB saveFinalUSLToUSL ");
-				logger.trace("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
 						+ finalUnsecureLoanDetailTo);
 				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 			}
@@ -1183,7 +1237,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
-				logger.trace("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
 						+ finalWorkingCapitalLoanDetailTo);
 				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
@@ -1207,7 +1261,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		try {
 			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			logger.trace("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
+			logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
 			if (finalTermLoanDetailTo == null) {
 				finalTermLoanDetailTo = new FinalTermLoanDetail();
 				System.out.println("TL application id ont avialable");
@@ -1230,7 +1284,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================ Enter in getAndSaveFinalMCQOverseasNetworkIds() ===========");
 		List<Integer> overseasNetworkIdsFrom = networkRepository
 				.getOverseasNetworkIds(autoFillOneFormDetailRequest.getFromApplicationId());
-		logger.trace("---------- overseasNetworkIdsFromList (Integer)  -----> " + overseasNetworkIdsFrom);
+		logger.warn("---------- overseasNetworkIdsFromList (Integer)  -----> " + overseasNetworkIdsFrom);
 		if (overseasNetworkIdsFrom == null) {
 			logger.error("Error in getAndSaveFinalMCQOverseasNetworkIds()");
 			throw new NullPointerException();
@@ -1253,7 +1307,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetailsList = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.trace("---------- MonthlyTurnoverDetail  -----> " + monthlyTurnoverDetailsList);
+			logger.warn("---------- MonthlyTurnoverDetail  -----> " + monthlyTurnoverDetailsList);
 			if (CommonUtils.isListNullOrEmpty(monthlyTurnoverDetailsList)) {
 				logger.error("Exception in getAndSaveFinalInformationFinancial()");
 				throw new NullPointerException();
@@ -1280,7 +1334,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		try {
 			List<GuarantorsCorporateDetail> guarantorsCorporateDetailList = guarantorsCorporateDetailRepository
 					.listGuarantorsCorporateFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.trace("---------- GuarantorsCorporateDetail  -----> " + guarantorsCorporateDetailList);
+			logger.warn("---------- GuarantorsCorporateDetail  -----> " + guarantorsCorporateDetailList);
 			guarantorsCorporateDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 			for (GuarantorsCorporateDetail guarantorsCorporateDetailFrom : guarantorsCorporateDetailList) {
 				GuarantorsCorporateDetail guarantorsCorporateDetailTo = new GuarantorsCorporateDetail();
@@ -1305,7 +1359,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		try {
 			List<AssociatedConcernDetail> associatedConcernDetailList = associatedConcernDetailRepository
 					.listAssociatedConcernFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.trace("---------- AssociatedConcernDetail  -----> " + associatedConcernDetailList);
+			logger.warn("---------- AssociatedConcernDetail  -----> " + associatedConcernDetailList);
 			associatedConcernDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 			for (AssociatedConcernDetail associatedConcernDetailFrom : associatedConcernDetailList) {
 				AssociatedConcernDetail associatedConcernDetailTo = new AssociatedConcernDetail();
@@ -1329,7 +1383,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		List<ReferencesRetailDetail> referencesRetailDetailList = referenceRetailDetailsRepository
 				.listReferencesRetailFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
-		logger.trace("---------- ReferencesRetailDetail  -----> " + referencesRetailDetailList);
+		logger.warn("---------- ReferencesRetailDetail  -----> " + referencesRetailDetailList);
 		for (ReferencesRetailDetail referencesRetailDetailFrom : referencesRetailDetailList) {
 			ReferencesRetailDetail referencesRetailRequestTo = new ReferencesRetailDetail();
 			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailRequestTo, "id", "applicationId");
@@ -1344,7 +1398,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================ Enter in getAndSaveFinalUSLBankAccountHeldDetail() ===========");
 		List<BankAccountHeldDetail> bankAccountHeldDetailsList = bankAccountHeldDetailRepository
 				.listBankAccountHeldFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
-		logger.trace("----------BankAccountHeldDetail ----------> " + bankAccountHeldDetailsList);
+		logger.warn("----------BankAccountHeldDetail ----------> " + bankAccountHeldDetailsList);
 		for (BankAccountHeldDetail bankAccountHeldDetailFrom : bankAccountHeldDetailsList) {
 			BankAccountHeldDetail bankAccountHeldDetailTo = new BankAccountHeldDetail();
 			BeanUtils.copyProperties(bankAccountHeldDetailFrom, bankAccountHeldDetailTo, "id", "applicationId");
@@ -1359,7 +1413,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================ Enter in getAndSaveFinalUSLCreditCard() ===========");
 		List<CreditCardsDetail> creditCardsDetailsList = creditCardsDetailRepository
 				.listCreditCardsFromGarrId(autoFillOneFormDetailRequest.getFromApplicationId());
-		logger.trace("----------CreditCardsDetailList ----------> " + creditCardsDetailsList);
+		logger.warn("----------CreditCardsDetailList ----------> " + creditCardsDetailsList);
 		for (CreditCardsDetail creditCardsDetailFrom : creditCardsDetailsList) {
 			CreditCardsDetail creditCardsDetailTo = new CreditCardsDetail();
 			BeanUtils.copyProperties(creditCardsDetailFrom, creditCardsDetailTo, "id", "applicationId");
@@ -1379,7 +1433,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add((long) DocumentAlias.TL_CMA);
 		prodDocMappingList.add((long) DocumentAlias.TL_COMPANY_ACT);
 		prodDocMappingList.add(DocumentAlias.TL_FINANCIAL_MODEL);
-
+		// deleteFile(prodDocMappingList,DocumentAlias.UERT_TYPE_APPLICANT);
 		getAndSaveFinalAllFileUpload(prodDocMappingList, 0);
 
 		logger.info(
@@ -1395,7 +1449,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add((long) DocumentAlias.WC_CMA);
 		prodDocMappingList.add((long) DocumentAlias.WC_COMPANY_ACT);
 		prodDocMappingList.add(DocumentAlias.WC_FINANCIAL_MODEL);
-
+		// deleteFile(prodDocMappingList,DocumentAlias.UERT_TYPE_APPLICANT);
 		getAndSaveFinalAllFileUpload(prodDocMappingList, 0);
 
 		logger.info(
@@ -1417,20 +1471,20 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
-
-		// getAndSaveFinalAllFileUpload(prodDocMappingList,1);
-		DocumentRequest documentRequest = new DocumentRequest();
-		DocumentResponse response = null;
-		for (Long productDocumentMappingId : prodDocMappingList) {
-			documentRequest.setApplicationId(autoFillOneFormDetailRequest.getFromApplicationId());
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			documentRequest.setProductDocumentMappingId(productDocumentMappingId);
-			response = dmsClient.listProductDocument(documentRequest);
-			if (response != null) {
-				documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
-				fileUpload(response, documentRequest, 1);
-			}
-		}
+		// deleteFile(prodDocMappingList, DocumentAlias.UERT_TYPE_APPLICANT);
+		getAndSaveFinalAllFileUpload(prodDocMappingList, 1);
+		/*
+		 * DocumentRequest documentRequest = new DocumentRequest(); DocumentResponse
+		 * response = null; for (Long productDocumentMappingId : prodDocMappingList) {
+		 * documentRequest.setApplicationId(autoFillOneFormDetailRequest.
+		 * getFromApplicationId());
+		 * documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		 * documentRequest.setProductDocumentMappingId(productDocumentMappingId);
+		 * response = dmsClient.listProductDocument(documentRequest); if (response !=
+		 * null) {
+		 * documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId(
+		 * ).getId()); fileUpload(response, documentRequest, 1); } }
+		 */
 		logger.info("================= Exit From getAndSaveFinalFileUploadTLToTLAndWLAndUSL()================== ");
 	}
 
@@ -1448,20 +1502,20 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
-
-		// getAndSaveFinalAllFileUpload(prodDocMappingList,1);
-		DocumentRequest documentRequest = new DocumentRequest();
-		DocumentResponse response = null;
-		for (Long productDocumentMappingId : prodDocMappingList) {
-			documentRequest.setApplicationId(autoFillOneFormDetailRequest.getFromApplicationId());
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			documentRequest.setProductDocumentMappingId(productDocumentMappingId);
-			response = dmsClient.listProductDocument(documentRequest);
-			if (response != null) {
-				documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
-				fileUpload(response, documentRequest, 1);
-			}
-		}
+		// deleteFile(prodDocMappingList, DocumentAlias.UERT_TYPE_APPLICANT);
+		getAndSaveFinalAllFileUpload(prodDocMappingList, 1);
+		/*
+		 * DocumentRequest documentRequest = new DocumentRequest(); DocumentResponse
+		 * response = null; for (Long productDocumentMappingId : prodDocMappingList) {
+		 * documentRequest.setApplicationId(autoFillOneFormDetailRequest.
+		 * getFromApplicationId());
+		 * documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		 * documentRequest.setProductDocumentMappingId(productDocumentMappingId);
+		 * response = dmsClient.listProductDocument(documentRequest); if (response !=
+		 * null) {
+		 * documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId(
+		 * ).getId()); fileUpload(response, documentRequest, 1); } }
+		 */
 		logger.info("================= Exit From getAndSaveFinalFileUploadWLToWLAndTLAndUSL()================== ");
 	}
 
@@ -1479,20 +1533,83 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD);
-		// getAndSaveFinalAllFileUpload(prodDocMappingList,1);
-		DocumentRequest documentRequest = new DocumentRequest();
-		DocumentResponse response = null;
-		for (Long productDocumentMappingId : prodDocMappingList) {
-			documentRequest.setApplicationId(autoFillOneFormDetailRequest.getFromApplicationId());
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			documentRequest.setProductDocumentMappingId(productDocumentMappingId);
-			response = dmsClient.listProductDocument(documentRequest);
-			if (response != null) {
-				documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
-				fileUpload(response, documentRequest, 1);
+		// deleteFile(prodDocMappingList,DocumentAlias.UERT_TYPE_APPLICANT);
+		getAndSaveFinalAllFileUpload(prodDocMappingList, 1);
+		/*
+		 * DocumentRequest documentRequest = new DocumentRequest(); DocumentResponse
+		 * response = null; for (Long productDocumentMappingId : prodDocMappingList) {
+		 * documentRequest.setApplicationId(autoFillOneFormDetailRequest.
+		 * getFromApplicationId());
+		 * documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		 * documentRequest.setProductDocumentMappingId(productDocumentMappingId);
+		 * response = dmsClient.listProductDocument(documentRequest); if (response !=
+		 * null) {
+		 * documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId(
+		 * ).getId()); fileUpload(response, documentRequest, 1); } }
+		 */
+		logger.info("================= Exit From getAndSaveFinalFileUploadUSLToUSLToTLAndWL()================== ");
+	}
+
+	public void deleteFile(List<Long> prodDocMappingList, String userType) {
+		logger.info("================ Enter in deleteFile() ===========");
+		DocumentResponse documentResponse = null;
+		for (Long productMapIDTo : prodDocMappingList) {
+			DocumentRequest documentRequest = new DocumentRequest();
+			documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
+			documentRequest.setUserType(userType);
+			documentRequest.setProductDocumentMappingId(productMapIDTo);
+
+			try {
+				documentResponse = dmsClient.listProductDocument(documentRequest);
+				DocumentResponse response = null;
+				for (Object obj : documentResponse.getDataList()) {
+					StorageDetailsResponse res = MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) obj, StorageDetailsResponse.class);
+					documentRequest.setOriginalFileName(res.getOriginalFileName());
+					// String json =
+					// com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getStringfromObject(documentRequest);
+
+					/*
+					 * JSONObject json = new JSONObject(); json.put("id", documentResponse.getId());
+					 * 
+					 * response=dmsClient.deleteIrrDocument(json);
+					 */
+
+				}
+
+				/*
+				 * if(documentResponse!=null) { JSONObject json = new JSONObject();
+				 * json.put("id", documentResponse.getId()); documentResponse=
+				 * dmsClient.deleteProductDocument(json.toJSONString());
+				 */
+
+				/*
+				 * assetsDetailsRepository.inActiveAssetsDetails(documentResponse.getStorageId()
+				 * ); liabilitiesDetailsRepository.inActiveAssetsDetails(documentResponse.
+				 * getStorageId());
+				 * operatingStatementDetailsRepository.inActiveAssetsDetails(documentResponse.
+				 * getStorageId());
+				 * balanceSheetDetailRepository.inActiveBalanceSheetDetail(documentResponse.
+				 * getStorageId());
+				 * keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
+				 * getStorageId()); employeesCategoryBreaksDetailRepository.
+				 * inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
+				 * 
+				 * boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetails(
+				 * documentResponse.getStorageId());
+				 * strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetails(
+				 * documentResponse.getStorageId());
+				 * keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
+				 * getStorageId()); employeesCategoryBreaksDetailRepository.
+				 * inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
+				 */
+
+			} catch (DocumentException | IOException e) {
+				logger.error("Error - Failed to delect files ");
+				e.printStackTrace();
 			}
 		}
-		logger.info("================= Exit From getAndSaveFinalFileUploadUSLToUSLToTLAndWL()================== ");
+		logger.info("================= Exit From deleteFile()================== ");
 	}
 
 	public void getAndSaveFinalAllFileUpload(List<Long> prodDocMappingList, int flag) throws DocumentException {
@@ -1500,14 +1617,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		DocumentRequest documentRequest = new DocumentRequest();
 
 		DocumentResponse response = null;
-		logger.trace("------ ProdDocMappingList -------> " + prodDocMappingList);
+		logger.warn("------ ProdDocMappingList -------> " + prodDocMappingList);
 		for (Long productDocumentMappingId : prodDocMappingList) {
 			documentRequest.setApplicationId(autoFillOneFormDetailRequest.getFromApplicationId());
 			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 			documentRequest.setProductDocumentMappingId(productDocumentMappingId);
 			response = dmsClient.listProductDocument(documentRequest);
 			if (response != null) {
-				// documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
+				documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
 				fileUpload(response, documentRequest, flag);
 			}
 		}
@@ -1519,7 +1636,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================ Enter in getAndSaveFinalFileUploadUSLCoApplicant() ===========");
 		DocumentRequest documentRequest = new DocumentRequest();
 		DocumentResponse documentResponse = null;
-		logger.trace("------ CorporateCoApplicantDetailList -------> " + corporateCoApplicantDetailFromList);
+		logger.warn("------ CorporateCoApplicantDetailList -------> " + corporateCoApplicantDetailFromList);
 		for (CorporateCoApplicantDetail corporateCoApplicantDetailFrom : corporateCoApplicantDetailFromList) {
 			for (Long productDocumentMappingId : prodDocMappingListCoApp) {
 				documentRequest.setCoApplicantId(corporateCoApplicantDetailFrom.getId());
@@ -1550,10 +1667,16 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				String json = com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper
 						.getStringfromObject(documentRequest);
 				URL url = new URL(res.getFilePath());
+				File f = new File(res.getFilePath());
+				// System.out.println(url.getFile().getBytes());
+				// byte[] b = FileCopyUtils.copyToByteArray(f);
 
+				// System.out.println("byte=" + b);
 				String contentType = url.openConnection().getContentType();
 				System.out.println(contentType);
-				byte[] b = url.getFile().getBytes();
+				FileUtils.copyURLToFile(url, f);
+				byte[] b = FileUtils.readFileToByteArray(f);
+				System.out.println("byte 2" + b);
 				MultipartFile multipartFile = new CommonMultiPartFile(b, res.getOriginalFileName(), contentType);
 				if (flag == 0) {
 					response = dmsClient.readExcel(json, multipartFile);
