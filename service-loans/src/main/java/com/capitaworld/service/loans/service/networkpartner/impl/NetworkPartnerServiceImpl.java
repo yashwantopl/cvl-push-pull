@@ -335,7 +335,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 			nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
-			Collections.sort(nhbsApplicationsResponseList, Collections.reverseOrder());
+			
 		}		
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
