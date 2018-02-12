@@ -2113,7 +2113,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 				else
-					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / assetsDetails.getTotalAssets()) * 100);//----- formula based
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / assetsDetails.getTotalAssets()));//----- formula based
 			}else if(isCoActUploaded){
 				BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
 				balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear-1+"");
@@ -2122,7 +2122,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				else if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getGrandTotal()))
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 				else
-					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / balanceSheetDetail.getGrandTotal()) * 100);//----- formula based
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / balanceSheetDetail.getGrandTotal()));//----- formula based
 			}
 				
 		return qualitativeInputSheetManuRequest;
