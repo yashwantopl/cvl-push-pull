@@ -1343,13 +1343,13 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 			balanceSheetDetail.setDeferredPaymentCredits(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 			balanceSheetDetail.setTermDeposits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others 
-			balanceSheetDetail.setOthers(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify 
+			balanceSheetDetail.setOthersPlsSpecify(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 			balanceSheetDetail.setDebentures(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 			balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-		financialInputRequest.setOtherLongTermLiablitiesFy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
+		financialInputRequest.setOtherLongTermLiablitiesFy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 			balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1367,9 +1367,9 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 			balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 			balanceSheetDetail.setDepositsAndInstallments(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-			balanceSheetDetail.setOthersPlsSpecify(0.0);
-		financialInputRequest.setOtherCurruntLiablitiesFy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersPlsSpecify());
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
+			balanceSheetDetail.setOthersTotals(0.0);
+		financialInputRequest.setOtherCurruntLiablitiesFy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersTotals());
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 			balanceSheetDetail.setProvisionForTax(0.0);
@@ -1420,13 +1420,13 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 			balanceSheetDetail.setCapitalAdvance(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
-			balanceSheetDetail.setOthersTotals(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersAssetsTransit())) // ------ others assets in transit
+			balanceSheetDetail.setOthersAssetsTransit(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 			balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 			balanceSheetDetail.setAssetsInTransit(0.0);
-		financialInputRequest.setOtheNonCurruntAssetFy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
+		financialInputRequest.setOtheNonCurruntAssetFy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersAssetsTransit()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others pls specify
 		
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 			balanceSheetDetail.setInventory(0.0);
@@ -1596,13 +1596,13 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					balanceSheetDetail.setDeferredPaymentCredits(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 					balanceSheetDetail.setTermDeposits(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others 
-					balanceSheetDetail.setOthers(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
+					balanceSheetDetail.setOthersPlsSpecify(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 					balanceSheetDetail.setDebentures(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 					balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-				financialInputRequest.setOtherLongTermLiablitiesSy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
+				financialInputRequest.setOtherLongTermLiablitiesSy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 					balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1620,9 +1620,9 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 					balanceSheetDetail.setDepositsAndInstallments(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specify
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
-				financialInputRequest.setOtherCurruntLiablitiesSy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersPlsSpecify());
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others pls specifytotals
+					balanceSheetDetail.setOthersTotals(0.0);
+				financialInputRequest.setOtherCurruntLiablitiesSy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() + balanceSheetDetail.getOthersTotals());
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 					balanceSheetDetail.setProvisionForTax(0.0);
@@ -1673,13 +1673,13 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 					balanceSheetDetail.setCapitalAdvance(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
-					balanceSheetDetail.setOthersTotals(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersAssetsTransit())) // ------ others assets in transit
+					balanceSheetDetail.setOthersAssetsTransit(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 					balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 					balanceSheetDetail.setAssetsInTransit(0.0);
-				financialInputRequest.setOtheNonCurruntAssetSy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
+				financialInputRequest.setOtheNonCurruntAssetSy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersAssetsTransit()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 					balanceSheetDetail.setInventory(0.0);
@@ -1849,13 +1849,13 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 					balanceSheetDetail.setDeferredPaymentCredits(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getTermDeposits()))
 					balanceSheetDetail.setTermDeposits(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthers())) // ------ others
-					balanceSheetDetail.setOthers(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others pls specfy
+					balanceSheetDetail.setOthersPlsSpecify(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDebentures()))
 					balanceSheetDetail.setDebentures(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getUnsecuredLoansFromOthers()))
 					balanceSheetDetail.setUnsecuredLoansFromOthers(0.0);
-				financialInputRequest.setOtherLongTermLiablitiesTy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthers() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others 
+				financialInputRequest.setOtherLongTermLiablitiesTy((balanceSheetDetail.getDeferredPaymentCredits() + balanceSheetDetail.getTermDeposits() + balanceSheetDetail.getOthersPlsSpecify() + balanceSheetDetail.getDebentures()) - balanceSheetDetail.getUnsecuredLoansFromOthers()); // ------ others 
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getLongTermProvisions()))
 					balanceSheetDetail.setLongTermProvisions(0.0);
@@ -1873,9 +1873,9 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 					balanceSheetDetail.setStatutoryLiabilityDues(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getDepositsAndInstallments()))
 					balanceSheetDetail.setDepositsAndInstallments(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersPlsSpecify())) // ------ others
-					balanceSheetDetail.setOthersPlsSpecify(0.0);
-				financialInputRequest.setOtherCurruntLiablitiesTy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() +balanceSheetDetail.getOthersPlsSpecify());
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
+					balanceSheetDetail.setOthersTotals(0.0);
+				financialInputRequest.setOtherCurruntLiablitiesTy(balanceSheetDetail.getAdvanceFromCustomers() + balanceSheetDetail.getDividendPayable() + balanceSheetDetail.getStatutoryLiabilityDues() + balanceSheetDetail.getDepositsAndInstallments() +balanceSheetDetail.getOthersTotals());
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getProvisionForTax()))
 					balanceSheetDetail.setProvisionForTax(0.0);
@@ -1926,13 +1926,13 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCapitalAdvance()))
 					balanceSheetDetail.setCapitalAdvance(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersTotals())) // ------ others totals
-					balanceSheetDetail.setOthersTotals(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getOthersAssetsTransit())) // ------ others assets in transit
+					balanceSheetDetail.setOthersAssetsTransit(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getPreOperativeExpensesPending()))
 					balanceSheetDetail.setPreOperativeExpensesPending(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getAssetsInTransit()))
 					balanceSheetDetail.setAssetsInTransit(0.0);
-				financialInputRequest.setOtheNonCurruntAssetTy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersTotals()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
+				financialInputRequest.setOtheNonCurruntAssetTy((balanceSheetDetail.getCapitalAdvance() + balanceSheetDetail.getOthersAssetsTransit()) - balanceSheetDetail.getPreOperativeExpensesPending() - balanceSheetDetail.getAssetsInTransit());// ------ others totals
 				
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getInventory()))
 					balanceSheetDetail.setInventory(0.0);
@@ -2113,7 +2113,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 				else
-					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / assetsDetails.getTotalAssets()) * 100);//----- formula based
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / assetsDetails.getTotalAssets()));//----- formula based
 			}else if(isCoActUploaded){
 				BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
 				balanceSheetDetail = balanceSheetDetailRepository.getBalanceSheetDetail(aplicationId, currentYear-1+"");
@@ -2122,7 +2122,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				else if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getGrandTotal()))
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 				else
-					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / balanceSheetDetail.getGrandTotal()) * 100);//----- formula based
+					qualitativeInputSheetManuRequest.setProjectSize((primaryTermLoanDetail.getTotalCostOfEstimate() / balanceSheetDetail.getGrandTotal()));//----- formula based
 			}
 				
 		return qualitativeInputSheetManuRequest;

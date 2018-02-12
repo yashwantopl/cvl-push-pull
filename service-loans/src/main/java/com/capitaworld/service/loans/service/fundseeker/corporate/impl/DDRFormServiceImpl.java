@@ -54,6 +54,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetai
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRAuthorizedSignDetailsRepository;
@@ -76,6 +77,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetai
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
@@ -180,6 +182,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	@Autowired
 	private DirectorBackgroundDetailsService backgroundDetailsService;
 	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+	
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 * @throws Exception 
@@ -252,10 +257,12 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
 			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
 			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		} else {
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null,appId,userId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
+			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		}
 		return dDRFormDetailsRequest;
 	}
@@ -676,6 +683,11 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 	}
 	
+	private String getCurrency(Long applicationId, Long userId) {
+		Integer currencyId = loanApplicationRepository.getCurrencyId(applicationId, userId);
+		Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
+		return CommonDocumentUtils.getCurrency(currencyId) + " in " + CommonDocumentUtils.getDenomination(denominationId);
+	}
 	
 	@SuppressWarnings("unchecked")
 	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
@@ -692,7 +704,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
-		
+		response.setCurrency(getCurrency(applicationId, userId));
 		//GET REGISTERED ADDRESS :- LINENO:7
 		String regOfficeAdd = "";
 		regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPremiseNumber()) ? applicantDetail.getRegisteredPremiseNumber() + ", " : "";
@@ -1238,12 +1250,12 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		
 		DDRCMACalculationResponse capitalResponse = new DDRCMACalculationResponse();
-		capitalResponse.setKeyId(DDRFinancialSummaryFields.UNSECURE_LOAN.getId());
-		capitalResponse.setKeyName(DDRFinancialSummaryFields.UNSECURE_LOAN.getValue());
+		capitalResponse.setKeyId(DDRFinancialSummaryFields.CAPITAL.getId());
+		capitalResponse.setKeyName(DDRFinancialSummaryFields.CAPITAL.getValue());
 		if(isCMAUpload) {
 			capitalResponse.setProvisionalYear(CommonUtils.checkDouble(cma2018Liabilities.getOrdinarySharesCapital()));
-			capitalResponse.setLastYear(CommonUtils.checkDouble(cma2018Liabilities.getOrdinarySharesCapital()));
-			capitalResponse.setLastToLastYear(CommonUtils.checkDouble(cma2018Liabilities.getOrdinarySharesCapital()));
+			capitalResponse.setLastYear(CommonUtils.checkDouble(cma2017Liabilities.getOrdinarySharesCapital()));
+			capitalResponse.setLastToLastYear(CommonUtils.checkDouble(cma2016Liabilities.getOrdinarySharesCapital()));
 		} else {
 			capitalResponse.setProvisionalYear(CommonUtils.checkDouble(coAct2018BalanceSheet.getOrdinaryShareCapital()) + CommonUtils.checkDouble(coAct2018BalanceSheet.getPreferenceShareCapital())
 					+ CommonUtils.checkDouble(coAct2018BalanceSheet.getShareApplicationPendingAllotment()));

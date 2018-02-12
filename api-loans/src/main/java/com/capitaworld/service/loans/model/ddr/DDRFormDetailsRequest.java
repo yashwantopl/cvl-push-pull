@@ -80,9 +80,10 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String listOfDirectors; 
 	private String listOfShareholdersAndShareHoldingPatter;
 	private String summaryOfBservations;
-	private Double provisionalTotalSales = 0.0;
-	private Double lastYearTotalSales  = 0.0;
-	private Double lastToLastYearTotalSales  = 0.0;
+	private Double provisionalTotalSales;
+	private Double lastYearTotalSales;
+	private Double lastToLastYearTotalSales;
+	private String currency;
 	private Boolean isActive;
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
@@ -1063,32 +1064,32 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 
 
-
 	public void setLastYearTotalSales(Double lastYearTotalSales) {
 		this.lastYearTotalSales = lastYearTotalSales;
 	}
-
-
 	public Double getLastToLastYearTotalSales() {
 		return lastToLastYearTotalSales;
 	}
-
-
 
 	public void setLastToLastYearTotalSales(Double lastToLastYearTotalSales) {
 		this.lastToLastYearTotalSales = lastToLastYearTotalSales;
 	}
 
-
-
 	public String getBusinessDetailsComment() {
 		return businessDetailsComment;
 	}
 
-
-
 	public void setBusinessDetailsComment(String businessDetailsComment) {
 		this.businessDetailsComment = businessDetailsComment;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 
