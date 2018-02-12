@@ -65,7 +65,9 @@ public class ProposedProductDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()){
 				frameRequest.setClientId(clientId);
 			}
 			proposedProductDetailsService.saveOrUpdate(frameRequest);
@@ -88,7 +90,9 @@ public class ProposedProductDetailController {
 		
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);

@@ -31,6 +31,16 @@ public class FinancialArrangementsDetail implements Serializable {
 	private Long id;
 
 	private Double amount;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="loan_date")
+	private Date loanDate;
+	
+	@Column(name="loan_type")
+	private Integer loanType;
+	
+	@Column(name="lender_type")
+	private Integer lenderType;
 
 	@ManyToOne
 	@JoinColumn(name="application_id")
@@ -48,6 +58,9 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	@Column(name="financial_institution_name")
 	private String financialInstitutionName;
+	
+	@Column(name="address")
+	private String address;
 
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -58,6 +71,15 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="outstanding_amount")
+	private Double outstandingAmount;
+	
+	@Column(name="security_details")
+	private String securityDetails;
+	
+	@Column(name="relationship_since")
+	private Integer relationshipSince;
 
 	public FinancialArrangementsDetail() {
 	}
@@ -141,5 +163,68 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	public Date getLoanDate() {
+		return loanDate;
+	}
+
+	public void setLoanDate(Date loanDate) {
+		this.loanDate = loanDate;
+	}
+
+	public Integer getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(Integer loanType) {
+		this.loanType = loanType;
+	}
+
+	public Integer getLenderType() {
+		return lenderType;
+	}
+
+	public void setLenderType(Integer lenderType) {
+		this.lenderType = lenderType;
+	}
+
+	public Double getOutstandingAmount() {
+		return outstandingAmount;
+	}
+
+	public void setOutstandingAmount(Double outstandingAmount) {
+		this.outstandingAmount = outstandingAmount;
+	}
+
+
+
+	public Integer getRelationshipSince() {
+		return relationshipSince;
+	}
+
+	public void setRelationshipSince(Integer relationshipSince) {
+		this.relationshipSince = relationshipSince;
+	}
+
+	public String getSecurityDetails() {
+		return securityDetails;
+	}
+
+	public void setSecurityDetails(String securityDetails) {
+		this.securityDetails = securityDetails;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+
+	
+	
+	
 
 }

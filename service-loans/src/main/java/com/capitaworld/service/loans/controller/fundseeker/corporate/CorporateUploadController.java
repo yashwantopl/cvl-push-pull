@@ -268,6 +268,14 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					case DocumentAlias.USL_CMA: {
+						flag = excelExtractionService.readCMA(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
+					case DocumentAlias.USL_COMPANY_ACT: {
+						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
 					}
 
 				} catch (Exception e) {
@@ -441,7 +449,9 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadFlag");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

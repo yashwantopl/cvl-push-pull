@@ -41,30 +41,65 @@ public class LoanApplicationRequest implements Serializable {
 	private String loanTypeSub;
 
 	private String currencyValue;
-	
+
 	private Boolean isApplicantDetailsFilled;
-	
+
 	private Boolean isApplicantPrimaryFilled;
-	
+
 	private Boolean isApplicantFinalFilled;
-	
+
 	private String applicationCode;
-	
+
 	private Integer status;
-	
+
 	private String primaryFilledCount;
-	
+
 	private Boolean profilePrimaryLocked;
-	
+
 	private Boolean finalLocked;
-	
+
 	private String mcaCompanyId;
-	
+
 	private Boolean isMca;
+
+	private Long npUserId;
+
+	private Long npAssigneeId;
+
+	private String email;
+
+	private String mobile;
+
+	private String userName;
+
+	private String providerName;
 	
+	private String paymentStatus;
+	private String typeOfPayment;
 	
-	
-	
+	public String getTypeOfPayment() {
+		return typeOfPayment;
+	}
+
+	public void setTypeOfPayment(String typeOfPayment) {
+		this.typeOfPayment = typeOfPayment;
+	}
+
+	public Long getNpAssigneeId() {
+		return npAssigneeId;
+	}
+
+	public void setNpAssigneeId(Long npAssigneeId) {
+		this.npAssigneeId = npAssigneeId;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
 
 	public Boolean getIsMca() {
 		return isMca;
@@ -94,8 +129,8 @@ public class LoanApplicationRequest implements Serializable {
 		this.id = id;
 		this.productId = productId;
 	}
-	
-	public LoanApplicationRequest(Long id,Long userId) {
+
+	public LoanApplicationRequest(Long id, Long userId) {
 		super();
 		this.id = id;
 		this.userId = userId;
@@ -284,6 +319,44 @@ public class LoanApplicationRequest implements Serializable {
 	public void setIsApplicantFinalFilled(Boolean isApplicantFinalFilled) {
 		this.isApplicantFinalFilled = isApplicantFinalFilled;
 	}
-	
-	
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getProviderName() {
+		return providerName;
+	}
+
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
 }

@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
@@ -26,6 +28,8 @@ public interface LoanApplicationService {
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
 	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
+	
+	public Long getIrrByApplicationId(Long id) throws Exception;
 
 	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception;
 
@@ -113,10 +117,21 @@ public interface LoanApplicationService {
 	
 	public Boolean isTermLoanLessThanLimit(Long applicationId);
 	
+	public Integer getIndustryIrrByApplication(Long applicationId);
+	
 	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception;
 	
 	public void updateFlow(Long applicationId,Long clientId,Long userId) throws Exception ;
 	
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId, Long clientId) throws Exception;
+	
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)throws Exception;
+	
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
+	
+	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
+	
+	public LoanApplicationRequest getFromClient(Long id) throws Exception;
 }
 
 

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -37,4 +38,9 @@ public interface CorporateApplicantService {
 	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	
+	public PaymentRequest getPaymentInfor(Long userId,Long applicationId) throws Exception;
+	
+	public void saveIndustry(Long applicationId, List<Long> industrylist) ;
+	public void saveSector(Long applicationId, List<Long> sectorlist) ;
+	public void saveSubSector(Long applicationId, List<Long> subSectorlist) ;
 }

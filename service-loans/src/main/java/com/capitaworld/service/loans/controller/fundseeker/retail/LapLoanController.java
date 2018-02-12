@@ -56,7 +56,9 @@ public class LapLoanController {
 						HttpStatus.OK);
 			}
 
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				lapDetailRequest.setClientId(clientId);
 			}
 			lapLoanService.saveOrUpdate(lapDetailRequest, userId);
@@ -76,7 +78,9 @@ public class LapLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

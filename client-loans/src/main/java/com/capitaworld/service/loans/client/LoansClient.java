@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
@@ -108,6 +109,7 @@ public class LoansClient {
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
 	private static final String MOBILE_GET_FS_MATCHES_LIST = "/mobile/fundSeekerProposal";
+	private static final String MOBILE_CHANGE_STATUS = "/mobile/changeStatus";
 
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
@@ -128,6 +130,10 @@ public class LoansClient {
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
+	
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	
+	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -545,12 +551,12 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse saveApplicantDetails(MRetailApplicantResponse response) throws LoansException {
+	public LoansResponse saveApplicantDetails(MRetailApplicantResponse mRetailApplicantResponse) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_SAVE_APPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(response, headers);
+			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(mRetailApplicantResponse, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
@@ -1174,6 +1180,19 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
 		}
 	}
+	
+	public LoansResponse changeStatus(MobileFPMatchesRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(MOBILE_CHANGE_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+		}
+	}
 
 	public LoansResponse getCreateCampaignLoan(Long userId, String code) throws ExcelException {
 		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "/" + userId + "/" + code;
@@ -1299,6 +1318,34 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoanApplicationRequest.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
 		}
 	}
 	

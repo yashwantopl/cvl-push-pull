@@ -23,6 +23,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecure
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -32,9 +34,9 @@ import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
-
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -43,9 +45,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnse
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -56,6 +58,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -71,7 +74,9 @@ import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.LenderType;
 import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.NatureFacility;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.RatingAgency;
@@ -158,6 +163,12 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -393,11 +404,12 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			unsecuredLoanPrimaryViewResponse.setTenure(primaryUnsecuredLoanDetail.getTenure() != null ? primaryUnsecuredLoanDetail.getTenure() / 12 : null);
 
 			unsecuredLoanPrimaryViewResponse.setPurposeOfLoan(primaryUnsecuredLoanDetail.getPurposeOfLoan() != null ? primaryUnsecuredLoanDetail.getPurposeOfLoan() : null);
+			unsecuredLoanPrimaryViewResponse.setSharePriceFace(primaryUnsecuredLoanDetail.getSharePriceFace());
+			unsecuredLoanPrimaryViewResponse.setSharePriceMarket(primaryUnsecuredLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getDenominationId()))
 				unsecuredLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryUnsecuredLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryUnsecuredLoanDetail.getDenominationId()).getValue());
 			if (primaryUnsecuredLoanDetail.getProductId() != null)
-				unsecuredLoanPrimaryViewResponse
-						.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
+				unsecuredLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
 
 			if (primaryUnsecuredLoanDetail.getModifiedDate() != null)
 				unsecuredLoanPrimaryViewResponse
@@ -459,6 +471,10 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				creditRatingOrganizationDetailResponse
 						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
+				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
+					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+				}
 			}
 			unsecuredLoanPrimaryViewResponse
 					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
@@ -500,11 +516,44 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				}
 				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
 				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			unsecuredLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
+		}
+		
+		//get value of Director's Background and set in response
+		
+		try {
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+				directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String directorName = "";
+				if (directorBackgroundDetailRequest.getSalutationId() != null){
+					directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+				directorBackgroundDetailResponse.setDirectorsName(directorName);
+				directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+			}
+			unsecuredLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Director's Background {}", e);
 		}
 
 		// get value of Past Financial and set in response
@@ -542,9 +591,17 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetailResponse);
+				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
-					financialArrangementsDetailResponse.setFacilityNature(NatureFacility
-							.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			unsecuredLoanPrimaryViewResponse
@@ -593,6 +650,16 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
+		
+		//references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		unsecuredLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
 		// get list of Brochure
 		DocumentRequest documentRequest = new DocumentRequest();

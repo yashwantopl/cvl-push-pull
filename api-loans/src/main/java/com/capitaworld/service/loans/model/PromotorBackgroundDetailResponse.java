@@ -25,6 +25,8 @@ public class PromotorBackgroundDetailResponse implements Serializable{
     private String qualification;
 
     private Double totalExperience;
+    
+    private Double networth;
 
     public String getAchievements() {
         return achievements;
@@ -81,4 +83,15 @@ public class PromotorBackgroundDetailResponse implements Serializable{
     public void setTotalExperience(Double totalExperience) {
         this.totalExperience = totalExperience;
     }
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+	
+    
+    
 }

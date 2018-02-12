@@ -19,6 +19,8 @@ public class PrimaryUnsecureLoanRequest extends LoanApplicationRequest implement
 	private Integer creditRatingId;
 	private boolean isActive;
 	private String purposeOfLoan;
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
 	private List<Long> negativeList=Collections.emptyList();
 	public Integer getCreditRatingId() {
 		return creditRatingId;
@@ -43,6 +45,18 @@ public class PrimaryUnsecureLoanRequest extends LoanApplicationRequest implement
 	}
 	public void setNegativeList(List<Long> negativeList) {
 		this.negativeList = negativeList;
+	}
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
 	}
 	
 	

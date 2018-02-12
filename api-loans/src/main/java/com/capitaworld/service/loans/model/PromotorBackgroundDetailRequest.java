@@ -24,6 +24,8 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	private String address;
 
 	private Double age;
+	
+	private Double networth;
 
 	private Long applicationId;
 
@@ -132,5 +134,15 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	public void setTotalExperience(Double totalExperience) {
 		this.totalExperience = totalExperience;
 	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+	
+	
 
 }

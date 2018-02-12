@@ -63,7 +63,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -91,7 +91,7 @@ public class CommonController {
 			}
 		} else {
 			if (longLatrequest.getUserType() == CommonUtils.UserType.SERVICE_PROVIDER
-					|| longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER) {
+					|| longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER || longLatrequest.getUserType() == CommonUtils.UserType.NETWORK_PARTNER) {
 				UserLongitudeLatitudeRequest userRequest = new UserLongitudeLatitudeRequest();
 				userRequest.setLongitude(longLatrequest.getLongitude());
 				userRequest.setLatitude(longLatrequest.getLatitude());
@@ -132,7 +132,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -161,7 +161,7 @@ public class CommonController {
 			}
 		} else {
 			if (longLatrequest.getUserType() == CommonUtils.UserType.SERVICE_PROVIDER
-					|| longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER) {
+					|| longLatrequest.getUserType() == CommonUtils.UserType.FUND_PROVIDER || longLatrequest.getUserType() == CommonUtils.UserType.NETWORK_PARTNER) {
 				UserLongitudeLatitudeRequest userRequest = new UserLongitudeLatitudeRequest();
 				userRequest.setUserId(finalUserId);
 				userRequest.setUserType(longLatrequest.getUserType());
@@ -203,7 +203,7 @@ public class CommonController {
 		obj.put("userType", userType);
 
 		Integer spUserId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
 			// SP LOGIN
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				// MEANS FS, FP VIEW
@@ -228,7 +228,11 @@ public class CommonController {
 							HttpStatus.OK);
 				}
 			} else {
+				if (CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				spUserId = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if (CommonUtils.UserType.NETWORK_PARTNER == userType){
+					spUserId = CommonUtils.UserType.NETWORK_PARTNER;
+				}
 			}
 			userType = spUserId;
 		}
@@ -256,7 +260,7 @@ public class CommonController {
 			 * productMasterService.getList(userId); obj.put("productId",
 			 * !CommonUtils.isListNullOrEmpty(productMasterlist) ?
 			 * productMasterlist.get(0).getId() : null); }
-			 */ else if (userType == CommonUtils.UserType.SERVICE_PROVIDER) {
+			 */ else if (userType == CommonUtils.UserType.SERVICE_PROVIDER || userType == CommonUtils.UserType.NETWORK_PARTNER) {
 			obj.put("productId", null);
 			obj.put("lastAccessAppId", null);
 		}
