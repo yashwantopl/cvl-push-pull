@@ -131,6 +131,12 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "landline_no")
 	private String landlineNo;
 
+	@Column(name = "key_vertical_sector")
+	private Long keyVerticalSector;
+	
+	@Column(name = "key_vertical_subsector")
+	private Long keyVerticalSubsector;
+	
 	public CorporateApplicantDetail() {
 	}
 
@@ -404,6 +410,22 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setLandlineNo(String landlineNo) {
 		this.landlineNo = landlineNo;
+	}
+
+	public Long getKeyVerticalSector() {
+		return keyVerticalSector;
+	}
+
+	public void setKeyVerticalSector(Long keyVerticalSector) {
+		this.keyVerticalSector = keyVerticalSector;
+	}
+
+	public Long getKeyVerticalSubsector() {
+		return keyVerticalSubsector;
+	}
+
+	public void setKeyVerticalSubsector(Long keyVerticalSubsector) {
+		this.keyVerticalSubsector = keyVerticalSubsector;
 	}
 
 }

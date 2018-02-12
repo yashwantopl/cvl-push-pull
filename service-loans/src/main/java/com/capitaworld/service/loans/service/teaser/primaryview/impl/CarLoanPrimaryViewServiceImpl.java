@@ -196,7 +196,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 profileViewPLResponse.setLastName(applicantDetail.getLastName() != null ? applicantDetail.getLastName() : null);
                 profileViewPLResponse.setMaritalStatus(applicantDetail.getStatusId() != null ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null);
                 profileViewPLResponse.setMiddleName(applicantDetail.getMiddleName() != null ? applicantDetail.getMiddleName() : null);
-                profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome() : 0));
+                profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome().toString() : 0));
 
                 //set office address
                 AddressResponse officeAddress = new AddressResponse();
@@ -342,6 +342,8 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             if(!CommonUtils.isObjectNullOrEmpty(primaryCarLoanDetailRequest.getCertifiedDealer()) && primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue()){
                 carLoanResponse.setCertifiedDealer(primaryCarLoanDetailRequest.getCertifiedDealer().booleanValue() ? "Yes" : "No");
              }
+            //carLoanResponse.setOnRoadCarPrice(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getOnRoadCarPrice()) ? CommonUtils.CurrencyFormat(carLoanResponse.getOnRoadCarPrice().toString()) : null);
+            //carLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getDownPayment()) ? CommonUtils.CurrencyFormat(carLoanResponse.getDownPayment().toString()) : null);
             carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
             carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
             carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);

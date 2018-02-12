@@ -6,8 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +23,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -35,20 +35,28 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FutureFinancialEstimatesDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -64,7 +72,9 @@ import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.LenderType;
 import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.NatureFacility;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.RatingAgency;
@@ -115,6 +125,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService DirectorBackgroundDetailsService;
 
 	@Autowired
 	private OneFormClient oneFormClient;
@@ -145,6 +158,12 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailsService;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -378,6 +397,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
 			termLoanPrimaryViewResponse.setTenure(primaryTermLoanDetail.getTenure() != null ? primaryTermLoanDetail.getTenure() / 12 : null);
+			termLoanPrimaryViewResponse.setSharePriceFace(primaryTermLoanDetail.getSharePriceFace());
+			termLoanPrimaryViewResponse.setSharePriceMarket(primaryTermLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
 				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
 			if (primaryTermLoanDetail.getProductId() != null)
@@ -436,14 +457,17 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				}
 
 				if (creditRatingOrganizationDetailRequest.getCreditRatingTermId() != null)
-					creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
-							.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+					creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
 				if (creditRatingOrganizationDetailRequest.getRatingAgencyId() != null)
-					creditRatingOrganizationDetailResponse.setRatingAgency(
-							RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
-				creditRatingOrganizationDetailResponse
-						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
+					creditRatingOrganizationDetailResponse.setRatingAgency(RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+				creditRatingOrganizationDetailResponse.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
 				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
+				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
+					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+				}
+				
+				
 			}
 			termLoanPrimaryViewResponse
 					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
@@ -485,12 +509,45 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				}
 				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
 				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
 		}
+		
+		//get value of Director's Background and set in response
+		
+				try {
+					List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+					List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+					for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+						DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+						directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+						directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+						String directorName = "";
+						if (directorBackgroundDetailRequest.getSalutationId() != null){
+							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+						}
+						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+						directorBackgroundDetailResponse.setDirectorsName(directorName);
+						directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+						directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+						directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+						directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+						directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+						directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+					}
+					termLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+				} catch (Exception e) {
+					logger.error("Problem to get Data of Director's Background {}", e);
+				}
 
 		// get value of Past Financial and set in response
 		try {
@@ -530,9 +587,21 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetailResponse);
+				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+				if (financialArrangementsDetailRequest.getLenderType() != null){
+					financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				}
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				if (financialArrangementsDetailRequest.getLoanType() != null){
+					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				}
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
-					financialArrangementsDetailResponse.setFacilityNature(NatureFacility
-							.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			termLoanPrimaryViewResponse
@@ -562,7 +631,17 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Finance Means Details {}", e1);
 		}
+		//references
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		termLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
+		
 		// get Total cost of project and set in response
 		try {
 			List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService

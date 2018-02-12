@@ -39,6 +39,8 @@ public class PromotorBackgroundDetail implements Serializable {
 
 	private Double age;
 
+	private Double networth;
+	
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
@@ -197,5 +199,15 @@ public class PromotorBackgroundDetail implements Serializable {
 	public void setTotalExperience(Double totalExperience) {
 		this.totalExperience = totalExperience;
 	}
+
+	public Double getNetworth() {
+		return networth;
+	}
+
+	public void setNetworth(Double networth) {
+		this.networth = networth;
+	}
+	
+	
 
 }

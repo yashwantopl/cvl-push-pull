@@ -126,12 +126,12 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidenceType())){
 				finalViewCommonResponse.setResidenceType(ResidenceStatusRetailMst.getById(applicantDetail.getResidenceType()).getValue());
 				if(applicantDetail.getResidenceType() == 2){
-					finalViewCommonResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualRent()) ? applicantDetail.getAnnualRent().toString() : "-");
+					finalViewCommonResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualRent()) ? CommonUtils.CurrencyFormat(applicantDetail.getAnnualRent().toString()) : "-");
 				}
 			}else{
 				finalViewCommonResponse.setResidenceType("-");
 			}
-			finalViewCommonResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualRent()) ? applicantDetail.getAnnualRent().toString() : "-");
+			finalViewCommonResponse.setAnnualRent(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualRent()) ? CommonUtils.CurrencyFormat(applicantDetail.getAnnualRent().toString()) : "-");
 			finalViewCommonResponse.setYearAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidingYear()) ? applicantDetail.getResidingYear().toString() : "-");
 			finalViewCommonResponse.setMonthsAtCurrentResident(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getResidingMonth()) ? applicantDetail.getResidingMonth().toString() : "-");
 			finalViewCommonResponse.setWebsite(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getWebsiteAddress()) ? applicantDetail.getWebsiteAddress() : "-");
@@ -165,7 +165,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 					finalViewCommonResponse.setBusinessEstablishmentYear(
 							!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? format.format(applicantDetail.getBusinessStartDate()) : "-");
 					finalViewCommonResponse.setShareHolding(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getShareHolding()) ? applicantDetail.getShareHolding() : "-");
-					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ? applicantDetail.getAnnualTurnover().toString() : "-");
+					finalViewCommonResponse.setAnnualTurnover(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAnnualTurnover()) ? CommonUtils.CurrencyFormat(applicantDetail.getAnnualTurnover().toString()) : "-");
 					finalViewCommonResponse.setTradeLicenseNo(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseNumber()) ? applicantDetail.getTradeLicenseNumber() : "-");
 					SimpleDateFormat format1 = new SimpleDateFormat("dd/MM/yyyy");
 					finalViewCommonResponse.setTradeExpiryDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTradeLicenseExpiryDate()) ?  format1.format(applicantDetail.getTradeLicenseExpiryDate()) : "-");
@@ -173,6 +173,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				}
 			}
 			List<ExistingLoanDetailRequest> existingLoanDetailRequestList = existingLoanService.getExistingLoanDetailList(applicantId,CommonUtils.ApplicantType.APPLICANT);
+			
 			finalViewCommonResponse.setExistingLoanDetailRequest(existingLoanDetailRequestList);
 
 			List<BankAccountHeldDetailsRequest> accountHeldDetailsRequestList = bankAccountsHeldService.getExistingLoanDetailList(applicantId, CommonUtils.ApplicantType.APPLICANT);
@@ -185,7 +186,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				cardsDetailResponse.setCardNumber(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCardNumber()) ? cardsDetailRequest.getCardNumber() : "-");
 				cardsDetailResponse.setIssuerName(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getIssuerName()) ? cardsDetailRequest.getIssuerName() : "-");
 				cardsDetailResponse.setCreditCardTypes(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(cardsDetailRequest.getCreditCardTypesId()).getValue() : "-");
-				cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? cardsDetailRequest.getOutstandingBalance().toString() : "-");
+				cardsDetailResponse.setOutstandingBalance(!CommonUtils.isObjectNullOrEmpty(cardsDetailRequest.getOutstandingBalance()) ? CommonUtils.CurrencyFormat(cardsDetailRequest.getOutstandingBalance().toString()) : "-");
 				creditCardsDetailResponseList.add(cardsDetailResponse);
 			}
 			finalViewCommonResponse.setCreditCardsDetailResponse(creditCardsDetailResponseList);
@@ -202,7 +203,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				OtherCurrentAssetDetailResponse assetDetailResponse = new OtherCurrentAssetDetailResponse();
 				assetDetailResponse.setAssetType(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetTypesId()) ? Assets.getById(assetDetailRequest.getAssetTypesId()).getValue() : "-");
 				assetDetailResponse.setAssetDescription(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetDescription()) ? assetDetailRequest.getAssetDescription() : "-");
-				assetDetailResponse.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue()) ? assetDetailRequest.getAssetValue().toString() : "-");
+				assetDetailResponse.setAssetValue(!CommonUtils.isObjectNullOrEmpty(assetDetailRequest.getAssetValue()) ? CommonUtils.CurrencyFormat(assetDetailRequest.getAssetValue().toString()) : "-");
 				assetDetailResponseList.add(assetDetailResponse);
 			}
 			finalViewCommonResponse.setAssetDetailResponseList(assetDetailResponseList);
@@ -213,8 +214,8 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 				OtherIncomeDetailResponse detailResponse = new OtherIncomeDetailResponse();
 				detailResponse.setIncomeDetails(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeDetailsId()) ? IncomeDetails.getById(detailRequest.getIncomeDetailsId()).getValue() : "-");
 				detailResponse.setIncomeHead(!CommonUtils.isObjectNullOrEmpty(detailRequest.getIncomeHead()) ? detailRequest.getIncomeHead() : "-");
-				detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome()) ? detailRequest.getGrossIncome().toString() : "-");
-				detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome()) ? detailRequest.getNetIncome().toString() : "-");
+				detailResponse.setGrossIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getGrossIncome()) ? CommonUtils.CurrencyFormat(detailRequest.getGrossIncome().toString()) : "-");
+				detailResponse.setNetIncome(!CommonUtils.isObjectNullOrEmpty(detailRequest.getNetIncome()) ? CommonUtils.CurrencyFormat(detailRequest.getNetIncome().toString()) : "-");
 				incomeDetailResponseList.add(detailResponse);
 			}
 			finalViewCommonResponse.setIncomeDetailResponseList(incomeDetailResponseList);

@@ -32,4 +32,7 @@ public interface CorporateCoApplicantRepository extends JpaRepository<CorporateC
 	@Query("select cd.applicationId.id from CorporateCoApplicantDetail cd where cd.id =:id and cd.isActive = true")
 	public Long getApplicantIdById(@Param("id") Long id);
 	
+	@Modifying
+	@Query("update CorporateCoApplicantDetail coa set coa.isActive = false,coa.modifiedDate = NOW() where coa.applicationId.id =:applicationId  and coa.isActive = true")
+	public int inactiveAllCoApplicant(@Param("applicationId") Long applicationId);
 }

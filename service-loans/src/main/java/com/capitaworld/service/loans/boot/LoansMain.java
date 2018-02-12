@@ -12,10 +12,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.rating.RatingClient;
 //import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
 
@@ -47,21 +49,24 @@ public class LoansMain {
 
 	@Value("${notificationURL}")
 	String notificationURL;
-	
+
 	@Value("${userURL}")
 	String userURL;
-	
+
 	@Value("${oneForm}")
 	private String oneFormUrl;
-	
+
 	@Value("${matchesURL}")
 	private String matchEngineUrl;
 
 	@Value("${ratingURL}")
 	private String ratingUrl;
-	
+
 	@Value("${capitaworld.service.cibil.url}")
 	private String cibilUrl;
+
+	@Value("${capitaworld.service.gateway.url}")
+	private String gatewayBaseUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -80,50 +85,54 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(notificationClient);
 		return notificationClient;
 	}
-	
+
 	@Bean
-	public UsersClient userMasterClient(){
+	public UsersClient userMasterClient() {
 		UsersClient usersClient = new UsersClient(userURL);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(usersClient);
 		return usersClient;
 	}
-	
-	
+
 	@Bean
-	public OneFormClient oneFormClient(){
+	public OneFormClient oneFormClient() {
 		OneFormClient oneFormClient = new OneFormClient(oneFormUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(oneFormClient);
 		return oneFormClient;
 	}
-	
+
 	@Bean
-	public MatchEngineClient matchEngineClient(){
+	public MatchEngineClient matchEngineClient() {
 		MatchEngineClient matchEngineClient = new MatchEngineClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(matchEngineClient);
 		return matchEngineClient;
 	}
-	
+
 	@Bean
-	public ProposalDetailsClient proposalDetailsClient(){
+	public ProposalDetailsClient proposalDetailsClient() {
 		ProposalDetailsClient proposalDetailsClient = new ProposalDetailsClient(matchEngineUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(proposalDetailsClient);
 		return proposalDetailsClient;
 	}
-	
+
 	@Bean
-	public CIBILClient cibilClient(){
+	public CIBILClient cibilClient() {
 		CIBILClient cibilClient = new CIBILClient(cibilUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(cibilClient);
 		return cibilClient;
 	}
-	
 
-	/*@Bean
-	public RatingClient ratingClient(){
+	@Bean
+	public RatingClient ratingClient() {
 		RatingClient ratingClient = new RatingClient(ratingUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(ratingClient);
 		return ratingClient;
-	}*/
+	}
 
+	@Bean
+	public GatewayClient gatewayClient() {
+		GatewayClient gatewayClient = new GatewayClient(gatewayBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
+		return gatewayClient;
+	}
 
 }

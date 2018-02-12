@@ -124,6 +124,11 @@ public class MobileLoanServiceImpl implements MobileService {
 		RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
 		if(!CommonUtils.isObjectNullOrEmpty(mRetailApplicantResponse.getId())) {
 			retailApplicantDetail = retailApplicantDetailRepository.findOne(mRetailApplicantResponse.getId());
+		} else {
+			retailApplicantDetail.setApplicationId(loanApplicationRepository.findOne(mRetailApplicantResponse.getApplicationId()));
+			retailApplicantDetail.setCreatedBy(mRetailApplicantResponse.getUserId());
+			retailApplicantDetail.setCreatedDate(new Date());
+			retailApplicantDetail.setIsActive(true);
 		}
 		BeanUtils.copyProperties(mRetailApplicantResponse, retailApplicantDetail,"applicationId","userId","data");
 		retailApplicantDetail.setModifiedDate(new Date());
@@ -134,22 +139,29 @@ public class MobileLoanServiceImpl implements MobileService {
 			if(loantype.getValue() == LoanType.HOME_LOAN.getValue()) {
 				logger.info("Start Save Applicant Home Loan Primary Details...");
 				PrimaryHomeLoanDetailRequest homeLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(), PrimaryHomeLoanDetailRequest.class);
-				primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mRetailApplicantResponse.getUserId());
-				
+				if(!CommonUtils.isObjectNullOrEmpty(homeLoanRequest)){
+					primaryHomeLoanService.saveOrUpdate(homeLoanRequest, mRetailApplicantResponse.getUserId());
+				}
 			} else if(loantype.getValue() == LoanType.PERSONAL_LOAN.getValue()) {
 				logger.info("Start Save Applicant Personal Loan Primary Details...");
 				PrimaryPersonalLoanRequest personalLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryPersonalLoanRequest.class);
-				primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
+				if(!CommonUtils.isObjectNullOrEmpty(personalLoanRequest)){
+					primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, mRetailApplicantResponse.getUserId());
+				}
 				
 			} else if(loantype.getValue() == LoanType.CAR_LOAN.getValue()) {
 				logger.info("Start Save Applicant Car Loan Primary Details...");
 				PrimaryCarLoanDetailRequest carLoanRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryCarLoanDetailRequest.class);
-				primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
+				if(!CommonUtils.isObjectNullOrEmpty(carLoanRequest)){
+					primaryCarLoanService.saveOrUpdate(carLoanRequest, mRetailApplicantResponse.getUserId());
+				}
 				
 			} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 				logger.info("Start Save Applicant LAP Loan Primary Details...");
 				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);;
-				primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
+				if(!CommonUtils.isObjectNullOrEmpty(lapLoanDetailRequest)){
+					primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
+				}
 			}
 		}
 		logger.info("Saved Successfully All Profile And Primary Data For Mobile App...");
@@ -276,7 +288,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(commonRequest.getUserId());
 				applicationMaster.setModifiedDate(new Date());
-				
+				applicationMaster.setName(loanApplicationRequest.getName());
 				
 				if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getTenure())) {
 					applicationMaster.setTenure(loanApplicationRequest.getTenure() * 12);
@@ -288,6 +300,38 @@ public class MobileLoanServiceImpl implements MobileService {
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
+				
+				
+				//SAVE PROFILE DETAILS
+				
+				if(CommonUtils.getUserMainType(type.getValue()) == CommonUtils.UserMainType.RETAIL) {
+					
+					RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
+					retailApplicantDetail.setApplicationId(applicationMaster);
+					retailApplicantDetail.setOccupationId(loanApplicationRequest.getOccupationId());
+					retailApplicantDetail.setBirthDate(loanApplicationRequest.getDateOfBirth());
+					retailApplicantDetail.setMonthlyIncome(loanApplicationRequest.getMonthlyIncome());
+					retailApplicantDetail.setAnnualTurnover(loanApplicationRequest.getAnnualTurnover());
+					retailApplicantDetail.setMonthlyLoanObligation(loanApplicationRequest.getMonthlyLoanObligation());
+					retailApplicantDetail.setBonusPerAnnum(loanApplicationRequest.getBonusPerAnnum());
+					retailApplicantDetail.setIncentivePerAnnum(loanApplicationRequest.getIncentivePerAnnum());
+					retailApplicantDetail.setOtherIncome(loanApplicationRequest.getOtherIncome());
+					retailApplicantDetail.setOtherInvestment(loanApplicationRequest.getOtherInvestment());
+					retailApplicantDetail.setTaxPaidLastYear(loanApplicationRequest.getTaxPaidLastYear());
+					retailApplicantDetail.setPermanentPincode(loanApplicationRequest.getPermanentPincode());
+					retailApplicantDetail.setEmployedWithId(loanApplicationRequest.getEmployedWithId());
+					retailApplicantDetail.setIsActive(true);
+					retailApplicantDetail.setTotalExperienceMonth(loanApplicationRequest.getTotalExperienceMonth());
+					retailApplicantDetail.setTotalExperienceYear(loanApplicationRequest.getTotalExperienceYear());
+					retailApplicantDetail.setCurrentJobMonth(loanApplicationRequest.getCurrentJobMonth());
+					retailApplicantDetail.setCurrentJobYear(loanApplicationRequest.getCurrentJobYear());
+					retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
+					retailApplicantDetail.setCreatedDate(new Date());
+					retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
+					retailApplicantDetail.setModifiedDate(new Date());
+					retailApplicantDetailRepository.save(retailApplicantDetail);
+				}
+				
 				
 				
 				// for save primary details
@@ -314,10 +358,17 @@ public class MobileLoanServiceImpl implements MobileService {
 					primaryHomeLoanDetail.setPropertyPrice(loanApplicationRequest.getMarketValue());
 					primaryHomeLoanDetail.setPropertyType(loanApplicationRequest.getPropertyType());
 					primaryHomeLoanDetail.setProjectCity(loanApplicationRequest.getPropertyLocation());
+					primaryHomeLoanDetail.setLoanType(loanApplicationRequest.getLoanType());
+					primaryHomeLoanDetail.setDownPayment(loanApplicationRequest.getDownPayment());
+					primaryHomeLoanDetail.setBunglowCost(loanApplicationRequest.getBunglowCost());
+					primaryHomeLoanDetail.setConstructionCost(loanApplicationRequest.getConstructionCost());
+					primaryHomeLoanDetail.setRenovationType(loanApplicationRequest.getRenovationType());
+					primaryHomeLoanDetail.setIsLoanTaken(loanApplicationRequest.getIsLoanTaken());
+					primaryHomeLoanDetail.setMarketValProp(loanApplicationRequest.getMarketValProp());
+					primaryHomeLoanDetail.setPropertyPrice(loanApplicationRequest.getPropertyPrice());
 					primaryHomeLoanDetailRepository.save(primaryHomeLoanDetail);
-
 					// create record in fs retail applicant
-					saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);
+					/*saveRetailApplicantDetailForMobileApplication(applicationMaster, loanApplicationRequest);*/
 					break;
 				case CAR_LOAN:
 					break;
@@ -339,19 +390,27 @@ public class MobileLoanServiceImpl implements MobileService {
 		try {
 			RetailApplicantDetail retailApplicantDetail = new RetailApplicantDetail();
 			retailApplicantDetail.setApplicationId(applicationMaster);
-			retailApplicantDetail.setOccupationId(loanApplicationRequest.getEmploymentType());
+			retailApplicantDetail.setOccupationId(loanApplicationRequest.getOccupationId());
 			retailApplicantDetail.setBirthDate(loanApplicationRequest.getDateOfBirth());
-			retailApplicantDetail.setMonthlyIncome(loanApplicationRequest.getIncome());
+			retailApplicantDetail.setMonthlyIncome(loanApplicationRequest.getMonthlyIncome());
+			retailApplicantDetail.setAnnualTurnover(loanApplicationRequest.getAnnualTurnover());
+			retailApplicantDetail.setMonthlyLoanObligation(loanApplicationRequest.getMonthlyLoanObligation());
+			retailApplicantDetail.setBonusPerAnnum(loanApplicationRequest.getBonusPerAnnum());
+			retailApplicantDetail.setIncentivePerAnnum(loanApplicationRequest.getIncentivePerAnnum());
+			retailApplicantDetail.setOtherIncome(loanApplicationRequest.getOtherIncome());
+			retailApplicantDetail.setOtherInvestment(loanApplicationRequest.getOtherInvestment());
+			retailApplicantDetail.setTaxPaidLastYear(loanApplicationRequest.getTaxPaidLastYear());
+			retailApplicantDetail.setPermanentPincode(loanApplicationRequest.getPermanentPincode());
+			retailApplicantDetail.setEmployedWithId(loanApplicationRequest.getEmployedWithId());
 			retailApplicantDetail.setIsActive(true);
-			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
-			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
-			retailApplicantDetail.setCreatedDate(new Date());
-			retailApplicantDetail.setModifiedDate(new Date());
 			retailApplicantDetail.setTotalExperienceMonth(loanApplicationRequest.getTotalExperienceMonth());
 			retailApplicantDetail.setTotalExperienceYear(loanApplicationRequest.getTotalExperienceYear());
 			retailApplicantDetail.setCurrentJobMonth(loanApplicationRequest.getCurrentJobMonth());
 			retailApplicantDetail.setCurrentJobYear(loanApplicationRequest.getCurrentJobYear());
-			retailApplicantDetail.setMonthlyLoanObligation(loanApplicationRequest.getObligation());
+			retailApplicantDetail.setCreatedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setCreatedDate(new Date());
+			retailApplicantDetail.setModifiedBy(applicationMaster.getUserId());
+			retailApplicantDetail.setModifiedDate(new Date());
 			retailApplicantDetailRepository.save(retailApplicantDetail);
 			return true;
 		} catch (Exception e) {

@@ -40,6 +40,8 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Double turnOverSecondYear;
 
 	private Double turnOverThirdYear;
+	
+	private String nameOfDirector;
 
 	public Long getId() {
 		return id;
@@ -154,5 +156,14 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.turnOverThirdYear = turnOverThirdYear;
 	}
 
+	public String getNameOfDirector() {
+		return nameOfDirector;
+	}
+
+	public void setNameOfDirector(String nameOfDirector) {
+		this.nameOfDirector = nameOfDirector;
+	}
+	
+	
 	
 }

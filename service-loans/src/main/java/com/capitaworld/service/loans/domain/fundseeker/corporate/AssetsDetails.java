@@ -182,6 +182,61 @@ public class AssetsDetails implements Serializable {
 	
 	@Column(name="storage_details_id")
 	private Long storageDetailsId;
+	
+	@Column(name="land_building")
+	private Double landBuilding;
+	
+	@Column(name="plant_machines")
+	private Double plantMachines;
+	
+	
+	@Column(name="impairment_asset")
+	private Double impairmentAsset;
+	
+	@Column(name="others_pre_operative_expenses_pending")
+	private Double othersPreOperativeExpensesPending;
+	
+	@Column(name="others_assets_in_transit")
+	private Double othersAssetsInTransit;
+	
+	
+	@Column(name="others_other")
+	private Double othersOther;
+	
+
+	@Column(name="total_other_nca_patent")
+	private Double totalOtherNcaPatent;
+	
+	@Column(name="total_other_nca_goodwill")
+	private Double totalOtherNcaGoodwill;
+	
+	@Column(name="total_other_nca_prelimnary_expenses")
+	private Double totalOtherNcaPrelimnaryExpenses;
+	
+	@Column(name="total_other_nca_bad_expenses")
+	private Double totalOtherNcaBadExpenses;
+	
+	@Column(name="total_other_nca_other")
+	private Double totalOtherNcaOther;
+	
+	@Column(name = "other_nca_other_capital_work_inprogress")
+	private Double otherNcaOtherCapitalWorkInprogress;
+	
+	
+	@Column(name = "gross_block_1")
+	private Double GrossBlock1;
+
+	@Column(name = "gross_block_2")
+	private Double GrossBlock2;
+
+	@Column(name = "gross_block_3")
+	private Double GrossBlock3;
+
+	@Column(name = "gross_block_4")
+	private Double GrossBlock4;
+
+//	@Column(name = "gross_block_5")
+//	private Double GrossBlock5;
 
 	//bi-directional many-to-one association to FsLoanApplicationMaster
 	@ManyToOne
@@ -189,7 +244,71 @@ public class AssetsDetails implements Serializable {
 	private LoanApplicationMaster loanApplicationMaster;
 	
 	
-
+	public AssetsDetails() {
+		super();
+		this.advancePaymentTaxes = 0.0;
+		this.advanceToSupplierRawMaterials = 0.0;
+		this.advanceToSuppliersCapitalGoods = 0.0;
+		this.anyOther = 0.0;
+		this.badOrDoubtfulExpenses = 0.0;
+		this.cashAndBankBalance= 0.0;
+		this.currentRatio = 0.0;
+		this.deferredReceviables = 0.0;
+		this.deferredReceviablesOthers = 0.0;
+		this.deferredTaxAssets = 0.0;
+		this.depreciationToDate = 0.0;
+		this.exportReceivables = 0.0;
+		this.finishedGoods= 0.0;
+		this.fixedDepositsWithBanks = 0.0;
+		this.goodWill = 0.0;
+		this.governmentAndOtherTrustee = 0.0;
+		this.grossBlock = 0.0;
+		this.instalmentsDeferred= 0.0;
+		this.intangibleAssets = 0.0;
+		this.inventory = 0.0;
+		this.investments = 0.0;
+		this.investmentsInSubsidiary= 0.0;
+		this.investmentsOrBookDebts= 0.0;
+		this.netBlock= 0.0;
+		this.netWorkingCapital = 0.0;
+		this.nonConsumableStoreAndSpares= 0.0;
+		this.otherConsumableSpares = 0.0;
+		this.otherConsumableSparesImported = 0.0;
+		this.otherConsumableSparesIndegenous = 0.0;
+		this.otherCurrentAssets = 0.0;
+		this.otherNonCurrentAssets = 0.0;
+		this.others = 0.0;
+		this.patents = 0.0;
+		this.prelimExpenses= 0.0;
+		this.rawMaterial = 0.0;
+		this.rawMaterialImported = 0.0;
+		this.rawMaterialIndegenous = 0.0;
+		this.receivableOtherThanDefferred = 0.0;
+		this.stockInProcess = 0.0;
+		this.tangibleNetWorth = 0.0;
+		this.totalAssets = 0.0;
+		this.totalCurrentAssets = 0.0;
+		this.totalIntangibleAssets = 0.0;
+		this.totalOtherNonCurrentAssets = 0.0;
+		this.totalOutSideLiability = 0.0;
+		this.totalTermLiability = 0.0;
+		this.landBuilding= 0.0;
+		this.plantMachines = 0.0;
+		this.impairmentAsset = 0.0;
+		this.othersPreOperativeExpensesPending = 0.0;
+		this.othersAssetsInTransit = 0.0;
+		this.othersOther = 0.0;
+		this.totalOtherNcaPatent= 0.0;
+		this.totalOtherNcaGoodwill = 0.0;
+		this.totalOtherNcaPrelimnaryExpenses = 0.0;
+		this.totalOtherNcaBadExpenses = 0.0;
+		this.totalOtherNcaOther= 0.0;
+		this.otherNcaOtherCapitalWorkInprogress = 0.0;
+		this.GrossBlock1 = 0.0;
+		this.GrossBlock2 = 0.0;
+		this.GrossBlock3 = 0.0;
+		this.GrossBlock4 = 0.0;
+	}
 
 	public Long getStorageDetailsId() {
 		return storageDetailsId;
@@ -632,6 +751,146 @@ public class AssetsDetails implements Serializable {
 
 	public void setLoanApplicationMaster(LoanApplicationMaster loanApplicationMaster) {
 		this.loanApplicationMaster = loanApplicationMaster;
+	}
+
+	public Double getGrossBlock1() {
+		return GrossBlock1;
+	}
+
+	public void setGrossBlock1(Double grossBlock1) {
+		GrossBlock1 = grossBlock1;
+	}
+
+	public Double getGrossBlock2() {
+		return GrossBlock2;
+	}
+
+	public void setGrossBlock2(Double grossBlock2) {
+		GrossBlock2 = grossBlock2;
+	}
+
+	public Double getGrossBlock3() {
+		return GrossBlock3;
+	}
+
+	public void setGrossBlock3(Double grossBlock3) {
+		GrossBlock3 = grossBlock3;
+	}
+
+	public Double getGrossBlock4() {
+		return GrossBlock4;
+	}
+
+	public void setGrossBlock4(Double grossBlock4) {
+		GrossBlock4 = grossBlock4;
+	}
+
+//	public Double getGrossBlock5() {
+//		return GrossBlock5;
+//	}
+//
+//	public void setGrossBlock5(Double grossBlock5) {
+//		GrossBlock5 = grossBlock5;
+//	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public Double getLandBuilding() {
+		return landBuilding;
+	}
+
+	public void setLandBuilding(Double landBuilding) {
+		this.landBuilding = landBuilding;
+	}
+
+	public Double getPlantMachines() {
+		return plantMachines;
+	}
+
+	public void setPlantMachines(Double plantMachines) {
+		this.plantMachines = plantMachines;
+	}
+
+	public Double getImpairmentAsset() {
+		return impairmentAsset;
+	}
+
+	public void setImpairmentAsset(Double impairmentAsset) {
+		this.impairmentAsset = impairmentAsset;
+	}
+
+	public Double getOthersPreOperativeExpensesPending() {
+		return othersPreOperativeExpensesPending;
+	}
+
+	public void setOthersPreOperativeExpensesPending(Double othersPreOperativeExpensesPending) {
+		this.othersPreOperativeExpensesPending = othersPreOperativeExpensesPending;
+	}
+
+	public Double getOthersAssetsInTransit() {
+		return othersAssetsInTransit;
+	}
+
+	public void setOthersAssetsInTransit(Double othersAssetsInTransit) {
+		this.othersAssetsInTransit = othersAssetsInTransit;
+	}
+
+	public Double getOthersOther() {
+		return othersOther;
+	}
+
+	public void setOthersOther(Double othersOther) {
+		this.othersOther = othersOther;
+	}
+
+	public Double getTotalOtherNcaPatent() {
+		return totalOtherNcaPatent;
+	}
+
+	public void setTotalOtherNcaPatent(Double totalOtherNcaPatent) {
+		this.totalOtherNcaPatent = totalOtherNcaPatent;
+	}
+
+	public Double getTotalOtherNcaGoodwill() {
+		return totalOtherNcaGoodwill;
+	}
+
+	public void setTotalOtherNcaGoodwill(Double totalOtherNcaGoodwill) {
+		this.totalOtherNcaGoodwill = totalOtherNcaGoodwill;
+	}
+
+	public Double getTotalOtherNcaPrelimnaryExpenses() {
+		return totalOtherNcaPrelimnaryExpenses;
+	}
+
+	public void setTotalOtherNcaPrelimnaryExpenses(Double totalOtherNcaPrelimnaryExpenses) {
+		this.totalOtherNcaPrelimnaryExpenses = totalOtherNcaPrelimnaryExpenses;
+	}
+
+	public Double getTotalOtherNcaBadExpenses() {
+		return totalOtherNcaBadExpenses;
+	}
+
+	public void setTotalOtherNcaBadExpenses(Double totalOtherNcaBadExpenses) {
+		this.totalOtherNcaBadExpenses = totalOtherNcaBadExpenses;
+	}
+
+	public Double getTotalOtherNcaOther() {
+		return totalOtherNcaOther;
+	}
+
+	public void setTotalOtherNcaOther(Double totalOtherNcaOther) {
+		this.totalOtherNcaOther = totalOtherNcaOther;
+	}
+
+	public Double getOtherNcaOtherCapitalWorkInprogress() {
+		return otherNcaOtherCapitalWorkInprogress;
+	}
+
+	public void setOtherNcaOtherCapitalWorkInprogress(Double otherNcaOtherCapitalWorkInprogress) {
+		this.otherNcaOtherCapitalWorkInprogress = otherNcaOtherCapitalWorkInprogress;
 	}
 
 	

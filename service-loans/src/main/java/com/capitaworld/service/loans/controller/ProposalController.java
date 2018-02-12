@@ -44,9 +44,14 @@ public class ProposalController {
 	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
+		logger.info("request.getPageIndex()::"+request.getPageIndex());
+		logger.info("request.getSize()::"+request.getSize());
+		
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -65,7 +70,9 @@ public class ProposalController {
 		// request must not be null
 		Long userId = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -91,7 +98,9 @@ public class ProposalController {
 		Long userId = null;
 		Long userType = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -110,7 +119,9 @@ public class ProposalController {
 		Long userId = null;
 		Long userType = null;
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -132,7 +143,9 @@ public class ProposalController {
 		Long userType = null;
 		Integer loginUserType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -166,7 +179,9 @@ public class ProposalController {
 		try {
 			Long userType = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userType = clientUserType;
 			} else {
 				userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
