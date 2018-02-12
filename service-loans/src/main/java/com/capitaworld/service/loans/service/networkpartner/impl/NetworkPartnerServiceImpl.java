@@ -280,11 +280,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}else{
 					nhbsApplicationsResponse.setOneFormFilled("Unlocked");
 				}
-				List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
-				if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-					nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
-				}
+				
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByNpUserIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
 						nhbsApplicationsResponse.setPaymentMode(loanApplicationMaster.getTypeOfPayment());
 						nhbsApplicationsResponse.setIsPaymentDone("Received");
@@ -306,6 +307,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						
 					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpUserId());
@@ -328,7 +333,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			nhbsApplicationsResponseList = null;
 		}
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-			//nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
+			nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
 		}		
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
