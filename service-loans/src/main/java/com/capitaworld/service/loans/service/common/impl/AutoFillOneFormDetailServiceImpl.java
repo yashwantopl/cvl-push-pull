@@ -498,6 +498,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		getAndSaveCreditRating();
 
 		// promopter for all loan
+		getAndSaveDirectorBackGround();
 		getAndSavePromotoresBackGround();
 		getAndSaveOwnerShip();
 

@@ -1,5 +1,5 @@
 
-CREATE TABLE `loan_applications`.`fs_ddr_form_details` (
+CREATE TABLE `loan_application`.`fs_ddr_form_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `application_id`  bigint(20) NOT NULL,
 `user_id` bigint(20) NOT NULL,
@@ -79,7 +79,7 @@ UNIQUE KEY `application_id` (`application_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_creditors_details` (
+CREATE TABLE `loan_application`.`fs_ddr_creditors_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id`  bigint(20) NOT NULL,
 `name`  varchar(255) DEFAULT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_creditors_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_office_details` (
+CREATE TABLE `loan_application`.`fs_ddr_office_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `area_in_sqft` varchar(255) DEFAULT NULL,
@@ -112,7 +112,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_office_details` (
 
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_authorized_sign_details` (
+CREATE TABLE `loan_application`.`fs_ddr_authorized_sign_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `name` varchar(255) DEFAULT NULL,
@@ -127,7 +127,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_authorized_sign_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_vehicles_owned_details` (
+CREATE TABLE `loan_application`.`fs_ddr_vehicles_owned_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `bank_name` varchar(255) DEFAULT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_vehicles_owned_details` (
 
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_rel_with_dbs_details` (
+CREATE TABLE `loan_application`.`fs_ddr_rel_with_dbs_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `type_of_rel` varchar(255) DEFAULT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_rel_with_dbs_details` (
 
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_other_bank_loan_details` (
+CREATE TABLE `loan_application`.`fs_ddr_other_bank_loan_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `type_of_rel` varchar(255) DEFAULT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_other_bank_loan_details` (
 
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_credit_card_details` (
+CREATE TABLE `loan_application`.`fs_ddr_credit_card_details` (
 `id` bigint(20) unsigned NOT NULL auto_increment,
 `fs_ddr_form_id` bigint(20) NOT NULL,
 `bank_name` varchar(255) DEFAULT NULL,
@@ -190,7 +190,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_credit_card_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_financial_summary` (
+CREATE TABLE `loan_application`.`fs_ddr_financial_summary` (
   `id` BIGINT(20) unsigned NOT NULL auto_increment,
   `fs_ddr_form_id` BIGINT(20) NULL,
   `perticular_id` int(20) DEFAULT NULL,
@@ -209,7 +209,7 @@ CREATE TABLE `loan_applications`.`fs_ddr_financial_summary` (
 
 
 
-CREATE TABLE `loan_applications`.`fs_ddr_family_directors_details` (
+CREATE TABLE `loan_application`.`fs_ddr_family_directors_details` (
   `id` BIGINT(20) unsigned NOT NULL auto_increment,
   `fs_ddr_form_id` BIGINT(20) NULL,
   `background_id`BIGINT(20) NULL,	
