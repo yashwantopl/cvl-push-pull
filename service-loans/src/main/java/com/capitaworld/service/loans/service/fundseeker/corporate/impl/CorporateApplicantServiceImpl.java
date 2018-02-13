@@ -617,6 +617,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				address.setCountryId(corporateApplicantDetail.getAdministrativeCountryId());
 				address.setStateId(corporateApplicantDetail.getAdministrativeStateId());
 				address.setCityId(corporateApplicantDetail.getAdministrativeCityId());
+				address.setPincode(corporateApplicantDetail.getAdministrativePincode());
 				paymentRequest.setAddress(address);
 			}
 			try {
