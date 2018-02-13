@@ -611,12 +611,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 				Address address = new Address();
-				address.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
-				address.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
-				address.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
-				address.setCountryId(corporateApplicantDetail.getRegisteredCountryId());
-				address.setStateId(corporateApplicantDetail.getRegisteredStateId());
-				address.setCityId(corporateApplicantDetail.getRegisteredCityId());
+				address.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+				address.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+				address.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+				address.setCountryId(corporateApplicantDetail.getAdministrativeCountryId());
+				address.setStateId(corporateApplicantDetail.getAdministrativeStateId());
+				address.setCityId(corporateApplicantDetail.getAdministrativeCityId());
 				paymentRequest.setAddress(address);
 			}
 			try {
