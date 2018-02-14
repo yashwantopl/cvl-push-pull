@@ -534,7 +534,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		if (corporateApplicantDetailTo == null) {
 			corporateApplicantDetailTo = new CorporateApplicantDetail();
 		}
-		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, "id", "applicationId","organisationName");
 		corporateApplicantDetailTo
 				.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
 		corporateApplicantDetailTo = applicantRepository.save(corporateApplicantDetailTo);
