@@ -224,9 +224,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	private CorporateApplicantDetail corporateApplicantDetailTo = null;
 	private List<CorporateCoApplicantDetail> corporateCoApplicantDetailToList = new ArrayList<>(2);
 	private static List<Long> prodDocMappingListCoApp = new ArrayList<Long>(10);
-	private static String[] skipData= {"id","userId",
+	private static String[] skipPrimaryData= {"id","userId",
 			"applicationId", "productId", "categoryCode", "applicationCode", "isPrimaryLocked",
 			"isFinalLocked","createdBy","createdDate","isActive","isMsmeScoreRequired","eligibleAmnt","npUserId","npAssigneeId","ddrStatusId","typeOfPayment","appointmentDate","appointmentTime","paymentAmount"};
+	private static String[] skipProfileData= {"id","applicationId","organisationName","administrativePremiseNumber","administrativeStreetName","administrativeLandMark","administrativeCountryId","administrativeStateId","administrativeCityId","administrativePincode"};
 	static {
 		prodDocMappingListCoApp.add(
 				DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1);
@@ -237,9 +238,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingListCoApp.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 		prodDocMappingListCoApp.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 		prodDocMappingListCoApp
-				.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS);
-		
-		
+				.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS);				
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(AutoFillOneFormDetailServiceImpl.class);
@@ -534,7 +533,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		if (corporateApplicantDetailTo == null) {
 			corporateApplicantDetailTo = new CorporateApplicantDetail();
 		}
-		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, "id", "applicationId","organisationName");
+		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo,skipProfileData);
 		corporateApplicantDetailTo
 				.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
 		corporateApplicantDetailTo = applicantRepository.save(corporateApplicantDetailTo);
@@ -599,7 +598,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, skipData);
+			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
 			workingCapitalLoanDetailTo.setModifiedBy(userId);
 			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
@@ -627,7 +626,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				throw new Exception();
 			}
 			// build
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryTermLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
 
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryTermLoanDetailTo.setModifiedBy(userId);
@@ -651,7 +650,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryUnsecuredLoanDetailTo,skipData);
+			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryUnsecuredLoanDetailTo,skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
@@ -674,7 +673,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("TL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryTermLoanDetailTo,skipData);
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryTermLoanDetailTo,skipPrimaryData);
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryTermLoanDetailTo.setModifiedBy(userId);
             primaryTermLoanDetailTo.setModifiedDate(new Date());
@@ -696,7 +695,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, workingCapitalLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
 			workingCapitalLoanDetailTo.setModifiedBy(userId);
 			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
@@ -718,7 +717,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
@@ -740,7 +739,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USl application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
@@ -762,7 +761,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, workingCapitalLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
 			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setModifiedBy(userId);
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
@@ -785,7 +784,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("TL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryTermLoanDetailTo, skipData);
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTermLoanDetailTo.setModifiedBy(userId);
