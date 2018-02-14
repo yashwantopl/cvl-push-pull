@@ -652,6 +652,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
 			NotificationRequest notificationRequest = new NotificationRequest();
 			notificationRequest.setClientRefId(userId.toString());
+			String fsName = getApplicantName(applicationId);
 			for (int i = 0; i < response.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) response.getDataList().get(i), ProposalMappingRequest.class);
@@ -673,7 +674,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// (LinkedHashMap<String, Object>) userResponse.getData(),
 				// FundProviderDetailsRequest.class);
 				// fundProviderDetailsRequest.get
-				String fsName = getApplicantName(applicationId);
 				try {
 					if (CommonUtils.isObjectNullOrEmpty(fsName)) {
 						parameters.put("fs_name", "NA");
@@ -719,24 +719,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// parameters.put("fp_pname", "NA");
 				// }
 				//
-				logger.info("Before send mail-------------------------------------->");
-				int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
-				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
-					logger.info("Current loan is corporate-------------------------------------->");
-					if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
-							&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
-						logger.info("Start sending mail when maker has lock primary details");
-						asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
-								applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());						
-					} else {
-						logger.info("NP userId or assign id null or empty-------------------------------------->");
-					}
-					
-				}
 				String[] a = { master.getUserId().toString() };
 				notificationRequest
 						.addNotification(createNotification(a, userId, 0L, NotificationAlias.SYS_FS_FINAL_LOCK,
 								parameters, applicationId, proposalrequest.getFpProductId()));
+			}
+			logger.info("Before send mail-------------------------------------->");
+			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				logger.info("Current loan is corporate-------------------------------------->");
+				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
+						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
+					logger.info("Start sending mail when maker has lock primary details");
+					asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
+							applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());						
+				} else {
+					logger.info("NP userId or assign id null or empty-------------------------------------->");
+				}
+				
 			}
 			notificationClient.send(notificationRequest);
 			// send FP notification end
