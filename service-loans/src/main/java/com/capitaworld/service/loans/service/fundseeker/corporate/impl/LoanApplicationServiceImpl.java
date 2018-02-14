@@ -719,13 +719,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// parameters.put("fp_pname", "NA");
 				// }
 				//
+				logger.info("Before send mail-------------------------------------->");
 				int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+					logger.info("Current loan is corporate-------------------------------------->");
 					if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
-							|| !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
+							&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
 						logger.info("Start sending mail when maker has lock primary details");
 						asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
 								applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());						
+					} else {
+						logger.info("NP userId or assign id null or empty-------------------------------------->");
 					}
 					
 				}
