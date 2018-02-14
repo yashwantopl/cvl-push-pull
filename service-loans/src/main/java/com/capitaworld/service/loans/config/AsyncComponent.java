@@ -36,6 +36,7 @@ import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -706,7 +707,7 @@ public class AsyncComponent {
 	 * @param fsName
 	 */
 	public void sendEmailWhenMakerLockFinalDetails(Long checkerId,Long makerId,
-			String applicationCode,Integer productId,String fsName) {
+			String applicationCode,Integer productId,String fsName,Long applicationId) {
 		logger.info("Enter in send mail when aker has lock final details then send to checker ");
 		try {
 			UsersRequest checkerUserName = getUserNameAndEmail(checkerId);
@@ -716,6 +717,7 @@ public class AsyncComponent {
 				return;
 			}
 			Map<String,Object> parameters = new HashMap<>();
+			parameters.put("maker_name",makerUserName.getName());
 			parameters.put("checker_name",checkerUserName.getName());
 			parameters.put("fs_name",fsName);
 			parameters.put("lone_type", CommonUtils.getLoanName(productId));
@@ -723,6 +725,9 @@ public class AsyncComponent {
 			String subject = makerUserName.getName()+ " has lock final details for " + applicationCode;
 			sendNotification(toIds,checkerId.toString(),parameters, NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
 			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail());
+			String[] toUserIds = {checkerId.toString()};
+			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters,applicationId, null);
+			logger.info("Successfully send system notification------------------>" );
 		} catch (Exception e) {
 			logger.info("Throw exception while sending final lock mail");
 			e.printStackTrace();

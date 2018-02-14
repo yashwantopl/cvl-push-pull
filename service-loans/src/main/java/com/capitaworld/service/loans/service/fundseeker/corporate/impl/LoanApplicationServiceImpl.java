@@ -725,7 +725,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							|| !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
 						logger.info("Start sending mail when maker has lock primary details");
 						asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
-								applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName);						
+								applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());						
 					}
 					
 				}
