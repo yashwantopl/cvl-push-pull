@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -223,6 +224,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	private CorporateApplicantDetail corporateApplicantDetailTo = null;
 	private List<CorporateCoApplicantDetail> corporateCoApplicantDetailToList = new ArrayList<>(2);
 	private static List<Long> prodDocMappingListCoApp = new ArrayList<Long>(10);
+	private static String[] skipPrimaryData= {"id","userId",
+			"applicationId", "productId", "categoryCode", "applicationCode", "isPrimaryLocked",
+			"isFinalLocked","createdBy","createdDate","isActive","isMsmeScoreRequired","eligibleAmnt","npUserId","npAssigneeId","ddrStatusId","typeOfPayment","appointmentDate","appointmentTime","paymentAmount"};
+	private static String[] skipProfileData= {"id","applicationId","organisationName","administrativePremiseNumber","administrativeStreetName","administrativeLandMark","administrativeCountryId","administrativeStateId","administrativeCityId","administrativePincode"};
 	static {
 		prodDocMappingListCoApp.add(
 				DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1);
@@ -233,7 +238,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingListCoApp.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD);
 		prodDocMappingListCoApp.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD);
 		prodDocMappingListCoApp
-				.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS);
+				.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS);				
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(AutoFillOneFormDetailServiceImpl.class);
@@ -528,7 +533,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		if (corporateApplicantDetailTo == null) {
 			corporateApplicantDetailTo = new CorporateApplicantDetail();
 		}
-		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo,skipProfileData);
 		corporateApplicantDetailTo
 				.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
 		corporateApplicantDetailTo = applicantRepository.save(corporateApplicantDetailTo);
@@ -593,9 +598,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode","isPrimaryLocked","isFinalLocked");
-			workingCapitalLoanDetailTo.setCreatedDate(new Date());
+			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
+			workingCapitalLoanDetailTo.setModifiedBy(userId);
+			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
@@ -621,12 +626,11 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				throw new Exception();
 			}
 			// build
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryTermLoanDetailTo, "id",
-					"applicationId", "productId", "categoryCode", "applicationCode", "isPrimaryLocked",
-					"isFinalLocked");
+			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
 
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryTermLoanDetailTo.setCreatedDate(new Date());
+			primaryTermLoanDetailTo.setModifiedBy(userId);
+			primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 			logger.info("Sucessfully save PrimaryTermLoanDetail in To application Id"
 					+ corporateApplicantDetailTo.getApplicationId());
@@ -646,11 +650,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryUnsecuredLoanDetailTo, "id",
-					"applicationId", "productId", "categoryCode", "applicationCode", "isPrimaryLocked",
-					"isFinalLocked");
+			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryUnsecuredLoanDetailTo,skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryUnsecuredLoanDetailTo.setCreatedDate(new Date());
+			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
+			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 
 		} catch (Exception e) {
@@ -670,10 +673,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("TL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryTermLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isPrimaryLocked", "isFinalLocked");
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryTermLoanDetailTo,skipPrimaryData);
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryTermLoanDetailTo.setCreatedDate(new Date());
+			primaryTermLoanDetailTo.setModifiedBy(userId);
+            primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 
 		} catch (Exception e) {
@@ -692,9 +695,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, workingCapitalLoanDetailTo, "id", "applicationId",
-					"categoryCode", "productId", "applicationCode", "isPrimaryLocked", "isFinalLocked");
-			workingCapitalLoanDetailTo.setCreatedDate(new Date());
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
+			workingCapitalLoanDetailTo.setModifiedBy(userId);
+			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 
@@ -714,10 +717,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryUnsecuredLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isPrimaryLocked", "isFinalLocked");
+			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryUnsecuredLoanDetailTo.setCreatedDate(new Date());
+			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
+			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 
 		} catch (Exception e) {
@@ -736,11 +739,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("USl application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryUnsecuredLoanDetailTo, "id",
-					"applicationId", "productId", "categoryCode", "applicationCode", "isPrimaryLocked",
-					"isFinalLocked");
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
 			primaryUnsecuredLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryUnsecuredLoanDetailTo.setCreatedDate(new Date());
+			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
+			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 
 		} catch (Exception e) {
@@ -759,9 +761,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("WC application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, workingCapitalLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isPrimaryLocked", "isFinalLocked");
-			workingCapitalLoanDetailTo.setCreatedDate(new Date());
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
+			workingCapitalLoanDetailTo.setModifiedDate(new Date());
+			workingCapitalLoanDetailTo.setModifiedBy(userId);
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 
@@ -782,10 +784,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				System.out.println("TL application id ont avialable");
 				throw new Exception();
 			}
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryTermLoanDetailTo, "id", "applicationId",
-					"productId", "categoryCode", "applicationCode", "isPrimaryLocked", "isFinalLocked");
+			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
 			primaryTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			primaryTermLoanDetailTo.setCreatedDate(new Date());
+			primaryTermLoanDetailTo.setModifiedDate(new Date());
+			primaryTermLoanDetailTo.setModifiedBy(userId);
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 
 		} catch (Exception e) {
@@ -1385,6 +1387,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		List<ReferencesRetailDetail> referencesRetailDetailList = referenceRetailDetailsRepository
 				.listReferencesRetailFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
 		logger.warn("---------- ReferencesRetailDetail  -----> " + referencesRetailDetailList);
+		referenceRetailDetailsRepository.inActive(userId,corporateApplicantDetailTo.getApplicationId().getId());
 		for (ReferencesRetailDetail referencesRetailDetailFrom : referencesRetailDetailList) {
 			ReferencesRetailDetail referencesRetailRequestTo = new ReferencesRetailDetail();
 			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailRequestTo, "id", "applicationId");
@@ -1398,8 +1401,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	public void getAndSaveFinalUSLBankAccountHeldDetail() {
 		logger.info("================ Enter in getAndSaveFinalUSLBankAccountHeldDetail() ===========");
 		List<BankAccountHeldDetail> bankAccountHeldDetailsList = bankAccountHeldDetailRepository
-				.listBankAccountHeldFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
+				.listBankAccountHeldFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());		
 		logger.warn("----------BankAccountHeldDetail ----------> " + bankAccountHeldDetailsList);
+		bankAccountHeldDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (BankAccountHeldDetail bankAccountHeldDetailFrom : bankAccountHeldDetailsList) {
 			BankAccountHeldDetail bankAccountHeldDetailTo = new BankAccountHeldDetail();
 			BeanUtils.copyProperties(bankAccountHeldDetailFrom, bankAccountHeldDetailTo, "id", "applicationId");
@@ -1413,8 +1417,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	public void getAndSaveFinalUSLCreditCard() {
 		logger.info("================ Enter in getAndSaveFinalUSLCreditCard() ===========");
 		List<CreditCardsDetail> creditCardsDetailsList = creditCardsDetailRepository
-				.listCreditCardsFromGarrId(autoFillOneFormDetailRequest.getFromApplicationId());
+				.listCreditCardsFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
 		logger.warn("----------CreditCardsDetailList ----------> " + creditCardsDetailsList);
+		creditCardsDetailRepository.inactive(corporateApplicantDetailTo.getApplicationId().getId());
 		for (CreditCardsDetail creditCardsDetailFrom : creditCardsDetailsList) {
 			CreditCardsDetail creditCardsDetailTo = new CreditCardsDetail();
 			BeanUtils.copyProperties(creditCardsDetailFrom, creditCardsDetailTo, "id", "applicationId");
@@ -1551,6 +1556,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================= Exit From getAndSaveFinalFileUploadUSLToUSLToTLAndWL()================== ");
 	}
 
+	@SuppressWarnings("unchecked")
 	public void deleteFile(List<Long> prodDocMappingList, String userType) {
 		logger.info("================ Enter in deleteFile() ===========");
 		DocumentResponse documentResponse = null;
@@ -1570,41 +1576,34 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					// String json =
 					// com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getStringfromObject(documentRequest);
 
-					/*
-					 * JSONObject json = new JSONObject(); json.put("id", documentResponse.getId());
-					 * 
-					 * response=dmsClient.deleteIrrDocument(json);
-					 */
-
-				}
-
-				/*
-				 * if(documentResponse!=null) { JSONObject json = new JSONObject();
-				 * json.put("id", documentResponse.getId()); documentResponse=
-				 * dmsClient.deleteProductDocument(json.toJSONString());
-				 */
-
-				/*
-				 * assetsDetailsRepository.inActiveAssetsDetails(documentResponse.getStorageId()
-				 * ); liabilitiesDetailsRepository.inActiveAssetsDetails(documentResponse.
-				 * getStorageId());
-				 * operatingStatementDetailsRepository.inActiveAssetsDetails(documentResponse.
-				 * getStorageId());
-				 * balanceSheetDetailRepository.inActiveBalanceSheetDetail(documentResponse.
-				 * getStorageId());
-				 * keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
-				 * getStorageId()); employeesCategoryBreaksDetailRepository.
-				 * inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
-				 * 
-				 * boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetails(
-				 * documentResponse.getStorageId());
-				 * strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetails(
-				 * documentResponse.getStorageId());
-				 * keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
-				 * getStorageId()); employeesCategoryBreaksDetailRepository.
-				 * inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
-				 */
-
+					
+					 JSONObject json =  new  JSONObject();                                                                					 
+						json.put("id", res.getId());					 					  
+					  response=dmsClient.deleteIrrDocument(json.toJSONString());
+					  if(response!=null && response.getStatus()==200) {
+						 if(productMapIDTo==DocumentAlias.TL_CMA||productMapIDTo==DocumentAlias.WC_CMA) {
+							 assetsDetailsRepository.inActiveAssetsDetails(documentResponse.getStorageId());
+							  liabilitiesDetailsRepository.inActiveAssetsDetails(documentResponse.getStorageId());
+							 operatingStatementDetailsRepository.inActiveAssetsDetails(documentResponse.
+							  getStorageId());
+							  balanceSheetDetailRepository.inActiveBalanceSheetDetail(documentResponse.
+							  getStorageId());
+							  keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
+							  getStorageId()); employeesCategoryBreaksDetailRepository.
+							  inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
+							  
+							  boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetails(
+							  documentResponse.getStorageId());
+							  strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetails(
+							  documentResponse.getStorageId());
+							  keyManagementDetailRepository.inActiveKeyManagementDetails(documentResponse.
+							  getStorageId()); employeesCategoryBreaksDetailRepository.
+							  inActiveemployeesCategoryBreaksDetails(documentResponse.getStorageId());
+							 
+						 } 	
+						
+					  }
+				}							  			
 			} catch (DocumentException | IOException e) {
 				logger.error("Error - Failed to delect files ");
 				e.printStackTrace();

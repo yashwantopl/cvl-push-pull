@@ -26,6 +26,7 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -76,6 +77,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApp
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -193,6 +195,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Value("${capitaworld.service.gateway.amount}")
 	private String amount;
 
+	@Autowired
+	private AsyncComponent asyncComponent;
+	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -647,6 +652,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
 			NotificationRequest notificationRequest = new NotificationRequest();
 			notificationRequest.setClientRefId(userId.toString());
+			String fsName = getApplicantName(applicationId);
 			for (int i = 0; i < response.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) response.getDataList().get(i), ProposalMappingRequest.class);
@@ -669,10 +675,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// FundProviderDetailsRequest.class);
 				// fundProviderDetailsRequest.get
 				try {
-					if (CommonUtils.isObjectNullOrEmpty(getApplicantName(applicationId))) {
+					if (CommonUtils.isObjectNullOrEmpty(fsName)) {
 						parameters.put("fs_name", "NA");
 					} else {
-						parameters.put("fs_name", getApplicantName(applicationId));
+						parameters.put("fs_name", fsName);
 					}
 
 				} catch (Exception e) {
@@ -717,6 +723,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				notificationRequest
 						.addNotification(createNotification(a, userId, 0L, NotificationAlias.SYS_FS_FINAL_LOCK,
 								parameters, applicationId, proposalrequest.getFpProductId()));
+			}
+			logger.info("Before send mail-------------------------------------->");
+			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				logger.info("Current loan is corporate-------------------------------------->");
+				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
+						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
+					logger.info("Start sending mail when maker has lock primary details");
+					asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
+							applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());						
+				} else {
+					logger.info("NP userId or assign id null or empty-------------------------------------->");
+				}
+				
 			}
 			notificationClient.send(notificationRequest);
 			// send FP notification end
@@ -3685,12 +3705,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					Object values = gatewayClient.payout(gatewayRequest);
 					System.out.println("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
+					
+					logger.info("Start Sent Mail When FS select Online Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE,NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+					logger.info("End Sent Mail When FS select Online Payment");
+					
 					return values;
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE");
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
+			} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+				logger.info("Start Sent Mail When FS select CASH Payment");
+				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+				logger.info("End Sent Mail When FS select CASH Payment");
+			} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+				logger.info("Start Sent Mail When FS select CHEQUE Payment");
+				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+				logger.info("End Sent Mail When FS select CHEQUE Payment");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
