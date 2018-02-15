@@ -1342,6 +1342,7 @@ public class LoansClient {
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
 		try {
+			System.out.println("url====================>" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
