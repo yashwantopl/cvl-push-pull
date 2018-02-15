@@ -203,13 +203,13 @@ public class DDRFormController {
 			reportRequest.setType("NHBSDDR");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			
-			File file = new File("Nhbs"+".pdf");
-			System.out.println(file.getAbsolutePath());
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(byteArr);
-			fos.flush();
-			fos.close();
-			
+//			File file = new File("Nhbs"+".pdf");
+//			System.out.println(file.getAbsolutePath());
+//			FileOutputStream fos = new FileOutputStream(file);
+//			fos.write(byteArr);
+//			fos.flush();
+//			fos.close();
+//			
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 
