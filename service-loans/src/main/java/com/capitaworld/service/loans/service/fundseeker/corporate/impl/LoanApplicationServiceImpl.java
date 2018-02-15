@@ -3718,11 +3718,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 				logger.info("Start Sent Mail When FS select CASH Payment");
-				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.MAIL_FS_PAYMENT_CASH_CHEQUE);
+				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 				logger.info("End Sent Mail When FS select CASH Payment");
 			} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 				logger.info("Start Sent Mail When FS select CHEQUE Payment");
-				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.MAIL_FS_PAYMENT_CASH_CHEQUE);
+				asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 				logger.info("End Sent Mail When FS select CHEQUE Payment");
 			}
 		} catch (Exception e) {
