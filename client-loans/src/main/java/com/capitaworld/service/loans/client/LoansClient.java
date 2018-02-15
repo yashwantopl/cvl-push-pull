@@ -1340,7 +1340,7 @@ public class LoansClient {
 	}
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_DETAILS);
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
@@ -1349,7 +1349,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException("Loans service is not available while call getLoanMasterInfo");
 		}
 	}
 	
