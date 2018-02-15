@@ -81,6 +81,8 @@ public class LoanApplicationRequest implements Serializable {
 	private Date appointmentDate;
 
 	private String appointmentTime;
+	
+	private String address;
 
 	public LoanApplicationRequest() {
 	}
@@ -380,4 +382,13 @@ public class LoanApplicationRequest implements Serializable {
 	public void setAppointmentTime(String appointmentTime) {
 		this.appointmentTime = appointmentTime;
 	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
 }
