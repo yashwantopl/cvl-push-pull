@@ -1000,7 +1000,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			futureFinancialEstimatesDetailTo.setCreatedDate(new Date());
 			futureFinancialEstimateDetailsRepository.save(futureFinancialEstimatesDetailTo);
 		}
-		logger.info("Sucessfully save FutureFinancialEstimatesDetail to To ApllicationId ");
 		logger.info("================= Exit From getAndSaveFutureProjections()================== ");
 	}
 
@@ -1105,7 +1104,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	public void saveFinalWCToWC(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================Enter in saveFinalWCToWC() ===========");
 		// FinalTermLoanD
-		try {
+		
 			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
@@ -1119,20 +1118,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					"applicationId");
 			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-			finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalWCToWC()");
-			System.out.println("WC Loan detail not exist");
-			e.printStackTrace();
-		}
+		    finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToWC()================== ");
 	}
 
 	public void saveFinalWCToTL(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalWCToTL() ===========");
-		// FinalTermLoanD
-		try {
+		// FinalTermLoanD	
 			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalTermLoanDetailTo == null) {
@@ -1145,20 +1138,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
 			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalWCToTL()");
-			System.out.println("Final Term Loan detail not exist");
-			e.printStackTrace();
-		}
+			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToTL()================== ");
 	}
 
 	public void saveFinalWCToUSL(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalWCToUSL() ===========");
 		// FinalTermLoanD
-		try {
 			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
@@ -1171,20 +1158,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					"applicationId");
 			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalWCToUSL()");
-			System.out.println("Unsecure Loan detail not exist");
-			e.printStackTrace();
-		}
+			finalUnsecureLoanDetailTo=finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToUSL()================== ");
 	}
 
 	public void saveFinalTLToTL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToTL() ===========");
-		// FinalTermLoanD
-		try {
+		// FinalTermLoanD		
 			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalTermLoanDetailTo == null) {
@@ -1196,22 +1177,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
 			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-
-		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
-			e.printStackTrace();
-			throw e;
-			
-		}
-		logger.info("================= Exit From saveFinalTLToTL()================== ");
+			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
+			logger.info("================= Exit From saveFinalTLToTL()================== ");
 	}
 
 	public void saveFinalTLToWL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToWL() ===========");
 		// FinalTermLoanD
-		try {
 			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
@@ -1222,21 +1195,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
 			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-			finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalTLToWL()");
-			System.out.println("WL detail not exist");
-			e.printStackTrace();
-		}
+			finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToWL()================== ");
 	}
 
 	public void saveFinalTLToUSL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToUSL() ===========");
 		// FinalTermLoanD
-
-		try {
 			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
@@ -1248,21 +1214,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
 			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalTLToUSL()");
-			System.out.println("Unsecure detail not exist");
-			e.printStackTrace();
-		}
+			finalUnsecureLoanDetailTo=	finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToUSL()================== ");
 	}
 
 	public void saveFinalUSLToUSL(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToUSL() ===========");
 		// FinalTermLoanD
-
-		try {
 			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalUnsecureLoanDetailTo == null) {
@@ -1274,19 +1233,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalUnsecureLoanDetailTo, "id", "applicationId");
 			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalUSLToUSL()");
-			System.out.println("Unsecure detail not exist");
-			e.printStackTrace();
-		}
+			finalUnsecureLoanDetailTo=finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToUSL()================== ");
 	}
 
 	public void saveFinalUSLToWC(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToWC() ===========");
-		try {
 			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (finalWorkingCapitalLoanDetailTo == null) {
@@ -1299,19 +1252,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					"applicationId");
 			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-			finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Exception in saveFinalUSLToWC()");
-			System.out.println("WC Loan detail not exist");
-			e.printStackTrace();
-		}
+			finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToWC()================== ");
 	}
 
 	public void saveFinalUSLToTL(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToTL() ===========");
-		try {
+		
 			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
@@ -1323,13 +1271,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
 			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-
-		} catch (Exception e) {
-			logger.error("Error in saveFinalUSLToTL()");
-			System.out.println("Term Loan detail not exist");
-			e.printStackTrace();
-		}
+			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToTL()================== ");
 	}
 
@@ -1350,14 +1293,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			mappingDetailTo.setActive(true);
 			mappingDetailTo.setCreatedDate(new Date());
 			mappingDetailTo.setCreatedBy(userId);
-			networkRepository.save(mappingDetailTo);
+			networkRepository.save(mappingDetailTo);			
 		}
 		logger.info("================= Exit From getAndSaveFinalMCQOverseasNetworkIds()================== ");
 	}
 
 	public void getAndSaveFinalInformationFinancial() {
 		logger.info("================ Enter in getAndSaveFinalInformationFinancial() ===========");
-		try {
+		
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetailsList = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			logger.warn("---------- MonthlyTurnoverDetail  -----> " + monthlyTurnoverDetailsList);
@@ -1374,17 +1317,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				monthlyTurnoverDetailTo.setCreatedDate(new Date());
 				monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetailTo);
 			}
-		} catch (Exception e) {
-			logger.error("Exception in getAndSaveFinalInformationFinancial()");
-			e.printStackTrace();
-			/* throw new NullPointerException(CommonUtils.SOMETHING_WENT_WRONG); */
-		}
+		
 		logger.info("================= Exit From getAndSaveFinalInformationFinancial()================== ");
 	}
 
 	public void getAndSaveFinalOtherGuarantor() {
 		logger.info("================ Enter in getAndSaveFinalOtherGuarantor() ===========");
-		try {
 			List<GuarantorsCorporateDetail> guarantorsCorporateDetailList = guarantorsCorporateDetailRepository
 					.listGuarantorsCorporateFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			logger.warn("---------- GuarantorsCorporateDetail  -----> " + guarantorsCorporateDetailList);
@@ -1396,20 +1334,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				guarantorsCorporateDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 				guarantorsCorporateDetailTo.setCreatedDate(new Date());
 				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetailTo);
-
 			}
-
-		} catch (Exception e) {
-			logger.error("Exception in getAndSaveFinalOtherGuarantor()");
-			e.printStackTrace();
-			// TODO: handle exception
-		}
 		logger.info("================= Exit From getAndSaveFinalOtherGuarantor()================== ");
 	}
 
 	public void getAndSaveFinalOtherAssociatedConcern() {
 		logger.info("================ Enter in getAndSaveFinalOtherAssociatedConcern() ===========");
-		try {
+
 			List<AssociatedConcernDetail> associatedConcernDetailList = associatedConcernDetailRepository
 					.listAssociatedConcernFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			logger.warn("---------- AssociatedConcernDetail  -----> " + associatedConcernDetailList);
@@ -1422,12 +1353,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				associatedConcernDetailTo.setCreatedDate(new Date());
 				associatedConcernDetailRepository.save(associatedConcernDetailTo);
 			}
-
-		} catch (Exception e) {
-			logger.error("Exception in getAndSaveFinalOtherAssociatedConcern()");
-			e.printStackTrace();
-			// TODO: handle exception
-		}
 		logger.info("================= Exit From getAndSaveFinalOtherAssociatedConcern()================== ");
 	}
 
@@ -1663,10 +1588,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				for (Object obj : documentResponse.getDataList()) {
 					StorageDetailsResponse res = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) obj, StorageDetailsResponse.class);
-					documentRequest.setOriginalFileName(res.getOriginalFileName());
-					// String json =
-					// com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getStringfromObject(documentRequest);
-
+					documentRequest.setOriginalFileName(res.getOriginalFileName());			
 					JSONObject json = new JSONObject();
 					json.put("id", res.getId());
 					response = dmsClient.deleteIrrDocument(json.toJSONString());
