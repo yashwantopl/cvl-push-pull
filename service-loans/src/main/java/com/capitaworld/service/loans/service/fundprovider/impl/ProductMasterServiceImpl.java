@@ -450,13 +450,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<Object> getListByUserType(Long userId, Integer userType) {
+	public List<Object> getListByUserType(Long userId, Integer userType,Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMaster> results;
 		List<Object> requests = new ArrayList<>();
 		if (userType == 1) {
+			if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+			{
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			}
+			else
+			{
 			results = productMasterRepository.getUserRetailProductList(userId);
+			}
 			if (!CommonUtils.isListNullOrEmpty(results)) {
 				for (ProductMaster master : results) {
 					if (master.getProductId() == 3) {
@@ -471,8 +478,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				}
 			}
 		} else {
-
+			if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+			{
+				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+			}
+			else
+			{
 			results = productMasterRepository.getUserCorporateProductList(userId);
+			}
 			if (!CommonUtils.isListNullOrEmpty(results)) {
 				for (ProductMaster master : results) {
 					if (master.getProductId() == 1) {
