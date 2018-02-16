@@ -1085,5 +1085,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		return null;
 	}
+	
+	@Override
+	public void updateAssignDetails(ProposalMappingRequest request) {
+		try {
+			proposalDetailsClient.updateAssignDetails(request);
+		} catch (Exception e) {
+			logger.info("Throw Exception while updating assign issue");
+			e.printStackTrace();
+		}
+
+	}
 
 }

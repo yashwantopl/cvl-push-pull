@@ -219,4 +219,48 @@ public class ProposalController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	/**
+	 * AXIS BANK CHANGES (UPDATE ASSIGN BY AND ASSIGNTO FOR HO TO BO STEP)
+	 * @param request
+	 * @param httpServletRequest
+	 * @param clientUserType
+	 * @return
+	 * requestJson :- {fpProductId : 20,branchId : 2}
+	 */
+	@RequestMapping(value = "/updateAssignDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateAssignDetails(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in update assign details for axis bank flow");
+		try {
+			Integer userTypeInt = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userTypeInt || CommonUtils.UserType.NETWORK_PARTNER == userTypeInt) {
+				userId  = clientId;				
+			} else {
+				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			}
+			if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId()) || CommonUtils.isObjectNullOrEmpty(request.getBranchId())) {
+				logger.info("Fp Product id or Branch id null or empty !!");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
+			request.setUserId(userId);
+			proposalService.updateAssignDetails(request);
+			logger.info("Successfully updated assign details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.info("Throw Exception while update assign details");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 }
