@@ -319,7 +319,7 @@ public class AsyncComponent {
 	}
 	
 	
-	public UsersRequest getUserNameAndEmail(Long userId){
+	private UsersRequest getUserNameAndEmail(Long userId){
 		try {
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
@@ -654,6 +654,8 @@ public class AsyncComponent {
 		}
 		
 	}
+	
+	@Async
 	public void sendMailWhenFSSelectOnlinePayment(Long userId,PaymentRequest paymentInfo, NotificationTemplate emailNotificationTemplate,Long sysTemplateId) {
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(paymentInfo.getEmailAddress())) {
@@ -706,6 +708,7 @@ public class AsyncComponent {
 	 * @param productId
 	 * @param fsName
 	 */
+	@Async
 	public void sendEmailWhenMakerLockFinalDetails(Long checkerId,Long makerId,
 			String applicationCode,Integer productId,String fsName,Long applicationId) {
 		logger.info("Enter in send mail when aker has lock final details then send to checker ");
