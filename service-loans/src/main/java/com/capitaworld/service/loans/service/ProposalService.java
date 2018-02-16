@@ -30,4 +30,6 @@ public interface ProposalService {
 	
 	public Integer getPendingProposalCount(Long applicationId);
 	
+	public void updateAssignDetails(ProposalMappingRequest request);
+	
 }
