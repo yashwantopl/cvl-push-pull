@@ -83,6 +83,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String appointmentTime;
 	
 	private String address;
+	
+	private Boolean isMailSent;
 
 	public LoanApplicationRequest() {
 	}
@@ -390,5 +392,15 @@ public class LoanApplicationRequest implements Serializable {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+	public Boolean getIsMailSent() {
+		return isMailSent;
+	}
+
+	public void setIsMailSent(Boolean isMailSent) {
+		this.isMailSent = isMailSent;
+	}
+	
+	
 	
 }

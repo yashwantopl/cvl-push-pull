@@ -32,7 +32,9 @@ import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -482,7 +484,11 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			loanApplicationService.lockFinal(applicationId, userId, true);
+			LoanApplicationRequest loanApplicationRequest = loanApplicationService.lockFinal(applicationId, userId, true);
+			if(loanApplicationRequest.getIsMailSent()) {
+				asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),loanApplicationRequest.getNpUserId(),
+						loanApplicationRequest.getApplicationCode(),loanApplicationRequest.getProductId(),loanApplicationRequest.getName(),loanApplicationRequest.getId());	
+			}
 			CommonDocumentUtils.endHook(logger, "lockFinal");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
 					HttpStatus.OK);
@@ -1469,6 +1475,26 @@ public class LoanApplicationController {
 			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId,
 					clientId);
 			logger.info("Response========>{}", applicationMaster);
+			
+			try {
+				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+					logger.info("Start Sent Mail When FS select Online Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE,NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+					logger.info("End Sent Mail When FS select Online Payment");
+				} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+					logger.info("Start Sent Mail When FS select CASH Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					logger.info("End Sent Mail When FS select CASH Payment");
+				} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+					logger.info("Start Sent Mail When FS select CHEQUE Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					logger.info("End Sent Mail When FS select CHEQUE Payment");
+				}	
+			} catch(Exception e) {
+				e.printStackTrace();
+				logger.info("Throw Exception while send mail when save payment ");
+			}
+			
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
 			response.setData(applicationMaster);
 			logger.info("end save_payment_info()");
