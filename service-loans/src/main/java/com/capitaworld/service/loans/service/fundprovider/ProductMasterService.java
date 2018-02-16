@@ -24,7 +24,7 @@ public interface ProductMasterService {
 
 	public List<ProductMasterRequest> getList(Long userId);
 	
-	public List<Object> getListByUserType(Long userId,Integer userType);
+	public List<Object> getListByUserType(Long userId,Integer userType,Long userOrgId);
 
 	public String getUserNameByApplicationId(Long productId, Long userId);
 

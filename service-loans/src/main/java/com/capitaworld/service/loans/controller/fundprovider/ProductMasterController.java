@@ -261,6 +261,8 @@ public class ProductMasterController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}		
+			//get org id
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
 				logger.warn("UserId Require to get product Details ==>" + userId);
@@ -276,7 +278,7 @@ public class ProductMasterController {
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getListByUserType(userId, userType));
+			loansResponse.setListData(productMasterService.getListByUserType(userId, userType,userOrgId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
