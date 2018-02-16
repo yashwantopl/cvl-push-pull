@@ -135,6 +135,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			applicationMaster = loanApplicationRepository.findOne(appId);
 			
+			userId=applicationMaster.getUserId();
 			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
 			
 			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
