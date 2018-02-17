@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.Date;
+
 public class CorporateProposalDetails {
 
 	private String name;
@@ -19,6 +21,15 @@ public class CorporateProposalDetails {
 	private int fsType;
 	
 	private String address;
+	
+	private String assignBy;
+	
+	private String assignbranch;
+	
+	private Date assignDate;
+	
+	private Boolean isAssignedToBranch;
+	
 
 	public String getAddress() {
 		return address;
@@ -91,6 +102,40 @@ public class CorporateProposalDetails {
 	public void setFsType(int fsType) {
 		this.fsType = fsType;
 	}
+
+	public String getAssignBy() {
+		return assignBy;
+	}
+
+	public void setAssignBy(String assignBy) {
+		this.assignBy = assignBy;
+	}
+
+	public String getAssignbranch() {
+		return assignbranch;
+	}
+
+	public void setAssignbranch(String assignbranch) {
+		this.assignbranch = assignbranch;
+	}
+
+	public Date getAssignDate() {
+		return assignDate;
+	}
+
+	public void setAssignDate(Date assignDate) {
+		this.assignDate = assignDate;
+	}
+
+	public Boolean getIsAssignedToBranch() {
+		return isAssignedToBranch;
+	}
+
+	public void setIsAssignedToBranch(Boolean isAssignedToBranch) {
+		this.isAssignedToBranch = isAssignedToBranch;
+	}
+	
+	
 	
 		
 }
