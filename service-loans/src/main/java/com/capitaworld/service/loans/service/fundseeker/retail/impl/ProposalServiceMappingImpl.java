@@ -248,6 +248,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+					
+					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
+						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+							corporateProposalDetails.setAssignBy(usersRequest.getName());
+						}
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
+						try {
+							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
+							if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+								corporateProposalDetails.setAssignbranch((String)userResponse.getData());
+							}	
+						} catch (Exception e) {
+							logger.info("Throw Exception while get branch name by branch id--------->" +proposalrequest.getAssignBranchTo());
+							e.printStackTrace();
+						}
+						corporateProposalDetails.setIsAssignedToBranch(true);
+					} else {
+						corporateProposalDetails.setIsAssignedToBranch(false);
+					}
+					
 					proposalDetailsList.add(corporateProposalDetails);
 				} else {
 					Long fpProductId = request.getFpProductId();
@@ -403,6 +425,24 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return proposalDetailsList;
 	}
+	
+	private UsersRequest getUserNameAndEmail(Long userId){
+		try {
+			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+    				return request;
+    			}
+    		}
+		} catch(Exception e) {
+			logger.info("Throw exception while get name and email by userid");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
@@ -1087,14 +1127,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 	
 	@Override
-	public void updateAssignDetails(ProposalMappingRequest request) {
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws Exception {
 		try {
-			proposalDetailsClient.updateAssignDetails(request);
+			return proposalDetailsClient.updateAssignDetails(request);
 		} catch (Exception e) {
 			logger.info("Throw Exception while updating assign issue");
 			e.printStackTrace();
+			throw new Exception("Somethig went wrong");
 		}
-
 	}
 
 }

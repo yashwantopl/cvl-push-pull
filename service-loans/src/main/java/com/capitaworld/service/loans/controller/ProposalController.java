@@ -249,9 +249,9 @@ public class ProposalController {
 			}
 			
 			request.setUserId(userId);
-			proposalService.updateAssignDetails(request);
+			ProposalMappingResponse updateAssignDetails = proposalService.updateAssignDetails(request);
 			logger.info("Successfully updated assign details");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(updateAssignDetails.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.info("Throw Exception while update assign details");

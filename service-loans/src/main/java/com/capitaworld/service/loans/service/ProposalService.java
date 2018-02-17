@@ -30,6 +30,6 @@ public interface ProposalService {
 	
 	public Integer getPendingProposalCount(Long applicationId);
 	
-	public void updateAssignDetails(ProposalMappingRequest request);
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request)  throws Exception;
 	
 }
