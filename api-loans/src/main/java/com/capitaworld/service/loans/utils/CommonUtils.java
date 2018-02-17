@@ -751,7 +751,7 @@ public class CommonUtils {
 				TOTAL_DEBT(7,"Total Debt"),
 				SECURE_LOAN(8,"Secure Loan"),
 			  	UNSECURE_LOAN(9,"Unsecure Loan"),
-			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends & Relatives treated ad Qausi"),
+			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends And Relatives treated ad Qausi"),
 			  	CAPITAL(11,"Capital"),
 			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
 			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
