@@ -1,8 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +30,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 
@@ -46,7 +45,9 @@ public class DDRFormController {
 	
 	@Autowired
 	private ReportsClient reportsClient; 
-	
+
+	@Autowired
+	private LoanApplicationService loanApplicationService;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -185,7 +186,10 @@ public class DDRFormController {
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if(CommonUtils.UserType.FUND_PROVIDER == userType){
+			userId = loanApplicationService.getUserIdByApplicationId(appId);
+		}
+		else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
 		}
 		
