@@ -22,7 +22,7 @@ public interface ProductMasterService {
 
 	public ProductMaster getProductMaster(Long id);
 
-	public List<ProductMasterRequest> getList(Long userId);
+	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	
 	public List<Object> getListByUserType(Long userId,Integer userType,Long userOrgId);
 

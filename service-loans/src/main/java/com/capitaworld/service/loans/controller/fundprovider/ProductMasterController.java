@@ -230,7 +230,8 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			List<ProductMasterRequest> response = productMasterService.getList(userId);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			List<ProductMasterRequest> response = productMasterService.getList(userId,userOrgId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");

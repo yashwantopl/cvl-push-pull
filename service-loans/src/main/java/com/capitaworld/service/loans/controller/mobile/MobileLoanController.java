@@ -255,7 +255,7 @@ public class MobileLoanController {
 						HttpStatus.OK);
 			}
 			
-			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId());
+			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId(),null);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(list);
 			CommonDocumentUtils.endHook(logger, "getProductList for mobile");

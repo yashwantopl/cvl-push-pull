@@ -261,10 +261,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ProductMasterRequest> getList(Long userId) {
+	public List<ProductMasterRequest> getList(Long userId,Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getList");
-		List<ProductMaster> results = productMasterRepository.getUserProductList(userId);
+		List<ProductMaster> results;
+		if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+		{
+			results = productMasterRepository.getUserProductListByOrgId(userOrgId);
+		}
+		else
+		{
+		 results = productMasterRepository.getUserProductList(userId);
+		}
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
