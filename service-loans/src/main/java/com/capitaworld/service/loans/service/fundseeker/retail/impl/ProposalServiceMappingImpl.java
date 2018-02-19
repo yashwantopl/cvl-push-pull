@@ -1156,4 +1156,32 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 	}
 
+	@Override
+	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+		ProposalMappingResponse response = new ProposalMappingResponse();
+	
+		try {
+			response = proposalDetailsClient.proposalListByAssignee(request);
+			//mappingRequests =response.getDataList();
+			if(!CommonUtils.isListNullOrEmpty(response.getDataList()))
+			{
+				List<ProposalMappingRequest> mappingRequests = new ArrayList<>(response.getDataList().size());
+				for(int i=0;i<response.getDataList().size();i++)
+				{
+					
+					ProposalMappingRequest mappingRequest=MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getDataList().get(i),ProposalMappingRequest.class);
+					mappingRequest.setApplicationLoanAmount(loanApplicationRepository.findOne(mappingRequest.getApplicationId()).getAmount());
+					mappingRequests.add(mappingRequest);
+					//MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
+				}
+				return mappingRequests;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+
 }

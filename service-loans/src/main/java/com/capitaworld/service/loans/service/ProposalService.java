@@ -12,6 +12,8 @@ public interface ProposalService {
 
 	public List<?>  fundproviderProposal(ProposalMappingRequest request);
 	
+	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
+	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
 	
 	public ProposalCountResponse fundProviderProposalCount(ProposalMappingRequest request);
