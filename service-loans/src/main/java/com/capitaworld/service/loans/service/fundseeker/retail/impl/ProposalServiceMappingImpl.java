@@ -1166,6 +1166,29 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
+		
+		try {
+			//set branch id to proposal request
+			UsersRequest usersRequest=new UsersRequest();
+			usersRequest.setId(request.getUserId());
+			logger.info("Current user id ---------------------------------------------------> "+request.getUserId());
+			UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
+			if(!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+				if(basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
+					logger.info("Current user is Branch officer");
+					request.setBranchId(basicDetailsRequest.getId());	
+				}
+			} else {
+				logger.info("Branch Id Can't found");
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Branch Id from UserId");
+			e.printStackTrace();
+		}
+		
 		List proposalByMatches = new ArrayList();
 		try {
 			ProposalMappingResponse response = proposalDetailsClient.proposalListByAssignee(request);
