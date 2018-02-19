@@ -124,14 +124,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		List proposalDetailsList = new ArrayList();
 
 		try {
-
-			//set branch id to proposal request
-			UsersRequest usersRequest=new UsersRequest();
-			usersRequest.setId(request.getUserId());
-			UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
-			BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
-			request.setBranchId(basicDetailsRequest.getId());
+			
+			try {
+				//set branch id to proposal request
+				UsersRequest usersRequest=new UsersRequest();
+				usersRequest.setId(request.getUserId());
+				UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
+				BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
+				if(!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+					request.setBranchId(basicDetailsRequest.getId());	
+				}	
+			} catch (Exception e) {
+				logger.info("Throw Exception While Get Branch Id from UserId");
+				e.printStackTrace();
+			}
+			
 
 			//END set branch id to proposal request
 			// calling MATCHENGINE for getting proposal list
@@ -261,14 +269,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-						 usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
+						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
-							 userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
+							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
 							if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
 								corporateProposalDetails.setAssignbranch((String)userResponse.getData());
 							}	
