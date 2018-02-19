@@ -41,6 +41,16 @@ public class CommonUtils {
 	public static final Long TL_LESS_TWO = 20000000L;
 
 	
+	public interface UsersRoles {
+		public static final Long MAKER =1l;
+		public static final Long CHECKER = 2l;
+		public static final Long APPROVER = 3l;
+		public static final Long ADMIN_HO = 4l;
+		public static final Long HO = 5l;
+		public static final Long BO = 6l;
+	}
+	
+	
 	public interface DenominationInAmount  {
 		public static final Long  LAKHS =100000l;
 		public static final Long MILLIONS = 1000000l;
