@@ -261,14 +261,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
+						 usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
-							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
+							 userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
 							if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
 								corporateProposalDetails.setAssignbranch((String)userResponse.getData());
 							}	
