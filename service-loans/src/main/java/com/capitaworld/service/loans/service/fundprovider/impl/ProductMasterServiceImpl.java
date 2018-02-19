@@ -314,7 +314,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public ProductDetailsResponse getProductDetailsResponse(Long userId) {
+	public ProductDetailsResponse getProductDetailsResponse(Long userId , Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		UserResponse usrResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
@@ -322,13 +322,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		if (usrResponse != null && usrResponse.getStatus() == 200) {
 			Long fpMappingId = usrResponse.getId();
 			if (fpMappingId != null) {
-				ProductMaster userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+				ProductMaster userProduct = null;
+				if(!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId);
+				} else {
+					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+				}
 				productDetailsResponse.setProductId(userProduct.getProductId());
 				productDetailsResponse.setProductMappingId(fpMappingId);
 				productDetailsResponse.setMessage("Proposal Details Sent");
 				productDetailsResponse.setStatus(HttpStatus.OK.value());
 			} else {
-				List<ProductMaster> userProductList = productMasterRepository.getUserProductList(userId);
+				List<ProductMaster> userProductList = null;
+				if(!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					userProductList = productMasterRepository.getUserProductListByOrgId(userOrgId);
+				} else {
+					userProductList = productMasterRepository.getUserProductList(userId);
+				}
 				if (!CommonUtils.isListNullOrEmpty(userProductList)) {
 					ProductMaster productMaster = userProductList.get(0);
 					productDetailsResponse.setProductId(productMaster.getProductId());
