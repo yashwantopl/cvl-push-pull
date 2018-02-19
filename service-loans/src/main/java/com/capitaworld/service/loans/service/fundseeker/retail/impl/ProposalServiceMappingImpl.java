@@ -269,7 +269,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								imagePath = null;
 						}
 					}
-
+					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 					corporateProposalDetails.setImagePath(imagePath);
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
