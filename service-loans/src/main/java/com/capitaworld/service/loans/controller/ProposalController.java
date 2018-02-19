@@ -57,7 +57,7 @@ public class ProposalController {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
 		request.setUserId(userId);
-		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
+		List proposalDetailsList=proposalService.fundproviderProposal(request);
 		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
