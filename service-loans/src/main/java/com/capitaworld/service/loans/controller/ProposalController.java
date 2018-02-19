@@ -291,6 +291,7 @@ public class ProposalController {
 					new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
+		logger.info("User id ------------------>" + userId + "----------------------------" + request.getFpProductId());
 		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
 		
 		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
