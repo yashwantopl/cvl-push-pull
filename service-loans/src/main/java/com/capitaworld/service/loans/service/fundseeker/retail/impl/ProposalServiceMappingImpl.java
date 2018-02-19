@@ -63,6 +63,8 @@ import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
+import com.capitaworld.service.users.model.BranchMasterRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.OrganisationBranchData;
 import com.capitaworld.service.users.model.UserResponse;
@@ -123,8 +125,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		try {
 
-			// calling MATCHENGINE for getting proposal list
+			//set branch id to proposal request
+			UsersRequest usersRequest=new UsersRequest();
+			usersRequest.setId(request.getUserId());
+			UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
+			request.setBranchId(basicDetailsRequest.getId());
 
+			//END set branch id to proposal request
+			// calling MATCHENGINE for getting proposal list
+			
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
 			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
