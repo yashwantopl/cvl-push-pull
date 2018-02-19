@@ -41,7 +41,7 @@ public class ProposalController {
 	private AsyncComponent asyncComponent;
 	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
 		logger.info("request.getPageIndex()::"+request.getPageIndex());
@@ -57,8 +57,10 @@ public class ProposalController {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
 		request.setUserId(userId);
-		List proposalDetailsList=proposalService.fundproviderProposal(request);
-		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
+		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
+		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		loansResponse.setListData(proposalDetailsList);
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		
 	}
 	
@@ -261,6 +263,40 @@ public class ProposalController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/fundproviderProposalByAssignBy", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fundproviderProposalByAssignBy(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		// request must not be null
+		logger.info("request.getPageIndex()::"+request.getPageIndex());
+		logger.info("request.getSize()::"+request.getSize());
+		
+		Long userId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+			userId = clientId;
+		} else {
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+		}
+		request.setUserId(userId);
+		
+		if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId())) {
+			logger.info("Fp Product id null or empty !!");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		}
+		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
+		
+		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		loansResponse.setListData(proposalDetailsList);
+		CommonDocumentUtils.endHook(logger, "fundproviderProposalByAssignBy");
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		
+	}
+	
 	
 	
 }
