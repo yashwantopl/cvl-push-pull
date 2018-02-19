@@ -32,7 +32,7 @@ public interface ProductMasterService {
 
 	public Object[] getUserDetailsByPrductId(Long fpMappingId);
 
-	public ProductDetailsResponse getProductDetailsResponse(Long userId);
+	public ProductDetailsResponse getProductDetailsResponse(Long userId, Long userOrgId);
 
 	public FpProductDetails getProductDetails(Long productMappingId) throws Exception;
 

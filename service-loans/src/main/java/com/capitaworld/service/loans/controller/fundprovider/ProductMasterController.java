@@ -415,8 +415,12 @@ public class ProductMasterController {
 				CommonDocumentUtils.endHook(logger, "fpProductDetails");
 				return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 			}
+			Long userOrgId = null;
+			if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
+				userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);	
+			}
 
-			ProductDetailsResponse productDetailsResponse = productMasterService.getProductDetailsResponse(userId);
+			ProductDetailsResponse productDetailsResponse = productMasterService.getProductDetailsResponse(userId,userOrgId);
 			CommonDocumentUtils.endHook(logger, "fpProductDetails");
 			return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 

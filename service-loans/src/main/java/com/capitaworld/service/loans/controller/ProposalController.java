@@ -109,6 +109,9 @@ public class ProposalController {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
+		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
+		}
 		request.setUserType(userType);
 		request.setUserId(userId);
 		ProposalMappingResponse response = proposalService.get(request);
