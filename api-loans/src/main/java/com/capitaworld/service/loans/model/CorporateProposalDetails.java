@@ -28,6 +28,8 @@ public class CorporateProposalDetails {
 	
 	private Date assignDate;
 	
+	private Date lastStatusActionDate;
+	
 	private Boolean isAssignedToBranch;
 	
 
@@ -133,6 +135,14 @@ public class CorporateProposalDetails {
 
 	public void setIsAssignedToBranch(Boolean isAssignedToBranch) {
 		this.isAssignedToBranch = isAssignedToBranch;
+	}
+
+	public Date getLastStatusActionDate() {
+		return lastStatusActionDate;
+	}
+
+	public void setLastStatusActionDate(Date lastStatusActionDate) {
+		this.lastStatusActionDate = lastStatusActionDate;
 	}
 	
 	
