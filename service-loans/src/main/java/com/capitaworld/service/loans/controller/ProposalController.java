@@ -151,9 +151,7 @@ public class ProposalController {
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
-		if(!CommonUtils.isObjectListNull(request.getJobId(),request.getActionId(),request.getToStep(),request.getCurrentStep())) {
-			request.setClientId(clientId);
-		}
+		request.setClientId(clientId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 	
