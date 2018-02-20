@@ -40,6 +40,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.ProposalService;
+import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -112,6 +113,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private LogService logService;
 
 	DecimalFormat df = new DecimalFormat("#");
 	
@@ -271,6 +275,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 					corporateProposalDetails.setImagePath(imagePath);
+					corporateProposalDetails.setLastStatusActionDate(logService.getDateByLogType(proposalrequest.getApplicationId(), proposalrequest.getDateTypeMasterId()));
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
