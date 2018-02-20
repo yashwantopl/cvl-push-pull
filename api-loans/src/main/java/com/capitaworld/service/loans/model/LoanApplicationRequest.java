@@ -85,6 +85,26 @@ public class LoanApplicationRequest implements Serializable {
 	private String address;
 	
 	private Boolean isMailSent;
+	
+	private Boolean isNhbsApplication;
+	
+	private Integer ddrStatusId;
+
+	public Integer getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Integer ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
+	public Boolean getIsNhbsApplication() {
+		return isNhbsApplication;
+	}
+
+	public void setIsNhbsApplication(Boolean isNhbsApplication) {
+		this.isNhbsApplication = isNhbsApplication;
+	}
 
 	public LoanApplicationRequest() {
 	}
