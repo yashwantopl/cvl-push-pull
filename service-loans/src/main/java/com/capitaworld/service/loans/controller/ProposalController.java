@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
@@ -152,6 +153,10 @@ public class ProposalController {
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(request.getWorkflowRequest())) {
+			request.getWorkflowRequest().setUserId(userId);
+			request.getWorkflowRequest().setClientId(clientId);
+		}
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 	
