@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -67,6 +69,9 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayBaseUrl;
+	
+	@Value("${capitaworld.service.reports.url}")
+	private String reportsBaseUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -133,6 +138,13 @@ public class LoansMain {
 		GatewayClient gatewayClient = new GatewayClient(gatewayBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
 		return gatewayClient;
+	}
+	
+	@Bean
+	public ReportsClient reportsClient() {
+		ReportsClient reportsClient = new ReportsClient(reportsBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
+		return reportsClient;
 	}
 
 }

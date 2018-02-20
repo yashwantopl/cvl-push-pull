@@ -41,7 +41,7 @@ public class ProposalController {
 	private AsyncComponent asyncComponent;
 	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
 		logger.info("request.getPageIndex()::"+request.getPageIndex());
@@ -58,7 +58,9 @@ public class ProposalController {
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
-		return new ResponseEntity<List>(proposalDetailsList,HttpStatus.OK);
+		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		loansResponse.setListData(proposalDetailsList);
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		
 	}
 	
@@ -106,6 +108,9 @@ public class ProposalController {
 		} else {
 			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));	
 		}
 		request.setUserType(userType);
 		request.setUserId(userId);
@@ -219,4 +224,83 @@ public class ProposalController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	/**
+	 * AXIS BANK CHANGES (UPDATE ASSIGN BY AND ASSIGNTO FOR HO TO BO STEP)
+	 * @param request
+	 * @param httpServletRequest
+	 * @param clientUserType
+	 * @return
+	 * requestJson :- {fpProductId : 20,branchId : 2}
+	 */
+	@RequestMapping(value = "/updateAssignDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateAssignDetails(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in update assign details for axis bank flow");
+		try {
+			Integer userTypeInt = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userTypeInt || CommonUtils.UserType.NETWORK_PARTNER == userTypeInt) {
+				userId  = clientId;				
+			} else {
+				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			}
+			if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId()) || CommonUtils.isObjectNullOrEmpty(request.getBranchId())) {
+				logger.info("Fp Product id or Branch id null or empty !!");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			
+			request.setUserId(userId);
+			ProposalMappingResponse updateAssignDetails = proposalService.updateAssignDetails(request);
+			logger.info("Successfully updated assign details");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(updateAssignDetails.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.info("Throw Exception while update assign details");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/fundproviderProposalByAssignBy", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fundproviderProposalByAssignBy(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		// request must not be null
+		logger.info("request.getPageIndex()::"+request.getPageIndex());
+		logger.info("request.getSize()::"+request.getSize());
+		
+		Long userId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+			userId = clientId;
+		} else {
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+		}
+		request.setUserId(userId);
+		
+		if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId())) {
+			logger.info("Fp Product id null or empty !!");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+					HttpStatus.OK);
+		}
+		logger.info("User id ------------------>" + userId + "----------------------------" + request.getFpProductId());
+		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
+		
+		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		loansResponse.setListData(proposalDetailsList);
+		CommonDocumentUtils.endHook(logger, "fundproviderProposalByAssignBy");
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		
+	}
+	
+	
+	
 }

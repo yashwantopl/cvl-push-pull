@@ -77,6 +77,14 @@ public class LoansResponse implements Serializable{
 		this.status = status;
 		this.data = data;
 	}
+	
+	public LoansResponse(String message, Integer status, byte[] contentInBytes) {
+		super();
+		this.message = message;
+		this.status = status;
+		this.contentInBytes = contentInBytes;
+	}
+
 
 
 	public Long getId() {

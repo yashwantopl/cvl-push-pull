@@ -230,7 +230,8 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			List<ProductMasterRequest> response = productMasterService.getList(userId);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			List<ProductMasterRequest> response = productMasterService.getList(userId,userOrgId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
@@ -261,6 +262,8 @@ public class ProductMasterController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}		
+			//get org id
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
 				logger.warn("UserId Require to get product Details ==>" + userId);
@@ -276,7 +279,7 @@ public class ProductMasterController {
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getListByUserType(userId, userType));
+			loansResponse.setListData(productMasterService.getListByUserType(userId, userType,userOrgId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -412,8 +415,12 @@ public class ProductMasterController {
 				CommonDocumentUtils.endHook(logger, "fpProductDetails");
 				return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 			}
+			Long userOrgId = null;
+			if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
+				userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);	
+			}
 
-			ProductDetailsResponse productDetailsResponse = productMasterService.getProductDetailsResponse(userId);
+			ProductDetailsResponse productDetailsResponse = productMasterService.getProductDetailsResponse(userId,userOrgId);
 			CommonDocumentUtils.endHook(logger, "fpProductDetails");
 			return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 

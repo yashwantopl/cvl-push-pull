@@ -1,9 +1,13 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +20,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.DDRMultipart;
 
 @RestController
 @RequestMapping("/ddr")
@@ -31,6 +42,15 @@ public class DDRFormController {
 	
 	@Autowired
 	private DDRFormService ddrFormService;
+	
+	@Autowired
+	private ReportsClient reportsClient; 
+
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+
+	@Autowired
+	private DMSClient dmsClient;
 	
 	/**
 	 * SAVE ALL DDR FIELDS EXCEPT FRAME
@@ -157,6 +177,70 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
+	}
+	
+	
+	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "clientId", required = false) Long clientId){
+		logger.info("In generateDDRPDF");
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+		if(CommonUtils.UserType.FUND_PROVIDER == userType){
+			userId = loanApplicationService.getUserIdByApplicationId(appId);
+		}
+		else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			userId = clientId;
+		}
+		
+		try {
+			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
+			
+			Map<String, Object> obj = new HashMap<String, Object>();
+			obj.put("autoFilled",oneFormDetails);
+			obj.put("toBeFilled", dDRFormDetailsRequest);
+			System.out.println(obj);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(obj);
+			reportRequest.setTemplate("NHBSDDR");
+			reportRequest.setType("NHBSDDR");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			
+//			File file = new File("Nhbs"+".pdf");
+//			System.out.println(file.getAbsolutePath());
+//			FileOutputStream fos = new FileOutputStream(file);
+//			fos.write(byteArr);
+//			fos.flush();
+//			fos.close();
+//			
+			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			  JSONObject jsonObj = new JSONObject();
+
+					jsonObj.put("applicationId", appId);
+				jsonObj.put("productDocumentMappingId", 329L);
+				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put("originalFileName", "NHBS_"+appId+".pdf");
+				
+				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+				if(documentResponse.getStatus() == 200){
+				System.out.println(documentResponse.getData());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfull", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
+				}
+				else{
+					 return new ResponseEntity<LoansResponse>(
+								new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				}
+//			response.getOutputStream().write(byteArr);
+//			response.setContentType("application/pdf");     
+//			response.setHeader("Content-Disposition", "attachment; filename=\""+"test.pdf"+"\"");
+        } catch (Exception e) {
+        	logger.info("thrown exception from generateDDRPDF");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
 	}
 	
 }

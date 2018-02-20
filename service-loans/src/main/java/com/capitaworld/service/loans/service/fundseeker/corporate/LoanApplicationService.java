@@ -39,7 +39,7 @@ public interface LoanApplicationService {
 
 	public boolean lockPrimary(Long applicationId, Long userId,boolean flag) throws Exception;
 
-	public boolean lockFinal(Long applicationId, Long userId,boolean flag) throws Exception;
+	public LoanApplicationRequest lockFinal(Long applicationId, Long userId,boolean flag) throws Exception;
 	
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	

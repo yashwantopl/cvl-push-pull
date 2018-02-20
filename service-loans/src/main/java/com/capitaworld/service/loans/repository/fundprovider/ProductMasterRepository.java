@@ -27,17 +27,29 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMaster> getUserProductList(@Param("userId") Long userId);
 	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true")
+	public List<ProductMaster> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15)")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15)")
+	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId not in (1,2)")
 	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId not in (1,2)")
+	public List<ProductMaster> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and productId=:productId ")
 	public List<ProductMaster> getUserProductListByProduct(@Param("userId") Long userId,@Param("productId") Integer productId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId ")
 	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.id=:productId ")
+	public ProductMaster getUserProductByOrgId(@Param("productId") Long productId,@Param("userOrgId") Long userOrgId);
 	
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);

@@ -41,6 +41,16 @@ public class CommonUtils {
 	public static final Long TL_LESS_TWO = 20000000L;
 
 	
+	public interface UsersRoles {
+		public static final Long MAKER =1l;
+		public static final Long CHECKER = 2l;
+		public static final Long APPROVER = 3l;
+		public static final Long ADMIN_HO = 4l;
+		public static final Long HO = 5l;
+		public static final Long BO = 6l;
+	}
+	
+	
 	public interface DenominationInAmount  {
 		public static final Long  LAKHS =100000l;
 		public static final Long MILLIONS = 1000000l;
@@ -751,7 +761,7 @@ public class CommonUtils {
 				TOTAL_DEBT(7,"Total Debt"),
 				SECURE_LOAN(8,"Secure Loan"),
 			  	UNSECURE_LOAN(9,"Unsecure Loan"),
-			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends & Relatives treated ad Qausi"),
+			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends And Relatives treated ad Qausi"),
 			  	CAPITAL(11,"Capital"),
 			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
 			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
