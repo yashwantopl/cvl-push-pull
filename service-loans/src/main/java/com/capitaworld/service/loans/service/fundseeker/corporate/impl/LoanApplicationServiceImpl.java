@@ -540,10 +540,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
 				request.setFinalLocked(master.getIsFinalLocked());
 				try {
-					ProposalMappingResponse response = proposalDetailsClient
-							.getFundSeekerApplicationStatus(master.getId());
-					request.setStatus(
-							CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
+					if(!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())){
+						request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
+						request.setIsNhbsApplication(true);
+						request.setDdrStatusId(Integer.valueOf(master.getDdrStatusId().toString()));
+					}else{
+						ProposalMappingResponse response = proposalDetailsClient
+								.getFundSeekerApplicationStatus(master.getId());
+						request.setStatus(
+								CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
+						request.setIsNhbsApplication(false);
+					}					
 					com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 							.getById(master.getProductId());
 					request.setName(loanType.getValue());

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -85,7 +84,20 @@ public class ProposalController {
 	}
 	
 	@RequestMapping(value = "/count/fundprovider", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProposalCountResponse> fundProviderProposalCount(@RequestBody ProposalMappingRequest request) {
+	public ResponseEntity<ProposalCountResponse> fundProviderProposalCount(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+		Long userId = null;
+		Long userType = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+			userId = clientId;
+			userType = clientUserType;
+		} else {
+			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
+		}
+		request.setUserId(userId);
 		return new ResponseEntity<ProposalCountResponse>(proposalService.fundProviderProposalCount(request),HttpStatus.OK);
 	}
 	
@@ -139,6 +151,7 @@ public class ProposalController {
 		}
 		request.setLastActionPerformedBy(userType);
 		request.setUserId(userId);
+		request.setClientId(clientId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);
 	}
 	
