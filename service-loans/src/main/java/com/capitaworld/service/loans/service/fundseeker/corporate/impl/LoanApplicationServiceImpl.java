@@ -3690,6 +3690,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationMaster.setPaymentAmount(paymentRequest.getPaymentAmount());
 			loanApplicationMaster.setAppointmentDate(paymentRequest.getAppointmentDate());
 			loanApplicationMaster.setAppointmentTime(paymentRequest.getAppointmentTime());
+			loanApplicationMaster.setIsAcceptConsent(paymentRequest.getIsAcceptConsent());
 			loanApplicationRepository.save(loanApplicationMaster);
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(paymentRequest.getApplicationId());

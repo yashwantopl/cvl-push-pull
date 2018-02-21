@@ -606,6 +606,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setTypeOfPayment(loanApplicationMaster.getTypeOfPayment());
 			paymentRequest.setAppointmentDate(loanApplicationMaster.getAppointmentDate());
 			paymentRequest.setAppointmentTime(loanApplicationMaster.getAppointmentTime());
+			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {

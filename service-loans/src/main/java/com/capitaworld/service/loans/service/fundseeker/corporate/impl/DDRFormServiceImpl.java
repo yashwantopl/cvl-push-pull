@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -1303,18 +1304,18 @@ public class DDRFormServiceImpl implements DDRFormService{
 		DDRCMACalculationResponse leverage = new DDRCMACalculationResponse();
         leverage.setKeyId(DDRFinancialSummaryFields.LEVERAGE.getId());
         leverage.setKeyName(DDRFinancialSummaryFields.LEVERAGE.getValue());
-        leverage.setProvisionalYear(netWorthResponse.getProvisionalYear() > 0 ? totalLiability.getProvisionalYear() / netWorthResponse.getProvisionalYear() : 0.0);
-        leverage.setLastYear(netWorthResponse.getLastYear() > 0 ? totalLiability.getLastYear() / netWorthResponse.getLastYear()  : 0.0);
-        leverage.setLastToLastYear(netWorthResponse.getLastToLastYear() > 0 ? totalLiability.getLastToLastYear() / netWorthResponse.getLastToLastYear()  : 0.0);
+        leverage.setProvisionalYear( CommonUtils.checkDouble(netWorthResponse.getProvisionalYear() > 0 ? totalLiability.getProvisionalYear() / netWorthResponse.getProvisionalYear() : 0.0));
+        leverage.setLastYear( CommonUtils.checkDouble(netWorthResponse.getLastYear() > 0 ? totalLiability.getLastYear() / netWorthResponse.getLastYear()  : 0.0));
+        leverage.setLastToLastYear( CommonUtils.checkDouble(netWorthResponse.getLastToLastYear() > 0 ? totalLiability.getLastToLastYear() / netWorthResponse.getLastToLastYear()  : 0.0));
         leverage.setDiffPvsnlAndLastYear(calculateFinancialSummary(leverage.getProvisionalYear(),leverage.getLastYear()));
         responseList.add(leverage);
         
         DDRCMACalculationResponse adjustedLeverage = new DDRCMACalculationResponse();
         adjustedLeverage.setKeyId(DDRFinancialSummaryFields.ADJUSTED_LEVERAGE.getId());
         adjustedLeverage.setKeyName(DDRFinancialSummaryFields.ADJUSTED_LEVERAGE.getValue());
-        adjustedLeverage.setProvisionalYear(adjustedNetWorth.getProvisionalYear() > 0 ? totalLiability.getProvisionalYear() / adjustedNetWorth.getProvisionalYear() : 0.0);
-        adjustedLeverage.setLastYear(adjustedNetWorth.getLastYear() > 0 ? totalLiability.getLastYear() / adjustedNetWorth.getLastYear() : 0.0);
-        adjustedLeverage.setLastToLastYear(adjustedNetWorth.getLastToLastYear() > 0 ? totalLiability.getLastToLastYear() / adjustedNetWorth.getLastToLastYear() : 0.0);
+        adjustedLeverage.setProvisionalYear( CommonUtils.checkDouble(adjustedNetWorth.getProvisionalYear() > 0 ? totalLiability.getProvisionalYear() / adjustedNetWorth.getProvisionalYear() : 0.0));
+        adjustedLeverage.setLastYear( CommonUtils.checkDouble(adjustedNetWorth.getLastYear() > 0 ? totalLiability.getLastYear() / adjustedNetWorth.getLastYear() : 0.0));
+        adjustedLeverage.setLastToLastYear( CommonUtils.checkDouble(adjustedNetWorth.getLastToLastYear() > 0 ? totalLiability.getLastToLastYear() / adjustedNetWorth.getLastToLastYear() : 0.0));
         adjustedLeverage.setDiffPvsnlAndLastYear(calculateFinancialSummary(adjustedLeverage.getProvisionalYear(),adjustedLeverage.getLastYear()));
         responseList.add(adjustedLeverage);
         
@@ -1341,18 +1342,18 @@ public class DDRFormServiceImpl implements DDRFormService{
         DDRCMACalculationResponse gearingResp = new DDRCMACalculationResponse();
         gearingResp.setKeyId(DDRFinancialSummaryFields.GEARING.getId());
         gearingResp.setKeyName(DDRFinancialSummaryFields.GEARING.getValue());
-        gearingResp.setProvisionalYear(netWorthResponse.getProvisionalYear() > 0 ? totalDebt.getProvisionalYear() / netWorthResponse.getProvisionalYear() : 0.0);
-        gearingResp.setLastYear(netWorthResponse.getLastYear() > 0  ? totalDebt.getLastYear() / netWorthResponse.getLastYear() : 0.0);
-        gearingResp.setLastToLastYear(netWorthResponse.getLastToLastYear() > 0 ? totalDebt.getLastToLastYear() / netWorthResponse.getLastToLastYear() : 0.0);
+        gearingResp.setProvisionalYear( CommonUtils.checkDouble(netWorthResponse.getProvisionalYear() > 0 ? totalDebt.getProvisionalYear() / netWorthResponse.getProvisionalYear() : 0.0));
+        gearingResp.setLastYear( CommonUtils.checkDouble(netWorthResponse.getLastYear() > 0  ? totalDebt.getLastYear() / netWorthResponse.getLastYear() : 0.0));
+        gearingResp.setLastToLastYear( CommonUtils.checkDouble(netWorthResponse.getLastToLastYear() > 0 ? totalDebt.getLastToLastYear() / netWorthResponse.getLastToLastYear() : 0.0));
         gearingResp.setDiffPvsnlAndLastYear(calculateFinancialSummary(gearingResp.getProvisionalYear(),gearingResp.getLastYear()));
         responseList.add(gearingResp);
         
         DDRCMACalculationResponse adjustedGearingResp = new DDRCMACalculationResponse();
         adjustedGearingResp.setKeyId(DDRFinancialSummaryFields.ADJUSTED_GEARING.getId());
         adjustedGearingResp.setKeyName(DDRFinancialSummaryFields.ADJUSTED_GEARING.getValue());
-        adjustedGearingResp.setProvisionalYear(adjustedNetWorth.getProvisionalYear() > 0 ? totalDebt.getProvisionalYear() / adjustedNetWorth.getProvisionalYear() : 0.0);
-        adjustedGearingResp.setLastYear(adjustedNetWorth.getLastYear() > 0 ? totalDebt.getLastYear() / adjustedNetWorth.getLastYear() : 0.0);
-        adjustedGearingResp.setLastToLastYear(adjustedNetWorth.getLastToLastYear() > 0 ? totalDebt.getLastToLastYear() / adjustedNetWorth.getLastToLastYear() : 0.0);
+        adjustedGearingResp.setProvisionalYear( CommonUtils.checkDouble(adjustedNetWorth.getProvisionalYear() > 0 ? totalDebt.getProvisionalYear() / adjustedNetWorth.getProvisionalYear() : 0.0));
+        adjustedGearingResp.setLastYear( CommonUtils.checkDouble(adjustedNetWorth.getLastYear() > 0 ? totalDebt.getLastYear() / adjustedNetWorth.getLastYear() : 0.0));
+        adjustedGearingResp.setLastToLastYear( CommonUtils.checkDouble(adjustedNetWorth.getLastToLastYear() > 0 ? totalDebt.getLastToLastYear() / adjustedNetWorth.getLastToLastYear() : 0.0));
         adjustedGearingResp.setDiffPvsnlAndLastYear(calculateFinancialSummary(adjustedGearingResp.getProvisionalYear(),adjustedGearingResp.getLastYear()));
         responseList.add(adjustedGearingResp);
 		
@@ -1428,13 +1429,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	private double calculateFinancialSummary(Double provisinalYear, Double lastYear) {
-        if(!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
-            if((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
-                return ((provisinalYear-lastYear) / lastYear) * 100;
-            }
+		DecimalFormat decimalFormat = new DecimalFormat("#.##");
+    if(!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
+        if((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
+            return Double.valueOf(decimalFormat.format(((provisinalYear-lastYear) / lastYear) * 100));
         }
-        return 0.0;
-        
+    }
+    return 0.0;
     }
 	
 	@SuppressWarnings("unchecked")
