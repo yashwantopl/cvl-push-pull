@@ -844,7 +844,16 @@ public class CommonUtils {
 			}
 		  
 		  public static double checkDouble(Double value) {
-			  return isObjectNullOrEmpty(value) ? 0.0 : value;
+			  
+			  if(!isObjectNullOrEmpty(value)){
+			  DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
+			  return Double.valueOf(decimalFormat1.format(value));
+			  
+			  }
+			  else{
+				  return 0.0;
+			  }
+//			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }
 		  public interface PaymentMode{
 			  public static final String ONLINE = "ONLINE";
