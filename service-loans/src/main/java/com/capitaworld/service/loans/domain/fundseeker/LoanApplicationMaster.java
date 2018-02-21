@@ -192,6 +192,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "payment_amount")
 	private Double paymentAmount;
 	
+	@Column(name = "is_accept_consent")
+	private Boolean isAcceptConsent;
+	
 	
 
 	public Long getDdrStatusId() {
@@ -612,6 +615,14 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setPaymentAmount(Double paymentAmount) {
 		this.paymentAmount = paymentAmount;
+	}
+	
+	public Boolean getIsAcceptConsent() {
+		return isAcceptConsent;
+	}
+
+	public void setIsAcceptConsent(Boolean isAcceptConsent) {
+		this.isAcceptConsent = isAcceptConsent;
 	}
 
 	@Override
