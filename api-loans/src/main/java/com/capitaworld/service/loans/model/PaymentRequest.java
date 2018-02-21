@@ -25,6 +25,7 @@ public class PaymentRequest implements Serializable {
 	private String mobileNumber;
 	private Double paymentAmount;
 	private String status;
+	private Boolean isAcceptConsent;
 
 	public PaymentRequest() {
 
@@ -116,6 +117,15 @@ public class PaymentRequest implements Serializable {
 
 	public void setTrxnId(String trxnId) {
 		this.trxnId = trxnId;
+	}
+	
+
+	public Boolean getIsAcceptConsent() {
+		return isAcceptConsent;
+	}
+
+	public void setIsAcceptConsent(Boolean isAcceptConsent) {
+		this.isAcceptConsent = isAcceptConsent;
 	}
 
 	@Override
