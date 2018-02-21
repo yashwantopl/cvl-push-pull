@@ -543,7 +543,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())){
 						request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
 						request.setIsNhbsApplication(true);
-						request.setDdrStatusId(Integer.valueOf(master.getDdrStatusId().toString()));
+						request.setDdrStatusId(CommonUtils.isObjectListNull(master.getDdrStatusId()) ? null : Integer.valueOf(master.getDdrStatusId().toString()));
 					}else{
 						ProposalMappingResponse response = proposalDetailsClient
 								.getFundSeekerApplicationStatus(master.getId());
