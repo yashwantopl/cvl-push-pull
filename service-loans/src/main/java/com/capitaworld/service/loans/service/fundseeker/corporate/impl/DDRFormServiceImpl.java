@@ -716,6 +716,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(stateName) ? stateName+ ", " : "";
 		String cityName = getCityName(applicantDetail.getRegisteredCityId());
 		regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(cityName) ? cityName : "";
+		regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode())?applicantDetail.getRegisteredPincode() : "";
 		response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		
 		//Contact Details  :- LINENO:8
@@ -732,6 +733,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntStateName) ? admntStateName+ ", " : "";
 		String admntCityName = getCityName(applicantDetail.getAdministrativeCityId());
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCityName) ? admntCityName : "";
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePincode()) ? applicantDetail.getAdministrativePincode() : ""; 
 		response.setCorpOfficeAddress(!CommonUtils.isObjectNullOrEmpty(admntOfficeAdd) ? admntOfficeAdd : "NA");
 		
 		//GET RERGISTERED EMAIL ID  :- LINENO:11
