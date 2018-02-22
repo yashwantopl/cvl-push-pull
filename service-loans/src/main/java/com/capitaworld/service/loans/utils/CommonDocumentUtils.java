@@ -160,7 +160,7 @@ public class CommonDocumentUtils {
 				oneFormClient);
 		String state = CommonDocumentUtils.getState(applicantDetail.getAdministrativeStateId().longValue(),
 				oneFormClient);
-		String city = CommonDocumentUtils.getCountry(applicantDetail.getAdministrativeCityId(), oneFormClient);
+		String city = CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient);
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(state) ? state + ", " : "";
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(city) ? city : "";
@@ -185,7 +185,7 @@ public class CommonDocumentUtils {
 				oneFormClient);
 		String state = CommonDocumentUtils.getState(applicantDetail.getPermanentStateId().longValue(),
 				oneFormClient);
-		String city = CommonDocumentUtils.getCountry(applicantDetail.getPermanentCityId(), oneFormClient);
+		String city = CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient);
 		permAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
 		permAdd += !CommonUtils.isObjectNullOrEmpty(state) ? state + ", " : "";
 		permAdd += !CommonUtils.isObjectNullOrEmpty(city) ? city : "";
