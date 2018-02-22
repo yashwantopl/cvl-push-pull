@@ -844,7 +844,7 @@ public class CommonUtils {
 			}
 		  
 		  public static double checkDouble(Double value) {
-			  
+			  try{
 			  if(!isObjectNullOrEmpty(value)){
 			  DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
 			  return Double.valueOf(decimalFormat1.format(value));
@@ -853,6 +853,10 @@ public class CommonUtils {
 			  else{
 				  return 0.0;
 			  }
+			  }
+			  catch (Exception e) {
+				return 0.00;
+			}
 //			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }
 		  public interface PaymentMode{
