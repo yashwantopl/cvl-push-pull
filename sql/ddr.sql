@@ -228,6 +228,32 @@ CREATE TABLE `loan_application`.`fs_ddr_family_directors_details` (
 
 
 
+ALTER TABLE `loan_application`.`fs_ddr_form_details` 
+CHANGE COLUMN `major_clients` `major_clients` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `credit_period_enjoyed_from_suppliers` `credit_period_enjoyed_from_suppliers` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `credit_period_extended_to_buyers` `credit_period_extended_to_buyers` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `other_source_of_income` `other_source_of_income` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `other_business_in_family_name` `other_business_in_family_name` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `business_details_comment` `business_details_comment` TEXT NULL DEFAULT NULL ;
+
+
+
+ALTER TABLE `loan_application`.`fs_ddr_office_details` 
+CHANGE COLUMN `any_other_showroom` `any_other_showroom` TEXT NULL DEFAULT NULL ;
+
+
+ALTER TABLE `loan_application`.`fs_ddr_family_directors_details` 
+CHANGE COLUMN `is_house_owned` `is_house_owned` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `address_of_other_property` `address_of_other_property` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `name_occupation_of_spouse` `name_occupation_of_spouse` TEXT NULL DEFAULT NULL ;
+
+
+ALTER TABLE `loan_application`.`fs_ddr_authorized_sign_details` 
+CHANGE COLUMN `document_obtained` `document_obtained` TEXT NULL DEFAULT NULL ;
+
+
+
+
 
 
 
