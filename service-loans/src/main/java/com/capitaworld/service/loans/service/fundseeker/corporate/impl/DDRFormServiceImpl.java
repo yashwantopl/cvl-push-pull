@@ -1433,6 +1433,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	private double calculateFinancialSummary(Double provisinalYear, Double lastYear) {
+		try{
 		DecimalFormat decimalFormat = new DecimalFormat("#.##");
     if(!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
         if((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
@@ -1440,6 +1441,10 @@ public class DDRFormServiceImpl implements DDRFormService{
         }
     }
     return 0.0;
+		}
+		catch (Exception e) {
+			return 0.00;
+		}
     }
 	
 	@SuppressWarnings("unchecked")
