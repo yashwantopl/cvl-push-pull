@@ -50,7 +50,6 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -76,8 +75,8 @@ import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsSer
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -195,6 +194,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Value("${capitaworld.service.gateway.amount}")
 	private String amount;
 
+	@Autowired
+	private NetworkPartnerService networkPartnerService;
 	/*@Autowired
 	private AsyncComponent asyncComponent;
 	*/
@@ -458,6 +459,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+				
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment()) && applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+					GatewayRequest gatewayRequest = networkPartnerService.getPaymentStatuOfApplication(applicationRequest.getId());
+					if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
+						if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
+						}else{
+							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
+						}	
+					}
+				}
 			} else {
 				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationMaster.getId());
