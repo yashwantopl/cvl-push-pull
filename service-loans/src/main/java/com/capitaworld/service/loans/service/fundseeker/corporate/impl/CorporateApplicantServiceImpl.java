@@ -606,6 +606,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setTypeOfPayment(loanApplicationMaster.getTypeOfPayment());
 			paymentRequest.setAppointmentDate(loanApplicationMaster.getAppointmentDate());
 			paymentRequest.setAppointmentTime(loanApplicationMaster.getAppointmentTime());
+			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
@@ -621,7 +622,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				paymentRequest.setAddress(address);
 			}
 			try {
-				UserResponse userResponse = usersClient.getEmailMobile(userId);
+				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 					UsersRequest request = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);

@@ -261,10 +261,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ProductMasterRequest> getList(Long userId) {
+	public List<ProductMasterRequest> getList(Long userId,Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getList");
-		List<ProductMaster> results = productMasterRepository.getUserProductList(userId);
+		List<ProductMaster> results;
+		if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+		{
+			results = productMasterRepository.getUserProductListByOrgId(userOrgId);
+		}
+		else
+		{
+		 results = productMasterRepository.getUserProductList(userId);
+		}
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
@@ -306,7 +314,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public ProductDetailsResponse getProductDetailsResponse(Long userId) {
+	public ProductDetailsResponse getProductDetailsResponse(Long userId , Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		UserResponse usrResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
@@ -314,13 +322,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		if (usrResponse != null && usrResponse.getStatus() == 200) {
 			Long fpMappingId = usrResponse.getId();
 			if (fpMappingId != null) {
-				ProductMaster userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+				ProductMaster userProduct = null;
+				if(!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId);
+				} else {
+					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+				}
 				productDetailsResponse.setProductId(userProduct.getProductId());
 				productDetailsResponse.setProductMappingId(fpMappingId);
 				productDetailsResponse.setMessage("Proposal Details Sent");
 				productDetailsResponse.setStatus(HttpStatus.OK.value());
 			} else {
-				List<ProductMaster> userProductList = productMasterRepository.getUserProductList(userId);
+				List<ProductMaster> userProductList = null;
+				if(!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					userProductList = productMasterRepository.getUserProductListByOrgId(userOrgId);
+				} else {
+					userProductList = productMasterRepository.getUserProductList(userId);
+				}
 				if (!CommonUtils.isListNullOrEmpty(userProductList)) {
 					ProductMaster productMaster = userProductList.get(0);
 					productDetailsResponse.setProductId(productMaster.getProductId());
@@ -450,13 +468,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<Object> getListByUserType(Long userId, Integer userType) {
+	public List<Object> getListByUserType(Long userId, Integer userType,Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMaster> results;
 		List<Object> requests = new ArrayList<>();
 		if (userType == 1) {
+			if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+			{
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			}
+			else
+			{
 			results = productMasterRepository.getUserRetailProductList(userId);
+			}
 			if (!CommonUtils.isListNullOrEmpty(results)) {
 				for (ProductMaster master : results) {
 					if (master.getProductId() == 3) {
@@ -471,8 +496,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				}
 			}
 		} else {
-
+			if(!CommonUtils.isObjectNullOrEmpty(userOrgId))
+			{
+				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+			}
+			else
+			{
 			results = productMasterRepository.getUserCorporateProductList(userId);
+			}
 			if (!CommonUtils.isListNullOrEmpty(results)) {
 				for (ProductMaster master : results) {
 					if (master.getProductId() == 1) {

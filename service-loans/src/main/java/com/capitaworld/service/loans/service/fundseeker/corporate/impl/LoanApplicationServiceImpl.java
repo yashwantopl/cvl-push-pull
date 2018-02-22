@@ -75,6 +75,7 @@ import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsSer
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -193,6 +194,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Value("${capitaworld.service.gateway.amount}")
 	private String amount;
 
+	@Autowired
+	private NetworkPartnerService networkPartnerService;
+	/*@Autowired
+	private AsyncComponent asyncComponent;
+	*/
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -453,6 +459,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+				
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment()) && applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+					GatewayRequest gatewayRequest = networkPartnerService.getPaymentStatuOfApplication(applicationRequest.getId());
+					if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
+						if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
+						}else{
+							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
+						}	
+					}
+				}
 			} else {
 				applicationRequest.setLoanTypeMain(CommonUtils.RETAIL);
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationMaster.getId());
@@ -535,10 +552,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
 				request.setFinalLocked(master.getIsFinalLocked());
 				try {
-					ProposalMappingResponse response = proposalDetailsClient
-							.getFundSeekerApplicationStatus(master.getId());
-					request.setStatus(
-							CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
+					if(!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())){
+						request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
+						request.setIsNhbsApplication(true);
+						request.setDdrStatusId(CommonUtils.isObjectListNull(master.getDdrStatusId()) ? null : Integer.valueOf(master.getDdrStatusId().toString()));
+					}else{
+						ProposalMappingResponse response = proposalDetailsClient
+								.getFundSeekerApplicationStatus(master.getId());
+						request.setStatus(
+								CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
+						request.setIsNhbsApplication(false);
+					}					
 					com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 							.getById(master.getProductId());
 					request.setName(loanType.getValue());
@@ -627,8 +651,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
+	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
 		try {
+			
+			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
+			loanApplicationRequest.setIsMailSent(false);
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
 				throw new Exception(
@@ -647,6 +674,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
 			NotificationRequest notificationRequest = new NotificationRequest();
 			notificationRequest.setClientRefId(userId.toString());
+			String fsName = getApplicantName(applicationId);
 			for (int i = 0; i < response.getDataList().size(); i++) {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) response.getDataList().get(i), ProposalMappingRequest.class);
@@ -669,10 +697,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// FundProviderDetailsRequest.class);
 				// fundProviderDetailsRequest.get
 				try {
-					if (CommonUtils.isObjectNullOrEmpty(getApplicantName(applicationId))) {
+					if (CommonUtils.isObjectNullOrEmpty(fsName)) {
 						parameters.put("fs_name", "NA");
 					} else {
-						parameters.put("fs_name", getApplicantName(applicationId));
+						parameters.put("fs_name", fsName);
 					}
 
 				} catch (Exception e) {
@@ -718,12 +746,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						.addNotification(createNotification(a, userId, 0L, NotificationAlias.SYS_FS_FINAL_LOCK,
 								parameters, applicationId, proposalrequest.getFpProductId()));
 			}
+			logger.info("Before send mail-------------------------------------->");
+			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+				logger.info("Current loan is corporate-------------------------------------->");
+				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
+						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
+					logger.info("Start sending mail when maker has lock primary details");
+					
+					loanApplicationRequest.setId(applicationMaster.getId());
+					loanApplicationRequest.setNpAssigneeId(applicationMaster.getNpAssigneeId());
+					loanApplicationRequest.setNpUserId(applicationMaster.getNpUserId());
+					loanApplicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
+					loanApplicationRequest.setProductId(applicationMaster.getProductId());
+					loanApplicationRequest.setName(fsName);
+					loanApplicationRequest.setIsMailSent(true);
+					/*asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
+							applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());*/				
+				} else {
+					logger.info("NP userId or assign id null or empty-------------------------------------->");
+				}
+				
+			}
 			notificationClient.send(notificationRequest);
 			// send FP notification end
 
 			// create log when teaser submit
 			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
-			return true;
+			return loanApplicationRequest;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Locking Final Information");
@@ -3652,6 +3702,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationMaster.setPaymentAmount(paymentRequest.getPaymentAmount());
 			loanApplicationMaster.setAppointmentDate(paymentRequest.getAppointmentDate());
 			loanApplicationMaster.setAppointmentTime(paymentRequest.getAppointmentTime());
+			loanApplicationMaster.setIsAcceptConsent(paymentRequest.getIsAcceptConsent());
 			loanApplicationRepository.save(loanApplicationMaster);
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(paymentRequest.getApplicationId());
@@ -3704,8 +3755,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)
-			throws Exception {
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId,
+			Long ClientId) throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
 			GatewayRequest gatewayRequest = new GatewayRequest();
@@ -3717,41 +3768,42 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			logger.info("Status===>{}", updatePayment);
-			if(!CommonUtils.isObjectNullOrEmpty(updatePayment)) {
-				loanRequest.setPaymentStatus(updatePayment.toString());				
+			if (!CommonUtils.isObjectNullOrEmpty(updatePayment)) {
+				loanRequest.setPaymentStatus(updatePayment.toString());
 			}
-			if(CommonUtils.isObjectNullOrEmpty(loanRequest)) {
-				logger.warn("Invalid Application Id in Updating Payment Status====>{}",paymentRequest.getApplicationId());
+			if (CommonUtils.isObjectNullOrEmpty(loanRequest)) {
+				logger.warn("Invalid Application Id in Updating Payment Status====>{}",
+						paymentRequest.getApplicationId());
 				return null;
 			}
-			
+
 			try {
-				if(CommonUtils.isObjectNullOrEmpty(loanRequest.getNpUserId())) {
+				if (CommonUtils.isObjectNullOrEmpty(loanRequest.getNpUserId())) {
 					return loanRequest;
 				}
-				
+
 				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(loanRequest.getNpUserId());
 				UserResponse userResponse = userClient.getNPDetails(usersRequest);
 				if (CommonUtils.isObjectListNull(userResponse, userResponse.getData())) {
 					logger.warn("User Response or Data in UserResponse must not be null===>{}", userResponse);
-				}else {
+				} else {
 					NetworkPartnerDetailsRequest npRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) userResponse.getData(), NetworkPartnerDetailsRequest.class);
-					loanRequest.setProviderName(npRequest.getFirstName() + " " + npRequest.getLastName());					
+					loanRequest.setProviderName(npRequest.getFirstName() + " " + npRequest.getLastName());
 				}
-				
+
 				UserResponse emailMobile = userClient.getEmailMobile(loanRequest.getNpUserId());
 				if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
 					logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
 					return loanRequest;
-				}else {
+				} else {
 					UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
 					loanRequest.setEmail(userEmailMobile.getEmail());
 					loanRequest.setMobile(userEmailMobile.getMobile());
 				}
-			}catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("Error while Getting Client Details from Users");
 			}
@@ -3844,18 +3896,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			applicationRequest.setUserName(getFsApplicantName(id));
-			
+
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
 				logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
 				return applicationRequest;
-			}else {
-				UsersRequest userEmailMobile = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+			} else {
+				UsersRequest userEmailMobile = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
 				applicationRequest.setEmail(userEmailMobile.getEmail());
 				applicationRequest.setMobile(userEmailMobile.getMobile());
 			}
-			
+			// SETTING ADDRESS
+			String address = null;
+			int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
+			if (CommonUtils.UserMainType.CORPORATE == mainType) {
+				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+						.findOneByApplicationIdId(id);
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+					address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+				}
+			} else {
+				RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+					address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
+				}
+			}
+			applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
@@ -3871,8 +3938,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return false;
 		} else {
-			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()) && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()))
-			{
+			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked())
+					&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked())) {
 				try {
 
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -3884,11 +3951,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					try {
 						if (corporateApplicantDetail.getKeyVerticalSector() != null
 								&& corporateApplicantDetail.getKeyVerticalSubsector() != null) {
-														return true ;
-						}
-						else
-						{
-							return false ;
+							return true;
+						} else {
+							return false;
 						}
 					} catch (Exception e) {
 						logger.error("Error while getting Status From isApplicationEligibleForIrr");

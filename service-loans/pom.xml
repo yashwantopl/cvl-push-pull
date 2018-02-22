@@ -94,7 +94,7 @@
 			<artifactId>client-dms</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.capitaworld.notification</groupId>
 			<artifactId>client-notification</artifactId>
@@ -118,21 +118,26 @@
 			<artifactId>client-cibil</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		 <dependency>
+		<dependency>
 			<groupId>com.capitaworld.rating</groupId>
 			<artifactId>client-rating</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		 <dependency>
-		 	<groupId>com.capitaworld.service.gateway</groupId>
-		 	<artifactId>client-gateway</artifactId>
-		 	<version>0.0.1</version>
-		 </dependency>
-		 <dependency>
-		 	<groupId>commons-io</groupId>
-		 	<artifactId>commons-io</artifactId>
-		 	<version>2.3</version>
-		 </dependency>
+		<dependency>
+			<groupId>com.capitaworld.service.gateway</groupId>
+			<artifactId>client-gateway</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.service.reports</groupId>
+			<artifactId>client-reports</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

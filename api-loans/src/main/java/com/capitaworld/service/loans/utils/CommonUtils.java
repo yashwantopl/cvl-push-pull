@@ -41,6 +41,16 @@ public class CommonUtils {
 	public static final Long TL_LESS_TWO = 20000000L;
 
 	
+	public interface UsersRoles {
+		public static final Long MAKER =1l;
+		public static final Long CHECKER = 2l;
+		public static final Long APPROVER = 3l;
+		public static final Long ADMIN_HO = 4l;
+		public static final Long HO = 5l;
+		public static final Long BO = 6l;
+	}
+	
+	
 	public interface DenominationInAmount  {
 		public static final Long  LAKHS =100000l;
 		public static final Long MILLIONS = 1000000l;
@@ -747,11 +757,11 @@ public class CommonUtils {
 				PROFIT_BEFORE_TAX(3,"Profit Before Tax (PBT)"),
 				PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"),
 				NET_WORTH(5,"Net Worth"),
-				ADJUSTED_NET_WORTH(6,"Adjusted Net Work(Treating unsecured loan as quasi capital)"),
+				ADJUSTED_NET_WORTH(6,"Adjusted NetWorth (Treating unsecured loan as quasi capital)**"),
 				TOTAL_DEBT(7,"Total Debt"),
 				SECURE_LOAN(8,"Secure Loan"),
-			  	UNSECURE_LOAN(9,"Unsecure Loan"),
-			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecure Loan from Friends & Relatives treated ad Qausi"),
+			  	UNSECURE_LOAN(9,"Unsecured Loan"),
+			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecured Loan from Friends And Relatives treated ad Qausi"),
 			  	CAPITAL(11,"Capital"),
 			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
 			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
@@ -834,7 +844,20 @@ public class CommonUtils {
 			}
 		  
 		  public static double checkDouble(Double value) {
-			  return isObjectNullOrEmpty(value) ? 0.0 : value;
+			  try{
+			  if(!isObjectNullOrEmpty(value)){
+			  DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
+			  return Double.valueOf(decimalFormat1.format(value));
+			  
+			  }
+			  else{
+				  return 0.0;
+			  }
+			  }
+			  catch (Exception e) {
+				return 0.00;
+			}
+//			  return isObjectNullOrEmpty(value) ? 0.0 : value;
 		  }
 		  public interface PaymentMode{
 			  public static final String ONLINE = "ONLINE";

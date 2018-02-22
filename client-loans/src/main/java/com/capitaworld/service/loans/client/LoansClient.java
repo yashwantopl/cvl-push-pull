@@ -135,6 +135,10 @@ public class LoansClient {
 	
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
+	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
+	
+	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
+	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
 
@@ -1336,8 +1340,9 @@ public class LoansClient {
 	}
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_DETAILS);
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
 		try {
+			System.out.println("url====================>" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
@@ -1345,8 +1350,35 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException("Loans service is not available while call getLoanMasterInfo");
 		}
 	}
 	
+	public LoansResponse getFilledDetails(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_TO_BE_FILLED).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getAutoFilledDetails(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_AUTO_FILLED_MASTER).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
 }

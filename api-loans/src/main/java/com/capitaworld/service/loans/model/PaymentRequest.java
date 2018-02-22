@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -17,12 +18,14 @@ public class PaymentRequest implements Serializable {
 	private String nameOfEntity;
 	private Address address;
 	private String typeOfPayment;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date appointmentDate;
 	private String appointmentTime;
 	private String emailAddress;
 	private String mobileNumber;
 	private Double paymentAmount;
 	private String status;
+	private Boolean isAcceptConsent;
 
 	public PaymentRequest() {
 
@@ -114,6 +117,15 @@ public class PaymentRequest implements Serializable {
 
 	public void setTrxnId(String trxnId) {
 		this.trxnId = trxnId;
+	}
+	
+
+	public Boolean getIsAcceptConsent() {
+		return isAcceptConsent;
+	}
+
+	public void setIsAcceptConsent(Boolean isAcceptConsent) {
+		this.isAcceptConsent = isAcceptConsent;
 	}
 
 	@Override
