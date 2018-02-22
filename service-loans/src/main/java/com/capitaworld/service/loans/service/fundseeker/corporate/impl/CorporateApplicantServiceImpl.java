@@ -622,7 +622,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				paymentRequest.setAddress(address);
 			}
 			try {
-				UserResponse userResponse = usersClient.getEmailMobile(userId);
+				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 					UsersRequest request = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
