@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 
@@ -17,4 +18,5 @@ public interface NetworkPartnerService {
 	
 	public JSONObject getNhbsProposalCount(NhbsApplicationRequest nhbsApplicationRequest);
 	
+	public GatewayRequest getPaymentStatuOfApplication(Long applicationId);
 }
