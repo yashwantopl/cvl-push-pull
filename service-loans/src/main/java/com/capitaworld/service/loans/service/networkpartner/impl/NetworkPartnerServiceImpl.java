@@ -286,6 +286,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByNpUserIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}else{
+						nhbsApplicationsResponse.setApplicationDate(new Date());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
 						nhbsApplicationsResponse.setPaymentMode(loanApplicationMaster.getTypeOfPayment());
@@ -335,7 +337,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
 			nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
-			
 		}		
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
