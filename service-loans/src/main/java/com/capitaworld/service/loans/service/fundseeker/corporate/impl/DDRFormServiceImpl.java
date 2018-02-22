@@ -579,6 +579,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRFinancialSummary obj : objList) {
 					DDRFinancialSummaryRequest response = new DDRFinancialSummaryRequest();
 					BeanUtils.copyProperties(obj, response);
+					response.setDiffPfPrvsnlAndLastYear(CommonUtils.checkDouble(obj.getDiffPfPrvsnlAndLastYear()));
+				     response.setLastToLastYear(CommonUtils.checkDouble(obj.getLastToLastYear()));
+				     response.setLastYear(CommonUtils.checkDouble(obj.getLastYear()));
+				     response.setProvisionalYear(CommonUtils.checkDouble(obj.getProvisionalYear()));
 					responseList.add(response);
 				}
 				return responseList;
