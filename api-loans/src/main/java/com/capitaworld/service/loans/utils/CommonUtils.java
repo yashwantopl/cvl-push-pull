@@ -757,7 +757,7 @@ public class CommonUtils {
 				PROFIT_BEFORE_TAX(3,"Profit Before Tax (PBT)"),
 				PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"),
 				NET_WORTH(5,"Net Worth"),
-				ADJUSTED_NET_WORTH(6,"Adjusted Net Work(Treating unsecured loan as quasi capital)"),
+				ADJUSTED_NET_WORTH(6,"Adjusted NetWorth (Treating unsecured loan as quasi capital)**"),
 				TOTAL_DEBT(7,"Total Debt"),
 				SECURE_LOAN(8,"Secure Loan"),
 			  	UNSECURE_LOAN(9,"Unsecured Loan"),
