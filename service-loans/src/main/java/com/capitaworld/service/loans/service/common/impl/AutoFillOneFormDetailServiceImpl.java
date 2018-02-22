@@ -239,7 +239,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	};
 	private static String[] skipProfileData = { "id", "applicationId", "organisationName",
 			"administrativePremiseNumber", "administrativeStreetName", "administrativeLandMark",
-			"administrativeCountryId", "administrativeStateId", "administrativeCityId", "administrativePincode" };
+			"administrativeCountryId", "administrativeStateId", "administrativeCityId", "administrativePincode","createdDate","createdBy","isActive" };
 	
 	static {
 		prodDocMappingListCoApp.add(
@@ -330,9 +330,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList,getUSLOtherTypeProductMappingIDList());
 
 			} else {
+				// naegative list in all loan
+				getAndSaveNagativeList();
+				
 				// fund requirement
 				savePrimaryWCToWC(loanDetailFrom);
-
+              
 				// Comapny and Project Detail
 				getAndSaveAchivements();
 
@@ -407,8 +410,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				savePrimaryTLtoTL(primaryTermLoanDetailFrom);
 
 			} else {
+				
+				// naegative list in all loan
+        		getAndSaveNagativeList();
+        		
 				// fund requirement
-
+                    savePrimaryTLtoTL(primaryTermLoanDetailFrom);
+            		
 				// Comapny and Project Detail
 				getAndSaveAchivements();
 
@@ -465,6 +473,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList, getWCLOtherTypeProductMappingIDList());
 
 			} else {
+				// naegative list in all loan
+				getAndSaveNagativeList();
+				
 				// funs requiremnt
 				savePrimaryUSLtoUSL(primaryUnsecuredLoanDetailFrom);
 
@@ -513,9 +524,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		//others
 		getAndSaveReferenceDatailForPrimaryAndFinal();
 		
-		// naegative list in all loan
-		getAndSaveNagativeList();
-
 		// final mcq OverseasnetworksIs
 		getAndSaveFinalMCQOverseasNetworkIds();
 
@@ -531,17 +539,19 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================Entering in =====> saveProfile() of corporate loan========= ");
 
 		// profile
-		CorporateApplicantDetail corporateApplicantDetailFrom = applicantRepository.getByApplicationAndUserId(userId,
-				autoFillOneFormDetailRequest.getFromApplicationId());
+		CorporateApplicantDetail corporateApplicantDetailFrom = applicantRepository.findOneByApplicationIdId(autoFillOneFormDetailRequest.getFromApplicationId());
 
-		corporateApplicantDetailTo = applicantRepository.getByApplicationAndUserId(userId,
-				autoFillOneFormDetailRequest.getToApplicationId());
+		corporateApplicantDetailTo = applicantRepository.findOneByApplicationIdId(autoFillOneFormDetailRequest.getToApplicationId());
 		if (corporateApplicantDetailTo == null) {
 			corporateApplicantDetailTo = new CorporateApplicantDetail();
+			corporateApplicantDetailTo.setCreatedDate(new Date());
+			corporateApplicantDetailTo.setCreatedBy(userId);
+			corporateApplicantDetailTo.setIsActive(true);
+			corporateApplicantDetailTo.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
 		}
 		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, skipProfileData);
-		corporateApplicantDetailTo
-				.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
+		corporateApplicantDetailTo.setModifiedDate(new Date());
+		corporateApplicantDetailTo.setModifiedBy(userId);
 		corporateApplicantDetailTo = applicantRepository.save(corporateApplicantDetailTo);
 		logger.info("Getting all industry and sectors and sub sector list");
 		// lists
