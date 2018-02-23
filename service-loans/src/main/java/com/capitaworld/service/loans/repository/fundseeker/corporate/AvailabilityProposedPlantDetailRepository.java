@@ -22,6 +22,11 @@ public interface AvailabilityProposedPlantDetailRepository
 	@Transactional
 	@Query("update AvailabilityProposedPlantDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveAvailabilityProposedPlantDetails(@Param("sId")Long storageDetailsId);
+	
+	@Modifying
+	@Transactional
+	@Query("update AvailabilityProposedPlantDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
+	public void inActiveAvailabilityProposedPlantDetailsByAppId(@Param("applicationId")Long applicationId);
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.AvailabilityProposedPlantDetailResponse(a.descriptionPM, a.estimatedValue, a.importedOrIndigenous, a.supplier, a.useOrPurpose) from AvailabilityProposedPlantDetail a where a.applicationId.id= :applicationId and isActive=true")
 	 public List<AvailabilityProposedPlantDetailResponse> listByApplicationId(@Param("applicationId")Long applicationId);

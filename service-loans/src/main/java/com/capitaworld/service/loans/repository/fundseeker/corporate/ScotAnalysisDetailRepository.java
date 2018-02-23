@@ -22,6 +22,11 @@ public interface ScotAnalysisDetailRepository extends JpaRepository<ScotAnalysis
 	@Query("update ScotAnalysisDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveScotDetails(@Param("sId")Long storageDetailsId);
 	
+	@Modifying
+	@Transactional
+	@Query("update ScotAnalysisDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
+	public void inActiveScotDetailsByAppId(@Param("applicationId")Long applicationId);
+	
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse(a.	concernsDetails, a.concernsMeasure, a.opportunitiesDetials, a.strengthDetails, a.weaknessDetials, a.weaknessMeasure) from ScotAnalysisDetail a where a.applicationId.id= :applicationId and isActive=true")
 	 public List<ScotAnalysisDetailResponse> listByApplicationId(@Param("applicationId")Long applicationId);
 
