@@ -21,6 +21,11 @@ public interface DriverForFutureGrowthDetailRepository extends JpaRepository<Dri
 	@Transactional
 	@Query("update DriverForFutureGrowthDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveDriverForFutureGrowthDetails(@Param("sId")Long storageDetailsId);
+	
+	@Modifying
+	@Transactional
+	@Query("update DriverForFutureGrowthDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
+	public void inActiveDriverForFutureGrowthDetailsByAppId(@Param("applicationId") Long applicationId);
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse(a.firstString,a.secondString,a.thirdString,a.forthString) from DriverForFutureGrowthDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<DriverForFutureGrowthResponse> listByApplicationId(@Param("applicationId") Long applicationId);

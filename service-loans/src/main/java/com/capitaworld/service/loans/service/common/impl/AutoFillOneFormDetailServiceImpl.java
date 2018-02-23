@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,17 +56,21 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProj
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankAccountHeldDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BoardOfDirectorsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DprUserDataDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
@@ -86,11 +92,17 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinanci
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImplementationScheduleDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ScotAnalysisDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.StrategicAlliancesDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankAccountHeldDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
@@ -98,6 +110,8 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetai
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonMultiPartFile;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -221,6 +235,37 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	@Autowired
 	private StrategicAlliancesDetailRepository strategicAlliancesDetailRepository;
+	
+	@Autowired
+	private ExcelExtractionService excelExtractionService;
+	
+	@Autowired
+	private ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
+	
+	@Autowired
+	private TechnologyPositioningDetailRepository technologyPositioningDetailRepository;
+	
+	@Autowired
+	private RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository;
+	
+	@Autowired
+	private DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository;
+	
+	@Autowired
+	private ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository;
+	
+	@Autowired
+	private AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository;
+	
+	@Autowired
+	private RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository;
+	
+	@Autowired
+	private ScotAnalysisDetailRepository scotAnalysisDetailRepository; 
+	
+	@Autowired
+	private DprUserDataDetailRepository dprUserDataDetailRepository;
+	
 
 	private AutoFillOneFormDetailRequest autoFillOneFormDetailRequest = null;
 	private Long userId = null;
@@ -1702,10 +1747,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				MultipartFile multipartFile = new CommonMultiPartFile(b, res.getOriginalFileName(), contentType);
 				if (flag == 0) {
 					response = dmsClient.readExcel(json, multipartFile);
+					if(response != null && (response.getStatus() == 200)) {
+						readAndSaveExcelData(documentRequest.getProductDocumentMappingId(),documentRequest.getApplicationId(),response.getStorageId(),multipartFile);
+					}
 				} else if (flag == 1) {
 					response = dmsClient.uploadFile(json, multipartFile);
 				}
-				logger.info("-------- Documet response ---------> " + response);
+				logger.info("-------- Documet response ---------> {}", response);
 				System.out.println(response);
 			}
 
@@ -1715,6 +1763,117 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			e.printStackTrace();
 		}
 		logger.info("================= Exit From fileUpload()================== ");
+
+	}
+	
+	
+	private void readAndSaveExcelData(Long productDocumentMappingId,Long toApplicationId,Long storageId,MultipartFile multipartFiles) throws DocumentException {
+			// Code for read CMA BS and DPR
+			Boolean flag = false;
+			try {
+
+				switch (productDocumentMappingId.intValue()) {
+				case DocumentAlias.WC_DPR_OUR_FORMAT: {
+					logger.info("Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>{}",DocumentAlias.WC_DPR_OUR_FORMAT,toApplicationId);
+					boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
+					strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
+					keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
+					employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
+					technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
+					revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
+					driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
+					projectImplementationScheduleDetailRepository.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
+					availabilityProposedPlantDetailRepository.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
+					requirementsAndAvailabilityRawMaterialsDetailRepository.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
+					scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
+					dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
+					flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.WC_CMA: {
+					logger.info("Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.WC_DPR_OUR_FORMAT,toApplicationId,storageId);
+					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.WC_COMPANY_ACT: {
+					logger.info("Going to INactive DocumentAlias.WC_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.WC_COMPANY_ACT,toApplicationId,storageId);
+					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.TL_DPR_OUR_FORMAT: {
+					logger.info("Going to INactive DocumentAlias.TL_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_DPR_OUR_FORMAT,toApplicationId,storageId);
+					boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
+					strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
+					keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
+					employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
+					technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
+					revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
+					driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
+					projectImplementationScheduleDetailRepository.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
+					availabilityProposedPlantDetailRepository.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
+					requirementsAndAvailabilityRawMaterialsDetailRepository.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
+					scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
+					dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
+					flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.TL_CMA: {
+					logger.info("Going to INactive DocumentAlias.TL_CMA===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_CMA,toApplicationId,storageId);
+					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.TL_COMPANY_ACT: {
+					logger.info("Going to INactive DocumentAlias.TL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_COMPANY_ACT,toApplicationId,storageId);
+					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.USL_CMA: {
+					logger.info("Going to INactive DocumentAlias.USL_CMA===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.USL_CMA,toApplicationId,storageId);
+					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				case DocumentAlias.USL_COMPANY_ACT: {
+					logger.info("Going to INactive DocumentAlias.USL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.USL_COMPANY_ACT,toApplicationId,storageId);
+					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+					break;
+				}
+				default : {
+					flag = true;
+				}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+				JSONObject json = new JSONObject();
+				json.put("id", storageId);
+				dmsClient.deleteProductDocument(json.toJSONString());
+				logger.error("Error While Uploading Document in Autofill==>{}",json.toJSONString());
+			}
+			if (flag) {
+				logger.info("File Uploaded SuccessFully in Autofill");
+			} else {
+				// code for inactive CMA BS and DPR recored
+				JSONObject json = new JSONObject();
+				json.put("id", storageId);
+				dmsClient.deleteProductDocument(json.toJSONString());
+				logger.error("Error While Uploading Document==>{}",json.toJSONString());
+			}
 
 	}
 
