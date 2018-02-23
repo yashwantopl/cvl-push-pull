@@ -26,6 +26,15 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	
 	private Double diffPfPrvsnlAndLastYear;
 	
+	
+	private String provisionalYearString;
+	
+	private String lastYearString;
+	
+	private String lastToLastYearString;
+	
+	private String diffPfPrvsnlAndLastYearString;
+	
 	private Long createdBy;
 	
 	private Date createdDate;
@@ -35,6 +44,41 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	private Date modifyDate;
 	
 	private Boolean isActive;
+	
+	
+	
+
+	public String getProvisionalYearString() {
+		return provisionalYearString;
+	}
+
+	public void setProvisionalYearString(String provisionalYearString) {
+		this.provisionalYearString = provisionalYearString;
+	}
+
+	public String getLastYearString() {
+		return lastYearString;
+	}
+
+	public void setLastYearString(String lastYearString) {
+		this.lastYearString = lastYearString;
+	}
+
+	public String getLastToLastYearString() {
+		return lastToLastYearString;
+	}
+
+	public void setLastToLastYearString(String lastToLastYearString) {
+		this.lastToLastYearString = lastToLastYearString;
+	}
+
+	public String getDiffPfPrvsnlAndLastYearString() {
+		return diffPfPrvsnlAndLastYearString;
+	}
+
+	public void setDiffPfPrvsnlAndLastYearString(String diffPfPrvsnlAndLastYearString) {
+		this.diffPfPrvsnlAndLastYearString = diffPfPrvsnlAndLastYearString;
+	}
 
 	public Long getId() {
 		return id;

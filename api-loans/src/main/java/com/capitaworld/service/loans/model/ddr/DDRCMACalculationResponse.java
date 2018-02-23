@@ -15,6 +15,39 @@ public class DDRCMACalculationResponse implements Serializable {
 	private Double lastYear;
 	private Double lastToLastYear;
 	private Double diffPvsnlAndLastYear;
+	
+	private String provisionalYearString;
+	private String lastYearString;
+	private String lastToLastYearString;
+	private String diffPvsnlAndLastYearString;
+	
+	
+	
+	
+	public String getProvisionalYearString() {
+		return provisionalYearString;
+	}
+	public void setProvisionalYearString(String provisionalYearString) {
+		this.provisionalYearString = provisionalYearString;
+	}
+	public String getLastYearString() {
+		return lastYearString;
+	}
+	public void setLastYearString(String lastYearString) {
+		this.lastYearString = lastYearString;
+	}
+	public String getLastToLastYearString() {
+		return lastToLastYearString;
+	}
+	public void setLastToLastYearString(String lastToLastYearString) {
+		this.lastToLastYearString = lastToLastYearString;
+	}
+	public String getDiffPvsnlAndLastYearString() {
+		return diffPvsnlAndLastYearString;
+	}
+	public void setDiffPvsnlAndLastYearString(String diffPvsnlAndLastYearString) {
+		this.diffPvsnlAndLastYearString = diffPvsnlAndLastYearString;
+	}
 	public Integer getKeyId() {
 		return keyId;
 	}

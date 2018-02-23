@@ -864,5 +864,16 @@ public class CommonUtils {
 			  public static final String CHEQUE = "CHEQUE";
 			  public static final String CASH = "CASH";
 		  }
+		  
+		  public static String checkString(Double value){
+			  try{
+			  DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
+			  System.out.println( decimalFormat1.format(value));
+			  return decimalFormat1.format(value);
+			  }
+			  catch (Exception e) {
+				return "0.00";
+			}
+		  }
 
 }
