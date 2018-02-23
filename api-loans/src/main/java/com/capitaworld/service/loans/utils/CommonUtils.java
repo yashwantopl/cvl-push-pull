@@ -846,7 +846,7 @@ public class CommonUtils {
 		  public static double checkDouble(Double value) {
 			  try{
 			  if(!isObjectNullOrEmpty(value)){
-			  DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
+			  DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
 			  return Double.valueOf(decimalFormat1.format(value));
 			  
 			  }

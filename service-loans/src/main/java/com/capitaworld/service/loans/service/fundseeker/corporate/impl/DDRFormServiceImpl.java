@@ -1676,7 +1676,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	private double calculateFinancialSummary(Double provisinalYear, Double lastYear) {
 		try{
-		DecimalFormat decimalFormat = new DecimalFormat("#.00");
+		DecimalFormat decimalFormat = new DecimalFormat("0.00");
     if(!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
         if((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
             return Double.valueOf(decimalFormat.format(((provisinalYear-lastYear) / lastYear) * 100));
