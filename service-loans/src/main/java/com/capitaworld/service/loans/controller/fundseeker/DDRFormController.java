@@ -196,7 +196,8 @@ public class DDRFormController {
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
 			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
-			
+			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
+			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();
 			obj.put("autoFilled",oneFormDetails);
 			obj.put("toBeFilled", dDRFormDetailsRequest);
