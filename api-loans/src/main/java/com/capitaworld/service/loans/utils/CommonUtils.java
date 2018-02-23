@@ -801,8 +801,8 @@ public class CommonUtils {
 			}
 		  
 		  public enum DDRFinancialSummaryToBeFields {
-				PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"), 
-				SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
+//				PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"), 
+//				SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
 				RECEIVAVLES_TURNOVER(3,"Receivables turnover (Days)"),
 				CREDITORS_TURNOVER(4, "Creditors Turnover (Days)");		  
 	
@@ -823,10 +823,10 @@ public class CommonUtils {
 				}
 				public static DDRFinancialSummaryToBeFields getType(Integer x) {
 					switch (x) {
-					case 1:
-						return PER_OF_SALES_OF_ANCHORE_PRODUCT;
-					case 2:
-						return SALES_OF_ANCHOR_PODUCTS;
+//					case 1:
+//						return PER_OF_SALES_OF_ANCHORE_PRODUCT;
+//					case 2:
+//						return SALES_OF_ANCHOR_PODUCTS;
 					case 3:
 						return RECEIVAVLES_TURNOVER;
 					case 4:
