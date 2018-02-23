@@ -646,6 +646,12 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRFamilyDirectorsDetails obj : objList) {
 					response = new DDRFamilyDirectorsDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					try {
+						DDRFamilyDirectorsDetailsRequest.printFields(response);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					responseList.add(response);
 				}
 				return responseList;
