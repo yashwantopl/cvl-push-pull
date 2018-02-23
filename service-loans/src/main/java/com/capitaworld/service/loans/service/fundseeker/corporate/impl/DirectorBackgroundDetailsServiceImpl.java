@@ -77,6 +77,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				BeanUtils.copyProperties(detail, directorBackgroundDetailRequest);
 				directorBackgroundDetailRequests.add(directorBackgroundDetailRequest);
 			}
+			DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequests);
 			return directorBackgroundDetailRequests;
 		} catch (Exception e) {
 			logger.info("Exception  in getdirectorBackgroundDetail  :-");

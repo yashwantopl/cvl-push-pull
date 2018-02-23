@@ -420,7 +420,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);
 		if (applicationMaster == null) {
 			return null;
 		}
