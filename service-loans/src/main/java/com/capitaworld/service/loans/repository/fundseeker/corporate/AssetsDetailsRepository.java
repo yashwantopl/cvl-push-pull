@@ -17,6 +17,11 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	@Query("update AssetsDetails a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveAssetsDetails(@Param("sId") Long storageDetailsId);
 	
+	@Modifying
+	@Transactional
+	@Query("update AssetsDetails a set a.isActive = false where a.loanApplicationMaster.id = :applicationId and a.isActive = true")
+	public void inActiveAssetsDetailsByAppId(@Param("applicationId") Long applicationId);
+	
 	@Query("from AssetsDetails a where a.loanApplicationMaster.id = :appId and a.year = :yr and a.isActive = true")
 	public AssetsDetails getAssetsDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 	

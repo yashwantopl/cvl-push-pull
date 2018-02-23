@@ -17,6 +17,11 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	@Query("update OperatingStatementDetails o set o.isActive = false where o.storageDetailsId= :sId")
 	public void inActiveAssetsDetails(@Param("sId") Long storageDetailsId);
 
+	@Modifying
+	@Transactional
+	@Query("update OperatingStatementDetails o set o.isActive = false where o.loanApplicationMaster.id = :applicationId and o.isActive = true")
+	public void inActiveAssetsDetailsByAppId(@Param("applicationId") Long applicationId);
+	
 	@Query("from OperatingStatementDetails o where o.loanApplicationMaster.id = :appId and o.year = :yr and o.isActive = true")
 	public OperatingStatementDetails getOperatingStatementDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 	

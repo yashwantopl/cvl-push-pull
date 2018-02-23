@@ -17,6 +17,11 @@ public interface ProfitibilityStatementDetailRepository extends JpaRepository<Pr
 	@Query("update ProfitibilityStatementDetail p set p.isActive = false where p.storageDetailsId= :sId")
 	public void inActiveProfitibilityStatementDetail(@Param("sId") Long storageDetailsId);
 	
+	@Modifying
+	@Transactional
+	@Query("update ProfitibilityStatementDetail p set p.isActive = false where p.applicationId.id = :applicationId and p.isActive = true")
+	public void inActiveProfitibilityStatementDetailByAppId(@Param("applicationId") Long applicationId);
+	
 	@Query("from ProfitibilityStatementDetail p where p.applicationId.id = :appId and p.year = :yr and p.isActive = true")
 	public ProfitibilityStatementDetail getProfitibilityStatementDetail(@Param("appId") Long applicationId, @Param("yr") String year);
 	
