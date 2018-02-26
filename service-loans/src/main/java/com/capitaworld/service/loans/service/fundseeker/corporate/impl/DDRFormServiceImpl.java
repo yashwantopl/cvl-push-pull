@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -38,6 +39,7 @@ import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRAuthorizedSignDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
 import com.capitaworld.service.loans.model.ddr.DDRCreditCardDetailsRequest;
@@ -1734,6 +1736,63 @@ public class DDRFormServiceImpl implements DDRFormService{
 			responseList.add(obj);
 		}
 		return responseList;
+	}
+
+	@Override
+	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception {
+//		DDRFormDetailsRequest
+		try{
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(documentUploadFlagRequest.getApplicationId());
+		if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
+			dDRFormDetails = new DDRFormDetails();
+			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
+			dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setCreatedBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setCreatedDate(new Date());
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+		}
+		
+		final int switchCase = documentUploadFlagRequest.getDocumentMappingId().intValue();
+		switch (switchCase) {
+		// Working Capital 
+		case 9:
+			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+		case 10:
+			dDRFormDetails.setSanctionLetter("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+			
+		case 11:
+			dDRFormDetails.setItrForLast3years("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+			
+		case 13:
+			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+			
+			// term Loan
+			
+			
+			// Unsecured loan
+
+		default:
+			break;
+		}
+		ddrFormDetailsRepository.save(dDRFormDetails);
+		return 1L;
+		}
+		catch (Exception e) {
+			return 0L;
+		}
 	}
 
 	
