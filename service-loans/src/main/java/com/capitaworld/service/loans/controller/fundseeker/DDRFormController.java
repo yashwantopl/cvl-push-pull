@@ -27,10 +27,12 @@ import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 
@@ -242,6 +244,52 @@ public class DDRFormController {
             return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
+	}
+	
+	@RequestMapping(value = "/uploadFlag", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> uploadFlag(@RequestBody DocumentUploadFlagRequest documentRequest, HttpServletRequest request,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			
+			
+			
+			CommonDocumentUtils.startHook(logger, "uploadFlag");
+			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
+				logger.warn("Document Request Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
+			logger.info("In uploadFlag");
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
+			if(CommonUtils.UserType.FUND_PROVIDER == userType){
+				userId = loanApplicationService.getUserIdByApplicationId(documentRequest.getApplicationId());
+			}
+			else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+				userId = clientId;
+			}
+			documentRequest.setUserId(userId);
+			Long response = ddrFormService.saveDocumentFLag(documentRequest);
+//			DocumentResponse response = null;//corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles);
+			if (response != null && response == 1) {
+				logger.info("File Updated Document Flag SuccessFully");
+				CommonDocumentUtils.endHook(logger, "uploadFlag");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(response.toString(), HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				logger.error("Error While Updating Document Flag==>");
+				CommonDocumentUtils.endHook(logger, "uploadFlag");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error While Updating Document Flag==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 }
