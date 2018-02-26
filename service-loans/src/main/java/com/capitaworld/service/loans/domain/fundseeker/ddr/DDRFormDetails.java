@@ -235,6 +235,51 @@ public class DDRFormDetails implements Serializable {
 	@Column(name = "summary_of_bservations")
 	private String summaryOfBservations;
 	
+	@Column(name = "remark_of_company_info")
+	private String remarkOfCompanyInfo;
+	
+	@Column(name = "remark_of_bank_arrangement")
+	private String remarkOfDetailBankArrangement;
+	
+	@Column(name = "remark_of_fin_summary")
+	private String remarkOfFinSummary;
+	
+	@Column(name = "remark_of_total_sales")
+	private String remarkOfTotalSales;
+	
+	@Column(name = "remark_of_total_debt")
+	private String remarkOfTotalDebt;
+	
+	@Column(name = "remark_of_latest_debtors_list")
+	private String remarkOfLatestDebtList;
+	
+	@Column(name = "remark_of_latest_cred_list")
+	private String remarkOfLatestCredList;
+	
+	@Column(name = "remark_of_business_details")
+	private String remarkOfBusinessDetails;
+	
+	@Column(name = "remark_of_personal_details")
+	private String remarkOfPersonalDetails;
+	
+	@Column(name = "remark_of_name_of_auth_signatory")
+	private String remarkOfNameOfAuthSignatory;
+	
+	@Column(name = "remark_of_other_detail")
+	private String remarkOfOtherDetail;
+	
+	@Column(name = "remark_of_detail_of_credcard")
+	private String remarkOfDetailOfCredCard;
+	
+	@Column(name = "remark_of_past_pre_relationship")
+	private String remarkOfPastPreRelationship;
+	
+	@Column(name = "remark_of_any_other_bank_loan")
+	private String remarkOfAnyOtherBankLoan;
+	
+	@Column(name = "remark_of_doc_checklist")
+	private String remarkOfDocCheckList;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 	
@@ -844,6 +889,126 @@ public class DDRFormDetails implements Serializable {
 
 	public void setBusinessDetailsComment(String businessDetailsComment) {
 		this.businessDetailsComment = businessDetailsComment;
+	}
+
+	public String getRemarkOfCompanyInfo() {
+		return remarkOfCompanyInfo;
+	}
+
+	public void setRemarkOfCompanyInfo(String remarkOfCompanyInfo) {
+		this.remarkOfCompanyInfo = remarkOfCompanyInfo;
+	}
+
+	public String getRemarkOfDetailBankArrangement() {
+		return remarkOfDetailBankArrangement;
+	}
+
+	public void setRemarkOfDetailBankArrangement(String remarkOfDetailBankArrangement) {
+		this.remarkOfDetailBankArrangement = remarkOfDetailBankArrangement;
+	}
+
+	public String getRemarkOfFinSummary() {
+		return remarkOfFinSummary;
+	}
+
+	public void setRemarkOfFinSummary(String remarkOfFinSummary) {
+		this.remarkOfFinSummary = remarkOfFinSummary;
+	}
+
+	public String getRemarkOfTotalSales() {
+		return remarkOfTotalSales;
+	}
+
+	public void setRemarkOfTotalSales(String remarkOfTotalSales) {
+		this.remarkOfTotalSales = remarkOfTotalSales;
+	}
+
+	public String getRemarkOfTotalDebt() {
+		return remarkOfTotalDebt;
+	}
+
+	public void setRemarkOfTotalDebt(String remarkOfTotalDebt) {
+		this.remarkOfTotalDebt = remarkOfTotalDebt;
+	}
+
+	public String getRemarkOfLatestDebtList() {
+		return remarkOfLatestDebtList;
+	}
+
+	public void setRemarkOfLatestDebtList(String remarkOfLatestDebtList) {
+		this.remarkOfLatestDebtList = remarkOfLatestDebtList;
+	}
+
+	public String getRemarkOfLatestCredList() {
+		return remarkOfLatestCredList;
+	}
+
+	public void setRemarkOfLatestCredList(String remarkOfLatestCredList) {
+		this.remarkOfLatestCredList = remarkOfLatestCredList;
+	}
+
+	public String getRemarkOfBusinessDetails() {
+		return remarkOfBusinessDetails;
+	}
+
+	public void setRemarkOfBusinessDetails(String remarkOfBusinessDetails) {
+		this.remarkOfBusinessDetails = remarkOfBusinessDetails;
+	}
+
+	public String getRemarkOfPersonalDetails() {
+		return remarkOfPersonalDetails;
+	}
+
+	public void setRemarkOfPersonalDetails(String remarkOfPersonalDetails) {
+		this.remarkOfPersonalDetails = remarkOfPersonalDetails;
+	}
+
+	public String getRemarkOfNameOfAuthSignatory() {
+		return remarkOfNameOfAuthSignatory;
+	}
+
+	public void setRemarkOfNameOfAuthSignatory(String remarkOfNameOfAuthSignatory) {
+		this.remarkOfNameOfAuthSignatory = remarkOfNameOfAuthSignatory;
+	}
+
+	public String getRemarkOfOtherDetail() {
+		return remarkOfOtherDetail;
+	}
+
+	public void setRemarkOfOtherDetail(String remarkOfOtherDetail) {
+		this.remarkOfOtherDetail = remarkOfOtherDetail;
+	}
+
+	public String getRemarkOfDetailOfCredCard() {
+		return remarkOfDetailOfCredCard;
+	}
+
+	public void setRemarkOfDetailOfCredCard(String remarkOfDetailOfCredCard) {
+		this.remarkOfDetailOfCredCard = remarkOfDetailOfCredCard;
+	}
+
+	public String getRemarkOfPastPreRelationship() {
+		return remarkOfPastPreRelationship;
+	}
+
+	public void setRemarkOfPastPreRelationship(String remarkOfPastPreRelationship) {
+		this.remarkOfPastPreRelationship = remarkOfPastPreRelationship;
+	}
+
+	public String getRemarkOfAnyOtherBankLoan() {
+		return remarkOfAnyOtherBankLoan;
+	}
+
+	public void setRemarkOfAnyOtherBankLoan(String remarkOfAnyOtherBankLoan) {
+		this.remarkOfAnyOtherBankLoan = remarkOfAnyOtherBankLoan;
+	}
+
+	public String getRemarkOfDocCheckList() {
+		return remarkOfDocCheckList;
+	}
+
+	public void setRemarkOfDocCheckList(String remarkOfDocCheckList) {
+		this.remarkOfDocCheckList = remarkOfDocCheckList;
 	}
 
 	@Override
