@@ -32,6 +32,9 @@ public class CorporateProposalDetails {
 	
 	private Boolean isAssignedToBranch;
 	
+	private Date modifiedDate;
+	private String modifiedBy;
+	
 
 	public String getAddress() {
 		return address;
@@ -143,6 +146,22 @@ public class CorporateProposalDetails {
 
 	public void setLastStatusActionDate(Date lastStatusActionDate) {
 		this.lastStatusActionDate = lastStatusActionDate;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
 	}
 	
 	
