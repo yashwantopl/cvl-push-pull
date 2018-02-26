@@ -1747,13 +1747,42 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetails = new DDRFormDetails();
 			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
 			dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setCreatedBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setCreatedDate(new Date());
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
 		}
 		
 		final int switchCase = documentUploadFlagRequest.getDocumentMappingId().intValue();
 		switch (switchCase) {
+		// Working Capital 
+		case 9:
+			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
 		case 10:
 			dDRFormDetails.setSanctionLetter("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
 			break;
+			
+		case 11:
+			dDRFormDetails.setItrForLast3years("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+			
+		case 13:
+			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			break;
+			
+			// term Loan
+			
+			
+			// Unsecured loan
 
 		default:
 			break;
