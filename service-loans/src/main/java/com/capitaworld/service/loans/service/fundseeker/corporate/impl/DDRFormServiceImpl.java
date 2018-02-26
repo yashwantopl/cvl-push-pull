@@ -1743,7 +1743,12 @@ public class DDRFormServiceImpl implements DDRFormService{
 //		DDRFormDetailsRequest
 		try{
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(documentUploadFlagRequest.getApplicationId());
-		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
+		if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)){
+			dDRFormDetails = new DDRFormDetails();
+			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
+			dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
+		}
+		
 		final int switchCase = documentUploadFlagRequest.getDocumentMappingId().intValue();
 		switch (switchCase) {
 		case 10:
@@ -1755,25 +1760,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 		ddrFormDetailsRepository.save(dDRFormDetails);
 		return 1L;
-		}
-		
-		else{
-			dDRFormDetails = new DDRFormDetails();
-			dDRFormDetails.setApplicationId(documentUploadFlagRequest.getApplicationId());
-			dDRFormDetails.setUserId(documentUploadFlagRequest.getUserId());
-			final int switchCase = documentUploadFlagRequest.getDocumentMappingId().intValue();
-			switch (switchCase) {
-			case 10:
-				dDRFormDetails.setSanctionLetter("Yes");
-				break;
-
-			default:
-				break;
-			}
-			ddrFormDetailsRepository.save(dDRFormDetails);
-			return 1L;
-			
-		}
 		}
 		catch (Exception e) {
 			return 0L;
