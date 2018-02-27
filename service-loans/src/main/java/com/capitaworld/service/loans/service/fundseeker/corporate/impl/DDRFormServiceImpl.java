@@ -1751,6 +1751,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetails.setCreatedDate(new Date());
 			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
 			dDRFormDetails.setModifyDate(new Date());
+			dDRFormDetails.setIsActive(true);
 		}
 		
 		final int switchCase = documentUploadFlagRequest.getDocumentMappingId().intValue();

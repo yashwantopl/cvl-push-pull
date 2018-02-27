@@ -83,6 +83,7 @@ ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details AD
 ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_4 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_bs_profitibility_statement_details ADD COLUMN other_operating_revenue_5 DOUBLE DEFAULT NULL;
 
+ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN other_nca_other_capital_work_inprogress DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_1 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_2 DOUBLE DEFAULT NULL;
 ALTER TABLE loan_applications.fs_corporate_cma_assets_details ADD COLUMN gross_block_3 DOUBLE DEFAULT NULL;
