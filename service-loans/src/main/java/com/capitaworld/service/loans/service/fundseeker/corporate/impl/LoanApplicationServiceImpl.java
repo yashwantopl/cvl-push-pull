@@ -243,9 +243,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception {
 		try {
 			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
-			Integer productId = CommonUtils.getProductIdByLoanCode(loanCode);
+			LoanType type = CommonUtils.getProductByLoanCode(loanCode);
 			LoanApplicationMaster applicationMaster = null;
-			LoanType type = CommonUtils.LoanType.getType(productId);
+//			LoanType type = CommonUtils.LoanType.getType(productId);
 			if (type == null) {
 				logger.warn("Loan Type is NULL while Creating new Loan From Campaign================>");
 				return null;
@@ -254,13 +254,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			applicationMaster = getLoanByType(type);
 			applicationMaster.setUserId(finalUserId);
-			applicationMaster.setProductId(productId);
+			applicationMaster.setProductId(type.getValue());
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
-			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
-				ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
-				applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
-				applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
+			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(type.getValue())) {
+				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
