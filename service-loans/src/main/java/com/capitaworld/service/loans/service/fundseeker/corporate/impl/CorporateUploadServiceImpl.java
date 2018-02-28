@@ -119,6 +119,8 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@Override
 	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles)
 			throws Exception {
+		DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+		
 		try {
 			DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
 			try{
@@ -135,7 +137,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				logger.error("Error while saving Upload FLag");
 				throw new Exception("Error while saving Upload FLag");
 			}
-			return dmsClient.uploadFile(documentRequestString, multipartFiles);
+			return response;
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while uploading Corporate Other Documents");
