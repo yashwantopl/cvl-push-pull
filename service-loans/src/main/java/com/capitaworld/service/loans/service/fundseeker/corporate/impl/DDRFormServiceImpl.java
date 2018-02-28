@@ -247,6 +247,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 			Long ddrFormId = dDRFormDetails.getId();
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
 			BeanUtils.copyProperties(dDRFormDetails, dDRFormDetailsRequest);
+			dDRFormDetailsRequest.setOutsideLoansString(CommonUtils.checkString(dDRFormDetails.getOutsideLoans()));
+			dDRFormDetailsRequest.setLoansFromFamilyMembersRelativeString(CommonUtils.checkString(dDRFormDetails.getLoansFromFamilyMembersRelative()));
 			dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRCreditCardDetailsList(getCreditCardDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));

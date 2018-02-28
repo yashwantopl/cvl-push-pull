@@ -457,6 +457,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(productId, headers);
 			LoansResponse response = restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 			if (response != null) {
