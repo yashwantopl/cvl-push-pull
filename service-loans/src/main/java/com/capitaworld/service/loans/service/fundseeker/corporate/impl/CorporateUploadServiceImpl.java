@@ -117,12 +117,13 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
-	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles)
+	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
 			throws Exception {
 		DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
 		
 		try {
 			DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
+			request.setUserId(userId);
 			try{
 				logger.error("saving Upload FLag");
 			Long resp = saveDocumentFLag( request);

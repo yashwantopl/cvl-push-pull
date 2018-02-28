@@ -118,7 +118,7 @@ public class CorporateUploadController {
 
 	@RequestMapping(value = "/other_doc", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadDoc(@RequestPart("uploadRequest") String documentRequestString,
-			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
+			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadDoc");
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
@@ -126,8 +126,16 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			Long userId = null;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
 
-			DocumentResponse response = corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles);
+			DocumentResponse response = corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles,userId);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully");
 				CommonDocumentUtils.endHook(logger, "uploadDoc");
