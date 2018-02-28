@@ -40,32 +40,30 @@ public class CommonUtils {
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
 
-	
 	public interface UsersRoles {
-		public static final Long MAKER =1l;
+		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
 		public static final Long APPROVER = 3l;
 		public static final Long ADMIN_HO = 4l;
 		public static final Long HO = 5l;
 		public static final Long BO = 6l;
 	}
-	
-	
-	public interface DenominationInAmount  {
-		public static final Long  LAKHS =100000l;
+
+	public interface DenominationInAmount {
+		public static final Long LAKHS = 100000l;
 		public static final Long MILLIONS = 1000000l;
 		public static final Long CRORES = 10000000l;
-		public static final Long BILLIONS=100000000l;
-		public static final Long ABSOLUTE=1l;
+		public static final Long BILLIONS = 100000000l;
+		public static final Long ABSOLUTE = 1l;
 	}
-	public interface  DenominationId  {
+
+	public interface DenominationId {
 		public static final Integer LAKHS = 1;
 		public static final Integer MILLIONS = 2;
 		public static final Integer CRORES = 3;
-		public static final Integer BILLIONS=4;
-		public static final Integer ABSOLUTE=5;
+		public static final Integer BILLIONS = 4;
+		public static final Integer ABSOLUTE = 5;
 	}
-	
 
 	public static boolean isListNullOrEmpty(Collection<?> data) {
 		return (data == null || data.isEmpty());
@@ -85,14 +83,13 @@ public class CommonUtils {
 								|| "undefined".equals(value))
 						: false));
 	}
-	
+
 	public static boolean isObjectNullOrEmptyOrDash(Object value) {
-		  return (value == null
-		    || (value instanceof String
-		      ? (((String) value).isEmpty() || "".equals(((String) value).trim()) || "null".equals(value)|| "-".equals(value)
-		        || "undefined".equals(value))
-		      : false));
-		 }
+		return (value == null || (value instanceof String
+				? (((String) value).isEmpty() || "".equals(((String) value).trim()) || "null".equals(value)
+						|| "-".equals(value) || "undefined".equals(value))
+				: false));
+	}
 
 	public static Date getDateByDateMonthYear(Integer date, Integer month, Integer year) {
 
@@ -174,16 +171,17 @@ public class CommonUtils {
 				"previousJobMonth", "previousJobYear", "totalExperienceMonth", "totalExperienceYear",
 				"monthlyLoanObligation", "previousEmployersAddress", "previousEmployersName", "annualTurnover",
 				"businessStartDate", "patPreviousYear", "patCurrentYear", "depreciationPreviousYear",
-				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear","highestQualification", "qualifyingYear", "institute","residingYear","residingMonth", "spouseName", "isSpouseEmployed"};
+				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear",
+				"highestQualification", "qualifyingYear", "institute", "residingYear", "residingMonth", "spouseName",
+				"isSpouseEmployed" };
 
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
-				"fatherName", "motherName", "noChildren", "noDependent",
-				 "highestQualificationOther", "residenceType",
+				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
-				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode", 
-				 "seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate",
-				"tradeLicenseNumber", "unattended", "websiteAddress", "userId" };
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
+				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
+				"unattended", "websiteAddress", "userId" };
 	}
 
 	public interface ApplicantType {
@@ -230,7 +228,7 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 	}
-	
+
 	public static String getDdrStatusString(int ddrStatusId) {
 		if (isObjectNullOrEmpty(ddrStatusId)) {
 			return "NA";
@@ -252,7 +250,7 @@ public class CommonUtils {
 			return "NA";
 		}
 	}
-	
+
 	public interface DdrStatus {
 		public static final Long OPEN = 1l;
 		public static final Long IN_PROGRESS = 2l;
@@ -261,7 +259,7 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 	}
-	
+
 	public interface UserType {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
@@ -438,15 +436,19 @@ public class CommonUtils {
 	}
 
 	public static String CurrencyFormat(String value) {
-		
+
 		Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
-		return  format.format(new BigDecimal(value)).substring(4);
-		
-		/*Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new Locale("en", "in"));
-		return format.format(new BigDecimal(value));*/
-		
-		/*NumberFormat nf = NumberFormat.getInstance();
-		return nf.format(new BigDecimal(new BigDecimal(value).toPlainString())) + " ";*/
+		return format.format(new BigDecimal(value)).substring(4);
+
+		/*
+		 * Format format = com.ibm.icu.text.NumberFormat.getCurrencyInstance(new
+		 * Locale("en", "in")); return format.format(new BigDecimal(value));
+		 */
+
+		/*
+		 * NumberFormat nf = NumberFormat.getInstance(); return nf.format(new
+		 * BigDecimal(new BigDecimal(value).toPlainString())) + " ";
+		 */
 	}
 
 	public static String getLoanName(Integer x) {
@@ -495,385 +497,339 @@ public class CommonUtils {
 		}
 	}
 
-	public static Integer getProductIdByLoanCode(String code) {
+	public static LoanType getProductByLoanCode(String code) {
 		code = code.toUpperCase();
 		if ("WL".equalsIgnoreCase(code)) {
-			return LoanType.WORKING_CAPITAL.getValue();
+			return LoanType.WORKING_CAPITAL;
 		} else if ("TL".equalsIgnoreCase(code)) {
-			return LoanType.TERM_LOAN.getValue();
+			return LoanType.TERM_LOAN;
 		} else if ("HL".equalsIgnoreCase(code)) {
-			return LoanType.HOME_LOAN.getValue();
+			return LoanType.HOME_LOAN;
 		} else if ("CL".equalsIgnoreCase(code)) {
-			return LoanType.CAR_LOAN.getValue();
+			return LoanType.CAR_LOAN;
 		} else if ("PL".equalsIgnoreCase(code)) {
-			return LoanType.PERSONAL_LOAN.getValue();
+			return LoanType.PERSONAL_LOAN;
 		} else if ("LAP".equalsIgnoreCase(code)) {
-			return LoanType.LAP_LOAN.getValue();
+			return LoanType.LAP_LOAN;
 		} else if ("LAS".equalsIgnoreCase(code)) {
-			return LoanType.LAS_LOAN.getValue();
+			return LoanType.LAS_LOAN;
 		} else if ("USL".equalsIgnoreCase(code)) {
-			return LoanType.UNSECURED_LOAN.getValue();
+			return LoanType.UNSECURED_LOAN;
 		} else {
 			return null;
 		}
 	}
-	
-	public static Boolean isTermLoanLessThanLimit(Integer denomination,Double amount)
-	{
-		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+
+	public static Boolean isTermLoanLessThanLimit(Integer denomination, Double amount) {
+		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return false;
 		}
-		if(convertDenominationToValue(denomination,amount)<TL_LESS_TWO)
+		if (convertDenominationToValue(denomination, amount) < TL_LESS_TWO)
 			return true;
 		else
 			return false;
-		
+
 	}
 
 	private static Long convertDenominationToValue(Integer denomination, Double amount) {
 		// TODO Auto-generated method stub
-		if(isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)){
+		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return null;
 		}
-		if(denomination==DenominationId.LAKHS){
-			return 	(long) (DenominationInAmount.LAKHS* amount);
-		}else if(denomination==DenominationId.MILLIONS){
-			return 	(long) (DenominationInAmount.MILLIONS * amount);	
-		}else if(denomination==DenominationId.CRORES){
-			return 	(long) (DenominationInAmount.CRORES * amount);
-		}else if(denomination==DenominationId.BILLIONS){
-			return 	(long) (DenominationInAmount.BILLIONS* amount);
-		}else if(denomination==DenominationId.ABSOLUTE){
-			return 	(long) (DenominationInAmount.ABSOLUTE* amount);
-		}else{
+		if (denomination == DenominationId.LAKHS) {
+			return (long) (DenominationInAmount.LAKHS * amount);
+		} else if (denomination == DenominationId.MILLIONS) {
+			return (long) (DenominationInAmount.MILLIONS * amount);
+		} else if (denomination == DenominationId.CRORES) {
+			return (long) (DenominationInAmount.CRORES * amount);
+		} else if (denomination == DenominationId.BILLIONS) {
+			return (long) (DenominationInAmount.BILLIONS * amount);
+		} else if (denomination == DenominationId.ABSOLUTE) {
+			return (long) (DenominationInAmount.ABSOLUTE * amount);
+		} else {
 			return null;
 		}
 	}
-	
-	private static final String[] tensNames = {
-		    "",
-		    " ten",
-		    " twenty",
-		    " thirty",
-		    " forty",
-		    " fifty",
-		    " sixty",
-		    " seventy",
-		    " eighty",
-		    " ninety"
-		  };
 
-		  private static final String[] numNames = {
-		    "",
-		    " one",
-		    " two",
-		    " three",
-		    " four",
-		    " five",
-		    " six",
-		    " seven",
-		    " eight",
-		    " nine",
-		    " ten",
-		    " eleven",
-		    " twelve",
-		    " thirteen",
-		    " fourteen",
-		    " fifteen",
-		    " sixteen",
-		    " seventeen",
-		    " eighteen",
-		    " nineteen"
-		  };
+	private static final String[] tensNames = { "", " ten", " twenty", " thirty", " forty", " fifty", " sixty",
+			" seventy", " eighty", " ninety" };
 
-		
+	private static final String[] numNames = { "", " one", " two", " three", " four", " five", " six", " seven",
+			" eight", " nine", " ten", " eleven", " twelve", " thirteen", " fourteen", " fifteen", " sixteen",
+			" seventeen", " eighteen", " nineteen" };
 
-		  private static String convertLessThanOneThousand(int number) {
-		    String soFar;
+	private static String convertLessThanOneThousand(int number) {
+		String soFar;
 
-		    if (number % 100 < 20){
-		      soFar = numNames[number % 100];
-		      number /= 100;
-		    }
-		    else {
-		      soFar = numNames[number % 10];
-		      number /= 10;
+		if (number % 100 < 20) {
+			soFar = numNames[number % 100];
+			number /= 100;
+		} else {
+			soFar = numNames[number % 10];
+			number /= 10;
 
-		      soFar = tensNames[number % 10] + soFar;
-		      number /= 10;
-		    }
-		    if (number == 0) return soFar;
-		    return numNames[number] + " hundred" + soFar;
-		  }
+			soFar = tensNames[number % 10] + soFar;
+			number /= 10;
+		}
+		if (number == 0)
+			return soFar;
+		return numNames[number] + " hundred" + soFar;
+	}
 
-		  public static BigDecimal convertInBigDecimal(Object obj)
-		  {
-			 
-			  if(!CommonUtils.isObjectNullOrEmpty(obj))
-			  {
-			  if(obj instanceof String)
-			  {
-				  return   new BigDecimal((String)obj.toString().replaceAll(",", "")); 
-			  }
-			  if(obj instanceof Double)
-			  {
-				  return   new BigDecimal((Double)obj); 
-			  }
-			  if(obj instanceof Long)
-			  {
-				  return   new BigDecimal((Long)obj); 
-			  }
-			  if(obj instanceof Integer)
-			  {
-				  return   new BigDecimal((Integer)obj); 
-			  }
-			  }
-			  return new BigDecimal(0);
-			
-		  }
+	public static BigDecimal convertInBigDecimal(Object obj) {
 
-		  public static String amountInWords(long number) {
-		    // 0 to 999 999 999 999
-		    if (number == 0) { return "zero"; }
-
-		    String snumber = Long.toString(number);
-
-		    // pad with "0"
-		    String mask = "000000000000";
-		    DecimalFormat df = new DecimalFormat(mask);
-		    snumber = df.format(number);
-
-		    // XXXnnnnnnnnn
-		    int billions = Integer.parseInt(snumber.substring(0,3));
-		    // nnnXXXnnnnnn
-		    int millions  = Integer.parseInt(snumber.substring(3,6));
-		    // nnnnnnXXXnnn
-		    int hundredThousands = Integer.parseInt(snumber.substring(6,9));
-		    // nnnnnnnnnXXX
-		    int thousands = Integer.parseInt(snumber.substring(9,12));
-
-		    String tradBillions;
-		    switch (billions) {
-		    case 0:
-		      tradBillions = "";
-		      break;
-		    case 1 :
-		      tradBillions = convertLessThanOneThousand(billions)
-		      + " billion ";
-		      break;
-		    default :
-		      tradBillions = convertLessThanOneThousand(billions)
-		      + " billion ";
-		    }
-		    String result =  tradBillions;
-
-		    String tradMillions;
-		    switch (millions) {
-		    case 0:
-		      tradMillions = "";
-		      break;
-		    case 1 :
-		      tradMillions = convertLessThanOneThousand(millions)
-		         + " million ";
-		      break;
-		    default :
-		      tradMillions = convertLessThanOneThousand(millions)
-		         + " million ";
-		    }
-		    result =  result + tradMillions;
-
-		    String tradHundredThousands;
-		    switch (hundredThousands) {
-		    case 0:
-		      tradHundredThousands = "";
-		      break;
-		    case 1 :
-		      tradHundredThousands = "one thousand ";
-		      break;
-		    default :
-		      tradHundredThousands = convertLessThanOneThousand(hundredThousands)
-		         + " thousand ";
-		    }
-		    result =  result + tradHundredThousands;
-
-		    String tradThousand;
-		    tradThousand = convertLessThanOneThousand(thousands);
-		    result =  result + tradThousand;
-
-		    // remove extra spaces!
-		    return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
-		  }
-		  
-		  
-		  public enum DDRFrames {
-				AUTHORIZED_SIGN_DETAILS(1), 
-				CREDIT_CARD_DETAILS(2),
-				CREDITORS_DETAILS(3),
-				REGISTERED_OFFICE(4),
-				OPERATING_OFFICE(5),
-				OTHER_BANK_LOAN_DETAILS(6),
-				REL_WITH_DBS_DETAILS(7),
-				VEHICLES_OWNED_DETAILS(8);
-	
-			  	private int value;
-
-				private DDRFrames(int value) {
-					this.value = value;
-				}
-
-				public int getValue() {
-					return value;
-				}
-
-				public static DDRFrames getType(Integer x) {
-					switch (x) {
-					case 1:
-						return AUTHORIZED_SIGN_DETAILS;
-					case 2:
-						return CREDIT_CARD_DETAILS;
-					case 3:
-						return CREDIT_CARD_DETAILS;
-					case 4:
-						return REGISTERED_OFFICE;
-					case 5:
-						return OPERATING_OFFICE;
-					case 6:
-						return OTHER_BANK_LOAN_DETAILS;
-					case 7:
-						return REL_WITH_DBS_DETAILS;
-					case 8:
-						return VEHICLES_OWNED_DETAILS;
-					default :
-						return null;
-					}
-				}
-
+		if (!CommonUtils.isObjectNullOrEmpty(obj)) {
+			if (obj instanceof String) {
+				return new BigDecimal((String) obj.toString().replaceAll(",", ""));
 			}
-		  
-		  
-		  public enum DDRFinancialSummaryFields {
-				FIRST_TOTAL_SALES(1,"Total Sales"), 
-				INTEREST_COST(2,"Interest Cost"),
-				PROFIT_BEFORE_TAX(3,"Profit Before Tax (PBT)"),
-				PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"),
-				NET_WORTH(5,"Net Worth"),
-				ADJUSTED_NET_WORTH(6,"Adjusted NetWorth (Treating unsecured loan as quasi capital)**"),
-				TOTAL_DEBT(7,"Total Debt"),
-				SECURE_LOAN(8,"Secure Loan"),
-			  	UNSECURE_LOAN(9,"Unsecured Loan"),
-			  	UNSECURE_LOAN_FROM_FRIEND(10,"Unsecured Loan from Friends And Relatives treated ad Qausi"),
-			  	CAPITAL(11,"Capital"),
-			  	TOTAL_CURRENT_ASSET(12,"Total Current Asset"),
-			  	TOTAL_CURRENT_LIABILITY(13,"Total Current Liabilities"),
-			  	TOTAL_LIABILITY(14,"Total Liabilities (TOL)"),
-			  	LEVERAGE(15,"Leverage (TOL/TNW)"),
-			  	ADJUSTED_LEVERAGE(16, "Adjusted Leverage (TOL/Adjusted TNW)"),
-			  	CAPITAL_EMPLOYED(17,"Capital Employed"),
-			  	GEARING(18,"Gearing (Total Debt/TNW)"),
-			  	ADJUSTED_GEARING(19,"Adjusted Gearing (Total Debt/Adjusted TNW)"),
-			  	CURRENT_RATIO(20,"Current Ratio"),
-			  	INVENTORY_TURNOVER(21,"Inventory Turnover(Days)"),
-			  	LAST_TOTAL_SALES(22,"Total Sales"),
-			  	WORKING_CAPITAL_CYCLE(23, "Working Capital Cycle(Days)");
-			  
-	
-			  	private int id;
-			  	private String value;
-
-				private DDRFinancialSummaryFields(int id,String value) {
-					this.id = id;
-					this.value = value;
-				}
-				
-				public int getId() {
-					return id;
-				}
-
-				public String getValue() {
-					return value;
-				}
-				
-				public static DDRFinancialSummaryFields[] getAll() {
-					return DDRFinancialSummaryFields.values();
-				}
-				
-
+			if (obj instanceof Double) {
+				return new BigDecimal((Double) obj);
 			}
-		  
-		  public enum DDRFinancialSummaryToBeFields {
-//				PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"), 
-//				SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
-				RECEIVAVLES_TURNOVER(3,"Receivables turnover (Days)"),
-				CREDITORS_TURNOVER(4, "Creditors Turnover (Days)");		  
-	
-			  	private int id;
-			  	private String value;
-
-				private DDRFinancialSummaryToBeFields(int id,String value) {
-					this.id = id;
-					this.value = value;
-				}
-				
-				public int getId() {
-					return id;
-				}
-
-				public String getValue() {
-					return value;
-				}
-				public static DDRFinancialSummaryToBeFields getType(Integer x) {
-					switch (x) {
-//					case 1:
-//						return PER_OF_SALES_OF_ANCHORE_PRODUCT;
-//					case 2:
-//						return SALES_OF_ANCHOR_PODUCTS;
-					case 3:
-						return RECEIVAVLES_TURNOVER;
-					case 4:
-						return CREDITORS_TURNOVER;
-					default :
-						return null;
-					}
-				}
-				
-				public static DDRFinancialSummaryFields[] getAll() {
-					return DDRFinancialSummaryFields.values();
-				}
-				
-
+			if (obj instanceof Long) {
+				return new BigDecimal((Long) obj);
 			}
-		  
-		  public static double checkDouble(Double value) {
-			  try{
-			  if(!isObjectNullOrEmpty(value)){
-			  DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			  return Double.valueOf(decimalFormat1.format(value));
-			  
-			  }
-			  else{
-				  return 0.0;
-			  }
-			  }
-			  catch (Exception e) {
-				return 0.00;
+			if (obj instanceof Integer) {
+				return new BigDecimal((Integer) obj);
 			}
-//			  return isObjectNullOrEmpty(value) ? 0.0 : value;
-		  }
-		  public interface PaymentMode{
-			  public static final String ONLINE = "ONLINE";
-			  public static final String CHEQUE = "CHEQUE";
-			  public static final String CASH = "CASH";
-		  }
-		  
-		  public static String checkString(Double value){
-			  try{
-			  DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			  System.out.println( decimalFormat1.format(value));
-			  return decimalFormat1.format(value);
-			  }
-			  catch (Exception e) {
-				return "0.00";
+		}
+		return new BigDecimal(0);
+
+	}
+
+	public static String amountInWords(long number) {
+		// 0 to 999 999 999 999
+		if (number == 0) {
+			return "zero";
+		}
+
+		String snumber = Long.toString(number);
+
+		// pad with "0"
+		String mask = "000000000000";
+		DecimalFormat df = new DecimalFormat(mask);
+		snumber = df.format(number);
+
+		// XXXnnnnnnnnn
+		int billions = Integer.parseInt(snumber.substring(0, 3));
+		// nnnXXXnnnnnn
+		int millions = Integer.parseInt(snumber.substring(3, 6));
+		// nnnnnnXXXnnn
+		int hundredThousands = Integer.parseInt(snumber.substring(6, 9));
+		// nnnnnnnnnXXX
+		int thousands = Integer.parseInt(snumber.substring(9, 12));
+
+		String tradBillions;
+		switch (billions) {
+		case 0:
+			tradBillions = "";
+			break;
+		case 1:
+			tradBillions = convertLessThanOneThousand(billions) + " billion ";
+			break;
+		default:
+			tradBillions = convertLessThanOneThousand(billions) + " billion ";
+		}
+		String result = tradBillions;
+
+		String tradMillions;
+		switch (millions) {
+		case 0:
+			tradMillions = "";
+			break;
+		case 1:
+			tradMillions = convertLessThanOneThousand(millions) + " million ";
+			break;
+		default:
+			tradMillions = convertLessThanOneThousand(millions) + " million ";
+		}
+		result = result + tradMillions;
+
+		String tradHundredThousands;
+		switch (hundredThousands) {
+		case 0:
+			tradHundredThousands = "";
+			break;
+		case 1:
+			tradHundredThousands = "one thousand ";
+			break;
+		default:
+			tradHundredThousands = convertLessThanOneThousand(hundredThousands) + " thousand ";
+		}
+		result = result + tradHundredThousands;
+
+		String tradThousand;
+		tradThousand = convertLessThanOneThousand(thousands);
+		result = result + tradThousand;
+
+		// remove extra spaces!
+		return result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ");
+	}
+
+	public enum DDRFrames {
+		AUTHORIZED_SIGN_DETAILS(1), CREDIT_CARD_DETAILS(2), CREDITORS_DETAILS(3), REGISTERED_OFFICE(
+				4), OPERATING_OFFICE(5), OTHER_BANK_LOAN_DETAILS(6), REL_WITH_DBS_DETAILS(7), VEHICLES_OWNED_DETAILS(8);
+
+		private int value;
+
+		private DDRFrames(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return value;
+		}
+
+		public static DDRFrames getType(Integer x) {
+			switch (x) {
+			case 1:
+				return AUTHORIZED_SIGN_DETAILS;
+			case 2:
+				return CREDIT_CARD_DETAILS;
+			case 3:
+				return CREDIT_CARD_DETAILS;
+			case 4:
+				return REGISTERED_OFFICE;
+			case 5:
+				return OPERATING_OFFICE;
+			case 6:
+				return OTHER_BANK_LOAN_DETAILS;
+			case 7:
+				return REL_WITH_DBS_DETAILS;
+			case 8:
+				return VEHICLES_OWNED_DETAILS;
+			default:
+				return null;
 			}
-		  }
+		}
+
+	}
+
+	public enum DDRFinancialSummaryFields {
+		FIRST_TOTAL_SALES(1, "Total Sales"), INTEREST_COST(2, "Interest Cost"), PROFIT_BEFORE_TAX(3,
+				"Profit Before Tax (PBT)"), PROFIT_AFTER_TAX(4, "Profit After Tax (PAT)"), NET_WORTH(5,
+						"Net Worth"), ADJUSTED_NET_WORTH(6,
+								"Adjusted NetWorth (Treating unsecured loan as quasi capital)**"), TOTAL_DEBT(7,
+										"Total Debt"), SECURE_LOAN(8, "Secure Loan"), UNSECURE_LOAN(9,
+												"Unsecured Loan"), UNSECURE_LOAN_FROM_FRIEND(10,
+														"Unsecured Loan from Friends And Relatives treated ad Qausi"), CAPITAL(
+																11, "Capital"), TOTAL_CURRENT_ASSET(12,
+																		"Total Current Asset"), TOTAL_CURRENT_LIABILITY(
+																				13,
+																				"Total Current Liabilities"), TOTAL_LIABILITY(
+																						14,
+																						"Total Liabilities (TOL)"), LEVERAGE(
+																								15,
+																								"Leverage (TOL/TNW)"), ADJUSTED_LEVERAGE(
+																										16,
+																										"Adjusted Leverage (TOL/Adjusted TNW)"), CAPITAL_EMPLOYED(
+																												17,
+																												"Capital Employed"), GEARING(
+																														18,
+																														"Gearing (Total Debt/TNW)"), ADJUSTED_GEARING(
+																																19,
+																																"Adjusted Gearing (Total Debt/Adjusted TNW)"), CURRENT_RATIO(
+																																		20,
+																																		"Current Ratio"), INVENTORY_TURNOVER(
+																																				21,
+																																				"Inventory Turnover(Days)"), LAST_TOTAL_SALES(
+																																						22,
+																																						"Total Sales"), WORKING_CAPITAL_CYCLE(
+																																								23,
+																																								"Working Capital Cycle(Days)");
+
+		private int id;
+		private String value;
+
+		private DDRFinancialSummaryFields(int id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public static DDRFinancialSummaryFields[] getAll() {
+			return DDRFinancialSummaryFields.values();
+		}
+
+	}
+
+	public enum DDRFinancialSummaryToBeFields {
+		// PER_OF_SALES_OF_ANCHORE_PRODUCT(1,"% of sales of Anchor Products"),
+		// SALES_OF_ANCHOR_PODUCTS(2,"Sales of Anchor Products"),
+		RECEIVAVLES_TURNOVER(3, "Receivables turnover (Days)"), CREDITORS_TURNOVER(4, "Creditors Turnover (Days)");
+
+		private int id;
+		private String value;
+
+		private DDRFinancialSummaryToBeFields(int id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public static DDRFinancialSummaryToBeFields getType(Integer x) {
+			switch (x) {
+			// case 1:
+			// return PER_OF_SALES_OF_ANCHORE_PRODUCT;
+			// case 2:
+			// return SALES_OF_ANCHOR_PODUCTS;
+			case 3:
+				return RECEIVAVLES_TURNOVER;
+			case 4:
+				return CREDITORS_TURNOVER;
+			default:
+				return null;
+			}
+		}
+
+		public static DDRFinancialSummaryFields[] getAll() {
+			return DDRFinancialSummaryFields.values();
+		}
+
+	}
+
+	public static double checkDouble(Double value) {
+		try {
+			if (!isObjectNullOrEmpty(value)) {
+				DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
+				return Double.valueOf(decimalFormat1.format(value));
+
+			} else {
+				return 0.0;
+			}
+		} catch (Exception e) {
+			return 0.00;
+		}
+		// return isObjectNullOrEmpty(value) ? 0.0 : value;
+	}
+
+	public interface PaymentMode {
+		public static final String ONLINE = "ONLINE";
+		public static final String CHEQUE = "CHEQUE";
+		public static final String CASH = "CASH";
+	}
+
+	public static String checkString(Double value) {
+		try {
+			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
+			System.out.println(decimalFormat1.format(value));
+			return decimalFormat1.format(value);
+		} catch (Exception e) {
+			return "0.00";
+		}
+	}
 
 }
