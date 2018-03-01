@@ -103,6 +103,9 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String remarkOfAnyOtherBankLoan;
 	private String remarkOfDocCheckList;
 	
+	private String outsideLoansString;
+	private String loansFromFamilyMembersRelativeString;
+	
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
 	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();
@@ -117,6 +120,30 @@ public class DDRFormDetailsRequest implements Serializable {
 	
 	
 	
+	public String getOutsideLoansString() {
+		return outsideLoansString;
+	}
+
+
+
+	public String getLoansFromFamilyMembersRelativeString() {
+		return loansFromFamilyMembersRelativeString;
+	}
+
+
+
+	public void setOutsideLoansString(String outsideLoansString) {
+		this.outsideLoansString = outsideLoansString;
+	}
+
+
+
+	public void setLoansFromFamilyMembersRelativeString(String loansFromFamilyMembersRelativeString) {
+		this.loansFromFamilyMembersRelativeString = loansFromFamilyMembersRelativeString;
+	}
+
+
+
 	public Long getId() {
 		return id;
 	}
