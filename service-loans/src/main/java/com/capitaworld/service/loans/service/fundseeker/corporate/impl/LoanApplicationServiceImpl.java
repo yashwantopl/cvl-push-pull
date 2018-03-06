@@ -258,7 +258,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			try {
 				// Inactivating Campaign Codes
-				inactiveCampaignDetails(finalUserId, code);
+				if (!codeExist) {
+					inactiveCampaignDetails(finalUserId, code);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("Error while inactivating campaign details");
