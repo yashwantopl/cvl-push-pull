@@ -832,4 +832,38 @@ public class CommonUtils {
 		}
 	}
 
+	public enum CampaignCodes {
+		ALL1MSME(1, "ALL1MSME");
+
+		private int id;
+		private String value;
+
+		private CampaignCodes(int id) {
+			this.id = id;
+		}
+
+		private CampaignCodes(int id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public static CampaignCodes getType(Integer x) {
+			switch (x) {
+			case 1:
+				return CampaignCodes.ALL1MSME;
+			default:
+				return null;
+			}
+		}
+
+	}
+
 }

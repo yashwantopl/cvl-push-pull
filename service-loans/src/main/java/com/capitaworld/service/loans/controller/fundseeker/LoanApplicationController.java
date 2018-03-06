@@ -1209,6 +1209,9 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			for (String campaignCode : campaignCodes) {
+				if(CommonUtils.CampaignCodes.ALL1MSME.getValue().equals(campaignCode)) {
+					
+				}
 				boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
 				if (campaignCodeExist) {
 					logger.info("Campaign code is already Exists==>" + campaignCode);

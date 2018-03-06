@@ -25,6 +25,8 @@ public class FrameRequest implements Serializable{
 	
 	private int applicantType;
 	
+	private List<String> campaignCodes;
+	
 
 	public int getApplicantType() {
 		return applicantType;
@@ -73,7 +75,13 @@ public class FrameRequest implements Serializable{
 	public void setDdrFormId(Long ddrFormId) {
 		this.ddrFormId = ddrFormId;
 	}
-	
-	
+
+	public List<String> getCampaignCodes() {
+		return campaignCodes;
+	}
+
+	public void setCampaignCodes(List<String> campaignCodes) {
+		this.campaignCodes = campaignCodes;
+	}
 
 }
