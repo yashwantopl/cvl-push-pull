@@ -1203,6 +1203,25 @@ public class LoanApplicationController {
 			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
+			
+			boolean isMsmeUserFromGeneric = false;
+			try {
+				logger.info("Campaign Code=====>{}", campaignCodes);
+				if (!CommonUtils.isListNullOrEmpty(campaignCodes)) {
+					isMsmeUserFromGeneric = campaignCodes.contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					Integer index = campaignCodes
+//							.indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					logger.info("index==={}=of Code====>{}", index, CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					if (index > -1) {
+						logger.info("codeExist====>{}", isMsmeUserFromGeneric);
+//					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Set Campaign Code to LoanApplication Master");
+			}
+			
+			
 			JSONObject json = new JSONObject();
 			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1213,13 +1232,15 @@ public class LoanApplicationController {
 				if (campaignCodeExist) {
 					logger.info("Campaign code is already Exists==>" + campaignCode);
 				} else {
-					LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId,
-							campaignCode);
-					json.put("id", request2.getId());
-					json.put("productId", request2.getProductId());
-					json.put("hasAlreadyApplied", loanApplicationService.hasAlreadyApplied(finalUserId,
-							request2.getId(), request2.getProductId()));
-					json.put("isNew", true);
+					if(!CommonUtils.CampaignCodes.ALL1MSME.getValue().equals(campaignCode)) {
+						LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId,
+								campaignCode);
+						json.put("id", request2.getId());
+						json.put("productId", request2.getProductId());
+						json.put("hasAlreadyApplied", loanApplicationService.hasAlreadyApplied(finalUserId,
+								request2.getId(), request2.getProductId()));
+						json.put("isNew", true);	
+					}
 				}
 			}
 
@@ -1236,6 +1257,7 @@ public class LoanApplicationController {
 					json.put("isNew", false);
 				}
 			}
+			json.put("msmeGeneric", isMsmeUserFromGeneric);
 			loansResponse.setData(json);
 
 			logger.info("end createLoanFromCampaign()");
