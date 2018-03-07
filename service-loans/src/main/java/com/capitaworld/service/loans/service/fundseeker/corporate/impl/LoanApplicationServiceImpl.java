@@ -207,19 +207,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanApplicationMaster applicationMaster = null;
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
 					: commonRequest.getClientId());
-			String code = null;
 			boolean codeExist = false;
 			try {
 				logger.info("Campaign Code=====>{}", commonRequest.getCampaignCodes());
 				if (!CommonUtils.isListNullOrEmpty(commonRequest.getCampaignCodes())) {
-					Integer index = commonRequest.getCampaignCodes()
-							.indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					logger.info("index==={}=of Code====>{}", index, CommonUtils.CampaignCodes.ALL1MSME.getValue());
-					if (index > -1) {
-						code = commonRequest.getCampaignCodes().get(index);
-						codeExist = isCampaignCodeExist(userId, commonRequest.getClientId(), code);
+					codeExist = commonRequest.getCampaignCodes().contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					Integer index = commonRequest.getCampaignCodes()
+//							.indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					logger.info("index==={}=of Code====>{}", index, CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					if (index > -1) {
+//						code = commonRequest.getCampaignCodes().get(index);
+//						codeExist = true;
 						logger.info("codeExist====>{}", codeExist);
-					}
+//					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -247,8 +247,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 					applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
 					applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
-					if (!codeExist) {
-						applicationMaster.setCampaignCode(code);
+					if (codeExist) {
+						applicationMaster.setCampaignCode(CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					}
 				}
 				applicationMaster
@@ -258,8 +258,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			try {
 				// Inactivating Campaign Codes
-				if (!codeExist) {
-					inactiveCampaignDetails(finalUserId, code);
+				if (codeExist) {
+					inactiveCampaignDetails(finalUserId, CommonUtils.CampaignCodes.ALL1MSME.getValue());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
