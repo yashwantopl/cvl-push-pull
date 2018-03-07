@@ -1435,10 +1435,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (applicationMaster.getProductId() != LoanType.UNSECURED_LOAN.getValue()) {
+			if (applicationMaster.getProductId() != LoanType.TERM_LOAN.getValue()) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
 						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
-					response.put("message", "Please Fill FINAL DPR details to Move Next !");
+					response.put("message", "Please Fill Financial Model details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+			}
+			if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) {
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
+						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+					response.put("message", "Please Fill DPR details to Move Next !");
 					response.put("result", false);
 					return response;
 				}
