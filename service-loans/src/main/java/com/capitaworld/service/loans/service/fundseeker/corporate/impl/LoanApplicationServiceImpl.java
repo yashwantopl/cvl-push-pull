@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -196,13 +197,35 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
-	/*@Autowired
-	private AsyncComponent asyncComponent;
-	*/
+
+	/*
+	 * @Autowired private AsyncComponent asyncComponent;
+	 */
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
 			LoanApplicationMaster applicationMaster = null;
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
+					: commonRequest.getClientId());
+			boolean codeExist = false;
+			try {
+				logger.info("Campaign Code=====>{}", commonRequest.getCampaignCodes());
+				if (!CommonUtils.isListNullOrEmpty(commonRequest.getCampaignCodes())) {
+					codeExist = commonRequest.getCampaignCodes().contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					Integer index = commonRequest.getCampaignCodes()
+//							.indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					logger.info("index==={}=of Code====>{}", index, CommonUtils.CampaignCodes.ALL1MSME.getValue());
+//					if (index > -1) {
+//						code = commonRequest.getCampaignCodes().get(index);
+//						codeExist = true;
+						logger.info("codeExist====>{}", codeExist);
+//					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Set Campaign Code to LoanApplication Master");
+			}
+
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
 				LoanApplicationRequest loanApplicationRequest = (LoanApplicationRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, LoanApplicationRequest.class);
@@ -211,11 +234,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					continue;
 				}
 				applicationMaster = getLoanByType(type);
-				logger.info("userId==>" + (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
-						: commonRequest.getClientId()));
+				logger.info("userId==>" + finalUserId);
 				BeanUtils.copyProperties(loanApplicationRequest, applicationMaster, "name");
-				applicationMaster.setUserId((CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
-						: commonRequest.getClientId()));
+				applicationMaster.setUserId(finalUserId);
 				applicationMaster.setCreatedBy(userId);
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
@@ -226,10 +247,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
 					applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
 					applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+					if (codeExist) {
+						applicationMaster.setCampaignCode(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					}
 				}
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
+			}
+
+			try {
+				// Inactivating Campaign Codes
+				if (codeExist) {
+					inactiveCampaignDetails(finalUserId, CommonUtils.CampaignCodes.ALL1MSME.getValue());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error while inactivating campaign details");
 			}
 			return true;
 		} catch (Exception e) {
@@ -239,13 +273,49 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+	private List<String> getCampaignCodes(Long userId) {
+		try {
+			UserResponse response = userClient.getCampaignCodesByUserId(userId);
+			if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
+				logger.info("No Codes Found for UserId===>{}", userId);
+			} else {
+				return (List<String>) response.getData();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Getting Campaign Codes using Users Client");
+		}
+		return Collections.emptyList();
+	}
+
+	private void inactiveCampaignDetails(Long userId, String code) {
+		try {
+			UserResponse response = userClient.inactiveCampaign(userId, code);
+			if (CommonUtils.isObjectNullOrEmpty(response)) {
+				logger.info("Response Found full to inactive User Details===>{}", userId);
+			} else {
+				if (HttpStatus.OK.value() == response.getStatus()) {
+					logger.info("Successfully inactivated Campaign Details for userId===>{}====Code====>{}", userId,
+							code);
+				} else {
+					logger.info(
+							"Something Went Wrong while inactivatig  Campaign Details for userId===>{}====Code====>{}===Status==>{}",
+							userId, code, response.getStatus());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Getting Campaign Codes using Users Client");
+		}
+	}
+
 	@Override
 	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception {
 		try {
 			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
 			LoanType type = CommonUtils.getProductByLoanCode(loanCode);
 			LoanApplicationMaster applicationMaster = null;
-//			LoanType type = CommonUtils.LoanType.getType(productId);
+			// LoanType type = CommonUtils.LoanType.getType(productId);
 			if (type == null) {
 				logger.warn("Loan Type is NULL while Creating new Loan From Campaign================>");
 				return null;
@@ -258,7 +328,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
 			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(type.getValue())) {
-				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+				applicationMaster
+						.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
@@ -457,15 +528,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
 				applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
-				
-				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment()) && applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
-					GatewayRequest gatewayRequest = networkPartnerService.getPaymentStatuOfApplication(applicationRequest.getId());
-					if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
-						if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+
+				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getTypeOfPayment())
+						&& applicationRequest.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)) {
+					GatewayRequest gatewayRequest = networkPartnerService
+							.getPaymentStatuOfApplication(applicationRequest.getId());
+					if (!CommonUtils.isObjectNullOrEmpty(gatewayRequest)) {
+						if (gatewayRequest.getStatus()
+								.equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)) {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						}else{
+						} else {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						}	
+						}
 					}
 				}
 			} else {
@@ -550,17 +624,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				request.setProfilePrimaryLocked(master.getIsPrimaryLocked());
 				request.setFinalLocked(master.getIsFinalLocked());
 				try {
-					if(!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())){
+					if (!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())) {
 						request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
 						request.setIsNhbsApplication(true);
-						request.setDdrStatusId(CommonUtils.isObjectListNull(master.getDdrStatusId()) ? null : Integer.valueOf(master.getDdrStatusId().toString()));
-					}else{
+						request.setDdrStatusId(CommonUtils.isObjectListNull(master.getDdrStatusId()) ? null
+								: Integer.valueOf(master.getDdrStatusId().toString()));
+					} else {
 						ProposalMappingResponse response = proposalDetailsClient
 								.getFundSeekerApplicationStatus(master.getId());
-						request.setStatus(
-								CommonUtils.isObjectNullOrEmpty(response.getData()) ? null : (Integer) response.getData());
+						request.setStatus(CommonUtils.isObjectNullOrEmpty(response.getData()) ? null
+								: (Integer) response.getData());
 						request.setIsNhbsApplication(false);
-					}					
+					}
 					com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 							.getById(master.getProductId());
 					request.setName(loanType.getValue());
@@ -651,7 +726,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
 		try {
-			
+
 			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
 			loanApplicationRequest.setIsMailSent(false);
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
@@ -748,10 +823,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				logger.info("Current loan is corporate-------------------------------------->");
-				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId()) 
+				if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpAssigneeId())
 						&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getNpUserId())) {
 					logger.info("Start sending mail when maker has lock primary details");
-					
+
 					loanApplicationRequest.setId(applicationMaster.getId());
 					loanApplicationRequest.setNpAssigneeId(applicationMaster.getNpAssigneeId());
 					loanApplicationRequest.setNpUserId(applicationMaster.getNpUserId());
@@ -759,12 +834,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanApplicationRequest.setProductId(applicationMaster.getProductId());
 					loanApplicationRequest.setName(fsName);
 					loanApplicationRequest.setIsMailSent(true);
-					/*asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.getNpAssigneeId(),applicationMaster.getNpUserId(),
-							applicationMaster.getApplicationCode(),applicationMaster.getProductId(),fsName,applicationMaster.getId());*/				
+					/*
+					 * asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.
+					 * getNpAssigneeId(),applicationMaster.getNpUserId(),
+					 * applicationMaster.getApplicationCode(),applicationMaster.getProductId(),
+					 * fsName,applicationMaster.getId());
+					 */
 				} else {
 					logger.info("NP userId or assign id null or empty-------------------------------------->");
 				}
-				
+
 			}
 			notificationClient.send(notificationRequest);
 			// send FP notification end

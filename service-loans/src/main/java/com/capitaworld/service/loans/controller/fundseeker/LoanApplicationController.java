@@ -484,10 +484,13 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoanApplicationRequest loanApplicationRequest = loanApplicationService.lockFinal(applicationId, userId, true);
-			if(loanApplicationRequest.getIsMailSent()) {
-				asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),loanApplicationRequest.getNpUserId(),
-						loanApplicationRequest.getApplicationCode(),loanApplicationRequest.getProductId(),loanApplicationRequest.getName(),loanApplicationRequest.getId());	
+			LoanApplicationRequest loanApplicationRequest = loanApplicationService.lockFinal(applicationId, userId,
+					true);
+			if (loanApplicationRequest.getIsMailSent()) {
+				asyncComponent.sendEmailWhenMakerLockFinalDetails(loanApplicationRequest.getNpAssigneeId(),
+						loanApplicationRequest.getNpUserId(), loanApplicationRequest.getApplicationCode(),
+						loanApplicationRequest.getProductId(), loanApplicationRequest.getName(),
+						loanApplicationRequest.getId());
 			}
 			CommonDocumentUtils.endHook(logger, "lockFinal");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
@@ -1203,23 +1206,45 @@ public class LoanApplicationController {
 			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
+
+			boolean isMsmeUserFromGeneric = false;
+			try {
+				logger.info("Campaign Code=====>{}", campaignCodes);
+				if (!CommonUtils.isListNullOrEmpty(campaignCodes)) {
+					isMsmeUserFromGeneric = campaignCodes.contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					// Integer index = campaignCodes
+					// .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					// logger.info("index==={}=of Code====>{}", index,
+					// CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					// if (index > -1) {
+					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
+					// }
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Set Campaign Code to LoanApplication Master");
+			}
+
 			JSONObject json = new JSONObject();
 			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			for (String campaignCode : campaignCodes) {
-				boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId, campaignCode);
-				if (campaignCodeExist) {
-					logger.info("Campaign code is already Exists==>" + campaignCode);
-				} else {
-					LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId,
+				if (!CommonUtils.CampaignCodes.ALL1MSME.getValue().equals(campaignCode)) {
+					boolean campaignCodeExist = loanApplicationService.isCampaignCodeExist(userId, clientId,
 							campaignCode);
-					json.put("id", request2.getId());
-					json.put("productId", request2.getProductId());
-					json.put("hasAlreadyApplied", loanApplicationService.hasAlreadyApplied(finalUserId,
-							request2.getId(), request2.getProductId()));
-					json.put("isNew", true);
+					if (campaignCodeExist) {
+						logger.info("Campaign code is already Exists==>" + campaignCode);
+					} else {
+						LoanApplicationRequest request2 = loanApplicationService.saveFromCampaign(userId, clientId,
+								campaignCode);
+						json.put("id", request2.getId());
+						json.put("productId", request2.getProductId());
+						json.put("hasAlreadyApplied", loanApplicationService.hasAlreadyApplied(finalUserId,
+								request2.getId(), request2.getProductId()));
+						json.put("isNew", true);
+					}
 				}
 			}
 
@@ -1236,6 +1261,7 @@ public class LoanApplicationController {
 					json.put("isNew", false);
 				}
 			}
+			json.put("msmeGeneric", isMsmeUserFromGeneric);
 			loansResponse.setData(json);
 
 			logger.info("end createLoanFromCampaign()");
@@ -1334,8 +1360,7 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	
+
 	@RequestMapping(value = "/isApplicationEligibleForIrr/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> isApplicationEligibleForIrr(HttpServletRequest request,
 			@PathVariable Long applicationId, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -1479,26 +1504,31 @@ public class LoanApplicationController {
 			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId,
 					clientId);
 			logger.info("Response========>{}", applicationMaster);
-			
+
 			try {
 				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select Online Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE,NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
 					logger.info("End Sent Mail When FS select Online Payment");
 				} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CASH Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CASH Payment");
 				} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
 					logger.info("Start Sent Mail When FS select CHEQUE Payment");
-					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
 					logger.info("End Sent Mail When FS select CHEQUE Payment");
-				}	
-			} catch(Exception e) {
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 				logger.info("Throw Exception while send mail when save payment ");
 			}
-			
+
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
 			response.setData(applicationMaster);
 			logger.info("end save_payment_info()");
@@ -1527,8 +1557,8 @@ public class LoanApplicationController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,
-					userId, clientId));
+			response.setData(
+					loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, userId, clientId));
 			logger.info("end updatePaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
