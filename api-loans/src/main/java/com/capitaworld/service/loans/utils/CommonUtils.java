@@ -122,16 +122,29 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(
-				14), UNSECURED_LOAN(15);
+		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL");
 		private int value;
+		private String name;
+		private String code;
 
-		private LoanType(int value) {
+		private LoanType(int value,String name,String code) {
 			this.value = value;
+			this.name = name;
+			this.code = code;
 		}
 
 		public int getValue() {
 			return value;
+		}
+		public String getName() {
+			return name;
+		}
+		public String getCode(boolean inLowerCase) {
+			if(inLowerCase) {
+				return code.toLowerCase();				
+			}
+			return code;
 		}
 
 		public static LoanType getType(Integer x) {
