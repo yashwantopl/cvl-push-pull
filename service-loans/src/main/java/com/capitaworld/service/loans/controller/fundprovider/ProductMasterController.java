@@ -626,5 +626,22 @@ public class ProductMasterController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}	
+	}
+	
+	@RequestMapping(value = "/get_product/{orgId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProductsByOrg(@PathVariable("orgId") Long orgId) {
+		try {
+			logger.info("start getProductsByOrg()");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(productMasterService.getProductByOrgId(orgId));
+			logger.info("End getProductsByOrg()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getProductsByOrg==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 }
