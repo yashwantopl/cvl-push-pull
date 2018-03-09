@@ -512,7 +512,7 @@ public class CommonUtils {
 
 	public static LoanType getProductByLoanCode(String code) {
 		code = code.toUpperCase();
-		if ("WL".equalsIgnoreCase(code)) {
+		if ("WC".equalsIgnoreCase(code)) {
 			return LoanType.WORKING_CAPITAL;
 		} else if ("TL".equalsIgnoreCase(code)) {
 			return LoanType.TERM_LOAN;
