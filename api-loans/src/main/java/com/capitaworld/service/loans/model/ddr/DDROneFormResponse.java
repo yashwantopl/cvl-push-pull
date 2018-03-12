@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.ddr;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
@@ -14,6 +15,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,6 +32,17 @@ public class DDROneFormResponse implements Serializable {
 	private String establishMentYear;
 	private String aboutMe;
 	private String currency;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date approvedDate;
+
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
+
 
 	List<PromotorBackgroundDetailResponse> promoBackRespList = null;
 	List<OwnershipDetailResponse> ownershipRespList = null;

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -819,6 +820,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
@@ -2257,6 +2260,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("DDR==============> Throw Exception while save document flag");
 			e.printStackTrace();
 		}
+
 		return 0L;
 	}
 
