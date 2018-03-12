@@ -122,16 +122,29 @@ public class CommonUtils {
 	}
 
 	public enum LoanType {
-		WORKING_CAPITAL(1), TERM_LOAN(2), HOME_LOAN(3), CAR_LOAN(12), PERSONAL_LOAN(7), LAP_LOAN(13), LAS_LOAN(
-				14), UNSECURED_LOAN(15);
+		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL");
 		private int value;
+		private String name;
+		private String code;
 
-		private LoanType(int value) {
+		private LoanType(int value,String name,String code) {
 			this.value = value;
+			this.name = name;
+			this.code = code;
 		}
 
 		public int getValue() {
 			return value;
+		}
+		public String getName() {
+			return name;
+		}
+		public String getCode(boolean inLowerCase) {
+			if(inLowerCase) {
+				return code.toLowerCase();				
+			}
+			return code;
 		}
 
 		public static LoanType getType(Integer x) {
@@ -499,7 +512,7 @@ public class CommonUtils {
 
 	public static LoanType getProductByLoanCode(String code) {
 		code = code.toUpperCase();
-		if ("WL".equalsIgnoreCase(code)) {
+		if ("WC".equalsIgnoreCase(code)) {
 			return LoanType.WORKING_CAPITAL;
 		} else if ("TL".equalsIgnoreCase(code)) {
 			return LoanType.TERM_LOAN;
@@ -830,6 +843,40 @@ public class CommonUtils {
 		} catch (Exception e) {
 			return "0.00";
 		}
+	}
+
+	public enum CampaignCodes {
+		ALL1MSME(1, "ALL1MSME");
+
+		private int id;
+		private String value;
+
+		private CampaignCodes(int id) {
+			this.id = id;
+		}
+
+		private CampaignCodes(int id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public static CampaignCodes getType(Integer x) {
+			switch (x) {
+			case 1:
+				return CampaignCodes.ALL1MSME;
+			default:
+				return null;
+			}
+		}
+
 	}
 
 }

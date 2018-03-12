@@ -75,8 +75,10 @@ public class MatchesController {
 					logger.info("Start Sending Mail To Fs Corporate for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				loansResponse.setData(matchResponse.getData());
+				loansResponse.setFlag(matchResponse.getIsUBIMatched());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			CommonDocumentUtils.endHook(logger, "matchFSCorporate");
 			return new ResponseEntity<LoansResponse>(
@@ -119,8 +121,10 @@ public class MatchesController {
 					logger.info("Start Sending Mail To Fs Retails for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value(),matchResponse.getIsUBIMatched()), HttpStatus.OK);
+				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				loansResponse.setData(matchResponse.getData());
+				loansResponse.setFlag(matchResponse.getIsUBIMatched());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

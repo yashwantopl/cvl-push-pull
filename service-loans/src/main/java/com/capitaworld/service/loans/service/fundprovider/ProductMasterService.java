@@ -12,10 +12,8 @@ import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
-import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 public interface ProductMasterService {
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId);
@@ -55,6 +53,8 @@ public interface ProductMasterService {
 	public List<ChatDetails> getChatListByFpMappingId(Long applicationId);
 	
 	public boolean isProductActive(Long productId);
+	
+	public List<ProductMasterRequest> getProductByOrgId(Long orgd);
 
 	
 }
