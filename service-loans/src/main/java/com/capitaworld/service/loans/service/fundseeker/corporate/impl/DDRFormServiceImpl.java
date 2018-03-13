@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -819,6 +820,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
@@ -1952,6 +1955,48 @@ public class DDRFormServiceImpl implements DDRFormService{
 				dDRFormDetails.setModifyDate(new Date());
 				break;
 				
+			case 330:
+				dDRFormDetails.setFieldAuditReport("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 331:
+				dDRFormDetails.setBankStatementOfLast12months("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 332:
+				dDRFormDetails.setFinancialFigures("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 333:
+				dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 334:
+				dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 335:
+				dDRFormDetails.setVatRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 336:
+				dDRFormDetails.setListOfDirectors("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
 				// term Loan
 				
 			case 30:
@@ -2028,11 +2073,54 @@ public class DDRFormServiceImpl implements DDRFormService{
 				
 			
 				
-			case 381:
+			case 38:
 				dDRFormDetails.setItrForLast3years("Yes");
 				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
 				dDRFormDetails.setModifyDate(new Date());
 				break;
+				
+			case 337:
+				dDRFormDetails.setFieldAuditReport("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 338:
+				dDRFormDetails.setBankStatementOfLast12months("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 339:
+				dDRFormDetails.setFinancialFigures("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 340:
+				dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 341:
+				dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 342:
+				dDRFormDetails.setVatRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 343:
+				dDRFormDetails.setListOfDirectors("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
 				
 			
 				
@@ -2119,6 +2207,49 @@ public class DDRFormServiceImpl implements DDRFormService{
 				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
 				dDRFormDetails.setModifyDate(new Date());
 				break;
+				
+				
+			case 344:
+				dDRFormDetails.setFieldAuditReport("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 345:
+				dDRFormDetails.setBankStatementOfLast12months("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 346:
+				dDRFormDetails.setFinancialFigures("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 347:
+				dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 348:
+				dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 349:
+				dDRFormDetails.setVatRegistrationOfCompany("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
+				
+			case 350:
+				dDRFormDetails.setListOfDirectors("Yes");
+				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+				dDRFormDetails.setModifyDate(new Date());
+				break;
 	
 			default:
 				break;
@@ -2129,6 +2260,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("DDR==============> Throw Exception while save document flag");
 			e.printStackTrace();
 		}
+
 		return 0L;
 	}
 

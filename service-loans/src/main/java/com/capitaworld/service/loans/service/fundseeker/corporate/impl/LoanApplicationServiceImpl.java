@@ -3955,6 +3955,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
 						+ applicationMaster);
 			}
+			
+			if(statusId.equals(CommonUtils.DdrStatus.APPROVED)) {
+				applicationMaster.setApprovedDate(new Date());
+			}
 
 			applicationMaster.setDdrStatusId(statusId);
 			applicationMaster.setModifiedBy(userId);

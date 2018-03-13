@@ -75,6 +75,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 			for (SecurityCorporateDetail detail : securityCorporateDetails) {
 				SecurityCorporateDetailRequest securityCorporateDetailsRequest = new SecurityCorporateDetailRequest();
 				BeanUtils.copyProperties(detail, securityCorporateDetailsRequest);
+				securityCorporateDetailsRequest.setAmountString(CommonUtils.checkString(detail.getAmount()));
 				securityCorporateDetailRequests.add(securityCorporateDetailsRequest);
 			}
 			return securityCorporateDetailRequests;

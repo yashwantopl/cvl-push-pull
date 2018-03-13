@@ -26,7 +26,16 @@ public class SecurityCorporateDetailRequest implements Serializable {
 	
 	private Boolean isActive = true;
 	
+	private String amountString;
 	
+
+	public String getAmountString() {
+		return amountString;
+	}
+
+	public void setAmountString(String amountString) {
+		this.amountString = amountString;
+	}
 
 	public Boolean getIsActive() {
 		return isActive;
