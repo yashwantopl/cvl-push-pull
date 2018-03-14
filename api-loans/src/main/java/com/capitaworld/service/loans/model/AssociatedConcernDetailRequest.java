@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.model;
  */
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 public class AssociatedConcernDetailRequest implements Serializable{
 
@@ -164,6 +165,18 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.nameOfDirector = nameOfDirector;
 	}
 	
+	public static void printFields(Object obj) throws Exception {
+        Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
+        System.out.println("length : "+fields.length);
+        for(Field field : fields) {
+            Object value = field.get(obj);
+            if(value instanceof String){
+             String a = value.toString().replaceAll("&", "&amp;");
+             value = a;
+             field.set(obj, value);
+            }
+        }
+    }
 	
 	
 }

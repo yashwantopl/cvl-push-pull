@@ -1,7 +1,7 @@
 package com.capitaworld.service.loans.model.ddr;
 
 import java.io.Serializable;
-
+import java.lang.reflect.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -87,7 +87,19 @@ public class DDRCreditorsDetailsRequest  implements Serializable{
 				+ ", isActive=" + isActive + "]";
 	}
 
-	
+	public static void printFields(Object obj) throws Exception {
+        Field[] fields = DDRCreditorsDetailsRequest.class.getDeclaredFields();
+        System.out.println("length : "+fields.length);
+        for(Field field : fields) {
+            Object value = field.get(obj);
+            if(value instanceof String){
+             String a = value.toString().replaceAll("&", "&amp;");
+             value = a;
+             field.set(obj, value);
+            }
+        }
+    }
+	 
 	
 	
 	
