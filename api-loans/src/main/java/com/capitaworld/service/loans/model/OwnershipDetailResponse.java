@@ -1,8 +1,9 @@
 package com.capitaworld.service.loans.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
+import java.lang.reflect.Field;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Created by dhaval on 21-May-17.
@@ -40,5 +41,18 @@ public class OwnershipDetailResponse implements Serializable{
 
     public void setStackPercentage(Double stackPercentage) {
         this.stackPercentage = stackPercentage;
+    }
+    
+    public static void printFields(Object obj) throws Exception {
+        Field[] fields = OwnershipDetailResponse.class.getDeclaredFields();
+        System.out.println("length : "+fields.length);
+        for(Field field : fields) {
+            Object value = field.get(obj);
+            if(value instanceof String){
+             String a = value.toString().replaceAll("&", "&amp;");
+             value = a;
+             field.set(obj, value);
+            }
+        }
     }
 }
