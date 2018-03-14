@@ -74,6 +74,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 			for (ExistingProductDetail detail : existingProductDetails) {
 				ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
 				BeanUtils.copyProperties(detail, existingProductDetailRequest);
+				ExistingProductDetailRequest.printFields(existingProductDetailRequest);
 				existingProductDetailRequests.add(existingProductDetailRequest);
 			}
 			return existingProductDetailRequests;

@@ -76,6 +76,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 			for (ProposedProductDetail detail : proposedProductDetails) {
 				ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
 				BeanUtils.copyProperties(detail, proposedProductDetailRequest);
+				ProposedProductDetailRequest.printFields(proposedProductDetailRequest);
 				proposedProductDetailRequests.add(proposedProductDetailRequest);
 			}
 			return proposedProductDetailRequests;
