@@ -79,6 +79,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
 				BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
+				AssociatedConcernDetailRequest.printFields(associatedConcernDetailRequest);
 				associatedConcernDetailRequests.add(associatedConcernDetailRequest);
 			}
 			CommonDocumentUtils.endHook(logger, "getAssociatedConcernsDetailList");
