@@ -60,6 +60,7 @@ public class DashboardServiceImpl implements DashboardService {
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			dashboardProfileResponse = new DashboardProfileResponse();
 			dashboardProfileResponse.setProductId(productId);
+			dashboardProfileResponse.setModeOfPayment(loanApplicationMaster.getTypeOfPayment());
 			CorporateApplicantDetail corporateApplicantDetail = null;
 			if(isSP){
 				corporateApplicantDetail = corporateApplicantDetailRepository
