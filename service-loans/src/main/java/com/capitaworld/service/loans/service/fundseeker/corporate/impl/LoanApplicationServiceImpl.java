@@ -498,6 +498,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 		applicationRequest.setAmount(applicationMaster.getAmount());
 		applicationRequest.setDenominationId(applicationMaster.getDenominationId());
+		int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(id);
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+				applicationRequest.setName(corporateApplicantDetail.getOrganisationName());
+				applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
+				applicationRequest.setTypeOfPayment(applicationMaster.getTypeOfPayment());
+				applicationRequest.setAmount(applicationMaster.getPaymentAmount());
+			}
+		}
 		return applicationRequest;
 	}
 
