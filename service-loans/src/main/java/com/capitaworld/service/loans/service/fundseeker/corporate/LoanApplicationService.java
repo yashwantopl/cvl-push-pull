@@ -12,6 +12,8 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
+import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
@@ -134,6 +136,10 @@ public interface LoanApplicationService {
 	public LoanApplicationRequest getFromClient(Long id) throws Exception;
 
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception;
+	
+	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
+	
+	
 }
 
 
