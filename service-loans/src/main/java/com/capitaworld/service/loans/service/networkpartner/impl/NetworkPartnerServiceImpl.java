@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.gateway.model.GatewayResponse;
+import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +84,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}else{
 			applicationMastersList = null;
 		}
+
 		List<NhbsApplicationsResponse> nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
 		if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 			for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
+
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
@@ -162,28 +166,44 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					e.printStackTrace();
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-					try{
-						UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && (boolean)userResponse.getData()){
-							nhbsApplicationsResponse.setClientSource("SP");	
-						}else{
-							nhbsApplicationsResponse.setClientSource("Direct");
+
+				    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+					PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
+					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+					try {
+						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
+						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
+							receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
 						}
-					}catch (Exception e) {
-						logger.error("error while calling users clients while calling checkUserUnderSp()");
+					}catch (Exception e){
+						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
-						GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
-						if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
-							if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
-								nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+
+					if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
+						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+						try{
+							UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
+							if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && (boolean)userResponse.getData()){
+								nhbsApplicationsResponse.setClientSource("SP");
+							}else{
+								nhbsApplicationsResponse.setClientSource("Direct");
 							}
-						}	
-					}else{
-						nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
-					}
+						}catch (Exception e) {
+							logger.error("error while calling users clients while calling checkUserUnderSp()");
+							e.printStackTrace();
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+							GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
+							if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
+								if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+									nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+								}
+							}
+						}else{
+							nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+						}
+					/*}*/
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -389,16 +409,32 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			int newPropsalCount = 0;
 			if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 				for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
-						GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
-						if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
-							if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
-								newPropsalCount++;
-							}
-						}	
-					}else{
-						newPropsalCount++;
-					}	
+
+                    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+                    PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
+                    paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+                    try {
+                        GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
+                        if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
+                            receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
+                        }
+                    }catch (Exception e){
+                        logger.error("error while calling gateway client");
+                        e.printStackTrace();
+                    }
+
+                    if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
+                        if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+                            GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
+                            if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
+                                if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+                                    newPropsalCount++;
+                                }
+                            }
+                        }else{
+                            newPropsalCount++;
+                        }
+                    /*}*/
 				}
 			}
 			//int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);

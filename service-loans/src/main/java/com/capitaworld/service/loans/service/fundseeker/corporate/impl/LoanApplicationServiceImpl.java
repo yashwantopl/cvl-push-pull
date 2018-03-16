@@ -1,3 +1,4 @@
+
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -57,7 +58,6 @@ import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
@@ -78,7 +78,6 @@ import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -129,6 +128,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
+	@Autowired
+	private DMSClient dmsClient;
+	
 	@Autowired
 	private Environment environment;
 
@@ -206,12 +208,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
-	
-	@Autowired
-	private ProductMasterService productMasterService;
-	
-	@Autowired
-	private DMSClient dmsClient;
 
 	/*
 	 * @Autowired private AsyncComponent asyncComponent;
@@ -513,6 +509,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 		applicationRequest.setAmount(applicationMaster.getAmount());
 		applicationRequest.setDenominationId(applicationMaster.getDenominationId());
+		int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(id);
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+				applicationRequest.setName(corporateApplicantDetail.getOrganisationName());
+				applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
+				applicationRequest.setTypeOfPayment(applicationMaster.getTypeOfPayment());
+				applicationRequest.setAmount(applicationMaster.getPaymentAmount());
+			}
+		}
 		return applicationRequest;
 	}
 
@@ -4155,7 +4161,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		return disbursementRequest;
 	}
-
+	
 	private String getAddressByApplicationId(Long applicationId) {
 		// TODO Auto-generated method stub
 		LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(applicationId);
@@ -4213,3 +4219,5 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 }
+
+

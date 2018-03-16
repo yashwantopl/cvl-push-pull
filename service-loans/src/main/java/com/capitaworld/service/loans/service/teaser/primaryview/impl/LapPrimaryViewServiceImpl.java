@@ -100,8 +100,11 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         profileViewLAPResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousJobYear()) ?  applicantDetail.getPreviousJobYear().toString() : "-");
                         profileViewLAPResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersName()) ?  applicantDetail.getPreviousEmployersName() : "-");
                         profileViewLAPResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersAddress()) ?  applicantDetail.getPreviousEmployersAddress() : "-");
-                        
-					}
+                        profileViewLAPResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+                        profileViewLAPResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+                        profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
+
+                    }
                     else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getEntityName())){
@@ -127,7 +130,8 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         profileViewLAPResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
                         profileViewLAPResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
                         profileViewLAPResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-						
+                        profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear())) ? String.valueOf(applicantDetail.getPatCurrentYear()) : "0"));
+
                     }
                     else if(applicantDetail.getOccupationId()==5){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
@@ -149,7 +153,8 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         profileViewLAPResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
                         profileViewLAPResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
                         profileViewLAPResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-						
+                        profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear())) ? String.valueOf(applicantDetail.getPatCurrentYear()) : "0"));
+
                     }else if(applicantDetail.getOccupationId()==6){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
                         if (!CommonUtil.isObjectNullOrEmpty(applicantDetail.getLandSize())){                          
@@ -171,9 +176,14 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                         profileViewLAPResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
                         profileViewLAPResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
                         profileViewLAPResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-						
+                        profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear())) ? String.valueOf(applicantDetail.getPatCurrentYear()) : "0"));
+
                     }else if(applicantDetail.getOccupationId()==7){
                     	profileViewLAPResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+                        profileViewLAPResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+                        profileViewLAPResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+                        profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
+
                     }                   
                 }else{
                 	profileViewLAPResponse.setNatureOfOccupation("-");
@@ -183,9 +193,12 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				profileViewLAPResponse.setLastName((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLastName()) ? applicantDetail.getLastName() : null));
 				profileViewLAPResponse.setGender((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getGenderId()) ? Gender.getById(applicantDetail.getGenderId()).getValue() : null));
 				profileViewLAPResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null));
-				profileViewLAPResponse.setMonthlyIncome((!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome())) ? String.valueOf(applicantDetail.getMonthlyIncome()) : "0"));
-				
-				
+
+                profileViewLAPResponse.setBonusPerAnnum(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? applicantDetail.getBonusPerAnnum().toString() : "-");
+                profileViewLAPResponse.setIncentivePerAnnum(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? applicantDetail.getIncentivePerAnnum().toString() : "-");
+                profileViewLAPResponse.setOtherIncome(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : "-");
+                profileViewLAPResponse.setOtherInvestment(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : "-");
+                profileViewLAPResponse.setTaxPaid(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : "-");
 				//set office address
                 AddressResponse officeAddress = new AddressResponse();
                 try {

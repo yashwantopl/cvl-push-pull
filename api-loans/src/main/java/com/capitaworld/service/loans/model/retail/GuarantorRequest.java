@@ -57,7 +57,10 @@ public class GuarantorRequest {
 	private Integer previousJobYear;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
-	
+
+	//new requirement for SB
+	private Integer modeOfReceipt;
+
 	private Double monthlyLoanObligation;
 	private Double patPreviousYear;
 	private Double patCurrentYear;
@@ -623,7 +626,11 @@ public class GuarantorRequest {
 	}
 
 
-	
-	
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
 
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }
