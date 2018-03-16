@@ -409,16 +409,32 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			int newPropsalCount = 0;
 			if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 				for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
-						GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
-						if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
-							if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
-								newPropsalCount++;
-							}
-						}	
-					}else{
-						newPropsalCount++;
-					}	
+
+                    List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+                    PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
+                    paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+                    try {
+                        GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
+                        if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
+                            receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
+                        }
+                    }catch (Exception e){
+                        logger.error("error while calling gateway client");
+                        e.printStackTrace();
+                    }
+
+                    if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){
+                        if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+                            GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
+                            if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
+                                if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
+                                    newPropsalCount++;
+                                }
+                            }
+                        }else{
+                            newPropsalCount++;
+                        }
+                    }
 				}
 			}
 			//int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
