@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,26 +51,6 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.AlliedActivity;
-import com.capitaworld.service.oneform.enums.Assets;
-import com.capitaworld.service.oneform.enums.CastCategory;
-import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
-import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
-import com.capitaworld.service.oneform.enums.EmployeeWith;
-import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.IncomeDetails;
-import com.capitaworld.service.oneform.enums.IndustryType;
-import com.capitaworld.service.oneform.enums.LandSize;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Occupation;
-import com.capitaworld.service.oneform.enums.OccupationNature;
-import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
-import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
-import com.capitaworld.service.oneform.enums.RelationshipType;
-import com.capitaworld.service.oneform.enums.ReligionRetailMst;
-import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
-import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
@@ -440,6 +421,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							profileViewPLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousJobYear()) ?  coApplicantDetail.getPreviousJobYear().toString() : "-");
 							profileViewPLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersName()) ?  coApplicantDetail.getPreviousEmployersName() : "-");
 							profileViewPLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getPreviousEmployersAddress()) ?  coApplicantDetail.getPreviousEmployersAddress() : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null
+									? String.format("%.2f", coApplicantDetail.getMonthlyIncome()) : 0));
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getMonthlyLoanObligation().toString()): "-");
+							profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(coApplicantDetail.getModeOfReceipt()).getValue() : "-");
 							break;
 						case 3: // Business
 						case 4: // Self Employed
@@ -461,6 +446,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getPatCurrentYear() != null
+									? String.format("%.2f", coApplicantDetail.getPatCurrentYear()) : 0));
 							break;
 						case 5:// Self Employed Professional
 							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSelfEmployedOccupationId())) {
@@ -481,6 +468,8 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getPatCurrentYear() != null
+									? String.format("%.2f", coApplicantDetail.getPatCurrentYear()) : 0));
 							break;
 						case 6:// Agriculturist
 							if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getLandSize())) {
@@ -500,7 +489,15 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(coApplicantDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getPatCurrentYear() != null
+									? String.format("%.2f", coApplicantDetail.getPatCurrentYear()) : 0));
 							break;
+							case 7:// Pensioner
+								profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(coApplicantDetail.getModeOfReceipt()).getValue() : "-");
+								profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null
+										? String.format("%.2f", coApplicantDetail.getMonthlyIncome()) : 0));
+								profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( coApplicantDetail.getMonthlyLoanObligation().toString()): "-");
+								break;
 						default:
 							break;
 						}
@@ -672,8 +669,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							? MaritalStatus.getById(coApplicantDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(
 							coApplicantDetail.getMiddleName() != null ? coApplicantDetail.getMiddleName() : null);
-					profileViewPLResponse.setMonthlyIncome(String.valueOf(coApplicantDetail.getMonthlyIncome() != null
-							? String.format("%.2f", coApplicantDetail.getMonthlyIncome()) : 0));
+
 					profileViewPLResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getBirthDate()) ? coApplicantDetail.getBirthDate().toString() : "-");
 					// set uploads
 					switch (productId) {

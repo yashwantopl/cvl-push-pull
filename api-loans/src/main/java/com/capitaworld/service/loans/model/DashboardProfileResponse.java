@@ -21,6 +21,10 @@ public class DashboardProfileResponse implements Serializable {
 	private String address;
 	private String about;
 	private String pan;
+	
+	// newly added
+	private String modeOfPayment;
+	
 	public Long getId() {
 		return id;
 	}
@@ -79,6 +83,15 @@ public class DashboardProfileResponse implements Serializable {
 	}
 	public void setPan(String pan) {
 		this.pan = pan;
+	}
+	
+	
+	
+	public String getModeOfPayment() {
+		return modeOfPayment;
+	}
+	public void setModeOfPayment(String modeOfPayment) {
+		this.modeOfPayment = modeOfPayment;
 	}
 	public void setAddress() {
 		String finalAddress = CommonUtils.isObjectNullOrEmpty(this.city) ? "NA ," : this.city +" ,"; 
