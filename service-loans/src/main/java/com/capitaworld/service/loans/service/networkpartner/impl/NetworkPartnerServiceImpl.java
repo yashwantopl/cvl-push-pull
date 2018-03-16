@@ -167,7 +167,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 
-				    List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+				    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 					PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
 					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
 					try {
@@ -180,7 +180,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						e.printStackTrace();
 					}
 
-					if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){
+					if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
 							UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
@@ -203,7 +203,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						}else{
 							nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 						}
-					}
+					/*}*/
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -410,7 +410,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 				for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
 
-                    List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+                    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
                     PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
                     paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
                     try {
@@ -423,7 +423,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                         e.printStackTrace();
                     }
 
-                    if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){
+                    if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
                         if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
                             GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
                             if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
@@ -434,7 +434,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                         }else{
                             newPropsalCount++;
                         }
-                    }
+                    /*}*/
 				}
 			}
 			//int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
