@@ -380,6 +380,9 @@ public class RetailApplicantDetail implements Serializable {
 	@Column(name = "tax_paid_last_year")
 	private Double taxPaidLastYear;
 
+	@Column(name = "mode_of_receipt")
+	private Integer modeOfReceipt;
+
 	public RetailApplicantDetail() {
 	}
 
@@ -1319,7 +1322,12 @@ public class RetailApplicantDetail implements Serializable {
 		this.ownershipTypeOthers = ownershipTypeOthers;
 	}
 
-	
-	
-	
+
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

@@ -371,6 +371,9 @@ public class CoApplicantDetail implements Serializable {
 	@Column(name = "address_same_as_applicant")
 	private Boolean addressSameAsApplicant;
 
+	@Column(name = "mode_of_receipt")
+	private Integer modeOfReceipt;
+
 	public CoApplicantDetail() {
 	}
 
@@ -1294,4 +1297,11 @@ public class CoApplicantDetail implements Serializable {
 		this.ownershipTypeOthers = ownershipTypeOthers;
 	}
 
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

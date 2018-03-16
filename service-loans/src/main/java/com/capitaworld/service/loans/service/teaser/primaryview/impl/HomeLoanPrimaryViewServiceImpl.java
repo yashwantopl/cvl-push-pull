@@ -105,6 +105,11 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						profileViewHLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousJobYear()) ?  applicantDetail.getPreviousJobYear().toString() : "-");
 						profileViewHLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersName()) ?  applicantDetail.getPreviousEmployersName() : "-");
 						profileViewHLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersAddress()) ?  applicantDetail.getPreviousEmployersAddress() : "-");
+						profileViewHLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+						profileViewHLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+						profileViewHLResponse.setMonthlyIncome(
+								(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
+										? applicantDetail.getMonthlyIncome().toString()  : "0"));
 					} else if (applicantDetail.getOccupationId() == 3 || applicantDetail.getOccupationId() == 4) {
 						profileViewHLResponse.setNatureOfOccupation(
 								OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
@@ -132,7 +137,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							profileViewHLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewHLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewHLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-							
+							profileViewHLResponse.setMonthlyIncome(
+								(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear()))
+										? applicantDetail.getPatCurrentYear().toString() : "0"));
 					} else if (applicantDetail.getOccupationId() == 5) {
 						profileViewHLResponse.setNatureOfOccupation(
 								OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
@@ -155,7 +162,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							profileViewHLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewHLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewHLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-							
+						profileViewHLResponse.setMonthlyIncome(
+								(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear()))
+										? applicantDetail.getPatCurrentYear().toString() : "0"));
 					} else if (applicantDetail.getOccupationId() == 6) {
 						profileViewHLResponse.setNatureOfOccupation(
 								OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
@@ -180,10 +189,17 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 							profileViewHLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewHLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewHLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-							
+						profileViewHLResponse.setMonthlyIncome(
+								(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getPatCurrentYear()))
+										? applicantDetail.getPatCurrentYear().toString() : "0"));
 					} else if (applicantDetail.getOccupationId() == 7) {
 						profileViewHLResponse.setNatureOfOccupation(
 								OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
+						profileViewHLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+						profileViewHLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+						profileViewHLResponse.setMonthlyIncome(
+								(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
+										? applicantDetail.getMonthlyIncome().toString()  : "0"));
 					}
 				} else {
 					profileViewHLResponse.setNatureOfOccupation("-");
@@ -198,14 +214,12 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 						? Gender.getById(applicantDetail.getGenderId()).getValue() : "-"));
 				profileViewHLResponse.setMaritalStatus((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())
 						? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : "-"));
-				profileViewHLResponse.setMonthlyIncome(
-						(!CommonUtils.isObjectNullOrEmpty(String.valueOf(applicantDetail.getMonthlyIncome()))
-								? applicantDetail.getMonthlyIncome().toString() : "0"));
-				profileViewHLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(applicantDetail.getOtherIncome().toString()) : ""));
-				profileViewHLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(applicantDetail.getOtherInvestment().toString()) : ""));
-				profileViewHLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(applicantDetail.getTaxPaidLastYear().toString()) : ""));
-				profileViewHLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(applicantDetail.getBonusPerAnnum().toString()) : ""));
-				profileViewHLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(applicantDetail.getIncentivePerAnnum().toString()) : ""));
+
+				profileViewHLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(applicantDetail.getOtherIncome().toString()) : "-"));
+				profileViewHLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(applicantDetail.getOtherInvestment().toString()) : "-"));
+				profileViewHLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(applicantDetail.getTaxPaidLastYear().toString()) : "-"));
+				profileViewHLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(applicantDetail.getBonusPerAnnum().toString()) : "-"));
+				profileViewHLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(applicantDetail.getIncentivePerAnnum().toString()) : "-"));
 				
 				// set office address
 				AddressResponse officeAddress = new AddressResponse();
@@ -439,12 +453,17 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					homeLoanResponse.setLandArea(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLandArea()) ? loanDetail.getLandArea().toString() : "-");
 				}
 			}
+			homeLoanResponse.setOriginalValProp(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOriginalValProp()) ? loanDetail.getOriginalValProp().toString() : "-");
+			homeLoanResponse.setMarketValProp(!CommonUtils.isObjectNullOrEmpty(loanDetail.getMarketValProp()) ? loanDetail.getMarketValProp().toString() : "-");
+			homeLoanResponse.setRegValProp(!CommonUtils.isObjectNullOrEmpty(loanDetail.getRegValProp()) ? loanDetail.getRegValProp().toString() : "-");
+			homeLoanResponse.setOldPropMonth(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOldPropMonth()) ? loanDetail.getOldPropMonth().toString() : "0");
+			homeLoanResponse.setOldPropYear(!CommonUtils.isObjectNullOrEmpty(loanDetail.getOldPropYear()) ? loanDetail.getOldPropYear().toString() : "0");
 
 			homeLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(loanDetail.getDownPayment()) ?  CommonUtils.CurrencyFormat(loanDetail.getDownPayment().toString()) : "-");
 			homeLoanResponse.setLoanAmount(!CommonUtils.isObjectNullOrEmpty(loanDetail.getAmount()) ?  loanDetail.getAmount().toString() : "-");
 			homeLoanResponse.setTenure(!CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? String.valueOf(loanDetail.getTenure() / 12) : "-");
 		}
-		homeLoanResponse.setLoanType(LoanType.getById(applicationMaster.getProductId()).getValue());
+		homeLoanResponse.setLoanType(!CommonUtils.isObjectNullOrEmpty(loanDetail.getLoanType()) ? HomeLoanType.getById(loanDetail.getLoanType()).getValue() : "-");
 		
 		homeLoanResponse.setPropertyUse(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPropertyUsed()) ? PropertyUsedSubType.getById(loanDetail.getPropertyUsed()).getValue() : null);
 		homeLoanResponse.setRentalIncome(!CommonUtils.isObjectNullOrEmpty(loanDetail.getEstimatedRentalIncome()) ? CommonUtils.CurrencyFormat(loanDetail.getEstimatedRentalIncome().toString()) : null);
