@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -85,7 +85,7 @@ public class ProposalController {
 	}
 	
 	@RequestMapping(value = "/saveDisbursementDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<Boolean> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
 		Long userId = null;
