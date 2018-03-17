@@ -167,20 +167,25 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 
-				    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+					List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+					List<Long> receivedAppIdList = new ArrayList<>();
 					PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
 					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
 					try {
 						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
 							receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
+							for (int i = 0; i < receivedPaymentList.size(); i++) {
+								PaymentTypeRequest paymentTypeRequest1 = MultipleJSONObjectHelper.getObjectFromMap(receivedPaymentList.get(i),PaymentTypeRequest.class);
+								receivedAppIdList.add(paymentTypeRequest1.getApplicationId());
+							}
 						}
 					}catch (Exception e){
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
 
-					if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
+					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
 							UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
@@ -203,7 +208,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						}else{
 							nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 						}
-					/*}*/
+					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -407,23 +412,27 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == nhbsApplicationRequest.getUserRoleId()){
 			List<LoanApplicationMaster> applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
 			int newPropsalCount = 0;
+
+			List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+			List<Long> receivedAppIdList = new ArrayList<>();
+			PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
+			paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+			try {
+				GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
+					receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
+					for (int i = 0; i < receivedPaymentList.size(); i++) {
+						 PaymentTypeRequest paymentTypeRequest1 = MultipleJSONObjectHelper.getObjectFromMap(receivedPaymentList.get(i),PaymentTypeRequest.class);
+						 receivedAppIdList.add(paymentTypeRequest1.getApplicationId());
+					}
+				}
+			}catch (Exception e){
+				logger.error("error while calling gateway client");
+				e.printStackTrace();
+			}
 			if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 				for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
-
-                    /*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
-                    PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
-                    paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
-                    try {
-                        GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
-                        if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
-                            receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
-                        }
-                    }catch (Exception e){
-                        logger.error("error while calling gateway client");
-                        e.printStackTrace();
-                    }
-
-                    if(!CommonUtils.isObjectListNull(receivedPaymentList) && receivedPaymentList.contains(loanApplicationMaster.getId())){*/
+                    if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
                         if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
                             GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
                             if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
@@ -434,7 +443,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                         }else{
                             newPropsalCount++;
                         }
-                    /*}*/
+                    }
 				}
 			}
 			//int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);

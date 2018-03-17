@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.ProposalResponse;
+import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -33,5 +34,7 @@ public interface ProposalService {
 	public Integer getPendingProposalCount(Long applicationId);
 	
 	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request)  throws Exception;
+
+	public Boolean saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 	
 }
