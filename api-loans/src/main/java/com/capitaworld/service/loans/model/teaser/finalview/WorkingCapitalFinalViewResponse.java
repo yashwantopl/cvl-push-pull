@@ -104,19 +104,41 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 	/**
 	 * Working Capital Final Uploads Data Fields
 	 */
+	// FINANCIAL UPLOADS
 	private List<Object> lastAuditedAnnualReportList;
 	private List<Object> sanctionLetterCopyList;
 	private List<Object> lastITReturnList;
+	private List<Object> bankStatementList;
 	private List<Object> netWorthStatementOfdirectorsList;
 	private List<Object> provisionalFinancialsList;
-	private List<Object> panOfDirectorsList;
-	private List<Object> detailedListOfShareholdersList;
-	private List<Object> photoOfDirectorsList;
-	
-	//PRIMARY UPLOADS MOVED TO FINAL UPLOADS
 	private List<Object> brochureList;
-    private List<Object> certificateList;
-    private List<Object> panCardList;
+	private List<Object> itReturnForFYOfAllDirectorsList;
+	private List<Object> finSubsidiariesEntitiesList;
+	private List<Object> assessOrderForLastThreeYearsList;
+
+	// KYC UPLOADS
+	private List<Object> certificateOfIncorpList;
+	private List<Object> detailedListOfShareholdersList;
+	private List<Object> panCardList;
+	private List<Object> photoOfDirectorsList;
+	private List<Object> panOfDirectorsList;
+	private List<Object> residenceAddProofList;
+	private List<Object> resolutionForAdditionOfDirectorsList;
+
+	// OFFLINE UPLOADS
+	private List<Object> momAndAOAList;
+	private List<Object> debtorsList;
+	private List<Object> gstVATExciseList;
+	private List<Object> letterOfIntentFromFPList;
+	private List<Object> copiesOfRelevantLicenseList;
+	private List<Object> salesTaxReturnsList;
+	private List<Object> latestTaxPaidCoyList;
+	private List<Object> encumbranceList;
+	private List<Object> copiesOfTrustDeedList;
+	private List<Object> marketSurveyReportList;
+	private List<Object> detailsOfContLiabilitiesList;
+
+
 
 	/**
 	 * Final Working Capital Information
@@ -951,14 +973,6 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.brochureList = brochureList;
 	}
 
-	public List<Object> getCertificateList() {
-		return certificateList;
-	}
-
-	public void setCertificateList(List<Object> certificateList) {
-		this.certificateList = certificateList;
-	}
-
 	public List<Object> getPanCardList() {
 		return panCardList;
 	}
@@ -1311,6 +1325,147 @@ public class WorkingCapitalFinalViewResponse implements Serializable {
 		this.varianceInProjectedSales = varianceInProjectedSales;
 	}
 
-	
-	
+	public List<Object> getBankStatementList() {
+		return bankStatementList;
+	}
+
+	public void setBankStatementList(List<Object> bankStatementList) {
+		this.bankStatementList = bankStatementList;
+	}
+
+	public List<Object> getItReturnForFYOfAllDirectorsList() {
+		return itReturnForFYOfAllDirectorsList;
+	}
+
+	public void setItReturnForFYOfAllDirectorsList(List<Object> itReturnForFYOfAllDirectorsList) {
+		this.itReturnForFYOfAllDirectorsList = itReturnForFYOfAllDirectorsList;
+	}
+
+	public List<Object> getFinSubsidiariesEntitiesList() {
+		return finSubsidiariesEntitiesList;
+	}
+
+	public void setFinSubsidiariesEntitiesList(List<Object> finSubsidiariesEntitiesList) {
+		this.finSubsidiariesEntitiesList = finSubsidiariesEntitiesList;
+	}
+
+	public List<Object> getAssessOrderForLastThreeYearsList() {
+		return assessOrderForLastThreeYearsList;
+	}
+
+	public void setAssessOrderForLastThreeYearsList(List<Object> assessOrderForLastThreeYearsList) {
+		this.assessOrderForLastThreeYearsList = assessOrderForLastThreeYearsList;
+	}
+
+	public List<Object> getCertificateOfIncorpList() {
+		return certificateOfIncorpList;
+	}
+
+	public void setCertificateOfIncorpList(List<Object> certificateOfIncorpList) {
+		this.certificateOfIncorpList = certificateOfIncorpList;
+	}
+
+	public List<Object> getResolutionForAdditionOfDirectorsList() {
+		return resolutionForAdditionOfDirectorsList;
+	}
+
+	public void setResolutionForAdditionOfDirectorsList(List<Object> resolutionForAdditionOfDirectorsList) {
+		this.resolutionForAdditionOfDirectorsList = resolutionForAdditionOfDirectorsList;
+	}
+
+	public List<Object> getMomAndAOAList() {
+		return momAndAOAList;
+	}
+
+	public void setMomAndAOAList(List<Object> momAndAOAList) {
+		this.momAndAOAList = momAndAOAList;
+	}
+
+	public List<Object> getDebtorsList() {
+		return debtorsList;
+	}
+
+	public void setDebtorsList(List<Object> debtorsList) {
+		this.debtorsList = debtorsList;
+	}
+
+	public List<Object> getGstVATExciseList() {
+		return gstVATExciseList;
+	}
+
+	public void setGstVATExciseList(List<Object> gstVATExciseList) {
+		this.gstVATExciseList = gstVATExciseList;
+	}
+
+	public List<Object> getLetterOfIntentFromFPList() {
+		return letterOfIntentFromFPList;
+	}
+
+	public void setLetterOfIntentFromFPList(List<Object> letterOfIntentFromFPList) {
+		this.letterOfIntentFromFPList = letterOfIntentFromFPList;
+	}
+
+	public List<Object> getCopiesOfRelevantLicenseList() {
+		return copiesOfRelevantLicenseList;
+	}
+
+	public void setCopiesOfRelevantLicenseList(List<Object> copiesOfRelevantLicenseList) {
+		this.copiesOfRelevantLicenseList = copiesOfRelevantLicenseList;
+	}
+
+	public List<Object> getSalesTaxReturnsList() {
+		return salesTaxReturnsList;
+	}
+
+	public void setSalesTaxReturnsList(List<Object> salesTaxReturnsList) {
+		this.salesTaxReturnsList = salesTaxReturnsList;
+	}
+
+	public List<Object> getLatestTaxPaidCoyList() {
+		return latestTaxPaidCoyList;
+	}
+
+	public void setLatestTaxPaidCoyList(List<Object> latestTaxPaidCoyList) {
+		this.latestTaxPaidCoyList = latestTaxPaidCoyList;
+	}
+
+	public List<Object> getEncumbranceList() {
+		return encumbranceList;
+	}
+
+	public void setEncumbranceList(List<Object> encumbranceList) {
+		this.encumbranceList = encumbranceList;
+	}
+
+	public List<Object> getCopiesOfTrustDeedList() {
+		return copiesOfTrustDeedList;
+	}
+
+	public void setCopiesOfTrustDeedList(List<Object> copiesOfTrustDeedList) {
+		this.copiesOfTrustDeedList = copiesOfTrustDeedList;
+	}
+
+	public List<Object> getMarketSurveyReportList() {
+		return marketSurveyReportList;
+	}
+
+	public void setMarketSurveyReportList(List<Object> marketSurveyReportList) {
+		this.marketSurveyReportList = marketSurveyReportList;
+	}
+
+	public List<Object> getDetailsOfContLiabilitiesList() {
+		return detailsOfContLiabilitiesList;
+	}
+
+	public void setDetailsOfContLiabilitiesList(List<Object> detailsOfContLiabilitiesList) {
+		this.detailsOfContLiabilitiesList = detailsOfContLiabilitiesList;
+	}
+
+	public List<Object> getResidenceAddProofList() {
+		return residenceAddProofList;
+	}
+
+	public void setResidenceAddProofList(List<Object> residenceAddProofList) {
+		this.residenceAddProofList = residenceAddProofList;
+	}
 }
