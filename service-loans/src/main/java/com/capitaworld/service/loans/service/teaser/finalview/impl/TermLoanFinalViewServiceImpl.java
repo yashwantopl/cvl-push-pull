@@ -179,49 +179,158 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
+
+		/*
+		 * FINAL UPLOADS
+		 * */
+		/* FINANCIAL */
 		try{
 			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
 		try{
 			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_IT_RETURN));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setBankStatementList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_BANK_STATEMENT));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		try{
-			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
-		}catch(DocumentException e){
+		try {
+			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}try {
+			response.setItReturnForFYOfAllDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_IT_RETURN_DIRECTOR)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setFinSubsidiariesEntitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setAssessOrderForLastThreeYearsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/* KYC UPLOADS */
+		try {
+			response.setCertificateOfIncorpList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_DETAILED_LIST_OF_SHAREHOLDERS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
+		try{
+			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setResidenceAddProofList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setResolutionForAdditionOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_DIRECTOR_RESOLUTION)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/* OTHERS UPLOADS */
+		try {
+			response.setMomAndAOAList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_MOM_AOA)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setDebtorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DEBTORS_LIST)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setGstVATExciseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_GST_APPLIED)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setLetterOfIntentFromFPList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_LETTER_OF_INTENT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setCopiesOfRelevantLicenseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_RELEVANT_LICENSE)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setSalesTaxReturnsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_SALES_TAX)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setLatestTaxPaidCoyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_LATEST_TAX)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setEncumbranceList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_ENCUMBRANCE)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setCopiesOfTrustDeedList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COPIES_TRUST_DEEDS)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setMarketSurveyReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_MARKET_SURVEY_REPORT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setDetailsOfContLiabilitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CONTINGENT_LIABILITIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * DPR, CMA, FINANCIAL MODELS
+		 * */
 		try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
 			response.setDprList(dprList);
@@ -245,21 +354,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		}
 		try{
 			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DPR_YOUR_FORMAT)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCertificateList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}

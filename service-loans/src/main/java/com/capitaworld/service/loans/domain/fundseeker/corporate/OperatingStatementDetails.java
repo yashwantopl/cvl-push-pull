@@ -78,6 +78,11 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name="export_sales")
 	private Double exportSales;
 
+	
+
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
+	
 	private Double interest;
 
 	@Column(name="is_active")
@@ -422,6 +427,14 @@ public class OperatingStatementDetails implements Serializable {
 		this.exportSales = exportSales;
 	}
 
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
+	}
+	
 	public Double getInterest() {
 		return this.interest;
 	}

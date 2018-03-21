@@ -91,7 +91,10 @@ public class BalanceSheetDetail implements Serializable {
 	private double dividendPayable;
 
 	private double exports;
-
+	
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
+	
 	@Column(name="finished_goods")
 	private double finishedGoods;
 
@@ -730,6 +733,14 @@ public class BalanceSheetDetail implements Serializable {
 
 	public void setExports(double exports) {
 		this.exports = exports;
+	}
+	
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
 	}
 
 	public double getFinishedGoods() {
