@@ -1963,7 +1963,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 			Calendar calendar = Calendar.getInstance();
 			Double tillYear = (double) calendar.get(Calendar.YEAR);
-			tillYear = 2018.0;
+			
 			Double fromYear = tillYear;
 
 			List<String> yearList = new ArrayList<String>();
@@ -2233,7 +2233,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 			Calendar calendar = Calendar.getInstance();
 			Double tillYear = (double) calendar.get(Calendar.YEAR);
-			tillYear = 2018.0;
+		
 			Double fromYear = tillYear;
 
 			List<String> yearList = new ArrayList<String>();
