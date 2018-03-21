@@ -50,6 +50,9 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name="dividend_payable")
 	private Double dividendPayable;
 
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
+	
 	@Column(name="from_application_bank")
 	private Double fromApplicationBank;
 
@@ -368,6 +371,14 @@ public class LiabilitiesDetails implements Serializable{
 
 	public void setDividendPayable(Double dividendPayable) {
 		this.dividendPayable = dividendPayable;
+	}
+
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
 	}
 
 	public Double getFromApplicationBank() {
