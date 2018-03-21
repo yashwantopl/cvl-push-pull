@@ -1,3 +1,5 @@
+
+
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -23,6 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
@@ -54,6 +59,7 @@ import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
@@ -102,12 +108,15 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
+import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
@@ -120,6 +129,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
+	@Autowired
+	private DMSClient dmsClient;
+	
 	@Autowired
 	private Environment environment;
 
@@ -4066,4 +4078,148 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return false;
 	}
 
+	@Override
+	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest) {
+		// TODO Auto-generated method stub
+		
+
+		try
+		{
+		//set fs details
+		LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(disbursementRequest.getApplicationId());
+		disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
+		disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
+		//fs image
+		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(disbursementRequest.getApplicationId());
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		documentRequest.setProductDocumentMappingId(
+				CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+
+		DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+		String imagePath = null;
+		if (documentResponse != null && documentResponse.getStatus() == 200) {
+			List<Map<String, Object>> list = documentResponse.getDataList();
+			if (!CommonUtils.isListNullOrEmpty(list)) {
+				StorageDetailsResponse response = null;
+
+				response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+						StorageDetailsResponse.class);
+
+				if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+					imagePath = response.getFilePath();
+				else
+					imagePath = null;
+			}
+		}
+		disbursementRequest.setFsImage(imagePath);
+		
+		//set fp details
+		disbursementRequest.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getFpName());
+		ProductMaster productMaster=productMasterRepository.findOne(disbursementRequest.getProductMappingId());
+		
+		UsersRequest  request=new UsersRequest();
+		request.setId(productMaster.getUserId());
+		UserResponse userResponse=userClient.getFPDetails(request);
+		
+		FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+				(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+		System.out.println("response is"+userResponse.toString());
+		
+		disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
+		String fpAddress="";
+		fpAddress=fundProviderDetailsRequest.getStateName()+",";
+		fpAddress+=fundProviderDetailsRequest.getCountryName();
+		disbursementRequest.setFpAddress(fpAddress);
+		
+		disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
+		//set fp image
+		
+		documentRequest.setUserId(productMaster.getUserId());
+		documentRequest.setUserType("user");
+		documentRequest.setUserDocumentMappingId(1L);
+
+		 documentResponse = dmsClient.listUserDocument(documentRequest);
+		 imagePath = "";
+		if (documentResponse != null && documentResponse.getStatus() == 200) {
+			List<Map<String, Object>> list = documentResponse.getDataList();
+			if (!CommonUtils.isListNullOrEmpty(list)) {
+				StorageDetailsResponse response = null;
+
+				response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
+				if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+					imagePath = response.getFilePath();
+				else
+					imagePath = "";
+			}
+		}
+		disbursementRequest.setFpImage(imagePath);
+		}
+		catch(Exception e)
+		{
+			logger.warn("error while getting details of disbursement",e);
+		}
+		
+		return disbursementRequest;
+	}
+	
+	private String getAddressByApplicationId(Long applicationId) {
+		// TODO Auto-generated method stub
+		LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(applicationId);
+		String address="";
+		if(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId())==CommonUtils.CORPORATE)
+		{
+			CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+			// set state
+			List<Long> stateList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+			stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					address=masterResponse.getValue()+",";
+				} else {
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+			
+			List<Long> countryList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+			countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					address+=masterResponse.getValue()+",";
+				} else {
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+		}
+		else
+		{
+			
+		}
+		return address;
+	}
+
 }
+
+
+

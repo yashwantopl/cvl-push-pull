@@ -1,21 +1,28 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +36,9 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingOrganizationDetail;
@@ -42,13 +51,16 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.FinanceMeansDet
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FutureFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.GuarantorsCorporateDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.MonthlyTurnoverDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OwnershipDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
@@ -56,7 +68,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProj
 import com.capitaworld.service.loans.domain.fundseeker.retail.BankAccountHeldDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -111,7 +122,6 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonMultiPartFile;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -165,7 +175,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
 	@Autowired
-	private RetailApplicantDetailRepository retailApplicantDetailRepository; 
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 
 	@Autowired
 	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
@@ -235,37 +245,41 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	@Autowired
 	private StrategicAlliancesDetailRepository strategicAlliancesDetailRepository;
-	
+
 	@Autowired
 	private ExcelExtractionService excelExtractionService;
-	
+
 	@Autowired
 	private ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
-	
+
 	@Autowired
 	private TechnologyPositioningDetailRepository technologyPositioningDetailRepository;
-	
+
 	@Autowired
 	private RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository;
-	
+
 	@Autowired
 	private DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository;
-	
+
 	@Autowired
 	private ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository;
-	
+
 	@Autowired
 	private AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository;
-	
+
 	@Autowired
 	private RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository;
-	
+
 	@Autowired
-	private ScotAnalysisDetailRepository scotAnalysisDetailRepository; 
-	
+	private ScotAnalysisDetailRepository scotAnalysisDetailRepository;
+
 	@Autowired
 	private DprUserDataDetailRepository dprUserDataDetailRepository;
-	
+
+	@Autowired
+	private Environment environment;
+
+	private FormulaEvaluator evaluator;
 
 	private AutoFillOneFormDetailRequest autoFillOneFormDetailRequest = null;
 	private Long userId = null;
@@ -275,17 +289,18 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	private static String[] skipPrimaryData = { "id", "userId", "applicationId", "productId", "categoryCode",
 			"applicationCode", "isPrimaryLocked", "isFinalLocked", "createdBy", "createdDate", "isActive",
 			"isMsmeScoreRequired", "eligibleAmnt", "npUserId", "npAssigneeId", "ddrStatusId", "typeOfPayment",
-			"appointmentDate", "appointmentTime", "paymentAmount" ,
-			"isApplicantDetailsFilled","isApplicantPrimaryFilled","isApplicantFinalFilled","isCoApp1DetailsFilled"
-			 ,"isCoApp1FinalFilled","isCoApp2DetailsFilled","isCoApp2FinalFilled","isGuarantor1DetailsFilled","isGuarantor1FinalFilled","isGuarantor2DetailsFilled"
-             ,"isGuarantor2FinalFilled","isPrimaryUploadFilled","isFinalDprUploadFilled","isFinalUploadFilled","isFinalMcqFilled","detailsFilledTime"	
-	         ,"primaryFilledTime","finalFilledTime","detailsFilledCount","primaryFilledCount","finalFilledCount","mcaCompanyId","isMca","campaignCode"
-	         ,"campaignCode"  
-	};
+			"appointmentDate", "appointmentTime", "paymentAmount", "isApplicantDetailsFilled",
+			"isApplicantPrimaryFilled", "isApplicantFinalFilled", "isCoApp1DetailsFilled", "isCoApp1FinalFilled",
+			"isCoApp2DetailsFilled", "isCoApp2FinalFilled", "isGuarantor1DetailsFilled", "isGuarantor1FinalFilled",
+			"isGuarantor2DetailsFilled", "isGuarantor2FinalFilled", "isPrimaryUploadFilled", "isFinalDprUploadFilled",
+			"isFinalUploadFilled", "isFinalMcqFilled", "detailsFilledTime", "primaryFilledTime", "finalFilledTime",
+			"detailsFilledCount", "primaryFilledCount", "finalFilledCount", "mcaCompanyId", "isMca", "campaignCode",
+			"campaignCode" };
 	private static String[] skipProfileData = { "id", "applicationId", "organisationName",
 			"administrativePremiseNumber", "administrativeStreetName", "administrativeLandMark",
-			"administrativeCountryId", "administrativeStateId", "administrativeCityId", "administrativePincode","createdDate","createdBy","isActive" };
-	
+			"administrativeCountryId", "administrativeStateId", "administrativeCityId", "administrativePincode",
+			"createdDate", "createdBy", "isActive" };
+
 	static {
 		prodDocMappingListCoApp.add(
 				DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1);
@@ -299,9 +314,15 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.add(DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS);
 	}
 
+	private String CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cwcmafile.location";
+
+	private String USL_CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cwcmafile.usl.location";
+
 	private static final Logger logger = LoggerFactory.getLogger(AutoFillOneFormDetailServiceImpl.class);
 
-	public void getAndSaveCorporateAutoFillOneFormDateils(Long userId, AutoFillOneFormDetailRequest autoFillOneFormDetailRequest) throws DocumentException,NullPointerException ,IOException {
+	public void getAndSaveCorporateAutoFillOneFormDateils(Long userId,
+			AutoFillOneFormDetailRequest autoFillOneFormDetailRequest)
+			throws DocumentException, NullPointerException, IOException {
 		logger.info("Entering in the getAndSaveCorporateAutoFillOneFormDateils ");
 		logger.info("Getting all perameters " + " userId=====> " + userId + " AutoFillOneFromRequest ==========>"
 				+ autoFillOneFormDetailRequest);
@@ -372,15 +393,15 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				saveFinalWCToUSL(finalWorkingCapitalLoanDetailFrom);
 				// final file upload
 				getAndSaveFinalAllFileUpload(fromDocTypeProductMappingIDList, getUSLExcelTypeProductMappingIDList());
-				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList,getUSLOtherTypeProductMappingIDList());
+				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList, getUSLOtherTypeProductMappingIDList());
 
 			} else {
 				// naegative list in all loan
 				getAndSaveNagativeList();
-				
+
 				// fund requirement
 				savePrimaryWCToWC(loanDetailFrom);
-              
+
 				// Comapny and Project Detail
 				getAndSaveAchivements();
 
@@ -398,7 +419,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 				// finakl file upload
 				getAndSaveFinalAllFileUpload(fromDocTypeProductMappingIDList, fromDocTypeProductMappingIDList);
-				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList,fromOtherTypeProductMappingIDList);
+				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList, fromOtherTypeProductMappingIDList);
 
 			}
 			break;
@@ -455,13 +476,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				savePrimaryTLtoTL(primaryTermLoanDetailFrom);
 
 			} else {
-				
+
 				// naegative list in all loan
-        		getAndSaveNagativeList();
-        		
+				getAndSaveNagativeList();
+
 				// fund requirement
-                    savePrimaryTLtoTL(primaryTermLoanDetailFrom);
-            		
+				savePrimaryTLtoTL(primaryTermLoanDetailFrom);
+
 				// Comapny and Project Detail
 				getAndSaveAchivements();
 
@@ -520,7 +541,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			} else {
 				// naegative list in all loan
 				getAndSaveNagativeList();
-				
+
 				// funs requiremnt
 				savePrimaryUSLtoUSL(primaryUnsecuredLoanDetailFrom);
 
@@ -530,7 +551,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				// final information
 				getAndSaveFinalUSLCreditCard();
 				getAndSaveFinalUSLBankAccountHeldDetail();
-				//getAndSaveFinalUSLAdditionalDetailRefrence();
+				// getAndSaveFinalUSLAdditionalDetailRefrence();
 
 				// final file upload of co applicant
 				List<CorporateCoApplicantDetail> corporateCoApplicantDetailsList = coApplicantDetailRepository
@@ -547,7 +568,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				}
 				// file upload
 				getAndSaveFinalAllFileUpload(fromDocTypeProductMappingIDList, fromDocTypeProductMappingIDList);
-				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList, fromOtherTypeProductMappingIDList);				
+				getAndSaveFinalAllFileUpload(fromOtherTypeProductMappingIDList, fromOtherTypeProductMappingIDList);
 			}
 			break;
 		}
@@ -560,15 +581,15 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		getAndSaveDirectorBackGround();
 		getAndSavePromotoresBackGround();
 		getAndSaveOwnerShip();
-		
+
 		// financila for all loan
 		getAndSavePastFinancials();
 		getAndSaveCurrentFinancial();
 		getAndSaveCreditRating();
 
-		//others
+		// others
 		getAndSaveReferenceDatailForPrimaryAndFinal();
-		
+
 		// final mcq OverseasnetworksIs
 		getAndSaveFinalMCQOverseasNetworkIds();
 
@@ -584,15 +605,18 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================Entering in =====> saveProfile() of corporate loan========= ");
 
 		// profile
-		CorporateApplicantDetail corporateApplicantDetailFrom = applicantRepository.findOneByApplicationIdId(autoFillOneFormDetailRequest.getFromApplicationId());
+		CorporateApplicantDetail corporateApplicantDetailFrom = applicantRepository
+				.findOneByApplicationIdId(autoFillOneFormDetailRequest.getFromApplicationId());
 
-		corporateApplicantDetailTo = applicantRepository.findOneByApplicationIdId(autoFillOneFormDetailRequest.getToApplicationId());
+		corporateApplicantDetailTo = applicantRepository
+				.findOneByApplicationIdId(autoFillOneFormDetailRequest.getToApplicationId());
 		if (corporateApplicantDetailTo == null) {
 			corporateApplicantDetailTo = new CorporateApplicantDetail();
 			corporateApplicantDetailTo.setCreatedDate(new Date());
 			corporateApplicantDetailTo.setCreatedBy(userId);
 			corporateApplicantDetailTo.setIsActive(true);
-			corporateApplicantDetailTo.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
+			corporateApplicantDetailTo
+					.setApplicationId(new LoanApplicationMaster(autoFillOneFormDetailRequest.getToApplicationId()));
 		}
 		BeanUtils.copyProperties(corporateApplicantDetailFrom, corporateApplicantDetailTo, skipProfileData);
 		corporateApplicantDetailTo.setModifiedDate(new Date());
@@ -725,17 +749,17 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			System.out.println("Term Loan detail not exist");
 			e.printStackTrace();
 			throw e;
-			
+
 		}
 		logger.info("================= Exit From savePrimaryWCToUSL()================== ");
 	}
 
-	public void savePrimaryTLtoTL(PrimaryTermLoanDetail primaryTermLoanDetailFrom)  {
+	public void savePrimaryTLtoTL(PrimaryTermLoanDetail primaryTermLoanDetailFrom) {
 		logger.info("=================Enter in savePrimaryTLtoTL() save detail from to To applicant ============== ");
-		
-			PrimaryTermLoanDetail primaryTermLoanDetailTo = primaryTLRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-	try{
+
+		PrimaryTermLoanDetail primaryTermLoanDetailTo = primaryTLRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		try {
 			if (primaryTermLoanDetailTo == null) {
 				System.out.println("TL application id ont avialable");
 				throw new NullPointerException();
@@ -745,23 +769,23 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryTermLoanDetailTo.setModifiedBy(userId);
 			primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTLRepository.save(primaryTermLoanDetailTo);
-	} catch (NullPointerException e) {
-		logger.error("Exception in saveFinalTLToTL()");
-		System.out.println("Term Loan detail not exist");
-		e.printStackTrace();
-		throw e;
-		
-	}
-		
+		} catch (NullPointerException e) {
+			logger.error("Exception in saveFinalTLToTL()");
+			System.out.println("Term Loan detail not exist");
+			e.printStackTrace();
+			throw e;
+
+		}
+
 		logger.info("================= Exit From savePrimaryTLtoTL()================== ");
 	}
 
 	public void savePrimaryTLtoWC(PrimaryTermLoanDetail primaryTermLoanDetailFrom) throws NullPointerException {
 		logger.info("=================Enter in savePrimaryTLtoWC() save detail from to To applicant ============== ");
-		
-			PrimaryWorkingCapitalLoanDetail workingCapitalLoanDetailTo = primaryWCRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-	try {
+
+		PrimaryWorkingCapitalLoanDetail workingCapitalLoanDetailTo = primaryWCRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		try {
 			if (workingCapitalLoanDetailTo == null) {
 				System.out.println("WC application id ont avialable");
 				throw new NullPointerException();
@@ -771,22 +795,22 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setModifiedDate(new Date());
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
-	} catch (NullPointerException e) {
-		logger.error("Exception in saveFinalTLToTL()");
-		System.out.println("Term Loan detail not exist");
-		e.printStackTrace();
-		throw e;
-		
-	}
-			logger.info("================= Exit From savePrimaryTLtoWC()================== ");
+		} catch (NullPointerException e) {
+			logger.error("Exception in saveFinalTLToTL()");
+			System.out.println("Term Loan detail not exist");
+			e.printStackTrace();
+			throw e;
+
+		}
+		logger.info("================= Exit From savePrimaryTLtoWC()================== ");
 	}
 
 	public void savePrimaryTLtoUSL(PrimaryTermLoanDetail primaryTermLoanDetailFrom) {
 		logger.info("=================Enter in savePrimaryTLtoUSL() save detail from to To applicant ============== ");
-	
-			PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailTo = primaryUnsecuredLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-	try {
+
+		PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailTo = primaryUnsecuredLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		try {
 			if (primaryUnsecuredLoanDetailTo == null) {
 				System.out.println("USL application id ont avialable");
 				throw new NullPointerException();
@@ -796,23 +820,23 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
-	} catch (NullPointerException e) {
-		logger.error("Exception in saveFinalTLToTL()");
-		System.out.println("Term Loan detail not exist");
-		e.printStackTrace();
-		throw e;
-		
-	}
-		
+		} catch (NullPointerException e) {
+			logger.error("Exception in saveFinalTLToTL()");
+			System.out.println("Term Loan detail not exist");
+			e.printStackTrace();
+			throw e;
+
+		}
+
 		logger.info("================= Exit From savePrimaryTLtoUSL()================== ");
 	}
 
 	public void savePrimaryUSLtoUSL(PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailFrom) {
 		logger.info("=================Enter in savePrimaryUSLtoUSL() save detail from to To applicant ============== ");
-		
-			PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailTo = primaryUnsecuredLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-	try {
+
+		PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailTo = primaryUnsecuredLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		try {
 			if (primaryUnsecuredLoanDetailTo == null) {
 				System.out.println("USl application id ont avialable");
 				throw new NullPointerException();
@@ -822,22 +846,22 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedBy(userId);
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
-	} catch (NullPointerException e) {
-		logger.error("Exception in saveFinalTLToTL()");
-		System.out.println("Term Loan detail not exist");
-		e.printStackTrace();
-		throw e;
-		
-	}
+		} catch (NullPointerException e) {
+			logger.error("Exception in saveFinalTLToTL()");
+			System.out.println("Term Loan detail not exist");
+			e.printStackTrace();
+			throw e;
+
+		}
 		logger.info("================= Exit From savePrimaryUSLtoUSL()================== ");
 	}
 
 	public void savePrimaryUSLtoWC(PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailFrom) {
 		logger.info("=================Enter in savePrimaryUSLtoWC() save detail from to To applicant ============== ");
-	
-			PrimaryWorkingCapitalLoanDetail workingCapitalLoanDetailTo = primaryWCRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			try {
+
+		PrimaryWorkingCapitalLoanDetail workingCapitalLoanDetailTo = primaryWCRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		try {
 			if (workingCapitalLoanDetailTo == null) {
 				System.out.println("WC application id ont avialable");
 				throw new NullPointerException();
@@ -847,13 +871,13 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setModifiedBy(userId);
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
-	} catch (NullPointerException e) {
-		logger.error("Exception in saveFinalTLToTL()");
-		System.out.println("Term Loan detail not exist");
-		e.printStackTrace();
-		throw e;
-		
-	}
+		} catch (NullPointerException e) {
+			logger.error("Exception in saveFinalTLToTL()");
+			System.out.println("Term Loan detail not exist");
+			e.printStackTrace();
+			throw e;
+
+		}
 		logger.info("================= Exit From savePrimaryUSLtoWC()================== ");
 	}
 
@@ -1110,29 +1134,35 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			securityCorporateDetailsRepository.save(securityCorporateDetailTo);
 		}
 		logger.info("================= Exit From getAndSaveColletralDetails()================== ");
-		
+
 	}
-   public void getAndSaveReferenceDatailForPrimaryAndFinal() {
+
+	public void getAndSaveReferenceDatailForPrimaryAndFinal() {
 		logger.info("================Enter in getAndSaveReferenceDatail() ===========");
-	   List<ReferencesRetailDetail> referencesRetailDetailFromList =  referenceRetailDetailsRepository.listReferencesRetailFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
-	   if(referencesRetailDetailFromList==null) {
-	   referenceRetailDetailsRepository.listReferencesRetailFromCoAppId(autoFillOneFormDetailRequest.getFromApplicationId());
-	   if(referencesRetailDetailFromList==null) {
-		   referencesRetailDetailFromList =referenceRetailDetailsRepository.listReferencesRetailFromGarrId(autoFillOneFormDetailRequest.getFromApplicationId());
-	   }
-	   logger.info("Get ReferencesRetailDetailfromList =====> "+ referencesRetailDetailFromList+ "  FromApplicationId ===>" + autoFillOneFormDetailRequest.getFromApplicationId());
-	   }
-	   referenceRetailDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
-	  for(ReferencesRetailDetail referencesRetailDetailFrom: referencesRetailDetailFromList) {
-		 ReferencesRetailDetail referencesRetailDetailTo= new ReferencesRetailDetail();  
-		  BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailDetailTo,"id","applicationId");
-		  referencesRetailDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-		  referencesRetailDetailTo.setModifiedBy(userId);
-		  referencesRetailDetailTo.setModifiedDate(new Date());
-		  referenceRetailDetailsRepository.save(referencesRetailDetailTo);
-	  }
+		List<ReferencesRetailDetail> referencesRetailDetailFromList = referenceRetailDetailsRepository
+				.listReferencesRetailFromAppId(autoFillOneFormDetailRequest.getFromApplicationId());
+		if (referencesRetailDetailFromList == null) {
+			referenceRetailDetailsRepository
+					.listReferencesRetailFromCoAppId(autoFillOneFormDetailRequest.getFromApplicationId());
+			if (referencesRetailDetailFromList == null) {
+				referencesRetailDetailFromList = referenceRetailDetailsRepository
+						.listReferencesRetailFromGarrId(autoFillOneFormDetailRequest.getFromApplicationId());
+			}
+			logger.info("Get ReferencesRetailDetailfromList =====> " + referencesRetailDetailFromList
+					+ "  FromApplicationId ===>" + autoFillOneFormDetailRequest.getFromApplicationId());
+		}
+		referenceRetailDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
+		for (ReferencesRetailDetail referencesRetailDetailFrom : referencesRetailDetailFromList) {
+			ReferencesRetailDetail referencesRetailDetailTo = new ReferencesRetailDetail();
+			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailDetailTo, "id", "applicationId");
+			referencesRetailDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			referencesRetailDetailTo.setModifiedBy(userId);
+			referencesRetailDetailTo.setModifiedDate(new Date());
+			referenceRetailDetailsRepository.save(referencesRetailDetailTo);
+		}
 		logger.info("================= Exit From getAndSaveReferenceDatail()================== ");
-   }
+	}
+
 	public void getAndSaveNagativeList() {
 		logger.info("-----------Enter in getAndSaveNagativeList()--------------");
 		List<Long> negativeList = fsNegativeFpListRepository
@@ -1159,175 +1189,173 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	public void saveFinalWCToWC(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================Enter in saveFinalWCToWC() ===========");
 		// FinalTermLoanD
-		
-			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalWorkingCapitalLoanDetailTo == null) {
-				logger.warn("Aplication Id not available in DB=====> saveFinalWCToWC()");
-				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
-						+ finalWorkingCapitalLoanDetailTo);
-				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
-			}
-			BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id",
-					"applicationId");
-			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-		    finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
+		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalWorkingCapitalLoanDetailTo == null) {
+			logger.warn("Aplication Id not available in DB=====> saveFinalWCToWC()");
+			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+					+ finalWorkingCapitalLoanDetailTo);
+			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
+
+		}
+		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id",
+				"applicationId");
+		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
+		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToWC()================== ");
 	}
 
 	public void saveFinalWCToTL(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalWCToTL() ===========");
-		// FinalTermLoanD	
-			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalTermLoanDetailTo == null) {
-				logger.warn("Aplication Id not available in DB=====> saveFinalWCToTL()");
-				logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
-						+ finalTermLoanDetailTo);
-				finalTermLoanDetailTo = new FinalTermLoanDetail();
+		// FinalTermLoanD
+		FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalTermLoanDetailTo == null) {
+			logger.warn("Aplication Id not available in DB=====> saveFinalWCToTL()");
+			logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
+					+ finalTermLoanDetailTo);
+			finalTermLoanDetailTo = new FinalTermLoanDetail();
 
-			}
-			BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
-			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
+		}
+		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
+		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalTermLoanDetailTo.setCreatedDate(new Date());
+		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToTL()================== ");
 	}
 
 	public void saveFinalWCToUSL(FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalWCToUSL() ===========");
 		// FinalTermLoanD
-			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalUnsecureLoanDetailTo == null) {
-				logger.warn("Aplication Id not available in DB =====> saveFinalWCToUSL()");
-				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
-						+ finalUnsecureLoanDetailTo);
-				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
-			}
-			BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalUnsecureLoanDetailTo, "id",
-					"applicationId");
-			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecureLoanDetailTo=finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
+		FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalUnsecureLoanDetailTo == null) {
+			logger.warn("Aplication Id not available in DB =====> saveFinalWCToUSL()");
+			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+					+ finalUnsecureLoanDetailTo);
+			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
+		}
+		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
+		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToUSL()================== ");
 	}
 
 	public void saveFinalTLToTL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToTL() ===========");
-		// FinalTermLoanD		
-			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalTermLoanDetailTo == null) {
-				logger.warn("Aplication Id not available in DB  =====> saveFinalTLToTL()");
-				logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
-						+ finalTermLoanDetailTo);
-				finalTermLoanDetailTo = new FinalTermLoanDetail();
-			}
-			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
-			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
-			logger.info("================= Exit From saveFinalTLToTL()================== ");
+		// FinalTermLoanD
+		FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalTermLoanDetailTo == null) {
+			logger.warn("Aplication Id not available in DB  =====> saveFinalTLToTL()");
+			logger.warn("----------New Object Created,  Empty detail in FinalTermLoanDetail  --------> "
+					+ finalTermLoanDetailTo);
+			finalTermLoanDetailTo = new FinalTermLoanDetail();
+		}
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
+		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalTermLoanDetailTo.setCreatedDate(new Date());
+		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
+		logger.info("================= Exit From saveFinalTLToTL()================== ");
 	}
 
 	public void saveFinalTLToWL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToWL() ===========");
 		// FinalTermLoanD
-			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalWorkingCapitalLoanDetailTo == null) {
-				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
-						+ finalWorkingCapitalLoanDetailTo);
-				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
-			}
-			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
-			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-			finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
+		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalWorkingCapitalLoanDetailTo == null) {
+			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+					+ finalWorkingCapitalLoanDetailTo);
+			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
+		}
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
+		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
+		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToWL()================== ");
 	}
 
 	public void saveFinalTLToUSL(FinalTermLoanDetail finalTermLoanDetailFrom) {
 		logger.info("================ Enter in saveFinalTLToUSL() ===========");
 		// FinalTermLoanD
-			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalUnsecureLoanDetailTo == null) {
-				logger.warn("applicationId not  available in DB in saveFinalTLToUSL () ");
-				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
-						+ finalUnsecureLoanDetailTo);
-				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
-			}
-			BeanUtils.copyProperties(finalTermLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
-			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecureLoanDetailTo=	finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
+		FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalUnsecureLoanDetailTo == null) {
+			logger.warn("applicationId not  available in DB in saveFinalTLToUSL () ");
+			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+					+ finalUnsecureLoanDetailTo);
+			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
+		}
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
+		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToUSL()================== ");
 	}
 
 	public void saveFinalUSLToUSL(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToUSL() ===========");
 		// FinalTermLoanD
-			FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalUnsecureLoanDetailTo == null) {
-				logger.warn("applicationid not available in  DB saveFinalUSLToUSL ");
-				logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
-						+ finalUnsecureLoanDetailTo);
-				finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
-			}
-			BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalUnsecureLoanDetailTo, "id", "applicationId");
-			finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalUnsecureLoanDetailTo.setCreatedDate(new Date());
-			finalUnsecureLoanDetailTo=finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-			logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  "+ finalUnsecureLoanDetailTo);
+		FinalUnsecureLoanDetail finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalUnsecureLoanDetailTo == null) {
+			logger.warn("applicationid not available in  DB saveFinalUSLToUSL ");
+			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+					+ finalUnsecureLoanDetailTo);
+			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
+		}
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
+		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
+		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToUSL()================== ");
 	}
 
 	public void saveFinalUSLToWC(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToWC() ===========");
-			FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			if (finalWorkingCapitalLoanDetailTo == null) {
-				logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
-						+ finalWorkingCapitalLoanDetailTo);
-				finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
+		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		if (finalWorkingCapitalLoanDetailTo == null) {
+			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+					+ finalWorkingCapitalLoanDetailTo);
+			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
-			}
-			BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalWorkingCapitalLoanDetailTo, "id",
-					"applicationId");
-			finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
-			finalWorkingCapitalLoanDetailTo=finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-			logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  "+ finalWorkingCapitalLoanDetailTo);
+		}
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
+		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
+		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
+		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToWC()================== ");
 	}
 
 	public void saveFinalUSLToTL(FinalUnsecureLoanDetail finalUnsecureLoanDetailfrom) {
 		logger.info("================ Enter in saveFinalUSLToTL() ===========");
-		
-			FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
-					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
-			logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
-			if (finalTermLoanDetailTo == null) {
-				finalTermLoanDetailTo = new FinalTermLoanDetail();
-				System.out.println("TL application id ont avialable");
 
-			}
-			BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
-			finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			finalTermLoanDetailTo.setCreatedDate(new Date());
-			finalTermLoanDetailTo=finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-			logger.info("Sucessfully FinalTermLoanDetail save ======>  "+ finalTermLoanDetailTo);
+		FinalTermLoanDetail finalTermLoanDetailTo = finalTermLoanDetailRepository
+				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
+		logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
+		if (finalTermLoanDetailTo == null) {
+			finalTermLoanDetailTo = new FinalTermLoanDetail();
+			System.out.println("TL application id ont avialable");
+
+		}
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
+		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+		finalTermLoanDetailTo.setCreatedDate(new Date());
+		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
+		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToTL()================== ");
 	}
 
@@ -1348,66 +1376,66 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			mappingDetailTo.setActive(true);
 			mappingDetailTo.setCreatedDate(new Date());
 			mappingDetailTo.setCreatedBy(userId);
-			networkRepository.save(mappingDetailTo);			
+			networkRepository.save(mappingDetailTo);
 		}
 		logger.info("================= Exit From getAndSaveFinalMCQOverseasNetworkIds()================== ");
 	}
 
 	public void getAndSaveFinalInformationFinancial() {
 		logger.info("================ Enter in getAndSaveFinalInformationFinancial() ===========");
-		
-			List<MonthlyTurnoverDetail> monthlyTurnoverDetailsList = monthlyTurnoverDetailsRepository
-					.listMonthlyTurnoverFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.warn("---------- MonthlyTurnoverDetail  -----> " + monthlyTurnoverDetailsList);
-			if (CommonUtils.isListNullOrEmpty(monthlyTurnoverDetailsList)) {
-				logger.error("Exception in getAndSaveFinalInformationFinancial()");
-				throw new NullPointerException();
-			}
-			monthlyTurnoverDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
-			for (MonthlyTurnoverDetail monthlyTurnoverDetailFrom : monthlyTurnoverDetailsList) {
-				MonthlyTurnoverDetail monthlyTurnoverDetailTo = new MonthlyTurnoverDetail();
-				BeanUtils.copyProperties(monthlyTurnoverDetailFrom, monthlyTurnoverDetailTo, "id", "applicationId",
-						"createdDate");
-				monthlyTurnoverDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-				monthlyTurnoverDetailTo.setCreatedDate(new Date());
-				monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetailTo);
-			}
-		
+
+		List<MonthlyTurnoverDetail> monthlyTurnoverDetailsList = monthlyTurnoverDetailsRepository
+				.listMonthlyTurnoverFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
+		logger.warn("---------- MonthlyTurnoverDetail  -----> " + monthlyTurnoverDetailsList);
+		if (CommonUtils.isListNullOrEmpty(monthlyTurnoverDetailsList)) {
+			logger.error("Exception in getAndSaveFinalInformationFinancial()");
+			throw new NullPointerException();
+		}
+		monthlyTurnoverDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
+		for (MonthlyTurnoverDetail monthlyTurnoverDetailFrom : monthlyTurnoverDetailsList) {
+			MonthlyTurnoverDetail monthlyTurnoverDetailTo = new MonthlyTurnoverDetail();
+			BeanUtils.copyProperties(monthlyTurnoverDetailFrom, monthlyTurnoverDetailTo, "id", "applicationId",
+					"createdDate");
+			monthlyTurnoverDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			monthlyTurnoverDetailTo.setCreatedDate(new Date());
+			monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetailTo);
+		}
+
 		logger.info("================= Exit From getAndSaveFinalInformationFinancial()================== ");
 	}
 
 	public void getAndSaveFinalOtherGuarantor() {
 		logger.info("================ Enter in getAndSaveFinalOtherGuarantor() ===========");
-			List<GuarantorsCorporateDetail> guarantorsCorporateDetailList = guarantorsCorporateDetailRepository
-					.listGuarantorsCorporateFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.warn("---------- GuarantorsCorporateDetail  -----> " + guarantorsCorporateDetailList);
-			guarantorsCorporateDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
-			for (GuarantorsCorporateDetail guarantorsCorporateDetailFrom : guarantorsCorporateDetailList) {
-				GuarantorsCorporateDetail guarantorsCorporateDetailTo = new GuarantorsCorporateDetail();
-				BeanUtils.copyProperties(guarantorsCorporateDetailFrom, guarantorsCorporateDetailTo, "id",
-						"applicationId", "createdDate");
-				guarantorsCorporateDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-				guarantorsCorporateDetailTo.setCreatedDate(new Date());
-				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetailTo);
-			}
+		List<GuarantorsCorporateDetail> guarantorsCorporateDetailList = guarantorsCorporateDetailRepository
+				.listGuarantorsCorporateFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
+		logger.warn("---------- GuarantorsCorporateDetail  -----> " + guarantorsCorporateDetailList);
+		guarantorsCorporateDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
+		for (GuarantorsCorporateDetail guarantorsCorporateDetailFrom : guarantorsCorporateDetailList) {
+			GuarantorsCorporateDetail guarantorsCorporateDetailTo = new GuarantorsCorporateDetail();
+			BeanUtils.copyProperties(guarantorsCorporateDetailFrom, guarantorsCorporateDetailTo, "id", "applicationId",
+					"createdDate");
+			guarantorsCorporateDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			guarantorsCorporateDetailTo.setCreatedDate(new Date());
+			guarantorsCorporateDetailRepository.save(guarantorsCorporateDetailTo);
+		}
 		logger.info("================= Exit From getAndSaveFinalOtherGuarantor()================== ");
 	}
 
 	public void getAndSaveFinalOtherAssociatedConcern() {
 		logger.info("================ Enter in getAndSaveFinalOtherAssociatedConcern() ===========");
 
-			List<AssociatedConcernDetail> associatedConcernDetailList = associatedConcernDetailRepository
-					.listAssociatedConcernFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
-			logger.warn("---------- AssociatedConcernDetail  -----> " + associatedConcernDetailList);
-			associatedConcernDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
-			for (AssociatedConcernDetail associatedConcernDetailFrom : associatedConcernDetailList) {
-				AssociatedConcernDetail associatedConcernDetailTo = new AssociatedConcernDetail();
-				BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", "applicationId",
-						"createdDate");
-				associatedConcernDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-				associatedConcernDetailTo.setCreatedDate(new Date());
-				associatedConcernDetailRepository.save(associatedConcernDetailTo);
-			}
+		List<AssociatedConcernDetail> associatedConcernDetailList = associatedConcernDetailRepository
+				.listAssociatedConcernFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
+		logger.warn("---------- AssociatedConcernDetail  -----> " + associatedConcernDetailList);
+		associatedConcernDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
+		for (AssociatedConcernDetail associatedConcernDetailFrom : associatedConcernDetailList) {
+			AssociatedConcernDetail associatedConcernDetailTo = new AssociatedConcernDetail();
+			BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", "applicationId",
+					"createdDate");
+			associatedConcernDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			associatedConcernDetailTo.setCreatedDate(new Date());
+			associatedConcernDetailRepository.save(associatedConcernDetailTo);
+		}
 		logger.info("================= Exit From getAndSaveFinalOtherAssociatedConcern()================== ");
 	}
 
@@ -1468,8 +1496,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add((long) DocumentAlias.TL_CMA);
 		prodDocMappingList.add((long) DocumentAlias.TL_COMPANY_ACT);
 		prodDocMappingList.add(DocumentAlias.TL_FINANCIAL_MODEL);
-		logger.info(
-				"================= Exit From getTLExcelTypeProductMappingIDList()================== ");
+		logger.info("================= Exit From getTLExcelTypeProductMappingIDList()================== ");
 		return prodDocMappingList;
 	}
 
@@ -1482,22 +1509,20 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add((long) DocumentAlias.WC_CMA);
 		prodDocMappingList.add((long) DocumentAlias.WC_COMPANY_ACT);
 		prodDocMappingList.add(DocumentAlias.WC_FINANCIAL_MODEL);
-		logger.info(
-				"================= Exit From getWCLExcelTypeProductMappingIDList()================== ");
+		logger.info("================= Exit From getWCLExcelTypeProductMappingIDList()================== ");
 		return prodDocMappingList;
 	}
 
 	public List<Long> getUSLExcelTypeProductMappingIDList() throws DocumentException {
 		logger.info("================ Enter in getUSLExcelTypeProductMappingIDList() ===========");
 		List<Long> prodDocMappingList = new ArrayList<Long>(5);
-		prodDocMappingList.add(0,(long)0);
-		prodDocMappingList.add(1,(long) 0);
-		prodDocMappingList.add(2,(long) DocumentAlias.USL_CMA);
-		prodDocMappingList.add(3,(long) DocumentAlias.USL_COMPANY_ACT);
-		prodDocMappingList.add(4,(long)0);
-		
-		logger.info(
-				"================= Exit From getUSLExcelTypeProductMappingIDList()================== ");
+		prodDocMappingList.add(0, (long) 0);
+		prodDocMappingList.add(1, (long) 0);
+		prodDocMappingList.add(2, (long) DocumentAlias.USL_CMA);
+		prodDocMappingList.add(3, (long) DocumentAlias.USL_COMPANY_ACT);
+		prodDocMappingList.add(4, (long) 0);
+
+		logger.info("================= Exit From getUSLExcelTypeProductMappingIDList()================== ");
 		return prodDocMappingList;
 	}
 
@@ -1507,18 +1532,18 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY);
-		//new
+		// new
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_BANK_STATEMENT);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_LAST_IT_RETURN);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
-		
-		//new
+
+		// new
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_IT_RETURN_DIRECTOR);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS);
-		
+
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -1526,7 +1551,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS);
 		prodDocMappingList.add(DocumentAlias.TERM_LOAN_DIRECTOR_RESOLUTION);
-		
+
 		prodDocMappingList.add(DocumentAlias.TL_MOM_AOA);
 		prodDocMappingList.add(DocumentAlias.TL_DEBTORS_LIST);
 		prodDocMappingList.add(DocumentAlias.TL_GST_APPLIED);
@@ -1548,18 +1573,18 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		List<Long> prodDocMappingList = new ArrayList<Long>();
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY);
-		//new
+		// new
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
-		
+
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_BROCHURE_OF_PROPOSED_ACTIVITIES);
-		//new
+		// new
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_IT_RETURN_DIRECTOR);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_ASSESSMENT_ORDERS);
-		//kyc
+		// kyc
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -1567,7 +1592,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_DIRECTOR_ADDRESS);
 		prodDocMappingList.add(DocumentAlias.WORKING_CAPITAL_DIRECTOR_RESOLUTION);
-        //other		
+		// other
 		prodDocMappingList.add(DocumentAlias.WC_MOM_AOA);
 		prodDocMappingList.add(DocumentAlias.WC_DEBTORS_LIST);
 		prodDocMappingList.add(DocumentAlias.WC_GST_APPLIED);
@@ -1580,7 +1605,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.WC_MARKET_SURVEY_REPORT);
 		prodDocMappingList.add(DocumentAlias.WC_CONTINGENT_LIABILITIES);
 
-		
 		logger.info("================= Exit From getWCLOtherTypeProductMappingIDList()================== ");
 		return prodDocMappingList;
 	}
@@ -1590,24 +1614,24 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		List<Long> prodDocMappingList = new ArrayList<Long>();
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_SANCTION_LETTER_COPY);
-		//new 
+		// new
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_BANK_STATEMENT);
-		
+
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_LAST_IT_RETURN);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES);
-		//new 
+		// new
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_IT_RETURN_DIRECTOR);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_ASSESSMENT_ORDERS);
-		
+
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_DETAILED_LIST_OF_SHAREHOLDERS);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS);
-		//new 
+		// new
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_DIRECTOR_ADDRESS);
 		prodDocMappingList.add(DocumentAlias.UNSECURED_LOAN_DIRECTOR_RESOLUTION);
 
@@ -1622,7 +1646,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		prodDocMappingList.add(DocumentAlias.USL_COPIES_TRUST_DEEDS);
 		prodDocMappingList.add(DocumentAlias.USL_MARKET_SURVEY_REPORT);
 		prodDocMappingList.add(DocumentAlias.USL_CONTINGENT_LIABILITIES);
-		
+
 		logger.info("================= Exit From getUSLOtherTypeProductMappingIDList()================== ");
 		return prodDocMappingList;
 	}
@@ -1643,7 +1667,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				for (Object obj : documentResponse.getDataList()) {
 					StorageDetailsResponse res = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) obj, StorageDetailsResponse.class);
-					documentRequest.setOriginalFileName(res.getOriginalFileName());			
+					documentRequest.setOriginalFileName(res.getOriginalFileName());
 					JSONObject json = new JSONObject();
 					json.put("id", res.getId());
 					response = dmsClient.deleteIrrDocument(json.toJSONString());
@@ -1677,23 +1701,24 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================= Exit From deleteFile()================== ");
 	}
 
-	public void getAndSaveFinalAllFileUpload(List<Long> prodDocMappingFromList, List<Long> prodDocMappingToList) throws DocumentException {
+	public void getAndSaveFinalAllFileUpload(List<Long> prodDocMappingFromList, List<Long> prodDocMappingToList)
+			throws DocumentException {
 		logger.info("================ Enter in getAndSaveFinalAllFileUpload() ===========");
 		DocumentRequest documentRequest = new DocumentRequest();
 		DocumentResponse response = null;
-		int i=0;
+		int i = 0;
 		logger.warn("------ ProdDocMappingList -------> " + prodDocMappingFromList);
-		for (Long productDocumentMappingIdFrom : prodDocMappingFromList) {		
+		for (Long productDocumentMappingIdFrom : prodDocMappingFromList) {
 			documentRequest.setApplicationId(autoFillOneFormDetailRequest.getFromApplicationId());
 			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 			documentRequest.setProductDocumentMappingId(productDocumentMappingIdFrom);
 			response = dmsClient.listProductDocument(documentRequest);
-				if (response.getDataList().size() > 0 && prodDocMappingFromList.indexOf(i)!=0) {               					 
-					documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
-					documentRequest.setProductDocumentMappingId(prodDocMappingToList.get(i));
-					fileUpload(response, documentRequest);					
-				}
-				i++;
+			if (response.getDataList().size() > 0 && prodDocMappingFromList.indexOf(i) != 0) {
+				documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
+				documentRequest.setProductDocumentMappingId(prodDocMappingToList.get(i));
+				fileUpload(response, documentRequest);
+			}
+			i++;
 		}
 		logger.info("================= Exit From getAndSaveFinalAllFileUpload()================== ");
 	}
@@ -1726,32 +1751,49 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	public void fileUpload(DocumentResponse response, DocumentRequest documentRequest) {
 		logger.info("================ Enter in fileUpload() ===========");
 		documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
-		int flag=0;
-		System.out.println("no times");
+		int flag = 0;
 		try {
 			for (Object obj : response.getDataList()) {
 				StorageDetailsResponse res = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) obj, StorageDetailsResponse.class);
 				documentRequest.setOriginalFileName(res.getOriginalFileName());
 				String json = com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper
-						.getStringfromObject(documentRequest);				
+						.getStringfromObject(documentRequest);
 				URL url = new URL(res.getFilePath());
-				File f = new File(res.getFilePath());
+				File f = null;
+
 				String contentType = url.openConnection().getContentType();
-				if(contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-					flag=1;
-				System.out.println(contentType);
-				FileUtils.copyURLToFile(url, f);
-				byte[] b = FileUtils.readFileToByteArray(f);
-				System.out.println("byte 2" + b);
+
+				byte[] b = null;
+				if ((contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+						|| contentType.equals("application/vnd.ms-excel"))) {
+					flag = 1;
+					if (documentRequest.getProductDocumentMappingId() == 7
+							|| documentRequest.getProductDocumentMappingId() == 34
+							|| documentRequest.getProductDocumentMappingId() == 327) {
+						f = buildWCAndTLAndUSLCMAExcelFile(res.getOriginalFileName());
+					} else if (documentRequest.getProductDocumentMappingId() == 8
+							|| documentRequest.getProductDocumentMappingId() == 35
+							|| documentRequest.getProductDocumentMappingId() == 328) {
+						f = buildCoCMAExcelFile(res.getOriginalFileName());
+					} else {
+						f = new File(res.getOriginalFileName());
+						FileUtils.copyURLToFile(url, f);
+					}
+				} else {
+					f = new File(res.getOriginalFileName());
+					FileUtils.copyURLToFile(url, f);
+				}
+				b = FileUtils.readFileToByteArray(f);
 				MultipartFile multipartFile = new CommonMultiPartFile(b, res.getOriginalFileName(), contentType);
 				if (flag == 0) {
-					response = dmsClient.readExcel(json, multipartFile);
-					if(response != null && (response.getStatus() == 200)) {
-						readAndSaveExcelData(documentRequest.getProductDocumentMappingId(),documentRequest.getApplicationId(),response.getStorageId(),multipartFile);
-					}
-				} else if (flag == 1) {
 					response = dmsClient.uploadFile(json, multipartFile);
+				} else if (flag == 1) {
+					response = dmsClient.readExcel(json, multipartFile);
+					if (response != null && (response.getStatus() == 200)) {
+						readAndSaveExcelData(documentRequest.getProductDocumentMappingId(),
+								documentRequest.getApplicationId(), response.getStorageId(), multipartFile);
+					}
 				}
 				logger.info("-------- Documet response ---------> {}", response);
 				System.out.println(response);
@@ -1765,116 +1807,643 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================= Exit From fileUpload()================== ");
 
 	}
-	
-	
-	private void readAndSaveExcelData(Long productDocumentMappingId,Long toApplicationId,Long storageId,MultipartFile multipartFiles) throws DocumentException {
-			// Code for read CMA BS and DPR
-			Boolean flag = false;
-			try {
 
-				switch (productDocumentMappingId.intValue()) {
-				case DocumentAlias.WC_DPR_OUR_FORMAT: {
-					logger.info("Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>{}",DocumentAlias.WC_DPR_OUR_FORMAT,toApplicationId);
-					boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
-					strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
-					keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
-					employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
-					technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
-					revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
-					driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
-					projectImplementationScheduleDetailRepository.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
-					availabilityProposedPlantDetailRepository.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
-					requirementsAndAvailabilityRawMaterialsDetailRepository.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
-					scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
-					dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
-					flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.WC_CMA: {
-					logger.info("Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.WC_DPR_OUR_FORMAT,toApplicationId,storageId);
-					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.WC_COMPANY_ACT: {
-					logger.info("Going to INactive DocumentAlias.WC_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.WC_COMPANY_ACT,toApplicationId,storageId);
-					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
-					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.TL_DPR_OUR_FORMAT: {
-					logger.info("Going to INactive DocumentAlias.TL_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_DPR_OUR_FORMAT,toApplicationId,storageId);
-					boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
-					strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
-					keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
-					employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
-					technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
-					revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
-					driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
-					projectImplementationScheduleDetailRepository.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
-					availabilityProposedPlantDetailRepository.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
-					requirementsAndAvailabilityRawMaterialsDetailRepository.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
-					scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
-					dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
-					flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.TL_CMA: {
-					logger.info("Going to INactive DocumentAlias.TL_CMA===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_CMA,toApplicationId,storageId);
-					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.TL_COMPANY_ACT: {
-					logger.info("Going to INactive DocumentAlias.TL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.TL_COMPANY_ACT,toApplicationId,storageId);
-					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
-					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.USL_CMA: {
-					logger.info("Going to INactive DocumentAlias.USL_CMA===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.USL_CMA,toApplicationId,storageId);
-					assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-					flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				case DocumentAlias.USL_COMPANY_ACT: {
-					logger.info("Going to INactive DocumentAlias.USL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",DocumentAlias.USL_COMPANY_ACT,toApplicationId,storageId);
-					balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
-					profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-					flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
-					break;
-				}
-				default : {
-					flag = true;
-				}
-				}
+	@SuppressWarnings("unchecked")
+	private void readAndSaveExcelData(Long productDocumentMappingId, Long toApplicationId, Long storageId,
+			MultipartFile multipartFiles) throws DocumentException {
+		// Code for read CMA BS and DPR
+		Boolean flag = false;
+		try {
 
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
-				JSONObject json = new JSONObject();
-				json.put("id", storageId);
-				dmsClient.deleteProductDocument(json.toJSONString());
-				logger.error("Error While Uploading Document in Autofill==>{}",json.toJSONString());
+			switch (productDocumentMappingId.intValue()) {
+			case DocumentAlias.WC_DPR_OUR_FORMAT: {
+				logger.info("Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>{}",
+						DocumentAlias.WC_DPR_OUR_FORMAT, toApplicationId);
+				boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
+				strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
+				keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
+				employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
+				technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
+				revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
+				driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
+				projectImplementationScheduleDetailRepository
+						.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
+				availabilityProposedPlantDetailRepository
+						.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
+				requirementsAndAvailabilityRawMaterialsDetailRepository
+						.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
+				scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
+				dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
+				flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
+				break;
 			}
-			if (flag) {
-				logger.info("File Uploaded SuccessFully in Autofill");
-			} else {
-				// code for inactive CMA BS and DPR recored
-				JSONObject json = new JSONObject();
-				json.put("id", storageId);
-				dmsClient.deleteProductDocument(json.toJSONString());
-				logger.error("Error While Uploading Document==>{}",json.toJSONString());
+			case DocumentAlias.WC_CMA: {
+				logger.info(
+						"Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.WC_DPR_OUR_FORMAT, toApplicationId, storageId);
+				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.WC_COMPANY_ACT: {
+				logger.info(
+						"Going to INactive DocumentAlias.WC_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.WC_COMPANY_ACT, toApplicationId, storageId);
+				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+				flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.TL_DPR_OUR_FORMAT: {
+				logger.info(
+						"Going to INactive DocumentAlias.TL_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.TL_DPR_OUR_FORMAT, toApplicationId, storageId);
+				boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
+				strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
+				keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
+				employeesCategoryBreaksDetailRepository.inActiveemployeesCategoryBreaksDetailsByAppId(toApplicationId);
+				technologyPositioningDetailRepository.inActiveTechnologyPositioningDetailsByAppId(toApplicationId);
+				revenueAndOrderBookDetailRepository.inActiveRevenueAndOrderBookDetailsByAppId(toApplicationId);
+				driverForFutureGrowthDetailRepository.inActiveDriverForFutureGrowthDetailsByAppId(toApplicationId);
+				projectImplementationScheduleDetailRepository
+						.inActiveProjectImplementationScheduleDetailsByAppId(toApplicationId);
+				availabilityProposedPlantDetailRepository
+						.inActiveAvailabilityProposedPlantDetailsByAppId(toApplicationId);
+				requirementsAndAvailabilityRawMaterialsDetailRepository
+						.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
+				scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
+				dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
+				flag = excelExtractionService.readDPR(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.TL_CMA: {
+				logger.info("Going to INactive DocumentAlias.TL_CMA===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.TL_CMA, toApplicationId, storageId);
+				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.TL_COMPANY_ACT: {
+				logger.info(
+						"Going to INactive DocumentAlias.TL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.TL_COMPANY_ACT, toApplicationId, storageId);
+				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+				flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.USL_CMA: {
+				logger.info(
+						"Going to INactive DocumentAlias.USL_CMA===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.USL_CMA, toApplicationId, storageId);
+				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
+				flag = excelExtractionService.readCMA(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			case DocumentAlias.USL_COMPANY_ACT: {
+				logger.info(
+						"Going to INactive DocumentAlias.USL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
+						DocumentAlias.USL_COMPANY_ACT, toApplicationId, storageId);
+				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
+				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
+				flag = excelExtractionService.readBS(toApplicationId, storageId, multipartFiles);
+				break;
+			}
+			default: {
+				flag = true;
+			}
 			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			JSONObject json = new JSONObject();
+			json.put("id", storageId);
+			dmsClient.deleteProductDocument(json.toJSONString());
+			logger.error("Error While Uploading Document in Autofill==>{}", json.toJSONString());
+		}
+		if (flag) {
+			logger.info("File Uploaded SuccessFully in Autofill");
+		} else {
+			// code for inactive CMA BS and DPR recored
+			JSONObject json = new JSONObject();
+			json.put("id", storageId);
+			dmsClient.deleteProductDocument(json.toJSONString());
+			logger.error("Error While Uploading Document==>{}", json.toJSONString());
+		}
+
+	}
+
+	@SuppressWarnings("resource")
+	public File buildWCAndTLAndUSLCMAExcelFile(String pathname) {
+		File file = null;
+		try {
+
+			String CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cwcmafile.location";
+			int addProjected = 8;
+			if (autoFillOneFormDetailRequest.getFromProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
+				CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cwcmafile.usl.location";
+				addProjected = 0;
+			}
+			Workbook wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(CWCMA_EXCEL_FILE_LOCATION)));
+
+			logger.info("Forming Excel Data");
+			Sheet sheet1 = wb.getSheetAt(0);
+
+			Sheet sheet2 = wb.getSheetAt(1);
+
+			Sheet sheet3 = wb.getSheetAt(2);
+
+			evaluator = wb.getCreationHelper().createFormulaEvaluator();
+			Calendar calendar = Calendar.getInstance();
+			Double tillYear = (double) calendar.get(Calendar.YEAR);
+			
+			Double fromYear = tillYear;
+
+			List<String> yearList = new ArrayList<String>();
+			yearList.add(--fromYear + "");
+			yearList.add(--fromYear + "");
+			yearList.add(--fromYear + "");
+
+			
+			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
+					.getOperatingStatementDetailsByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
+							yearList, "Audited");
+			int j = 1;
+			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
+
+				sheet1.getRow(4).getCell(j).setCellValue(Double.parseDouble(operatingStatementDetails.getYear()));
+				System.out.println(sheet1.getRow(4).getCell(j).getNumericCellValue());
+				sheet1.getRow(7).getCell(j).setCellValue(operatingStatementDetails.getDomesticSales());
+				System.out.println(sheet1.getRow(7).getCell(j).getNumericCellValue());
+				sheet1.getRow(8).getCell(j).setCellValue(operatingStatementDetails.getExportSales());
+				System.out.println(sheet1.getRow(8).getCell(j).getNumericCellValue());
+				sheet1.getRow(9).getCell(j).setCellValue(operatingStatementDetails.getAddOtherRevenueIncome());
+				// sheet1.getRow(11).getCell(j).setCellValue(operatingStatementDetails.getTotalCostSales()
+				// );
+
+				sheet1.getRow(12).getCell(j).setCellValue(operatingStatementDetails.getLessExciseDuty());
+				sheet1.getRow(13).getCell(j).setCellValue(operatingStatementDetails.getDeductOtherItems());
+				sheet1.getRow(14).getCell(j).setCellValue(operatingStatementDetails.getNetSales());
+
+				// sheet1.getRow(16).getCell(j).setCellValue(operatingStatementDetails.getF);
+				// sheet1.getRow(18).getCell(j).setCellValue(10);
+
+				sheet1.getRow(19).getCell(j).setCellValue(operatingStatementDetails.getRawMaterials());
+				sheet1.getRow(20).getCell(j).setCellValue(operatingStatementDetails.getRawMaterialsImported());
+				sheet1.getRow(21).getCell(j).setCellValue(operatingStatementDetails.getRawMaterialsIndigenous());
+
+				sheet1.getRow(23).getCell(j).setCellValue(operatingStatementDetails.getOtherSpares());
+				sheet1.getRow(24).getCell(j).setCellValue(operatingStatementDetails.getOtherSparesImported());
+				sheet1.getRow(25).getCell(j).setCellValue(operatingStatementDetails.getOtherSparesIndigenous());
+
+				sheet1.getRow(27).getCell(j).setCellValue(operatingStatementDetails.getPowerAndFuel());
+				sheet1.getRow(29).getCell(j).setCellValue(operatingStatementDetails.getDirectLabour());
+				sheet1.getRow(31).getCell(j).setCellValue(operatingStatementDetails.getOtherMfgExpenses());
+
+				sheet1.getRow(33).getCell(j).setCellValue(operatingStatementDetails.getDepreciation());
+
+				// sheet1.getRow(35).getCell(j).setCellValue(operatingStatementDetails.getSubTotalCostSales());
+
+				sheet1.getRow(37).getCell(j).setCellValue(operatingStatementDetails.getAddOperatingStock());
+				// sheet1.getRow(39).getCell(j).setCellValue(operatingStatementDetails.get);
+
+				sheet1.getRow(41).getCell(j).setCellValue(operatingStatementDetails.getDeductStockInProcess());
+
+				sheet1.getRow(43).getCell(j).setCellValue(operatingStatementDetails.getProductionCost());
+
+				sheet1.getRow(45).getCell(j).setCellValue(operatingStatementDetails.getAddOperatingStockFg());
+				// sheet1.getRow(47).getCell(j).setCellValue(operatingStatementDetails.getOtherMfgExpenses());
+
+				sheet1.getRow(49).getCell(j).setCellValue(operatingStatementDetails.getDeductClStockFg());
+				sheet1.getRow(51).getCell(j).setCellValue(operatingStatementDetails.getTotalCostSales());
+
+				sheet1.getRow(53).getCell(j)
+						.setCellValue(operatingStatementDetails.getSellingAndDistributionExpenses());
+				sheet1.getRow(55).getCell(j).setCellValue(operatingStatementDetails.getSellingGenlAdmnExpenses());
+				// sheet1.getRow(57).getCell(j).setCellValue(operatingStatementDetails.get);
+
+				sheet1.getRow(59).getCell(j).setCellValue(operatingStatementDetails.getOpProfitBeforeIntrest());
+				sheet1.getRow(61).getCell(j).setCellValue(operatingStatementDetails.getInterest());
+				sheet1.getRow(63).getCell(j).setCellValue(operatingStatementDetails.getOpProfitAfterInterest());
+				sheet1.getRow(65).getCell(j).setCellValue(operatingStatementDetails.getAddOtherNonOpIncome());
+				// sheet1.getRow(66).getCell(j).setCellValue(operatingStatementDetails.getSub);
+
+				sheet1.getRow(67).getCell(j).setCellValue(operatingStatementDetails.getDeductOtherNonOpExp());
+				// sheet1.getRow(68).getCell(j).setCellValue(operatingStatementDetails.getSubTotalDeductAndCostOfProduction());
+
+				sheet1.getRow(69).getCell(j).setCellValue(operatingStatementDetails.getNetofNonOpIncomeOrExpenses());
+				sheet1.getRow(70).getCell(j).setCellValue(operatingStatementDetails.getExpensesAmortised());
+				sheet1.getRow(72).getCell(j).setCellValue(operatingStatementDetails.getProfitBeforeTaxOrLoss());
+				sheet1.getRow(74).getCell(j).setCellValue(operatingStatementDetails.getProvisionForTaxes());
+				sheet1.getRow(76).getCell(j).setCellValue(operatingStatementDetails.getProvisionForDeferredTax());
+				sheet1.getRow(77).getCell(j).setCellValue(operatingStatementDetails.getNetProfitOrLoss());
+				sheet1.getRow(79).getCell(j).setCellValue(operatingStatementDetails.getEquityDeividendPaidAmt());
+				sheet1.getRow(81).getCell(j).setCellValue(operatingStatementDetails.getDividendRate());
+				sheet1.getRow(83).getCell(j).setCellValue(operatingStatementDetails.getRetainedProfit());
+				sheet1.getRow(85).getCell(j).setCellValue(operatingStatementDetails.getRetainedProfitOrNetProfit());
+				j++;
+			}
+			// int totalCell = operatingStatementDetailsList.size();
+			Double temp = fromYear;
+			temp += --j;
+			for (int i = j; temp <= tillYear + addProjected; temp++) {
+				sheet1.getRow(4).getCell(++i).setCellValue(temp);
+				System.out.println(sheet1.getRow(4).getCell(i).getNumericCellValue());
+			}
+
+			// Operating Stmt. ends
+
+			// Liabilities Starts
+			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
+					.getLiabilitiesDetailsByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
+							yearList,"Audited");
+			j = 1;
+			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
+
+					sheet2.getRow(4).getCell(j).setCellValue(Double.parseDouble(liabilitiesDetails.getYear()));
+					System.out.println(sheet2.getRow(4).getCell(j).getNumericCellValue());
+					// sheet1.getRow(8).getCell(j).setCellValue(liabilitiesDetails.getB);
+					sheet2.getRow(10).getCell(j).setCellValue(liabilitiesDetails.getFromApplicationBank());
+					sheet2.getRow(11).getCell(j).setCellValue(liabilitiesDetails.getFromOtherBanks());
+					sheet2.getRow(12).getCell(j).setCellValue(liabilitiesDetails.getWhichBpAndBd());
+					sheet2.getRow(14).getCell(j).setCellValue(liabilitiesDetails.getSubTotalA());
+					sheet2.getRow(16).getCell(j).setCellValue(liabilitiesDetails.getShortTermBorrowingFromOthers());
+					sheet2.getRow(18).getCell(j).setCellValue(liabilitiesDetails.getSundryCreditors());
+					sheet2.getRow(20).getCell(j).setCellValue(liabilitiesDetails.getAdvancePaymentsFromCustomers());
+					sheet2.getRow(22).getCell(j).setCellValue(liabilitiesDetails.getProvisionalForTaxation());
+					sheet2.getRow(24).getCell(j).setCellValue(liabilitiesDetails.getDividendPayable());
+					sheet2.getRow(26).getCell(j).setCellValue(liabilitiesDetails.getOtherStatutoryLiability());
+					sheet2.getRow(28).getCell(j).setCellValue(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans());
+					sheet2.getRow(31).getCell(j).setCellValue(liabilitiesDetails.getOtherCurrentLiability());
+					sheet2.getRow(34).getCell(j).setCellValue(liabilitiesDetails.getSubTotalB());
+					sheet2.getRow(36).getCell(j).setCellValue(liabilitiesDetails.getTotalCurrentLiabilities());
+					sheet2.getRow(40).getCell(j).setCellValue(liabilitiesDetails.getDebentures());
+					sheet2.getRow(42).getCell(j).setCellValue(liabilitiesDetails.getPreferencesShares());
+					sheet2.getRow(44).getCell(j).setCellValue(liabilitiesDetails.getTermLoans());
+					// sheet1.getRow(45).getCell(j).setCellValue(liabilitiesDetails.getShortTermBorrowingFromOthers());
+
+					sheet2.getRow(46).getCell(j).setCellValue(liabilitiesDetails.getProvisionalForTaxation());
+					sheet2.getRow(48).getCell(j).setCellValue(liabilitiesDetails.getDeferredPaymentsCredits());
+					sheet2.getRow(50).getCell(j).setCellValue(liabilitiesDetails.getTermDeposits());
+					sheet2.getRow(52).getCell(j).setCellValue(liabilitiesDetails.getOtherTermLiabilies());
+					sheet2.getRow(54).getCell(j).setCellValue(liabilitiesDetails.getTotalTermLiabilities());
+					sheet2.getRow(56).getCell(j).setCellValue(liabilitiesDetails.getOtherNcl());
+					sheet2.getRow(57).getCell(j)
+							.setCellValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
+					sheet2.getRow(58).getCell(j).setCellValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther());
+					sheet2.getRow(59).getCell(j).setCellValue(liabilitiesDetails.getOtherNclLongTermProvisions());
+					sheet2.getRow(60).getCell(j).setCellValue(liabilitiesDetails.getOthers());
+
+					sheet2.getRow(62).getCell(j).setCellValue(liabilitiesDetails.getTotalOutsideLiabilities());
+					sheet2.getRow(64).getCell(j).setCellValue(liabilitiesDetails.getNetWorth());
+					sheet2.getRow(66).getCell(j).setCellValue(liabilitiesDetails.getOrdinarySharesCapital());
+					sheet2.getRow(68).getCell(j).setCellValue(liabilitiesDetails.getShareWarrentsOutstanding());
+					sheet2.getRow(70).getCell(j).setCellValue(liabilitiesDetails.getMinorityInterest());
+					sheet2.getRow(72).getCell(j).setCellValue(liabilitiesDetails.getGeneralReserve());
+					sheet2.getRow(74).getCell(j).setCellValue(liabilitiesDetails.getRevaluationReservse());
+					sheet2.getRow(76).getCell(j).setCellValue(liabilitiesDetails.getOtherReservse());
+					sheet2.getRow(78).getCell(j).setCellValue(liabilitiesDetails.getSurplusOrDeficit());
+					sheet2.getRow(80).getCell(j).setCellValue(liabilitiesDetails.getDeferredTaxLiability());
+					sheet2.getRow(82).getCell(j).setCellValue(liabilitiesDetails.getOthers());
+					sheet2.getRow(84).getCell(j).setCellValue(liabilitiesDetails.getNetWorth());
+					sheet2.getRow(86).getCell(j).setCellValue(liabilitiesDetails.getTotalLiability());
+					j++;
+				}
+
+			temp = fromYear;
+			temp += --j;
+			for (int i = j; temp <= tillYear + addProjected; temp++) {
+				sheet2.getRow(4).getCell(++i).setCellValue(temp);
+			}
+			// Liabilities Ends
+
+			// Asset Starts
+
+			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository
+					.getAssetsDetailsByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(), yearList,"Audited");
+			j = 1;
+			for (AssetsDetails assetsDetails : assetsDetailsList) {
+
+					sheet3.getRow(4).getCell(j).setCellValue(Double.parseDouble(assetsDetails.getYear()));
+					System.out.println(sheet3.getRow(4).getCell(j).getNumericCellValue());
+					// sheet3.getRow(8).getCell(j).setCellValue(assetsDetails.getCashAndBankBalance());
+
+					sheet3.getRow(10).getCell(j).setCellValue(assetsDetails.getInvestments());
+					sheet3.getRow(11).getCell(j).setCellValue(assetsDetails.getGovernmentAndOtherTrustee());
+					sheet3.getRow(14).getCell(j).setCellValue(assetsDetails.getFixedDepositsWithBanks());
+					sheet3.getRow(15).getCell(j).setCellValue(assetsDetails.getReceivableOtherThanDefferred());
+					sheet3.getRow(17).getCell(j).setCellValue(assetsDetails.getExportReceivables());
+					sheet3.getRow(19).getCell(j).setCellValue(assetsDetails.getInstalmentsDeferred());
+					sheet3.getRow(21).getCell(j).setCellValue(assetsDetails.getInventory());
+					sheet3.getRow(23).getCell(j).setCellValue(assetsDetails.getRawMaterial());
+					sheet3.getRow(25).getCell(j).setCellValue(assetsDetails.getRawMaterialImported());
+					sheet3.getRow(26).getCell(j).setCellValue(assetsDetails.getRawMaterialIndegenous());
+					sheet3.getRow(28).getCell(j).setCellValue(assetsDetails.getStockInProcess());
+					sheet3.getRow(30).getCell(j).setCellValue(assetsDetails.getFinishedGoods());
+					sheet3.getRow(32).getCell(j).setCellValue(assetsDetails.getOtherConsumableSpares());
+					sheet3.getRow(33).getCell(j).setCellValue(assetsDetails.getOtherConsumableSparesImported());
+					sheet3.getRow(34).getCell(j).setCellValue(assetsDetails.getOtherConsumableSparesIndegenous());
+					sheet3.getRow(36).getCell(j).setCellValue(assetsDetails.getAdvanceToSupplierRawMaterials());
+					sheet3.getRow(38).getCell(j).setCellValue(assetsDetails.getAdvancePaymentTaxes());
+					sheet3.getRow(40).getCell(j).setCellValue(assetsDetails.getOtherCurrentAssets());
+					sheet3.getRow(42).getCell(j).setCellValue(assetsDetails.getTotalCurrentAssets());
+					sheet3.getRow(44).getCell(j).setCellValue(assetsDetails.getGrossBlock());
+					sheet3.getRow(45).getCell(j).setCellValue(assetsDetails.getLandBuilding());
+					sheet3.getRow(46).getCell(j).setCellValue(assetsDetails.getPlantMachines());
+					sheet3.getRow(51).getCell(j).setCellValue(assetsDetails.getDepreciationToDate());
+					sheet3.getRow(53).getCell(j).setCellValue(assetsDetails.getImpairmentAsset());
+					sheet3.getRow(55).getCell(j).setCellValue(assetsDetails.getNetBlock());
+					// shet1.getRow(59).getCell(j).setCellValue(assetsDetails.getNetWorkingCapital());
+
+					sheet3.getRow(61).getCell(j).setCellValue(assetsDetails.getInvestmentsOrBookDebts());
+					sheet3.getRow(63).getCell(j).setCellValue(assetsDetails.getInvestmentsInSubsidiary());
+					// sheet1.getRow(64).getCell(j).setCellValue(assetsDetails.getInves;
+
+					sheet3.getRow(66).getCell(j).setCellValue(assetsDetails.getAdvanceToSuppliersCapitalGoods());
+					// sheet3.getRow(68).getCell(j).setCellValue(assetsDetails.getDeferredReceviables());
+					sheet3.getRow(70).getCell(j).setCellValue(assetsDetails.getOthers());
+					sheet3.getRow(71).getCell(j).setCellValue(assetsDetails.getOthersPreOperativeExpensesPending());
+					sheet3.getRow(72).getCell(j).setCellValue(assetsDetails.getOthersAssetsInTransit());
+					sheet3.getRow(73).getCell(j).setCellValue(assetsDetails.getOthersOther());
+					sheet3.getRow(75).getCell(j).setCellValue(assetsDetails.getNonConsumableStoreAndSpares());
+					sheet3.getRow(77).getCell(j).setCellValue(assetsDetails.getOtherNonCurrentAssets());
+					sheet3.getRow(79).getCell(j).setCellValue(assetsDetails.getTotalOtherNonCurrentAssets());
+					sheet3.getRow(81).getCell(j).setCellValue(assetsDetails.getIntangibleAssets());
+					sheet3.getRow(82).getCell(j).setCellValue(assetsDetails.getPatents());
+					sheet3.getRow(83).getCell(j).setCellValue(assetsDetails.getGoodWill());
+					sheet3.getRow(84).getCell(j).setCellValue(assetsDetails.getPrelimExpenses());
+					sheet3.getRow(85).getCell(j).setCellValue(assetsDetails.getBadOrDoubtfulExpenses());
+					// sheet1.getRow(86).getCell(j).setCellValue(assetsDetails.getOthers() );
+
+					sheet3.getRow(88).getCell(j).setCellValue(assetsDetails.getTotalAssets());
+					sheet3.getRow(90).getCell(j).setCellValue(assetsDetails.getTangibleNetWorth());
+					sheet3.getRow(92).getCell(j).setCellValue(assetsDetails.getNetWorkingCapital());
+					sheet3.getRow(94).getCell(j).setCellValue(assetsDetails.getCurrentRatio());
+					sheet3.getRow(96).getCell(j).setCellValue(assetsDetails.getTotalOutSideLiability());
+					sheet3.getRow(98).getCell(j).setCellValue(assetsDetails.getTotalTermLiability());
+					j++;
+				}
+
+			// Asset Ends
+			// totalCell = assetsDetailsList.size();
+			temp = fromYear;
+			temp += --j;
+			for (int i = j; temp <= tillYear + addProjected; temp++) {
+				sheet3.getRow(4).getCell(++i).setCellValue(temp);
+			}
+			file = new File(pathname);
+			FileOutputStream fos = new FileOutputStream(file);
+			wb.write(fos);
+			fos.close();
+
+		} catch (IllegalStateException | IOException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return file;
+	}
+
+	public File buildCoCMAExcelFile(String pathname) {
+		File file = null;
+		try {
+
+			String CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cocmafile.location";
+			int addProjected = 8;
+			if (autoFillOneFormDetailRequest.getFromProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
+				CWCMA_EXCEL_FILE_LOCATION = "cw.mca.cocmafile.usl.location ";
+				addProjected = 0;
+			}
+			@SuppressWarnings("resource")
+			Workbook wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(CWCMA_EXCEL_FILE_LOCATION)));
+
+			logger.info("Forming Excel Data");
+			Sheet sheet1 = wb.getSheetAt(0);
+
+			Sheet sheet2 = wb.getSheetAt(1);
+
+			Sheet sheet3 = wb.getSheetAt(2);
+
+			evaluator = wb.getCreationHelper().createFormulaEvaluator();
+			Calendar calendar = Calendar.getInstance();
+			Double tillYear = (double) calendar.get(Calendar.YEAR);
+		
+			Double fromYear = tillYear;
+
+			List<String> yearList = new ArrayList<String>();
+			yearList.add(--fromYear + "");
+			yearList.add(--fromYear + "");
+			yearList.add(--fromYear + "");
+
+			List<ProfitibilityStatementDetail> profitibilityStatementDetailsList = profitibilityStatementDetailRepository
+					.getProfitibilityStatementDetailByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
+							yearList,"Audited");
+			int j = 1;
+			for (ProfitibilityStatementDetail profitibilityStatementDetails : profitibilityStatementDetailsList) {
+
+					sheet1.getRow(4).getCell(j)
+							.setCellValue(Double.parseDouble(profitibilityStatementDetails.getYear()));
+					System.out.println(sheet1.getRow(4).getCell(j).getNumericCellValue());
+
+					sheet1.getRow(6).getCell(j).setCellValue(profitibilityStatementDetails.getSales());
+					sheet1.getRow(7).getCell(j).setCellValue(profitibilityStatementDetails.getSalesExport());
+					sheet1.getRow(8).getCell(j).setCellValue(profitibilityStatementDetails.getSalesDomestic());
+					sheet1.getRow(9).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getLessExciseDutyOrVatOrServiceTax());
+					sheet1.getRow(10).getCell(j).setCellValue(profitibilityStatementDetails.getLessAnyOtherItem());
+					sheet1.getRow(16).getCell(j).setCellValue(profitibilityStatementDetails.getNetSales());
+					sheet1.getRow(17).getCell(j).setCellValue(profitibilityStatementDetails.getOtherOperatingRevenue());
+					sheet1.getRow(23).getCell(j).setCellValue(profitibilityStatementDetails.getGrossOperatingRevenue());
+					sheet1.getRow(25).getCell(j).setCellValue(profitibilityStatementDetails.getOperatingExpenses());
+					sheet1.getRow(26).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getCostRawMaterialConsumed());
+					sheet1.getRow(27).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialImported());
+					sheet1.getRow(28).getCell(j).setCellValue(profitibilityStatementDetails.getRawMaterialIndigenous());
+					sheet1.getRow(29).getCell(j).setCellValue(profitibilityStatementDetails.getPurchasesStockTnTrade());
+					sheet1.getRow(30).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getIncreaseOrDecreaseInInventoryFg());
+					sheet1.getRow(31).getCell(j).setCellValue(profitibilityStatementDetails.getClosingStockFg());
+					sheet1.getRow(32).getCell(j).setCellValue(profitibilityStatementDetails.getOpeningStockOfFg());
+					sheet1.getRow(33).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getIncreaseOrDecreaseInInventoryWip());
+					sheet1.getRow(34).getCell(j).setCellValue(profitibilityStatementDetails.getClosingStockWip());
+					sheet1.getRow(35).getCell(j).setCellValue(profitibilityStatementDetails.getOpeningStockWip());
+					sheet1.getRow(36).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getEmployeeBenefitExpenses());
+					sheet1.getRow(37).getCell(j).setCellValue(profitibilityStatementDetails.getFactoryWages());
+					sheet1.getRow(38).getCell(j).setCellValue(profitibilityStatementDetails.getPersonnelCost());
+					sheet1.getRow(39).getCell(j).setCellValue(profitibilityStatementDetails.getOtherExpenses());
+					sheet1.getRow(40).getCell(j).setCellValue(profitibilityStatementDetails.getPowerAndFuel());
+					sheet1.getRow(41).getCell(j).setCellValue(profitibilityStatementDetails.getStoreAndSpares());
+					sheet1.getRow(42).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getStoreAndSparesImported());
+					sheet1.getRow(43).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getStoreAndSparesIndeigenous());
+					sheet1.getRow(44).getCell(j).setCellValue(profitibilityStatementDetails.getGeneralAdminExpenses());
+					sheet1.getRow(45).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getSellingDistributionExpenses());
+					sheet1.getRow(46).getCell(j).setCellValue(profitibilityStatementDetails.getOtherPlsSpecify());
+					sheet1.getRow(47).getCell(j).setCellValue(profitibilityStatementDetails.getExpensesCapitalised());
+					sheet1.getRow(52).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeDepreciation());
+					sheet1.getRow(54).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getDepreciationAndAmortisation());
+					sheet1.getRow(55).getCell(j).setCellValue(profitibilityStatementDetails.getDepreciation());
+					sheet1.getRow(56).getCell(j).setCellValue(profitibilityStatementDetails.getAmortisation());
+					sheet1.getRow(58).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeInterestAndTax());
+					sheet1.getRow(60).getCell(j).setCellValue(profitibilityStatementDetails.getFinanceCost());
+					sheet1.getRow(62).getCell(j)
+							.setCellValue(profitibilityStatementDetails.getOperatingProfitBeforeTax());
+					sheet1.getRow(64).getCell(j).setCellValue(profitibilityStatementDetails.getNonOperatingIncome());
+					sheet1.getRow(65).getCell(j).setCellValue(profitibilityStatementDetails.getNonOperatingExpenses());
+					sheet1.getRow(66).getCell(j).setCellValue(profitibilityStatementDetails.getExtraordinaryItems());
+					sheet1.getRow(72).getCell(j).setCellValue(profitibilityStatementDetails.getProfitBeforeTax());
+					sheet1.getRow(74).getCell(j).setCellValue(profitibilityStatementDetails.getProvisionForTax());
+					sheet1.getRow(75).getCell(j).setCellValue(profitibilityStatementDetails.getCurrentTax());
+					sheet1.getRow(76).getCell(j).setCellValue(profitibilityStatementDetails.getDeferredTax());
+					sheet1.getRow(78).getCell(j).setCellValue(profitibilityStatementDetails.getProfitAfterTax());
+					sheet1.getRow(80).getCell(j).setCellValue(profitibilityStatementDetails.getDividend());
+					sheet1.getRow(81).getCell(j).setCellValue(profitibilityStatementDetails.getAlreadyPaid());
+					sheet1.getRow(82).getCell(j).setCellValue(profitibilityStatementDetails.getBsProvision());
+					sheet1.getRow(84).getCell(j).setCellValue(profitibilityStatementDetails.getRetainedProfit());
+
+					j++;
+				
+			}
+
+			Double temp = fromYear;
+			temp += --j;
+			for (int i = j; temp <= tillYear + addProjected; temp++) {
+				sheet1.getRow(4).getCell(++i).setCellValue(temp);
+				System.out.println(sheet1.getRow(4).getCell(i).getNumericCellValue());
+			}
+
+			List<BalanceSheetDetail> balanceSheetDetailsList = balanceSheetDetailRepository
+					.getBalanceSheetDetailByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
+							yearList,"Audited");
+			j = 1;
+			for (BalanceSheetDetail balanceSheetDetail : balanceSheetDetailsList) {
+
+									sheet2.getRow(7).getCell(j).setCellValue(balanceSheetDetail.getOrdinaryShareCapital());
+					sheet2.getRow(8).getCell(j).setCellValue(balanceSheetDetail.getPreferenceShareCapital());
+					sheet2.getRow(9).getCell(j).setCellValue(balanceSheetDetail.getMoneyReceivedAgainstShareWarrants());
+					sheet2.getRow(10).getCell(j).setCellValue(balanceSheetDetail.getShareApplicationPendingAllotment());
+					sheet2.getRow(11).getCell(j).setCellValue(balanceSheetDetail.getMinorityInterest());
+					sheet2.getRow(13).getCell(j).setCellValue(balanceSheetDetail.getReservesAndSurplus());
+					sheet2.getRow(14).getCell(j).setCellValue(balanceSheetDetail.getCapitalReserve());
+					sheet2.getRow(15).getCell(j).setCellValue(balanceSheetDetail.getCapitalRedemptionReserve());
+					sheet2.getRow(16).getCell(j).setCellValue(balanceSheetDetail.getSecuritiesPremiumAccount());
+					sheet2.getRow(17).getCell(j).setCellValue(balanceSheetDetail.getDebentureRedemptionReserve());
+					sheet2.getRow(18).getCell(j).setCellValue(balanceSheetDetail.getRevaluationReserve());
+					sheet2.getRow(19).getCell(j).setCellValue(balanceSheetDetail.getContingencyReserve());
+					sheet2.getRow(20).getCell(j)
+							.setCellValue(balanceSheetDetail.getForeignCurrencyTranslationReserve());
+					sheet2.getRow(21).getCell(j).setCellValue(balanceSheetDetail.getHedgingReserve());
+					sheet2.getRow(22).getCell(j).setCellValue(balanceSheetDetail.getGeneralReserve());
+					sheet2.getRow(23).getCell(j).setCellValue(balanceSheetDetail.getSurplusInProfitAndLossAccount());
+					sheet2.getRow(24).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					sheet2.getRow(30).getCell(j).setCellValue(balanceSheetDetail.getOtherNonCurrentLiability());
+					sheet2.getRow(31).getCell(j).setCellValue(balanceSheetDetail.getLongTermBorrowing());
+					sheet2.getRow(32).getCell(j).setCellValue(balanceSheetDetail.getDebentures());
+					sheet2.getRow(33).getCell(j).setCellValue(balanceSheetDetail.getTermLoans());
+					sheet1.getRow(34).getCell(j).setCellValue(balanceSheetDetail.getTermLoansSecured());
+					sheet2.getRow(35).getCell(j).setCellValue(balanceSheetDetail.getTermLoansUnsecured());
+					sheet2.getRow(36).getCell(j).setCellValue(balanceSheetDetail.getUnsecuredLoansFromPromoters());
+					sheet2.getRow(37).getCell(j).setCellValue(balanceSheetDetail.getDeferredPaymentCredits());
+					sheet2.getRow(38).getCell(j).setCellValue(balanceSheetDetail.getLongTermProvisions());
+					sheet2.getRow(39).getCell(j).setCellValue(balanceSheetDetail.getTermDeposits());
+					sheet2.getRow(40).getCell(j).setCellValue(balanceSheetDetail.getDeferredTaxLiability());
+					sheet2.getRow(41).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					sheet2.getRow(42).getCell(j).setCellValue(balanceSheetDetail.getUnsecuredLoansFromOthers());
+					sheet2.getRow(43).getCell(j).setCellValue(balanceSheetDetail.getOtherTermLiability());
+					// sheet2.getRow(47).getCell(j).setCellValue(balanceSheetDetail.getCurrent);
+
+					sheet2.getRow(48).getCell(j).setCellValue(balanceSheetDetail.getShortTermBorrowings());
+					sheet2.getRow(49).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesSecured());
+					sheet2.getRow(50).getCell(j).setCellValue(balanceSheetDetail.getCurrentLiabilitiesUnsecured());
+					sheet2.getRow(51).getCell(j).setCellValue(balanceSheetDetail.getTradePayables());
+					sheet2.getRow(52).getCell(j).setCellValue(balanceSheetDetail.getAdvanceFromCustomers());
+					sheet2.getRow(53).getCell(j).setCellValue(balanceSheetDetail.getProvisionForTax());
+					sheet2.getRow(54).getCell(j).setCellValue(balanceSheetDetail.getDividendPayable());
+					sheet2.getRow(55).getCell(j).setCellValue(balanceSheetDetail.getStatutoryLiabilityDues());
+					sheet2.getRow(56).getCell(j).setCellValue(balanceSheetDetail.getDepositsAndInstallments());
+					sheet2.getRow(57).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					// sheet2.getRow(63).getCell(j).setCellValue(balanceSheetDetail.getTo);
+
+					// sheet2.getRow(65).getCell(j).setCellValue(balanceSheetDetail.getOthersNonCurrentAssets());
+
+					sheet2.getRow(66).getCell(j).setCellValue(balanceSheetDetail.getFixedAssets());
+					sheet2.getRow(67).getCell(j).setCellValue(balanceSheetDetail.getGrossFixedAssets());
+					sheet2.getRow(68).getCell(j).setCellValue(balanceSheetDetail.getDepreciationToDate());
+					sheet2.getRow(69).getCell(j).setCellValue(balanceSheetDetail.getImpairmentsOfAssests());
+					sheet2.getRow(70).getCell(j).setCellValue(balanceSheetDetail.getIntangibleAssets());
+					// sheet2.getRow(77).getCell(j).setCellValue(balanceSheetDetail.get);
+
+					sheet2.getRow(78).getCell(j).setCellValue(balanceSheetDetail.getCapitalAdvance());
+					sheet2.getRow(79).getCell(j).setCellValue(balanceSheetDetail.getNonCurrentInvestments());
+					sheet2.getRow(80).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInSubsidiaries());
+					sheet2.getRow(81).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInAssociates());
+					sheet2.getRow(82).getCell(j).setCellValue(balanceSheetDetail.getInvestmentInQuoted());
+					sheet2.getRow(83).getCell(j).setCellValue(balanceSheetDetail.getShortTermLoansAndAdvances());
+					sheet2.getRow(84).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					sheet2.getRow(85).getCell(j).setCellValue(balanceSheetDetail.getPreOperativeExpensesPending());
+					sheet2.getRow(86).getCell(j).setCellValue(balanceSheetDetail.getAssetsInTransit());
+					// sheet2.getRow(91).getCell(j).setCellValue(balanceSheetDetail.getCurrentS);
+
+					sheet2.getRow(92).getCell(j).setCellValue(balanceSheetDetail.getCurrentInvestments());
+					sheet2.getRow(93).getCell(j).setCellValue(balanceSheetDetail.getGovernmentAndOtherTrustee());
+					sheet2.getRow(94).getCell(j).setCellValue(balanceSheetDetail.getFixedDepositsWithBanks());
+					sheet2.getRow(95).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					sheet2.getRow(100).getCell(j).setCellValue(balanceSheetDetail.getInventory());
+					sheet2.getRow(101).getCell(j).setCellValue(balanceSheetDetail.getRawMaterial());
+					sheet2.getRow(102).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialImported());
+					sheet2.getRow(103).getCell(j).setCellValue(balanceSheetDetail.getRawMaterialIndegenous());
+					sheet2.getRow(104).getCell(j).setCellValue(balanceSheetDetail.getStockInProcess());
+					sheet2.getRow(105).getCell(j).setCellValue(balanceSheetDetail.getFinishedGoods());
+					sheet2.getRow(106).getCell(j).setCellValue(balanceSheetDetail.getOtherConsumablesSpares());
+					sheet2.getRow(107).getCell(j).setCellValue(balanceSheetDetail.getOtherConsumablesSparesImported());
+					sheet2.getRow(108).getCell(j)
+							.setCellValue(balanceSheetDetail.getOtherConsumablesSparesIndegenous());
+					sheet2.getRow(109).getCell(j).setCellValue(balanceSheetDetail.getTradeReceivables());
+					sheet2.getRow(110).getCell(j).setCellValue(balanceSheetDetail.getExports());
+					sheet2.getRow(111).getCell(j).setCellValue(balanceSheetDetail.getOtherThanExports());
+					sheet2.getRow(112).getCell(j).setCellValue(balanceSheetDetail.getCashAndCashEquivalents());
+					sheet2.getRow(113).getCell(j).setCellValue(balanceSheetDetail.getShortTermLoansAndAdvances());
+					sheet2.getRow(118).getCell(j).setCellValue(balanceSheetDetail.getOthersPlsSpecify());
+					sheet2.getRow(124).getCell(j).setCellValue(balanceSheetDetail.getDeferredTaxAsset());
+					sheet2.getRow(125).getCell(j).setCellValue(balanceSheetDetail.getMiscExpences());
+					// sheet2.getRow(127).getCell(j).setCellValue(balanceSheetDetail.get);
+
+					j++;
+				
+			}
+			temp = fromYear;
+			temp += --j;
+			for (int i = j; temp <= tillYear + addProjected; temp++) {
+				sheet2.getRow(4).getCell(++i).setCellValue(temp);
+			}
+
+			file = new File(pathname);
+			FileOutputStream fos = new FileOutputStream(file);
+			wb.write(fos);
+			fos.close();
+
+		} catch (IllegalStateException | IOException | InvalidFormatException e) {
+			logger.error("Error while forming data retriving empty template");
+			e.printStackTrace();
+			/*
+			 * return new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(
+			 * USL_CWCMA_EXCEL_FILE_LOCATION)));
+			 */
+		}
+		return file;
 	}
 
 }

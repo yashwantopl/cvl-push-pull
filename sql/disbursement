@@ -1,0 +1,23 @@
+CREATE TABLE `loan_applications`.`disbursement_details` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `proposal_id` bigint(20) unsigned DEFAULT NULL,
+  `disbursement_date` datetime DEFAULT NULL,
+  `transaction_no` varchar(100) DEFAULT NULL,
+  `mode` int(2) DEFAULT NULL,
+  `disburse_amount` decimal(19,2) DEFAULT NULL,
+  `tenure` int(10) DEFAULT NULL,
+  `interest_rate` double DEFAULT NULL,
+  `remark` varchar(200) DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `proposal_id` (`proposal_id`),
+  CONSTRAINT `disbursement_details_ibfk_1` FOREIGN KEY (`proposal_id`) REFERENCES `proposal_details` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `loan_applications`.`proposal_status_master` VALUES (11,'Disbursed','DISBURSED','2018-01-05 11:26:18','2018-01-05 11:26:22',NULL,NULL,''),(12,'ToDisbursed','TODISBURSED','2018-01-05 11:26:18','2018-01-05 11:26:18',NULL,NULL,'');
+

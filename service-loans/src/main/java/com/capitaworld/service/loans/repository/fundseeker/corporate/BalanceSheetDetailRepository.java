@@ -30,4 +30,8 @@ public interface BalanceSheetDetailRepository extends JpaRepository<BalanceSheet
 	
 	@Query("select o from BalanceSheetDetail o where o.applicationId.id = :applicationId and o.isActive = true")
 	public List<BalanceSheetDetail> getByApplicationId(@Param("applicationId") Long applicationId);
+
+	@Query("select o from BalanceSheetDetail o where o.applicationId.id = :applicationId and o.isActive = true and o.year IN :yearList and o.financialYearlyStatement =:financialYearlyStatement ORDER BY o.year ASC" )
+	public List<BalanceSheetDetail> getBalanceSheetDetailByApplicationId(@Param("applicationId") Long applicationId ,@Param("yearList") List<String> yearList, @Param("financialYearlyStatement") String financialYearlyStatement);
+
 }
