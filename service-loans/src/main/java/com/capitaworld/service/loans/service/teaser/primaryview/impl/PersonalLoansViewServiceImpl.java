@@ -92,9 +92,13 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				profileViewPLResponse.setLastName(applicantDetail.getLastName());
 				profileViewPLResponse.setMaritalStatus(applicantDetail.getStatusId() != null ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null);
 				profileViewPLResponse.setMiddleName(applicantDetail.getMiddleName());
-				profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome() : 0));
 				profileViewPLResponse.setNatureOfOccupation(OccupationNature.getById(applicantDetail.getOccupationId()).getValue());
-				
+
+				profileViewPLResponse.setBonusPerAnnum(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBonusPerAnnum()) ? applicantDetail.getBonusPerAnnum().toString() : "-");
+				profileViewPLResponse.setIncentivePerAnnum(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIncentivePerAnnum()) ? applicantDetail.getIncentivePerAnnum().toString() : "-");
+				profileViewPLResponse.setOtherIncome(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherIncome()) ? applicantDetail.getOtherIncome().toString() : "-");
+				profileViewPLResponse.setOtherInvestment(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOtherInvestment()) ? applicantDetail.getOtherInvestment().toString() : "-");
+				profileViewPLResponse.setTaxPaid(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getTaxPaidLastYear()) ? applicantDetail.getTaxPaidLastYear().toString() : "-");
 				//Office Address Data
 				AddressResponse officeAddress = new AddressResponse();
 
@@ -208,6 +212,10 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						profileViewPLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousJobYear()) ?  applicantDetail.getPreviousJobYear().toString() : "-");
 						profileViewPLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersName()) ?  applicantDetail.getPreviousEmployersName() : "-");
 						profileViewPLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPreviousEmployersAddress()) ?  applicantDetail.getPreviousEmployersAddress() : "-");
+						profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+						profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+						profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome().toString() : 0));
+
 						break;
 					case 3 : //Business
 					case 4 : //Self Employed
@@ -228,7 +236,8 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 						profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 						profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
-						
+						profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getPatCurrentYear() != null ? applicantDetail.getPatCurrentYear().toString() : 0));
+
 						break;
 					case 5 ://Self Employed Professional
 						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSelfEmployedOccupationId())){
@@ -247,6 +256,8 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 						profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 						profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
+						profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getPatCurrentYear() != null ? applicantDetail.getPatCurrentYear().toString() : 0));
+
 						break;
 					case 6://Agriculturist
 						if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getLandSize())){
@@ -264,8 +275,15 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationPreviousYear().toString()): "-");
 						profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( applicantDetail.getRemunerationCurrentYear().toString()): "-");
 						profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(applicantDetail.getBusinessStartDate()) : "-");
+						profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getPatCurrentYear() != null ? applicantDetail.getPatCurrentYear().toString() : 0));
+
 						break;
-					default:
+					case 7://Pensioner
+						profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( applicantDetail.getMonthlyLoanObligation().toString()): "-");
+						profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getModeOfReceipt()) ? ModeOfRecipt.getById(applicantDetail.getModeOfReceipt()).getValue() : "-");
+						profileViewPLResponse.setMonthlyIncome(String.valueOf(applicantDetail.getMonthlyIncome() != null ? applicantDetail.getMonthlyIncome().toString() : 0));
+						break;
+						default:
 						break;
 					}
 				}

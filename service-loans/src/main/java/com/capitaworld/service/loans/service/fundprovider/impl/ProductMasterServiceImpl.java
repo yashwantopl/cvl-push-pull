@@ -30,15 +30,12 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
@@ -687,5 +684,28 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		return false;
 	}
+
+	@Override
+	public List<ProductMasterRequest> getProductByOrgId(Long orgId) {
+		logger.info("Start getProductByOrgId()");
+		List<Integer> productIds = productMasterRepository.getProductsByOrgId(orgId);
+		logger.info("Product Ids =={}======>Provided By====>{}",productIds,orgId);
+		List<ProductMasterRequest> response = new ArrayList<>(productIds.size());
+		for(Integer productId  : productIds) {
+			com.capitaworld.service.loans.utils.CommonUtils.LoanType type = CommonUtils.LoanType.getType(productId.intValue());
+			if(CommonUtils.isObjectNullOrEmpty(type)) {
+				continue;
+			}
+			ProductMasterRequest request = new ProductMasterRequest();
+			request.setProductCode(type.getCode(false));
+			request.setProductId(productId);
+			request.setName(type.getName());
+			response.add(request);
+		}
+		logger.info("End getProductByOrgId()");
+		return response;
+	}
+	
+	
 
 }

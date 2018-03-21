@@ -56,7 +56,13 @@ public class HomeLoanResponse implements Serializable {
     
     private String propertyUse;
 	private String rentalIncome;
-    
+
+	private String oldPropMonth;
+	private String oldPropYear;
+	private String originalValProp;
+	private String marketValProp;
+	private String regValProp;
+
     private List<Object> profileImage;
     
 	public List<Object> getProfileImage() {
@@ -264,7 +270,44 @@ public class HomeLoanResponse implements Serializable {
 	public void setRentalIncome(String rentalIncome) {
 		this.rentalIncome = rentalIncome;
 	}
-	
-	
 
+	public String getOldPropMonth() {
+		return oldPropMonth;
+	}
+
+	public void setOldPropMonth(String oldPropMonth) {
+		this.oldPropMonth = oldPropMonth;
+	}
+
+	public String getOldPropYear() {
+		return oldPropYear;
+	}
+
+	public void setOldPropYear(String oldPropYear) {
+		this.oldPropYear = oldPropYear;
+	}
+
+	public String getOriginalValProp() {
+		return originalValProp;
+	}
+
+	public void setOriginalValProp(String originalValProp) {
+		this.originalValProp = originalValProp;
+	}
+
+	public String getMarketValProp() {
+		return marketValProp;
+	}
+
+	public void setMarketValProp(String marketValProp) {
+		this.marketValProp = marketValProp;
+	}
+
+	public String getRegValProp() {
+		return regValProp;
+	}
+
+	public void setRegValProp(String regValProp) {
+		this.regValProp = regValProp;
+	}
 }
