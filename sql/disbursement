@@ -18,3 +18,6 @@ CREATE TABLE `loan_applications`.`disbursement_details` (
   CONSTRAINT `disbursement_details_ibfk_1` FOREIGN KEY (`proposal_id`) REFERENCES `proposal_details` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+
+INSERT INTO `loan_applications`.`proposal_status_master` VALUES (11,'Disbursed','DISBURSED','2018-01-05 11:26:18','2018-01-05 11:26:22',NULL,NULL,''),(12,'ToDisbursed','TODISBURSED','2018-01-05 11:26:18','2018-01-05 11:26:18',NULL,NULL,'');
+
