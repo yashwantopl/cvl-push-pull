@@ -367,6 +367,16 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
+		try{
+			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)));
+		}catch(DocumentException e){
+			e.printStackTrace();
+		}
+		try{
+			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)));
+		}catch(DocumentException e){
+			e.printStackTrace();
+		}
 		try {
 			response.setCertificateList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION)));
 		} catch (DocumentException e) {
