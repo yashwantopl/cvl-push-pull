@@ -52,7 +52,9 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer date;
 	private Integer month;
 	private Integer year;
-	
+
+	//new requirement for SB
+	private Integer modeOfReceipt;
 	//new requirement cw-384
 	private Double monthlyLoanObligation;
 	private Double patPreviousYear;
@@ -645,7 +647,11 @@ public class RetailApplicantRequest implements Serializable {
 		this.isSpouseEmployed = isSpouseEmployed;
 	}
 
-	
-	
-	
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

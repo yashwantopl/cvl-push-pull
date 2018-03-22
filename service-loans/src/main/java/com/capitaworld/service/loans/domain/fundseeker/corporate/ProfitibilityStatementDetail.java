@@ -82,6 +82,9 @@ public class ProfitibilityStatementDetail implements Serializable {
 	@Column(name = "extraordinary_items")
 	private double extraordinaryItems;
 
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
+	
 	@Column(name = "factory_wages")
 	private double factoryWages;
 
@@ -495,6 +498,15 @@ public class ProfitibilityStatementDetail implements Serializable {
 
 	public void setExtraordinaryItems(double extraordinaryItems) {
 		this.extraordinaryItems = extraordinaryItems;
+	}
+
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
 	}
 
 	public double getFactoryWages() {

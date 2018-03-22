@@ -364,9 +364,11 @@ public class IrrServiceImpl implements IrrService{
 		financialInputRequest.setNoOfMonthFy(12.0);
 		// -------------------------------------------------------THIRD year data-------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 3 YR========================================================
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);		
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
-		
+
+
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 			operatingStatementDetails = new OperatingStatementDetails();
 		}
@@ -1179,7 +1181,8 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		ProfitibilityStatementDetail profitibilityStatementDetail = new ProfitibilityStatementDetail();
 		BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);	
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
 		
@@ -2113,6 +2116,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 			PrimaryTermLoanDetail primaryTermLoanDetail = null;
 			primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);			
 			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
 			
 			if(isCmaUploaded){
 				AssetsDetails assetsDetails = new AssetsDetails();

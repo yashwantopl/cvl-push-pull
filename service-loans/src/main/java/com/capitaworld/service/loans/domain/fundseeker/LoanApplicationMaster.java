@@ -195,7 +195,19 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "is_accept_consent")
 	private Boolean isAcceptConsent;
 	
+	@Column(name = "approved_date")
+	private Date approvedDate;
 	
+	
+	
+
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
 
 	public Long getDdrStatusId() {
 		return ddrStatusId;

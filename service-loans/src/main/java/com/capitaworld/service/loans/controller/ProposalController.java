@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,28 @@ public class ProposalController {
 		}
 		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);
 		return new ResponseEntity<List<FundProviderProposalDetails>>(proposalDetailsList,HttpStatus.OK);
+		
+	}
+	
+	@RequestMapping(value = "/saveDisbursementDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Boolean> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		// request must not be null
+		Long userId = null;
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
+			userId = clientId;
+		} else {
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+		}
+		request.setUserId(userId);
+		Boolean status=proposalService.saveDisbursementDetails(request, userId);
+		if(status)
+		return new ResponseEntity<Boolean>(status,HttpStatus.OK);
+		else
+		return new ResponseEntity<Boolean>(status,HttpStatus.BAD_REQUEST);
 		
 	}
 	

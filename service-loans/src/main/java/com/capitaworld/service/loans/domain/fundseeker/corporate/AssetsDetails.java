@@ -69,6 +69,9 @@ public class AssetsDetails implements Serializable {
 
 	@Column(name="export_receivables")
 	private Double exportReceivables;
+	
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
 
 	@Column(name="finished_goods")
 	private Double finishedGoods;
@@ -436,6 +439,14 @@ public class AssetsDetails implements Serializable {
 
 	public void setExportReceivables(Double exportReceivables) {
 		this.exportReceivables = exportReceivables;
+	}
+	
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
 	}
 
 	public Double getFinishedGoods() {

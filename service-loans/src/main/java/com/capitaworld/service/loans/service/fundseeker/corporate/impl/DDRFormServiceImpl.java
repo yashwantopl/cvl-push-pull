@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -287,6 +288,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRAuthorizedSignDetails authorizedSignDetails : listByDDRFormId) {
 					DDRAuthorizedSignDetailsRequest response = new DDRAuthorizedSignDetailsRequest();
 					BeanUtils.copyProperties(authorizedSignDetails, response);
+					DDRAuthorizedSignDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -338,6 +340,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			if(!CommonUtils.isListNullOrEmpty(objList)) {
 				for(DDRCreditCardDetails obj : objList) {
 					DDRCreditCardDetailsRequest response = new DDRCreditCardDetailsRequest();
+					DDRCreditCardDetailsRequest.printFields(response);
 					BeanUtils.copyProperties(obj, response);
 					responseList.add(response);
 				}
@@ -391,6 +394,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRCreditorsDetails obj : objList) {
 					DDRCreditorsDetailsRequest response = new DDRCreditorsDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					DDRCreditorsDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -444,6 +448,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDROfficeDetails obj : objList) {
 					DDROfficeDetailsRequest response = new DDROfficeDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					DDROfficeDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -498,6 +503,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDROtherBankLoanDetails obj : objList) {
 					DDROtherBankLoanDetailsRequest response = new DDROtherBankLoanDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					DDROtherBankLoanDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -552,6 +558,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRRelWithDbsDetails obj : objList) {
 					DDRRelWithDbsDetailsRequest response = new DDRRelWithDbsDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					DDRRelWithDbsDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -605,6 +612,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				for(DDRVehiclesOwnedDetails obj : objList) {
 					DDRVehiclesOwnedDetailsRequest response = new DDRVehiclesOwnedDetailsRequest();
 					BeanUtils.copyProperties(obj, response);
+					DDRVehiclesOwnedDetailsRequest.printFields(response);
 					responseList.add(response);
 				}
 			}
@@ -670,6 +678,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 					     response.setLastToLastYearString(CommonUtils.checkString(obj.getLastToLastYear()));
 					     response.setLastYearString(CommonUtils.checkString(obj.getLastYear()));
 					     response.setProvisionalYearString(CommonUtils.checkString(obj.getProvisionalYear()));
+					     DDRFinancialSummaryRequest.printFields(response);
 						responseList.add(response);
 					}
 					return responseList;
@@ -819,6 +828,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
@@ -918,6 +929,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				promoBackResp.setAchievements(promBackReq.getAchivements());
 				promoBackResp.setPanNo(promBackReq.getPanNo().toUpperCase());
 				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() : null )+ " " + promBackReq.getPromotorsName());
+				PromotorBackgroundDetailResponse.printFields(promoBackResp);
 				promoBackRespList.add(promoBackResp);
 			}
 			response.setPromoBackRespList(promoBackRespList);
@@ -935,6 +947,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				ownershipResp = new OwnershipDetailResponse();
 				BeanUtils.copyProperties(ownershipReq, ownershipResp);
 				ownershipResp.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipReq.getShareHoldingCategoryId()).getValue());
+				OwnershipDetailResponse.printFields(ownershipReq);
 				ownershipRespList.add(ownershipResp);
 			}
 			response.setOwnershipRespList(ownershipRespList);
@@ -967,6 +980,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 						e.printStackTrace();
 					}	
 				}
+				FinancialArrangementsDetailResponse.printFields(fincArragDetailResp);
 				fincArrngDetailResList.add(fincArragDetailResp);
 			}
 			response.setFincArrngDetailResList(fincArrngDetailResList);
@@ -1019,6 +1033,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			for(ReferencesRetailDetail referencesRetail : referencesRetailList) {
 				referencesResponse = new ReferenceRetailDetailsRequest();
 				BeanUtils.copyProperties(referencesRetail, referencesResponse);
+				ReferenceRetailDetailsRequest.printFields(referencesResponse);
 				referencesResponseList.add(referencesResponse);
 			}
 			response.setReferencesResponseList(referencesResponseList);
@@ -1786,6 +1801,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	        workingCapitalCycle.setLastToLastYearString(totalSalesResponse.getLastToLastYear() > 0 
 	        		?CommonUtils.checkString( CommonUtils.checkDouble((avgWorkingCapital2016 / totalSalesResponse.getLastToLastYear()) * 356) ): "0.00");
 	        workingCapitalCycle.setDiffPvsnlAndLastYearString(calculateFinancialSummaryString(workingCapitalCycle.getProvisionalYear(),workingCapitalCycle.getLastYear()));
+	        DDRCMACalculationResponse.printFields(workingCapitalCycle);
 	        responseList.add(workingCapitalCycle);
 		} catch (Exception e) {
 			logger.error("DDR ===================> Throw Exception While Get CO ACt and CMA Details -----application----->"+applicationId);
@@ -2257,6 +2273,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("DDR==============> Throw Exception while save document flag");
 			e.printStackTrace();
 		}
+
 		return 0L;
 	}
 
