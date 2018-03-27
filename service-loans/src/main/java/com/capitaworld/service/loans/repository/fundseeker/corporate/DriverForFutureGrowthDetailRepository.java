@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DriverForFutureGrowthDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
 
 import java.util.List;
 
@@ -29,4 +30,6 @@ public interface DriverForFutureGrowthDetailRepository extends JpaRepository<Dri
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.DriverForFutureGrowthResponse(a.firstString,a.secondString,a.thirdString,a.forthString) from DriverForFutureGrowthDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<DriverForFutureGrowthResponse> listByApplicationId(@Param("applicationId") Long applicationId);
+	
+	public List<DriverForFutureGrowthDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

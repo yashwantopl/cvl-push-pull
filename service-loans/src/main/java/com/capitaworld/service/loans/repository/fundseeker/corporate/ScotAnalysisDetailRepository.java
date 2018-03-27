@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ScotAnalysisDetail;
 import com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse;
 
@@ -29,5 +30,7 @@ public interface ScotAnalysisDetailRepository extends JpaRepository<ScotAnalysis
 	
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse(a.	concernsDetails, a.concernsMeasure, a.opportunitiesDetials, a.strengthDetails, a.weaknessDetials, a.weaknessMeasure) from ScotAnalysisDetail a where a.applicationId.id= :applicationId and isActive=true")
 	 public List<ScotAnalysisDetailResponse> listByApplicationId(@Param("applicationId")Long applicationId);
+	
+	public List<ScotAnalysisDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 
 }
