@@ -7,13 +7,11 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,10 +119,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOf
 import com.capitaworld.service.loans.repository.fundseeker.retail.BankAccountHeldDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -137,7 +133,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	private CorporateApplicantDetailRepository applicantRepository;
 	@Autowired
 	private PrimaryTermLoanDetailRepository primaryTLRepository;
-
 	@Autowired
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	@Autowired
@@ -1847,6 +1842,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				if (response != null && (response.getStatus() == 200)) {
 					res = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) obj,
 							StorageDetailsResponse.class);
+					if(isExcel(productmappingId.intValue()))
 					readAndSaveExcelData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, productmappingId,
 							corporateApplicantDetailTo.getApplicationId().getId(), res.getId(), userId);
 				}
@@ -2298,5 +2294,42 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			dprUserDataDetailTo.setModifiedDate(new Date());
 			dprUserDataDetailRepository.save(dprUserDataDetailTo);
 		}
+	}
+
+	public Boolean isExcel(int prodoctMappingId) {
+		Boolean flag = false;
+		switch (prodoctMappingId) {
+		case DocumentAlias.TL_DPR_OUR_FORMAT:
+			flag = true;
+			break;
+		case DocumentAlias.TL_DPR_YOUR_FORMAT :
+			flag = true;
+			break;
+		case DocumentAlias.TL_CMA:
+			flag = true;
+			break;
+		case DocumentAlias.TL_COMPANY_ACT:
+			flag = true;
+			break;
+		case DocumentAlias.WC_DPR_OUR_FORMAT:
+			flag = true;
+			break;
+		case DocumentAlias.WC_DPR_YOUR_FORMAT :
+			flag = true;
+			break;
+		case DocumentAlias.WC_CMA:
+			flag = true;
+			break;
+		case DocumentAlias.WC_COMPANY_ACT:
+			flag = true;
+			break;
+		case DocumentAlias.USL_CMA:
+			flag = true;
+			break;
+		case DocumentAlias.USL_COMPANY_ACT:
+			flag = true;
+			break;
+		}
+		return flag;
 	}
 }
