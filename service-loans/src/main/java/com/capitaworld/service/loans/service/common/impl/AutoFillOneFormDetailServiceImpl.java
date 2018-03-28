@@ -700,7 +700,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			PrimaryWorkingCapitalLoanDetail workingCapitalLoanDetailTo = primaryWCRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (workingCapitalLoanDetailTo == null) {
-				System.out.println("WC application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryWCToWC()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(workingCapitalLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
@@ -711,7 +711,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 
 		} catch (NullPointerException e) {
-			System.out.println("Working capital detail not exist");
+			logger.error("NullPointer Exception in savePrimaryWCToWC()");
 			e.printStackTrace();
 			throw e;
 		}
@@ -729,8 +729,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			logger.info("Get PrimaryTermLoanDetail of From application ====> "
 					+ autoFillOneFormDetailRequest.getFromApplicationId());
 			if (primaryTermLoanDetailTo == null) {
-				logger.error("Throw Exception PrimaryTermLoanDetail not available ");
-				System.out.println("TL application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryWCToTL()");
+
 				throw new NullPointerException();
 			}
 			// build
@@ -743,7 +743,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			logger.info("Sucessfully save PrimaryTermLoanDetail in To application Id"
 					+ corporateApplicantDetailTo.getApplicationId());
 		} catch (NullPointerException e) {
-			logger.error("PrimaryTermLoanDetail not exist ");
+			logger.error("NullPointer Exception in savePrimaryWCToTL()");
+
 			e.printStackTrace();
 			throw e;
 		}
@@ -758,7 +759,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetailTo = primaryUnsecuredLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (primaryUnsecuredLoanDetailTo == null) {
-				System.out.println("USL application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryWCToUSL()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetailFrom, primaryUnsecuredLoanDetailTo,
@@ -769,8 +770,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryWCToUSL()");
+
 			e.printStackTrace();
 			throw e;
 
@@ -787,7 +788,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		try {
 			if (primaryTermLoanDetailTo == null) {
-				System.out.println("TL application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryTLtoTL()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
@@ -796,8 +797,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryTLtoTL()");
 			e.printStackTrace();
 			throw e;
 
@@ -815,7 +815,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		try {
 			if (workingCapitalLoanDetailTo == null) {
-				System.out.println("WC application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryTLtoWC()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryTermLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
@@ -824,8 +824,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryTLtoWC()");
+
 			e.printStackTrace();
 			throw e;
 
@@ -842,7 +842,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		try {
 			if (primaryUnsecuredLoanDetailTo == null) {
-				System.out.println("USL application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryTLtoUSL()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryTermLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
@@ -851,8 +851,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryTLtoUSL()");
+
 			e.printStackTrace();
 			throw e;
 
@@ -870,7 +870,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		try {
 			if (primaryUnsecuredLoanDetailTo == null) {
-				System.out.println("USl application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryUSLtoUSL()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryUnsecuredLoanDetailTo, skipPrimaryData);
@@ -879,8 +879,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryUSLtoUSL()");
+
 			e.printStackTrace();
 			throw e;
 
@@ -897,7 +897,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		try {
 			if (workingCapitalLoanDetailTo == null) {
-				System.out.println("WC application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryUSLtoWC()");
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, workingCapitalLoanDetailTo, skipPrimaryData);
@@ -906,8 +906,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("Exception in saveFinalTLToTL()");
-			System.out.println("Term Loan detail not exist");
+			logger.error("NullPointer Exception in savePrimaryUSLtoWC()");
 			e.printStackTrace();
 			throw e;
 
@@ -923,7 +922,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			PrimaryTermLoanDetail primaryTermLoanDetailTo = primaryTLRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 			if (primaryTermLoanDetailTo == null) {
-				System.out.println("TL application id ont avialable");
+				logger.error("NullPointer Exception in savePrimaryUSLtoTL()");
+
 				throw new NullPointerException();
 			}
 			BeanUtils.copyProperties(primaryUnsecuredLoanDetailFrom, primaryTermLoanDetailTo, skipPrimaryData);
@@ -932,10 +932,11 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryTermLoanDetailTo.setModifiedBy(userId);
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 
-		} catch (Exception e) {
-			logger.error("Exception in  savePrimaryUSLtoT()L");
-			System.out.println("Term Loan detail not exist");
+		} catch (NullPointerException e) {
+			logger.error("NullPointer Exception in savePrimaryUSLtoTL()");
+
 			e.printStackTrace();
+			throw e;
 		}
 		logger.info("================= Exit From savePrimaryUSLtoTL()================== ");
 	}
@@ -1814,7 +1815,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					for (CorporateCoApplicantDetail coto : corporateCoApplicantDetailToList) {
 						documentRequest.setApplicationId(corporateApplicantDetailTo.getApplicationId().getId());
 						documentRequest.setCoApplicantId(coto.getId());
-						System.out.println("documetn req ======>" + documentRequest);
+
 						fileUpload(autoFillOneFormDetailRequest, corporateApplicantDetailTo, documentResponse,
 								productDocumentMappingId, userId);
 					}
@@ -1842,17 +1843,15 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				if (response != null && (response.getStatus() == 200)) {
 					res = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) obj,
 							StorageDetailsResponse.class);
-					if(isExcel(productmappingId.intValue()))
-					readAndSaveExcelData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, productmappingId,
-							corporateApplicantDetailTo.getApplicationId().getId(), res.getId(), userId);
+					if (isExcel(productmappingId.intValue()))
+						readAndSaveExcelData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, productmappingId,
+								corporateApplicantDetailTo.getApplicationId().getId(), res.getId(), userId);
 				}
 			}
 		} catch (DocumentException | IOException e) {
 			e.printStackTrace();
 			logger.error("-------- Exception in fileUpload  ---------> {}", e.getMessage());
 		}
-
-		System.out.println(response);
 		logger.info("================= Exit From fileUpload()================== ");
 	}
 
@@ -1860,6 +1859,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	private void readAndSaveExcelData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long productDocumentMappingId, Long toApplicationId,
 			Long storageId, Long userId) throws DocumentException {
+		logger.info("================ Enter in readAndSaveExcelData() ===========");
 		// Code for read CMA BS and DPR
 		Boolean flag = false;
 		try {
@@ -2013,12 +2013,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			dmsClient.deleteProductDocument(json.toJSONString());
 			logger.error("Error While Uploading Document==>{}", json.toJSONString());
 		}
-
+		logger.info("================ Exit in readAndSaveExcelData() ===========");
 	}
 
 	public void copyCMAData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long storageId, Long userId) {
-
+		logger.info("================ Enter in copyCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
 		Double tillYear = (double) calendar.get(Calendar.YEAR);
 
@@ -2069,10 +2069,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			assetsDetailsTo.setModifiedDate(new Date());
 			assetsDetailsRepository.save(assetsDetailsTo);
 		}
+		logger.info("================ Exit in copyCMAData() ===========");
 	}
 
 	public void copyCoCMAData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long storageId, Long userId) {
+		logger.info("================ Enter in copyCoCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
 		Double tillYear = (double) calendar.get(Calendar.YEAR);
 
@@ -2112,11 +2114,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			balanceSheetDetailTo.setStorageDetailsId(storageId);
 			balanceSheetDetailRepository.save(balanceSheetDetailTo);
 		}
+		logger.info("================ Exit in copyCoCMAData() ===========");
 	}
 
 	public void copyDprData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long storageDetailsId, Long userId) {
-
+		logger.info("================ Enter in copyDprData() ===========");
 		List<BoardOfDirectorsDetail> boardOfDirectorsDetailList = boardOfDirectorsDetailRepository
 				.findByApplicationIdIdAndIsActive(autoFillOneFormDetailRequest.getFromApplicationId(), true);
 		BoardOfDirectorsDetail boardOfDirectorsDetailTo = null;
@@ -2291,6 +2294,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			dprUserDataDetailTo.setModifiedDate(new Date());
 			dprUserDataDetailRepository.save(dprUserDataDetailTo);
 		}
+		logger.info("================ Exit in copyCMAData() ===========");
 	}
 
 	public Boolean isExcel(int prodoctMappingId) {
@@ -2299,7 +2303,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		case DocumentAlias.TL_DPR_OUR_FORMAT:
 			flag = true;
 			break;
-		case DocumentAlias.TL_DPR_YOUR_FORMAT :
+		case DocumentAlias.TL_DPR_YOUR_FORMAT:
 			flag = true;
 			break;
 		case DocumentAlias.TL_CMA:
@@ -2311,7 +2315,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		case DocumentAlias.WC_DPR_OUR_FORMAT:
 			flag = true;
 			break;
-		case DocumentAlias.WC_DPR_YOUR_FORMAT :
+		case DocumentAlias.WC_DPR_YOUR_FORMAT:
 			flag = true;
 			break;
 		case DocumentAlias.WC_CMA:
