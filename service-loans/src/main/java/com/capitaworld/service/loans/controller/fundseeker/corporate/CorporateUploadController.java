@@ -414,11 +414,13 @@ public class CorporateUploadController {
 							|| productDocumentMappingId == DocumentAlias.TL_DPR_OUR_FORMAT)
 						excelExtractionService.inActiveDPR(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
-							|| productDocumentMappingId == DocumentAlias.TL_CMA)
+							|| productDocumentMappingId == DocumentAlias.TL_CMA|| productDocumentMappingId==DocumentAlias.USL_CMA)
 						excelExtractionService.inActiveCMA(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
-							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT)
+							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
+							productDocumentMappingId==DocumentAlias.USL_COMPANY_ACT)
 						excelExtractionService.inActiveBS(docId);
+					
 
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
