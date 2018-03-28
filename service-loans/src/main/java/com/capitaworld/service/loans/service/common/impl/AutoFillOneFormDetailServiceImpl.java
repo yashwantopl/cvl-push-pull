@@ -2037,8 +2037,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(operatingStatementDetailsFrom, operatingStatementDetailsTo, "id", "applicationId",
 					"modifiedBy", "modifiedDate", "storageDetailsId");
 			operatingStatementDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
-			operatingStatementDetailsTo
-					.setLoanApplicationMaster(operatingStatementDetailsTo.getLoanApplicationMaster());
 			operatingStatementDetailsTo.setStorageDetailsId(storageId);
 			operatingStatementDetailsTo.setModifiedBy(userId);
 			operatingStatementDetailsTo.setModifiedDate(new Date());
@@ -2052,7 +2050,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			liabilitiesDetailsTo = new LiabilitiesDetails();
 			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsTo, "id", "applicationId", "modifiedBy",
 					"modifiedDate", "storageDetailsId");
-			liabilitiesDetailsTo.setId(corporateApplicantDetailTo.getApplicationId().getId());
+			liabilitiesDetailsTo.setFsLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
 			liabilitiesDetailsTo.setStorageDetailsId(storageId);
 			liabilitiesDetailsTo.setModifiedBy(userId);
 			liabilitiesDetailsTo.setModifiedDate(new Date());
@@ -2066,7 +2064,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(assetsDetailsFrom, assetsDetailsTo, "id", "applicationId", "modifiedBy",
 					"modifiedDate", "storageDetailsId");
 			assetsDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
-			assetsDetailsTo.setLoanApplicationMaster(assetsDetailsTo.getLoanApplicationMaster());
 			assetsDetailsTo.setModifiedBy(userId);
 			assetsDetailsTo.setStorageDetailsId(storageId);
 			assetsDetailsTo.setModifiedDate(new Date());
