@@ -39,6 +39,8 @@ public class CommonUtils {
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
+	
+	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
 
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;

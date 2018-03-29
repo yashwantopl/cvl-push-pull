@@ -1,10 +1,12 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
-import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -47,6 +50,9 @@ public class CorporateUploadController {
 
 	@Autowired
 	private CorporateUploadService corporateUploadService;
+	
+	@Autowired
+	private DownLoadCMAFileService downLoadCMAFileService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -508,4 +514,30 @@ public class CorporateUploadController {
 			return null;
 		}
 	}
+	
+	@RequestMapping(value="/downloadCma/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public ResponseEntity<LoansResponse>  getCmaFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ) {
+		System.out.println("appl id ---->"+applicationId + "  productMapId------->"+productDocumentMappingId);
+		System.out.println("heloodjsih");
+		
+		logger.info("In getCmaFile");
+		
+        try {
+        
+        	DocumentResponse  documentResponse =downLoadCMAFileService.cmaFileGenerator(applicationId,productDocumentMappingId);
+
+            LoansResponse loansResponse = new LoansResponse();
+            loansResponse.setData(documentResponse.getData());
+            logger.info("Out getCmaFile");
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+        	logger.info("thrown exception from getCmaFile");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+	}
+	
 }

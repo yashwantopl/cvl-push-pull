@@ -3840,8 +3840,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
 					gatewayRequest.setProductInfo(product);
-					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
-					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
+					//gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
+					//gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 					Object values = gatewayClient.payout(gatewayRequest);
 					System.out.println("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
