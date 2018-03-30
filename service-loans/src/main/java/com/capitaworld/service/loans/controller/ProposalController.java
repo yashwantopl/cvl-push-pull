@@ -32,7 +32,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 @RequestMapping("/proposal")
 public class ProposalController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ProposalController.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(ProposalController.class);
 	
 	@Autowired
 	ProposalService proposalService;

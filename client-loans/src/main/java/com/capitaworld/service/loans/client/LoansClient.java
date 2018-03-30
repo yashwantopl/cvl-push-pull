@@ -138,6 +138,8 @@ public class LoansClient {
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
+
+	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_Score/corporate";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -1453,6 +1455,22 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+
+	public LoansResponse calculateScoringCorporate(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 }
