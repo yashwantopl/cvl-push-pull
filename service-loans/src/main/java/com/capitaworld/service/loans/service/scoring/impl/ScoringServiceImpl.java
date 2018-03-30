@@ -7,6 +7,7 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ScoringRequestLoans;
 import com.capitaworld.service.loans.model.ScoringResponseLoans;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
@@ -69,7 +70,10 @@ public class ScoringServiceImpl implements ScoringService{
 
 
     @Override
-    public ResponseEntity<LoansResponse> calculateScoring(Long applicationId) {
+    public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
+
+        Long applicationId=scoringRequestLoans.getApplicationId();
+        Long scoreModelId = scoringRequestLoans.getScoringModelId();
 
         ScoringResponse calculateScore=null;
 
@@ -134,13 +138,11 @@ public class ScoringServiceImpl implements ScoringService{
         logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
 
-        // GET SCORE MODEL ID
-        BigInteger scoreModelId = null;
 
         if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
         {
             ScoringRequest scoringRequest = new ScoringRequest();
-            scoringRequest.setScoringModelId(scoreModelId.longValue());
+            scoringRequest.setScoringModelId(scoreModelId);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;

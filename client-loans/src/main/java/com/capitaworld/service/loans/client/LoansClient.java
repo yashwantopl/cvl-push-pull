@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.client;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,11 +11,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.ExcelRequest;
-import com.capitaworld.service.loans.model.ExcelResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -1460,13 +1456,13 @@ public class LoansClient {
 
 
 
-	public LoansResponse calculateScoringCorporate(Long applicationId) throws Exception {
+	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
