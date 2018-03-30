@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/calculate_Score")
+@RequestMapping("/calculate_score")
 public class ScoringController {
 
     private static final Logger logger = LoggerFactory.getLogger(ScoringController.class);
@@ -30,7 +30,7 @@ public class ScoringController {
 
 
     @RequestMapping(value = "/corporate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> calculateScore(ScoringRequestLoans scoringRequestLoans) {
+    public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans) {
 
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans) || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getScoringModelId())) {
             logger.warn("applicationId or scoring model id is null or empty");

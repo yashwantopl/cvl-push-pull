@@ -78,7 +78,7 @@ public class ScoringServiceImpl implements ScoringService{
         ScoringResponse calculateScore=null;
 
         // start Get GST Parameter
-        String gstNumber=null;
+        String gstNumber="33GSPTN1361G1ZD";
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=null;
         try

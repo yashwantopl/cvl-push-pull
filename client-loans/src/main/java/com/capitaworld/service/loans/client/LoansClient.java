@@ -135,7 +135,7 @@ public class LoansClient {
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
 
-	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_Score/corporate";
+	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_score/corporate";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
