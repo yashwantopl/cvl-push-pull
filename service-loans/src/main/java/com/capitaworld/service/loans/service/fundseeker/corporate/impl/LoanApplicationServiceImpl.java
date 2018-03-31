@@ -3839,7 +3839,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setAmount(Double.valueOf(amount));
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
-					gatewayRequest.setProductInfo(product);
+					gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
 					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 					Object values = gatewayClient.payout(gatewayRequest);
