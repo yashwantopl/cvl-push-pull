@@ -811,6 +811,47 @@ public class AssetsDetailsRequest implements Serializable {
 		this.otherNcaOtherCapitalWorkInprogress = otherNcaOtherCapitalWorkInprogress;
 	}
 
+	@Override
+	public String toString() {
+		return "AssetsDetailsRequest [id=" + id + ", advancePaymentTaxes=" + advancePaymentTaxes
+				+ ", advanceToSupplierRawMaterials=" + advanceToSupplierRawMaterials
+				+ ", advanceToSuppliersCapitalGoods=" + advanceToSuppliersCapitalGoods + ", anyOther=" + anyOther
+				+ ", badOrDoubtfulExpenses=" + badOrDoubtfulExpenses + ", cashAndBankBalance=" + cashAndBankBalance
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", currentRatio=" + currentRatio
+				+ ", deferredReceviables=" + deferredReceviables + ", deferredReceviablesOthers="
+				+ deferredReceviablesOthers + ", deferredTaxAssets=" + deferredTaxAssets + ", depreciationToDate="
+				+ depreciationToDate + ", exportReceivables=" + exportReceivables + ", financialYearlyStatement="
+				+ financialYearlyStatement + ", finishedGoods=" + finishedGoods + ", fixedDepositsWithBanks="
+				+ fixedDepositsWithBanks + ", goodWill=" + goodWill + ", governmentAndOtherTrustee="
+				+ governmentAndOtherTrustee + ", grossBlock=" + grossBlock + ", instalmentsDeferred="
+				+ instalmentsDeferred + ", intangibleAssets=" + intangibleAssets + ", inventory=" + inventory
+				+ ", investments=" + investments + ", investmentsInSubsidiary=" + investmentsInSubsidiary
+				+ ", investmentsOrBookDebts=" + investmentsOrBookDebts + ", isActive=" + isActive + ", modifiedBy="
+				+ modifiedBy + ", modifiedDate=" + modifiedDate + ", netBlock=" + netBlock + ", netWorkingCapital="
+				+ netWorkingCapital + ", nonConsumableStoreAndSpares=" + nonConsumableStoreAndSpares
+				+ ", otherConsumableSpares=" + otherConsumableSpares + ", otherConsumableSparesImported="
+				+ otherConsumableSparesImported + ", otherConsumableSparesIndegenous=" + otherConsumableSparesIndegenous
+				+ ", otherCurrentAssets=" + otherCurrentAssets + ", otherNonCurrentAssets=" + otherNonCurrentAssets
+				+ ", others=" + others + ", patents=" + patents + ", prelimExpenses=" + prelimExpenses
+				+ ", rawMaterial=" + rawMaterial + ", rawMaterialImported=" + rawMaterialImported
+				+ ", rawMaterialIndegenous=" + rawMaterialIndegenous + ", receivableOtherThanDefferred="
+				+ receivableOtherThanDefferred + ", stockInProcess=" + stockInProcess + ", tangibleNetWorth="
+				+ tangibleNetWorth + ", totalAssets=" + totalAssets + ", totalCurrentAssets=" + totalCurrentAssets
+				+ ", totalIntangibleAssets=" + totalIntangibleAssets + ", totalOtherNonCurrentAssets="
+				+ totalOtherNonCurrentAssets + ", totalOutSideLiability=" + totalOutSideLiability
+				+ ", totalTermLiability=" + totalTermLiability + ", year=" + year + ", storageDetailsId="
+				+ storageDetailsId + ", landBuilding=" + landBuilding + ", plantMachines=" + plantMachines
+				+ ", impairmentAsset=" + impairmentAsset + ", othersPreOperativeExpensesPending="
+				+ othersPreOperativeExpensesPending + ", othersAssetsInTransit=" + othersAssetsInTransit
+				+ ", othersOther=" + othersOther + ", totalOtherNcaPatent=" + totalOtherNcaPatent
+				+ ", totalOtherNcaGoodwill=" + totalOtherNcaGoodwill + ", totalOtherNcaPrelimnaryExpenses="
+				+ totalOtherNcaPrelimnaryExpenses + ", totalOtherNcaBadExpenses=" + totalOtherNcaBadExpenses
+				+ ", totalOtherNcaOther=" + totalOtherNcaOther + ", otherNcaOtherCapitalWorkInprogress="
+				+ otherNcaOtherCapitalWorkInprogress + ", GrossBlock1=" + GrossBlock1 + ", GrossBlock2=" + GrossBlock2
+				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", loanApplicationMaster="
+				+ loanApplicationMaster + "]";
+	}
+
 	
 
 }
