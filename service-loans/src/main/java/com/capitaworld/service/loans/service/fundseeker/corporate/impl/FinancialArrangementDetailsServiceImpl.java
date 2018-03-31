@@ -67,10 +67,11 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId)throws Exception {
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
+			throws Exception {
 		try {
 			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id,userId);
+					.listSecurityCorporateDetailFromAppId(id, userId);
 			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
@@ -86,6 +87,21 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	@Override
+	public Boolean saveOrUpdateFromCibil(List<FinancialArrangementsDetailRequest> finArrDetailRequest,
+			Long applicationId, Long userId) {
+		financialArrangementDetailsRepository.inActive(userId, applicationId);
+		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
+			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setIsActive(true);
+			financialArrangementDetailsRepository.save(arrangementsDetail);
+		}
+		return true;
 	}
 
 }
