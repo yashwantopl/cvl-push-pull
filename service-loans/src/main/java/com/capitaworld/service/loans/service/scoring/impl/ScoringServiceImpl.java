@@ -642,6 +642,12 @@ public class ScoringServiceImpl implements ScoringService{
                         map.put("CONCENTRATION_CUSTOMER",null);
                         break;
                     }
+                    case "CREDIT_SUMMATION":
+                    {
+                        // remaining
+                        map.put("CREDIT_SUMMATION",null);
+                        break;
+                    }
                 }
 
                 fundSeekerInputRequest.setMap(map);

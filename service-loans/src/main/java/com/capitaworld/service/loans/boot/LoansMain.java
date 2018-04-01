@@ -158,15 +158,15 @@ public class LoansMain {
 
 	@Bean
 	public ScoringClient scoringClient() {
-		ScoringClient scoringClient = new ScoringClient(reportsBaseUrl);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringBaseUrl);
+		ScoringClient scoringClient = new ScoringClient(scoringBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(scoringClient);
 		return scoringClient;
 	}
 
 	@Bean
 	public GstClient gstClient() {
 		GstClient gstClient = new GstClient(gstBaseUrl);
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
 	}
 
