@@ -1,12 +1,14 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -515,29 +517,30 @@ public class CorporateUploadController {
 		}
 	}
 	
-	@RequestMapping(value="/downloadCma/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
-	public ResponseEntity<LoansResponse>  getCmaFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ) {
+	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
 		System.out.println("appl id ---->"+applicationId + "  productMapId------->"+productDocumentMappingId);
-		System.out.println("heloodjsih");
+		
 		
 		logger.info("In getCmaFile");
 		
         try {
-        
-        	DocumentResponse  documentResponse =downLoadCMAFileService.cmaFileGenerator(applicationId,productDocumentMappingId);
-
-            LoansResponse loansResponse = new LoansResponse();
-            loansResponse.setData(documentResponse.getData());
+        	  httpServletResponse.setContentType("application/csv");  
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA|| productDocumentMappingId==(long)DocumentAlias.TL_CMA ||productDocumentMappingId==(long)DocumentAlias.USL_CMA ) {
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT) {
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+              downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
             logger.info("Out getCmaFile");
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-        } catch (Exception e) {
+         
+        } catch (NullPointerException |IOException e) {
         	logger.info("thrown exception from getCmaFile");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
+          
         }
-        
+     
 	}
 	
 }

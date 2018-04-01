@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.service.common;
 
-import com.capitaworld.service.dms.model.DocumentResponse;
+import org.apache.poi.ss.usermodel.Workbook;
 
 public interface DownLoadCMAFileService {
 
-	public DocumentResponse cmaFileGenerator(Long applicationId,Long productDocumentMappingId) ;
+	public Workbook cmaFileGenerator(Long applicationId,Long productDocumentMappingId) ;
 	
-	public DocumentResponse  coCMAFileGenerator(Long applicationId, Long productDocumentMappingId) ;
+	public Workbook coCMAFileGenerator(Long applicationId, Long productDocumentMappingId) ;
 }
