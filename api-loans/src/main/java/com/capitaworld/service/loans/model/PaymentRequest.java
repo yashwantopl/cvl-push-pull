@@ -25,6 +25,7 @@ public class PaymentRequest implements Serializable {
 	private String mobileNumber;
 	private Double paymentAmount;
 	private String purposeCode;
+	private String responseParams;
 	private String status;
 	private Boolean isAcceptConsent;
 
@@ -136,6 +137,14 @@ public class PaymentRequest implements Serializable {
 
 	public void setPurposeCode(String purposeCode) {
 		this.purposeCode = purposeCode;
+	}
+
+	public String getResponseParams() {
+		return responseParams;
+	}
+
+	public void setResponseParams(String responseParams) {
+		this.responseParams = responseParams;
 	}
 
 	@Override
