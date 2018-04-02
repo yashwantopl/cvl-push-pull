@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1789,9 +1788,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			documentRequest.setProductDocumentMappingId(productDocumentMappingIdFrom);
 			response = dmsClient.listProductDocument(documentRequest);
 			if (response.getDataList().size() > 0 && prodDocMappingFromList.indexOf(i) != 0) {
-
-				fileUpload(autoFillOneFormDetailRequest, corporateApplicantDetailTo, response,
+				if(productDocumentMappingIdFrom==(long)DocumentAlias.TL_CMA || productDocumentMappingIdFrom==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingIdFrom== (long)DocumentAlias.WC_CMA ||productDocumentMappingIdFrom==(long)DocumentAlias.WC_COMPANY_ACT || productDocumentMappingIdFrom==(long)DocumentAlias.USL_CMA||productDocumentMappingIdFrom==(long)DocumentAlias.USL_COMPANY_ACT ) {
+                   readAndSaveExcelData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, prodDocMappingToList.get(i), userId);
+				} else {
+				  fileUpload(autoFillOneFormDetailRequest, corporateApplicantDetailTo, response,
 						prodDocMappingToList.get(i), userId);
+				}
 			}
 			i++;
 		}
@@ -1841,11 +1843,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				response = dmsClient.importDocument(documentImportRequest);
 
 				if (response != null && (response.getStatus() == 200)) {
-					res = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) obj,
-							StorageDetailsResponse.class);
-					if (isExcel(productmappingId.intValue()))
-						readAndSaveExcelData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, productmappingId,
-								corporateApplicantDetailTo.getApplicationId().getId(), res.getId(), userId);
+					logger.info("================= Sucessfull file uploaded ==================> ",response);               
 				}
 			}
 		} catch (DocumentException | IOException e) {
@@ -1857,11 +1855,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	@SuppressWarnings("unchecked")
 	private void readAndSaveExcelData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
-			CorporateApplicantDetail corporateApplicantDetailTo, Long productDocumentMappingId, Long toApplicationId,
-			Long storageId, Long userId) throws DocumentException {
+			CorporateApplicantDetail corporateApplicantDetailTo, Long productDocumentMappingId, 
+			 Long userId) throws DocumentException {
 		logger.info("================ Enter in readAndSaveExcelData() ===========");
 		// Code for read CMA BS and DPR
 		Boolean flag = false;
+		Long toApplicationId =corporateApplicantDetailTo.getApplicationId().getId();
 		try {
 
 			switch (productDocumentMappingId.intValue()) {
@@ -1894,28 +1893,28 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 						.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
 				scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
 				dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
-				copyDprData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyDprData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.WC_CMA: {
 				logger.info(
 						"Going to INactive DocumentAlias.WC_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.WC_DPR_OUR_FORMAT, toApplicationId, storageId);
+						DocumentAlias.WC_DPR_OUR_FORMAT, toApplicationId);
 				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.WC_COMPANY_ACT: {
 				logger.info(
 						"Going to INactive DocumentAlias.WC_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.WC_COMPANY_ACT, toApplicationId, storageId);
+						DocumentAlias.WC_COMPANY_ACT, toApplicationId);
 				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
 				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
@@ -1931,8 +1930,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 			case DocumentAlias.TL_DPR_OUR_FORMAT: {
 				logger.info(
-						"Going to INactive DocumentAlias.TL_DPR_OUR_FORMAT===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.TL_DPR_OUR_FORMAT, toApplicationId, storageId);
+						"Going to INactive DocumentAlias.TL_DPR_OUR_FORMAT===>{}===>for Application Id==> ",
+						DocumentAlias.TL_DPR_OUR_FORMAT, toApplicationId);
 				boardOfDirectorsDetailRepository.inActiveBoardOfDirectorsDetailsByAppId(toApplicationId);
 				strategicAlliancesDetailRepository.inActiveStrategicAlliancesDetailsByAppId(toApplicationId);
 				keyManagementDetailRepository.inActiveKeyManagementDetailsByAppId(toApplicationId);
@@ -1948,48 +1947,48 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 						.inActiveRequirementsAndAvailabilityRawMaterialsDetailsByAppId(toApplicationId);
 				scotAnalysisDetailRepository.inActiveScotDetailsByAppId(toApplicationId);
 				dprUserDataDetailRepository.inActiveDprUserDataDetailsByAppId(toApplicationId);
-				copyDprData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyDprData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.TL_CMA: {
 				logger.info("Going to INactive DocumentAlias.TL_CMA===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.TL_CMA, toApplicationId, storageId);
+						DocumentAlias.TL_CMA, toApplicationId);
 				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.TL_COMPANY_ACT: {
 				logger.info(
 						"Going to INactive DocumentAlias.TL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.TL_COMPANY_ACT, toApplicationId, storageId);
+						DocumentAlias.TL_COMPANY_ACT, toApplicationId);
 				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
 				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.USL_CMA: {
 				logger.info(
 						"Going to INactive DocumentAlias.USL_CMA===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.USL_CMA, toApplicationId, storageId);
+						DocumentAlias.USL_CMA, toApplicationId);
 				assetsDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				liabilitiesDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
 				operatingStatementDetailsRepository.inActiveAssetsDetailsByAppId(toApplicationId);
-				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
 			case DocumentAlias.USL_COMPANY_ACT: {
 				logger.info(
 						"Going to INactive DocumentAlias.USL_COMPANY_ACT===>{}===>for Application Id==> for Storage Id==>{}",
-						DocumentAlias.USL_COMPANY_ACT, toApplicationId, storageId);
+						DocumentAlias.USL_COMPANY_ACT, toApplicationId);
 				balanceSheetDetailRepository.inActiveBalanceSheetDetailByAppId(toApplicationId);
 				profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetailByAppId(toApplicationId);
-				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo, storageId, userId);
+				copyCoCMAData(autoFillOneFormDetailRequest, corporateApplicantDetailTo,userId);
 				flag = true;
 				break;
 			}
@@ -1999,12 +1998,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			JSONObject json = new JSONObject();
-			json.put("id", storageId);
-			dmsClient.deleteProductDocument(json.toJSONString());
-			logger.error("Error While Uploading Document in Autofill==>{}", json.toJSONString());
+			logger.error("Error While Uploading Document in Autofill==>{}");
 		}
-		if (flag) {
+		/*if (flag) {
 			logger.info("File Uploaded SuccessFully in Autofill");
 		} else {
 			// code for inactive CMA BS and DPR recored
@@ -2012,12 +2008,12 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			json.put("id", storageId);
 			dmsClient.deleteProductDocument(json.toJSONString());
 			logger.error("Error While Uploading Document==>{}", json.toJSONString());
-		}
+		}*/
 		logger.info("================ Exit in readAndSaveExcelData() ===========");
 	}
 
 	public void copyCMAData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
-			CorporateApplicantDetail corporateApplicantDetailTo, Long storageId, Long userId) {
+			CorporateApplicantDetail corporateApplicantDetailTo,  Long userId) {
 		logger.info("================ Enter in copyCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
 		Double tillYear = (double) calendar.get(Calendar.YEAR);
@@ -2037,7 +2033,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(operatingStatementDetailsFrom, operatingStatementDetailsTo, "id", "applicationId",
 					"modifiedBy", "modifiedDate", "storageDetailsId");
 			operatingStatementDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
-			operatingStatementDetailsTo.setStorageDetailsId(storageId);
+			operatingStatementDetailsTo.setStorageDetailsId(null);
 			operatingStatementDetailsTo.setModifiedBy(userId);
 			operatingStatementDetailsTo.setModifiedDate(new Date());
 			operatingStatementDetailsRepository.save(operatingStatementDetailsTo);
@@ -2051,7 +2047,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsTo, "id", "applicationId", "modifiedBy",
 					"modifiedDate", "storageDetailsId");
 			liabilitiesDetailsTo.setFsLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
-			liabilitiesDetailsTo.setStorageDetailsId(storageId);
+			liabilitiesDetailsTo.setStorageDetailsId(null);
 			liabilitiesDetailsTo.setModifiedBy(userId);
 			liabilitiesDetailsTo.setModifiedDate(new Date());
 			liabilitiesDetailsRepository.save(liabilitiesDetailsTo);
@@ -2065,7 +2061,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					"modifiedDate", "storageDetailsId");
 			assetsDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
 			assetsDetailsTo.setModifiedBy(userId);
-			assetsDetailsTo.setStorageDetailsId(storageId);
+			assetsDetailsTo.setStorageDetailsId(null);
 			assetsDetailsTo.setModifiedDate(new Date());
 			assetsDetailsRepository.save(assetsDetailsTo);
 		}
@@ -2073,7 +2069,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	}
 
 	public void copyCoCMAData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
-			CorporateApplicantDetail corporateApplicantDetailTo, Long storageId, Long userId) {
+			CorporateApplicantDetail corporateApplicantDetailTo,  Long userId) {
 		logger.info("================ Enter in copyCoCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
 		Double tillYear = (double) calendar.get(Calendar.YEAR);
@@ -2096,7 +2092,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			profitibilityStatementDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			profitibilityStatementDetailTo.setModifiedBy(userId);
 			profitibilityStatementDetailTo.setModifiedDate(new Date());
-			profitibilityStatementDetailTo.setStorageDetailsId(storageId);
+			profitibilityStatementDetailTo.setStorageDetailsId(null);
 			profitibilityStatementDetailRepository.save(profitibilityStatementDetailTo);
 		}
 
@@ -2111,14 +2107,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			balanceSheetDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			balanceSheetDetailTo.setModifiedBy(userId);
 			balanceSheetDetailTo.setModifiedDate(new Date());
-			balanceSheetDetailTo.setStorageDetailsId(storageId);
+			balanceSheetDetailTo.setStorageDetailsId(null);
 			balanceSheetDetailRepository.save(balanceSheetDetailTo);
 		}
 		logger.info("================ Exit in copyCoCMAData() ===========");
 	}
 
 	public void copyDprData(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
-			CorporateApplicantDetail corporateApplicantDetailTo, Long storageDetailsId, Long userId) {
+			CorporateApplicantDetail corporateApplicantDetailTo,  Long userId) {
 		logger.info("================ Enter in copyDprData() ===========");
 		List<BoardOfDirectorsDetail> boardOfDirectorsDetailList = boardOfDirectorsDetailRepository
 				.findByApplicationIdIdAndIsActive(autoFillOneFormDetailRequest.getFromApplicationId(), true);
@@ -2130,7 +2126,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			boardOfDirectorsDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			boardOfDirectorsDetailTo.setModifiedBy(userId);
 			boardOfDirectorsDetailTo.setModifiedDate(new Date());
-			boardOfDirectorsDetailTo.setStorageDetailsId(storageDetailsId);
+			boardOfDirectorsDetailTo.setStorageDetailsId(null);
 			boardOfDirectorsDetailRepository.save(boardOfDirectorsDetailTo);
 		}
 
@@ -2144,7 +2140,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			strategicAlliancesDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			strategicAlliancesDetailTo.setModifiedBy(userId);
 			strategicAlliancesDetailTo.setModifiedDate(new Date());
-			strategicAlliancesDetailTo.setStorageDetailsId(storageDetailsId);
+			strategicAlliancesDetailTo.setStorageDetailsId(null);
 			strategicAlliancesDetailRepository.save(strategicAlliancesDetailTo);
 		}
 
@@ -2158,7 +2154,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			keyManagementDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			keyManagementDetailTo.setModifiedBy(userId);
 			keyManagementDetailTo.setModifiedDate(new Date());
-			keyManagementDetailTo.setStorageDetailsId(storageDetailsId);
+			keyManagementDetailTo.setStorageDetailsId(null);
 			keyManagementDetailRepository.save(keyManagementDetailTo);
 		}
 
@@ -2173,7 +2169,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			employeesCategoryBreaksDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			employeesCategoryBreaksDetailTo.setModifiedBy(userId);
 			employeesCategoryBreaksDetailTo.setModifiedDate(new Date());
-			employeesCategoryBreaksDetailTo.setStorageDetailsId(storageDetailsId);
+			employeesCategoryBreaksDetailTo.setStorageDetailsId(null);
 			employeesCategoryBreaksDetailRepository.save(employeesCategoryBreaksDetailTo);
 		}
 
@@ -2189,7 +2185,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			technologyPositioningDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			technologyPositioningDetailTo.setModifiedBy(userId);
 			technologyPositioningDetailTo.setModifiedDate(new Date());
-			technologyPositioningDetailTo.setStorageDetailsId(storageDetailsId);
+			technologyPositioningDetailTo.setStorageDetailsId(null);
 			technologyPositioningDetailRepository.save(technologyPositioningDetailTo);
 
 		}
@@ -2204,7 +2200,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			revenueAndOrderBookDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			revenueAndOrderBookDetailTo.setModifiedBy(userId);
 			revenueAndOrderBookDetailTo.setModifiedDate(new Date());
-			revenueAndOrderBookDetailTo.setStorageDetailsId(storageDetailsId);
+			revenueAndOrderBookDetailTo.setStorageDetailsId(null);
 			revenueAndOrderBookDetailRepository.save(revenueAndOrderBookDetailTo);
 		}
 
@@ -2218,7 +2214,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			driverForFutureGrowthDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			driverForFutureGrowthDetailTo.setModifiedBy(userId);
 			driverForFutureGrowthDetailTo.setModifiedDate(new Date());
-			driverForFutureGrowthDetailTo.setStorageDetailsId(storageDetailsId);
+			driverForFutureGrowthDetailTo.setStorageDetailsId(null);
 			driverForFutureGrowthDetailRepository.save(driverForFutureGrowthDetailTo);
 		}
 
@@ -2232,7 +2228,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			availabilityProposedPlantDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			availabilityProposedPlantDetailTo.setModifiedBy(userId);
 			availabilityProposedPlantDetailTo.setModifiedDate(new Date());
-			availabilityProposedPlantDetailTo.setStorageDetailsId(storageDetailsId);
+			availabilityProposedPlantDetailTo.setStorageDetailsId(null);
 			availabilityProposedPlantDetailRepository.save(availabilityProposedPlantDetailTo);
 		}
 
@@ -2247,7 +2243,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			projectImplementationScheduleDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			projectImplementationScheduleDetailTo.setModifiedBy(userId);
 			projectImplementationScheduleDetailTo.setModifiedDate(new Date());
-			projectImplementationScheduleDetailTo.setStorageDetailsId(storageDetailsId);
+			projectImplementationScheduleDetailTo.setStorageDetailsId(null);
 			projectImplementationScheduleDetailRepository.save(projectImplementationScheduleDetailTo);
 		}
 
@@ -2263,7 +2259,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			requirementsAndAvailabilityRawMaterialsDetailTo.setModifiedBy(userId);
 			requirementsAndAvailabilityRawMaterialsDetailTo.setModifiedDate(new Date());
-			requirementsAndAvailabilityRawMaterialsDetailTo.setStorageDetailsId(storageDetailsId);
+			requirementsAndAvailabilityRawMaterialsDetailTo.setStorageDetailsId(null);
 			requirementsAndAvailabilityRawMaterialsDetailRepository
 					.save(requirementsAndAvailabilityRawMaterialsDetailTo);
 		}
@@ -2277,7 +2273,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			scotAnalysisDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			scotAnalysisDetailTo.setModifiedBy(userId);
 			scotAnalysisDetailTo.setModifiedDate(new Date());
-			scotAnalysisDetailTo.setStorageDetailsId(storageDetailsId);
+			scotAnalysisDetailTo.setStorageDetailsId(null);
 			scotAnalysisDetailRepository.save(scotAnalysisDetailTo);
 		}
 
@@ -2289,7 +2285,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			BeanUtils.copyProperties(dprUserDataDetailFrom, dprUserDataDetailTo, "id", "applicationId", "modifiedBy",
 					"modifiedDate", "storageDetailsId");
 			dprUserDataDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
-			dprUserDataDetailTo.setStorageDetailsId(storageDetailsId);
+			dprUserDataDetailTo.setStorageDetailsId(null);
 			dprUserDataDetailTo.setModifiedBy(userId);
 			dprUserDataDetailTo.setModifiedDate(new Date());
 			dprUserDataDetailRepository.save(dprUserDataDetailTo);
@@ -2297,40 +2293,5 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.info("================ Exit in copyCMAData() ===========");
 	}
 
-	public Boolean isExcel(int prodoctMappingId) {
-		Boolean flag = false;
-		switch (prodoctMappingId) {
-		case DocumentAlias.TL_DPR_OUR_FORMAT:
-			flag = true;
-			break;
-		case DocumentAlias.TL_DPR_YOUR_FORMAT:
-			flag = true;
-			break;
-		case DocumentAlias.TL_CMA:
-			flag = true;
-			break;
-		case DocumentAlias.TL_COMPANY_ACT:
-			flag = true;
-			break;
-		case DocumentAlias.WC_DPR_OUR_FORMAT:
-			flag = true;
-			break;
-		case DocumentAlias.WC_DPR_YOUR_FORMAT:
-			flag = true;
-			break;
-		case DocumentAlias.WC_CMA:
-			flag = true;
-			break;
-		case DocumentAlias.WC_COMPANY_ACT:
-			flag = true;
-			break;
-		case DocumentAlias.USL_CMA:
-			flag = true;
-			break;
-		case DocumentAlias.USL_COMPANY_ACT:
-			flag = true;
-			break;
-		}
-		return flag;
-	}
+
 }
