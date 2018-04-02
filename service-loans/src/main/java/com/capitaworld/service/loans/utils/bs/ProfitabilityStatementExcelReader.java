@@ -96,37 +96,28 @@ public class ProfitabilityStatementExcelReader {
 		 * this method extract data from excel associate column and row wise
 		 * e.g. you want to extract B13,B14,... cell data for year 2014
 		 */
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "C",
-				"2015", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "D",
-				"2016", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "E",
-				"2017", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "F",
-				"2018", profitibilityStatementDetailRepository);
-	
-		if(loanApplicationMaster.getProductId()!=15){
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "G",
-				"2019", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "H",
-				"2020", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "I",
-				"2021", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "J",
-				"2022", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "K",
-				"2023", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "L",
-				"2024", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "M",
-				"2025", profitibilityStatementDetailRepository);
-		extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, profitabilityStatementMappingList, "N",
-				"2026", profitibilityStatementDetailRepository);
+		
+		System.out.println("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());       
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"F",String.valueOf(sheet.getRow(3).getCell(5).getNumericCellValue()),"Estimated",profitibilityStatementDetailRepository);
+        if(loanApplicationMaster.getProductId()!=15){
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()),"Projected", profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"H",String.valueOf(sheet.getRow(3).getCell(7).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"I",String.valueOf(sheet.getRow(3).getCell(8).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"J",String.valueOf(sheet.getRow(3).getCell(9).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"K",String.valueOf(sheet.getRow(3).getCell(10).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"L",String.valueOf(sheet.getRow(3).getCell(11).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"M",String.valueOf(sheet.getRow(3).getCell(12).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"N",String.valueOf(sheet.getRow(3).getCell(13).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
 		}
+		
+		
 	}
 
 	public static void extractCellFromSheet(Long storageDetailsId, XSSFSheet sheet,
-			LoanApplicationMaster loanApplicationMaster, ArrayList arrayList, String column, String year,
+			LoanApplicationMaster loanApplicationMaster, ArrayList<String> arrayList, String column, String year,String financialYearlyStatement,
 			ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository) {
 		int nullCounter = 0;
 		int arrayListCounter = 0;
@@ -144,8 +135,7 @@ public class ProfitabilityStatementExcelReader {
 			bsProfitabilityStatement.setStorageDetailsId(storageDetailsId);
 
 			bsProfitabilityStatement.setYear(year);
-
-		
+            bsProfitabilityStatement.setFinancialYearlyStatement(financialYearlyStatement);
 			
 			bsProfitabilityStatement.setSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 			bsProfitabilityStatement.setSalesExport(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

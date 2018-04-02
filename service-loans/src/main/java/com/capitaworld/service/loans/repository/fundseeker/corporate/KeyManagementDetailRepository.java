@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.BoardOfDirectorsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.KeyManagementDetail;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface KeyManagementDetailRepository extends JpaRepository<KeyManageme
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.KeyManagementResponse(a.anySpecialAchievement,a.designation,a.experience,a.functionalDuties,a.name,a.qualification) from KeyManagementDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<KeyManagementResponse> listByApplicationId(@Param("applicationId")Long applicationId);
+	
+	public List<KeyManagementDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

@@ -231,7 +231,7 @@ public class MobileLoanController {
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(list);
 			CommonDocumentUtils.endHook(logger, "getProductList for mobile");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully saved data"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully saved data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.warn("Error While get fp product list for mobile app");
 			e.printStackTrace();
@@ -249,7 +249,7 @@ public class MobileLoanController {
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(proposalDetailsList);
 			CommonDocumentUtils.endHook(logger, "fundproviderProposal for mobile");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundproviderProposal for mobile"),HttpStatus.OK);	
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundproviderProposal for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.warn("Error While get fp matches list for mobile app");
 			e.printStackTrace();
@@ -267,7 +267,7 @@ public class MobileLoanController {
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(proposalDetailsList);
 			CommonDocumentUtils.endHook(logger, "fundseekerProposal matches for mobile");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundseekerProposal matches for mobile"),HttpStatus.OK);	
+			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundseekerProposal matches for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.warn("Error While get FS matches list for mobile app");
 			e.printStackTrace();
