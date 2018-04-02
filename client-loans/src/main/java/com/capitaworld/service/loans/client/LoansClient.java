@@ -1195,7 +1195,7 @@ public class LoansClient {
 	
 	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
 			Long clientId, Long applicationId) throws ExcelException {
-		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS)
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL)
 				.concat("/" + applicationId + "/" + userId + "/" + clientId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
