@@ -137,5 +137,52 @@ public class FinancialArrangementDetailsController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<FinancialArrangementsDetailRequest> detailRequests,
+			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
+			@PathVariable("clientId") Long clientId) {
+		// request must not be null
+		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
+			logger.warn("frameRequest can not be empty ==>" + detailRequests);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		// application id and user id must not be null
+		if (applicationId == null || userId == null) {
+			logger.warn("application id, user id must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+
+		// When calling client for this method if one of this path variable is null it
+		// takes "null" so can not cast to Long
+		if (clientId != null && clientId == -1) {
+			clientId = null;
+		}
+
+		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
+		try {
+			// Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			financialArrangementDetailsService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 
 }

@@ -12,9 +12,11 @@ import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ScoringRequestLoans;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -25,7 +27,6 @@ import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
@@ -113,6 +114,7 @@ public class LoansClient {
 
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
 
@@ -138,6 +140,8 @@ public class LoansClient {
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
+
+	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_score/corporate";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -1163,7 +1167,6 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<ExistingLoanDetailRequest>> entity = new HttpEntity<List<ExistingLoanDetailRequest>>(
 					detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1181,13 +1184,29 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(
 					detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
+			Long clientId, Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS)
+				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<FinancialArrangementsDetailRequest>> entity = new HttpEntity<List<FinancialArrangementsDetailRequest>>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException(url + " in Loans service is not available");
 		}
 	}
 
@@ -1453,6 +1472,22 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+
+	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 }

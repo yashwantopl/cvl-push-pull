@@ -107,6 +107,12 @@
 			<version>1.0.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.capitaworld.service.gst</groupId>
+			<artifactId>client-gst</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
 
 		<!-- api of one form -->
 		<dependency>

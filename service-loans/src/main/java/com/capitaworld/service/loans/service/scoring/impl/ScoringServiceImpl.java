@@ -1,12 +1,22 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.gst.GstCalculation;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ScoringRequestLoans;
+import com.capitaworld.service.loans.model.ScoringResponseLoans;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
 import com.capitaworld.service.loans.service.irr.impl.IrrServiceImpl;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
@@ -17,16 +27,18 @@ import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.ibm.icu.util.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Service
+@Transactional
 public class ScoringServiceImpl implements ScoringService{
 
 
@@ -53,9 +65,41 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private ScoringClient scoringClient;
 
+    @Autowired
+    private GstClient gstClient;
+
 
     @Override
-    public void calculateScoring(Long applicationId) {
+    public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
+
+        Long applicationId=scoringRequestLoans.getApplicationId();
+        Long scoreModelId = scoringRequestLoans.getScoringModelId();
+
+        ScoringResponse calculateScore=null;
+
+        // start Get GST Parameter
+        String gstNumber="33GSPTN1361G1ZD";
+        GstResponse gstResponse=null;
+        GstCalculation gstCalculation=null;
+        try
+        {
+            GSTR1Request gstr1Request=new GSTR1Request();
+            gstr1Request.setGstin(gstNumber);
+            gstResponse=gstClient.getCalculations(gstr1Request);
+
+            if(!CommonUtils.isObjectNullOrEmpty(gstResponse) && CommonUtils.isObjectNullOrEmpty(gstResponse.getData()))
+            {
+                gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)gstResponse.getData(),
+                        GstCalculation.class);
+            }
+
+        }
+        catch (Exception e)
+        {
+            logger.error("error while getting GST parameter");
+            e.printStackTrace();
+        }
+        // end Get GST Parameter
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -94,13 +138,11 @@ public class ScoringServiceImpl implements ScoringService{
         logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
 
-        // GET SCORE MODEL ID
-        BigInteger scoreModelId = null;
 
         if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
         {
             ScoringRequest scoringRequest = new ScoringRequest();
-            scoringRequest.setScoringModelId(scoreModelId.longValue());
+            scoringRequest.setScoringModelId(scoreModelId);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
@@ -556,16 +598,54 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "NO_OF_CUSTOMER": {
-                        // remaining
+                    case "NO_OF_CUSTOMER":
+                    {
+                        try {
+                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer()))
+                            {
+                                map.put("NO_OF_CUSTOMER",gstCalculation.getNoOfCustomer());
+                            }
+                            else
+                            {
+                                map.put("NO_OF_CUSTOMER",null);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting NO_OF_CUSTOMER parameter");
+                            e.printStackTrace();
+                            map.put("NO_OF_CUSTOMER",null);
+                        }
 
                         map.put("NO_OF_CUSTOMER",null);
                         break;
                     }
-                    case "CONCENTRATION_CUSTOMER": {
-                        // remaining
+                    case "CONCENTRATION_CUSTOMER":
+                    {
+                        try {
+                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration()))
+                            {
+                                map.put("CONCENTRATION_CUSTOMER",gstCalculation.getConcentration());
+                            }
+                            else
+                            {
+                                map.put("CONCENTRATION_CUSTOMER",null);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
+                            e.printStackTrace();
+                            map.put("CONCENTRATION_CUSTOMER",null);
+                        }
 
                         map.put("CONCENTRATION_CUSTOMER",null);
+                        break;
+                    }
+                    case "CREDIT_SUMMATION":
+                    {
+                        // remaining
+                        map.put("CREDIT_SUMMATION",null);
                         break;
                     }
                 }
@@ -577,13 +657,14 @@ public class ScoringServiceImpl implements ScoringService{
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
 
-            ScoringResponse calculateScore=null;
             try {
                  calculateScore = scoringClient.calculateScore(scoringRequest);
             }
             catch (Exception e) {
                 logger.error("error while calling scoring");
                 e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.OK.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(calculateScore)) {
@@ -596,6 +677,19 @@ public class ScoringServiceImpl implements ScoringService{
                 logger.info("Interpretation from scoring module------->" + interpretation);
             }
         }
+
+        if(CommonUtils.isObjectNullOrEmpty(calculateScore) || CommonUtils.isObjectNullOrEmpty(calculateScore.getScore()))
+        {
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        ScoringResponseLoans scoringResponseLoans=new ScoringResponseLoans();
+        BeanUtils.copyProperties(calculateScore,scoringResponseLoans);
+
+        LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+        loansResponse.setData(scoringResponseLoans);
+        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
 }
