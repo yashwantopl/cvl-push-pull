@@ -176,12 +176,12 @@ public class CommonUtils {
 				"applicationId" };
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
-		public static final String[] CORPORATE_PROFILE = { "panNo","constitutionId","establishmentMonth",
-			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName",
+		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
 		};
-		public static final String[] CORPORATE_FINAL = { "aadhar","creditRatingId",
-				"contLiabilityFy","contLiabilitySy" ,"contLiabilityTy" ," contLiabilityYear","promoterDetailOption"
+		public static final String[] CORPORATE_FINAL = { "aadhar","secondAddress","sameAs","creditRatingId",
+				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable"
 		};
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
