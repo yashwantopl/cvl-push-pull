@@ -10,7 +10,7 @@ import com.capitaworld.service.rating.model.RatingResponse;
 
 public interface IrrService {
 
-	public  FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception;
+	/*public  FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception;
 	
 	public  FinancialInputRequest coActIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception;
 	
@@ -20,5 +20,5 @@ public interface IrrService {
 	
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Long denom) throws Exception;
 	
-	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
+	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);*/
 }

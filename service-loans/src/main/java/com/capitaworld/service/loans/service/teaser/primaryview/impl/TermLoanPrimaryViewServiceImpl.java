@@ -397,8 +397,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
 			termLoanPrimaryViewResponse.setTenure(primaryTermLoanDetail.getTenure() != null ? primaryTermLoanDetail.getTenure() / 12 : null);
-			termLoanPrimaryViewResponse.setSharePriceFace(primaryTermLoanDetail.getSharePriceFace());
-			termLoanPrimaryViewResponse.setSharePriceMarket(primaryTermLoanDetail.getSharePriceMarket());
+			//termLoanPrimaryViewResponse.setSharePriceFace(primaryTermLoanDetail.getSharePriceFace());
+			//termLoanPrimaryViewResponse.setSharePriceMarket(primaryTermLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
 				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
 			if (primaryTermLoanDetail.getProductId() != null)
@@ -408,8 +408,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
 						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
-			termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
-					? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
+			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
+			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 		// get value of proposed product and set in response
 		try {
@@ -435,7 +435,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			logger.error("Problem to get Data of Achievement Details {}", e);
 		}
 
-		// get value of Credit Rating and set in response
+		/*// get value of Credit Rating and set in response
 		try {
 			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
 					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
@@ -515,7 +515,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			termLoanPrimaryViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
-		}
+		}*/
 		
 		//get value of Director's Background and set in response
 		
@@ -524,9 +524,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
 					for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 						DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-						directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-						directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
@@ -536,12 +534,13 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						}
 						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 						directorBackgroundDetailResponse.setDirectorsName(directorName);
-						directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
 						directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
 						directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
 						directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 						directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 						directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+						directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+						directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 					}
 					termLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
@@ -549,7 +548,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					logger.error("Problem to get Data of Director's Background {}", e);
 				}
 
-		// get value of Past Financial and set in response
+		/*// get value of Past Financial and set in response
 		try {
 			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
 			if (pastFinancialEstimatesDetailRequestList.size()>4){
@@ -575,7 +574,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Security Details {}", e);
-		}
+		}*/
 
 		// get value of Financial Arrangements and set in response
 		try {
@@ -591,17 +590,17 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
 				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				if (financialArrangementsDetailRequest.getLenderType() != null){
-					financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
-				}
+//				if (financialArrangementsDetailRequest.getLenderType() != null){
+//					financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+//				}
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
 				if (financialArrangementsDetailRequest.getLoanType() != null){
 					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				}
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
-					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+//				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
+//					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			termLoanPrimaryViewResponse
@@ -611,7 +610,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
 
-		// get Finance Means Details and set in response
+		/*// get Finance Means Details and set in response
 		try {
 			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
 					.getMeansOfFinanceList(toApplicationId, userId);
@@ -660,7 +659,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
-
+*/
 		// get list of Brochure
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);

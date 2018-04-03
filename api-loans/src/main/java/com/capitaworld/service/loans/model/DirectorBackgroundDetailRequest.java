@@ -23,11 +23,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private Long id;
 
-	private String achivements;
-
 	private String address;
-
-	private Double age;
 	
 	private Double networth;
 
@@ -46,13 +42,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private String directorsName;
 
-	private String qualification;
-
 	private Double totalExperience;
 	
 	private Boolean isActive = true;
-	
-	
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date dob;
+
+	private String mobile;
 	
 
 	public Boolean getIsActive() {
@@ -74,13 +71,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.id = id;
 	}
 
-	public String getAchivements() {
-		return this.achivements;
-	}
 
-	public void setAchivements(String achivements) {
-		this.achivements = achivements;
-	}
 
 	public String getAddress() {
 		return this.address;
@@ -90,13 +81,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.address = address;
 	}
 
-	public Double getAge() {
-		return this.age;
-	}
 
-	public void setAge(Double age) {
-		this.age = age;
-	}
 
 	public Long getApplicationId() {
 		return this.applicationId;
@@ -132,13 +117,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.directorsName = directorsName;
 	}
 
-	public String getQualification() {
-		return this.qualification;
-	}
 
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
-	}
 
 	public Double getTotalExperience() {
 		return this.totalExperience;
@@ -178,6 +157,22 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setDesignation(String designation) {
 		this.designation = designation;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 	public static void printFields(Object obj) throws Exception {

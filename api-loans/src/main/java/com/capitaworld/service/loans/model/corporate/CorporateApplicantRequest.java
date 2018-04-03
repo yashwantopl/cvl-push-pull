@@ -23,7 +23,7 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private Long applicationId;
 
-	private String aboutUs;
+	//private String aboutUs;
 
 	private String panNo;
 
@@ -33,7 +33,7 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Integer establishmentYear;
 
-	private String groupName;
+	//private String groupName;
 
 	private Long keyVericalFunding;
 
@@ -45,15 +45,11 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Address firstAddress;
 
-	private Address secondAddress;
-
-	private Boolean sameAs;
-
 	private String websiteAddress;
 
 	private String landlineNo;
 	
-	private List<CorporateCoApplicantRequest> coApplicants = Collections.emptyList();
+	//private List<CorporateCoApplicantRequest> coApplicants = Collections.emptyList();
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -70,6 +66,9 @@ public class CorporateApplicantRequest implements Serializable {
 	private Long keyVerticalSector;
  	
 	private Long keyVerticalSubsector;
+
+	private String gstIn;
+	private String email;
 
 	public Long getUserId() {
 		return userId;
@@ -106,13 +105,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public String getAboutUs() {
-		return this.aboutUs;
-	}
 
-	public void setAboutUs(String aboutUs) {
-		this.aboutUs = aboutUs;
-	}
 
 	public Integer getConstitutionId() {
 		return this.constitutionId;
@@ -138,13 +131,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.establishmentYear = establishmentYear;
 	}
 
-	public String getGroupName() {
-		return this.groupName;
-	}
 
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
 
 	public Long getKeyVericalFunding() {
 		return this.keyVericalFunding;
@@ -178,13 +165,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.organisationName = organisationName;
 	}
 
-	public Boolean getSameAs() {
-		return sameAs;
-	}
 
-	public void setSameAs(Boolean sameAs) {
-		this.sameAs = sameAs;
-	}
 
 	public String getWebsiteAddress() {
 		return this.websiteAddress;
@@ -218,13 +199,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.firstAddress = firstAddress;
 	}
 
-	public Address getSecondAddress() {
-		return secondAddress;
-	}
 
-	public void setSecondAddress(Address secondAddress) {
-		this.secondAddress = secondAddress;
-	}
 
 	public List<Long> getSubsectors() {
 		return subsectors;
@@ -266,13 +241,6 @@ public class CorporateApplicantRequest implements Serializable {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public List<CorporateCoApplicantRequest> getCoApplicants() {
-		return coApplicants;
-	}
-
-	public void setCoApplicants(List<CorporateCoApplicantRequest> coApplicants) {
-		this.coApplicants = coApplicants;
-	}
 
 	public Long getKeyVerticalSector() {
 		return keyVerticalSector;
@@ -289,6 +257,20 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setKeyVerticalSubsector(Long keyVerticalSubsector) {
 		this.keyVerticalSubsector = keyVerticalSubsector;
 	}
-	
-	
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }

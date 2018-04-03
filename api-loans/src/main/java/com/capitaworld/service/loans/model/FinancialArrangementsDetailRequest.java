@@ -16,7 +16,7 @@ public class FinancialArrangementsDetailRequest {
 
 	private Double amount;
 
-	private Integer facilityNatureId;
+	/*private Integer facilityNatureId;*/
 
 	private String financialInstitutionName;
 	
@@ -25,7 +25,7 @@ public class FinancialArrangementsDetailRequest {
 	
 	private Integer loanType;
 	
-	private Integer lenderType;
+	/*private Integer lenderType;*/
 	
 	private Double outstandingAmount;
 	
@@ -65,7 +65,7 @@ public class FinancialArrangementsDetailRequest {
 
 
 
-	public Integer getFacilityNatureId() {
+	/*public Integer getFacilityNatureId() {
 		return facilityNatureId;
 	}
 
@@ -73,7 +73,7 @@ public class FinancialArrangementsDetailRequest {
 
 	public void setFacilityNatureId(Integer facilityNatureId) {
 		this.facilityNatureId = facilityNatureId;
-	}
+	}*/
 
 
 
@@ -113,7 +113,7 @@ public class FinancialArrangementsDetailRequest {
 
 
 
-	public Integer getLenderType() {
+/*	public Integer getLenderType() {
 		return lenderType;
 	}
 
@@ -121,7 +121,7 @@ public class FinancialArrangementsDetailRequest {
 
 	public void setLenderType(Integer lenderType) {
 		this.lenderType = lenderType;
-	}
+	}*/
 
 
 
