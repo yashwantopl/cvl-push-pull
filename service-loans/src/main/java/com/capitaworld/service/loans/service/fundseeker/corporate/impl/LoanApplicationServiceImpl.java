@@ -518,6 +518,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
 				applicationRequest.setTypeOfPayment(applicationMaster.getTypeOfPayment());
 				applicationRequest.setAmount(applicationMaster.getPaymentAmount());
+				applicationRequest.setGstIn(corporateApplicantDetail.getGstIn());
 			}
 		}
 		return applicationRequest;
