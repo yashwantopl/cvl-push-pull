@@ -48,7 +48,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.ID); //--------------------put check for Ignore properties
+            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_PROFILE); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
