@@ -1,8 +1,7 @@
 package com.capitaworld.service.loans.service.scoring;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ScoringRequestLoans;
-import com.capitaworld.service.loans.model.ScoringResponseLoans;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import org.springframework.http.ResponseEntity;
 
 public interface ScoringService {

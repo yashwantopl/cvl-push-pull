@@ -16,7 +16,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ScoringRequestLoans;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -141,7 +141,8 @@ public class LoansClient {
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
 
-	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_score/corporate";
+	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
+
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;

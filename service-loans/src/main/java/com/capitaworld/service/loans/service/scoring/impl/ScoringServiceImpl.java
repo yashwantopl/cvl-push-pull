@@ -1,40 +1,28 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
-import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.ScoringRequestLoans;
-import com.capitaworld.service.loans.model.ScoringResponseLoans;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PastFinancialEstiamateDetailsService;
-import com.capitaworld.service.loans.service.irr.impl.IrrServiceImpl;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.oneform.enums.Denomination;
-import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
-import com.capitaworld.service.scoring.model.ModelParameterResponse;
-import com.capitaworld.service.scoring.model.ScoringRequest;
-import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.model.*;
+import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.ibm.icu.util.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -72,13 +60,16 @@ public class ScoringServiceImpl implements ScoringService{
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
 
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
         Long applicationId=scoringRequestLoans.getApplicationId();
-        Long scoreModelId = scoringRequestLoans.getScoringModelId();
+        Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        ScoringResponse calculateScore=null;
+        ScoringResponse scoringResponseMain=null;
 
         // start Get GST Parameter
-        String gstNumber="33GSPTN1361G1ZD";
+
+        String gstNumber="33GSPTN1361G1ZD";  // remaining
+
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=null;
         try
@@ -143,6 +134,8 @@ public class ScoringServiceImpl implements ScoringService{
         {
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
@@ -167,7 +160,7 @@ public class ScoringServiceImpl implements ScoringService{
                 Map<String, Object> map = new HashMap<>();
                 switch (modelParameterResponse.getName()) {
 
-                    case "COMBINED_NETWORTH":
+                    case ScoreParameter.COMBINED_NETWORTH:
                     {
                         try
                         {
@@ -196,7 +189,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "CUSTOMER_ASSOCIATE_CONCERN":
+                    case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
                         // remaining
 
@@ -205,7 +198,7 @@ public class ScoringServiceImpl implements ScoringService{
                         break;
 
                     }
-                    case "CIBIL_TRANSUNION_SCORE":
+                    case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
                         // remaining
 
@@ -214,7 +207,7 @@ public class ScoringServiceImpl implements ScoringService{
                         break;
                     }
 
-                    case "EXPERIENCE_IN_THE_BUSINESS":
+                    case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
                     {
                         // remaining
 
@@ -222,7 +215,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "DEBT_EQUITY_RATIO": {
+                    case ScoreParameter.DEBT_EQUITY_RATIO: {
 
                         try
                         {
@@ -260,7 +253,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "TOL_TNW ": {
+                    case ScoreParameter.TOL_TNW : {
 
                         try
                         {
@@ -291,7 +284,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "AVERAGE_CURRENT_RATIO":
+                    case ScoreParameter.AVERAGE_CURRENT_RATIO:
                     {
                         try
                         {
@@ -312,7 +305,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "WORKING_CAPITAL_CYCLE": {
+                    case ScoreParameter.WORKING_CAPITAL_CYCLE: {
 
                         try
                         {
@@ -354,7 +347,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "AVERAGE_ANNUAL_GROWTH_GROSS_CASH":
+                    case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
                     {
                         try
                         {
@@ -403,7 +396,7 @@ public class ScoringServiceImpl implements ScoringService{
                         }
                         break;
                     }
-                    case "AVERAGE_ANNUAL_GROWTH_NET_SALE": {
+                    case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE: {
 
                         try
                         {
@@ -450,7 +443,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "AVERAGE_EBIDTA": {
+                    case ScoreParameter.AVERAGE_EBIDTA: {
 
                         try
                         {
@@ -504,7 +497,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS": {
+                    case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS: {
 
                         try
                         {
@@ -557,7 +550,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "AVERAGE_INTEREST_COV_RATIO":
+                    case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
                     {
                         try
                         {
@@ -598,7 +591,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                         break;
                     }
-                    case "NO_OF_CUSTOMER":
+                    case ScoreParameter.NO_OF_CUSTOMER:
                     {
                         try {
                             if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer()))
@@ -620,7 +613,7 @@ public class ScoringServiceImpl implements ScoringService{
                         map.put("NO_OF_CUSTOMER",null);
                         break;
                     }
-                    case "CONCENTRATION_CUSTOMER":
+                    case ScoreParameter.CONCENTRATION_CUSTOMER:
                     {
                         try {
                             if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration()))
@@ -642,7 +635,7 @@ public class ScoringServiceImpl implements ScoringService{
                         map.put("CONCENTRATION_CUSTOMER",null);
                         break;
                     }
-                    case "CREDIT_SUMMATION":
+                    case ScoreParameter.CREDIT_SUMMATION:
                     {
                         // remaining
                         map.put("CREDIT_SUMMATION",null);
@@ -658,37 +651,30 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setDataList(fundSeekerInputRequestList);
 
             try {
-                 calculateScore = scoringClient.calculateScore(scoringRequest);
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             }
             catch (Exception e) {
                 logger.error("error while calling scoring");
                 e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.OK.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
-            if (!com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(calculateScore)) {
-                score = calculateScore.getScore();
-                scale = calculateScore.getScale();
-                interpretation = calculateScore.getInterpretation();
-
-                logger.info("Total Use score from scoring module------->" + score);
-                logger.info("Scale from scoring module------->" + scale);
-                logger.info("Interpretation from scoring module------->" + interpretation);
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.error("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
-        if(CommonUtils.isObjectNullOrEmpty(calculateScore) || CommonUtils.isObjectNullOrEmpty(calculateScore.getScore()))
-        {
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.OK.value());
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        ScoringResponseLoans scoringResponseLoans=new ScoringResponseLoans();
-        BeanUtils.copyProperties(calculateScore,scoringResponseLoans);
-
-        LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-        loansResponse.setData(scoringResponseLoans);
+        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
