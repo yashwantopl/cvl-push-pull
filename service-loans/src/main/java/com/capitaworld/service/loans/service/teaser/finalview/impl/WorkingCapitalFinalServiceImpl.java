@@ -830,9 +830,9 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
 			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-				directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-				directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
@@ -842,12 +842,14 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				}
 				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 				directorBackgroundDetailResponse.setDirectorsName(directorName);
-				directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+				//.setQualification(directorBackgroundDetailRequest.getQualification());
 				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
 				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
 				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
+				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 			}
 			response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
@@ -951,11 +953,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
 				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+		//		financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
 				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+		//		financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}

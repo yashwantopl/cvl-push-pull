@@ -118,7 +118,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
-	@Override
+	/*@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
 		Integer businessTypeId=null; // get from irr-cw industry mapping
@@ -324,8 +324,8 @@ public class IrrServiceImpl implements IrrService{
 	@Override
 	public FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception {
 		// TODO Auto-generated method stub
-		/*JSONObject jSONObject = new JSONObject();
-		IrrRequest irrRequest = new IrrRequest();*/
+		*//*JSONObject jSONObject = new JSONObject();
+		IrrRequest irrRequest = new IrrRequest();*//*
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
 		LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
@@ -1168,16 +1168,16 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 				
 				
 		// FinancialInput Object Set
-		/*irrRequest.setFinancialInputRequest(financialInputRequest);
-		jSONObject.put("irrRequest",irrRequest);*/
+		*//*irrRequest.setFinancialInputRequest(financialInputRequest);
+		jSONObject.put("irrRequest",irrRequest);*//*
 		return financialInputRequest;
 	}
 
 	@Override
 	public FinancialInputRequest coActIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception {
 		// TODO Auto-generated method stub
-		/*JSONObject jSONObject = new JSONObject();
-		IrrRequest irrRequest = new IrrRequest();*/
+		*//*JSONObject jSONObject = new JSONObject();
+		IrrRequest irrRequest = new IrrRequest();*//*
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		ProfitibilityStatementDetail profitibilityStatementDetail = new ProfitibilityStatementDetail();
 		BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
@@ -2512,5 +2512,5 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 					qualitativeInputSheetTradRequest.setContingentLiabilities((pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()) *denom);//-----formula based
 
 		return qualitativeInputSheetTradRequest;		
-	}
+	}*/
 }

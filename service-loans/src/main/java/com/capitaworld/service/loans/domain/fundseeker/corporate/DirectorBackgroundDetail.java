@@ -31,13 +31,13 @@ public class DirectorBackgroundDetail implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@Lob
-	private String achivements;
+	/*@Lob
+	private String achivements;*/
 
 	@Lob
 	private String address;
 
-	private Double age;
+	/*private Double age;*/
 	
 	private Double din;
 
@@ -81,11 +81,17 @@ public class DirectorBackgroundDetail implements Serializable {
 	@Column(name="directors_name")
 	private String directorsName;
 
-	@Lob
-	private String qualification;
+	/*@Lob
+	private String qualification;*/
 
 	@Column(name="total_experience")
 	private Double totalExperience;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="dob")
+	private Date dob;
+
+	private String mobile;
 
 	public DirectorBackgroundDetail() {
 	}
@@ -98,13 +104,7 @@ public class DirectorBackgroundDetail implements Serializable {
 		this.id = id;
 	}
 
-	public String getAchivements() {
-		return this.achivements;
-	}
 
-	public void setAchivements(String achivements) {
-		this.achivements = achivements;
-	}
 
 	public String getAddress() {
 		return this.address;
@@ -114,13 +114,7 @@ public class DirectorBackgroundDetail implements Serializable {
 		this.address = address;
 	}
 
-	public Double getAge() {
-		return this.age;
-	}
 
-	public void setAge(Double age) {
-		this.age = age;
-	}
 
 	public LoanApplicationMaster getApplicationId() {
 		return this.applicationId;
@@ -195,13 +189,6 @@ public class DirectorBackgroundDetail implements Serializable {
 		this.directorsName = directorsName;
 	}
 
-	public String getQualification() {
-		return this.qualification;
-	}
-
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
-	}
 
 	public Double getTotalExperience() {
 		return this.totalExperience;
@@ -243,8 +230,19 @@ public class DirectorBackgroundDetail implements Serializable {
 		this.designation = designation;
 	}
 
-	
-	
-	
+	public Date getDob() {
+		return dob;
+	}
 
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 }
