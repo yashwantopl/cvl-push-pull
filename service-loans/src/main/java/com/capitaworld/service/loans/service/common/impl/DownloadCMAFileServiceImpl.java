@@ -147,7 +147,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
                 
 			}
 			// Operating Stmt. ends
-                 setyear(sheet1, temp, j, total_Column, true);
+                 setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true);
 			// Liabilities Starts
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
 					.getByApplicationId(applicationId);
@@ -205,7 +205,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}
 			// Liabilities Ends
-			setyear(sheet2, temp, j,total_Column, true);
+			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true);
 
 			// Asset Starts
 
@@ -282,7 +282,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			}
 
 			// Asset Ends
-			setyear(sheet3, temp, j,total_Column, true);
+			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true);
 			//documentResponse =fileUpload(wb, applicationId, productDocumentMappingId);
 			logger.info("Exit with cmaFileGenerator() {} ", documentResponse);
 
@@ -406,7 +406,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				j++;
 
 			}
-			setyear(sheet1, temp, j ,total_Column, false);
+			setyear(sheet1, temp, profitibilityStatementDetailsList.size() ,total_Column, false);
 
 		List<BalanceSheetDetail>	balanceSheetDetailsList = balanceSheetDetailRepository.getByApplicationId(applicationId);
 			j = 2;
@@ -548,7 +548,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}			// Asset Ends
             
-			setyear(sheet2, temp, j,total_Column, true);
+			setyear(sheet2, temp, balanceSheetDetailsList.size(),total_Column, true);
 			logger.info("Exit with cmaFileGenerator() {} ");
 
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
@@ -562,22 +562,20 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	
 	public void setyear(Sheet sheet , Double temp ,int j, Double total_Column, Boolean flag) {
 		Calendar  calendar =Calendar.getInstance();
-		Double tillYear =(double)calendar.get(Calendar.YEAR);
-		
-		Double totalYear= temp+total_Column-(--j) ;
+ 		Double tillYear =(double)calendar.get(Calendar.YEAR);
+       		
+		Double totalYear= temp+total_Column+(4- j) ;
 		if(j<2) {
 			temp=tillYear-3;
-			totalYear=temp+total_Column;  
+			totalYear=temp+total_Column+(4-j);  
 		}
-		for (int i = j; temp <totalYear;temp++) {
+		for (int i = j; temp <totalYear;) {
 			if(flag) {
-				sheet.getRow(4).getCell(++i).setCellValue(temp);
-				System.out.println(sheet.getRow(4).getCell(i).getNumericCellValue());
+				sheet.getRow(4).getCell(++i).setCellValue(++temp);
+			
 			}
 			else {
-				sheet.getRow(3).getCell(++i).setCellValue(temp);
-				System.out.println(sheet.getRow(3).getCell(i).getNumericCellValue());
-				System.out.println(sheet.getRow(4).getCell(i).getStringCellValue());
+				sheet.getRow(3).getCell(++i+1).setCellValue(++temp);
 			}
 				
 		}
