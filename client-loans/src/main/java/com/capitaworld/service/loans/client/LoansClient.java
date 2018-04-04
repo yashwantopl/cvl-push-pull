@@ -645,7 +645,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
-		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_SAVE).concat("/" + applicationId);
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
 		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
