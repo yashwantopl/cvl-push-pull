@@ -56,9 +56,9 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
 
             // saving Data
-            saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId,
+           /* saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId,
                     corporateMcqRequest.getOverseasNetworkIds());
-
+*/
             //setting flag
             loanApplicationRepository.setIsFinalMcqMandatoryFilled(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getFinalMcqFilled()) ? false : corporateMcqRequest.getFinalMcqFilled());
             loanApplicationRepository.setFinalFilledCount(corporateMcqRequest.getApplicationId(), finalUserId,corporateMcqRequest.getFinalFilledCount());
@@ -92,7 +92,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             }
             CorporateMcqRequest corporateMcqRequest = new CorporateMcqRequest();
             BeanUtils.copyProperties(loanDetail, corporateMcqRequest);
-            corporateMcqRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
+         //   corporateMcqRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
             return corporateMcqRequest;
         } catch (Exception e) {
             logger.error("Error while getting Final Mcq Details:-");
