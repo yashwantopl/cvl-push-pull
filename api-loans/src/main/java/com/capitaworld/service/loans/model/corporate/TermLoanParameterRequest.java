@@ -182,6 +182,16 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
 
+	private Integer ddrFlow;
+
+	public Integer getDdrFlow() {
+		return ddrFlow;
+	}
+
+	public void setDdrFlow(Integer ddrFlow) {
+		this.ddrFlow = ddrFlow;
+	}
+
 	public Integer getMinChequeBounced() {
 		return minChequeBounced;
 	}
