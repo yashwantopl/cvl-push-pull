@@ -634,6 +634,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
