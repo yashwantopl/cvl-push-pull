@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.boot;
 
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.scoring.ScoringClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,9 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.gst.url}")
 	private String gstBaseUrl;
+
+	@Value("${capitaworld.service.analyzer.url}")
+	private String analyzerBaseUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -168,6 +172,13 @@ public class LoansMain {
 		GstClient gstClient = new GstClient(gstBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gstClient);
 		return gstClient;
+	}
+
+	@Bean
+	public AnalyzerClient analyzerClient() {
+		AnalyzerClient analyzerClient = new AnalyzerClient(analyzerBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
+		return analyzerClient;
 	}
 
 }

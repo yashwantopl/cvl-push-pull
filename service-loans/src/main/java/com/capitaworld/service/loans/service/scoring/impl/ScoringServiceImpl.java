@@ -1,10 +1,16 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
@@ -12,7 +18,10 @@ import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.scoring.model.*;
+import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
+import com.capitaworld.service.scoring.model.ModelParameterResponse;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.ibm.icu.util.Calendar;
 import org.slf4j.Logger;
@@ -62,6 +71,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+
+    @Autowired
+    private AnalyzerClient analyzerClient;
 
 
     @Override
@@ -217,9 +229,16 @@ public class ScoringServiceImpl implements ScoringService{
 
                     case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
                     {
-                        // remaining
+                        Double directorExperience=directorBackgroundDetailsRepository.getSumOfDirectorsExperience(applicationId);
 
-                        map.put("EXPERIENCE_IN_THE_BUSINESS",null);
+                        if(!CommonUtils.isObjectNullOrEmpty(directorExperience))
+                        {
+                            map.put("EXPERIENCE_IN_THE_BUSINESS",directorExperience);
+                        }
+                        else
+                        {
+                            map.put("EXPERIENCE_IN_THE_BUSINESS",null);
+                        }
 
                         break;
                     }
@@ -640,8 +659,44 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CREDIT_SUMMATION:
                     {
-                        // remaining
-                        map.put("CREDIT_SUMMATION",null);
+
+                        Double totalCredit=null;
+                        Double projctedSales=null;
+                        Double creditSummation=null;
+
+                        // start get total credit from Analyser
+                        ReportRequest reportRequest = new ReportRequest();
+                        reportRequest.setApplicationId(applicationId);
+                        try {
+                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                            Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
+                                    Data.class);
+                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                                totalCredit=data.getTotalCredit();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            logger.error("error while calling analyzer client");
+                        }
+
+                        // get get total credit from Analyser
+
+                        // start get projected sales from GST client
+
+                        projctedSales=gstCalculation.getProjectedSales();
+
+                        // end get projected sales from GST client
+
+
+                        if(!(CommonUtils.isObjectNullOrEmpty(totalCredit) || CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0))
+                        {
+                            creditSummation=(totalCredit*12)/(projctedSales*12);
+                            map.put("CREDIT_SUMMATION",creditSummation);
+                        }
+                        else
+                        {
+                            map.put("CREDIT_SUMMATION",null);
+                        }
                         break;
                     }
                 }
