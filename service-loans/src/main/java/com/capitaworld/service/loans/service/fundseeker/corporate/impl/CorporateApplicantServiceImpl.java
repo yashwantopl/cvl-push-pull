@@ -113,16 +113,16 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.ID);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_FINAL);
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
 
-			// save co-applicant details
+			/*// save co-applicant details
 			for (CorporateCoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
-			}
+			}*/
 
 			// industry data save
 			saveIndustry(applicantDetail.getApplicationId().getId(), applicantRequest.getIndustrylist());
@@ -164,7 +164,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -243,7 +243,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
 		}
 
-		// Setting Administrative Address
+		/*// Setting Administrative Address
 		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
 			if (from.getFirstAddress() != null) {
 				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
@@ -264,7 +264,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
 				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
 			}
-		}
+		}*/
 	}
 
 	private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
@@ -279,7 +279,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		address.setStateId(from.getRegisteredStateId());
 		address.setCountryId(from.getRegisteredCountryId());
 		to.setFirstAddress(address);
-		if (from.getSameAs() != null && from.getSameAs()) {
+		/*if (from.getSameAs() != null && from.getSameAs()) {
 			to.setSecondAddress(address);
 		} else {
 			address = new Address();
@@ -292,7 +292,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			address.setCountryId(from.getAdministrativeCountryId());
 			to.setSecondAddress(address);
 
-		}
+		}*/
 
 		// Setting Administrative Address
 	}

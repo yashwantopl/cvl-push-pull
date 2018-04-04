@@ -90,6 +90,16 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private Integer ddrStatusId;
 
+	private String gstIn;
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
 	public Integer getDdrStatusId() {
 		return ddrStatusId;
 	}

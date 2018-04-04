@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
+import com.capitaworld.service.loans.model.ddr.*;
+import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,16 +28,6 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRAuthorizedSignDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRCreditCardDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRCreditorsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFamilyDirectorsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFinancialSummary;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROfficeDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDROtherBankLoanDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRRelWithDbsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRVehiclesOwnedDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
@@ -43,18 +36,6 @@ import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
-import com.capitaworld.service.loans.model.ddr.DDRAuthorizedSignDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
-import com.capitaworld.service.loans.model.ddr.DDRCreditCardDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRCreditorsDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRFamilyDirectorsDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRFinancialSummaryRequest;
-import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDROfficeDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
-import com.capitaworld.service.loans.model.ddr.DDROtherBankLoanDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRRelWithDbsDetailsRequest;
-import com.capitaworld.service.loans.model.ddr.DDRVehiclesOwnedDetailsRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
@@ -63,16 +44,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Liabilities
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRAuthorizedSignDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRCreditCardDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRCreditorsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFamilyDirectorsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFinancialSummaryRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRFormDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROfficeDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDROtherBankLoanDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRRelWithDbsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.ddr.DDRVehiclesOwnedDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
@@ -142,7 +113,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 
 	@Autowired
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
-	
+
 	@Autowired
 	private OwnershipDetailsService ownershipDetailsService;
 	
@@ -190,7 +161,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
-	
+
+	@Autowired
+	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
+
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 * @throws Exception 
@@ -219,14 +193,14 @@ public class DDRFormServiceImpl implements DDRFormService{
 			
 			
 			//SAVE ALL LIST DATA
-			saveAuthorizedSignDetails(ddrFormDetailsRequest.getdDRAuthSignDetailsList(), userId,dDRFormDetails.getId());
+			/*saveAuthorizedSignDetails(ddrFormDetailsRequest.getdDRAuthSignDetailsList(), userId,dDRFormDetails.getId());
 			saveCreaditorsDetails(ddrFormDetailsRequest.getdDRCreditorsDetailsList(), userId, dDRFormDetails.getId());
-			saveCreditCardDetails(ddrFormDetailsRequest.getdDRCreditCardDetailsList(), userId, dDRFormDetails.getId());
+			saveCreditCardDetails(ddrFormDetailsRequest.getdDRCreditCardDetailsList(), userId, dDRFormDetails.getId());*/
 			saveOfficeDetails(ddrFormDetailsRequest.getdDROperatingOfficeList(), userId,DDRFrames.OPERATING_OFFICE.getValue(),dDRFormDetails.getId());
 			saveOfficeDetails(ddrFormDetailsRequest.getdDRRegisteredOfficeList(), userId,DDRFrames.REGISTERED_OFFICE.getValue(),dDRFormDetails.getId());
-			saveOtherBankLoanDetails(ddrFormDetailsRequest.getdDROtherBankLoanDetailsList(), userId,dDRFormDetails.getId());
+			/*saveOtherBankLoanDetails(ddrFormDetailsRequest.getdDROtherBankLoanDetailsList(), userId,dDRFormDetails.getId());
 			saveRelWithDBSDetails(ddrFormDetailsRequest.getdDRRelWithDbsDetailsList(), userId,dDRFormDetails.getId());
-			saveVehiclesOwnedDetails(ddrFormDetailsRequest.getdDRVehiclesOwnedDetailsList(), userId,dDRFormDetails.getId());
+			saveVehiclesOwnedDetails(ddrFormDetailsRequest.getdDRVehiclesOwnedDetailsList(), userId,dDRFormDetails.getId());*/
 			saveFinancialSummary(ddrFormDetailsRequest.getdDRFinancialSummaryList(), userId,dDRFormDetails.getId());
 			saveFamilyDirectorsDetails(ddrFormDetailsRequest.getdDRFamilyDirectorsList(), userId, dDRFormDetails.getId());
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "+dDRFormDetails.getId());	
@@ -252,16 +226,17 @@ public class DDRFormServiceImpl implements DDRFormService{
 			BeanUtils.copyProperties(dDRFormDetails, dDRFormDetailsRequest);
 			dDRFormDetailsRequest.setOutsideLoansString(CommonUtils.checkString(dDRFormDetails.getOutsideLoans()));
 			dDRFormDetailsRequest.setLoansFromFamilyMembersRelativeString(CommonUtils.checkString(dDRFormDetails.getLoansFromFamilyMembersRelative()));
-			dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
+			/*dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRCreditCardDetailsList(getCreditCardDetails(ddrFormId));
-			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));*/
 			dDRFormDetailsRequest.setdDROperatingOfficeList(getOfficeDetails(ddrFormId, DDRFrames.OPERATING_OFFICE.getValue()));
 			dDRFormDetailsRequest.setdDRRegisteredOfficeList(getOfficeDetails(ddrFormId, DDRFrames.REGISTERED_OFFICE.getValue()));
-			dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
+			/*dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
-			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));*/
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId,appId,userId));
+			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId,appId,userId));
 			dDRFormDetailsRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
 			dDRFormDetailsRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
 			dDRFormDetailsRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
@@ -269,6 +244,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		} else {
 			dDRFormDetailsRequest = new DDRFormDetailsRequest();
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null,appId,userId));
+			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(null,appId,userId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
 			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		}
@@ -782,6 +758,51 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 		return Collections.emptyList();
 	}
+
+
+	public List<DDRExistingBankerDetailRequest> getExistingBankerDetails(Long ddrFormId, Long appId, Long userId){
+		try {
+			List<DDRExistingBankerDetailRequest> responseList = null;
+			if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+				List<DDRExistingBankerDetails> objList = ddrExistingBankerDetailsRepository.getListByDDRFormId(ddrFormId);
+				if(!CommonUtils.isListNullOrEmpty(objList)) {
+					responseList = new ArrayList<>(objList.size());
+					DDRExistingBankerDetailRequest response = null;
+					for(DDRExistingBankerDetails obj : objList) {
+						response = new DDRExistingBankerDetailRequest();
+						BeanUtils.copyProperties(obj, response);
+						try {
+							DDRExistingBankerDetailRequest.printFields(response);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						responseList.add(response);
+					}
+					return responseList;
+				}
+			}
+
+			try {
+				List<FinancialArrangementsDetailRequest> finArrangeReqList = financialArrangementDetailsService.getFinancialArrangementDetailsList(appId, userId);
+				DDRExistingBankerDetailRequest response = null;
+				responseList = new ArrayList<>(finArrangeReqList.size());
+				for(FinancialArrangementsDetailRequest finReq : finArrangeReqList) {
+					response = new DDRExistingBankerDetailRequest();
+					response.setFinancialInstitutionName(finReq.getFinancialInstitutionName());
+					responseList.add(response);
+				}
+			} catch (Exception e) {
+				logger.info("Throw Exception While Get DDRExistingBankerDetailRequest Details");
+				e.printStackTrace();
+			}
+			return responseList;
+		} catch (Exception e) {
+			logger.info("DDR ===============> Throw Exception While Get DDRExistingBankerDetailRequest--------------DDR FORM ID-->" + ddrFormId);
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+	}
 	
 	public void saveFamilyDirectorsDetails(List<DDRFamilyDirectorsDetailsRequest> requestList, Long userId, Long ddrFormId) {
 		try {
@@ -938,7 +959,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		
-		//OWNERSHIP DETAILS :- LINENO:12
+		/*//OWNERSHIP DETAILS :- LINENO:12
 		try {
 			List<OwnershipDetailRequest> ownershipReqList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
 			List<OwnershipDetailResponse> ownershipRespList = new ArrayList<>(ownershipReqList.size());
@@ -954,7 +975,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Primary Ownership Details in DDR OneForm");
 			e.printStackTrace();
-		}
+		}*/
 		
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :- LINENO:21
 		try {
@@ -964,8 +985,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 			for (FinancialArrangementsDetailRequest fincArrngDetailReq : fincArrngDetailReqList) {
 				fincArragDetailResp = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(fincArrngDetailReq, fincArragDetailResp);
-				fincArragDetailResp.setFacilityNature(NatureFacility.getById(fincArrngDetailReq.getFacilityNatureId()).getValue());
-				if(!CommonUtils.isObjectNullOrEmpty(fincArrngDetailReq.getRelationshipSince())) {
+				//fincArragDetailResp.setFacilityNature(NatureFacility.getById(fincArrngDetailReq.getFacilityNatureId()).getValue());
+				/*if(!CommonUtils.isObjectNullOrEmpty(fincArrngDetailReq.getRelationshipSince())) {
 					try {
 						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(fincArrngDetailReq.getRelationshipSince().longValue());
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
@@ -979,7 +1000,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 						logger.info("Throw Exception while get relationship sinc year in DDR OneForm");
 						e.printStackTrace();
 					}	
-				}
+				}*/
 				FinancialArrangementsDetailResponse.printFields(fincArragDetailResp);
 				fincArrngDetailResList.add(fincArragDetailResp);
 			}
@@ -990,13 +1011,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 		
 		
-		//SECURITY DETAIL :- LINENO:12
+		/*//SECURITY DETAIL :- LINENO:12
 		try {
 			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 		//DIRECTOR BACKGROUND  DETAIL :- LINENO:12
@@ -1026,7 +1047,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		response.setdDRCMACalculationList(getCMAandCOActDetails(applicationId));
 		
 		
-		try {
+		/*try {
 			List<ReferencesRetailDetail> referencesRetailList = referenceRetailDetailsRepository.listReferencesRetailFromAppId(applicationId);
 			List<ReferenceRetailDetailsRequest> referencesResponseList = new ArrayList<>(referencesRetailList.size());
 			ReferenceRetailDetailsRequest referencesResponse = null;
@@ -1040,7 +1061,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Reference Details in DDR OneForm");
 			e.printStackTrace();
-		}
+		}*/
 		return response; 
 	}
 	
