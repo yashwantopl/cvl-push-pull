@@ -224,9 +224,9 @@ public class IrrServiceImpl implements IrrService{
 			if(isCmaUploaded)			
 			irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId,appId,industry,denom));
 			
-			// if coAct filled
+			/*// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));*/
 			
 			
 			
