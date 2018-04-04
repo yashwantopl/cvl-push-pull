@@ -56,6 +56,13 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private GstClient gstClient;
 
+    @Autowired
+    private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+
+
+    @Autowired
+    private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
@@ -68,7 +75,10 @@ public class ScoringServiceImpl implements ScoringService{
 
         // start Get GST Parameter
 
-        String gstNumber="33GSPTN1361G1ZD";  // remaining
+        //String gstNumber="33GSPTN1361G1ZD";
+
+        String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
+        Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=null;
@@ -172,8 +182,6 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(termLoans))
                                 termLoans = 0.0;
 
-                            Double loanAmount = 0.0; // remaining
-
                             if((termLoans+loanAmount)!=0)
                                 map.put("COMBINED_NETWORTH", ((networthSum)/(termLoans+loanAmount))*100);
                             else
@@ -260,9 +268,6 @@ public class ScoringServiceImpl implements ScoringService{
                             Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
                             if (CommonUtils.isObjectNullOrEmpty(tol))
                                 tol = 0.0;
-
-
-                            Double loanAmount = 0.0; // remaining
 
                             Double tnw = assetsDetailsTY.getTangibleNetWorth();
                             if (CommonUtils.isObjectNullOrEmpty(tnw))
@@ -477,8 +482,6 @@ public class ScoringServiceImpl implements ScoringService{
                             Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
                             if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
                                 termLoansTy = 0.0;
-
-                            Double loanAmount = 0.0; // remaining
 
                             Double termLoansEBIDTA = termLoansTy + loanAmount;
 
