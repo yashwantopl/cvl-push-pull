@@ -3,6 +3,10 @@ package com.capitaworld.service.loans.service.irr.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,32 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalUnsecureLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalUnsecuredLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinalWorkingCapitalLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -78,7 +57,7 @@ public class IrrServiceImpl implements IrrService{
 	AssetsDetailsRepository assetsDetailsRepository;
 	
 	@Autowired
-	PastFinancialEstiamateDetailsService pastFinancialEstiamateDetailsService;
+	CorporateFinalInfoService corporateFinalInfoService;
 	
 	@Autowired
 	ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
@@ -87,13 +66,13 @@ public class IrrServiceImpl implements IrrService{
 	BalanceSheetDetailRepository balanceSheetDetailRepository;
 
 	@Autowired
-	FinalTermLoanDetailRepository finalTermLoanDetailRepository;
+	CorporateMcqDetailRepository corporateMcqDetailRepository;
 	
-	@Autowired
+	/*@Autowired
 	FinalWorkingCapitalLoanDetailRepository finalWorkingCapitalLoanDetailRepository;
 	
 	@Autowired
-	FinalUnsecuredLoanDetailRepository finalUnsecuredLoanDetailRepository;
+	FinalUnsecuredLoanDetailRepository finalUnsecuredLoanDetailRepository;*/
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -118,12 +97,12 @@ public class IrrServiceImpl implements IrrService{
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
-	/*@Override
+	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
 		// TODO Auto-generated method stub
 		Integer businessTypeId=null; // get from irr-cw industry mapping
 		//businessTypeId=3;   // temp
-		Double industryRiskScore=0.0;;
+		Double industryRiskScore=0.0;
 		//industryRiskScore=8.5; //temp
 		String industry="";
 		//industry="E - Commerce";
@@ -231,23 +210,23 @@ public class IrrServiceImpl implements IrrService{
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
 			{
 				//---- Service
-				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId, applicationMaster.getProductId(), denom));
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,denom));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId)
 			{
 				//---- Trading
-				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId, applicationMaster.getProductId(), denom));
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
 			}
 			
 		
 			
 			// if CMA filled
 			if(isCmaUploaded)			
-			irrRequest.setFinancialInputRequest(cmaIrrMappingService(appId,industry,denom));
+			irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId,appId,industry,denom));
 			
-			// if coAct filled
+			/*// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(appId,industry,denom));
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));*/
 			
 			
 			
@@ -322,16 +301,16 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public FinancialInputRequest cmaIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception {
+	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
 		// TODO Auto-generated method stub
-		*//*JSONObject jSONObject = new JSONObject();
-		IrrRequest irrRequest = new IrrRequest();*//*
+		//JSONObject jSONObject = new JSONObject();
+		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
 		LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
 		AssetsDetails assetsDetails = new AssetsDetails();
-		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
-		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
 		//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
@@ -629,8 +608,8 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesFy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
-		// -----CONTIGENT LIABILITIES				
-		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() * denom));
+		// -----CONTIGENT LIABILITIES
+		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
 		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
 		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
@@ -896,7 +875,7 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesSy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
 		// -----CONTIGENT LIABILITIES		
-		financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-2).getContingentLiability() * denom));
+		financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
 		
 		
 		// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
@@ -1164,27 +1143,27 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					assetsDetails.setAdvancePaymentTaxes(0.0);
 				financialInputRequest.setShortTermLoansAdvancesTy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
 				// -----CONTIGENT LIABILITIES		
-				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-3).getContingentLiability() * denom));
+				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
 				
 				
 		// FinancialInput Object Set
-		*//*irrRequest.setFinancialInputRequest(financialInputRequest);
-		jSONObject.put("irrRequest",irrRequest);*//*
+		irrRequest.setFinancialInputRequest(financialInputRequest);
+		//jSONObject.put("irrRequest",irrRequest);
 		return financialInputRequest;
 	}
 
 	@Override
-	public FinancialInputRequest coActIrrMappingService(Long aplicationId,String industry,Long denom) throws Exception {
+	public FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
 		// TODO Auto-generated method stub
-		*//*JSONObject jSONObject = new JSONObject();
-		IrrRequest irrRequest = new IrrRequest();*//*
+		//JSONObject jSONObject = new JSONObject();
+		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		ProfitibilityStatementDetail profitibilityStatementDetail = new ProfitibilityStatementDetail();
 		BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
-		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
-		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
 				//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
@@ -1466,7 +1445,7 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 			balanceSheetDetail.setCashAndCashEquivalents(0.0);
 		financialInputRequest.setShortTermLoansAdvancesFy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
 		// -----CONTIGENT LIABILITIES				
-		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() * denom));
+		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt() * denom));
 		
 		// ----------------------------------------SECOND YEAR DATA---------------------------------------------------------------------------------------
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 2 YR========================================================
@@ -1719,11 +1698,11 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					balanceSheetDetail.setCashAndCashEquivalents(0.0);
 				financialInputRequest.setShortTermLoansAdvancesSy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
 				// -----CONTIGENT LIABILITIES				
-				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-2).getContingentLiability() * denom));
+				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
 				
 				// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 1 YR========================================================
-profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(aplicationId, currentYear-3+"");
+				profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfitibilityStatementDetail(aplicationId, currentYear-3+"");
 				
 				if(CommonUtils.isObjectNullOrEmpty(profitibilityStatementDetail)){
 					profitibilityStatementDetail = new ProfitibilityStatementDetail();
@@ -1972,7 +1951,7 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 					balanceSheetDetail.setShortTermLoansAndAdvances(0.0);
 				financialInputRequest.setShortTermLoansAdvancesTy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
 				// -----CONTIGENT LIABILITIES				
-				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest) ? 0.0 : (pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-3).getContingentLiability() * denom));
+				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
 				
 		// FinancialInput Object Set		
 		return financialInputRequest;
@@ -1987,7 +1966,9 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
-		LoanType type = CommonUtils.LoanType.getType(productId);
+
+		return setQualitativeInputManu(aplicationId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
+		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
 			// set 
@@ -2000,11 +1981,71 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 			return setUSLManufacturingQualitativeInput(aplicationId,userId,industryRiskScore,denom);
 			//break;
 				
-		}
-		return null;
+		}*/
 	}
 
-	public QualitativeInputSheetManuRequest setWCManufacturingQualitativeInput(Long aplicationId,Long userId,Double industryRiskScore,Long denom) throws Exception{
+	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
+		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
+
+		CorporateMcqDetail corporateMcqDetail = null;
+		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
+
+		qualitativeInputSheetManuRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
+		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(corporateMcqDetail.getUnhedgedForeignCurrency().longValue());
+		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(corporateMcqDetail.getFinancialRestructuringHistory().longValue());
+		qualitativeInputSheetManuRequest.setIndustryRiskScore(industryRiskScore); //-----Industry mapping -- Remaining
+		qualitativeInputSheetManuRequest.setCustomerQuality(corporateMcqDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetManuRequest.setSupplierQuality(corporateMcqDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetManuRequest.setOrderBookPosition(corporateMcqDetail.getOrderBookPosition().longValue());
+		qualitativeInputSheetManuRequest.setIndustrialEmployeeRelations(corporateMcqDetail.getEmployeeRelations().longValue());
+		qualitativeInputSheetManuRequest.setIntegrity(corporateMcqDetail.getIntegrity().longValue());
+		qualitativeInputSheetManuRequest.setBusinessCommitment(corporateMcqDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetManuRequest.setManagementCompetence(corporateMcqDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetManuRequest.setBusinessExperience(corporateMcqDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetManuRequest.setSuccsessionPlanning(corporateMcqDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetManuRequest.setFinancialStrength(corporateMcqDetail.getFinancialSupport().longValue());
+		qualitativeInputSheetManuRequest.setAbilityToRaise(corporateMcqDetail.getAbilityToRaiseFunds().longValue());
+		qualitativeInputSheetManuRequest.setIntraCompanyConflicts(corporateMcqDetail.getIntraCompany().longValue());
+		qualitativeInputSheetManuRequest.setStatusProjectClearances(corporateMcqDetail.getStatusOfProjectClearances().longValue());
+		qualitativeInputSheetManuRequest.setStatusFinancialClosure(corporateMcqDetail.getStatusOfFinancialClosure().longValue());
+		qualitativeInputSheetManuRequest.setProjectDebtService(corporateMcqDetail.getProjectedDebtService().longValue());
+		qualitativeInputSheetManuRequest.setInternalRateReturn(corporateMcqDetail.getInternalRateReturn().longValue());
+		qualitativeInputSheetManuRequest.setSensititivityAnalysis(corporateMcqDetail.getSensititivityAnalysis().longValue());
+		qualitativeInputSheetManuRequest.setInfrastructureAvailability(corporateMcqDetail.getInfrastructureAvailability().longValue());
+		qualitativeInputSheetManuRequest.setConstructionContract(corporateMcqDetail.getConstructionContract().longValue());
+		qualitativeInputSheetManuRequest.setDesignTechnologyRisk(corporateMcqDetail.getTechnologyRiskId().longValue());
+		qualitativeInputSheetManuRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetManuRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetManuRequest.setCumulativeDaysDpLimits(corporateMcqDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetManuRequest.setCompliancesWithSancationed(corporateMcqDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetManuRequest.setSubmissionProgressReport(corporateMcqDetail.getProgressReports().longValue());
+		qualitativeInputSheetManuRequest.setDelayInReceiptPrincipal(corporateMcqDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetManuRequest.setDelayInSubmissionAudited(corporateMcqDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetManuRequest.setVarianceInProjectedSales(corporateMcqDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetManuRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
+
+		//---Contigent Liabilities set
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		if(isCmaUploaded) {
+			AssetsDetails assetsDetails = new AssetsDetails();
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);//-----formula based
+			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
+				qualitativeInputSheetManuRequest.setContingentLiabilities(0.0);//-----formula based
+			else
+				qualitativeInputSheetManuRequest.setContingentLiabilities((corporateFinalInfoRequest.getContLiabilityFyAmt() / assetsDetails.getTangibleNetWorth()) * denom);//-----formula based
+		}
+
+		//---project size 0.0 WC
+		qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+
+		return qualitativeInputSheetManuRequest;
+	}
+
+	/*public QualitativeInputSheetManuRequest setWCManufacturingQualitativeInput(Long aplicationId,Long userId,Double industryRiskScore,Long denom) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
@@ -2063,8 +2104,8 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 	
 	public QualitativeInputSheetManuRequest setTLManufacturingQualitativeInput(Long aplicationId,Long userId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
-		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
-		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+		CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
 		
 		FinalTermLoanDetail finalTermLoanDetail = null;
 		finalTermLoanDetail = finalTermLoanDetailRepository.getByApplicationAndUserId(aplicationId,userId);
@@ -2197,16 +2238,18 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 				
 		return qualitativeInputSheetManuRequest;
 	}
-	
+	*/
 	
 	
 	
 	@Override
-	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Long denom)
+	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
-		LoanType type = CommonUtils.LoanType.getType(productId);
+
+		return setServiceQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);
+		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
 			return setWCServiceQualitativeInput(aplicationId,userId ,denom);
@@ -2214,57 +2257,59 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 			return setTLServiceQualitativeInput(aplicationId,userId ,denom);
 		case UNSECURED_LOAN :
 			return setUSLServiceQualitativeInput(aplicationId,userId ,denom);
-		}
-		return null;
+		}*/
 	}
 
-	public QualitativeInputSheetServRequest setWCServiceQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
+	public QualitativeInputSheetServRequest setServiceQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
-		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
-		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
+
+		CorporateMcqDetail corporateMcqDetail = null;
+		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
 		
-		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
-		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(aplicationId,userId);
-		
-		qualitativeInputSheetServRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
-		qualitativeInputSheetServRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
-		qualitativeInputSheetServRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
-		qualitativeInputSheetServRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
-		qualitativeInputSheetServRequest.setProductSeasonality(finalWorkingCapitalLoanDetail.getProductSeasonality().longValue());
-		qualitativeInputSheetServRequest.setImpactOnOperatingMargins(finalWorkingCapitalLoanDetail.getImpactOnOperatingMargins().longValue());
-		qualitativeInputSheetServRequest.setEnvironmentImpact(finalWorkingCapitalLoanDetail.getEnvironmentalImpact().longValue());
-		qualitativeInputSheetServRequest.setIntegrity(finalWorkingCapitalLoanDetail.getIntegrity().longValue());
-		qualitativeInputSheetServRequest.setBusinessCommitment(finalWorkingCapitalLoanDetail.getBusinessCommitment().longValue());
-		qualitativeInputSheetServRequest.setManagementCompetence(finalWorkingCapitalLoanDetail.getManagementCompetence().longValue());
-		qualitativeInputSheetServRequest.setBusinessExperience(finalWorkingCapitalLoanDetail.getBusinessExperience().longValue());
-		qualitativeInputSheetServRequest.setSuccsessionPlanning(finalWorkingCapitalLoanDetail.getSuccessionPlanning().longValue());
-		qualitativeInputSheetServRequest.setFinancialStrength(finalWorkingCapitalLoanDetail.getFinancialStrength().longValue());
-		qualitativeInputSheetServRequest.setInternalControl(finalWorkingCapitalLoanDetail.getInternalControl().longValue());
-		qualitativeInputSheetServRequest.setCreditTrackRecord(finalWorkingCapitalLoanDetail.getCreditTrackRecord().longValue());
-		qualitativeInputSheetServRequest.setNumberCheckReturned(finalWorkingCapitalLoanDetail.getNumberOfCheques().longValue());
-		qualitativeInputSheetServRequest.setNumberTimesDpLimits(finalWorkingCapitalLoanDetail.getNumberOfTimesDp().longValue());
-		qualitativeInputSheetServRequest.setCumulativeDaysDpLimits(finalWorkingCapitalLoanDetail.getCumulativeNoOfDaysDp().longValue());
-		qualitativeInputSheetServRequest.setCompliancesWithSancationed(finalWorkingCapitalLoanDetail.getComplianceWithSanctioned().longValue());
-		qualitativeInputSheetServRequest.setSubmissionProgressReport(finalWorkingCapitalLoanDetail.getProgressReports().longValue());
-		qualitativeInputSheetServRequest.setDelayInReceiptPrincipal(finalWorkingCapitalLoanDetail.getDelayInReceipt().longValue());
-		qualitativeInputSheetServRequest.setDelayInSubmissionAudited(finalWorkingCapitalLoanDetail.getDelayInSubmission().longValue());
-		qualitativeInputSheetServRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
-		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
+		qualitativeInputSheetServRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
+		qualitativeInputSheetServRequest.setCustomerQuality(corporateMcqDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetServRequest.setSupplierQuality(corporateMcqDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetServRequest.setSustainabilityProductDemand(corporateMcqDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetServRequest.setProductSeasonality(corporateMcqDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetServRequest.setImpactOnOperatingMargins(corporateMcqDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetServRequest.setEnvironmentImpact(corporateMcqDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetServRequest.setIntegrity(corporateMcqDetail.getIntegrity().longValue());
+		qualitativeInputSheetServRequest.setBusinessCommitment(corporateMcqDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetServRequest.setManagementCompetence(corporateMcqDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetServRequest.setBusinessExperience(corporateMcqDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetServRequest.setSuccsessionPlanning(corporateMcqDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetServRequest.setFinancialStrength(corporateMcqDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetServRequest.setInternalControl(corporateMcqDetail.getInternalControl().longValue());
+		qualitativeInputSheetServRequest.setCreditTrackRecord(corporateMcqDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetServRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetServRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetServRequest.setCumulativeDaysDpLimits(corporateMcqDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetServRequest.setCompliancesWithSancationed(corporateMcqDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetServRequest.setSubmissionProgressReport(corporateMcqDetail.getProgressReports().longValue());
+		qualitativeInputSheetServRequest.setDelayInReceiptPrincipal(corporateMcqDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetServRequest.setDelayInSubmissionAudited(corporateMcqDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetServRequest.setVarianceInProjectedSales(corporateMcqDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetServRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
 		
 		//---Contigent Liabilities set
-				if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
-					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
-				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
-					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
-				else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
-					qualitativeInputSheetServRequest.setContingentLiabilities(0.0);
-				else
-					qualitativeInputSheetServRequest.setContingentLiabilities((pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()) *denom);//-----formula based
-				
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		if(isCmaUploaded) {
+			AssetsDetails assetsDetails = new AssetsDetails();
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
+				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
+			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
+				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
+			else
+				qualitativeInputSheetServRequest.setContingentLiabilities((corporateFinalInfoRequest.getContLiabilityFyAmt() / assetsDetails.getTangibleNetWorth()) * denom);//-----formula based
+		}
+		
 		return qualitativeInputSheetServRequest;		
 	}
 	
-	public QualitativeInputSheetServRequest setTLServiceQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
+	/*public QualitativeInputSheetServRequest setTLServiceQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
@@ -2355,16 +2400,18 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 
 		return qualitativeInputSheetServRequest;		
 	}
-	
+	*/
 	
 	
 	
 	@Override
-	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Long denom)
+	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
 			throws Exception {
 		// TODO Auto-generated method stub
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
-		LoanType type = CommonUtils.LoanType.getType(productId);
+
+		return setTradingQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);
+		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
 			return setWCTradingQualitativeInput(aplicationId,userId, denom);
@@ -2372,57 +2419,59 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 			return setTLTradingQualitativeInput(aplicationId,userId, denom);
 		case UNSECURED_LOAN :
 			return setUSLTradingQualitativeInput(aplicationId,userId, denom);
-		}
-		return null;
+		}*/
 	}
 
-	public QualitativeInputSheetTradRequest setWCTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
+	public QualitativeInputSheetTradRequest setTradingQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
-		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
-		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
 		
-		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetail = null; 
-		finalWorkingCapitalLoanDetail = finalWorkingCapitalLoanDetailRepository.getByApplicationAndUserId(aplicationId,userId);
+		CorporateMcqDetail corporateMcqDetail = null;
+		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
 		
-		qualitativeInputSheetTradRequest.setAccountingQuality(finalWorkingCapitalLoanDetail.getAccountingQuality().longValue());
-		qualitativeInputSheetTradRequest.setCustomerQuality(finalWorkingCapitalLoanDetail.getCustomerQuality().longValue());
-		qualitativeInputSheetTradRequest.setSupplierQuality(finalWorkingCapitalLoanDetail.getSupplierQuality().longValue());
-		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(finalWorkingCapitalLoanDetail.getSustainabilityProduct().longValue());
-		qualitativeInputSheetTradRequest.setProductSeasonality(finalWorkingCapitalLoanDetail.getProductSeasonality().longValue());
-		qualitativeInputSheetTradRequest.setImpactOnOperatingMargins(finalWorkingCapitalLoanDetail.getImpactOnOperatingMargins().longValue());
-		qualitativeInputSheetTradRequest.setEnvironmentImpact(finalWorkingCapitalLoanDetail.getEnvironmentalImpact().longValue());
-		qualitativeInputSheetTradRequest.setIntegrity(finalWorkingCapitalLoanDetail.getIntegrity().longValue());
-		qualitativeInputSheetTradRequest.setBusinessCommitment(finalWorkingCapitalLoanDetail.getBusinessCommitment().longValue());
-		qualitativeInputSheetTradRequest.setManagementCompetence(finalWorkingCapitalLoanDetail.getManagementCompetence().longValue());
-		qualitativeInputSheetTradRequest.setBusinessExperience(finalWorkingCapitalLoanDetail.getBusinessExperience().longValue());
-		qualitativeInputSheetTradRequest.setSuccsessionPlanning(finalWorkingCapitalLoanDetail.getSuccessionPlanning().longValue());
-		qualitativeInputSheetTradRequest.setFinancialStrength(finalWorkingCapitalLoanDetail.getFinancialStrength().longValue());
-		qualitativeInputSheetTradRequest.setInternalControl(finalWorkingCapitalLoanDetail.getInternalControl().longValue());
-		qualitativeInputSheetTradRequest.setCreditTrackRecord(finalWorkingCapitalLoanDetail.getCreditTrackRecord().longValue());
-		qualitativeInputSheetTradRequest.setNumberCheckReturned(finalWorkingCapitalLoanDetail.getNumberOfCheques().longValue());
-		qualitativeInputSheetTradRequest.setNumberTimesDpLimits(finalWorkingCapitalLoanDetail.getNumberOfTimesDp().longValue());
-		qualitativeInputSheetTradRequest.setCumulativeDaysDpLimits(finalWorkingCapitalLoanDetail.getCumulativeNoOfDaysDp().longValue());
-		qualitativeInputSheetTradRequest.setCompliancesWithSancationed(finalWorkingCapitalLoanDetail.getComplianceWithSanctioned().longValue());
-		qualitativeInputSheetTradRequest.setSubmissionProgressReport(finalWorkingCapitalLoanDetail.getProgressReports().longValue());
-		qualitativeInputSheetTradRequest.setDelayInReceiptPrincipal(finalWorkingCapitalLoanDetail.getDelayInReceipt().longValue());
-		qualitativeInputSheetTradRequest.setDelayInSubmissionAudited(finalWorkingCapitalLoanDetail.getDelayInSubmission().longValue());
-		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(finalWorkingCapitalLoanDetail.getVarianceInProjectedSales().longValue());
-		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(finalWorkingCapitalLoanDetail.getNumberOfLc().longValue());
+		qualitativeInputSheetTradRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
+		qualitativeInputSheetTradRequest.setCustomerQuality(corporateMcqDetail.getCustomerQuality().longValue());
+		qualitativeInputSheetTradRequest.setSupplierQuality(corporateMcqDetail.getSupplierQuality().longValue());
+		qualitativeInputSheetTradRequest.setSustainabilityProductDemand(corporateMcqDetail.getSustainabilityProduct().longValue());
+		qualitativeInputSheetTradRequest.setProductSeasonality(corporateMcqDetail.getProductSeasonality().longValue());
+		qualitativeInputSheetTradRequest.setImpactOnOperatingMargins(corporateMcqDetail.getImpactOnOperatingMargins().longValue());
+		qualitativeInputSheetTradRequest.setEnvironmentImpact(corporateMcqDetail.getEnvironmentalImpact().longValue());
+		qualitativeInputSheetTradRequest.setIntegrity(corporateMcqDetail.getIntegrity().longValue());
+		qualitativeInputSheetTradRequest.setBusinessCommitment(corporateMcqDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetTradRequest.setManagementCompetence(corporateMcqDetail.getManagementCompetence().longValue());
+		qualitativeInputSheetTradRequest.setBusinessExperience(corporateMcqDetail.getBusinessExperience().longValue());
+		qualitativeInputSheetTradRequest.setSuccsessionPlanning(corporateMcqDetail.getSuccessionPlanning().longValue());
+		qualitativeInputSheetTradRequest.setFinancialStrength(corporateMcqDetail.getFinancialStrength().longValue());
+		qualitativeInputSheetTradRequest.setInternalControl(corporateMcqDetail.getInternalControl().longValue());
+		qualitativeInputSheetTradRequest.setCreditTrackRecord(corporateMcqDetail.getCreditTrackRecord().longValue());
+		qualitativeInputSheetTradRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
+		qualitativeInputSheetTradRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
+		qualitativeInputSheetTradRequest.setCumulativeDaysDpLimits(corporateMcqDetail.getCumulativeNoOfDaysDp().longValue());
+		qualitativeInputSheetTradRequest.setCompliancesWithSancationed(corporateMcqDetail.getComplianceWithSanctioned().longValue());
+		qualitativeInputSheetTradRequest.setSubmissionProgressReport(corporateMcqDetail.getProgressReports().longValue());
+		qualitativeInputSheetTradRequest.setDelayInReceiptPrincipal(corporateMcqDetail.getDelayInReceipt().longValue());
+		qualitativeInputSheetTradRequest.setDelayInSubmissionAudited(corporateMcqDetail.getDelayInSubmission().longValue());
+		qualitativeInputSheetTradRequest.setVarianceInProjectedSales(corporateMcqDetail.getVarianceInProjectedSales().longValue());
+		qualitativeInputSheetTradRequest.setNumberOfLcBgIssuedInFavor(corporateMcqDetail.getNumberOfLc().longValue());
 		
 		//---Contigent Liabilities set
-		if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest))
-			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
-		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability()))
-			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
-		else if(CommonUtils.isObjectNullOrEmpty(pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()))
-			qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);
-		else
-			qualitativeInputSheetTradRequest.setContingentLiabilities((pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()) *denom);//-----formula based
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		if(isCmaUploaded) {
+			AssetsDetails assetsDetails = new AssetsDetails();
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
+				qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);//-----formula based
+			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
+				qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);//-----formula based
+			else
+				qualitativeInputSheetTradRequest.setContingentLiabilities((corporateFinalInfoRequest.getContLiabilityFyAmt() / assetsDetails.getTangibleNetWorth()) * denom);//-----formula based
+		}
 
 		return qualitativeInputSheetTradRequest;		
 	}
 	
-	public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
+	/*public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
 		pastFinancialEstimatesDetailRequest=pastFinancialEstiamateDetailsService.getPastFinancialEstimateDetailsList(aplicationId);
@@ -2512,5 +2561,6 @@ profitibilityStatementDetail = profitibilityStatementDetailRepository.getProfiti
 					qualitativeInputSheetTradRequest.setContingentLiabilities((pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getContingentLiability() / pastFinancialEstimatesDetailRequest.get(pastFinancialEstimatesDetailRequest.size()-1).getNetWorth()) *denom);//-----formula based
 
 		return qualitativeInputSheetTradRequest;		
-	}*/
+	}
+*/
 }

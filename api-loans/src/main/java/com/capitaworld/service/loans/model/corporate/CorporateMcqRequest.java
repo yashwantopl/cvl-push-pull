@@ -13,24 +13,24 @@ public class CorporateMcqRequest implements Serializable {
     private Long id;
     private Long clientId;
     private Long applicationId;
-    private Integer accountingSystemsId;
-    private Integer brandAmbassadorId;
-    private Integer competenceId;
-    private Integer distributionAndMarketingTieUpsId;
-    private Integer environmentCertificationId;
-    private Integer existingShareHoldersId;
-    private Integer indiaDistributionNetworkId;
-    private Integer internalAuditId;
-    private Boolean isDependsMajorlyOnGovernment;
-    private Boolean isIsoCertified;
-    private Integer marketPositionId;
-    private Integer marketPositioningTopId;
-    private Integer marketShareTurnoverId;
-    private Integer marketingPositioningId;
-    private Integer productServicesPerseId;
-    private Integer technologyPatentedId;
-    private Integer technologyRequiresUpgradationId;
-    private Integer technologyTypeId;
+ //   private Integer accountingSystemsId;
+//    private Integer brandAmbassadorId;
+//   private Integer competenceId;
+//    private Integer distributionAndMarketingTieUpsId;
+//    private Integer environmentCertificationId;
+//    private Integer existingShareHoldersId;
+//    private Integer indiaDistributionNetworkId;
+//    private Integer internalAuditId;
+ //   private Boolean isDependsMajorlyOnGovernment;
+ //   private Boolean isIsoCertified;
+ //   private Integer marketPositionId;
+ //   private Integer marketPositioningTopId;
+ //   private Integer marketShareTurnoverId;
+ //   private Integer marketingPositioningId;
+ //   private Integer productServicesPerseId;
+ //   private Integer technologyPatentedId;
+//    private Integer technologyRequiresUpgradationId;
+ //   private Integer technologyTypeId;
     //new fields for nhbs
     private Integer technologyRiskId;
     private Integer customerQuality;
@@ -72,24 +72,23 @@ public class CorporateMcqRequest implements Serializable {
     private Integer sensititivityAnalysis;
     private Integer varianceInProjectedSales;
 
-    private Boolean whetherTechnologyIsTied;
     private String finalFilledCount;
     private Long userId;
-
-    private List<Integer> overseasNetworkIds = Collections.emptyList();
-
     private Boolean isFinalMcqFilled;
+//    private Boolean whetherTechnologyIsTied;
+//    private List<Integer> overseasNetworkIds = Collections.emptyList();
+
 
     public CorporateMcqRequest() {
     }
 
-    public List<Integer> getOverseasNetworkIds() {
+   /* public List<Integer> getOverseasNetworkIds() {
         return overseasNetworkIds;
     }
 
     public void setOverseasNetworkIds(List<Integer> overseasNetworkIds) {
         this.overseasNetworkIds = overseasNetworkIds;
-    }
+    }*/
 
     public Boolean getFinalMcqFilled() {
         return isFinalMcqFilled;
@@ -123,7 +122,7 @@ public class CorporateMcqRequest implements Serializable {
         this.applicationId = applicationId;
     }
 
-    public Integer getAccountingSystemsId() {
+    /*public Integer getAccountingSystemsId() {
         return accountingSystemsId;
     }
 
@@ -265,7 +264,7 @@ public class CorporateMcqRequest implements Serializable {
 
     public void setTechnologyTypeId(Integer technologyTypeId) {
         this.technologyTypeId = technologyTypeId;
-    }
+    }*/
 
     public Integer getTechnologyRiskId() {
         return technologyRiskId;
@@ -579,13 +578,13 @@ public class CorporateMcqRequest implements Serializable {
         this.varianceInProjectedSales = varianceInProjectedSales;
     }
 
-    public Boolean getWhetherTechnologyIsTied() {
+   /* public Boolean getWhetherTechnologyIsTied() {
         return whetherTechnologyIsTied;
     }
 
     public void setWhetherTechnologyIsTied(Boolean whetherTechnologyIsTied) {
         this.whetherTechnologyIsTied = whetherTechnologyIsTied;
-    }
+    }*/
 
     public String getFinalFilledCount() {
         return finalFilledCount;
