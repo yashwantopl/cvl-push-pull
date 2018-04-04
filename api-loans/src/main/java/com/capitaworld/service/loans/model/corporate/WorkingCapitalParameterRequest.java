@@ -175,6 +175,16 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
 
+	private Integer ddrFlow;
+
+	public Integer getDdrFlow() {
+		return ddrFlow;
+	}
+
+	public void setDdrFlow(Integer ddrFlow) {
+		this.ddrFlow = ddrFlow;
+	}
+
 	public Integer getMinChequeBounced() {
 		return minChequeBounced;
 	}

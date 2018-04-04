@@ -286,6 +286,17 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="is_cheque_bounced_last_six_months_mandatory")
 	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
 
+	@Column(name="ddr_flow")
+	private Integer ddrFlow;
+
+	public Integer getDdrFlow() {
+		return ddrFlow;
+	}
+
+	public void setDdrFlow(Integer ddrFlow) {
+		this.ddrFlow = ddrFlow;
+	}
+
 	public Integer getMinChequeBounced() {
 		return minChequeBounced;
 	}

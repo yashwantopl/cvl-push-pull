@@ -149,3 +149,7 @@ alter table loan_applications.fp_unsecure_loan_details add column min_cheque_bou
 alter table loan_applications.fp_unsecure_loan_details add column max_cheque_bounced_last_six_months int(2) default 0;
 alter table loan_applications.fp_unsecure_loan_details add column is_cheque_bounced_last_six_months_display bit(1) default 0;
 alter table loan_applications.fp_unsecure_loan_details add column is_cheque_bounced_last_six_months_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_unsecure_loan_details add column ddr_flow int(2) default null;
+alter table loan_applications.fp_working_capital_details add column ddr_flow int(2) default null;
+alter table loan_applications.fp_term_loan_details add column ddr_flow int(2) default null;
