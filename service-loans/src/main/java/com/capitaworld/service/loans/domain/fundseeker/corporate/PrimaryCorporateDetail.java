@@ -29,7 +29,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     private Double otherAmt;
 
     @Column(name = "have_collateral_security")
-    private Boolean haveCollateralSecurity;
+    private Integer haveCollateralSecurity;
 
     @Column(name = "collateral_security_amt")
     private Double collateralSecurityAmount;
@@ -78,11 +78,11 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.otherAmt = otherAmt;
     }
 
-    public Boolean getHaveCollateralSecurity() {
+    public Integer getHaveCollateralSecurity() {
         return haveCollateralSecurity;
     }
 
-    public void setHaveCollateralSecurity(Boolean haveCollateralSecurity) {
+    public void setHaveCollateralSecurity(Integer haveCollateralSecurity) {
         this.haveCollateralSecurity = haveCollateralSecurity;
     }
 
