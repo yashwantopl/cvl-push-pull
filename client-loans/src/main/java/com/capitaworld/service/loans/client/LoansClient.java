@@ -78,6 +78,7 @@ public class LoansClient {
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -105,14 +106,14 @@ public class LoansClient {
 	private static final String MOBILE_SAVE_COAPPLICANT = "/mobile/saveCoApplicantDetails";
 	private static final String MOBILE_GET_GUARANTOR = "/mobile/getGuarantorDetails";
 	private static final String MOBILE_SAVE_GUARANTOR = "/mobile/saveGuarantorDetails";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/loan_eligibility/hl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/loan_eligibility/hl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/loan_eligibility/hl/calc_home_loan_amount";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/loan_eligibility/pl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/loan_eligibility/pl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/mobile_loan_eligibility/hl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/hl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/mobile_loan_eligibility/hl/calc_home_loan_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/pl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/mobile_loan_eligibility/pl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/lap/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/mobile_loan_eligibility/lap/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/mobile_loan_eligibility/lap/calc_lap_amount";
 	private static final String MOBILE_GET_FP_PRODUCT_LIST = "/mobile/getProductList";
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
@@ -725,6 +726,21 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getTotalEMI(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
+		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");

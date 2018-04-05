@@ -3846,7 +3846,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setAmount(Double.valueOf(amount));
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
-					gatewayRequest.setProductInfo(product);
+					gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
+					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
+					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
+					gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 					Object values = gatewayClient.payout(gatewayRequest);
 					System.out.println("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
@@ -3876,6 +3879,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+			gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			logger.info("Status===>{}", updatePayment);

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AvailabilityProposedPlantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 
 /**
@@ -22,5 +23,6 @@ public interface ProposedProductDetailsRepository extends JpaRepository<Proposed
 	@Query("update ProposedProductDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
+    public List<ProposedProductDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 
 }

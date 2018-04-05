@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
 
 public interface ProfitibilityStatementDetailRepository extends JpaRepository<ProfitibilityStatementDetail, Long>{
 
@@ -30,4 +31,8 @@ public interface ProfitibilityStatementDetailRepository extends JpaRepository<Pr
 	
 	@Query("select o from ProfitibilityStatementDetail o where o.applicationId.id = :applicationId and o.isActive = true and o.year IN :yearList and o.financialYearlyStatement =:financialYearlyStatement  ORDER BY o.year ASC")
 	public List<ProfitibilityStatementDetail> getProfitibilityStatementDetailByApplicationId(@Param("applicationId") Long applicationId,@Param("yearList") List<String> yearList, @Param("financialYearlyStatement") String financialYearlyStatement);
+	
+	public List<ProfitibilityStatementDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
+	
+	
 }
