@@ -93,6 +93,11 @@ CREATE TABLE `loan_applications`.`fs_corporate_final_mcq_details` (
 
 
 alter table `loan_applications`.`fs_corporate_director_background_details` add (mobile varchar(20), dob datetime);
+ALTER TABLE `loan_application`.`fs_corporate_director_background_details` 
+ADD COLUMN `pincode` VARCHAR(45) NULL AFTER `appointment_date`,
+ADD COLUMN `state_code` VARCHAR(45) NULL AFTER `pincode`,
+ADD COLUMN `city` VARCHAR(45) NULL AFTER `state_code`;
+
 
 
 CREATE TABLE `loan_applications`.`fs_ddr_existing_banker_details` (
@@ -108,3 +113,5 @@ CREATE TABLE `loan_applications`.`fs_ddr_existing_banker_details` (
   `is_active` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+

@@ -36,6 +36,13 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	@Lob
 	private String address;
+	
+	private String pincode;
+	
+	@Column(name="state_code")
+	private String stateCode;
+	
+	private String city;
 
 	/*private Double age;*/
 	
@@ -245,4 +252,29 @@ public class DirectorBackgroundDetail implements Serializable {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
+	public String getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+
+	public String getStateCode() {
+		return stateCode;
+	}
+
+	public void setStateCode(String stateCode) {
+		this.stateCode = stateCode;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+	
 }
