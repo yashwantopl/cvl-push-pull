@@ -204,9 +204,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
 
-	@Value("${capitaworld.service.gateway.amount}")
-	private String amount;
+	@Value("${capitaworld.service.gateway.nhbsAmount}")
+	private String nhbsAmount;
 
+	@Value("${capitaworld.service.gateway.sidbiAmount}")
+	private String sidbiAmount;
+	
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
 
@@ -3809,6 +3812,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(paymentRequest.getApplicationId());
+			
+			
+			if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+				
+				loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
+				loanApplicationRepository.save(loanApplicationMaster);
+				
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+						.findOneByApplicationIdId(paymentRequest.getApplicationId());
+				
+				corporateApplicantDetail.setPanNo(paymentRequest.getPanNo());
+				corporateApplicantDetailRepository.save(corporateApplicantDetail);
+				
+			} else {
+				
 			loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
 			loanApplicationMaster.setPaymentAmount(paymentRequest.getPaymentAmount());
 			loanApplicationMaster.setAppointmentDate(paymentRequest.getAppointmentDate());
@@ -3825,6 +3843,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				corporateApplicantDetail.setCreatedDate(new Date());
 				corporateApplicantDetail.setIsActive(true);
 			}
+			
 			corporateApplicantDetail.setOrganisationName(paymentRequest.getNameOfEntity());
 			corporateApplicantDetail.setAdministrativePremiseNumber(paymentRequest.getAddress().getPremiseNumber());
 			corporateApplicantDetail.setAdministrativeStreetName(paymentRequest.getAddress().getStreetName());
@@ -3836,29 +3855,55 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			corporateApplicantDetail.setModifiedBy(userId);
 			corporateApplicantDetail.setModifiedDate(new Date());
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);
-			if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
-				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE()");
+		 }
+			if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())&&
+					paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
+				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE() in NHBS");
 				GatewayRequest gatewayRequest = new GatewayRequest();
 				try {
 					gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
 					gatewayRequest.setEmail(paymentRequest.getEmailAddress());
 					gatewayRequest.setPhone(paymentRequest.getMobileNumber());
-					gatewayRequest.setAmount(Double.valueOf(amount));
+					gatewayRequest.setAmount(Double.valueOf(nhbsAmount));
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
 					gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
 					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
-					gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
+					//gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 					Object values = gatewayClient.payout(gatewayRequest);
 					System.out.println("Response for gateway is:- " + values);
-					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
+					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in NHBS");
 					return values;
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE");
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
+			}else if(CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())&&
+					paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+				
+				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
+				
+				UserResponse emailMobile = userClient.getEmailMobile(userId);
+			    UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+				
+			    GatewayRequest gatewayRequest = new GatewayRequest();
+				
+			    gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+			    gatewayRequest.setEmail(usersRequest.getEmail());
+			    gatewayRequest.setPhone(usersRequest.getMobile());
+			  
+			    gatewayRequest.setAmount(Double.valueOf(sidbiAmount));
+			    gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
+			    gatewayRequest.setUserId(userId);
+			    gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
+				gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
+				gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
+				Object values = gatewayClient.payout(gatewayRequest);
+				System.out.println("Response for gateway is:- " + values);
+				logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
+				return values;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
