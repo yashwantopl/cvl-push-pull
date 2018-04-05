@@ -3818,7 +3818,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
 				loanApplicationRepository.save(loanApplicationMaster);
-	
+				
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+						.findOneByApplicationIdId(paymentRequest.getApplicationId());
+				
+				corporateApplicantDetail.setPanNo(paymentRequest.getPanNo());
+				corporateApplicantDetailRepository.save(corporateApplicantDetail);
+				
 			} else {
 				
 			loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
