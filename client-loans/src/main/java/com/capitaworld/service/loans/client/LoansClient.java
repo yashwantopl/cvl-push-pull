@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.CMADetailRequest;
+import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
@@ -1525,7 +1525,7 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
-	public CMADetailRequest getCMADetils(Long appId) throws ExcelException {
+	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
@@ -1533,7 +1533,7 @@ public class LoansClient {
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
