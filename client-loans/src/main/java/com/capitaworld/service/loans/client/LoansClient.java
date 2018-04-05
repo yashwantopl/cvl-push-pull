@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.client;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,6 +25,7 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
@@ -148,6 +151,11 @@ public class LoansClient {
 	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
 
 	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCmaDetail/";
+	
+	private static final String CMA_DETAILS = "/cma/get";
+	private static final String SAVE_CMA_DETAILS = "/cma/save";
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -1539,5 +1547,32 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 		
+	}
+	
+	public CMARequest getCMA(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
+		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
+		try {
+			return restTemplate.getForObject(url, CMARequest.class);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
+		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
+		logger.info("Enter in save CMA details in Loan client");
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.info("Throw Exception while call save CMA details");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
 	}
 }

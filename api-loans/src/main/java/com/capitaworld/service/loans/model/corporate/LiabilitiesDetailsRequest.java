@@ -224,7 +224,7 @@ public class LiabilitiesDetailsRequest implements Serializable{
 	
 	private Long storageDetailsId;
 
-	private LoanApplicationRequest fsLoanApplicationMaster;
+	private Long applicationId;
 	
 	
 	public Long getStorageDetailsId() {
@@ -547,12 +547,12 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.year = year;
 	}
 
-	public LoanApplicationRequest getFsLoanApplicationMaster() {
-		return this.fsLoanApplicationMaster;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
-	public void setFsLoanApplicationMaster(LoanApplicationRequest fsLoanApplicationMaster) {
-		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	@Override
@@ -581,7 +581,7 @@ public class LiabilitiesDetailsRequest implements Serializable{
 				+ ", otherNclOthers=" + otherNclOthers + ", otherNclUnsecuredLoansFromPromoters="
 				+ otherNclUnsecuredLoansFromPromoters + ", otherNcl=" + otherNcl + ", termLiabilitiesUnsecured="
 				+ termLiabilitiesUnsecured + ", year=" + year + ", storageDetailsId=" + storageDetailsId
-				+ ", fsLoanApplicationMaster=" + fsLoanApplicationMaster + "]";
+				+ ", applicationId=" + applicationId + "]";
 	}
 
 	

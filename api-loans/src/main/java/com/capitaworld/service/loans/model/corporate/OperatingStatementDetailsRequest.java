@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 
 
 public class OperatingStatementDetailsRequest implements Serializable {
@@ -124,7 +123,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 	
 	private Double SellingAndDistributionExpenses;
 	
-	private LoanApplicationRequest loanApplicationMaster;
+	private Long applicationId;
 
 	public OperatingStatementDetailsRequest() {
 		super();
@@ -175,6 +174,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.totalCostSales =0.0;
 		this.totalGrossSales = 0.0;
 		this.generalAdminExp=0.0;
+		this.SellingAndDistributionExpenses = 0.0;
 	}
 
 	public Double getSellingAndDistributionExpenses() {
@@ -640,12 +640,12 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.year = year;
 	}
 
-	public LoanApplicationRequest getLoanApplicationMaster() {
-		return loanApplicationMaster;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
-	public void setLoanApplicationMaster(LoanApplicationRequest loanApplicationMaster) {
-		this.loanApplicationMaster = loanApplicationMaster;
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	@Override
@@ -678,7 +678,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 				+ ", subTotalOfIncome=" + subTotalOfIncome + ", totalCostSales=" + totalCostSales + ", totalGrossSales="
 				+ totalGrossSales + ", year=" + year + ", storageDetailsId=" + storageDetailsId + ", generalAdminExp="
 				+ generalAdminExp + ", SellingAndDistributionExpenses=" + SellingAndDistributionExpenses
-				+ ", loanApplicationMaster=" + loanApplicationMaster + "]";
+				+ ", applicationId=" + applicationId + "]";
 	}
 	
 	

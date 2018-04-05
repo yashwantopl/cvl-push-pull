@@ -151,7 +151,7 @@ public class AssetsDetailsRequest implements Serializable {
 
 	private Double GrossBlock4;
 
-	private LoanApplicationRequest loanApplicationMaster;
+	private Long applicationId;
 	
 	
 	public AssetsDetailsRequest() {
@@ -663,12 +663,12 @@ public class AssetsDetailsRequest implements Serializable {
 		this.year = year;
 	}
 
-	public LoanApplicationRequest getLoanApplicationMaster() {
-		return loanApplicationMaster;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
-	public void setLoanApplicationMaster(LoanApplicationRequest loanApplicationMaster) {
-		this.loanApplicationMaster = loanApplicationMaster;
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
 	public Double getGrossBlock1() {
@@ -848,8 +848,8 @@ public class AssetsDetailsRequest implements Serializable {
 				+ totalOtherNcaPrelimnaryExpenses + ", totalOtherNcaBadExpenses=" + totalOtherNcaBadExpenses
 				+ ", totalOtherNcaOther=" + totalOtherNcaOther + ", otherNcaOtherCapitalWorkInprogress="
 				+ otherNcaOtherCapitalWorkInprogress + ", GrossBlock1=" + GrossBlock1 + ", GrossBlock2=" + GrossBlock2
-				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", loanApplicationMaster="
-				+ loanApplicationMaster + "]";
+				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", applicationId="
+				+ applicationId + "]";
 	}
 
 	
