@@ -1548,18 +1548,7 @@ public class LoansClient {
 		}
 		
 	}
-	
-	public CMARequest getCMA(Long applicationId) throws Exception {
-		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
-		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
-		try {
-			return restTemplate.getForObject(url, CMARequest.class);
-		} catch (Exception e) {
-			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
-			e.printStackTrace();
-			throw new Exception("Loans service is not available");
-		}
-	}
+
 	
 	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
 		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
