@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.CMADetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
@@ -17,7 +18,6 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -36,6 +36,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
@@ -146,6 +147,7 @@ public class LoansClient {
 
 	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
 
+	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCmaDetail/";
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -1522,5 +1524,20 @@ public class LoansClient {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
 		}
+	}
+	public CMADetailRequest getCMADetils(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailRequest.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+		
 	}
 }
