@@ -39,6 +39,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		
-		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
+		//return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
+		return null;
 	}
 }

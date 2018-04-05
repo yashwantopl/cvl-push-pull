@@ -128,6 +128,12 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "pan")
 	private String panNo;
 
+	@Column(name = "gstin")
+	private String gstIn;
+
+	@Column(name = "email")
+	private String email;
+
 	@Column(name = "landline_no")
 	private String landlineNo;
 
@@ -136,7 +142,28 @@ public class CorporateApplicantDetail implements Serializable {
 	
 	@Column(name = "key_vertical_subsector")
 	private Long keyVerticalSubsector;
-	
+
+	@Column(name = "aadhar")
+	private String aadhar;
+
+	@Column(name = "credit_rating_id")
+	private Integer creditRatingId;
+
+	@Column(name = "cont_liability_fy_amt")
+	private Double contLiabilityFyAmt;
+
+	@Column(name = "cont_liability_sy_amt")
+	private Double contLiabilitySyAmt;
+
+	@Column(name = "cont_liability_ty_amt")
+	private Double contLiabilityTyAmt;
+
+	@Column(name = "cont_liability_year")
+	private Integer contLiabilityYear;
+
+	@Column(name = "not_applicable")
+	private Boolean notApplicable;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -428,4 +455,84 @@ public class CorporateApplicantDetail implements Serializable {
 		this.keyVerticalSubsector = keyVerticalSubsector;
 	}
 
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean active) {
+		isActive = active;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public Integer getCreditRatingId() {
+		return creditRatingId;
+	}
+
+	public void setCreditRatingId(Integer creditRatingId) {
+		this.creditRatingId = creditRatingId;
+	}
+
+	public Integer getContLiabilityYear() {
+		return contLiabilityYear;
+	}
+
+	public void setContLiabilityYear(Integer contLiabilityYear) {
+		this.contLiabilityYear = contLiabilityYear;
+	}
+
+
+	public Boolean getNotApplicable() {
+		return notApplicable;
+	}
+
+	public void setNotApplicable(Boolean notApplicable) {
+		this.notApplicable = notApplicable;
+	}
+
+	public Double getContLiabilityFyAmt() {
+		return contLiabilityFyAmt;
+	}
+
+	public void setContLiabilityFyAmt(Double contLiabilityFyAmt) {
+		this.contLiabilityFyAmt = contLiabilityFyAmt;
+	}
+
+	public Double getContLiabilitySyAmt() {
+		return contLiabilitySyAmt;
+	}
+
+	public void setContLiabilitySyAmt(Double contLiabilitySyAmt) {
+		this.contLiabilitySyAmt = contLiabilitySyAmt;
+	}
+
+	public Double getContLiabilityTyAmt() {
+		return contLiabilityTyAmt;
+	}
+
+	public void setContLiabilityTyAmt(Double contLiabilityTyAmt) {
+		this.contLiabilityTyAmt = contLiabilityTyAmt;
+	}
 }

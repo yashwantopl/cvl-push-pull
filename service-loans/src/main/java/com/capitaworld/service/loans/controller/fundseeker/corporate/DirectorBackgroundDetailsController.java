@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -149,6 +150,32 @@ public class DirectorBackgroundDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/getList_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<DirectorBackgroundDetailRequest>> getListClient(@PathVariable("applicationId") Long applicationId) {
+		CommonDocumentUtils.startHook(logger, "getListClient");
+		try {
+			if (applicationId == null) {
+				logger.warn("applicationId Require to get director Background Details ==>" + applicationId);
+				return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(Collections.emptyList(), HttpStatus.OK);
+			}
+
+			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
+					.getDirectorBackgroundDetailList(applicationId,null);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getListClient");
+			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(response, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(Collections.emptyList(),
+					HttpStatus.OK);
 		}
 
 	}

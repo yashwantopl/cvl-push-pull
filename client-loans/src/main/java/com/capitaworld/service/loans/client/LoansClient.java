@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.client;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -10,8 +12,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.CMADetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -20,12 +25,12 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
@@ -34,6 +39,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
@@ -66,7 +72,8 @@ public class LoansClient {
 	private static final String CREATE_LOG = "/createLog";
 	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
 	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL = "/associated_concern_details/save";
-	private static final String CORPORATE_APPLICATION_DETAILS = "/fs_profile/save";
+	private static final String CORPORATE_APPLICATION_DETAILS_SAVE = "/fs_profile/save";
+	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/get_application_client";
 	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
@@ -83,6 +90,7 @@ public class LoansClient {
 	private static final String SAVE_TERM_LOAN_PRIMARY = "/term_loan/primary/save";
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
+	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/primary/save";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
@@ -113,6 +121,7 @@ public class LoansClient {
 
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
 
@@ -131,13 +140,23 @@ public class LoansClient {
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
 	
-	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
 	
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
+
+	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
+
+	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCmaDetail/";
+	
+	private static final String CMA_DETAILS = "/cma/get";
+	private static final String SAVE_CMA_DETAILS = "/cma/save";
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -624,7 +643,7 @@ public class LoansClient {
 	}
 
 	public LoansResponse saveCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
-		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS);
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_SAVE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -632,6 +651,21 @@ public class LoansClient {
 			HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
+		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
@@ -877,6 +911,21 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse getWorkingCapitalPrimary(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY_GET).concat("/" + applicationId);
+		System.out.println("url for Getting Working Capital Primary From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
 
 	public LoansResponse saveWorkingCapitalFinal(FinalWorkingCapitalLoanRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_FINAL);
@@ -944,7 +993,6 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
@@ -1163,7 +1211,6 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<ExistingLoanDetailRequest>> entity = new HttpEntity<List<ExistingLoanDetailRequest>>(
 					detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1181,13 +1228,29 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(
 					detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
+			Long clientId, Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL)
+				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<FinancialArrangementsDetailRequest>> entity = new HttpEntity<List<FinancialArrangementsDetailRequest>>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException(url + " in Loans service is not available");
 		}
 	}
 
@@ -1396,7 +1459,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
-		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1409,6 +1472,21 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	@SuppressWarnings("unchecked")
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_GET).concat("/" + applicationId);
+		System.out.println("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
@@ -1453,6 +1531,53 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+
+	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+		
+	}
+
+	
+	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
+		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
+		logger.info("Enter in save CMA details in Loan client");
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.info("Throw Exception while call save CMA details");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 }

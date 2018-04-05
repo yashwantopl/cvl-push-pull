@@ -76,8 +76,8 @@ public class AchievmentDetailsController {
 			
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(), finalUserId);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(), finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
