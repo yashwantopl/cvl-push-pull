@@ -359,7 +359,19 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
-		}try {
+		}
+		
+		try{
+			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)));
+		}catch(DocumentException e){
+			e.printStackTrace();
+		}
+		try{
+			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)));
+		}catch(DocumentException e){
+			e.printStackTrace();
+		}
+		try {
 			response.setItReturnForFYOfAllDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_IT_RETURN_DIRECTOR)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
@@ -1042,13 +1054,13 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
 				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-			//	financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
 				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-//				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
-//					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				//if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
+				//	financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);

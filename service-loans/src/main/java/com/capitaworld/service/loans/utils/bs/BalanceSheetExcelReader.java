@@ -146,26 +146,30 @@ public class BalanceSheetExcelReader
              * this method extract data from excel associate column and row wise
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"C","2015",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"D","2016",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E","2017",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"F","2018",balanceSheetDetailRepository);
-    
+            
+            System.out.println("BalanceSheetExcelReader -----------> "+sheet.getRow(4).getCell(2).getNumericCellValue());       
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Estimated",balanceSheetDetailRepository);
             if(loanApplicationMaster.getProductId()!=15){
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"G","2019",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"H","2020",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"I","2021",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"J","2022",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"K","2023",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"L","2024",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"M","2025",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"N","2026",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected", balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"N",String.valueOf(sheet.getRow(4).getCell(13).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+
             }
+            
+           
             
             
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ArrayList<String> arrayList,String column,String year,BalanceSheetDetailRepository balanceSheetDetailRepository)
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ArrayList<String> arrayList,String column,String year, String financialYearlyStatement,BalanceSheetDetailRepository balanceSheetDetailRepository)
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -181,7 +185,7 @@ public class BalanceSheetExcelReader
             bsBalanceSheet.setStorageDetailsId(storageDetailsId);
             
             bsBalanceSheet.setYear(year);
-
+            bsBalanceSheet.setFinancialYearlyStatement(financialYearlyStatement);
             bsBalanceSheet.setOrdinaryShareCapital(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             
             bsBalanceSheet.setPreferenceShareCapital(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
