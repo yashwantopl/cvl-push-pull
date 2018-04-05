@@ -12,4 +12,6 @@ public interface PrimaryWorkingCapitalLoanDetailRepository
 	@Query("from PrimaryWorkingCapitalLoanDetail pd where pd.applicationId.id =:applicationId and pd.applicationId.userId =:userId and pd.isActive = true")
 	public PrimaryWorkingCapitalLoanDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,
 			@Param("userId") Long id);
+	
+	public PrimaryWorkingCapitalLoanDetail findByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 }
