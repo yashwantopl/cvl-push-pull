@@ -564,18 +564,18 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		Calendar  calendar =Calendar.getInstance();
  		Double tillYear =(double)calendar.get(Calendar.YEAR);
        		
-		Double totalYear= temp+total_Column+(4- j) ;
+		Double totalYear= temp+total_Column-j+1;
 		if(j<2) {
 			temp=tillYear-3;
-			totalYear=temp+total_Column+(4-j);  
+			totalYear=temp+total_Column-1;  
 		}
-		for (int i = j; temp <totalYear;) {
+		for (int i = j; temp <totalYear;temp++) {
 			if(flag) {
-				sheet.getRow(4).getCell(++i).setCellValue(++temp);
+				sheet.getRow(4).getCell(++i).setCellValue(temp);
 			
 			}
 			else {
-				sheet.getRow(3).getCell(++i+1).setCellValue(++temp);
+				sheet.getRow(3).getCell(++i+1).setCellValue(temp);
 			}
 				
 		}
