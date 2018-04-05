@@ -43,4 +43,6 @@ public interface CorporateApplicantService {
 	public void saveIndustry(Long applicationId, List<Long> industrylist) ;
 	public void saveSector(Long applicationId, List<Long> sectorlist) ;
 	public void saveSubSector(Long applicationId, List<Long> subSectorlist) ;
+	
+	public CorporateApplicantRequest getCorporateApplicant(Long applicationId);
 }

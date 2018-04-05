@@ -104,4 +104,13 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		return true;
 	}
 
+	@Override
+	public Double getTotalOfEmiByApplicationId(Long applicationId) {
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);
+		return totalEmi;
+	}
+	
+	
+
 }

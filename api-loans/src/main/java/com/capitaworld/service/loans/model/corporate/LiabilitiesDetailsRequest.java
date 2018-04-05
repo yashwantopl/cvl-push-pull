@@ -224,7 +224,7 @@ public class LiabilitiesDetailsRequest implements Serializable{
 	
 	private Long storageDetailsId;
 
-	private LoanApplicationRequest fsLoanApplicationMaster;
+	private Long applicationId;
 	
 	
 	public Long getStorageDetailsId() {
@@ -547,13 +547,43 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.year = year;
 	}
 
-	public LoanApplicationRequest getFsLoanApplicationMaster() {
-		return this.fsLoanApplicationMaster;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
-	public void setFsLoanApplicationMaster(LoanApplicationRequest fsLoanApplicationMaster) {
-		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
 
+	@Override
+	public String toString() {
+		return "LiabilitiesDetailsRequest [id=" + id + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", debentures=" + debentures
+				+ ", deferredPaymentsCredits=" + deferredPaymentsCredits + ", deferredTaxLiability="
+				+ deferredTaxLiability + ", depositsOrInstalmentsOfTermLoans=" + depositsOrInstalmentsOfTermLoans
+				+ ", dividendPayable=" + dividendPayable + ", financialYearlyStatement=" + financialYearlyStatement
+				+ ", fromApplicationBank=" + fromApplicationBank + ", fromOtherBanks=" + fromOtherBanks
+				+ ", generalReserve=" + generalReserve + ", isActive=" + isActive + ", modifiedBy=" + modifiedBy
+				+ ", modifiedDate=" + modifiedDate + ", netWorth=" + netWorth + ", ordinarySharesCapital="
+				+ ordinarySharesCapital + ", otherCurrentLiability=" + otherCurrentLiability + ", otherReservse="
+				+ otherReservse + ", otherStatutoryLiability=" + otherStatutoryLiability + ", otherTermLiabilies="
+				+ otherTermLiabilies + ", others=" + others + ", preferencesShares=" + preferencesShares
+				+ ", provisionalForTaxation=" + provisionalForTaxation + ", revaluationReservse=" + revaluationReservse
+				+ ", shortTermBorrowingFromOthers=" + shortTermBorrowingFromOthers + ", subTotalA=" + subTotalA
+				+ ", subTotalB=" + subTotalB + ", sundryCreditors=" + sundryCreditors + ", surplusOrDeficit="
+				+ surplusOrDeficit + ", termDeposits=" + termDeposits + ", termLoans=" + termLoans
+				+ ", totalCurrentLiabilities=" + totalCurrentLiabilities + ", totalLiability=" + totalLiability
+				+ ", totalOutsideLiabilities=" + totalOutsideLiabilities + ", totalTermLiabilities="
+				+ totalTermLiabilities + ", whichBpAndBd=" + whichBpAndBd + ", termLiabilitiesSecured="
+				+ termLiabilitiesSecured + ", shareWarrentsOutstanding=" + shareWarrentsOutstanding
+				+ ", minorityInterest=" + minorityInterest + ", otherNclUnsecuredLoansFromOther="
+				+ otherNclUnsecuredLoansFromOther + ", otherNclLongTermProvisions=" + otherNclLongTermProvisions
+				+ ", otherNclOthers=" + otherNclOthers + ", otherNclUnsecuredLoansFromPromoters="
+				+ otherNclUnsecuredLoansFromPromoters + ", otherNcl=" + otherNcl + ", termLiabilitiesUnsecured="
+				+ termLiabilitiesUnsecured + ", year=" + year + ", storageDetailsId=" + storageDetailsId
+				+ ", applicationId=" + applicationId + "]";
+	}
+
+	
 
 }

@@ -14,8 +14,6 @@ public class LoansResponse implements Serializable{
 
 	private Long id;
 
-	private Integer status;
-
 	private String message;
 
 	private Object data;
@@ -30,7 +28,45 @@ public class LoansResponse implements Serializable{
 	
 	private Boolean flag;
 	
+	private String success;
 	
+	private Long response_code;
+	
+	private String response_code_message;
+	
+	private Integer status;
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(String success) {
+		this.success = success;
+	}
+
+	public Long getResponse_code() {
+		return response_code;
+	}
+
+	public void setResponse_code(Long response_code) {
+		this.response_code = response_code;
+	}
+
+	public String getResponse_code_message() {
+		return response_code_message;
+	}
+
+	public void setResponse_code_message(String response_code_message) {
+		this.response_code_message = response_code_message;
+	}
 
 	public byte[] getContentInBytes() {
 		return contentInBytes;
@@ -84,7 +120,22 @@ public class LoansResponse implements Serializable{
 		this.status = status;
 		this.contentInBytes = contentInBytes;
 	}
-
+	
+	public LoansResponse(String success, Object data, Long response_code, String response_code_message, String message) {
+		super();
+		this.success = success;
+		this.data = data;
+		this.response_code = response_code;
+		this.message = message;
+		this.response_code_message = response_code_message;
+	}
+	public LoansResponse(String success, Long response_code, String response_code_message, String message) {
+		super();
+		this.success = success;
+		this.response_code = response_code;
+		this.response_code_message = response_code_message;
+		this.message = message;
+	}
 
 
 	public Long getId() {
@@ -93,14 +144,6 @@ public class LoansResponse implements Serializable{
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
 	}
 
 	public String getMessage() {

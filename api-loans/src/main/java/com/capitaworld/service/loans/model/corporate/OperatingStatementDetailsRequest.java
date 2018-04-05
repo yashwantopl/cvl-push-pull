@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 
 
 public class OperatingStatementDetailsRequest implements Serializable {
@@ -124,7 +123,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 	
 	private Double SellingAndDistributionExpenses;
 	
-	private LoanApplicationRequest loanApplicationMaster;
+	private Long applicationId;
 
 	public OperatingStatementDetailsRequest() {
 		super();
@@ -175,6 +174,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.totalCostSales =0.0;
 		this.totalGrossSales = 0.0;
 		this.generalAdminExp=0.0;
+		this.SellingAndDistributionExpenses = 0.0;
 	}
 
 	public Double getSellingAndDistributionExpenses() {
@@ -640,13 +640,48 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.year = year;
 	}
 
-	public LoanApplicationRequest getLoanApplicationMaster() {
-		return loanApplicationMaster;
+	public Long getApplicationId() {
+		return applicationId;
 	}
 
-	public void setLoanApplicationMaster(LoanApplicationRequest loanApplicationMaster) {
-		this.loanApplicationMaster = loanApplicationMaster;
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
 	}
+
+	@Override
+	public String toString() {
+		return "OperatingStatementDetailsRequest [id=" + id + ", addOperatingStock=" + addOperatingStock
+				+ ", addOperatingStockFg=" + addOperatingStockFg + ", addOtherNonOpIncome=" + addOtherNonOpIncome
+				+ ", addOtherRevenueIncome=" + addOtherRevenueIncome + ", createdBy=" + createdBy + ", createdDate="
+				+ createdDate + ", deductClStockFg=" + deductClStockFg + ", deductOtherItems=" + deductOtherItems
+				+ ", deductOtherNonOpExp=" + deductOtherNonOpExp + ", deductStockInProcess=" + deductStockInProcess
+				+ ", depreciation=" + depreciation + ", directLabour=" + directLabour + ", dividendRate=" + dividendRate
+				+ ", domesticSales=" + domesticSales + ", equityDeividendPaidAmt=" + equityDeividendPaidAmt
+				+ ", expensesAmortised=" + expensesAmortised + ", exportSales=" + exportSales
+				+ ", financialYearlyStatement=" + financialYearlyStatement + ", interest=" + interest + ", isActive="
+				+ isActive + ", lessExciseDuty=" + lessExciseDuty + ", modifiedBy=" + modifiedBy + ", modifiedDate="
+				+ modifiedDate + ", netProfitOrLoss=" + netProfitOrLoss + ", netSales=" + netSales
+				+ ", netofNonOpIncomeOrExpenses=" + netofNonOpIncomeOrExpenses + ", opProfitAfterInterest="
+				+ opProfitAfterInterest + ", opProfitBeforeIntrest=" + opProfitBeforeIntrest + ", otherMfgExpenses="
+				+ otherMfgExpenses + ", otherSpares=" + otherSpares + ", otherSparesImported=" + otherSparesImported
+				+ ", otherSparesIndigenous=" + otherSparesIndigenous + ", percentageRiseOrFall=" + percentageRiseOrFall
+				+ ", powerAndFuel=" + powerAndFuel + ", productionCost=" + productionCost + ", profitBeforeTaxOrLoss="
+				+ profitBeforeTaxOrLoss + ", provisionForDeferredTax=" + provisionForDeferredTax
+				+ ", provisionForTaxes=" + provisionForTaxes + ", rawMaterials=" + rawMaterials
+				+ ", rawMaterialsImported=" + rawMaterialsImported + ", rawMaterialsIndigenous="
+				+ rawMaterialsIndigenous + ", retainedProfit=" + retainedProfit + ", retainedProfitOrNetProfit="
+				+ retainedProfitOrNetProfit + ", sellingGenlAdmnExpenses=" + sellingGenlAdmnExpenses
+				+ ", subTotalCostSales=" + subTotalCostSales + ", subTotalCostSalesAndSelling="
+				+ subTotalCostSalesAndSelling + ", subTotalDeductAndCostOfProduction="
+				+ subTotalDeductAndCostOfProduction + ", subTotalExpenses=" + subTotalExpenses
+				+ ", subTotalOfCostSalesAndOperatingStock=" + subTotalOfCostSalesAndOperatingStock
+				+ ", subTotalOfIncome=" + subTotalOfIncome + ", totalCostSales=" + totalCostSales + ", totalGrossSales="
+				+ totalGrossSales + ", year=" + year + ", storageDetailsId=" + storageDetailsId + ", generalAdminExp="
+				+ generalAdminExp + ", SellingAndDistributionExpenses=" + SellingAndDistributionExpenses
+				+ ", applicationId=" + applicationId + "]";
+	}
+	
+	
 
 	
 }

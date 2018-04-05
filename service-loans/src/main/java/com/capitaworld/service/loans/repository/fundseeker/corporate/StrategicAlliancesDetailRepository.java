@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.BoardOfDirectorsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.StrategicAlliancesDetail;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface StrategicAlliancesDetailRepository extends JpaRepository<Strate
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.StrategicAlliancesResponse(a.keyAlliancePartners,a.name,a.relationshipDetails) from StrategicAlliancesDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<StrategicAlliancesResponse> listByApplicationId(@Param("applicationId")Long applicationId);
+	
+	public List<StrategicAlliancesDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

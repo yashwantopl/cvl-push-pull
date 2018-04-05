@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.EmployeesCategoryBreaksDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TechnologyPositioningDetail;
 
 import java.util.List;
@@ -29,4 +30,6 @@ public interface TechnologyPositioningDetailRepository extends JpaRepository<Tec
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse(a.details,a.type) from TechnologyPositioningDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<TechnologyPositioningResponse> listByApplicationId(@Param("applicationId") Long applicationId);
+	
+	public List<TechnologyPositioningDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

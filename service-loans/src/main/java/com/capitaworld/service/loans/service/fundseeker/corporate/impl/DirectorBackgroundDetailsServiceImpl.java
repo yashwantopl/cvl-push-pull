@@ -68,8 +68,12 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Override
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList(Long applicationId,Long userId) throws Exception {
 		try {
-			List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
-					.listPromotorBackgroundFromAppId(applicationId,userId);
+			List<DirectorBackgroundDetail> directorBackgroundDetails = null;
+			if(userId != null) {
+				directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId,userId);	
+			}else {
+				directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+			}
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequests = new ArrayList<DirectorBackgroundDetailRequest>();
 
 			for (DirectorBackgroundDetail detail : directorBackgroundDetails) {

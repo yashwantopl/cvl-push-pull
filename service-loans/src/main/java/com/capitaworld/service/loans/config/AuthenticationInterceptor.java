@@ -34,7 +34,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return true;
 		}
 		
-		// for only client call
+		
+		
+		/*// for only client call
 		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
 		logger.info("URI----->"+requestURI);
 		logger.info("Client Call----------------->" + reqAuth);
@@ -71,7 +73,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		}
 		request.setAttribute(CommonUtils.USER_ID, authResponse.getUserId());
 		request.setAttribute(CommonUtils.USER_TYPE, authResponse.getUserType().intValue());
-		request.setAttribute(CommonUtils.USER_ORG_ID, authResponse.getUserOrgId());
+		request.setAttribute(CommonUtils.USER_ORG_ID, authResponse.getUserOrgId());*/
 		return true;
 	}
 

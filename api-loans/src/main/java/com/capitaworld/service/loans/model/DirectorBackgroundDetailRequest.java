@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
-import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -45,6 +44,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Double totalExperience;
 	
 	private Boolean isActive = true;
+	
+	private String pincode;
+	
+	private String stateCode;
+	
+	private String city;
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dob;
@@ -173,6 +178,30 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public String getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+
+	public String getStateCode() {
+		return stateCode;
+	}
+
+	public void setStateCode(String stateCode) {
+		this.stateCode = stateCode;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 	public static void printFields(Object obj) throws Exception {

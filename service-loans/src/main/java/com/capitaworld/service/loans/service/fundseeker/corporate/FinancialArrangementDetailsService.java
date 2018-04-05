@@ -17,4 +17,6 @@ public interface FinancialArrangementDetailsService {
 	
 	public Boolean saveOrUpdateFromCibil(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId);
 	
+	public Double getTotalOfEmiByApplicationId(Long applicationId);
+	
 }
