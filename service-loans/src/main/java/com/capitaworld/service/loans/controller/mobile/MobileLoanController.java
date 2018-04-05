@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.utils.MobileCustomizeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,8 +38,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.enums.ProductServicesPerse;
-import com.capitaworld.service.users.model.mobile.MobileApiResponse;
-import com.capitaworld.service.users.utils.MobileCustomizeResponse;
+
 
 
 @RestController
