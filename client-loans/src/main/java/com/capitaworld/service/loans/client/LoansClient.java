@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -134,7 +135,8 @@ public class LoansClient {
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
 	
-	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
 	
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
@@ -1431,7 +1433,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
-		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1444,6 +1446,21 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	@SuppressWarnings("unchecked")
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_GET).concat("/" + applicationId);
+		System.out.println("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
 	
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
