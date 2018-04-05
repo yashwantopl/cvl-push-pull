@@ -40,7 +40,8 @@ public class NhbsController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfProposals(applicationRequest);
+			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfProposals(applicationRequest,orgId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);			
@@ -131,8 +132,8 @@ public class NhbsController {
 			}
 			nhbsApplicationRequest.setUserId(userId);
 			LoansResponse loansResponse = new LoansResponse();
-			
-			JSONObject jsonCountObj = networkPartnerService.getNhbsProposalCount(nhbsApplicationRequest);
+			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			JSONObject jsonCountObj = networkPartnerService.getNhbsProposalCount(nhbsApplicationRequest,orgId);
 			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
 				logger.info("Data Found.");
 				loansResponse.setMessage("Data Found.");
