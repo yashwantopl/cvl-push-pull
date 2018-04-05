@@ -39,8 +39,8 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name="loan_type")
 	private Integer loanType;
 	
-	@Column(name="lender_type")
-	private Integer lenderType;
+	/*@Column(name="lender_type")
+	private Integer lenderType;*/
 
 	@ManyToOne
 	@JoinColumn(name="application_id")
@@ -53,14 +53,12 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name="created_date")
 	private Date createdDate;
 
-	@Column(name="facility_nature_id")
-	private Integer facilityNatureId;
+	/*@Column(name="facility_nature_id")
+	private Integer facilityNatureId;*/
 
 	@Column(name="financial_institution_name")
 	private String financialInstitutionName;
 	
-	@Column(name="address")
-	private String address;
 
 	@Column(name="is_active")
 	private Boolean isActive;
@@ -78,8 +76,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name="security_details")
 	private String securityDetails;
 	
-	@Column(name="relationship_since")
-	private Integer relationshipSince;
+
 
 	public FinancialArrangementsDetail() {
 	}
@@ -124,13 +121,13 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public Integer getFacilityNatureId() {
+	/*public Integer getFacilityNatureId() {
 		return this.facilityNatureId;
 	}
 
 	public void setFacilityNatureId(Integer facilityNatureId) {
 		this.facilityNatureId = facilityNatureId;
-	}
+	}*/
 
 	public String getFinancialInstitutionName() {
 		return this.financialInstitutionName;
@@ -180,13 +177,13 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.loanType = loanType;
 	}
 
-	public Integer getLenderType() {
+	/*public Integer getLenderType() {
 		return lenderType;
 	}
 
 	public void setLenderType(Integer lenderType) {
 		this.lenderType = lenderType;
-	}
+	}*/
 
 	public Double getOutstandingAmount() {
 		return outstandingAmount;
@@ -198,14 +195,6 @@ public class FinancialArrangementsDetail implements Serializable {
 
 
 
-	public Integer getRelationshipSince() {
-		return relationshipSince;
-	}
-
-	public void setRelationshipSince(Integer relationshipSince) {
-		this.relationshipSince = relationshipSince;
-	}
-
 	public String getSecurityDetails() {
 		return securityDetails;
 	}
@@ -214,17 +203,6 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.securityDetails = securityDetails;
 	}
 
-	public String getAddress() {
-		return address;
-	}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
-
-	
-	
-	
 
 }

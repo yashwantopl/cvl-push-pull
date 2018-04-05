@@ -17,14 +17,14 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 
     private Double amount;
 
-    private String facilityNature;
+    /*private String facilityNature;*/
 
     private String financialInstitutionName;
     
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date loanDate;
     
-    private String lenderType;
+   /* private String lenderType;*/
     
     private Double outstandingAmount;
     
@@ -37,7 +37,6 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     private String loanType;
     
     private String address;
-
     public Double getAmount() {
         return amount;
     }
@@ -46,13 +45,13 @@ public class FinancialArrangementsDetailResponse implements Serializable{
         this.amount = amount;
     }
 
-    public String getFacilityNature() {
+   /* public String getFacilityNature() {
         return facilityNature;
     }
 
     public void setFacilityNature(String facilityNature) {
         this.facilityNature = facilityNature;
-    }
+    }*/
 
     public String getFinancialInstitutionName() {
         return financialInstitutionName;
@@ -70,13 +69,13 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 		this.loanDate = loanDate;
 	}
 
-	public String getLenderType() {
+	/*public String getLenderType() {
 		return lenderType;
 	}
 
 	public void setLenderType(String lenderType) {
 		this.lenderType = lenderType;
-	}
+	}*/
 
 	public Double getOutstandingAmount() {
 		return outstandingAmount;
