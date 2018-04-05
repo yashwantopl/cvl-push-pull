@@ -10,13 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class DirectorBackgroundDetailResponse implements Serializable{
 	
 	 private static final long serialVersionUID = 1L;
-	 
-	    private String achivements;
 
 		private String address;
 
-		private Double age;
-		
 		private Double networth;
 
 		private Long applicationId;
@@ -34,17 +30,13 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String directorsName;
 
-		private String qualification;
-
 		private Double totalExperience;
 
-		public String getAchivements() {
-			return achivements;
-		}
+		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+		private Date dob;
 
-		public void setAchivements(String achivements) {
-			this.achivements = achivements;
-		}
+		private String mobile;
+
 
 		public String getAddress() {
 			return address;
@@ -54,13 +46,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 			this.address = address;
 		}
 
-		public Double getAge() {
-			return age;
-		}
 
-		public void setAge(Double age) {
-			this.age = age;
-		}
 
 		public Double getNetworth() {
 			return networth;
@@ -126,13 +112,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 			this.directorsName = directorsName;
 		}
 
-		public String getQualification() {
-			return qualification;
-		}
 
-		public void setQualification(String qualification) {
-			this.qualification = qualification;
-		}
 
 		public Double getTotalExperience() {
 			return totalExperience;
@@ -141,7 +121,20 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		public void setTotalExperience(Double totalExperience) {
 			this.totalExperience = totalExperience;
 		}
-		
-		
 
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 }

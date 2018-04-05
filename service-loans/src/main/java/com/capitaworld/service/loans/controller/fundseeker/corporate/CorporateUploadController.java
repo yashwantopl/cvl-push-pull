@@ -1,9 +1,10 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -47,6 +49,9 @@ public class CorporateUploadController {
 
 	@Autowired
 	private CorporateUploadService corporateUploadService;
+	
+	@Autowired
+	private DownLoadCMAFileService downLoadCMAFileService;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -414,11 +419,13 @@ public class CorporateUploadController {
 							|| productDocumentMappingId == DocumentAlias.TL_DPR_OUR_FORMAT)
 						excelExtractionService.inActiveDPR(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
-							|| productDocumentMappingId == DocumentAlias.TL_CMA)
+							|| productDocumentMappingId == DocumentAlias.TL_CMA|| productDocumentMappingId==DocumentAlias.USL_CMA)
 						excelExtractionService.inActiveCMA(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
-							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT)
+							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
+							productDocumentMappingId==DocumentAlias.USL_COMPANY_ACT)
 						excelExtractionService.inActiveBS(docId);
+					
 
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
@@ -506,4 +513,28 @@ public class CorporateUploadController {
 			return null;
 		}
 	}
+	
+	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
+		logger.info("In getCmaFile");
+		
+        try {
+        	  httpServletResponse.setContentType("application/csv");  
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA|| productDocumentMappingId==(long)DocumentAlias.TL_CMA ||productDocumentMappingId==(long)DocumentAlias.USL_CMA ) {
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT) {
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+              downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
+            logger.info("Out getCmaFile");
+         
+        } catch (NullPointerException |IOException e) {
+        	logger.info("thrown exception from getCmaFile");
+            e.printStackTrace();
+          
+        }
+     
+	}
+	
 }

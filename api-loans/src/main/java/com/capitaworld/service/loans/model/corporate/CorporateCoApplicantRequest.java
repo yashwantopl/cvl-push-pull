@@ -41,12 +41,12 @@ public class CorporateCoApplicantRequest {
 	private Boolean isActive;
 	
 	//CO-APPLICANT UPLOADS
-	
+
 	private List<Object> coApplicant_BankACStatments;
 	private List<Object> coApplicant_ItReturn;
 	private List<Object> coApplicant_BalanceSheet;
 	private List<Object> coApplicant_Form_16;
-	
+
 	private List<Object> coApplicant_AddressProof;
 	private List<Object> coApplicant_aadharCardList;
 	private List<Object> coApplicant_panCardList;
@@ -244,7 +244,7 @@ public class CorporateCoApplicantRequest {
 		this.coApplicant_panCardList = coApplicant_panCardList;
 	}
 
-	
-	
-	
+
+
+
 }

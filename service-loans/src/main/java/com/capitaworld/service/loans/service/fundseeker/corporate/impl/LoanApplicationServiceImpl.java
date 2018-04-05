@@ -500,16 +500,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
-		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);
 		if (applicationMaster == null) {
 			return null;
 		}
-		applicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(applicationMaster, applicationRequest);
+		/*
+		 * 
+		 applicationRequest.setApplicationCode(applicationMaster.getApplicationCode());
 		applicationRequest.setProductId(applicationMaster.getProductId());
-		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 		applicationRequest.setAmount(applicationMaster.getAmount());
 		applicationRequest.setDenominationId(applicationMaster.getDenominationId());
+		*/
+		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+		
+		
 		int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(id);
@@ -518,6 +524,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setCreatedDate(applicationMaster.getCreatedDate());
 				applicationRequest.setTypeOfPayment(applicationMaster.getTypeOfPayment());
 				applicationRequest.setAmount(applicationMaster.getPaymentAmount());
+				applicationRequest.setGstIn(corporateApplicantDetail.getGstIn());
 			}
 		}
 		return applicationRequest;
@@ -3839,7 +3846,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setAmount(Double.valueOf(amount));
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
-					gatewayRequest.setProductInfo(product);
+					gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
+					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
+					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
+					gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 					Object values = gatewayClient.payout(gatewayRequest);
 					System.out.println("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE()");
@@ -3869,6 +3879,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+			gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			logger.info("Status===>{}", updatePayment);

@@ -101,6 +101,18 @@
 			<version>0.0.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.capitaworld.client.scoring</groupId>
+			<artifactId>client-scoring</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.capitaworld.service.gst</groupId>
+			<artifactId>client-gst</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
 
 		<!-- api of one form -->
 		<dependency>
@@ -136,6 +148,11 @@
 		<dependency>
 			<groupId>com.capitaworld.service.reports</groupId>
 			<artifactId>client-reports</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.analyzer</groupId>
+			<artifactId>client-analyzer</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 	</dependencies>

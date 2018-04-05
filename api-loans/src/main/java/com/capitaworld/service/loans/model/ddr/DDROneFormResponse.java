@@ -45,25 +45,25 @@ public class DDROneFormResponse implements Serializable {
 
 
 	List<PromotorBackgroundDetailResponse> promoBackRespList = null;
-	List<OwnershipDetailResponse> ownershipRespList = null;
+	/*List<OwnershipDetailResponse> ownershipRespList = null;*/
 	List<FinancialArrangementsDetailResponse> fincArrngDetailResList = null;
 	List<ProposedProductDetailRequest> proposedProductDetailList = null;
 	List<ExistingProductDetailRequest> existingProductDetailList = null;
 	List<AssociatedConcernDetailRequest> associatedConcernDetailList = null;
 	List<DDRCMACalculationResponse> dDRCMACalculationList = null;
-	List<ReferenceRetailDetailsRequest> referencesResponseList = null;
-	List<SecurityCorporateDetailRequest> securityCorporateDetailList = null;
+	//List<ReferenceRetailDetailsRequest> referencesResponseList = null;
+	//List<SecurityCorporateDetailRequest> securityCorporateDetailList = null;
 	List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
 
 	public DDROneFormResponse() {
-		securityCorporateDetailList = Collections.emptyList();
-		referencesResponseList = Collections.emptyList();
+		//securityCorporateDetailList = Collections.emptyList();
+		//referencesResponseList = Collections.emptyList();
 		dDRCMACalculationList = Collections.emptyList();
 		associatedConcernDetailList = Collections.emptyList();
 		existingProductDetailList = Collections.emptyList();
 		proposedProductDetailList = Collections.emptyList();
 		fincArrngDetailResList = Collections.emptyList();
-		ownershipRespList = Collections.emptyList();
+		/*ownershipRespList = Collections.emptyList();*/
 		promoBackRespList = Collections.emptyList();
 		directorBackgroundDetailList = Collections.emptyList();
 	}
@@ -140,13 +140,13 @@ public class DDROneFormResponse implements Serializable {
 		this.promoBackRespList = promoBackRespList;
 	}
 
-	public List<OwnershipDetailResponse> getOwnershipRespList() {
+	/*public List<OwnershipDetailResponse> getOwnershipRespList() {
 		return ownershipRespList;
 	}
 
 	public void setOwnershipRespList(List<OwnershipDetailResponse> ownershipRespList) {
 		this.ownershipRespList = ownershipRespList;
-	}
+	}*/
 
 	public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
 		return fincArrngDetailResList;
@@ -188,21 +188,21 @@ public class DDROneFormResponse implements Serializable {
 		this.dDRCMACalculationList = dDRCMACalculationList;
 	}
 
-	public List<ReferenceRetailDetailsRequest> getReferencesResponseList() {
+	/*public List<ReferenceRetailDetailsRequest> getReferencesResponseList() {
 		return referencesResponseList;
 	}
 
 	public void setReferencesResponseList(List<ReferenceRetailDetailsRequest> referencesResponseList) {
 		this.referencesResponseList = referencesResponseList;
-	}
+	}*/
 
-	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailList() {
+	/*public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailList() {
 		return securityCorporateDetailList;
 	}
 
 	public void setSecurityCorporateDetailList(List<SecurityCorporateDetailRequest> securityCorporateDetailList) {
 		this.securityCorporateDetailList = securityCorporateDetailList;
-	}
+	}*/
 
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
 		return directorBackgroundDetailList;

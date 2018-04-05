@@ -1,9 +1,8 @@
 package com.capitaworld.service.loans.service.common;
 
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
@@ -26,5 +25,7 @@ public interface LoanEligibilityCalculatorService {
 	public JSONObject calcMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws Exception;
 	
 	public JSONObject calcLAPAmount(LAPEligibilityRequest homeLoanRequest) throws Exception;
+	
+	public CMADetailResponse getCMADetail(Long applicationId ); 
 	
 }

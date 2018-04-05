@@ -39,6 +39,9 @@ public class CommonUtils {
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
+	
+	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
+	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
 
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -176,6 +179,13 @@ public class CommonUtils {
 				"applicationId" };
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
+		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
+			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
+		};
+		public static final String[] CORPORATE_FINAL = { "aadhar","secondAddress","sameAs","creditRatingId",
+				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable"
+		};
 		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",

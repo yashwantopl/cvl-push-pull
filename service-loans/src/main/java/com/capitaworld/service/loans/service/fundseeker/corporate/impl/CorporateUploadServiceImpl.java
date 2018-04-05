@@ -119,26 +119,26 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@Override
 	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
 			throws Exception {
-		DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+//		DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
 		
 		try {
-			DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
-			request.setUserId(userId);
-			try{
-				logger.error("saving Upload FLag");
-			Long resp = saveDocumentFLag( request);
-			if(resp == 0L){
-				logger.error("Error while saving Upload FLag");
-				throw new Exception("Error while saving Upload FLag");
-			}
-			
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while saving Upload FLag");
-				throw new Exception("Error while saving Upload FLag");
-			}
-			return response;
+//			DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
+//			request.setUserId(userId);
+//			try{
+//				logger.error("saving Upload FLag");
+//			Long resp = saveDocumentFLag( request);
+//			if(resp == 0L){
+//				logger.error("Error while saving Upload FLag");
+//				throw new Exception("Error while saving Upload FLag");
+//			}
+//			
+//			}
+//			catch (Exception e) {
+//				e.printStackTrace();
+//				logger.error("Error while saving Upload FLag");
+//				throw new Exception("Error while saving Upload FLag");
+//			}
+			return dmsClient.uploadFile(documentRequestString, multipartFiles);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while uploading Corporate Other Documents");

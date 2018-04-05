@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProjectImplementationScheduleDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 
 import java.util.List;
 
@@ -30,4 +31,6 @@ public interface ProjectImplementationScheduleDetailRepository
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.ProjectImplementationScheduleResponse(a.activities,a.commencementDate,a.completionDate,a.timelineTotal) from ProjectImplementationScheduleDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<ProjectImplementationScheduleResponse> listByApplicationId(@Param("applicationId") Long applicationId);
+	
+	public List<ProjectImplementationScheduleDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }
