@@ -184,5 +184,28 @@ public class FinancialArrangementDetailsController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/get_total_emi/{applicationId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmi(
+			@PathVariable("applicationId") Long applicationId) {
+		// application id must not be null
+		if (applicationId == null) {
+			logger.warn("application id, must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		logger.warn("applicationId == >" + applicationId);
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),financialArrangementDetailsService.getTotalOfEmiByApplicationId(applicationId)),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Getting total EMI by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
 
 }

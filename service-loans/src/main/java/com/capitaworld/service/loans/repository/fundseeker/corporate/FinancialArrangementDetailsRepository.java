@@ -22,5 +22,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true")
+	public Double getTotalEmiByApplicationId(@Param("id")Long id);
 
 }
