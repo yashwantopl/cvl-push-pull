@@ -74,7 +74,6 @@ public class LoansClient {
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
-	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -85,9 +84,10 @@ public class LoansClient {
 	private static final String SECURITY_CORPORATE_DETAILS = "/security_corporate_details/save";
 	private static final String SAVE_TERM_LOAN_FINAL = "/term_loan/final/save";
 	private static final String SAVE_TERM_LOAN_PRIMARY = "/term_loan/primary/save";
+	private static final String SAVE_TERM_LOAN_PRIMARY_GET = "/term_loan/get_client";
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
-	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/primary/save";
+	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/get_client";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
@@ -102,14 +102,14 @@ public class LoansClient {
 	private static final String MOBILE_SAVE_COAPPLICANT = "/mobile/saveCoApplicantDetails";
 	private static final String MOBILE_GET_GUARANTOR = "/mobile/getGuarantorDetails";
 	private static final String MOBILE_SAVE_GUARANTOR = "/mobile/saveGuarantorDetails";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/mobile_loan_eligibility/hl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/hl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/mobile_loan_eligibility/hl/calc_home_loan_amount";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/pl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/mobile_loan_eligibility/pl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/lap/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/mobile_loan_eligibility/lap/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/mobile_loan_eligibility/lap/calc_lap_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/loan_eligibility/hl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/loan_eligibility/hl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/loan_eligibility/hl/calc_home_loan_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/loan_eligibility/pl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/loan_eligibility/pl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
 	private static final String MOBILE_GET_FP_PRODUCT_LIST = "/mobile/getProductList";
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
@@ -1579,7 +1579,18 @@ public class LoansClient {
 		}
 		
 	}
-
+	
+	public CMARequest getCMA(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
+		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
+		try {
+			return restTemplate.getForObject(url, CMARequest.class);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
 	
 	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
 		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
