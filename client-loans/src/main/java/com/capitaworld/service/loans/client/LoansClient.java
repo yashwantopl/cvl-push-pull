@@ -733,7 +733,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getTotalEMI(Long applicationId) throws ExcelException {
+	public LoansResponse getTotalEMI(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
@@ -744,7 +744,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new Exception("Loans service is not available");
 		}
 	}
 
