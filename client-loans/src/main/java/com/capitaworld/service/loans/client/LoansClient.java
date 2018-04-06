@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.client;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -1342,14 +1343,14 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getCreateCampaignLoan(Long userId, String code) throws ExcelException {
-		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "/" + userId + "/" + code;
+	public LoansResponse getCreateCampaignLoan(Long userId, String...code) throws ExcelException {
+		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<?> entity = new HttpEntity<>(headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			HttpEntity<List<String>> entity = new HttpEntity<List<String>>(Arrays.asList(code),headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not availables");
