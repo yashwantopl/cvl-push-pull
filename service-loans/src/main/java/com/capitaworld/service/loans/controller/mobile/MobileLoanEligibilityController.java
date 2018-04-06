@@ -1,4 +1,5 @@
 package com.capitaworld.service.loans.controller.mobile;
+import com.capitaworld.service.loans.utils.MobileCustomizeResponse;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest
 import com.capitaworld.service.loans.service.common.LoanEligibilityCalculatorService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.users.utils.MobileCustomizeResponse;
+
 
 @RestController
 @RequestMapping("/mobile_loan_eligibility")
