@@ -14,7 +14,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double businessAssetAmount;
     private Double wcAmount;
     private Double otherAmt;
-    private Integer haveCollateralSecurity;
+    private Boolean  haveCollateralSecurity;
     private Double collateralSecurityAmount;
 
     public PrimaryCorporateRequest() {
@@ -52,11 +52,11 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
         this.otherAmt = otherAmt;
     }
 
-    public Integer getHaveCollateralSecurity() {
+    public Boolean getHaveCollateralSecurity() {
         return haveCollateralSecurity;
     }
 
-    public void setHaveCollateralSecurity(Integer haveCollateralSecurity) {
+    public void setHaveCollateralSecurity(Boolean haveCollateralSecurity) {
         this.haveCollateralSecurity = haveCollateralSecurity;
     }
 
