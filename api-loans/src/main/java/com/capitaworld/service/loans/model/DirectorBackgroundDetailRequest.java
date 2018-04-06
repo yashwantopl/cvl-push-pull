@@ -55,7 +55,10 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Date dob;
 
 	private String mobile;
-	
+
+	private Integer gender;
+
+	private Integer relationshipType;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -202,6 +205,22 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public Integer getGender() {
+		return gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public Integer getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setRelationshipType(Integer relationshipType) {
+		this.relationshipType = relationshipType;
 	}
 
 	public static void printFields(Object obj) throws Exception {

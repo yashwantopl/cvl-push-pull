@@ -100,6 +100,12 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	private String mobile;
 
+	@Column(name="gender")
+	private Integer gender;
+
+	@Column(name="relationship_type")
+	private Integer relationshipType;
+
 	public DirectorBackgroundDetail() {
 	}
 
@@ -276,5 +282,20 @@ public class DirectorBackgroundDetail implements Serializable {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
+
+	public Integer getGender() {
+		return gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public Integer getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setRelationshipType(Integer relationshipType) {
+		this.relationshipType = relationshipType;
+	}
 }
