@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -79,7 +81,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 		
 	}*/
 	
-	@Override
+/*	@Override
 	public PrimaryTermLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
 			PrimaryTermLoanDetail loanDetail = primaryTLRepository.getByApplicationAndUserId(applicationId, userId);
@@ -91,8 +93,8 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			//get fp negative list
 			//termLoanRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(applicationId));
 			BeanUtils.copyProperties(loanDetail, termLoanRequest);
-			/*termLoanRequest.setTenure(
-					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));*/
+			termLoanRequest.setTenure(
+					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
 			JSONObject result = loanApplicationService.getCurrencyAndDenomination(applicationId,userId);
 			String data = result.get("currency").toString();
 			data = data.concat(" In "+ result.get("denomination").toString());
@@ -104,5 +106,39 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}*/
+	
+	@Override
+	public PrimaryTermLoanRequest get(Long id, Long userId) throws Exception {
+		try {
+			PrimaryTermLoanDetail loanDetail = null;
+			if(userId != null) {
+				loanDetail = primaryTLRepository.getByApplicationAndUserId(id, userId);				
+			}else {
+				loanDetail = primaryTLRepository.findByApplicationIdIdAndIsActive(id,true);
+			}
+			if (loanDetail == null) {
+				throw new NullPointerException(
+						"PrimaryTermLoanDetail not exist in DB with ID=>" + id + " with user Id==>" + userId);
+			}
+			PrimaryTermLoanRequest termLoanRequest = new PrimaryTermLoanRequest();
+			//get fp negative list
+			termLoanRequest .setNegativeList(fsNegativeFpListRepository.getListByApplicationId(id));
+			BeanUtils.copyProperties(loanDetail, termLoanRequest );
+			termLoanRequest .setTenure(
+					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			termLoanRequest.setCurrencyValue(data);
+			return termLoanRequest ;
+		} catch (Exception e) {
+			logger.error("Error while Getting term Details Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
+		}
 	}
+	
+	
+	
 }
