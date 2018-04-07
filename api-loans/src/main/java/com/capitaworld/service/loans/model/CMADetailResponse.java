@@ -9,19 +9,19 @@ public class CMADetailResponse implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	 //asset	
-		private Double receivableOtherThanDefferred;
-		private Double exportReceivables;
-		private Double inventory;
-		private Double advanceToSupplierRawMaterials;
+		private Double receivableOtherThanDefferred; //D16
+		private Double exportReceivables; //D18
+		private Double inventory; //D22
+		private Double advanceToSupplierRawMaterials; //D37
 		//liabilities
-		private Double sundryCreditors;
-		private Double advancePaymentsFromCustomers;
+		private Double sundryCreditors; //D19
+		private Double advancePaymentsFromCustomers;//D21
 		
-		private Double domesticSales;
-		private Double exportSales;
-		private Double netProfitOrLoss;
-		private Double depreciation;
-		private Double provisionForDeferredTax;
+		private Double domesticSales; //D8
+		private Double exportSales; //D9
+		private Double netProfitOrLoss; //D78
+		private Double depreciation; //D34
+		private Double provisionForDeferredTax; //D77
 		
 		public Double getReceivableOtherThanDefferred() {
 			return receivableOtherThanDefferred;

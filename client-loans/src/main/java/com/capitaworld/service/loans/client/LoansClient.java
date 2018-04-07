@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.client;
 
+import java.util.Arrays;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -25,12 +27,6 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
-import com.capitaworld.service.loans.model.corporate.CMARequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
-import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
-import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
@@ -78,7 +74,6 @@ public class LoansClient {
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
-	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -89,9 +84,10 @@ public class LoansClient {
 	private static final String SECURITY_CORPORATE_DETAILS = "/security_corporate_details/save";
 	private static final String SAVE_TERM_LOAN_FINAL = "/term_loan/final/save";
 	private static final String SAVE_TERM_LOAN_PRIMARY = "/term_loan/primary/save";
+	private static final String SAVE_TERM_LOAN_PRIMARY_GET = "/term_loan/get_client";
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
-	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/primary/save";
+	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/get_client";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
@@ -106,14 +102,14 @@ public class LoansClient {
 	private static final String MOBILE_SAVE_COAPPLICANT = "/mobile/saveCoApplicantDetails";
 	private static final String MOBILE_GET_GUARANTOR = "/mobile/getGuarantorDetails";
 	private static final String MOBILE_SAVE_GUARANTOR = "/mobile/saveGuarantorDetails";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/mobile_loan_eligibility/hl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/hl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/mobile_loan_eligibility/hl/calc_home_loan_amount";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/pl/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/mobile_loan_eligibility/pl/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/mobile_loan_eligibility/lap/get_eligible_tenure";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/mobile_loan_eligibility/lap/calc_min_max";
-	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/mobile_loan_eligibility/lap/calc_lap_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_MINMAX = "/loan_eligibility/hl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_GET_ELIGIBLE_TENURE = "/loan_eligibility/hl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_HL_CALC_LOAN_AMOUNT = "/loan_eligibility/hl/calc_home_loan_amount";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_GET_ELIGIBLE_TENURE = "/loan_eligibility/pl/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_PL_CALC_MINMAX = "/loan_eligibility/pl/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_GET_ELIGIBLE_TENURE = "/loan_eligibility/lap/get_eligible_tenure";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_MINMAX = "/loan_eligibility/lap/calc_min_max";
+	private static final String MOBILE_LOAN_ELIGIBILITY_LAP_CALC_LAP_AMOUNT = "/loan_eligibility/lap/calc_lap_amount";
 	private static final String MOBILE_GET_FP_PRODUCT_LIST = "/mobile/getProductList";
 	private static final String MOBILE_SAVE_LOANAPPLICATION = "/mobile/saveLoanApplicationDetails";
 	private static final String MOBILE_GET_FP_MATCHES_LIST = "/mobile/fundproviderProposal";
@@ -156,7 +152,10 @@ public class LoansClient {
 	
 	private static final String CMA_DETAILS = "/cma/get";
 	private static final String SAVE_CMA_DETAILS = "/cma/save";
-	
+
+	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
+	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
+
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -733,7 +732,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getTotalEMI(Long applicationId) throws ExcelException {
+	public LoansResponse getTotalEMI(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
@@ -744,7 +743,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new Exception("Loans service is not available");
 		}
 	}
 
@@ -1343,14 +1342,14 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getCreateCampaignLoan(Long userId, String code) throws ExcelException {
-		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "/" + userId + "/" + code;
+	public LoansResponse getCreateCampaignLoan(Long userId, String...code) throws ExcelException {
+		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<?> entity = new HttpEntity<>(headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			HttpEntity<List<String>> entity = new HttpEntity<List<String>>(Arrays.asList(code),headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not availables");
@@ -1581,7 +1580,18 @@ public class LoansClient {
 		}
 		
 	}
-
+	
+	public CMARequest getCMA(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
+		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
+		try {
+			return restTemplate.getForObject(url, CMARequest.class);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
 	
 	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
 		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
@@ -1595,6 +1605,36 @@ public class LoansClient {
 			logger.info("Throw Exception while call save CMA details");
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
+		}
+	}
+
+
+	public LoansResponse saveFundseekerInputRequest(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+	public LoansResponse getFundseekerInputRequest(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
 		}
 	}
 }

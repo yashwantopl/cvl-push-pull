@@ -92,6 +92,16 @@ public class LoanApplicationRequest implements Serializable {
 
 	private String gstIn;
 
+	private Long npOrgId;
+
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
+	}
+
 	public String getGstIn() {
 		return gstIn;
 	}

@@ -73,13 +73,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	private GatewayClient gatewayClient;
 	
 	@Override
-	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request) {
+	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request,Long npOrgId) {
 		logger.info("entry in getListOfProposals()");
 		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+			if(!CommonUtils.isObjectListNull(npOrgId)){
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(request.getApplicationStatusId(),npOrgId);
+			}else{
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getProposalsByDdrStatus(request.getDdrStatusId());
+            if(!CommonUtils.isObjectListNull(npOrgId)){
+                applicationMastersList = loanApplicationRepository.getProposalsByDdrStatusAndNpOrgId(request.getDdrStatusId(),npOrgId);
+            }else {
+                applicationMastersList = loanApplicationRepository.getProposalsByDdrStatus(request.getDdrStatusId());
+            }
 			applicationMastersList.sort(Comparator.comparing(LoanApplicationMaster::getModifiedDate));
 		}else{
 			applicationMastersList = null;
@@ -403,14 +411,20 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	}
 
 	@Override
-	public JSONObject getNhbsProposalCount(NhbsApplicationRequest nhbsApplicationRequest) {
+	public JSONObject getNhbsProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId) {
 		logger.info("entry in getNhbsProposalCount()");
 		JSONObject countObj = new JSONObject();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == nhbsApplicationRequest.getUserRoleId()){
 			int allotedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByNpUserId(nhbsApplicationRequest.getUserId());
 			countObj.put("allotedPropsalCount", allotedPropsalCount);
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == nhbsApplicationRequest.getUserRoleId()){
-			List<LoanApplicationMaster> applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
+            List<LoanApplicationMaster> applicationMastersList = new ArrayList<>();
+            if(!CommonUtils.isObjectListNull(npOrgId)){
+                applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId);
+            }else{
+                applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
+            }
+
 			int newPropsalCount = 0;
 
 			List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
@@ -447,13 +461,22 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 			}
 			//int newPropsalCount = loanApplicationRepository.getCountOfProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
-			int assignedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, nhbsApplicationRequest.getUserId());
+            int assignedPropsalCount = loanApplicationRepository.getCountOfAssignedProposalsByAssigneeId(CommonUtils.ApplicationStatus.ASSIGNED, nhbsApplicationRequest.getUserId());
 			countObj.put("newProposals", newPropsalCount);
 			countObj.put("assignedProposals", assignedPropsalCount);
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == nhbsApplicationRequest.getUserRoleId()){
-			int ddrSubmittedToApproverCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER);
-			int ddrApprovedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.APPROVED);
-			int ddrRevertedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.REVERTED);
+            int ddrSubmittedToApproverCount = 0;
+            int ddrApprovedCount = 0;
+            int ddrRevertedCount = 0;
+		    if(!CommonUtils.isObjectListNull(npOrgId)){
+                ddrSubmittedToApproverCount = loanApplicationRepository.getCountOfProposalsByDdrStatusAndNpOrgId(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER,npOrgId);
+                ddrApprovedCount = loanApplicationRepository.getCountOfProposalsByDdrStatusAndNpOrgId(CommonUtils.DdrStatus.APPROVED,npOrgId);
+                ddrRevertedCount = loanApplicationRepository.getCountOfProposalsByDdrStatusAndNpOrgId(CommonUtils.DdrStatus.REVERTED,npOrgId);
+            }else{
+                ddrSubmittedToApproverCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER);
+                ddrApprovedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.APPROVED);
+                ddrRevertedCount = loanApplicationRepository.getCountOfProposalsByDdrStatus(CommonUtils.DdrStatus.REVERTED);
+            }
 			countObj.put("ddrSubmittedToApproverCount", ddrSubmittedToApproverCount);
 			countObj.put("ddrApprovedCount", ddrApprovedCount);
 			countObj.put("ddrRevertedCount", ddrRevertedCount);

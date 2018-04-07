@@ -172,6 +172,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "np_user_id")
 	private Long npUserId;
 
+	@Column(name = "np_org_id")
+	private Long npOrgId;
+
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
 
@@ -197,9 +200,14 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "approved_date")
 	private Date approvedDate;
-	
-	
-	
+
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
+	}
 
 	public Date getApprovedDate() {
 		return approvedDate;

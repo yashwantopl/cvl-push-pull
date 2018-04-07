@@ -27,6 +27,7 @@ public class PaymentRequest implements Serializable {
 	private String purposeCode;
 	private String responseParams;
 	private String status;
+	private String panNo;
 	private Boolean isAcceptConsent;
 
 	public PaymentRequest() {
@@ -145,6 +146,16 @@ public class PaymentRequest implements Serializable {
 
 	public void setResponseParams(String responseParams) {
 		this.responseParams = responseParams;
+	}
+	
+	
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
 	}
 
 	@Override

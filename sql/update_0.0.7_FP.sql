@@ -153,3 +153,5 @@ alter table loan_applications.fp_unsecure_loan_details add column is_cheque_boun
 alter table loan_applications.fp_unsecure_loan_details add column ddr_flow int(2) default null;
 alter table loan_applications.fp_working_capital_details add column ddr_flow int(2) default null;
 alter table loan_applications.fp_term_loan_details add column ddr_flow int(2) default null;
+
+ALTER TABLE `loan_applications`.`fs_loan_application_master` ADD COLUMN `np_org_id` BIGINT(20) NULL AFTER `approved_date`;
