@@ -156,6 +156,9 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
+	
+	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1635,6 +1638,19 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getOrgAndPanByAppId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_ORG_PAN_DETAILS).concat("/" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
 		}
 	}
 }

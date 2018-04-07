@@ -20,28 +20,18 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
-import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
-import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -65,20 +55,13 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
-import com.capitaworld.service.oneform.enums.CreditRatingFund;
-import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.FinanceCategory;
-import com.capitaworld.service.oneform.enums.LenderType;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.Particular;
-import com.capitaworld.service.oneform.enums.RatingAgency;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.RelationshipType;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -164,6 +147,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -393,6 +378,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		// get value of Term Loan data
 		PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
 				.getByApplicationAndUserId(toApplicationId, userId);
+		PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateRepository.getByApplicationAndUserId(userId, toApplicationId);
+
 		// set value to response
 		if (primaryTermLoanDetail != null) {
 			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
@@ -404,7 +391,9 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			if (primaryTermLoanDetail.getProductId() != null)
 				termLoanPrimaryViewResponse
 						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
-
+			termLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
+			//termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
+			//termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
 						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
@@ -428,12 +417,12 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		}
 
 		// get value of achievement details and set in response
-		try {
-			termLoanPrimaryViewResponse.setAchievementDetailList(
-					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Achievement Details {}", e);
-		}
+//		try {
+//			termLoanPrimaryViewResponse.setAchievementDetailList(
+//					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Achievement Details {}", e);
+//		}
 
 		/*// get value of Credit Rating and set in response
 		try {
@@ -525,15 +514,15 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 						DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
 						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+						//directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
-						String directorName = "";
+						/*String directorName = "";
 						if (directorBackgroundDetailRequest.getSalutationId() != null){
 							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
 						}
 						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
-						directorBackgroundDetailResponse.setDirectorsName(directorName);
+						directorBackgroundDetailResponse.setDirectorsName(directorName);*/
 						directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
 						directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
 						directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
@@ -541,6 +530,11 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 						directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 						directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
+						directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+						directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+						directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+						directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : null )+ " " + directorBackgroundDetailRequest.getGender());
+						directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? RelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : null )+ " " + directorBackgroundDetailRequest.getRelationshipType());
 						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 					}
 					termLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
@@ -586,7 +580,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 				BeanUtils.copyProperties(financialArrangementsDetailRequest, financialArrangementsDetailResponse);
-				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+//				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
 				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
 				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
@@ -598,7 +592,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				}
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+			//	financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 //				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
 //					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);

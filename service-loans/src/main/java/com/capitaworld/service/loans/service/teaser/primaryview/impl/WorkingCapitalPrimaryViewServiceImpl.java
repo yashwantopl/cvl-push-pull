@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,24 +19,18 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
-import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.WorkingCapitalPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
@@ -60,17 +53,13 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.CreditRatingAvailable;
-import com.capitaworld.service.oneform.enums.CreditRatingFund;
-import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.LenderType;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.RatingAgency;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.RelationshipType;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -150,6 +139,9 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
+	
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -191,6 +183,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.getByApplicationAndUserId(userId, toApplicationId);
+		PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateRepository.getByApplicationAndUserId(userId, toApplicationId);
+
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, workingCapitalPrimaryViewResponse);
@@ -406,12 +400,18 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			}
 				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 				workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
-				workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
-				workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
+				workingCapitalPrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
+			
+				//workingCapitalPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
+				//workingCapitalPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
+				//workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+				//workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 				if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
 					workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
 				workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
 		}
+		
+		
 		// get value of proposed product and set in response
 		try {
 			workingCapitalPrimaryViewResponse.setProposedProductDetailRequestList(
@@ -429,147 +429,147 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		}
 
 		// get value of achievement details and set in response
-		try {
-			workingCapitalPrimaryViewResponse.setAchievementDetailList(
-					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Achievement Details {}", e);
-		}
+//		try {
+//			workingCapitalPrimaryViewResponse.setAchievementDetailList(
+//					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Achievement Details {}", e);
+//		}
 		
 		//references
-        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
-		try {
-			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
+//        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+//		try {
+//			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
-		// get value of Credit Rating and set in response
-		try {
-			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
-					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
-			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
-			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
-				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
-				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-				creditRatingOrganizationDetailResponse.setCreditRatingFund(creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null ? CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue() : null);
-				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
-						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
-								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
-				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-				if (masterResponse != null) {
-					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
-				} else {
-					workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
-				}
-				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
-						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
-				creditRatingOrganizationDetailResponse.setRatingAgency(
-						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
-				creditRatingOrganizationDetailResponse
-						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
-				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
-				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
-				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
-					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
-				}
-			}
-			workingCapitalPrimaryViewResponse
-					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Credit Rating {}", e);
-		}
+		// get value of CredicorporateApplicantDetailt Rating and set in response
+//		try {
+//			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+//					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
+//			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
+//			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
+//				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
+//				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
+//				creditRatingOrganizationDetailResponse.setCreditRatingFund(creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null ? CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue() : null);
+//				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
+//						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
+//								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
+//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+//				if (masterResponse != null) {
+//					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
+//				} else {
+//					workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
+//				}
+//				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
+//						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+//				creditRatingOrganizationDetailResponse.setRatingAgency(
+//						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+//				creditRatingOrganizationDetailResponse
+//						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
+//				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+//				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
+//				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
+//					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+//				}
+//			}
+//			workingCapitalPrimaryViewResponse
+//					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Credit Rating {}", e);
+//		}
 		// set short term rating option
-		try {
-			List<String> shortTermValueList = new ArrayList<String>();
-			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
-					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
-			for (Integer shortTermId : shortTermIdList) {
-				OneFormResponse oneFormResponse = oneFormClient
-						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-				if (masterResponse != null) {
-					shortTermValueList.add(masterResponse.getValue());
-				} else {
-					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
-				}
-				workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			List<String> shortTermValueList = new ArrayList<String>();
+//			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
+//					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
+//			for (Integer shortTermId : shortTermIdList) {
+//				OneFormResponse oneFormResponse = oneFormClient
+//						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+//				if (masterResponse != null) {
+//					shortTermValueList.add(masterResponse.getValue());
+//				} else {
+//					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
+//				}
+//				workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 		// set long term rating option
-		try {
-			List<String> longTermValueList = new ArrayList<String>();
-			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
-					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
-			for (Integer shortTermId : longTermIdList) {
-				OneFormResponse oneFormResponse = oneFormClient
-						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-				if (masterResponse != null) {
-					longTermValueList.add(masterResponse.getValue());
-				} else {
-					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
-				}
-			}
-			workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			List<String> longTermValueList = new ArrayList<String>();
+//			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
+//					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
+//			for (Integer shortTermId : longTermIdList) {
+//				OneFormResponse oneFormResponse = oneFormClient
+//						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+//				if (masterResponse != null) {
+//					longTermValueList.add(masterResponse.getValue());
+//				} else {
+//					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
+//				}
+//			}
+//			workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 		// get value of Ownership Details and set in response
-		try {
-			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
-					.getOwnershipDetailList(toApplicationId, userId);
-			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-				ownershipDetailResponse.setShareHoldingCategory(
-						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-				ownershipDetailResponseList.add(ownershipDetailResponse);
-			}
-			workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Ownership Details {}", e);
-		}
+//		try {
+//			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
+//					.getOwnershipDetailList(toApplicationId, userId);
+//			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+//			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+//				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+//				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+//				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+//				ownershipDetailResponse.setShareHoldingCategory(
+//						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+//				ownershipDetailResponseList.add(ownershipDetailResponse);
+//			}
+//			workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Ownership Details {}", e);
+//		}
 
 		// get value of Promotor Background and set in response
-		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
-			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + promotorBackgroundDetailRequest.getPromotorsName());
-				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-				String promotorName = "";
-				if (promotorBackgroundDetailRequest.getSalutationId() != null){
-					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
-				}
-				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
-				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
-				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
-			}
-			workingCapitalPrimaryViewResponse
-					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Promotor Background {}", e);
-		}
+//		try {
+//			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
+//			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+//			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+//				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+//				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+//				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+//				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+//				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
+//				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + promotorBackgroundDetailRequest.getPromotorsName());
+//				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+//				String promotorName = "";
+//				if (promotorBackgroundDetailRequest.getSalutationId() != null){
+//					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+//				}
+//				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
+//				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+//				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+//				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+//				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
+//				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+//			}
+//			workingCapitalPrimaryViewResponse
+//					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Promotor Background {}", e);
+//		}
 		
 		//get value of Director's Background and set in response
 		
@@ -581,7 +581,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 				//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				//directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
 				String directorName = "";
@@ -598,6 +598,13 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : null )+ " " + directorBackgroundDetailRequest.getGender());
+				directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? RelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : null )+ " " + directorBackgroundDetailRequest.getRelationshipType());
+
+				
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 			}
 			workingCapitalPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
@@ -606,32 +613,32 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		}
 
 		// get value of Past Financial and set in response
-		try {
-			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
-			if (pastFinancialEstimatesDetailRequestList.size()>4){
-				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
-			}
-			workingCapitalPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Past Financial {}", e);
-		}
-
-		// get value of Future Projection and set in response
-		try {
-			workingCapitalPrimaryViewResponse
-					.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
-							.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Future Projection {}", e);
-		}
-
-		// get value of Security and set in response
-		try {
-			workingCapitalPrimaryViewResponse.setSecurityCorporateDetailRequestList(
-					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Security Details {}", e);
-		}
+//		try {
+//			List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequestList = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsRequestFromAppId(toApplicationId);
+//			if (pastFinancialEstimatesDetailRequestList.size()>4){
+//				pastFinancialEstimatesDetailRequestList = pastFinancialEstimatesDetailRequestList.subList((pastFinancialEstimatesDetailRequestList.size()-4),pastFinancialEstimatesDetailRequestList.size());
+//			}
+//			workingCapitalPrimaryViewResponse.setPastFinancialEstimatesDetailRequestList(pastFinancialEstimatesDetailRequestList);
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Past Financial {}", e);
+//		}
+//
+//		// get value of Future Projection and set in response
+//		try {
+//			workingCapitalPrimaryViewResponse
+//					.setFutureFinancialEstimatesDetailRequestList(futureFinancialEstimatesDetailsService
+//							.getFutureFinancialEstimateDetailsList(toApplicationId, userId));
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Future Projection {}", e);
+//		}
+//
+//		// get value of Security and set in response
+//		try {
+//			workingCapitalPrimaryViewResponse.setSecurityCorporateDetailRequestList(
+//					securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+//		} catch (Exception e) {
+//			logger.error("Problem to get Data of Security Details {}", e);
+//		}
 
 		// get value of Financial Arrangements and set in response
 		try {
@@ -640,7 +647,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+//				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
 				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
 				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
@@ -649,7 +656,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 	//			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				//financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			workingCapitalPrimaryViewResponse.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
