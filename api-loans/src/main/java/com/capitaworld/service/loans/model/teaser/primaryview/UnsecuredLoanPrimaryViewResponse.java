@@ -83,6 +83,10 @@ public class UnsecuredLoanPrimaryViewResponse {
 
 	private List<CorporateCoApplicantRequest> coApplicantList;
 	private String purposeOfLoan;
+	
+	private String gstin;
+	private String haveCollateralSecurity;
+    private String collateralSecurityAmount;
 
 	public List<?> getIndustrySector() {
 		return industrySector;
@@ -524,6 +528,48 @@ public class UnsecuredLoanPrimaryViewResponse {
 
 	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
 		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+
+	/**
+	 * @return the gstin
+	 */
+	public String getGstin() {
+		return gstin;
+	}
+
+	/**
+	 * @param gstin the gstin to set
+	 */
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
+	}
+
+	/**
+	 * @return the haveCollateralSecurity
+	 */
+	public String getHaveCollateralSecurity() {
+		return haveCollateralSecurity;
+	}
+
+	/**
+	 * @param haveCollateralSecurity the haveCollateralSecurity to set
+	 */
+	public void setHaveCollateralSecurity(String haveCollateralSecurity) {
+		this.haveCollateralSecurity = haveCollateralSecurity;
+	}
+
+	/**
+	 * @return the collateralSecurityAmount
+	 */
+	public String getCollateralSecurityAmount() {
+		return collateralSecurityAmount;
+	}
+
+	/**
+	 * @param collateralSecurityAmount the collateralSecurityAmount to set
+	 */
+	public void setCollateralSecurityAmount(String collateralSecurityAmount) {
+		this.collateralSecurityAmount = collateralSecurityAmount;
 	}
 	
 	
