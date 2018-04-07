@@ -185,7 +185,7 @@ public class FinancialArrangementDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/get_total_emi/{applicationId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/get_total_emi/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getTotalEmi(
 			@PathVariable("applicationId") Long applicationId) {
 		// application id must not be null
