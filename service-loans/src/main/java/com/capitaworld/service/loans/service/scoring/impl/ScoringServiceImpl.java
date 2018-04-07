@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -74,6 +77,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private AnalyzerClient analyzerClient;
+
+    @Autowired
+    private CIBILClient cibilClient;
 
 
     @Override
@@ -211,19 +217,43 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                        // remaining
+                        Double customer_ass_concern_year=null;
+                        try {
 
-                        map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                            CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
+                            customer_ass_concern_year = (Double)cibilResponse.getData();
+                            map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
 
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
+                            e.printStackTrace();
+                            map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                        }
                         break;
 
                     }
                     case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
-                        // remaining
 
-                        map.put("CIBIL_TRANSUNION_SCORE",null);
+                        Double cibil_score_avg_promotor=null;
+                        try {
 
+                            CibilRequest cibilRequest=new CibilRequest();
+                            cibilRequest.setApplicationId(applicationId);
+
+                            CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
+                            cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                            map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
+                            e.printStackTrace();
+                            map.put("CIBIL_TRANSUNION_SCORE",null);
+                        }
                         break;
                     }
 

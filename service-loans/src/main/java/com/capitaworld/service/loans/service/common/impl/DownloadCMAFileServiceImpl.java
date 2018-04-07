@@ -565,7 +565,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  		Double tillYear =(double)calendar.get(Calendar.YEAR);
        		
 		Double totalYear= temp+total_Column-j+1;
-		if(j<2) {
+		if(j==0) {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
 		}

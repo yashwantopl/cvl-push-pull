@@ -95,6 +95,13 @@ public class LoansResponse implements Serializable{
 	public LoansResponse() {
 		super();
 	}
+	
+	public LoansResponse(Long id,String message, Integer status) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.message = message;
+	}
 
 	public LoansResponse(String message) {
 		super();

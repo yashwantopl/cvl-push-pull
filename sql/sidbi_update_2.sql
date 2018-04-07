@@ -1,0 +1,2 @@
+alter table `loan_applications`.`fs_corporate_primary_details` add (is_business_asset_checked BIT, is_working_capital_checked BIT, is_other_general_checked BIT);
+alter table `loan_applications`.`fs_corporate_primary_details` modify have_collateral_security BIT;

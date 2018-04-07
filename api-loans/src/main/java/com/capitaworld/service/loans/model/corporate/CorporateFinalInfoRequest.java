@@ -38,6 +38,8 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     private Boolean notApplicable;
 
+    private String aboutUs;
+
     public Boolean getSameAs() {
         return sameAs;
     }
@@ -157,5 +159,13 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     public void setNotApplicable(Boolean notApplicable) {
         this.notApplicable = notApplicable;
+    }
+
+    public String getAboutUs() {
+        return aboutUs;
+    }
+
+    public void setAboutUs(String aboutUs) {
+        this.aboutUs = aboutUs;
     }
 }
