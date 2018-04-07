@@ -25,17 +25,13 @@ public class FundSeekerInputRequestController {
     private FundSeekerInputRequestService fundSeekerInputRequestService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,
-                                              HttpServletRequest request)
+    public ResponseEntity<LoansResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
             throws Exception
     {
         try {
-            // request must not be null
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            fundSeekerInputRequestResponse.setUserId(userId);
 
-            if (CommonUtils.isObjectNullOrEmpty(userId)) {
-                logger.warn("userId can not be empty");
+            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+                logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
@@ -54,15 +50,14 @@ public class FundSeekerInputRequestController {
 
 
     @RequestMapping(value = "/get", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> get(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,
-                                              HttpServletRequest request)
+    public ResponseEntity<LoansResponse> get(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
             throws Exception
     {
-        try {
-            // request must not be null
-            Long userId  = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (CommonUtils.isObjectNullOrEmpty(userId)) {
-                logger.warn("userId can not be empty");
+        try
+        {
+
+            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+                logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
