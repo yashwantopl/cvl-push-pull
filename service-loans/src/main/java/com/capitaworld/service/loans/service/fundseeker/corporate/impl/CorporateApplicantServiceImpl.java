@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +86,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	
+	@Autowired
+	private Environment environment;
 
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -651,6 +657,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
 		logger.info("ENd Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
 		return applicantRequest;
+	}
+	
+	@Override
+	public JSONObject getOrgAndPanByAppId(Long applicationId) {
+		logger.info("Start Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
+		JSONObject obj =  new JSONObject();
+		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		if (!CommonUtils.isObjectListNull(applicantDetail)) {
+			obj.put("entityName", applicantDetail.getOrganisationName());
+			obj.put("panNo", applicantDetail.getPanNo());
+			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+		}
+		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
+		return obj;
 	}
 	
 	

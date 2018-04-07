@@ -45,4 +45,6 @@ public interface CorporateApplicantService {
 	public void saveSubSector(Long applicationId, List<Long> subSectorlist) ;
 	
 	public CorporateApplicantRequest getCorporateApplicant(Long applicationId);
+	
+	public JSONObject getOrgAndPanByAppId(Long applicationId);
 }
