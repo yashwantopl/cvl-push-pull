@@ -17,6 +17,11 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Boolean  haveCollateralSecurity;
     private Double collateralSecurityAmount;
 
+    private Boolean isBusinessAssetChecked;
+    private Boolean isWorkingCapitalChecked;
+    private Boolean isOtherGeneralChecked;
+
+
     public PrimaryCorporateRequest() {
     }
 
@@ -66,5 +71,29 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
         this.collateralSecurityAmount = collateralSecurityAmount;
+    }
+
+    public Boolean getBusinessAssetChecked() {
+        return isBusinessAssetChecked;
+    }
+
+    public void setBusinessAssetChecked(Boolean businessAssetChecked) {
+        isBusinessAssetChecked = businessAssetChecked;
+    }
+
+    public Boolean getWorkingCapitalChecked() {
+        return isWorkingCapitalChecked;
+    }
+
+    public void setWorkingCapitalChecked(Boolean workingCapitalChecked) {
+        isWorkingCapitalChecked = workingCapitalChecked;
+    }
+
+    public Boolean getOtherGeneralChecked() {
+        return isOtherGeneralChecked;
+    }
+
+    public void setOtherGeneralChecked(Boolean otherGeneralChecked) {
+        isOtherGeneralChecked = otherGeneralChecked;
     }
 }

@@ -140,6 +140,8 @@ public interface LoanApplicationService {
 	
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
 	
+	public Long createMsmeLoan(Long userId);
+	
 	
 }
 

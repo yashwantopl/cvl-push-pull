@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,8 @@ public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryC
 
     @Query("select pd.loanAmount from PrimaryCorporateDetail pd where pd.applicationId.id =:applicationId")
     public Double getLoanAmountByApplication(@Param("applicationId") Long applicationId);
+
+    public PrimaryCorporateDetail findOneByApplicationIdId(Long applicationId);
 }
 
 

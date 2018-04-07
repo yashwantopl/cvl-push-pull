@@ -220,4 +220,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
     //nhbs
     @Query("select count(*) from LoanApplicationMaster lm where lm.ddrStatusId =:id and npOrgId=:npOrgId and lm.isActive = true ")
     public int getCountOfProposalsByDdrStatusAndNpOrgId(@Param("id") Long ddrStatusId,@Param("npOrgId")Long npOrgId);
+    
+	@Query("select lm from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL")
+	public LoanApplicationMaster getCorporateLoan(@Param("userId") Long userId);
+
 }
