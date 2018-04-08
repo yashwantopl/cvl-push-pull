@@ -888,5 +888,24 @@ public class CommonUtils {
 		}
 
 	}
+	
+	public static Double addNumbers(Double... a){
+		Double sum = 0.0;
+		if(!isObjectNullOrEmpty(a)) {
+			for(Double b : a){
+				if(!isObjectNullOrEmpty(b))
+					sum += b;
+			}
+		}
+		return sum;
+	}
+	
+	public static Double substractNumbers(Double a, Double b){
+		a= isObjectNullOrEmpty(a) ? 0.0 : a;
+		b= isObjectNullOrEmpty(b) ? 0.0 : b;
+		
+		Double sub= a-b;
+		return sub;
+	}
 
 }
