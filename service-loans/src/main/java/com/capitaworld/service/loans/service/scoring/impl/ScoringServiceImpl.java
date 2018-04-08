@@ -343,7 +343,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
-                            Double currentRatio = assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio();
+                            Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio())/2;
                             if (CommonUtils.isObjectNullOrEmpty(currentRatio))
                                 currentRatio = 0.0;
 
