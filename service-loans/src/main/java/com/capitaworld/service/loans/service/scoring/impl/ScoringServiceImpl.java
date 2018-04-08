@@ -633,8 +633,17 @@ public class ScoringServiceImpl implements ScoringService{
                                 interestSy = 0.0;
 
                             try {
-                                Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
-                                map.put("AVERAGE_INTEREST_COV_RATIO",avgInterestCovRatio);
+
+                                if(interestTy!= 0 && interestSy!=0)
+                                {
+                                    Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
+                                }
+                                else
+                                {
+                                    map.put("AVERAGE_INTEREST_COV_RATIO",null);
+                                    logger.error("error while calculating AVERAGE_INTEREST_COV_RATIO");
+                                }
+
                             }
                             catch (Exception e)
                             {
