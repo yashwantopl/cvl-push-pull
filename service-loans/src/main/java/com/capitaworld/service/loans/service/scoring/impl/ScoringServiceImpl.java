@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -175,12 +176,20 @@ public class ScoringServiceImpl implements ScoringService{
                 e.printStackTrace();
             }
 
-            List<ModelParameterResponse> dataList = scoringResponse.getDataList();
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
             List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
-            int i = 0;
-            for (ModelParameterResponse modelParameterResponse : dataList) {
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
                 fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                 fundSeekerInputRequest.setName(modelParameterResponse.getName());
@@ -733,7 +742,6 @@ public class ScoringServiceImpl implements ScoringService{
 
                 fundSeekerInputRequest.setMap(map);
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
-                i = i + 1;
             }
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
