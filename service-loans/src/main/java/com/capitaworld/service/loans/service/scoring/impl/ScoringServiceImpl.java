@@ -372,7 +372,11 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-                            Double debtorsDays = ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            Double debtorsDays=null;
+                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            {
+                                debtorsDays= ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            }
                             if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
                                 debtorsDays = 0.0;
 
@@ -390,7 +394,11 @@ public class ScoringServiceImpl implements ScoringService{
 
                             /////////////
 
-                            Double creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            Double creditorsDays=null;
+                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            {
+                                creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            }
                             if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
                                 creditorsDays = 0.0;
 
@@ -444,9 +452,11 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(interestFy))
                                 interestFy = 0.0;
 
-                            Double avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(avgAnnualGrowthGrossCash))
-                                avgAnnualGrowthGrossCash = 0.0;
+                            Double avgAnnualGrowthGrossCash=null;
+                            if((netProfitOrLossSY + depreciationSy + interestSy !=0) && ((netProfitOrLossTY + depreciationTy + interestTy)!=0))
+                            {
+                                avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
+                            }
 
                             map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
 
@@ -489,10 +499,10 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Double avgAnnualGrowthNetSale=null;
 
-
-                            avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(avgAnnualGrowthNetSale))
-                                avgAnnualGrowthNetSale = 0.0;
+                            if((domesticSalesTy + exportSalesTy)!=0 && (domesticSalesSy + exportSalesSy)!=0)
+                            {
+                                avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
+                            }
 
                             map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
 
@@ -637,6 +647,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 if(interestTy!= 0 && interestSy!=0)
                                 {
                                     Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
+                                    map.put("AVERAGE_INTEREST_COV_RATIO",avgInterestCovRatio);
                                 }
                                 else
                                 {
