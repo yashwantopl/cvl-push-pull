@@ -61,7 +61,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	private DMSClient dmsClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
-
+    
+	private static final String profitibilitySheet="PS";
+	
+	private static final String balanceSheet="BS";
 	@Override
 	public Workbook cmaFileGenerator(Long applicationId , Long productDocumentMappingId) {
 		logger.info("Enter in cmaFileGenerator()  Forming Excel Data");
@@ -569,13 +572,16 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
 		}
+		if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
+			j=1;
+		}
 		for (int i = j; temp <totalYear;temp++) {
 			if(flag) {
 				sheet.getRow(4).getCell(++i).setCellValue(temp);
 			
 			}
 			else {
-				sheet.getRow(3).getCell(++i+1).setCellValue(temp);
+				sheet.getRow(3).getCell(++i).setCellValue(temp);
 			}
 				
 		}
