@@ -59,6 +59,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
+            {
+                corporateApplicantDetail=new CorporateApplicantDetail();
+            }
+
             BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail);
 
             corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
