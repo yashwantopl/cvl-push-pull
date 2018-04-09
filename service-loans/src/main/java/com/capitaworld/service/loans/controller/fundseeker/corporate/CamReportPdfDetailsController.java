@@ -61,7 +61,7 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 
 				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId", 358L);
+				jsonObj.put("productDocumentMappingId", 362L);
 				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put("originalFileName", "CAMREPORTSIDBI"+applicationId+".pdf");
 				
