@@ -25,6 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -209,6 +211,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Value("${capitaworld.service.gateway.sidbiAmount}")
 	private String sidbiAmount;
+	
+	@Autowired
+	private ConnectClient connectClient;
 	
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
@@ -3951,7 +3956,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				loanRequest.setInterestRate("5%");
 				loanRequest.setEmiAmount("Rs. 1");
 				loanRequest.setOnlinePaymentSuccess(updatePayment);
+				
+				
+				
+				
+				
 				return loanRequest;
+			}
+			
+			logger.info("Call Connector client for update payment status");
+			if("Success".equals(paymentRequest.getStatus())) {
+				try {
+					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(), userId);
+					if(!CommonUtils.isObjectListNull(connectResponse)) {
+						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+					} else {
+						logger.info("Connector Response null or empty" );
+					}
+				} catch (Exception e) {
+					logger.info("Throw Exception While Call Connector Service`");
+					e.printStackTrace();
+				}
 			}
 			
 			
