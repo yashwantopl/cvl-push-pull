@@ -1,6 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
- import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+ import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.util.CommonUtils;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -46,6 +50,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
     @Autowired
     private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+    
+    @Autowired
+    private ConnectClient connectClient;
 
 
     @Override
@@ -93,7 +100,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             }
-
+            
+            ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+            if(postOneForm != null) {
+    			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
+    			if(!postOneForm.getProceed().booleanValue()) {
+    				return new ResponseEntity<LoansResponse>(new LoansResponse("Not Eligibile from Matchengine",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+    			}
+    		}
             LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setFlag(true);
             logger.error("data successfully saved");
