@@ -3810,20 +3810,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throws Exception {
 		logger.info("Start updateLoanApplicationMaster()");
 		try {
+			
+			System.out.println("User Id"+userId);
+			System.out.println("Client Id"+clientId);
+			System.out.println("Payment Request"+paymentRequest.toString());
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(paymentRequest.getApplicationId());
-			
+			System.out.println("Loan Master"+loanApplicationMaster);
 			
 			if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
 				
 				loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
 				loanApplicationRepository.save(loanApplicationMaster);
 				
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				/*CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.findOneByApplicationIdId(paymentRequest.getApplicationId());
-				
+				System.out.println("corporateApplicantDetail"+corporateApplicantDetail);
 				corporateApplicantDetail.setPanNo(paymentRequest.getPanNo());
-				corporateApplicantDetailRepository.save(corporateApplicantDetail);
+				corporateApplicantDetailRepository.save(corporateApplicantDetail);*/
 				
 			} else {
 				
@@ -3885,15 +3889,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
 				
-				UserResponse emailMobile = userClient.getEmailMobile(userId);
+				/*UserResponse emailMobile = userClient.getEmailMobile(userId);
 			    UsersRequest usersRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
-				
+			*/	
 			    GatewayRequest gatewayRequest = new GatewayRequest();
 				
 			    gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
-			    gatewayRequest.setEmail(usersRequest.getEmail());
-			    gatewayRequest.setPhone(usersRequest.getMobile());
-			  
+			   /* gatewayRequest.setEmail(usersRequest.getEmail());
+			    gatewayRequest.setPhone(usersRequest.getMobile());*/
+			  			    
+			    gatewayRequest.setEmail("hakimuddin@capitaworld.com");
+			    gatewayRequest.setPhone("7869585058");
+			    
 			    gatewayRequest.setAmount(Double.valueOf(sidbiAmount));
 			    gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 			    gatewayRequest.setUserId(userId);
@@ -3901,6 +3908,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 				gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 				Object values = gatewayClient.payout(gatewayRequest);
+				
+				
 				System.out.println("Response for gateway is:- " + values);
 				logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
 				return values;
@@ -3924,9 +3933,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(ClientId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
-			gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
-			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
+			
+			//gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
+			// sanket's code
+			
+			if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+				
+				LoanApplicationRequest loanRequest = new LoanApplicationRequest();
+				
+				ProposalMappingRequest proposal = new ProposalMappingRequest();
+			//proposalDetailsClient.getFundSeekerApplicationStatus(applicationId)(paymentRequest.getApplicationId());
+				
+				loanRequest.setTypeOfLoan("Term Loan");
+				loanRequest.setLoanAmount(50000.0);
+				loanRequest.setTenure(12.0);
+				loanRequest.setInterestRate("5%");
+				loanRequest.setEmiAmount("Rs. 1");
+				loanRequest.setOnlinePaymentSuccess(updatePayment);
+				return loanRequest;
+			}
+			
+			
+			
+			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
+			
 			logger.info("Status===>{}", updatePayment);
 			if (!CommonUtils.isObjectNullOrEmpty(updatePayment)) {
 				loanRequest.setPaymentStatus(updatePayment.toString());

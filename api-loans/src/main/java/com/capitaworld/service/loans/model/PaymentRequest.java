@@ -163,6 +163,10 @@ public class PaymentRequest implements Serializable {
 		return "PaymentRequest [applicationId=" + applicationId + ", trxnId=" + trxnId + ", nameOfEntity="
 				+ nameOfEntity + ", address=" + address + ", typeOfPayment=" + typeOfPayment + ", appointmentDate="
 				+ appointmentDate + ", appointmentTime=" + appointmentTime + ", emailAddress=" + emailAddress
-				+ ", mobileNumber=" + mobileNumber + ", paymentAmount=" + paymentAmount + ", status=" + status + "]";
+				+ ", mobileNumber=" + mobileNumber + ", paymentAmount=" + paymentAmount + ", purposeCode=" + purposeCode
+				+ ", responseParams=" + responseParams + ", status=" + status + ", panNo=" + panNo
+				+ ", isAcceptConsent=" + isAcceptConsent + "]";
 	}
+
+	
 }
