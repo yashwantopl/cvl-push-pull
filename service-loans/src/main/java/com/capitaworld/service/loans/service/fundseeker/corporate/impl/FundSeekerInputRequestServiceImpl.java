@@ -4,7 +4,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.util.CommonUtils;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -65,6 +66,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             }
 
             BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail);
+            corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 
             corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             corporateApplicantDetail.setModifiedDate(new Date());
@@ -78,6 +80,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             }
             BeanUtils.copyProperties(fundSeekerInputRequest,primaryCorporateDetail);
 
+            primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             primaryCorporateDetail.setModifiedDate(new Date());
 
