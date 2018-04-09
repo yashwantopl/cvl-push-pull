@@ -59,9 +59,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
+            logger.info("getting corporateApplicantDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
             {
+                logger.info("corporateApplicantDetail is null created new object");
                 corporateApplicantDetail=new CorporateApplicantDetail();
             }
 
@@ -73,9 +75,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
 
+            logger.info("getting primaryCorporateDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
             {
+                logger.info("primaryCorporateDetail is null created new object");
                 primaryCorporateDetail=new PrimaryCorporateDetail();
             }
             BeanUtils.copyProperties(fundSeekerInputRequest,primaryCorporateDetail);
