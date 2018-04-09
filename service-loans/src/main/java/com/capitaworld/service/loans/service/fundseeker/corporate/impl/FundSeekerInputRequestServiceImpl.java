@@ -146,6 +146,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
         FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
 
+        fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
+
         List<FinancialArrangementsDetailRequest> financialArrangementsDetailResponseList = new ArrayList<FinancialArrangementsDetailRequest>();
         List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
