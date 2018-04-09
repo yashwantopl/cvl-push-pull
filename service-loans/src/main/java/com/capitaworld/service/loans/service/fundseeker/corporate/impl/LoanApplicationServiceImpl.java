@@ -4333,12 +4333,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Long createMsmeLoan(Long userId) {
-		logger.info("Entry in createMsmeLoan");
+		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
 		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
 			logger.info("Corporate Application Id is Already Exists===>{}",corporateLoan.getId());
 			return corporateLoan.getId();
 		}
+		logger.info("Successfully get result");
 		corporateLoan = new LoanApplicationMaster();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setCreatedBy(userId);
