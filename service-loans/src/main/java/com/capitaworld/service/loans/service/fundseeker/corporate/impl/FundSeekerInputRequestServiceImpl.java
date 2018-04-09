@@ -142,6 +142,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
 
             PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
+            {
+                primaryCorporateDetail=new PrimaryCorporateDetail();
+            }
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputResponse);
 
 
