@@ -3912,6 +3912,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			    gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
 				gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 				gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
+				
 				Object values = gatewayClient.payout(gatewayRequest);
 				
 				
@@ -3943,26 +3944,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Boolean updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			// sanket's code
 			
-			if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+      if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
 				
-				LoanApplicationRequest loanRequest = new LoanApplicationRequest();
+				LoanApplicationMaster loanApplicationMaster=loanApplicationRepository.findOne(paymentRequest.getApplicationId());
+				if (loanApplicationMaster == null) {
+					throw new NullPointerException("Invalid Loan Application ID==>" + paymentRequest.getApplicationId());
+				}
+				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				
 				ProposalMappingRequest proposal = new ProposalMappingRequest();
-			//proposalDetailsClient.getFundSeekerApplicationStatus(applicationId)(paymentRequest.getApplicationId());
-				
-				loanRequest.setTypeOfLoan("Term Loan");
-				loanRequest.setLoanAmount(50000.0);
-				loanRequest.setTenure(12.0);
-				loanRequest.setInterestRate("5%");
-				loanRequest.setEmiAmount("Rs. 1");
-				loanRequest.setOnlinePaymentSuccess(updatePayment);
-				
-				
-				
-				
-				
-				return loanRequest;
+			
+			ProposalMappingResponse	response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId());
+			ProposalMappingRequest proposalMappingRequest=(ProposalMappingRequest)response.getData();
+			
+			
+			/*applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType( );*/
+			applicationRequest.setLoanAmount(proposalMappingRequest.getElAmount());
+			applicationRequest.setTenure(proposalMappingRequest.getElTenure());
+			/*applicationRequest.setInterestRate(proposalMappingRequest.get);*/
+			applicationRequest.setEmiAmount(proposalMappingRequest.getEmi());
+			applicationRequest.setOnlinePaymentSuccess(updatePayment);
+				return applicationRequest;
 			}
+			
 			
 			logger.info("Call Connector client for update payment status");
 			if("Success".equals(paymentRequest.getStatus())) {
