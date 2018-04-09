@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -32,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -74,6 +78,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private AnalyzerClient analyzerClient;
+
+    @Autowired
+    private CIBILClient cibilClient;
 
 
     @Override
@@ -169,12 +176,20 @@ public class ScoringServiceImpl implements ScoringService{
                 e.printStackTrace();
             }
 
-            List<ModelParameterResponse> dataList = scoringResponse.getDataList();
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
             List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
-            int i = 0;
-            for (ModelParameterResponse modelParameterResponse : dataList) {
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
                 fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                 fundSeekerInputRequest.setName(modelParameterResponse.getName());
@@ -211,19 +226,45 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                        // remaining
+                        Double customer_ass_concern_year=6.0;
+                        /*try {
 
-                        map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                            CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
+                            customer_ass_concern_year = (Double)cibilResponse.getData();
+                            map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
 
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
+                            e.printStackTrace();
+                            map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                        }*/
+                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
                         break;
 
                     }
                     case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
-                        // remaining
 
-                        map.put("CIBIL_TRANSUNION_SCORE",null);
+                        Double cibil_score_avg_promotor=700.0;
+                        /*try {
 
+                            CibilRequest cibilRequest=new CibilRequest();
+                            cibilRequest.setApplicationId(applicationId);
+
+                            CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
+                            cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                            map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
+                            e.printStackTrace();
+                            map.put("CIBIL_TRANSUNION_SCORE",null);
+                        }*/
+                        map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
                         break;
                     }
 
@@ -313,7 +354,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
-                            Double currentRatio = assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio();
+                            Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio())/2;
                             if (CommonUtils.isObjectNullOrEmpty(currentRatio))
                                 currentRatio = 0.0;
 
@@ -333,7 +374,11 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-                            Double debtorsDays = ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            Double debtorsDays=null;
+                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            {
+                                debtorsDays= ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            }
                             if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
                                 debtorsDays = 0.0;
 
@@ -351,7 +396,11 @@ public class ScoringServiceImpl implements ScoringService{
 
                             /////////////
 
-                            Double creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            Double creditorsDays=null;
+                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            {
+                                creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                            }
                             if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
                                 creditorsDays = 0.0;
 
@@ -405,9 +454,11 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(interestFy))
                                 interestFy = 0.0;
 
-                            Double avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(avgAnnualGrowthGrossCash))
-                                avgAnnualGrowthGrossCash = 0.0;
+                            Double avgAnnualGrowthGrossCash=null;
+                            if((netProfitOrLossSY + depreciationSy + interestSy !=0) && ((netProfitOrLossTY + depreciationTy + interestTy)!=0))
+                            {
+                                avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
+                            }
 
                             map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
 
@@ -450,10 +501,10 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Double avgAnnualGrowthNetSale=null;
 
-
-                            avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(avgAnnualGrowthNetSale))
-                                avgAnnualGrowthNetSale = 0.0;
+                            if((domesticSalesTy + exportSalesTy)!=0 && (domesticSalesSy + exportSalesSy)!=0)
+                            {
+                                avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
+                            }
 
                             map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
 
@@ -594,8 +645,18 @@ public class ScoringServiceImpl implements ScoringService{
                                 interestSy = 0.0;
 
                             try {
-                                Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
-                                map.put("AVERAGE_INTEREST_COV_RATIO",avgInterestCovRatio);
+
+                                if(interestTy!= 0 && interestSy!=0)
+                                {
+                                    Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
+                                    map.put("AVERAGE_INTEREST_COV_RATIO",avgInterestCovRatio);
+                                }
+                                else
+                                {
+                                    map.put("AVERAGE_INTEREST_COV_RATIO",null);
+                                    logger.error("error while calculating AVERAGE_INTEREST_COV_RATIO");
+                                }
+
                             }
                             catch (Exception e)
                             {
@@ -703,7 +764,6 @@ public class ScoringServiceImpl implements ScoringService{
 
                 fundSeekerInputRequest.setMap(map);
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
-                i = i + 1;
             }
 
             scoringRequest.setDataList(fundSeekerInputRequestList);

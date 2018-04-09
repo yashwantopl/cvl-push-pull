@@ -1,0 +1,61 @@
+
+
+UPDATE `one_form`.`industry` SET `industry_name` = 'Agriculture and Allied Activities' WHERE `id` = '1';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Auto and Ancillary' WHERE `id` = '2';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Entertainment and Media' WHERE `id` = '9';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Engineering and Capital goods' WHERE `id` = '10';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Finance and Financial Services' WHERE `id` = '12';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Food and Beverages' WHERE `id` = '13';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Travel and Hospitality' WHERE `id` = '15';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Minerals and commodities' WHERE `id` = '18';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Oil and Gas' WHERE `id` = '19';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Shipping and Logistics' WHERE `id` = '22';
+UPDATE `one_form`.`industry` SET `industry_name` = 'Retail and E-Commerce' WHERE `id` = '25';
+
+
+UPDATE `one_form`.`sector` SET `sector_name` = 'Farm and Construction Machinery' WHERE `id` = '251';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Pesticides and Agro Chemicals' WHERE `id` = '255';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Tiles and Ceramics' WHERE `id` = '267';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Dyes and Pigments' WHERE `id` = '270';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Paints and Varnishes' WHERE `id` = '272';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Music and Video Stores' WHERE `id` = '294';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Photographic Equipment and Supplies' WHERE `id` = '295';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Industrial Equipment and Components' WHERE `id` = '305';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Machine Tools and Accessories' WHERE `id` = '306';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Home Furnishings and Improvements' WHERE `id` = '312';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Packaging and Containers' WHERE `id` = '314';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Paper and Paper Products' WHERE `id` = '315';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Processed and Packaged Goods' WHERE `id` = '318';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Toys and Games' WHERE `id` = '320';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Medical Appliances and instrument' WHERE `id` = '349';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Hotels and Resorts' WHERE `id` = '357';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Travel and Tourism' WHERE `id` = '360';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Information and Delivery Services' WHERE `id` = '364';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Roads and bridges' WHERE `id` = '375';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Iron and Steel' WHERE `id` = '384';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Exploration' WHERE `id` = '388';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Refineries' WHERE `id` = '389';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Marketing' WHERE `id` = '390';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Retailer' WHERE `id` = '391';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Services' WHERE `id` = '392';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Oil and Gas Pipeline' WHERE `id` = '393';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Apparel Footwear and Accessories' WHERE `id` = '422';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Catalog and Mail Order Houses' WHERE `id` = '437';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Pollution and Treatment Controls' WHERE `id` = '444';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Rental and Leasing Services' WHERE `id` = '447';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Security and Protection Services' WHERE `id` = '449';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Staffing and Outsourcing Services' WHERE `id` = '451';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Toy and Hobby Stores' WHERE `id` = '453';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Agriculture and Allied Activities' WHERE `id` = '459';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Auto and Ancillary' WHERE `id` = '460';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Entertainment and Media' WHERE `id` = '467';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Engineering and Capital goods' WHERE `id` = '468';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Finance and Financial Services' WHERE `id` = '470';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Food and Beverages' WHERE `id` = '471';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Travel and Hospitality' WHERE `id` = '473';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Minerals and commodities' WHERE `id` = '476';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Oil and Gas' WHERE `id` = '477';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Shipping and Logistics' WHERE `id` = '480';
+UPDATE `one_form`.`sector` SET `sector_name` = 'Others-Retail and E-Commerce' WHERE `id` = '483';
+
+

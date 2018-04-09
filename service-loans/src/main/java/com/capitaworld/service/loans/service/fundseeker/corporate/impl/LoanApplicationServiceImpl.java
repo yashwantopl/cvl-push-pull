@@ -4306,6 +4306,32 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return address;
 	}
 
+	@Override
+	public Long createMsmeLoan(Long userId) {
+		logger.info("Entry in createMsmeLoan");
+		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
+		if(!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
+			logger.info("Corporate Application Id is Already Exists===>{}",corporateLoan.getId());
+			return corporateLoan.getId();
+		}
+		corporateLoan = new LoanApplicationMaster();
+		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		corporateLoan.setCreatedBy(userId);
+		corporateLoan.setCreatedDate(new Date());
+		corporateLoan.setUserId(userId);
+		corporateLoan.setIsActive(true);
+		logger.info("Going to Create new Corporate UserId===>{}",userId);
+		corporateLoan = loanApplicationRepository.save(corporateLoan);
+		logger.info("Created New Corporate Loan of User Id==>{}",userId);
+		logger.info("Setting Last Application is as Last access Id in User Table");	
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		logger.info("Exit in createMsmeLoan");
+		return corporateLoan.getId();
+	}
+	
 }
 
 

@@ -98,7 +98,22 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
     private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
     private String loanAmount;
-    private List<?> industrySector;
+    private String gstIn;
+    /**
+	 * @return the gstIn
+	 */
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	/**
+	 * @param gstIn the gstIn to set
+	 */
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	private List<?> industrySector;
     private List<String> shortTermRating;
     private List<String> longTermRating;
 
@@ -106,6 +121,8 @@ public class WorkingCapitalPrimaryViewResponse {
     private List<Object> certificateList;
     private List<Object> panCardList;
     private List<Object> profilePic;
+    private String haveCollateralSecurity;
+    private String collateralSecurityAmount;
 
     public String getLoanAmount() {
         return loanAmount;
@@ -428,6 +445,39 @@ public class WorkingCapitalPrimaryViewResponse {
 	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
 		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
 	}
+
+	/**
+	 * @return the haveCollateralSecurity
+	 */
+	public String getHaveCollateralSecurity() {
+		return haveCollateralSecurity;
+	}
+
+	/**
+	 * @param haveCollateralSecurity the haveCollateralSecurity to set
+	 */
+	public void setHaveCollateralSecurity(String haveCollateralSecurity) {
+		this.haveCollateralSecurity = haveCollateralSecurity;
+	}
+
+	/**
+	 * @return the collateralSecurityAmount
+	 */
+	public String getCollateralSecurityAmount() {
+		return collateralSecurityAmount;
+	}
+
+	/**
+	 * @param collateralSecurityAmount the collateralSecurityAmount to set
+	 */
+	public void setCollateralSecurityAmount(String collateralSecurityAmount) {
+		this.collateralSecurityAmount = collateralSecurityAmount;
+	}
+
+	/**
+	 * @return the haveCollateralSecurity
+	 */
+	
 	
 	
     

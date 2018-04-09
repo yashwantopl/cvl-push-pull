@@ -1215,12 +1215,18 @@ public class LoanApplicationController {
 				logger.info("Campaign Code=====>{}", campaignCodes);
 				if (!CommonUtils.isListNullOrEmpty(campaignCodes)) {
 					isMsmeUserFromGeneric = campaignCodes.contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
+					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
+					if(isMsmeUserFromGeneric) {
+						//In this case
+						Long createdId = loanApplicationService.createMsmeLoan(clientId);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(createdId,"Successfully New Loan Created",HttpStatus.OK.value()), HttpStatus.OK);
+						
+					}
 					// Integer index = campaignCodes
 					// .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					// logger.info("index==={}=of Code====>{}", index,
 					// CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					// if (index > -1) {
-					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
 					// }
 				}
 			} catch (Exception e) {

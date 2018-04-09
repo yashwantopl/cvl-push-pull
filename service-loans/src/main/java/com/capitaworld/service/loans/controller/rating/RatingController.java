@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
@@ -39,7 +41,39 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}
 		
-		//return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
-		return null;
+		return irrService.calculateIrrRating(proposalMappingRequest.getApplicationId(), userId);
+	}
+	
+	@RequestMapping(value = "/cma_irr_mapping_financial_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<RatingResponse> cmaIrrMappingService(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+		
+		Long userId = null;
+		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
+		   userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		
+		if(CommonUtils.isObjectNullOrEmpty(proposalMappingRequest.getApplicationId()))
+		{
+			logger.error("application id is null or empty");
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("application id is null or empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		try {
+		
+			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, 1l);
+			return new ResponseEntity<RatingResponse>(new RatingResponse(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error("error while getting financial input from cma");
+			e.printStackTrace();
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("error while getting financial input from cma", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			
+		}
 	}
 }
