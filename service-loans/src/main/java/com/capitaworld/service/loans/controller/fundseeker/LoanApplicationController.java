@@ -1505,7 +1505,7 @@ public class LoanApplicationController {
 			logger.info("Response========>{}", applicationMaster);
 
 			try {
-				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment()) && paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
 					logger.info("Start Sent Mail When FS select Online Payment");
 					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
 							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);

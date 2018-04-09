@@ -25,7 +25,19 @@ public class LoanApplicationRequest implements Serializable {
 	private Integer productId;
 
 	private Double tenure;
+	
+	private String typeOfLoan;
 
+	private Double loanAmount;
+	
+	private String interestRate;
+	
+	private String emiAmount;
+	
+	private String nameOfEntity;
+	
+	private String fundProvider;
+	
 	private Long userId;
 
 	private Integer currencyId;
@@ -93,6 +105,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String gstIn;
 
 	private Long npOrgId;
+	
+	private Boolean onlinePaymentSuccess;
 
 	public Long getNpOrgId() {
 		return npOrgId;
@@ -439,6 +453,64 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setIsMailSent(Boolean isMailSent) {
 		this.isMailSent = isMailSent;
+	}
+
+	public String getTypeOfLoan() {
+		return typeOfLoan;
+	}
+
+	public void setTypeOfLoan(String typeOfLoan) {
+		this.typeOfLoan = typeOfLoan;
+	}
+
+	
+
+	public Double getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(Double loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+
+	public String getInterestRate() {
+		return interestRate;
+	}
+
+	public void setInterestRate(String interestRate) {
+		this.interestRate = interestRate;
+	}
+
+	public String getEmiAmount() {
+		return emiAmount;
+	}
+
+	public void setEmiAmount(String emiAmount) {
+		this.emiAmount = emiAmount;
+	}
+
+	public String getNameOfEntity() {
+		return nameOfEntity;
+	}
+
+	public void setNameOfEntity(String nameOfEntity) {
+		this.nameOfEntity = nameOfEntity;
+	}
+
+	public String getFundProvider() {
+		return fundProvider;
+	}
+
+	public void setFundProvider(String fundProvider) {
+		this.fundProvider = fundProvider;
+	}
+
+	public Boolean getOnlinePaymentSuccess() {
+		return onlinePaymentSuccess;
+	}
+
+	public void setOnlinePaymentSuccess(Boolean onlinePaymentSuccess) {
+		this.onlinePaymentSuccess = onlinePaymentSuccess;
 	}
 	
 	
