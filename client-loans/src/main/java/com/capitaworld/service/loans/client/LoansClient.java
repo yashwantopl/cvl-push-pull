@@ -1606,7 +1606,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest);
+			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest,headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.info("Throw Exception while call save CMA details");
