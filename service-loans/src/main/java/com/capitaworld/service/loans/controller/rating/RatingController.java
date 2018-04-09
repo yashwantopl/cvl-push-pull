@@ -45,7 +45,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	}
 	
 	@RequestMapping(value = "/cma_irr_mapping_financial_input", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<FinancialInputRequest> cmaIrrMappingService(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+	public ResponseEntity<RatingResponse> cmaIrrMappingService(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
@@ -58,21 +58,21 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 		if(CommonUtils.isObjectNullOrEmpty(proposalMappingRequest.getApplicationId()))
 		{
 			logger.error("application id is null or empty");
-			return new ResponseEntity<FinancialInputRequest>(
-					new FinancialInputRequest("application id is null or empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("application id is null or empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
 		try {
 		
 			FinancialInputRequest financialInputRequest=irrService.cmaIrrMappingService(userId, proposalMappingRequest.getApplicationId(), null, 1l);
-			return new ResponseEntity<FinancialInputRequest>(new FinancialInputRequest(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
+			return new ResponseEntity<RatingResponse>(new RatingResponse(financialInputRequest,"financial input fetched from cma", HttpStatus.OK.value()), HttpStatus.OK);
 			
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.error("error while getting financial input from cma");
 			e.printStackTrace();
-			return new ResponseEntity<FinancialInputRequest>(
-					new FinancialInputRequest("error while getting financial input from cma", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+			return new ResponseEntity<RatingResponse>(
+					new RatingResponse("error while getting financial input from cma", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 			
 		}
 	}
