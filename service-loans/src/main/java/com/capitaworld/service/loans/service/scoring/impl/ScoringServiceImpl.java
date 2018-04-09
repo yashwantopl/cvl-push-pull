@@ -226,8 +226,8 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                        Double customer_ass_concern_year=null;
-                        try {
+                        Double customer_ass_concern_year=6.0;
+                        /*try {
 
                             CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
                             customer_ass_concern_year = (Double)cibilResponse.getData();
@@ -239,15 +239,16 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
                             e.printStackTrace();
                             map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
-                        }
+                        }*/
+                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
                         break;
 
                     }
                     case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
 
-                        Double cibil_score_avg_promotor=null;
-                        try {
+                        Double cibil_score_avg_promotor=700.0;
+                        /*try {
 
                             CibilRequest cibilRequest=new CibilRequest();
                             cibilRequest.setApplicationId(applicationId);
@@ -262,7 +263,8 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
                             e.printStackTrace();
                             map.put("CIBIL_TRANSUNION_SCORE",null);
-                        }
+                        }*/
+                        map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
                         break;
                     }
 
