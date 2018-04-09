@@ -167,6 +167,11 @@
 				spring-boot-starter-data-elasticsearch
 			</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.connect.client</groupId>
+			<artifactId>client-connect</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

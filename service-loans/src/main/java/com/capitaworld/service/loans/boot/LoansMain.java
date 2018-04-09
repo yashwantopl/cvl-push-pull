@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -84,6 +85,9 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.analyzer.url}")
 	private String analyzerBaseUrl;
+	
+	@Value("${capitaworld.service.connect.url}")
+	private String connectBaseUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -179,6 +183,13 @@ public class LoansMain {
 		AnalyzerClient analyzerClient = new AnalyzerClient(analyzerBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
+	}
+	
+	@Bean
+	public ConnectClient connectClient() {
+		ConnectClient connectClient = new ConnectClient(connectBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
+		return connectClient;
 	}
 
 }
