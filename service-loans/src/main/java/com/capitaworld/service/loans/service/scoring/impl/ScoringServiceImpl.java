@@ -100,8 +100,11 @@ public class ScoringServiceImpl implements ScoringService{
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
         GstResponse gstResponse=null;
-        GstCalculation gstCalculation=null;
-        try
+        GstCalculation gstCalculation=new GstCalculation();
+        gstCalculation.setConcentration(20d);
+        gstCalculation.setNoOfCustomer(223d);
+        gstCalculation.setProjectedSales(1000000d);
+        /*try
         {
             GSTR1Request gstr1Request=new GSTR1Request();
             gstr1Request.setGstin(gstNumber);
@@ -118,7 +121,7 @@ public class ScoringServiceImpl implements ScoringService{
         {
             logger.error("error while getting GST parameter");
             e.printStackTrace();
-        }
+        }*/
         // end Get GST Parameter
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
