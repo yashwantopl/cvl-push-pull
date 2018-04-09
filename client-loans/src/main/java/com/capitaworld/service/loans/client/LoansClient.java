@@ -1588,7 +1588,10 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
 		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
 		try {
-			return restTemplate.getForObject(url, CMARequest.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<Object>(headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMARequest.class).getBody();
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
 			e.printStackTrace();
@@ -1601,6 +1604,7 @@ public class LoansClient {
 		logger.info("Enter in save CMA details in Loan client");
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
