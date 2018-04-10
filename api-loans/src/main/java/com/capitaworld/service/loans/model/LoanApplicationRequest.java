@@ -32,7 +32,7 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private String interestRate;
 	
-	private String emiAmount;
+	private Double emiAmount;
 	
 	private String nameOfEntity;
 	
@@ -481,11 +481,13 @@ public class LoanApplicationRequest implements Serializable {
 		this.interestRate = interestRate;
 	}
 
-	public String getEmiAmount() {
+	
+
+	public Double getEmiAmount() {
 		return emiAmount;
 	}
 
-	public void setEmiAmount(String emiAmount) {
+	public void setEmiAmount(Double emiAmount) {
 		this.emiAmount = emiAmount;
 	}
 
