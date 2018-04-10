@@ -455,7 +455,7 @@ public class LoanEligibilityCalculatorController {
 //		return cmaDetailResponse;
 //	}
 	
-	@RequestMapping(value="/getCMADetailForEligibility/{applicationId}" ,method =RequestMethod.POST) 
+	@RequestMapping(value="/getCMADetailForEligibility/{applicationId}" ,method =RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE) 
 	public CMADetailResponse getCmaDetailForEligibility(@PathVariable("applicationId") Long applicationId) {
 		logger.info("Enter in getCmaDetail()========>" + applicationId);
 		CMADetailResponse cmaDetailResponse=null;
