@@ -29,7 +29,7 @@ public class FundSeekerInputRequestController {
             throws Exception
     {
         try {
-        /*	Long userId = fundSeekerInputRequestResponse.getUserId();
+        	Long userId = fundSeekerInputRequestResponse.getUserId();
         	if(userId == null) {
         		fundSeekerInputRequestResponse.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));        		
         	}
@@ -38,10 +38,7 @@ public class FundSeekerInputRequestController {
                 logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }*/
-
-            fundSeekerInputRequestResponse.setUserId(2193l);
-            fundSeekerInputRequestResponse.setApplicationId(1304l);
+            }
 
             return fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
@@ -62,7 +59,7 @@ public class FundSeekerInputRequestController {
     {
         try
         {
-        	/*Long userId = fundSeekerInputRequestResponse.getUserId();
+        	Long userId = fundSeekerInputRequestResponse.getUserId();
         	if(userId == null) {
         		fundSeekerInputRequestResponse.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));        		
         	}
@@ -72,9 +69,7 @@ public class FundSeekerInputRequestController {
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
-*/
-            fundSeekerInputRequestResponse.setUserId(2193l);
-            fundSeekerInputRequestResponse.setApplicationId(1304l);
+
             return fundSeekerInputRequestService.get(fundSeekerInputRequestResponse);
 
 
