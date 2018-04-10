@@ -69,7 +69,8 @@ public class LoansClient {
 	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
 	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL = "/associated_concern_details/save";
 	private static final String CORPORATE_APPLICATION_DETAILS_SAVE = "/fs_profile/save";
-	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClient";
+//	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClient";
+	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/corporateApplicantDetailClient";
 	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
