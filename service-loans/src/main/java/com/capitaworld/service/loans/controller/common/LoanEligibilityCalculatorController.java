@@ -441,8 +441,22 @@ public class LoanEligibilityCalculatorController {
 		return new LoansResponse("Success", HttpStatus.OK.value());
 	}
 	
-	@RequestMapping(value="/getCMADetail/{applicationId}" ,method =RequestMethod.POST) 
-	public CMADetailResponse getCmaDetail(@PathVariable("applicationId") Long applicationId) {
+//	@RequestMapping(value="/getCMADetail/{applicationId}" ,method =RequestMethod.POST) 
+//	public CMADetailResponse getCmaDetail(@PathVariable("applicationId") Long applicationId) {
+//		logger.info("Enter in getCmaDetail()========>" + applicationId);
+//		CMADetailResponse cmaDetailResponse=null;
+//		try {
+//		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
+//		} catch (NullPointerException e) {
+//			e.printStackTrace();
+//			logger.info("Exception in getCmaDetail()========>");
+//		}
+//		logger.info("Exit from getCmaDetail()========>");
+//		return cmaDetailResponse;
+//	}
+	
+	@RequestMapping(value="/getCMADetailForEligibility/{applicationId}" ,method =RequestMethod.POST) 
+	public CMADetailResponse getCmaDetailForEligibility(@PathVariable("applicationId") Long applicationId) {
 		logger.info("Enter in getCmaDetail()========>" + applicationId);
 		CMADetailResponse cmaDetailResponse=null;
 		try {
