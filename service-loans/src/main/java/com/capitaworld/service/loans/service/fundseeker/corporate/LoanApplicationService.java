@@ -126,9 +126,9 @@ public interface LoanApplicationService {
 	
 	public void updateFlow(Long applicationId,Long clientId,Long userId) throws Exception ;
 	
-	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId, Long clientId) throws Exception;
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception;
 	
-	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId)throws Exception;
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
 	
