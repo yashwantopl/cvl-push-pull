@@ -532,7 +532,7 @@ public class CorporateApplicantController {
 		}
 	}
 	
-	@RequestMapping(value = "/get_application_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getApplicationClient/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCorporateApplicantDetails(@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
