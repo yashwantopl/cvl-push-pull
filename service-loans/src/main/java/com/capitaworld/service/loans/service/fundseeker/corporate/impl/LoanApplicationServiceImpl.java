@@ -4395,6 +4395,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
 			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
 			if(CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+				wcLoan = new PrimaryWorkingCapitalLoanDetail();
 				wcLoan.setApplicationId(loanApplicationMaster);
 				primaryWorkingCapitalLoanDetailRepository.save(wcLoan);	
 			}
