@@ -156,9 +156,9 @@ public class CommonDocumentUtils {
 				? applicantDetail.getAdministrativeLandMark() + ", "
 				: "";
 
-		String country = CommonDocumentUtils.getCountry(applicantDetail.getAdministrativeCountryId().longValue(),
+		String country = CommonDocumentUtils.getCountry(applicantDetail.getAdministrativeCountryId() != null ?applicantDetail.getAdministrativeCountryId().longValue() : null,
 				oneFormClient);
-		String state = CommonDocumentUtils.getState(applicantDetail.getAdministrativeStateId().longValue(),
+		String state = CommonDocumentUtils.getState(applicantDetail.getAdministrativeStateId()!=null ? applicantDetail.getAdministrativeStateId().longValue() : null,
 				oneFormClient);
 		String city = CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient);
 		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
@@ -181,9 +181,9 @@ public class CommonDocumentUtils {
 				? applicantDetail.getPermanentLandMark() + ", "
 				: "";
 
-		String country = CommonDocumentUtils.getCountry(applicantDetail.getPermanentCountryId().longValue(),
+		String country = CommonDocumentUtils.getCountry(applicantDetail.getPermanentCountryId()!=null ? applicantDetail.getPermanentCountryId().longValue() : null,
 				oneFormClient);
-		String state = CommonDocumentUtils.getState(applicantDetail.getPermanentStateId().longValue(),
+		String state = CommonDocumentUtils.getState(applicantDetail.getPermanentStateId()!=null ? applicantDetail.getPermanentStateId().longValue() : null,
 				oneFormClient);
 		String city = CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient);
 		permAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
