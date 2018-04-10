@@ -155,6 +155,23 @@
 			<artifactId>client-analyzer</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.fitchengine</groupId>
+			<artifactId>client-fitchengine</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>
+				spring-boot-starter-data-elasticsearch
+			</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.connect.client</groupId>
+			<artifactId>client-connect</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

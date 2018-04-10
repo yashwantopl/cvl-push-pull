@@ -69,11 +69,12 @@ public class LoansClient {
 	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
 	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL = "/associated_concern_details/save";
 	private static final String CORPORATE_APPLICATION_DETAILS_SAVE = "/fs_profile/save";
-	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/get_application_client";
+	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClient";
 	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -155,6 +156,9 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
+	
+	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1558,7 +1562,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans,headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1585,7 +1589,10 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
 		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
 		try {
-			return restTemplate.getForObject(url, CMARequest.class);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<Object>(headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMARequest.class).getBody();
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
 			e.printStackTrace();
@@ -1598,8 +1605,9 @@ public class LoansClient {
 		logger.info("Enter in save CMA details in Loan client");
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest);
+			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest,headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.info("Throw Exception while call save CMA details");
@@ -1635,6 +1643,19 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getOrgAndPanByAppId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_ORG_PAN_DETAILS).concat("/" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
 		}
 	}
 }

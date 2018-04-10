@@ -1,5 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+ import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.util.CommonUtils;
+ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
@@ -46,22 +51,40 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
     @Autowired
     private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+    
+    @Autowired
+    private ConnectClient connectClient;
 
 
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
+            logger.info("getting corporateApplicantDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
+            {
+                logger.info("corporateApplicantDetail is null created new object");
+                corporateApplicantDetail=new CorporateApplicantDetail();
+            }
+
             BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail);
+            corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 
             corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             corporateApplicantDetail.setModifiedDate(new Date());
 
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
 
+            logger.info("getting primaryCorporateDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
+            {
+                logger.info("primaryCorporateDetail is null created new object");
+                primaryCorporateDetail=new PrimaryCorporateDetail();
+            }
             BeanUtils.copyProperties(fundSeekerInputRequest,primaryCorporateDetail);
 
+            primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             primaryCorporateDetail.setModifiedDate(new Date());
 
@@ -93,7 +116,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             }
-
+            
+            ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+            if(postOneForm != null) {
+    			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
+    			if(!postOneForm.getProceed().booleanValue()) {
+    				return new ResponseEntity<LoansResponse>(new LoansResponse("Not Eligibile from Matchengine",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+    			}
+    		}
             LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setFlag(true);
             logger.error("data successfully saved");
@@ -116,14 +146,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
         FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
 
+        fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
+
         List<FinancialArrangementsDetailRequest> financialArrangementsDetailResponseList = new ArrayList<FinancialArrangementsDetailRequest>();
         List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
         try {
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
+            {
+                corporateApplicantDetail=new CorporateApplicantDetail();
+            }
             BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
 
             PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
+            {
+                primaryCorporateDetail=new PrimaryCorporateDetail();
+            }
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputResponse);
 
 

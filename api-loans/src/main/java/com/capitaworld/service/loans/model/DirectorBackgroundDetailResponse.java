@@ -36,6 +36,16 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private Date dob;
 
 		private String mobile;
+		
+		private String pincode;
+		
+		private String stateCode;
+		
+		private String city;
+		
+		private String gender;
+
+		private String relationshipType;
 
 
 		public String getAddress() {
@@ -137,4 +147,91 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
+	/**
+	 * @return the pincode
+	 */
+	public String getPincode() {
+		return pincode;
+	}
+
+	/**
+	 * @param pincode the pincode to set
+	 */
+	public void setPincode(String pincode) {
+		this.pincode = pincode;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * @param city the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the gender
+	 */
+	
+
+	/**
+	 * @return the relationshipType
+	 */
+	
+
+	/**
+	 * @return the gender
+	 */
+	public String getGender() {
+		return gender;
+	}
+
+	/**
+	 * @param gender the gender to set
+	 */
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	/**
+	 * @param relationshipType the relationshipType to set
+	 */
+	
+
+	/**
+	 * @return the stateCode
+	 */
+	public String getStateCode() {
+		return stateCode;
+	}
+
+	/**
+	 * @return the relationshipType
+	 */
+	public String getRelationshipType() {
+		return relationshipType;
+	}
+
+	/**
+	 * @param relationshipType the relationshipType to set
+	 */
+	public void setRelationshipType(String relationshipType) {
+		this.relationshipType = relationshipType;
+	}
+
+	/**
+	 * @param stateCode the stateCode to set
+	 */
+	public void setStateCode(String stateCode) {
+		this.stateCode = stateCode;
+	}
+	
+	
 }

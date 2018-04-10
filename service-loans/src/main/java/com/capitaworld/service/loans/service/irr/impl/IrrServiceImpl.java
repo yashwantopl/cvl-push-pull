@@ -194,8 +194,12 @@ public class IrrServiceImpl implements IrrService{
 			irrRequest.setBusinessTypeId(businessTypeId);
 			irrRequest.setUserId(userId);
 			
-			Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
-			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());
+			/*Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
+			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());*/
+			
+			Boolean isCmaUploaded=true;
+			Boolean isCoActUploaded=false;
+			
 			if((false == isCmaUploaded) && (false == isCoActUploaded))
 			{
 				log.info("cma and coAct are not uploaded.");	
