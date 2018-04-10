@@ -1261,7 +1261,7 @@ public class LoanApplicationController {
 				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(userId);
 				UserResponse response = usersClient.getLastAccessApplicant(usersRequest);
-				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getId())) {
 					Integer productId = loanApplicationService.getProductIdByApplicationId(response.getId(), userId);
 					json.put("id", response.getId());
 					json.put("productId", productId);
@@ -1734,6 +1734,29 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
+		try {
+			if (CommonUtils.isObjectListNull(loanRequest.getId(),loanRequest.getProductId())) {
+				logger.warn("All parameter must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			CommonDocumentUtils.startHook(logger, "updateProductDetails");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.updateProductDetails(loanRequest));
+			CommonDocumentUtils.endHook(logger, "updateProductDetails");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updateProductDetails==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 }
 

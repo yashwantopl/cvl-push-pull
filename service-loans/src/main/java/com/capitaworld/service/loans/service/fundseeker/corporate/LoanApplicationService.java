@@ -142,6 +142,8 @@ public interface LoanApplicationService {
 	
 	public Long createMsmeLoan(Long userId);
 	
+	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
+	
 	
 }
 

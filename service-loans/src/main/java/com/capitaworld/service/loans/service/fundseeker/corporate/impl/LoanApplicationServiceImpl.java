@@ -73,6 +73,9 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
@@ -218,6 +221,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
+	
+	@Autowired
+	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository; 
+
+	@Autowired
+	private PrimaryTermLoanDetailRepository primaryTermLoanDetailRepository;
+	
+	@Autowired
+	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
 
 	/*
 	 * @Autowired private AsyncComponent asyncComponent;
@@ -4337,12 +4349,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Long createMsmeLoan(Long userId) {
-		logger.info("Entry in createMsmeLoan");
+		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
 		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
 			logger.info("Corporate Application Id is Already Exists===>{}",corporateLoan.getId());
 			return corporateLoan.getId();
 		}
+		logger.info("Successfully get result");
 		corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 		corporateLoan.setCreatedBy(userId);
@@ -4359,6 +4372,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		userClient.setLastAccessApplicant(usersRequest);
 		logger.info("Exit in createMsmeLoan");
 		return corporateLoan.getId();
+	}
+	
+	
+	@Override
+	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
+		
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
+		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			return false;
+		}
+		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
+		loanApplicationMaster.setTenure(loanApplicationRequest.getTenure());
+		loanApplicationMaster.setProductId(loanApplicationRequest.getProductId());
+		
+		LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+		if (!CommonUtils.isObjectNullOrEmpty(type)) {
+			loanApplicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));	
+		}
+		loanApplicationRepository.save(loanApplicationMaster);
+		
+		if(CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
+			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+			if(CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+				wcLoan.setApplicationId(loanApplicationMaster);
+				primaryWorkingCapitalLoanDetailRepository.save(wcLoan);	
+			}
+		} else if(CommonUtils.LoanType.TERM_LOAN.getValue() == loanApplicationRequest.getProductId()) {
+			PrimaryTermLoanDetail tlLoan = primaryTermLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+			if(CommonUtils.isObjectNullOrEmpty(tlLoan)) {
+				tlLoan = new PrimaryTermLoanDetail();
+				tlLoan.setApplicationId(loanApplicationMaster);
+				primaryTermLoanDetailRepository.save(tlLoan);	
+			}
+		} else if(CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
+			PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+			unsLoan.setApplicationId(loanApplicationMaster);
+			primaryUnsecuredLoanDetailRepository.save(unsLoan);
+		} 
+		return true;
 	}
 	
 }
