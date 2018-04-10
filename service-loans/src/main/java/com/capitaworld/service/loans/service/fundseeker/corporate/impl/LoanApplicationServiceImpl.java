@@ -4396,11 +4396,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 		}
 		loanApplicationRepository.save(loanApplicationMaster);
-
-		if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
-			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
-					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if (CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+		
+		if(CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
+			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+			if(CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+				wcLoan = new PrimaryWorkingCapitalLoanDetail();
 				wcLoan.setApplicationId(loanApplicationMaster);
 				primaryWorkingCapitalLoanDetailRepository.save(wcLoan);
 			}
