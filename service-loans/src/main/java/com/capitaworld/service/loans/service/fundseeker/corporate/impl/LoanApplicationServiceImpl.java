@@ -3823,7 +3823,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.findOne(paymentRequest.getApplicationId());
 			System.out.println("Loan Master"+loanApplicationMaster);
 			
-			if(paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+			if("SIDBI_FEES".equalsIgnoreCase(paymentRequest.getPurposeCode())) {
 				
 				loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
 				loanApplicationRepository.save(loanApplicationMaster);
@@ -3953,8 +3953,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				
-				ProposalMappingRequest proposal = new ProposalMappingRequest();
-			
 			ProposalMappingResponse	response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId());
 			ProposalMappingRequest proposalMappingRequest=(ProposalMappingRequest)response.getData();
 			
