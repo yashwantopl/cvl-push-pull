@@ -33,8 +33,8 @@ public class LoansClient1 {
 
 	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
 		
-		System.out.println("Getting CMA DEtails");
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/" + appId);
+		System.out.println("Getting CMA DEtails========>" + url);
 		try {
 			/*
 			 * return restTemplate.postForObject(url, request,
