@@ -553,6 +553,7 @@ public class CorporateApplicantController {
 			logger.info("Loans Response onject creted");
 			loansResponse.setData(response);
 			logger.info("Data Ste");
+			logger.info("response====================================================>{}",response.toString());
 			CommonDocumentUtils.endHook(logger, "get");
 			logger.info("Returning okay");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
