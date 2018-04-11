@@ -317,9 +317,9 @@ public class IrrServiceImpl implements IrrService{
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-		//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+		financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
 		LoanApplicationMaster applicationMaster = null;
-		applicationMaster = loanApplicationRepository.findOne(aplicationId);
+		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -337,7 +337,7 @@ public class IrrServiceImpl implements IrrService{
 			primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 			financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace() * denom);
 			break;
-		}	
+		}	*/
 	
 		// set industry
 		financialInputRequest.setIndustryName(industry);
@@ -1170,8 +1170,8 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-				//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
-				LoanApplicationMaster applicationMaster = null;
+				financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
+				/*LoanApplicationMaster applicationMaster = null;
 				applicationMaster = loanApplicationRepository.findOne(aplicationId);
 				LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 				switch (type) {
@@ -1190,7 +1190,7 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 					financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace() * denom);
 					break;
-				}
+				}*/
 
 		// set industry
 		financialInputRequest.setIndustryName(industry);
