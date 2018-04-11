@@ -21,7 +21,7 @@ public class LoansClient1 {
 	private RestTemplate restTemplate;
 	
 	
-	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCmaDetail/";
+	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
 	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClientForEligibility";
 	
 	public LoansClient1(String loansBaseUrl) {
