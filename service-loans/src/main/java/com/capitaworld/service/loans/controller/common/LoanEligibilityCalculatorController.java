@@ -454,6 +454,22 @@ public class LoanEligibilityCalculatorController {
 		logger.info("Exit from getCmaDetail()========>");
 		return cmaDetailResponse;
 	}
+	
+	@RequestMapping(value="/getCMADetailForEligibility/{applicationId}" ,method =RequestMethod.POST) 
+	public CMADetailResponse getCmaDetailForEligibility(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getCmaDetail()========>" + applicationId);
+		CMADetailResponse cmaDetailResponse=null;
+		try {
+			logger.info("==================================>1 in Controller");
+		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
+		logger.info("cmaDetailResponse==================================>1 in Controlle=={}",cmaDetailResponse.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			logger.info("Exception in getCmaDetail()========>");
+		}
+		logger.info("Exit from getCmaDetail()========>");
+		return cmaDetailResponse;
+	}
 	// LAP Calculation Ends
 
 }
