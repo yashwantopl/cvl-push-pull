@@ -536,21 +536,29 @@ public class CorporateApplicantController {
 	public ResponseEntity<LoansResponse> getCorporateApplicantDetails(@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "get");
+			CommonDocumentUtils.startHook(logger, "getCorporateApplicantDetails()");
+			logger.info("In method getCorporateApplicantDetails()");
 			if (applicationId == null) {
+				logger.info("AppplicationId is NULL so returnig ()");
 				logger.warn(
 						"ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			logger.info("Calling Service IMpl Methdos()");
 
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(applicationId);
+			logger.info("Result retruned");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			logger.info("Loans Response onject creted");
 			loansResponse.setData(response);
+			logger.info("Data Ste");
 			CommonDocumentUtils.endHook(logger, "get");
+			logger.info("Returning okay");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
+			logger.info("Returning  with Exception");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -562,20 +570,28 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
+			logger.info("In method getApplicationClientForEligibility()");
 			if (applicationId == null) {
+				logger.info("AppplicationId is NULL so returnig from getApplicationClientForEligibility ()");
 				logger.warn(
 						"ApplicationId Require to get Corporate Profile Details for CLient Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			logger.info("Calling Service IMpl Methdos() from getApplicationClientForEligibility()");
 
 			CorporateApplicantRequest response = applicantService.getCorporateApplicant(applicationId);
+			logger.info("Result retruned from getApplicationClientForEligibility()");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			logger.info("Loans Response onject creted from getApplicationClientForEligibility()");
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "get");
+			logger.info("Data Set from getApplicationClientForEligibility()");
+			CommonDocumentUtils.endHook(logger, "getApplicationClientForEligibility");
+			logger.info("Returning okay");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Applicant Profile Details==>", e);
+			logger.info("Returning  with Exception");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
