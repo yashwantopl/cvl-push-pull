@@ -649,7 +649,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public CorporateApplicantRequest getCorporateApplicant(Long applicationId) {
 		logger.info("Start Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
-		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicationId);
+		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicationId,true);
 		logger.info("After Query Executions:-=>");
 		if (applicantDetail == null) {
 			logger.info("If Acpplicant Details is NULL:-=>");
