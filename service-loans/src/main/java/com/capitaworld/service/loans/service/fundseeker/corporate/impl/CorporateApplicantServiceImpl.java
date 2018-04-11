@@ -649,12 +649,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public CorporateApplicantRequest getCorporateApplicant(Long applicationId) {
 		logger.info("Start Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
-		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicationId);
+		logger.info("After Query Executions:-=>");
 		if (applicantDetail == null) {
+			logger.info("If Acpplicant Details is NULL:-=>");
 			return null;
 		}
+		logger.info("If Acpplicant Details is NOT NULL:-=>");
 		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+		logger.info("CorporateApplicantRequest Object new Created:-=>");
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
+		logger.info("Copy Domain to Request=======================:-=>");
 		logger.info("ENd Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
 		return applicantRequest;
 	}
