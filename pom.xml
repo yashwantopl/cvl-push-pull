@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.capitaworld.loans.service.parent</groupId>
   <artifactId>service-parent-loans</artifactId>
-  <version>0.0.1</version>
+  <version>1.0.1</version>
   <packaging>pom</packaging>
   <modules>
   	<module>api-loans</module>

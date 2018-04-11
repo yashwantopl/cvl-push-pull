@@ -46,6 +46,6 @@
 		</dependency>
 		
 	</dependencies>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<groupId>com.capitaworld.api.loans</groupId>
 </project>
