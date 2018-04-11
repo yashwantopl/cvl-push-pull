@@ -313,7 +313,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
 			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
 			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? Industry.getById(industry).getValue() : " ");
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
 			
 			
 			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
@@ -634,7 +634,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
 			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
 			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? Industry.getById(industry).getValue() : " ");
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
 			
 			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
 			//ADMIN OFFICE ADDRESS
