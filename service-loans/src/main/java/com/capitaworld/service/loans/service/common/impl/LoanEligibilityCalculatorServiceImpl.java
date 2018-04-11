@@ -678,29 +678,46 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		logger.info("=============Enter in the getCMADetail() =======>" + applicationId);
 		CMADetailResponse  cmaDetailResponse=new  CMADetailResponse();
 		try {
-		
+		logger.info("==================================>1");
 			
 		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,"Audited");
+		logger.info("==================================>2");
 			if(operating!=null) {
+				logger.info("==================================>3");
 				cmaDetailResponse.setDomesticSales((Double)operating.get(0)[1]);
+				logger.info("==================================>4");
 				cmaDetailResponse.setExportSales((Double) operating.get(0)[2]);
+				logger.info("==================================>5");
 				cmaDetailResponse.setNetProfitOrLoss((Double) operating.get(0)[3]);
+				logger.info("==================================>6");
 				cmaDetailResponse.setDepreciation((Double) operating.get(0)[4]);
+				logger.info("==================================>7");
 				cmaDetailResponse.setProvisionForDeferredTax((Double)operating.get(0)[5]);
+				logger.info("==================================>8");
 				logger.info("Successfully get from operating ");
 			}
 			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,"Audited");
+			logger.info("==================================>9");
 			if(liabilitie!=null) {
+				logger.info("==================================>10");
 				cmaDetailResponse.setSundryCreditors((Double)liabilitie.get(0)[1]);
+				logger.info("==================================>11");
 				cmaDetailResponse.setAdvancePaymentsFromCustomers((Double)liabilitie.get(0)[2]);
+				logger.info("==================================>12");
 				logger.info("Successfully get from liabilitie ");
 			}
 			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
+			logger.info("==================================>13");
 			if(asset!=null) {
+				logger.info("==================================>14");
 				cmaDetailResponse.setReceivableOtherThanDefferred((Double)asset.get(0)[1]);
+				logger.info("==================================>15");
 				cmaDetailResponse.setExportReceivables((Double)asset.get(0)[2]);
+				logger.info("==================================>16");
 				cmaDetailResponse.setInventory((Double)asset.get(0)[3]);
+				logger.info("==================================>17");
 				cmaDetailResponse.setAdvanceToSupplierRawMaterials((Double)asset.get(0)[4]);
+				logger.info("==================================>18");
 				logger.info("Successfully get from asset ");
 			}
 			
