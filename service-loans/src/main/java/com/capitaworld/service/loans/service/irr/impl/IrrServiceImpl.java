@@ -317,9 +317,9 @@ public class IrrServiceImpl implements IrrService{
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-		//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
+		financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
 		LoanApplicationMaster applicationMaster = null;
-		applicationMaster = loanApplicationRepository.findOne(aplicationId);
+		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -337,7 +337,7 @@ public class IrrServiceImpl implements IrrService{
 			primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 			financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace() * denom);
 			break;
-		}	
+		}	*/
 	
 		// set industry
 		financialInputRequest.setIndustryName(industry);
@@ -613,7 +613,10 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesFy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
 		// -----CONTIGENT LIABILITIES
-		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiesFy(null);
+		else
+			financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
 		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
 		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
@@ -878,7 +881,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesSy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
-		// -----CONTIGENT LIABILITIES		
+		// -----CONTIGENT LIABILITIES
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiesSy(null);
+		else
 		financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
 		
 		
@@ -1146,8 +1152,11 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 					assetsDetails.setAdvancePaymentTaxes(0.0);
 				financialInputRequest.setShortTermLoansAdvancesTy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
-				// -----CONTIGENT LIABILITIES		
-				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
+				// -----CONTIGENT LIABILITIES
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiestTy(null);
+		else
+			financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
 				
 				
 		// FinancialInput Object Set
@@ -1170,8 +1179,8 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-				//financialInputRequest.setShareFaceValue(10.00); // ------CAlculation Remained
-				LoanApplicationMaster applicationMaster = null;
+				financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
+				/*LoanApplicationMaster applicationMaster = null;
 				applicationMaster = loanApplicationRepository.findOne(aplicationId);
 				LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 				switch (type) {
@@ -1190,7 +1199,7 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 					primaryUnsecuredLoanDetail = primaryUnsecuredLoanDetailRepository.findOne(aplicationId);
 					financialInputRequest.setShareFaceValue(primaryUnsecuredLoanDetail.getSharePriceFace() * denom);
 					break;
-				}
+				}*/
 
 		// set industry
 		financialInputRequest.setIndustryName(industry);
@@ -1448,8 +1457,11 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCashAndCashEquivalents()))
 			balanceSheetDetail.setCashAndCashEquivalents(0.0);
 		financialInputRequest.setShortTermLoansAdvancesFy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
-		// -----CONTIGENT LIABILITIES				
-		financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt() * denom));
+		// -----CONTIGENT LIABILITIES
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiesFy(null);
+		else
+			financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt() * denom));
 		
 		// ----------------------------------------SECOND YEAR DATA---------------------------------------------------------------------------------------
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 2 YR========================================================
@@ -1701,8 +1713,11 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getCashAndCashEquivalents()))
 					balanceSheetDetail.setCashAndCashEquivalents(0.0);
 				financialInputRequest.setShortTermLoansAdvancesSy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
-				// -----CONTIGENT LIABILITIES				
-				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
+				// -----CONTIGENT LIABILITIES
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiesSy(null);
+		else
+			financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
 				
 				// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
 				//========= ==========================================PROFITIBILITYSTATEMENTDETAIL DETAIL 1 YR========================================================
@@ -1954,8 +1969,11 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 				if(CommonUtils.isObjectNullOrEmpty(balanceSheetDetail.getShortTermLoansAndAdvances()))
 					balanceSheetDetail.setShortTermLoansAndAdvances(0.0);
 				financialInputRequest.setShortTermLoansAdvancesTy(balanceSheetDetail.getShortTermLoansAndAdvances() * denom);
-				// -----CONTIGENT LIABILITIES				
-				financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
+				// -----CONTIGENT LIABILITIES
+		if(corporateFinalInfoRequest == null)
+			financialInputRequest.setContingentLiablitiestTy(null);
+		else
+			financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
 				
 		// FinancialInput Object Set		
 		return financialInputRequest;

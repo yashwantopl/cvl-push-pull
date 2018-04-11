@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,10 +60,10 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.Title;
-import com.capitaworld.service.oneform.model.IndustrySectorSubSectorTeaserRequest;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -137,6 +139,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private DirectorBackgroundDetailsService backgroundDetailsService;
 
+	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
 	@Override
 	public Map<String, Object> getCamReportFinalDetails(Long applicationId, Long productId) {
@@ -215,7 +218,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : " " )+ " " + directorBackgroundDetailRequest.getDirectorsName());
 					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
 					String directorName = "";
 					if (directorBackgroundDetailRequest.getSalutationId() != null){
@@ -293,7 +296,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			//INDUSTRY SECTOR SUBSECTOR
-			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
+		/*	List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
 			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
 			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
 			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
@@ -305,7 +308,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("industry", oneFormResponse.getListData());
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
+			
+			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
+			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
+			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
+			
 			
 			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
 			//ADMIN OFFICE ADDRESS
@@ -608,7 +617,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			//INDUSTRY SECTOR SUBSECTOR
-			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
+			/*List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
 			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
 			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
 			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
@@ -620,7 +629,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("industry", oneFormResponse.getListData());
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
+			
+			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
+			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
+			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
 			
 			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
 			//ADMIN OFFICE ADDRESS
