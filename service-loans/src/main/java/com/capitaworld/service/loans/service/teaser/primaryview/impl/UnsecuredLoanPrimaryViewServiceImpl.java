@@ -411,6 +411,8 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 		if (primaryUnsecuredLoanDetail != null) {
 			BeanUtils.copyProperties(primaryUnsecuredLoanDetail, unsecuredLoanPrimaryViewResponse);
 			unsecuredLoanPrimaryViewResponse.setTenure(primaryUnsecuredLoanDetail.getTenure() != null ? primaryUnsecuredLoanDetail.getTenure() / 12 : null);
+			unsecuredLoanPrimaryViewResponse.setAmount(primaryUnsecuredLoanDetail.getAmount());
+			unsecuredLoanPrimaryViewResponse.setLoanType(primaryUnsecuredLoanDetail.getProductId() != null ? LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue() : null);
 
 			unsecuredLoanPrimaryViewResponse.setPurposeOfLoan(primaryUnsecuredLoanDetail.getPurposeOfLoan() != null ? primaryUnsecuredLoanDetail.getPurposeOfLoan() : null);
 			/*unsecuredLoanPrimaryViewResponse.setSharePriceFace(primaryUnsecuredLoanDetail.getSharePriceFace());
