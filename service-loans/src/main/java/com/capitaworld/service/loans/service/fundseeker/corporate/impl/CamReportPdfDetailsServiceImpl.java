@@ -162,7 +162,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
 				}
 				
-				
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -310,7 +309,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				e.printStackTrace();
 			}*/
 			
-			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
+			Integer industry =  corporateApplicantRequest.getKeyVericalFunding().intValue();
 			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
 			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
 			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
@@ -677,7 +676,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productId);
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", printFields(matchResponse.getMatchDisplayObjectList()));
+			
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? printFields(matchResponse.getMatchDisplayObjectList()) : " ");
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
