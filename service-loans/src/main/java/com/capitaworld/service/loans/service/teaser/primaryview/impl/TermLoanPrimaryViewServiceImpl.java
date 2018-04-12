@@ -391,7 +391,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			if (primaryTermLoanDetail.getProductId() != null)
 				termLoanPrimaryViewResponse
 						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
-			termLoanPrimaryViewResponse.setAmount(primaryTermLoanDetail.getAmount());
+			
 			termLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			//termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
 			//termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
