@@ -36,6 +36,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+		
+		if(frameRequest.getIsFromClient()) {
+			directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
+		}
+		
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				DirectorBackgroundDetailRequest directorBackgroundDetailRequest= (DirectorBackgroundDetailRequest) MultipleJSONObjectHelper

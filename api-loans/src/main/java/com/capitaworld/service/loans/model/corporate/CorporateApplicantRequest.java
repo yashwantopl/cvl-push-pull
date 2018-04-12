@@ -131,8 +131,6 @@ public class CorporateApplicantRequest implements Serializable {
 		this.establishmentYear = establishmentYear;
 	}
 
-
-
 	public Long getKeyVericalFunding() {
 		return this.keyVericalFunding;
 	}

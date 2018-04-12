@@ -27,6 +27,8 @@ public class FrameRequest implements Serializable{
 	
 	private List<String> campaignCodes;
 	
+	private Boolean isFromClient;
+	
 
 	public int getApplicantType() {
 		return applicantType;
@@ -83,5 +85,15 @@ public class FrameRequest implements Serializable{
 	public void setCampaignCodes(List<String> campaignCodes) {
 		this.campaignCodes = campaignCodes;
 	}
+
+	public Boolean getIsFromClient() {
+		return isFromClient;
+	}
+
+	public void setIsFromClient(Boolean isFromClient) {
+		this.isFromClient = isFromClient;
+	}
+	
+	
 
 }
