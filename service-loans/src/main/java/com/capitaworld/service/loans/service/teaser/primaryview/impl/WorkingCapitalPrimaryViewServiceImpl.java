@@ -603,8 +603,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
 				directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? RelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
-
-				
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 			}
 			workingCapitalPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
