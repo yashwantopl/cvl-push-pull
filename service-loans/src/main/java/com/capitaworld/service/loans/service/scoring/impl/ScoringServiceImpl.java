@@ -105,6 +105,10 @@ public class ScoringServiceImpl implements ScoringService{
         String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
+        logger.info("LOAN AMOUNT :::: "+loanAmount);
+
+        logger.info("APPLICATION ID :::: "+applicationId);
+
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=new GstCalculation();
         gstCalculation.setConcentration(20d);
