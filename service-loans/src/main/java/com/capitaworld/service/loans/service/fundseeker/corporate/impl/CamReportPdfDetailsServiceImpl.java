@@ -410,84 +410,84 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			List<ProposalScoreDetailResponse> proposalScoreDetailResponseList=scoringResponse.getDataList();
 			for(ProposalScoreDetailResponse proposalScoreDetailResponse:proposalScoreDetailResponseList)
 			{
-				switch (proposalScoreDetailResponse.getParameterName()) {
+				switch (proposalScoreDetailResponse.getParameterOption()) {
 				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", proposalScoreDetailResponse.getParameterName());
+					map.put("combinedNetworthActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("combinedNetworthScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", proposalScoreDetailResponse.getParameterName());
+					map.put("customerAssociateConcernActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("customerAssociateConcernScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", proposalScoreDetailResponse.getParameterName());
+					map.put("cibilTransunionScoreActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("cibilTransunionScoreScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", proposalScoreDetailResponse.getParameterName());
+					map.put("experienceInBusinessActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("experienceInBusinessScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("debtEquityRatioActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("debtEquityRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", proposalScoreDetailResponse.getParameterName());
+					map.put("tolTnwActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("tolTnwScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgCurrentRatioActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgCurrentRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", proposalScoreDetailResponse.getParameterName());
+					map.put("wcCycleActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("wcCycleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualgrowthGrossActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgAnnualgrowthGrossScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthGrossScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualgrowthNetSaleActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgAnnualgrowthNetSaleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthNetSaleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgEbidtaActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgEbidtaScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgEbidtaScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualGrossCashActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgAnnualGrossCashScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualGrossCashScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgIntCovRatioActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("avgIntCovRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgIntCovRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", proposalScoreDetailResponse.getParameterName());
+					map.put("noOfCustomerActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("noOfCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("noOfCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", proposalScoreDetailResponse.getParameterName());
+					map.put("concentrationCustomerActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("concentrationCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("concentrationCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", proposalScoreDetailResponse.getParameterName());
+					map.put("creditSummationActual", proposalScoreDetailResponse.getParameterOption());
 					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
@@ -729,89 +729,88 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			
 			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
-			
 			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
 			{
 				ProposalScoreDetailResponse proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)proposalScoreDetailResponseList.get(i),ProposalScoreDetailResponse.class);
 				logger.info(proposalScoreDetailResponse.getParameterName());
 				switch (proposalScoreDetailResponse.getParameterName()) {
 				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("combinedNetworthActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("combinedNetworthScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("customerAssociateConcernActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("customerAssociateConcernScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("cibilTransunionScoreActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("cibilTransunionScoreScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("experienceInBusinessActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("experienceInBusinessScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("debtEquityRatioActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("debtEquityRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("tolTnwActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("tolTnwScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgCurrentRatioActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgCurrentRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("wcCycleActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("wcCycleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgAnnualgrowthGrossActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgAnnualgrowthGrossScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthGrossScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgAnnualgrowthNetSaleActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgAnnualgrowthNetSaleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthNetSaleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgEbidtaActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgEbidtaScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgEbidtaScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgAnnualGrossCashActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgAnnualGrossCashScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualGrossCashScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("avgIntCovRatioActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("avgIntCovRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgIntCovRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("noOfCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("noOfCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("noOfCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("concentrationCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("concentrationCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("concentrationCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
+					map.put("creditSummationActual", escapeXml(proposalScoreDetailResponse.getParameterOption()));
 					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
