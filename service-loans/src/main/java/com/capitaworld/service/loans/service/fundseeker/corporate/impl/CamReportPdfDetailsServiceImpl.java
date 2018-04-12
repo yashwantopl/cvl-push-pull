@@ -726,9 +726,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 			map.put("proposalScoreResponse",proposalScoreResponse);
 			
-			List<ProposalScoreDetailResponse> proposalScoreDetailResponseList=scoringResponse.getDataList();
-			for(ProposalScoreDetailResponse proposalScoreDetailResponse:proposalScoreDetailResponseList)
+			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
+			
+			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
+			
+			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
 			{
+				ProposalScoreDetailResponse proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)proposalScoreDetailResponseList.get(i),ProposalScoreDetailResponse.class);
+				logger.info(proposalScoreDetailResponse.getParameterName());
 				switch (proposalScoreDetailResponse.getParameterName()) {
 				case ScoreParameter.COMBINED_NETWORTH:
 					map.put("combinedNetworthActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
@@ -840,7 +845,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public FinancialInputRequest calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
 		
 		FinancialInputRequest financialInputRequest= irrService.cmaIrrMappingService(userId, applicationId, null, denomination);
-		
+		logger.info("Financial Input=================================>"+financialInputRequest.toString());
 		//Profit & Loss Statement
 		financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy()));
 		financialInputRequest.setNetSaleSy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy()));
