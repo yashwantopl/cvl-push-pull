@@ -66,6 +66,7 @@ import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
@@ -3947,6 +3948,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId) throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
+			
+			
 			GatewayRequest gatewayRequest = new GatewayRequest();
 			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
 			gatewayRequest.setUserId(userId);
@@ -3967,30 +3970,108 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 						.findOne(paymentRequest.getApplicationId());
+				
 				if (loanApplicationMaster == null) {
 					throw new NullPointerException(
 							"Invalid Loan Application ID==>" + paymentRequest.getApplicationId());
 				}
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-
 				try {
-					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId(),(long)applicationRequest.getProductId());
-					ProposalMappingRequest proposalMappingRequest = (ProposalMappingRequest) response.getData();
-					System.out.println(proposalMappingRequest);
-					logger.info("CONGRATULATIONS PAGE VALUES=======>"+applicationRequest);
-					
+					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById((long)loanApplicationMaster.getProductId(), paymentRequest.getApplicationId());
+					if(response!=null) {
+					logger.info("Inside Congratulations");
+					Long orgId;	
+						
+					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+					if(proposalMappingRequest!=null) {
 					applicationRequest.setLoanAmount(proposalMappingRequest.getElAmount());
 					applicationRequest.setTenure(proposalMappingRequest.getElTenure());
 					applicationRequest.setEmiAmount(proposalMappingRequest.getEmi());
 					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
 					applicationRequest.setInterestRate(proposalMappingRequest.getElRoi());
+					applicationRequest.setOnlinePaymentSuccess(updatePayment);
+					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
+				
+					orgId = proposalMappingRequest.getUserOrgId();
+					if(orgId==1L) {
+						applicationRequest.setFundProvider("Union");
 					
+					}
+					else if(orgId==2L){
+						
+						applicationRequest.setFundProvider("Saraswat");
+						
+					}
+                    else if(orgId==3L){
+						
+						applicationRequest.setFundProvider("Axis");
+						
+					}
+                    else if(orgId==4L){
+						
+						applicationRequest.setFundProvider("ICICI");
+						
+					}
+                    else if(orgId==5L){
+						
+						applicationRequest.setFundProvider("IDBI");
+						
+					}
+                    else if(orgId==6L) {
+						applicationRequest.setFundProvider("RBL");
+					
+					}
+					else if(orgId==7L){
+						
+						applicationRequest.setFundProvider("Tata Capital");
+						
+					}
+                    else if(orgId==8L){
+						
+						applicationRequest.setFundProvider("IDFC");
+						
+					}
+                    else if(orgId==9L){
+						
+						applicationRequest.setFundProvider("DENA Bank");
+						
+					}
+                    else if(orgId==10L){
+						
+						applicationRequest.setFundProvider("SIDBI");
+						
+					}
+                    else if(orgId==11L){
+						
+						applicationRequest.setFundProvider("NHBS");
+						
+					}
+                    else if(orgId==12L){
+						
+						applicationRequest.setFundProvider("CANARA BANK");
+						
+					}
+                    else if(orgId==13L){
+						
+						applicationRequest.setFundProvider("Indian Bank");
+						
+					}
+                    else {
+                    	applicationRequest.setFundProvider("BOI");
+                    	
+                    }
+					
+			  }
+					
+				}else {
+						throw new NullPointerException("Invaslid user");
+					}
 				} catch (Exception e) {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
 				}
-				applicationRequest.setOnlinePaymentSuccess(updatePayment);
+				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
 
