@@ -63,12 +63,14 @@ public class FundSeekerInputRequestController {
         	if(userId == null) {
         		fundSeekerInputRequestResponse.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));        		
         	}
+        	logger.info("Application Id for Getting============>{}",fundSeekerInputRequestResponse.getApplicationId());
+        	//Commented by Akshay discussed with Hiren
 
-            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
-                logger.warn("userId/applicationId can not be empty");
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+//            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+//                logger.warn("userId/applicationId can not be empty");
+//                return new ResponseEntity<LoansResponse>(
+//                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//            }
 
             return fundSeekerInputRequestService.get(fundSeekerInputRequestResponse);
 
