@@ -116,6 +116,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantDetail.setRegisteredLandMark(address.getLandMark());
 			applicantDetail.setRegisteredPremiseNumber(address.getPremiseNumber());
 			applicantDetail.setRegisteredStreetName(address.getStreetName());
+			applicantDetail.setRegisteredPincode(address.getPincode());
 		}
 		applicantRepository.save(applicantDetail);
 		

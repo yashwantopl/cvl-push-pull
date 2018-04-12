@@ -67,7 +67,7 @@ public class CorporateApplicantController {
 		try {
 			applicantService.saveITRMappingData(applicantRequest);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Successfully Saved Data!!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new LoansResponse("Successfully Saved Data!!", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
