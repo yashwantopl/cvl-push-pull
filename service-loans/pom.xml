@@ -173,6 +173,11 @@
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.capitaworld.connect</groupId>
+			<artifactId>api-connect</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
 		<groupId>com.capitaworld.service.loans</groupId>
 	<artifactId>client-loans</artifactId>
 	<version>1.0.1</version>
