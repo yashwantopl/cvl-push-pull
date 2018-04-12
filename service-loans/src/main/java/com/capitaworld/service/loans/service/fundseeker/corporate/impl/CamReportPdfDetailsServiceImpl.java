@@ -556,7 +556,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					e.printStackTrace();
 				}
 			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? printFields(establishMentYear) : "NA");
+			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? printFields(establishMentYear) : " ");
 			
 			
 			//DIRECTOR'S BACKGROUND
@@ -629,7 +629,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				e.printStackTrace();
 			}*/
 			
-			Integer industry = (int)(long) corporateApplicantRequest.getKeyVericalFunding();
+			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
 			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
 			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
 			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
@@ -663,8 +663,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
 			Integer denomination =loanApplicationRequest.getDenominationId();
 			Long denominationValue = denomination.longValue();
-			FinancialInputRequest financialInputRequest= calculateIRRScore(userId, applicationId,null, denominationValue);
+			FinancialInputRequest financialInputRequest= calculateIRRScore(userId, applicationId, null, denominationValue);
 			map.put("financialInputRequest", !CommonUtils.isObjectNullOrEmpty(financialInputRequest) ? financialInputRequest : " ");
+			logger.info("Financial Input",financialInputRequest);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
