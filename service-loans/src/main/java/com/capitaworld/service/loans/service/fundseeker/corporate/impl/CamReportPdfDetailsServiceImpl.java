@@ -148,17 +148,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ONE-FORM DATA
 		try {
 			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-			map.put("corporateApplicant", corporateApplicantRequest);
-			map.put("orgName", printFields(corporateApplicantRequest.getOrganisationName()));
+			map.put("corporateApplicant", printFields(corporateApplicantRequest));
+			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
 			//REGISTERED OFFICE ADDRESS
 			try {
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress())) {
-					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? printFields(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
-					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? printFields(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
-					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? printFields(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
-					map.put("registeredAddCountry", getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId()));
-					map.put("registeredAddState", getStateName(corporateApplicantRequest.getFirstAddress().getStateId()));
-					map.put("registeredAddCity", getCityName(corporateApplicantRequest.getFirstAddress().getCityId()));
+					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
+					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
+					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
+					map.put("registeredAddCountry", escapeXml(getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId())));
+					map.put("registeredAddState", escapeXml(getStateName(corporateApplicantRequest.getFirstAddress().getStateId())));
+					map.put("registeredAddCity", escapeXml(getCityName(corporateApplicantRequest.getFirstAddress().getCityId())));
 					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
 				}
 				
@@ -166,7 +166,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				e.printStackTrace();
 			}
 			
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue() : "NA");
+			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 				try {
@@ -274,7 +274,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 				}
-				map.put("financialArrangments",financialArrangementsDetailResponseList);
+				map.put("financialArrangments",printFields(financialArrangementsDetailResponseList));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -524,26 +524,25 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ONE-FORM DATA
 		try {
 			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-			map.put("corporateApplicant", corporateApplicantRequest);
-			map.put("orgName", printFields(corporateApplicantRequest.getOrganisationName()));
+				map.put("corporateApplicant", printFields(corporateApplicantRequest));
+				map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
 			//REGISTERED OFFICE ADDRESS
-		try {
+			try {
 				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress())) {
-					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? printFields(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
-					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? printFields(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
-					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? printFields(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
-					map.put("registeredAddCountry", getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId()));
-					map.put("registeredAddState", getStateName(corporateApplicantRequest.getFirstAddress().getStateId()));
-					map.put("registeredAddCity", getCityName(corporateApplicantRequest.getFirstAddress().getCityId()));
+					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
+					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
+					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
+					map.put("registeredAddCountry", escapeXml(getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId())));
+					map.put("registeredAddState", escapeXml(getStateName(corporateApplicantRequest.getFirstAddress().getStateId())));
+					map.put("registeredAddCity", escapeXml(getCityName(corporateApplicantRequest.getFirstAddress().getCityId())));
 					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
 				}
-				
 				
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
 			
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue() : "NA");
+			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 				try {
@@ -588,7 +587,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
-				map.put("dirBackground", printFields(directorBackgroundDetailResponseList));
+				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
 	        }
 				catch (Exception e) {
 					e.printStackTrace();
@@ -610,7 +609,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 				}
-				map.put("financialArrangments",financialArrangementsDetailResponseList);
+				map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -654,7 +653,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", primaryCorporateRequest.getAmount());
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getAmount()) ? primaryCorporateRequest.getAmount() : " ");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -665,7 +664,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Integer denomination =loanApplicationRequest.getDenominationId();
 			Long denominationValue = denomination.longValue();
 			FinancialInputRequest financialInputRequest= calculateIRRScore(userId, applicationId,null, denominationValue);
-			map.put("financialInputRequest", financialInputRequest);
+			map.put("financialInputRequest", !CommonUtils.isObjectNullOrEmpty(financialInputRequest) ? financialInputRequest : " ");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -676,9 +675,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productId);
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? printFields(matchResponse.getMatchDisplayObjectList()) : " ");
-			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -688,7 +685,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FITCH DATA
 		try {
 		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-		
 		if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 		{
 			FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
@@ -734,82 +730,82 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			{
 				switch (proposalScoreDetailResponse.getParameterName()) {
 				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", proposalScoreDetailResponse.getParameterName());
+					map.put("combinedNetworthActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("combinedNetworthScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", proposalScoreDetailResponse.getParameterName());
+					map.put("customerAssociateConcernActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("customerAssociateConcernScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", proposalScoreDetailResponse.getParameterName());
+					map.put("cibilTransunionScoreActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("cibilTransunionScoreScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", proposalScoreDetailResponse.getParameterName());
+					map.put("experienceInBusinessActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("experienceInBusinessScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("debtEquityRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("debtEquityRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", proposalScoreDetailResponse.getParameterName());
+					map.put("tolTnwActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("tolTnwScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgCurrentRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgCurrentRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", proposalScoreDetailResponse.getParameterName());
+					map.put("wcCycleActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("wcCycleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualgrowthGrossActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgAnnualgrowthGrossScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthGrossScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualgrowthNetSaleActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgAnnualgrowthNetSaleScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualgrowthNetSaleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgEbidtaActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgEbidtaScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgEbidtaScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgAnnualGrossCashActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgAnnualGrossCashScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgAnnualGrossCashScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", proposalScoreDetailResponse.getParameterName());
+					map.put("avgIntCovRatioActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("avgIntCovRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("avgIntCovRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", proposalScoreDetailResponse.getParameterName());
+					map.put("noOfCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("noOfCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("noOfCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", proposalScoreDetailResponse.getParameterName());
+					map.put("concentrationCustomerActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("concentrationCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("concentrationCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
 				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", proposalScoreDetailResponse.getParameterName());
+					map.put("creditSummationActual", escapeXml(proposalScoreDetailResponse.getParameterName()));
 					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
