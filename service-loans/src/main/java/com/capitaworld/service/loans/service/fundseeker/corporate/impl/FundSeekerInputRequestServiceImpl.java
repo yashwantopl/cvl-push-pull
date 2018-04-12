@@ -192,7 +192,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             LoansResponse res=new LoansResponse("data successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setData(fundSeekerInputResponse);
-            logger.error("data successfully fetched");
+            logger.info("data successfully fetched");
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
 
         }
