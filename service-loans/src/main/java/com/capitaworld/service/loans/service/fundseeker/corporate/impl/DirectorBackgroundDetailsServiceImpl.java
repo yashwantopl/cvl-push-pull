@@ -37,8 +37,12 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		
-		if(frameRequest.getIsFromClient()) {
-			directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
+		if(!CommonUtils.isObjectNullOrEmpty(frameRequest)) {
+			if(!CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient())) {
+				if(frameRequest.getIsFromClient()) {
+					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());	
+				}
+			}
 		}
 		
 		try {
