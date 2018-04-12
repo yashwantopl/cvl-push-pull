@@ -2427,12 +2427,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
-			RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-					.findOneByApplicationIdId(applicationId);
-			return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-		} else if (CommonUtils
-				.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+		if(applicationMaster.getProductId() != null) {
+			if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+						.findOneByApplicationIdId(applicationId);
+				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+			} else if (CommonUtils
+					.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+						.findOneByApplicationIdId(applicationId);
+				return corporateApplicantDetail.getOrganisationName();
+			}			
+		}else {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
