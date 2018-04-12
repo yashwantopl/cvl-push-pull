@@ -273,4 +273,20 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	@Override
+	public String toString() {
+		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", panNo=" + panNo + ", constitutionId=" + constitutionId + ", establishmentMonth="
+				+ establishmentMonth + ", establishmentYear=" + establishmentYear + ", keyVericalFunding="
+				+ keyVericalFunding + ", latitude=" + latitude + ", longitude=" + longitude + ", organisationName="
+				+ organisationName + ", firstAddress=" + firstAddress + ", websiteAddress=" + websiteAddress
+				+ ", landlineNo=" + landlineNo + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
+				+ ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId + ", keyVerticalSector="
+				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
+				+ email + "]";
+	}
+	
+	
 }
