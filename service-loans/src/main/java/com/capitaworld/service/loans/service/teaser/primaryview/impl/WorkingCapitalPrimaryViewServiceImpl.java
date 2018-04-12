@@ -398,8 +398,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						+ " in "
 						+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
 			}
-					workingCapitalPrimaryViewResponse.setLoanType(loanApplicationMaster.getProductId() != null ? LoanType.getById(loanApplicationMaster.getProductId()).getValue() : null);
-				workingCapitalPrimaryViewResponse.setLoanAmount(loanApplicationMaster.getAmount() != null ? String.valueOf(loanApplicationMaster.getAmount()) : null);
+//				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
+//				workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
 				workingCapitalPrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			
 				workingCapitalPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
