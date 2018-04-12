@@ -13,6 +13,9 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 public interface CorporateApplicantService {
+	
+	public void saveITRMappingData (CorporateApplicantRequest applicantRequest);
+	
 	public boolean save(CorporateApplicantRequest applicantRequest,Long userId) throws Exception;
 
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception;
