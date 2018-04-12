@@ -72,8 +72,7 @@ public class CamReportPdfDetailsController {
 						new LoansResponse("Successfull", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
 				}
 				else{
-					 return new ResponseEntity<LoansResponse>(
-								new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
 				}
 
 		} catch (Exception e) {
@@ -95,6 +94,7 @@ public class CamReportPdfDetailsController {
 		try {
 
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId);
+			logger.info("Data Map==================>"+response);
 			ReportRequest reportRequest = new ReportRequest();
 			logger.info("Response",response);
 			reportRequest.setParams(response);
@@ -113,8 +113,7 @@ public class CamReportPdfDetailsController {
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				System.out.println(documentResponse);
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("success", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
 					 return new ResponseEntity<LoansResponse>(

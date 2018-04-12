@@ -143,7 +143,15 @@ public class LoansResponse implements Serializable{
 		this.response_code_message = response_code_message;
 		this.message = message;
 	}
+	
 
+	public LoansResponse(Integer status, String message, Object data, Map<String, Object> map) {
+		super();
+		this.status = status;
+		this.message = message;
+		this.data = data;
+		this.map = map;
+	}
 
 	public Long getId() {
 		return id;
