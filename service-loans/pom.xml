@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>com.capitaworld.api.loans</groupId>
 			<artifactId>api-loans</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.cibil.client</groupId>
