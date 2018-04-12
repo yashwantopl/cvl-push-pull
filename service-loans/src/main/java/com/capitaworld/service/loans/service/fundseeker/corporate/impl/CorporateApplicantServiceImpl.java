@@ -93,13 +93,41 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private Environment environment;
 
 	@Override
+	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
+		
+		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			applicantDetail.setModifiedDate(new Date());
+		} else {
+			applicantDetail = new CorporateApplicantDetail();
+			applicantDetail.setCreatedBy(applicantRequest.getUserId());
+			applicantDetail.setCreatedDate(new Date());
+			applicantDetail.setIsActive(true);
+			applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		}
+		applicantDetail.setEstablishmentMonth(applicantRequest.getEstablishmentMonth());
+		applicantDetail.setEstablishmentYear(applicantRequest.getEstablishmentYear());
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+			Address address = applicantRequest.getFirstAddress();
+			applicantDetail.setRegisteredCityId(address.getCityId());
+			applicantDetail.setRegisteredStateId(address.getStateId());
+			applicantDetail.setRegisteredCountryId(address.getCountryId());
+			applicantDetail.setRegisteredLandMark(address.getLandMark());
+			applicantDetail.setRegisteredPremiseNumber(address.getPremiseNumber());
+			applicantDetail.setRegisteredStreetName(address.getStreetName());
+		}
+		applicantRepository.save(applicantDetail);
+		
+	}
+	
+	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
 		try {
 			// application id must not be null
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
-					applicantRequest.getApplicationId());
+			CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 			if (applicantDetail != null) {
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());

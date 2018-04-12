@@ -90,6 +90,12 @@ public class ScoringServiceImpl implements ScoringService{
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
+        logger.info("----------------------------START------------------------------");
+
+        logger.info("Application Id   ::"+applicationId);
+        logger.info("Fp Product Id    ::"+fpProductId);
+        logger.info("Scoring Model Id ::"+scoreModelId);
+
         ScoringResponse scoringResponseMain=null;
 
         // start Get GST Parameter
@@ -766,6 +772,8 @@ public class ScoringServiceImpl implements ScoringService{
                 }
 
                 System.out.println("MAP::"+map.toString());
+
+                logger.info("----------------------------END------------------------------");
 
                 fundSeekerInputRequest.setMap(map);
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);

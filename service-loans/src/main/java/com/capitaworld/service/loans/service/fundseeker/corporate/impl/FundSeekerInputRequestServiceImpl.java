@@ -117,13 +117,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             }
             
-            ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+           /* ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
             if(postOneForm != null) {
     			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
     			if(!postOneForm.getProceed().booleanValue()) {
     				return new ResponseEntity<LoansResponse>(new LoansResponse("Not Eligibile from Matchengine",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
     			}
-    		}
+    		}*/
             LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setFlag(true);
             logger.error("data successfully saved");

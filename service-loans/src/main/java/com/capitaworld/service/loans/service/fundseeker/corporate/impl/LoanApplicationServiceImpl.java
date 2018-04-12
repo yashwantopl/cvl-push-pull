@@ -3975,7 +3975,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 
 				try {
-					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId());
+					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId(),(long)applicationRequest.getProductId());
 					ProposalMappingRequest proposalMappingRequest = (ProposalMappingRequest) response.getData();
 					System.out.println(proposalMappingRequest);
 					logger.info("CONGRATULATIONS PAGE VALUES=======>"+applicationRequest);
