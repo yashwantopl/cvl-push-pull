@@ -69,6 +69,7 @@ public class LoansClient {
 	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
 	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL = "/associated_concern_details/save";
 	private static final String CORPORATE_APPLICATION_DETAILS_SAVE = "/fs_profile/save";
+	private static final String CORPORATE_APPLICATION_ITR_MAPPING_SAVE = "/fs_profile/saveITRMapping";
 	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClientForEligibility";
 	private static final String CORPORATE_APPLICATION_DETAILS_GET_NEW= "/fs_profile/getApplicationClient";
 	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
@@ -649,6 +650,22 @@ public class LoansClient {
 
 	public LoansResponse saveCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_SAVE);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest,
+					headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveITRMappingCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_ITR_MAPPING_SAVE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();

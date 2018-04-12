@@ -55,7 +55,28 @@ public class CorporateApplicantController {
 		logger.info("Ping success");
 		return "Ping Succeed";
 	}
-
+	
+	@RequestMapping(value = "/saveITRMapping", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveITRMappingData(@RequestBody CorporateApplicantRequest applicantRequest){
+		
+		if (applicantRequest.getApplicationId() == null) {
+			logger.warn("Application Id can not be empty ==>", applicantRequest);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			applicantService.saveITRMappingData(applicantRequest);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully Saved Data!!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+			
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CorporateApplicantRequest applicantRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
