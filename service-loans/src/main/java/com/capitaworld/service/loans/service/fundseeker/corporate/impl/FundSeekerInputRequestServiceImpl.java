@@ -1,9 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
- import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.service.gst.GstResponse;
-import com.capitaworld.service.gst.util.CommonUtils;
  import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -18,9 +15,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
  import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
  import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
  import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
- import com.capitaworld.service.rating.model.IrrRequest;
- import com.capitaworld.service.scoring.model.ScoringResponse;
- import org.slf4j.Logger;
+import com.capitaworld.service.loans.utils.CommonUtils;
+
+import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
  import org.springframework.beans.BeanUtils;
  import org.springframework.beans.factory.annotation.Autowired;
@@ -61,17 +58,21 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         try {
             logger.info("getting corporateApplicantDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
-            {
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
                 corporateApplicantDetail=new CorporateApplicantDetail();
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+        				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","isActive");
+                corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setCreatedDate(new Date());
+                corporateApplicantDetail.setIsActive(true);
+            } else {
+            	BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+        				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+            	corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setModifiedDate(new Date());
             }
-
-            BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail);
-            corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-
-            corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-            corporateApplicantDetail.setModifiedDate(new Date());
 
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
 
