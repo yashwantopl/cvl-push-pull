@@ -98,8 +98,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			// application id must not be null
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
-					applicantRequest.getApplicationId());
+			CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 			if (applicantDetail != null) {
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
