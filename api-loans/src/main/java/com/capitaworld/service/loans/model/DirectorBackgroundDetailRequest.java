@@ -222,6 +222,17 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setRelationshipType(Integer relationshipType) {
 		this.relationshipType = relationshipType;
 	}
+	
+
+	@Override
+	public String toString() {
+		return "DirectorBackgroundDetailRequest [id=" + id + ", address=" + address + ", networth=" + networth
+				+ ", applicationId=" + applicationId + ", salutationId=" + salutationId + ", din=" + din
+				+ ", appointmentDate=" + appointmentDate + ", designation=" + designation + ", panNo=" + panNo
+				+ ", directorsName=" + directorsName + ", totalExperience=" + totalExperience + ", isActive=" + isActive
+				+ ", pincode=" + pincode + ", stateCode=" + stateCode + ", city=" + city + ", dob=" + dob + ", mobile="
+				+ mobile + ", gender=" + gender + ", relationshipType=" + relationshipType + "]";
+	}
 
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
