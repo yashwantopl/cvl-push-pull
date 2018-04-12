@@ -3977,9 +3977,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(paymentRequest.getApplicationId());
 					ProposalMappingRequest proposalMappingRequest = (ProposalMappingRequest) response.getData();
+					System.out.println(proposalMappingRequest);
+					logger.info("CONGRATULATIONS PAGE VALUES=======>"+applicationRequest);
+					
 					applicationRequest.setLoanAmount(proposalMappingRequest.getElAmount());
 					applicationRequest.setTenure(proposalMappingRequest.getElTenure());
 					applicationRequest.setEmiAmount(proposalMappingRequest.getEmi());
+					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+					applicationRequest.setInterestRate(proposalMappingRequest.getElRoi());
+					
 				} catch (Exception e) {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
