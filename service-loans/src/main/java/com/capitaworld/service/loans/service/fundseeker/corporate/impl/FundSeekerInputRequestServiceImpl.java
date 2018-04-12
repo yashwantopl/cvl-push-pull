@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
  import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -118,7 +119,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             }
             
-            ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+            ConnectResponse postOneForm  = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
             if(postOneForm != null) {
     			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
     			if(!postOneForm.getProceed().booleanValue()) {
