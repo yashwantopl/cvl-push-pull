@@ -897,6 +897,8 @@ public class CommonUtils {
 					sum += b;
 			}
 		}
+		 DecimalFormat decim = new DecimalFormat("0.00");
+		 sum = Double.parseDouble(decim.format(sum));
 		return sum;
 	}
 	
@@ -905,6 +907,8 @@ public class CommonUtils {
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		
 		Double sub= a-b;
+		 DecimalFormat decim = new DecimalFormat("0.00");
+		 sub = Double.parseDouble(decim.format(sub));
 		return sub;
 	}
 
