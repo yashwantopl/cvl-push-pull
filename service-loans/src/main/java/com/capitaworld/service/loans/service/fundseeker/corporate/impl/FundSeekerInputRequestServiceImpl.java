@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import java.util.ArrayList;
  import java.util.Date;
  import java.util.List;
@@ -97,10 +98,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetail.setModifiedDate(new Date());
 
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
-            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-            entityManager.flush();
-            entityManager.clear();
+
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 
             for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
@@ -127,7 +125,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             }
-            
+
+            // save and commit transaction
+
+            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
+            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
+            EntityTransaction entityTransaction= entityManager.getTransaction();
+            entityTransaction.commit();
+            entityManager.flush();
+            entityManager.clear();
+
+
+
             ConnectResponse postOneForm  = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
             if(postOneForm != null) {
     			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
