@@ -54,6 +54,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgr
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -527,7 +528,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 				map.put("corporateApplicant", printFields(corporateApplicantRequest));
 				map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
+			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 				try {
@@ -654,8 +655,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getAmount()) ? primaryCorporateRequest.getAmount() : " ");
-			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTypeOfLoan()) ? escapeXml(primaryCorporateRequest.getTypeOfLoan()) : " ");
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? primaryCorporateRequest.getLoanAmount() : " ");
+			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
