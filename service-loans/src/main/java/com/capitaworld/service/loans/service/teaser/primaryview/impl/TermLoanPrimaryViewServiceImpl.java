@@ -108,7 +108,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
-	
+
 	@Autowired
 	private DirectorBackgroundDetailsService DirectorBackgroundDetailsService;
 
@@ -135,41 +135,41 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 
 	@Autowired
 	private MatchEngineClient matchEngineClient;
-	
+
 	@Autowired
 	private UsersClient usersClient;
 
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
-	
+
 	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
-	
+
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
-	
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
-			Long fundProviderUserId) {
+																	 Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
 		if (userType != null) {
 			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
-																	// view
-																	// viwed by
-																	// fund
-																	// provider
+				// view
+				// viwed by
+				// fund
+				// provider
 				Long fpProductMappingId = null;
 				try {
-					
-					 UsersRequest usersRequest = new UsersRequest();
-					 usersRequest.setId(fundProviderUserId);
-					 UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
-					 fpProductMappingId=userResponse.getId();
+
+					UsersRequest usersRequest = new UsersRequest();
+					usersRequest.setId(fundProviderUserId);
+					UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
+					fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
 					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
 					e.printStackTrace();
@@ -202,160 +202,160 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				termLoanPrimaryViewResponse.setEstablishmentMonth(
 						EstablishmentMonths.getById(corporateApplicantDetail.getEstablishmentMonth()).getValue());
 
-			
-			// set city
-						List<Long> cityList = new ArrayList<>();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-						cityList.add(corporateApplicantDetail.getRegisteredCityId());
-						if(!CommonUtils.isListNullOrEmpty(cityList))
-						{
-						try {
-							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
-							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-								MasterResponse masterResponse = MultipleJSONObjectHelper
-										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-								termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
-								termLoanPrimaryViewResponse.setRegOfficeCity(masterResponse.getValue());
-							} else {
-								termLoanPrimaryViewResponse.setCity("NA");
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						}
-						
-						cityList.clear();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-						cityList.add(corporateApplicantDetail.getAdministrativeCityId());
-						if(!CommonUtils.isListNullOrEmpty(cityList))
-						{
-						try {
-							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
-							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-								MasterResponse masterResponse = MultipleJSONObjectHelper
-										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-								termLoanPrimaryViewResponse.setAddOfficeCity(masterResponse.getValue());
-								
-							} else {
-								termLoanPrimaryViewResponse.setCity("NA");
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						}
-						
 
-						// set state
-						List<Long> stateList = new ArrayList<>();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-						stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
-						if(!CommonUtils.isListNullOrEmpty(stateList))
-						{
-						try {
-							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
-							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-								MasterResponse masterResponse = MultipleJSONObjectHelper
-										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-								termLoanPrimaryViewResponse.setState(masterResponse.getValue());
-								termLoanPrimaryViewResponse.setRegOfficestate(masterResponse.getValue());
-							} else {
-								termLoanPrimaryViewResponse.setState("NA");
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						}
-						
-						
-						stateList.clear();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
-							stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-							if(!CommonUtils.isListNullOrEmpty(stateList))
-							{
-							try {
-								OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-										.getListData();
-								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-									MasterResponse masterResponse = MultipleJSONObjectHelper
-											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-									termLoanPrimaryViewResponse.setAddOfficestate(masterResponse.getValue());
-								} else {
-									termLoanPrimaryViewResponse.setState("NA");
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							}
-						// set country
-						List<Long> countryList = new ArrayList<>();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-						countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
-						if(!CommonUtils.isListNullOrEmpty(countryList))
-						{
-						try {
-							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
-							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-								MasterResponse masterResponse = MultipleJSONObjectHelper
-										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-								termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
-								termLoanPrimaryViewResponse.setRegOfficecountry(masterResponse.getValue());
-							} else {
-								termLoanPrimaryViewResponse.setCountry("NA");
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						}
-						
-						countryList.clear();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
-							countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
-							if(!CommonUtils.isListNullOrEmpty(countryList))
-							{
-							try {
-								OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-										.getListData();
-								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-									MasterResponse masterResponse = MultipleJSONObjectHelper
-											.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-									termLoanPrimaryViewResponse.setAddOfficecountry(masterResponse.getValue());
-								} else {
-									termLoanPrimaryViewResponse.setCountry("NA");
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							}
-							
-			
-			List<Long> keyVerticalFundingId = new ArrayList<>();
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
-			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+			// set city
+			List<Long> cityList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+				cityList.add(corporateApplicantDetail.getRegisteredCityId());
+			if(!CommonUtils.isListNullOrEmpty(cityList))
+			{
 				try {
-					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
 					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
 							.getListData();
 					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						termLoanPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
+						termLoanPrimaryViewResponse.setCity(masterResponse.getValue());
+						termLoanPrimaryViewResponse.setRegOfficeCity(masterResponse.getValue());
 					} else {
-						termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+						termLoanPrimaryViewResponse.setCity("NA");
 					}
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+
+			cityList.clear();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+				cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+			if(!CommonUtils.isListNullOrEmpty(cityList))
+			{
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setAddOfficeCity(masterResponse.getValue());
+
+					} else {
+						termLoanPrimaryViewResponse.setCity("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+
+			// set state
+			List<Long> stateList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+				stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setState(masterResponse.getValue());
+						termLoanPrimaryViewResponse.setRegOfficestate(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setState("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+
+			stateList.clear();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+				stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setAddOfficestate(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setState("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			// set country
+			List<Long> countryList = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+				countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setCountry(masterResponse.getValue());
+						termLoanPrimaryViewResponse.setRegOfficecountry(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setCountry("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			countryList.clear();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+				countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						termLoanPrimaryViewResponse.setAddOfficecountry(masterResponse.getValue());
+					} else {
+						termLoanPrimaryViewResponse.setCountry("NA");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+
+			List<Long> keyVerticalFundingId = new ArrayList<>();
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+				keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+			try {
+				OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+						.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					termLoanPrimaryViewResponse.setKeyVericalFunding(masterResponse.getValue());
+				} else {
+					termLoanPrimaryViewResponse.setKeyVericalFunding(CommonUtils.NOT_APPLICABLE);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		}
 		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
@@ -376,29 +376,28 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 		}
 		// get value of Term Loan data
-		/*PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
-				.getByApplicationAndUserId(toApplicationId, userId);*/
+		PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
+				.getByApplicationAndUserId(toApplicationId, userId);
 		PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateRepository.getByApplicationAndUserId(userId, toApplicationId);
 
 		// set value to response
-		if (primaryCorporateDetail != null) {
-			BeanUtils.copyProperties(primaryCorporateDetail, termLoanPrimaryViewResponse);
-			//termLoanPrimaryViewResponse.setTenure(primaryCorporateDetail.getTenure() != null ? primaryCorporateDetail.getTenure() / 12 : null);
+		if (primaryTermLoanDetail != null) {
+			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
+			termLoanPrimaryViewResponse.setTenure(primaryTermLoanDetail.getTenure() != null ? primaryTermLoanDetail.getTenure() / 12 : null);
 			//termLoanPrimaryViewResponse.setSharePriceFace(primaryTermLoanDetail.getSharePriceFace());
 			//termLoanPrimaryViewResponse.setSharePriceMarket(primaryTermLoanDetail.getSharePriceMarket());
-			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId()))
-				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
-			if (primaryCorporateDetail.getProductId() != null)
+			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
+				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
+			if (primaryTermLoanDetail.getProductId() != null)
 				termLoanPrimaryViewResponse
-						.setLoanType(LoanType.getById(primaryCorporateDetail.getProductId()).getValue());
-			termLoanPrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
+						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 
 			termLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
 			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
-			if (primaryCorporateDetail.getModifiedDate() != null)
+			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()));
+						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
 			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
@@ -457,8 +456,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
 					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
 				}
-				
-				
+
+
 			}
 			termLoanPrimaryViewResponse
 					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
@@ -507,43 +506,43 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Promotor Background {}", e);
 		}*/
-		
+
 		//get value of Director's Background and set in response
-		
-				try {
-					List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
-					List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
-					for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-						DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-						directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-						//directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-						directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-						directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+
+		try {
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+				directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+				//directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+				directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+				directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
 						/*String directorName = "";
 						if (directorBackgroundDetailRequest.getSalutationId() != null){
 							directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
 						}
 						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 						directorBackgroundDetailResponse.setDirectorsName(directorName);*/
-						directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-						directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
-						directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
-						directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-						directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
-						directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-						directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-						directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
-						directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
-						directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
-						directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
-						directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? RelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
-						
-						directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
-					}
-					termLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
-				} catch (Exception e) {
-					logger.error("Problem to get Data of Director's Background {}", e);
-				}
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
+				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
+				directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? RelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+
+				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+			}
+			termLoanPrimaryViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Director's Background {}", e);
+		}
 
 		/*// get value of Past Financial and set in response
 		try {
@@ -574,7 +573,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		}*/
 
 		// get value of Financial Arrangements and set in response
-		/*try {
+		try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
 					.getFinancialArrangementDetailsList(toApplicationId, userId);
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -595,7 +594,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
 				}
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-			//	financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				//	financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 //				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
 //					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
@@ -606,7 +605,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
-*/
+
 		/*// get Finance Means Details and set in response
 		try {
 			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
