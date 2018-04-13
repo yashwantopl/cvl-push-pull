@@ -90,7 +90,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             primaryCorporateDetail.setModifiedDate(new Date());
 
-            primaryCorporateDetailRepository.save(primaryCorporateDetail);
+            primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 
