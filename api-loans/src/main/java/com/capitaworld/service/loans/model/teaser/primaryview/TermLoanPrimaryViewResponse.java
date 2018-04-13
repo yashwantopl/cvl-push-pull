@@ -37,6 +37,7 @@ public class TermLoanPrimaryViewResponse {
 	private List<?> matchesList;
 	private Double sharePriceFace;
 	private Double sharePriceMarket;
+	private String loanAmount;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
@@ -518,7 +519,12 @@ public class TermLoanPrimaryViewResponse {
 	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
 		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
 	}
-	
-	
-	
+
+	public String getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(String loanAmount) {
+		this.loanAmount = loanAmount;
+	}
 }
