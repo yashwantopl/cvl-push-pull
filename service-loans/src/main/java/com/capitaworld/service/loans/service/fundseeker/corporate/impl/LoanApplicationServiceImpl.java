@@ -3980,8 +3980,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(response!=null) {
 					logger.info("Inside Congratulations");
 					Long orgId;	
-						
-					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+					Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
+					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
+					
 					if(proposalMappingRequest!=null) {
 					applicationRequest.setLoanAmount(proposalMappingRequest.getElAmount());
 					applicationRequest.setTenure(proposalMappingRequest.getElTenure());
