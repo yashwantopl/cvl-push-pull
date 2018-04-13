@@ -393,8 +393,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 			
 			termLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
-			//termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
-			//termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
+			termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
+			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
 						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
