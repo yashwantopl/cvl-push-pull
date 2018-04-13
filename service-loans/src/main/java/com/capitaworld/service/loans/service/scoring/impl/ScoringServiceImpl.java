@@ -350,7 +350,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(tnw!=0)
                                 map.put("TOL_TNW",(tol+loanAmount)/tnw);
                             else
-                                map.put("TOL_TNW",null);
+                                map.put("TOL_TNW",0.0);
 
                         }
                         catch (Exception e)
@@ -421,7 +421,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(cogs!=0)
                                 map.put("WORKING_CAPITAL_CYCLE",debtorsDays+((averageInventory/cogs)*365)-creditorsDays);
                             else
-                                map.put("WORKING_CAPITAL_CYCLE",null);
+                                map.put("WORKING_CAPITAL_CYCLE",0.0);
 
                         }
                         catch (Exception e)
@@ -572,7 +572,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(termLoansEBIDTA!=0)
                                 map.put("AVERAGE_EBIDTA", (avgEBIDTA/termLoansEBIDTA)*100);
                             else
-                                map.put("AVERAGE_EBIDTA", null);
+                                map.put("AVERAGE_EBIDTA", 0.0);
                         }
                         catch (Exception e)
                         {
@@ -624,7 +624,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(totalAsset!=0)
                                 map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", (avgGrossCashAccruals/totalAsset)*100);
                             else
-                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", null);
+                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 0.0);
 
                         }
                         catch (Exception e)
@@ -666,8 +666,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 }
                                 else
                                 {
-                                    map.put("AVERAGE_INTEREST_COV_RATIO",null);
-                                    logger.error("error while calculating AVERAGE_INTEREST_COV_RATIO");
+                                    map.put("AVERAGE_INTEREST_COV_RATIO",0.0);
                                 }
 
                             }
