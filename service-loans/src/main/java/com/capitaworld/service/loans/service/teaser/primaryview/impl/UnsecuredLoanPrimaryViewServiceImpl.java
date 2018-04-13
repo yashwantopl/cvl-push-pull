@@ -102,7 +102,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanLoanDetailRepository;
+	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService;
@@ -174,9 +174,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
 	
-	@Autowired
-	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
-	
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
@@ -403,31 +401,30 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			}
 		}
 		// get value of Term Loan data
-		PrimaryUnsecuredLoanDetail primaryUnsecuredLoanDetail = primaryUnsecuredLoanLoanDetailRepository
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
 				.getByApplicationAndUserId(toApplicationId, userId);
-		PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.getByApplicationAndUserId(userId, toApplicationId);
 
 		// set value to response
-		if (primaryUnsecuredLoanDetail != null) {
-			BeanUtils.copyProperties(primaryUnsecuredLoanDetail, unsecuredLoanPrimaryViewResponse);
-			unsecuredLoanPrimaryViewResponse.setTenure(primaryUnsecuredLoanDetail.getTenure() != null ? primaryUnsecuredLoanDetail.getTenure() / 12 : null);
+		if (primaryCorporateDetail != null) {
+			BeanUtils.copyProperties(primaryCorporateDetail, unsecuredLoanPrimaryViewResponse);
+			//unsecuredLoanPrimaryViewResponse.setTenure(primaryCorporateDetail.getTenure() != null ? primaryUnsecuredLoanDetail.getTenure() / 12 : null);
 
-			unsecuredLoanPrimaryViewResponse.setPurposeOfLoan(primaryUnsecuredLoanDetail.getPurposeOfLoan() != null ? primaryUnsecuredLoanDetail.getPurposeOfLoan() : null);
+			//unsecuredLoanPrimaryViewResponse.setPurposeOfLoan(primaryUnsecuredLoanDetail.getPurposeOfLoan() != null ? primaryUnsecuredLoanDetail.getPurposeOfLoan() : null);
 			/*unsecuredLoanPrimaryViewResponse.setSharePriceFace(primaryUnsecuredLoanDetail.getSharePriceFace());
 			unsecuredLoanPrimaryViewResponse.setSharePriceMarket(primaryUnsecuredLoanDetail.getSharePriceMarket());*/
 			unsecuredLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			unsecuredLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
 			unsecuredLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryUnsecuredLoanDetail.getDenominationId()))
-				unsecuredLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryUnsecuredLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryUnsecuredLoanDetail.getDenominationId()).getValue());
-			if (primaryUnsecuredLoanDetail.getProductId() != null)
-				unsecuredLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
+			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId()))
+				unsecuredLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
+			if (primaryCorporateDetail.getProductId() != null)
+				unsecuredLoanPrimaryViewResponse.setLoanType(LoanType.getById(primaryCorporateDetail.getProductId()).getValue());
 
-			if (primaryUnsecuredLoanDetail.getModifiedDate() != null)
+			if (primaryCorporateDetail.getModifiedDate() != null)
 				unsecuredLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
-			unsecuredLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryUnsecuredLoanDetail.getCreditRatingId() != null
-					? CreditRatingAvailable.getById(primaryUnsecuredLoanDetail.getCreditRatingId()).getValue() : null);
+						.setDateOfProposal(DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()));
+			/*unsecuredLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryCorporateDetail.getCreditRatingId() != null
+					? CreditRatingAvailable.getById(primaryUnsecuredLoanDetail.getCreditRatingId()).getValue() : null);*/
 		}
 		// get value of proposed product and set in response
 		try {

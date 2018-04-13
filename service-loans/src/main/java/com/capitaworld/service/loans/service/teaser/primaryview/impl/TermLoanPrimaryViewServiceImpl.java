@@ -376,28 +376,29 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 		}
 		// get value of Term Loan data
-		PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
-				.getByApplicationAndUserId(toApplicationId, userId);
+		/*PrimaryTermLoanDetail primaryTermLoanDetail = primaryTermLoanLoanDetailRepository
+				.getByApplicationAndUserId(toApplicationId, userId);*/
 		PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateRepository.getByApplicationAndUserId(userId, toApplicationId);
 
 		// set value to response
-		if (primaryTermLoanDetail != null) {
-			BeanUtils.copyProperties(primaryTermLoanDetail, termLoanPrimaryViewResponse);
-			termLoanPrimaryViewResponse.setTenure(primaryTermLoanDetail.getTenure() != null ? primaryTermLoanDetail.getTenure() / 12 : null);
+		if (primaryCorporateDetail != null) {
+			BeanUtils.copyProperties(primaryCorporateDetail, termLoanPrimaryViewResponse);
+			//termLoanPrimaryViewResponse.setTenure(primaryCorporateDetail.getTenure() != null ? primaryCorporateDetail.getTenure() / 12 : null);
 			//termLoanPrimaryViewResponse.setSharePriceFace(primaryTermLoanDetail.getSharePriceFace());
 			//termLoanPrimaryViewResponse.setSharePriceMarket(primaryTermLoanDetail.getSharePriceMarket());
-			if (!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryTermLoanDetail.getDenominationId()))
-				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryTermLoanDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryTermLoanDetail.getDenominationId()).getValue());
-			if (primaryTermLoanDetail.getProductId() != null)
+			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId()))
+				termLoanPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue() + " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
+			if (primaryCorporateDetail.getProductId() != null)
 				termLoanPrimaryViewResponse
-						.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
-			
+						.setLoanType(LoanType.getById(primaryCorporateDetail.getProductId()).getValue());
+			termLoanPrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
+
 			termLoanPrimaryViewResponse.setGstin(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			termLoanPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
 			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
-			if (primaryTermLoanDetail.getModifiedDate() != null)
+			if (primaryCorporateDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+						.setDateOfProposal(DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()));
 			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
 			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
