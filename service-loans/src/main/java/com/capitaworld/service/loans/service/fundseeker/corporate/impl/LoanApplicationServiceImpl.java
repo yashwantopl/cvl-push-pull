@@ -3991,21 +3991,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationRequest.setOnlinePaymentSuccess(updatePayment);
 					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
 
-					//get user id from fp product id
-					ProductMaster productMaster=	productMasterRepository.findOne(proposalMappingRequest.getFpProductId());
-					//productMaster.getUserId();
-
-						UsersRequest usersRequest = new UsersRequest();
-						usersRequest.setId(productMaster.getUserId());
-						UserResponse userResponse = userClient.getFPDetails(usersRequest);
-
-						FundProviderDetailsRequest fundProviderDetailsRequest= MultipleJSONObjectHelper.getObjectFromMap(
-								(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
-
-						if(!CommonUtils.isObjectListNull(userResponse.getData(),fundProviderDetailsRequest))
-						{
-                            applicationRequest.setFpNameForPayment(fundProviderDetailsRequest.getOrganizationName());
-						}
 					orgId = proposalMappingRequest.getUserOrgId();
 					if(orgId==1L) {
 						applicationRequest.setFundProvider("Union");
@@ -4074,33 +4059,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     	applicationRequest.setFundProvider("BOI");
                     	
                     }
-					try {
-
-							ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getInPricipleById(loanApplicationMaster.getId());
-							Map map=(Map)proposalMappingResponse.getData();
-
-						String	fsNameForPayment=(String) map.get("fs_name");
-						String	amountForPayment=(String)map.get("amount");
-						String	roiForPayment=(String)map.get("rate_interest");
-						String	tenureForPayment=(String)map.get("tenure");
-						String	emiForPaymentayment=(String)map.get("emi_amount");
-						String	feesForPayment=(String)map.get("processing_fees");
-
-
-						applicationRequest.setFeesForPayment(feesForPayment);
-						applicationRequest.setEmiForPaymentayment(emiForPaymentayment);
-                        applicationRequest.setTenureForPayment(tenureForPayment);
-                        applicationRequest.setRoiForPayment(roiForPayment);
-                        applicationRequest.setAmountForPayment(amountForPayment);
-                        applicationRequest.setFsNameForPayment(fsNameForPayment);
-
-
-						}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-
 
 			  }
 					
