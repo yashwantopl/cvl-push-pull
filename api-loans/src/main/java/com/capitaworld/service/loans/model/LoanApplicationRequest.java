@@ -108,6 +108,17 @@ public class LoanApplicationRequest implements Serializable {
 	
 	private Boolean onlinePaymentSuccess;
 
+	private String fsNameForPayment;
+
+	private String amountForPayment;
+	private String roiForPayment;
+	private String tenureForPayment;
+	private String emiForPaymentayment;
+	private String  feesForPayment;
+    private String  fpNameForPayment;
+
+
+
 	public Long getNpOrgId() {
 		return npOrgId;
 	}
@@ -515,7 +526,60 @@ public class LoanApplicationRequest implements Serializable {
 	public void setOnlinePaymentSuccess(Boolean onlinePaymentSuccess) {
 		this.onlinePaymentSuccess = onlinePaymentSuccess;
 	}
-	
-	
-	
+
+	public String getFsNameForPayment() {
+		return fsNameForPayment;
+	}
+
+	public void setFsNameForPayment(String fsNameForPayment) {
+		this.fsNameForPayment = fsNameForPayment;
+	}
+
+	public String getAmountForPayment() {
+		return amountForPayment;
+	}
+
+	public void setAmountForPayment(String amountForPayment) {
+		this.amountForPayment = amountForPayment;
+	}
+
+	public String getRoiForPayment() {
+		return roiForPayment;
+	}
+
+	public void setRoiForPayment(String roiForPayment) {
+		this.roiForPayment = roiForPayment;
+	}
+
+	public String getTenureForPayment() {
+		return tenureForPayment;
+	}
+
+	public void setTenureForPayment(String tenureForPayment) {
+		this.tenureForPayment = tenureForPayment;
+	}
+
+	public String getEmiForPaymentayment() {
+		return emiForPaymentayment;
+	}
+
+	public void setEmiForPaymentayment(String emiForPaymentayment) {
+		this.emiForPaymentayment = emiForPaymentayment;
+	}
+
+	public String getFeesForPayment() {
+		return feesForPayment;
+	}
+
+	public void setFeesForPayment(String feesForPayment) {
+		this.feesForPayment = feesForPayment;
+	}
+
+    public String getFpNameForPayment() {
+        return fpNameForPayment;
+    }
+
+    public void setFpNameForPayment(String fpNameForPayment) {
+        this.fpNameForPayment = fpNameForPayment;
+    }
 }

@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.oneform.enums.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -52,15 +53,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.CommonResponse;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.PaymentRequest;
-import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -3965,7 +3957,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			Boolean updatePayment = false;
 			try {
-				updatePayment = gatewayClient.updatePayment(gatewayRequest);	
+				updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
 				logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
 				e.printStackTrace();
@@ -3998,7 +3990,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationRequest.setInterestRate(proposalMappingRequest.getElRoi());
 					applicationRequest.setOnlinePaymentSuccess(updatePayment);
 					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
-				
+
 					orgId = proposalMappingRequest.getUserOrgId();
 					if(orgId==1L) {
 						applicationRequest.setFundProvider("Union");
@@ -4067,7 +4059,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                     	applicationRequest.setFundProvider("BOI");
                     	
                     }
-					
+
 			  }
 					
 				}else {
