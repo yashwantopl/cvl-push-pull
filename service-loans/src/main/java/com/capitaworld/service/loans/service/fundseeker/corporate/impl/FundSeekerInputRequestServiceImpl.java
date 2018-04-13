@@ -24,10 +24,14 @@ import org.slf4j.Logger;
  import org.springframework.beans.factory.annotation.Autowired;
  import org.springframework.http.HttpStatus;
  import org.springframework.http.ResponseEntity;
- import org.springframework.stereotype.Service;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Service;
  import org.springframework.transaction.annotation.Transactional;
 
- import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import java.util.ArrayList;
  import java.util.Date;
  import java.util.List;
 
@@ -53,6 +57,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     @Autowired
     private ConnectClient connectClient;
 
+    @Autowired
+    private JpaTransactionManager jpaTransactionManager;
 
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
@@ -90,8 +96,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
             primaryCorporateDetail.setModifiedDate(new Date());
 
-            primaryCorporateDetailRepository.save(primaryCorporateDetail);
-
+            primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
+            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
+            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
+            entityManager.flush();
+            entityManager.clear();
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 
             for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
