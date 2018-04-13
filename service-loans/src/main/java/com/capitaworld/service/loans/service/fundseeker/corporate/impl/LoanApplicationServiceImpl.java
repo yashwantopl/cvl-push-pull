@@ -3984,7 +3984,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				try {
-					ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById((long)loanApplicationMaster.getProductId(), paymentRequest.getApplicationId());
+					ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
 					if(response!=null) {
 					logger.info("Inside Congratulations");
 					Long orgId;	
