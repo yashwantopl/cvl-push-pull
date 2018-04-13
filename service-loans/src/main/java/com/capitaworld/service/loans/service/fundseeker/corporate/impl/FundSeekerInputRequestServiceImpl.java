@@ -129,12 +129,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             // save and commit transaction
 
-         /*   EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-            EntityTransaction entityTransaction= entityManager.getTransaction();
-            entityTransaction.commit();
-            entityManager.flush();
-            entityManager.clear();*/
+            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
+            emf.close();
+//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
+//            EntityTransaction entityTransaction= entityManager.getTransaction();
+//            entityTransaction.commit();
+//            entityManager.flush();
+//            entityManager.clear();
 
 
 
