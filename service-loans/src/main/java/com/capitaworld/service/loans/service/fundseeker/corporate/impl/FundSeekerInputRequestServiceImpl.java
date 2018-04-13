@@ -92,6 +92,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 primaryCorporateDetail=new PrimaryCorporateDetail();
             }
             BeanUtils.copyProperties(fundSeekerInputRequest,primaryCorporateDetail);
+            primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
 
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
