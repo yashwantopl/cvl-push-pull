@@ -639,7 +639,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 //		}
 
 		// get value of Financial Arrangements and set in response
-		try {
+		/*try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
 					.getFinancialArrangementDetailsList(toApplicationId, userId);
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -662,7 +662,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
-
+*/
 		// get list of Brochure
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);

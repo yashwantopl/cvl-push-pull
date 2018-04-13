@@ -574,7 +574,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		}*/
 
 		// get value of Financial Arrangements and set in response
-		try {
+		/*try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
 					.getFinancialArrangementDetailsList(toApplicationId, userId);
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -606,7 +606,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
-
+*/
 		/*// get Finance Means Details and set in response
 		try {
 			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
