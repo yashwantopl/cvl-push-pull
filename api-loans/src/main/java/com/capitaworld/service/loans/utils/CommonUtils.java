@@ -900,7 +900,7 @@ public class CommonUtils {
 		}
 		 DecimalFormat decim = new DecimalFormat("##.##");
 		 sum = Double.parseDouble(decim.format(sum));
-		return sum;
+		return convertInBigDecimal(sum).doubleValue();
 	}
 	
 	public static Double substractNumbers(Double a, Double b){
@@ -910,7 +910,7 @@ public class CommonUtils {
 		Double sub= a-b;
 		 DecimalFormat decim = new DecimalFormat("##.##");
 		 sub = Double.parseDouble(decim.format(sub));
-		return sub;
+		return convertInBigDecimal(sub).doubleValue();
 	}
 
 }
