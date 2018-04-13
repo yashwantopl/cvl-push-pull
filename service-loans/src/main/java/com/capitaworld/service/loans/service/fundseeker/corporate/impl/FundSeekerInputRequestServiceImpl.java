@@ -135,8 +135,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 //            entityTransaction.commit();
             entityManager.flush();
             entityManager.clear();
-
-
+            entityManager.close();
 
             ConnectResponse postOneForm  = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
             if(postOneForm != null) {
