@@ -3977,23 +3977,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				try {
 					ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
-					if(response!=null) {
+					if(response!=null && response.getData()!=null) {
 					logger.info("Inside Congratulations");
 					Long orgId;	
 					Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
-					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
-					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
+//					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
+//					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
 					
-					if(proposalMappingRequest!=null) {
-					applicationRequest.setLoanAmount(proposalMappingRequest.getElAmount());
-					applicationRequest.setTenure(proposalMappingRequest.getElTenure());
-					applicationRequest.setEmiAmount(proposalMappingRequest.getEmi());
+					if(proposalresp!=null) {
+					applicationRequest.setLoanAmount(proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):0.0 );
+					applicationRequest.setTenure(proposalresp.get("tenure")!=null?Double.valueOf(proposalresp.get("tenure").toString() ):0.0 );
+					applicationRequest.setEmiAmount(proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):0.0 );
 					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-					applicationRequest.setInterestRate(proposalMappingRequest.getElRoi());
+					applicationRequest.setInterestRate(proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):0.0 );
 					applicationRequest.setOnlinePaymentSuccess(updatePayment);
 					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
-
-					orgId = proposalMappingRequest.getUserOrgId();
+					orgId =proposalresp.get("org_id")!=null ? Long.valueOf(proposalresp.get("org_id").toString()): null;
 					if(orgId==1L) {
 						applicationRequest.setFundProvider("Union");
 					
