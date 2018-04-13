@@ -81,7 +81,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
 	@Autowired
-	private PrimaryWorkingCapitalLoanDetailRepository primaryWorkingCapitalLoanDetailRepository;
+	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService;
@@ -388,27 +388,27 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		}
 
 		// get value of working capital data
-		PrimaryWorkingCapitalLoanDetail primaryWorkingCapitalLoanDetail = primaryWorkingCapitalLoanDetailRepository
+		PrimaryCorporateDetail primaryCorporateDetail1 = primaryCorporateDetailRepository
 				.getByApplicationAndUserId(toApplicationId, userId);
-		if (primaryWorkingCapitalLoanDetail != null) {
+		if (primaryCorporateDetail1 != null) {
 			// set value to response
-			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, workingCapitalPrimaryViewResponse);
-			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId())) {
-				workingCapitalPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue()
+			BeanUtils.copyProperties(primaryCorporateDetail1, workingCapitalPrimaryViewResponse);
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail1.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail1.getDenominationId())) {
+				workingCapitalPrimaryViewResponse.setCurrencyDenomination(Currency.getById(primaryCorporateDetail1.getCurrencyId()).getValue()
 						+ " in "
-						+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
+						+ Denomination.getById(primaryCorporateDetail1.getDenominationId()).getValue());
 			}
-				workingCapitalPrimaryViewResponse.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
-				workingCapitalPrimaryViewResponse.setLoanAmount(primaryWorkingCapitalLoanDetail.getAmount() != null ? String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()) : null);
+				workingCapitalPrimaryViewResponse.setLoanType(primaryCorporateDetail1.getProductId() != null ? LoanType.getById(primaryCorporateDetail1.getProductId()).getValue() : null);
+				workingCapitalPrimaryViewResponse.setLoanAmount(primaryCorporateDetail1.getAmount() != null ? String.valueOf(primaryCorporateDetail1.getAmount()) : null);
 				workingCapitalPrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 			
 				workingCapitalPrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
 				workingCapitalPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 				//workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 				//workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
-				if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-					workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
-				workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail1.getModifiedDate()))
+					workingCapitalPrimaryViewResponse.setDateOfProposal(primaryCorporateDetail1.getModifiedDate() != null ? DATE_FORMAT.format(primaryCorporateDetail1.getModifiedDate()) : null);
+				//workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryCorporateDetail1.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryCorporateDetail1.getCreditRatingId()).getValue() : null);
 		}
 		
 		

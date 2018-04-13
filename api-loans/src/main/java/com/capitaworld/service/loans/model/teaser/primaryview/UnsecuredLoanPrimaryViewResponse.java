@@ -50,6 +50,7 @@ public class UnsecuredLoanPrimaryViewResponse {
 	private List<?> matchesList;
 	private Double sharePriceFace;
 	private Double sharePriceMarket;
+	private String loanAmount;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
@@ -571,8 +572,13 @@ public class UnsecuredLoanPrimaryViewResponse {
 	public void setCollateralSecurityAmount(String collateralSecurityAmount) {
 		this.collateralSecurityAmount = collateralSecurityAmount;
 	}
-	
-	
-	
-	
+
+
+	public String getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(String loanAmount) {
+		this.loanAmount = loanAmount;
+	}
 }
