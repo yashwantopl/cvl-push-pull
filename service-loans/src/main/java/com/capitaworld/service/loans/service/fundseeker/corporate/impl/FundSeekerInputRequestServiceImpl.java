@@ -226,9 +226,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(postOneForm != null) {
 				logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
 				if(!postOneForm.getProceed().booleanValue()) {
-					return new LoansResponse("Not Eligibile from Matchengine",HttpStatus.INTERNAL_SERVER_ERROR.value());
+					return new LoansResponse("Not Eligibile from Matchengine",HttpStatus.BAD_REQUEST.value());
 				}else {
-					return new LoansResponse("Not Eligibile from Matchengine",HttpStatus.OK.value());
+					return new LoansResponse("Successfully Matched",HttpStatus.OK.value());
 				}
 			}
 		} catch (Exception e) {
@@ -236,7 +236,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			e.printStackTrace();
 			logger.info("Error while Calling Matchengine after Oneform Submit=============");
 		}
-		return new LoansResponse("Something went wrong while Checking your Eligibility",HttpStatus.BAD_REQUEST.value());
+		return new LoansResponse("Something went wrong while Checking your Eligibility",HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
     
     

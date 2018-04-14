@@ -4437,7 +4437,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public Long createMsmeLoan(Long userId,Boolean isActive) {
 		logger.info("IsActive======================>{}",isActive);
 		
-		if(isActive) {
+		if(isActive != null && isActive) {
 			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
 			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
 		}
