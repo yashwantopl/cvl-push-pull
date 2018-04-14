@@ -184,19 +184,16 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
 							receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
-							logger.info("received payment count from gateway->"+receivedPaymentList.size());
 							for (int i = 0; i < receivedPaymentList.size(); i++) {
 								PaymentTypeRequest paymentTypeRequest1 = MultipleJSONObjectHelper.getObjectFromMap(receivedPaymentList.get(i),PaymentTypeRequest.class);
 								receivedAppIdList.add(paymentTypeRequest1.getApplicationId());
-								logger.info("appid->"+paymentTypeRequest1.getApplicationId());
-								logger.info("receivedAppIdList size-->"+receivedAppIdList.size());
 							}
 						}
 					}catch (Exception e){
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size());
+					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size()+" id "+receivedAppIdList.get(0));
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
