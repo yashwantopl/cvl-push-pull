@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import com.capitaworld.service.loans.service.teaser.primaryview.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,6 @@ import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalV
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
-import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.CommonTeaserViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
-import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.LoanType;
 
@@ -36,8 +29,11 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	private LoanApplicationRepository loanApplicationMasterRepo;
 	
 	@Autowired
+	private CorporatePrimaryViewService corporatePrimaryViewService;
+
+	@Autowired
 	private WorkingCapitalPrimaryViewService  workingCapitalPrimaryViewService;
-	
+
 	@Autowired
 	private WorkingCapitalFinalService  workingCapitalFinalViewService;
 	
@@ -91,11 +87,14 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			return false;
 		switch (loanType) {
 		case WORKING_CAPITAL:
-				loansResponse.setData(workingCapitalPrimaryViewService.getWorkingCapitalPrimaryViewDetails(applicantId, null, null));
+				/*loansResponse.setData(workingCapitalPrimaryViewService.getWorkingCapitalPrimaryViewDetails(applicantId, null, null));
+				loansResponse.setMessage(LoanType.WORKING_CAPITAL.getId().toString());*/
+				loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
 				loansResponse.setMessage(LoanType.WORKING_CAPITAL.getId().toString());
 			break;
 		case TERM_LOAN:
-			loansResponse.setData(termLoanPrimaryViewService.getTermLoanPrimaryViewDetails(applicantId, null, null));
+			//loansResponse.setData(termLoanPrimaryViewService.getTermLoanPrimaryViewDetails(applicantId, null, null));
+			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
 			loansResponse.setMessage(LoanType.TERM_LOAN.getId().toString());
 			break;
 		case PERSONAL_LOAN:
@@ -115,7 +114,8 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 			loansResponse.setMessage(LoanType.LOAN_AGAINST_PROPERTY.getId().toString());
 			break;
 		case UNSECURED_LOAN:
-			loansResponse.setData(unsecuredLoanPrimaryViewService.getUnsecuredLoanPrimaryViewDetails(applicantId, null, null));
+			//loansResponse.setData(unsecuredLoanPrimaryViewService.getUnsecuredLoanPrimaryViewDetails(applicantId, null, null));
+			loansResponse.setData(corporatePrimaryViewService.getCorporatePrimaryViewDetails(applicantId, null, null));
 			loansResponse.setMessage(LoanType.UNSECURED_LOAN.getId().toString());
 			break;
 		
