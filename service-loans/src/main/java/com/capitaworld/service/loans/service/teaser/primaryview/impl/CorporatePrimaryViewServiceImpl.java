@@ -25,6 +25,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.*;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -313,56 +314,51 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
                 keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
 
+            try
+            {
+            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+           // SectorIndustryModel oneResponseDataList = (SectorIndustryModel) formResponse    .getData();
             
-            //corporatePrimaryViewResponse.setKeyVericalSector(Sector);
+            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper
+            .getObjectFromMap((Map)formResponse
+                    .getData(), SectorIndustryModel.class);
             
-
-           /*try {
-               OneFormResponse oneFormResponse= oneFormClient.getSectorById(Arrays.asList(sectorIndustryMapping.getSectorId()));
-               List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-                       .getListData();
-               if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                   MasterResponse masterResponse = MultipleJSONObjectHelper
-                           .getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                   corporatePrimaryViewResponse.setKeyVericalSector(masterResponse.getValue());
-               } else {
-                   corporatePrimaryViewResponse.setKeyVericalSector("NA");
-               }
-           }
-           catch (Exception e)
-           {
-                logger.warn("error while getting key vertical sector");
-           }*/
+            //get key vertical sector value
+            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+                    .getListData();
+            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+                MasterResponse masterResponse = MultipleJSONObjectHelper
+                        .getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+                corporatePrimaryViewResponse.setKeyVericalSector(masterResponse.getValue());
+            } else {
+                corporatePrimaryViewResponse.setKeyVericalSector("NA");
+            }
+            }
+            catch (Exception e) {
+            //System.o	
+            	e.printStackTrace();
+			}
+            
+            
 
 
             //key vertical Subsector
-
-           /* if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
-                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSubsector());
-
-            SubSectorMappingDetail  subSectorMappingDetail = subSectorMappingRepository.findOne(corporateApplicantDetail.getKeyVerticalSubsector());
-
-            if(!CommonUtils.isObjectNullOrEmpty(subSectorMappingDetail))
+            try
             {
-                corporatePrimaryViewResponse.setKeyVericalSubsector(SubSector.getById(Integer.parseInt(subSectorMappingDetail.getSubSectorId().toString())).getValue());
-            }*/
-            /*try {
-
-                OneFormResponse oneFormResponse= oneFormClient.SubSector(Arrays.asList(subSectorMappingDetail.getSubSectorId()));
-                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-                        .getListData();
-                if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-                    MasterResponse masterResponse = MultipleJSONObjectHelper
-                            .getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    corporatePrimaryViewResponse.setKeyVericalSubsector(masterResponse.getValue());
-                } else {
-                    corporatePrimaryViewResponse.setKeyVericalSubsector("NA");
-                }
+            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+            {
+            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+            	corporatePrimaryViewResponse.setKeyVericalSubsector((String)oneFormResponse.getData());
             }
-            catch (Exception e)
-            {
-                logger.warn("error while getting key vertical sector");
-            }*/
+            }
+            catch (Exception e) {
+				// TODO: handle exception
+            	logger.warn("error while getting key vertical sub-sector");
+			}
+
+           
+           
 
 
 
