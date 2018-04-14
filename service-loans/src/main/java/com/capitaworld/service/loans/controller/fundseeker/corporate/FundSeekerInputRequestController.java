@@ -83,4 +83,37 @@ public class FundSeekerInputRequestController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @RequestMapping(value = "/match/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(
+                           new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	logger.info("Application Id for Getting============>{}",applicationId);
+        	//Commented by Akshay discussed with Hiren
+
+//            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
+//                logger.warn("userId/applicationId can not be empty");
+//                return new ResponseEntity<LoansResponse>(
+//                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//            }
+
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId);
+            logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
+            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Calling Connect Client after Oneform Submit");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
 }
