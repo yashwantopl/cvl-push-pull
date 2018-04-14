@@ -111,10 +111,10 @@ public class ScoringServiceImpl implements ScoringService{
 
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=new GstCalculation();
-        gstCalculation.setConcentration(20d);
+       /* gstCalculation.setConcentration(20d);
         gstCalculation.setNoOfCustomer(223d);
-        gstCalculation.setProjectedSales(1000000d);
-       /* try
+        gstCalculation.setProjectedSales(1000000d);*/
+        try
         {
             GSTR1Request gstr1Request=new GSTR1Request();
             gstr1Request.setGstin(gstNumber);
@@ -131,7 +131,7 @@ public class ScoringServiceImpl implements ScoringService{
         {
             logger.error("error while getting GST parameter");
             e.printStackTrace();
-        }*/
+        }
         // end Get GST Parameter
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -222,10 +222,10 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(termLoans))
                                 termLoans = 0.0;
 
-                            if((termLoans+loanAmount)!=0)
+                            if((termLoans+loanAmount)!=0.0)
                                 map.put("COMBINED_NETWORTH", ((networthSum)/(termLoans+loanAmount))*100);
                             else
-                                map.put("COMBINED_NETWORTH",null);
+                                map.put("COMBINED_NETWORTH",101.0);
 
                         }
                         catch (Exception e)
@@ -319,10 +319,10 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(debt))
                                 equity = 0.0;
 
-                            if(equity!=0)
+                            if(equity!=0.0)
                                 map.put("DEBT_EQUITY_RATIO",debt/equity);
                             else
-                                map.put("DEBT_EQUITY_RATIO",null);
+                                map.put("DEBT_EQUITY_RATIO",0.0);
 
                         }
                         catch (Exception e)
@@ -347,7 +347,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 tnw = 0.0;
 
 
-                            if(tnw!=0)
+                            if(tnw!=0.0)
                                 map.put("TOL_TNW",(tol+loanAmount)/tnw);
                             else
                                 map.put("TOL_TNW",0.0);
@@ -388,7 +388,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Double debtorsDays=null;
-                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0.0)
                             {
                                 debtorsDays= ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
                             }
@@ -418,7 +418,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 creditorsDays = 0.0;
 
 
-                            if(cogs!=0)
+                            if(cogs!=0.0)
                                 map.put("WORKING_CAPITAL_CYCLE",debtorsDays+((averageInventory/cogs)*365)-creditorsDays);
                             else
                                 map.put("WORKING_CAPITAL_CYCLE",0.0);
@@ -468,12 +468,17 @@ public class ScoringServiceImpl implements ScoringService{
                                 interestFy = 0.0;
 
                             Double avgAnnualGrowthGrossCash=null;
-                            if((netProfitOrLossSY + depreciationSy + interestSy !=0) && ((netProfitOrLossTY + depreciationTy + interestTy)!=0))
+                            if((netProfitOrLossSY + depreciationSy + interestSy !=0.0) && ((netProfitOrLossTY + depreciationTy + interestTy)!=0.0))
                             {
                                 avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
+                                map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
+                            }
+                            else
+                            {
+                                map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH",0.0);
                             }
 
-                            map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
+
 
                         }
                         catch (Exception e)
@@ -514,12 +519,17 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Double avgAnnualGrowthNetSale=null;
 
-                            if((domesticSalesTy + exportSalesTy)!=0 && (domesticSalesSy + exportSalesSy)!=0)
+                            if((domesticSalesTy + exportSalesTy)!=0.0 && (domesticSalesSy + exportSalesSy)!=0.0)
                             {
                                 avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
+                                map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
+                            }
+                            else
+                            {
+                                map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", 0.0);
                             }
 
-                            map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
+
 
                         }
                         catch (Exception e)
@@ -569,7 +579,7 @@ public class ScoringServiceImpl implements ScoringService{
                             Double termLoansEBIDTA = termLoansTy + loanAmount;
 
 
-                            if(termLoansEBIDTA!=0)
+                            if(termLoansEBIDTA!=0.0)
                                 map.put("AVERAGE_EBIDTA", (avgEBIDTA/termLoansEBIDTA)*100);
                             else
                                 map.put("AVERAGE_EBIDTA", 0.0);
@@ -621,7 +631,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(totalAsset))
                                 totalAsset = 0.0;
 
-                            if(totalAsset!=0)
+                            if(totalAsset!=0.0)
                                 map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", (avgGrossCashAccruals/totalAsset)*100);
                             else
                                 map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 0.0);
@@ -659,7 +669,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             try {
 
-                                if(interestTy!= 0 && interestSy!=0)
+                                if(interestTy!= 0.0 && interestSy!=0.0)
                                 {
                                     Double avgInterestCovRatio = ((opProfitBeforeIntrestTy / interestTy) + (opProfitBeforeIntrestSy / interestSy)) / 2;
                                     map.put("AVERAGE_INTEREST_COV_RATIO",avgInterestCovRatio);
@@ -745,7 +755,18 @@ public class ScoringServiceImpl implements ScoringService{
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
-                                totalCredit=data.getTotalCredit();
+                                {
+                                    if(!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit()))
+                                    {
+                                        totalCredit=data.getTotalCredit();
+                                    }
+                                    else
+                                    {
+                                        totalCredit=0.0;
+                                    }
+
+                                }
+
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -761,14 +782,14 @@ public class ScoringServiceImpl implements ScoringService{
                         // end get projected sales from GST client
 
 
-                        if(!(CommonUtils.isObjectNullOrEmpty(totalCredit) || CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0))
+                        if(!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0))
                         {
                             creditSummation=(totalCredit*12)/(projctedSales*12);
                             map.put("CREDIT_SUMMATION",creditSummation);
                         }
                         else
                         {
-                            map.put("CREDIT_SUMMATION",null);
+                            map.put("CREDIT_SUMMATION",0.0);
                         }
                         break;
                     }
