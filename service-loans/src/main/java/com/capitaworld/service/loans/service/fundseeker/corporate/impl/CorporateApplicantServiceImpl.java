@@ -688,6 +688,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
 		logger.info("CorporateApplicantRequest Object new Created:-=>");
 		BeanUtils.copyProperties(applicantDetail, applicantRequest);
+		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 		logger.info("CorporateApplicantRequest Object new Created applicantRequest:-=>{}",applicantRequest.toString());
 		logger.info("Data===>:-=>{}",applicantRequest.getGstIn() + "==============>");
 		logger.info("Copy Domain to Request=======================:-=>");
