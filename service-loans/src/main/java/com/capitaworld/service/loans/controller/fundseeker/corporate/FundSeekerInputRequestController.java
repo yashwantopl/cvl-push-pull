@@ -84,7 +84,7 @@ public class FundSeekerInputRequestController {
         }
     }
     
-    @RequestMapping(value = "/match/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/match", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,HttpServletRequest request)
             throws Exception
     {
