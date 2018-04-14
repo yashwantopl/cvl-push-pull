@@ -81,6 +81,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(request.getApplicationStatusId(),npOrgId);
 			}else{
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+				logger.info("list of payment for nhbs call->"+applicationMastersList.size());
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
             if(!CommonUtils.isObjectListNull(npOrgId)){
@@ -192,7 +193,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
@@ -207,6 +207,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+							logger.info("in if of nhbs");
 							GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
 							if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
 								if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
@@ -492,6 +493,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		gatewayRequest.setApplicationId(applicationId);
 		try {
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
+			logger.info("payment response-->"+paymentStatus.toString());
 			logger.info("exit from getPaymentStatuOfApplication()");
 			return paymentStatus;
 		} catch (GatewayException e) {
