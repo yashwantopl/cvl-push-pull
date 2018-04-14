@@ -320,9 +320,9 @@ public class ScoringServiceImpl implements ScoringService{
                                 equity = 0.0;
 
                             if(equity!=0.0)
-                                map.put("DEBT_EQUITY_RATIO",debt/equity);
+                                    map.put("DEBT_EQUITY_RATIO",debt/equity);
                             else
-                                map.put("DEBT_EQUITY_RATIO",0.0);
+                                map.put("DEBT_EQUITY_RATIO",3.0);
 
                         }
                         catch (Exception e)
@@ -350,7 +350,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(tnw!=0.0)
                                 map.put("TOL_TNW",(tol+loanAmount)/tnw);
                             else
-                                map.put("TOL_TNW",0.0);
+                                map.put("TOL_TNW",4.0);
 
                         }
                         catch (Exception e)
@@ -468,17 +468,31 @@ public class ScoringServiceImpl implements ScoringService{
                                 interestFy = 0.0;
 
                             Double avgAnnualGrowthGrossCash=null;
-                            if((netProfitOrLossSY + depreciationSy + interestSy !=0.0) && ((netProfitOrLossTY + depreciationTy + interestTy)!=0.0))
+
+                            Double cashAccrualsSY=0.0;
+
+                            if(netProfitOrLossSY + depreciationSy + interestSy ==0.0)
                             {
-                                avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (netProfitOrLossTY + depreciationTy + interestTy)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (netProfitOrLossSY + depreciationSy + interestSy)) * 100)) / 2;
-                                map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
+                                cashAccrualsSY=1.0;
                             }
                             else
                             {
-                                map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH",0.0);
+                                cashAccrualsSY=netProfitOrLossSY + depreciationSy + interestSy;
                             }
 
+                            Double cashAccrualsFY=0.0;
 
+                            if(netProfitOrLossFY + depreciationFy + interestFy == 0.0)
+                            {
+                                cashAccrualsFY=1.0;
+                            }
+                            else
+                            {
+                                cashAccrualsFY=netProfitOrLossFY + depreciationFy + interestFy;
+                            }
+
+                            avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (cashAccrualsSY)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (cashAccrualsFY)) * 100)) / 2;
+                            map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
 
                         }
                         catch (Exception e)
@@ -519,17 +533,28 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Double avgAnnualGrowthNetSale=null;
 
-                            if((domesticSalesTy + exportSalesTy)!=0.0 && (domesticSalesSy + exportSalesSy)!=0.0)
+                            Double totalSale_FY=0.0;
+                            if(domesticSalesFy + exportSalesFy == 0.0)
                             {
-                                avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (domesticSalesTy + exportSalesTy)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (domesticSalesSy + exportSalesSy)) * 100)) / 2;
-                                map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
+                                totalSale_FY=1.0;
                             }
                             else
                             {
-                                map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", 0.0);
+                                totalSale_FY=domesticSalesFy + exportSalesFy;
                             }
 
+                            Double totalSale_SY=0.0;
+                            if(domesticSalesSy + exportSalesSy == 0.0)
+                            {
+                                totalSale_SY=1.0;
+                            }
+                            else
+                            {
+                                totalSale_SY=domesticSalesSy + exportSalesSy;
+                            }
 
+                            avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (totalSale_SY)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (totalSale_FY)) * 100)) / 2;
+                            map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
 
                         }
                         catch (Exception e)
@@ -582,7 +607,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(termLoansEBIDTA!=0.0)
                                 map.put("AVERAGE_EBIDTA", (avgEBIDTA/termLoansEBIDTA)*100);
                             else
-                                map.put("AVERAGE_EBIDTA", 0.0);
+                                map.put("AVERAGE_EBIDTA", 100.0);
                         }
                         catch (Exception e)
                         {
@@ -634,7 +659,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(totalAsset!=0.0)
                                 map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", (avgGrossCashAccruals/totalAsset)*100);
                             else
-                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 0.0);
+                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 20.0);
 
                         }
                         catch (Exception e)
