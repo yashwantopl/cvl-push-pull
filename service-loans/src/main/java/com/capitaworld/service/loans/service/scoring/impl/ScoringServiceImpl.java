@@ -283,7 +283,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                     case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
                     {
-                        Double directorExperience=directorBackgroundDetailsRepository.getSumOfDirectorsExperience(applicationId);
+                        Double directorExperience=directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
 
                         if(!CommonUtils.isObjectNullOrEmpty(directorExperience))
                         {

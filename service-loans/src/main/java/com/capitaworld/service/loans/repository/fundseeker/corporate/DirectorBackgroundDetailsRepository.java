@@ -21,8 +21,8 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	@Query("select sum(o.networth) from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and isActive = true")
 	public Double getSumOfDirectorsNetworth(@Param("applicationId") Long applicationId);
 
-	@Query("select sum(o.totalExperience) from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and isActive = true")
-	public Double getSumOfDirectorsExperience(@Param("applicationId") Long applicationId);
+	@Query("select max(o.totalExperience) from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and isActive = true")
+	public Double getMaxOfDirectorsExperience(@Param("applicationId") Long applicationId);
 	
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :id and o.isActive = true")
 	public List<DirectorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
