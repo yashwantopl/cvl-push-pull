@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -192,6 +193,16 @@ public class LoansResponse implements Serializable{
 	public void setFlag(Boolean flag) {
 		this.flag = flag;
 	}
+
+	@Override
+	public String toString() {
+		return "LoansResponse [id=" + id + ", message=" + message + ", data=" + data + ", listData=" + listData
+				+ ", mapData=" + mapData + ", map=" + map + ", contentInBytes=" + Arrays.toString(contentInBytes)
+				+ ", flag=" + flag + ", success=" + success + ", response_code=" + response_code
+				+ ", response_code_message=" + response_code_message + ", status=" + status + "]";
+	}
+	
+	
 	
 	
 	

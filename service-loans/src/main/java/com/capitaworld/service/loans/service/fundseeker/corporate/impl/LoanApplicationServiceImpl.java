@@ -4434,7 +4434,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Long createMsmeLoan(Long userId) {
+	public Long createMsmeLoan(Long userId,Boolean isActive) {
+		logger.info("IsActive======================>{}",isActive);
+		
+		if(isActive) {
+			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
+			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
+		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
 		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
