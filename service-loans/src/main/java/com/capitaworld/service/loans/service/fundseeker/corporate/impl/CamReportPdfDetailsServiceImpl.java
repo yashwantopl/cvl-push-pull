@@ -57,8 +57,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
@@ -140,6 +143,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private DirectorBackgroundDetailsService backgroundDetailsService;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
@@ -148,7 +154,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		//ONE-FORM DATA
-		try {
+		/*try {
 			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 			map.put("corporateApplicant", printFields(corporateApplicantRequest));
 			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
@@ -163,11 +169,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("registeredAddCity", escapeXml(getCityName(corporateApplicantRequest.getFirstAddress().getCityId())));
 					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
 				}
-				
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
-			
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
@@ -297,7 +301,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			//INDUSTRY SECTOR SUBSECTOR
-		/*	List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
+			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
 			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
 			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
 			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
@@ -309,7 +313,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("industry", oneFormResponse.getListData());
 			} catch (Exception e) {
 				e.printStackTrace();
-			}*/
+			}
 			
 			Integer industry =  corporateApplicantRequest.getKeyVericalFunding().intValue();
 			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
@@ -516,19 +520,50 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("bouncedChequeList", printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
 		}catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		return map;
 	}
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
+		CorporateFinalInfoRequest corporateFinalInfoRequest;
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
+			//ADMIN OFFICE ADDRESS
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) + ", " : "");
+				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName()) + ", " : "");
+				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark()) + ", " : "");
+				map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
+				map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
+				map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
+				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
+			}
+			//REGISTERED OFFICE ADDRESS
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
+				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
+				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getStreetName()) + ", " : "");
+				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getLandMark()) + ", " : "");
+				map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
+				map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
+				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
+				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
+			}
+			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
+			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		//ONE-FORM DATA
 		try {
-			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-				map.put("corporateApplicant", printFields(corporateApplicantRequest));
-				map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
+			//ONE-FORM DATA
+			map.put("corporateApplicant", printFields(corporateApplicantRequest));
+			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
+			
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
 				try {
@@ -540,10 +575,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					} 
 				} catch (Exception e) {
 					e.printStackTrace();
+					logger.info("Error in getting establishment year");
 				}
 			}
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? printFields(establishMentYear) : " ");
-			
+			//INDUSTRY DATA
+			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 			
 			//DIRECTOR'S BACKGROUND
 			try {
@@ -563,7 +604,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
-					//.setQualification(directorBackgroundDetailRequest.getQualification());
+					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
 					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
 					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
@@ -577,9 +618,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	        }
 				catch (Exception e) {
 					e.printStackTrace();
-		}
+					logger.info("Error in getting directors background details");
+		     }
 		
-		//FINANCIAL ARRANGEMENTS
+		    //FINANCIAL ARRANGEMENTS
 			try {
 				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
 				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -598,65 +640,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
 			} catch (Exception e) {
 				e.printStackTrace();
+				logger.info("Error in getting Financial arrangements data");
 			}
-			
-			//INDUSTRY SECTOR SUBSECTOR
-			/*List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
-			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
-			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
-			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
-			industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
-			industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
-			industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
-			try {
-				OneFormResponse oneFormResponse = oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
-			map.put("industry", oneFormResponse.getListData());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
-		
-			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
-			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
-			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
-			
-			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
-			//ADMIN OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) + ", " : "");
-				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName()) + ", " : "");
-				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark()) + ", " : "");
-				map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
-				map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
-				map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
-				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
-			}
-			//REGISTERED OFFICE ADDRESS
-			try {
-				if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
-					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
-					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getStreetName()) + ", " : "");
-					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateFinalInfoRequest.getFirstAddress().getLandMark()) + ", " : "");
-					map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
-					map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
-					map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
-					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
-				}
-				
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
-			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? primaryCorporateRequest.getLoanAmount() : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
+			if(primaryCorporateRequest.getBusinessAssetChecked()) {
+				map.put("purpose", "Purchase of Business Asset");
+			}else if(primaryCorporateRequest.getWorkingCapitalChecked()) {
+				map.put("purpose", "For Working Capital");
+			}else if(primaryCorporateRequest.getOtherGeneralChecked()) {
+				map.put("purpose", "Other General");
+			}
+			
+			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? primaryCorporateRequest.getCollateralSecurityAmount() : " ");
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -671,7 +671,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -683,8 +682,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	
-		
+		//PROPOSAL RESPONSE
+				try {
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setApplicationId(applicationId);
+					proposalMappingRequest.setFpProductId(productId);
+					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+					map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 		//FITCH DATA
 		try {
 		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
@@ -718,7 +726,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		//SCORING DATA
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
@@ -822,7 +829,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		}
 			catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
+				logger.info("Error while getting scoring data");
 			}
 		
 		//PERFIOS API DATA
@@ -839,6 +847,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("bouncedChequeList", printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
 		}catch (Exception e) {
 			e.printStackTrace();
+			logger.info("Error while getting perfios data");
 		}
 		
 		return map;
