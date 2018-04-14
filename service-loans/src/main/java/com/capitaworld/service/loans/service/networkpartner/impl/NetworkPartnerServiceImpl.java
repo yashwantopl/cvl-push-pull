@@ -186,17 +186,17 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
 							logger.info("received payment count from gateway->"+receivedPaymentList.size());
 							for (int i = 0; i < receivedPaymentList.size(); i++) {
-								logger.info("received pay obj-->"+receivedPaymentList.get(i).toString());
 								PaymentTypeRequest paymentTypeRequest1 = MultipleJSONObjectHelper.getObjectFromMap(receivedPaymentList.get(i),PaymentTypeRequest.class);
-								logger.info("converted received pay obj-->"+paymentTypeRequest1.toString());
 								receivedAppIdList.add(paymentTypeRequest1.getApplicationId());
+								logger.info("appid->"+paymentTypeRequest1.getApplicationId());
+								logger.info("receivedAppIdList size-->"+receivedAppIdList.size());
 							}
 						}
 					}catch (Exception e){
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-
+					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size());
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
@@ -210,6 +210,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error("error while calling users clients while calling checkUserUnderSp()");
 							e.printStackTrace();
 						}
+						logger.info("type of payment-->"+loanApplicationMaster.getTypeOfPayment());
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
 							GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
 							if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
