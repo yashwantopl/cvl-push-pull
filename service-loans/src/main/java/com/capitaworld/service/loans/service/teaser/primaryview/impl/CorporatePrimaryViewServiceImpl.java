@@ -333,26 +333,28 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
            }
 
 
-          /*  //key vertical Subsector
+            //key vertical Subsector
 
             if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
                 keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSubsector());
 
             SubSectorMappingDetail  subSectorMappingDetail = subSectorMappingRepository.findOne(corporateApplicantDetail.getKeyVerticalSubsector());
 
-            try {
+            if(!CommonUtils.isObjectNullOrEmpty(subSectorMappingDetail))
+            {
+                corporatePrimaryViewResponse.setKeyVericalSubsector(SubSector.getById(Integer.parseInt(subSectorMappingDetail.getSubSectorId().toString())).getValue());
+            }
+            /*try {
 
-                SubSector
-
-                OneFormResponse oneFormResponse= oneFormClient.get(Arrays.asList(sectorIndustryMapping.getSectorId()));
+                OneFormResponse oneFormResponse= oneFormClient.SubSector(Arrays.asList(subSectorMappingDetail.getSubSectorId()));
                 List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
                         .getListData();
                 if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
                     MasterResponse masterResponse = MultipleJSONObjectHelper
                             .getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-                    corporatePrimaryViewResponse.setKeyVericalSector(masterResponse.getValue());
+                    corporatePrimaryViewResponse.setKeyVericalSubsector(masterResponse.getValue());
                 } else {
-                    corporatePrimaryViewResponse.setKeyVericalSector("NA");
+                    corporatePrimaryViewResponse.setKeyVericalSubsector("NA");
                 }
             }
             catch (Exception e)
