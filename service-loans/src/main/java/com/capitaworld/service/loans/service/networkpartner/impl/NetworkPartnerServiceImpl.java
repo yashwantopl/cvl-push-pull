@@ -81,6 +81,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(request.getApplicationStatusId(),npOrgId);
 			}else{
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+				logger.info("list of payment for nhbs call->"+applicationMastersList.size());
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
             if(!CommonUtils.isObjectListNull(npOrgId)){
@@ -183,6 +184,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
 							receivedPaymentList = (List<Map<String, Object>>) gatewayResponse.getListData();
+							logger.info("received payment count from gateway->"+receivedPaymentList.size());
 							for (int i = 0; i < receivedPaymentList.size(); i++) {
 								PaymentTypeRequest paymentTypeRequest1 = MultipleJSONObjectHelper.getObjectFromMap(receivedPaymentList.get(i),PaymentTypeRequest.class);
 								receivedAppIdList.add(paymentTypeRequest1.getApplicationId());
