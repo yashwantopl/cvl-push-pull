@@ -1205,7 +1205,7 @@ public class LoanApplicationController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/create_loan_from_campaign", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> createLoanFromCampaign(HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId,
+			@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "isActive", required = false) Boolean isActive,
 			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
@@ -1218,7 +1218,7 @@ public class LoanApplicationController {
 					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
 					if(isMsmeUserFromGeneric) {
 						//In this case
-						Long createdId = loanApplicationService.createMsmeLoan(clientId);
+						Long createdId = loanApplicationService.createMsmeLoan(clientId,isActive);
 						return new ResponseEntity<LoansResponse>(new LoansResponse(createdId,"Successfully New Loan Created",HttpStatus.OK.value()), HttpStatus.OK);
 						
 					}
