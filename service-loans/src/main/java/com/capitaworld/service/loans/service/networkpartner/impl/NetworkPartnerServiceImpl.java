@@ -193,7 +193,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size()+" value "+receivedAppIdList.contains(loanApplicationMaster.getId()));
+					logger.info("receivedAppIdList nhbs-->"+receivedAppIdList.get(0)+" loanApp value " + loanApplicationMaster.getId() + "  contain value "+receivedAppIdList.contains(loanApplicationMaster.getId()));
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
