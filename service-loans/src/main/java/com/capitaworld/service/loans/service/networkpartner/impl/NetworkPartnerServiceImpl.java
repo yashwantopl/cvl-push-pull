@@ -193,7 +193,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size()+" id "+receivedAppIdList.get(0));
+					logger.info("receivedAppIdList count nhbs-->"+receivedAppIdList.size()+" value "+receivedAppIdList.contains(loanApplicationMaster.getId()));
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
@@ -209,6 +209,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						}
 						logger.info("type of payment-->"+loanApplicationMaster.getTypeOfPayment());
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
+							logger.info("in if of nhbs");
 							GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
 							if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
 								if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
