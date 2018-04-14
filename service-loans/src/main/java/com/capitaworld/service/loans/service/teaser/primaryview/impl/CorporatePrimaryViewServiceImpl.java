@@ -313,9 +313,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
                 keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
 
-                SectorIndustryMapping sectorIndustryMapping = sectorIndustryMappingRepository.findOne(corporateApplicantDetail.getKeyVerticalSector());
+            
+            //corporatePrimaryViewResponse.setKeyVericalSector(Sector);
+            
 
-           try {
+           /*try {
                OneFormResponse oneFormResponse= oneFormClient.getSectorById(Arrays.asList(sectorIndustryMapping.getSectorId()));
                List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
                        .getListData();
@@ -330,12 +332,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
            catch (Exception e)
            {
                 logger.warn("error while getting key vertical sector");
-           }
+           }*/
 
 
             //key vertical Subsector
 
-            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+           /* if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
                 keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSubsector());
 
             SubSectorMappingDetail  subSectorMappingDetail = subSectorMappingRepository.findOne(corporateApplicantDetail.getKeyVerticalSubsector());
@@ -343,7 +345,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             if(!CommonUtils.isObjectNullOrEmpty(subSectorMappingDetail))
             {
                 corporatePrimaryViewResponse.setKeyVericalSubsector(SubSector.getById(Integer.parseInt(subSectorMappingDetail.getSubSectorId().toString())).getValue());
-            }
+            }*/
             /*try {
 
                 OneFormResponse oneFormResponse= oneFormClient.SubSector(Arrays.asList(subSectorMappingDetail.getSubSectorId()));
