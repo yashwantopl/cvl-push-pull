@@ -105,6 +105,11 @@ public class ScoringServiceImpl implements ScoringService{
         String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
+        if(CommonUtils.isObjectNullOrEmpty(loanAmount))
+        {
+            loanAmount=0.0;
+        }
+
         logger.info("LOAN AMOUNT :::: "+loanAmount);
 
         logger.info("APPLICATION ID :::: "+applicationId);
@@ -163,10 +168,6 @@ public class ScoringServiceImpl implements ScoringService{
 
 
         ///////////////
-
-        Double score = 0.0;
-        Double scale = null;
-        String interpretation = null;
 
         logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
