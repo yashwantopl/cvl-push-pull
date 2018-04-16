@@ -125,7 +125,7 @@ public class ScoringServiceImpl implements ScoringService{
             gstr1Request.setGstin(gstNumber);
             gstResponse=gstClient.getCalculations(gstr1Request);
 
-            if(!CommonUtils.isObjectNullOrEmpty(gstResponse) && CommonUtils.isObjectNullOrEmpty(gstResponse.getData()))
+            if(!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()))
             {
                 gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)gstResponse.getData(),
                         GstCalculation.class);
