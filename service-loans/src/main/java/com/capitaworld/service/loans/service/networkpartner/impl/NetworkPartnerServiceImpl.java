@@ -179,7 +179,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 					List<Long> receivedAppIdList = new ArrayList<>();
 					PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
-					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_PENDING_LIST);
 					try {
 						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
@@ -207,7 +207,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
-							logger.info("in if of nhbs");
 							GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
 							if(!CommonUtils.isObjectNullOrEmpty(gatewayRequest)){
 								if(gatewayRequest.getStatus().equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)){
@@ -431,7 +430,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 			List<Long> receivedAppIdList = new ArrayList<>();
 			PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
-			paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+			paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_PENDING_LIST);
 			try {
 				GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
