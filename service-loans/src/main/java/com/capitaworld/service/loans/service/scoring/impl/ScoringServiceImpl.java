@@ -169,10 +169,6 @@ public class ScoringServiceImpl implements ScoringService{
 
         ///////////////
 
-        Double score = 0.0;
-        Double scale = null;
-        String interpretation = null;
-
         logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
 
