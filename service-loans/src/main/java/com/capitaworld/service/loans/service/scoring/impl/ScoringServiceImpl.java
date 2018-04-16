@@ -554,7 +554,17 @@ public class ScoringServiceImpl implements ScoringService{
                                 totalSale_SY=domesticSalesSy + exportSalesSy;
                             }
 
-                            avgAnnualGrowthNetSale = (((((domesticSalesTy + exportSalesTy) - (domesticSalesSy + exportSalesSy)) / (totalSale_SY)) * 100) + ((((domesticSalesSy + exportSalesSy) - (domesticSalesFy + exportSalesFy)) / (totalSale_FY)) * 100)) / 2;
+                            Double totalSale_TY=0.0;
+                            if(domesticSalesTy + exportSalesTy == 0.0)
+                            {
+                                totalSale_TY=1.0;
+                            }
+                            else
+                            {
+                                totalSale_TY=domesticSalesTy + exportSalesTy;
+                            }
+
+                            avgAnnualGrowthNetSale = (((((totalSale_TY) - (totalSale_SY)) / (totalSale_SY)) * 100) + ((((totalSale_SY) - (totalSale_FY)) / (totalSale_FY)) * 100)) / 2;
                             map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
 
                         }
