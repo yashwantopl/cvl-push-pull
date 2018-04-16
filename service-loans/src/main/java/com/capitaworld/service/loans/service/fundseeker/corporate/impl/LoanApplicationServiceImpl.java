@@ -510,10 +510,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
+		logger.info("appId->"+id);
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);
 		if (applicationMaster == null) {
 			return null;
 		}
+		logger.info("appId data->"+applicationMaster.toString());
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		/*
@@ -523,9 +525,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		 * applicationRequest.setAmount(applicationMaster.getAmount());
 		 * applicationRequest.setDenominationId(applicationMaster.getDenominationId());
 		 */
-		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
-
-		int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		int userMainType = 0;
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())){
+			userMainType = CommonUtils.UserMainType.CORPORATE;
+		}else{
+			applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+			userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		}
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(id);
