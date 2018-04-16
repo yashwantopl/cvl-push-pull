@@ -523,9 +523,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		 * applicationRequest.setAmount(applicationMaster.getAmount());
 		 * applicationRequest.setDenominationId(applicationMaster.getDenominationId());
 		 */
-		applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
-
-		int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		int userMainType = 0;
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())){
+			userMainType = CommonUtils.UserMainType.CORPORATE;
+		}else{
+			applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
+			userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
+		}
 		if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(id);
@@ -4434,7 +4438,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Long createMsmeLoan(Long userId) {
+	public Long createMsmeLoan(Long userId,Boolean isActive) {
+		logger.info("IsActive======================>{}",isActive);
+		
+		if(isActive != null && isActive) {
+			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
+			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
+		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
 		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {

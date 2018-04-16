@@ -81,6 +81,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(request.getApplicationStatusId(),npOrgId);
 			}else{
 				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(request.getApplicationStatusId());
+				logger.info("list of payment for nhbs call->"+applicationMastersList.size());
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
             if(!CommonUtils.isObjectListNull(npOrgId)){
@@ -178,7 +179,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 					List<Long> receivedAppIdList = new ArrayList<>();
 					PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
-					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+					paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_PENDING_LIST);
 					try {
 						GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 						if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){
@@ -192,8 +193,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
-
+					logger.info("appId->"+loanApplicationMaster.getId());
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
+					    logger.info("received list->"+receivedAppIdList.toString());
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
 							UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
@@ -430,7 +432,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 			List<Long> receivedAppIdList = new ArrayList<>();
 			PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
-			paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_RECEIVED_LIST);
+			paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_PENDING_LIST);
 			try {
 				GatewayResponse gatewayResponse = gatewayClient.getPaymentList(paymentTypeRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(gatewayResponse.getListData())){

@@ -92,6 +92,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 primaryCorporateDetail=new PrimaryCorporateDetail();
             }
             BeanUtils.copyProperties(fundSeekerInputRequest,primaryCorporateDetail);
+            primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
 
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
             primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
@@ -128,23 +129,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             // save and commit transaction
 
-            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-            EntityTransaction entityTransaction= entityManager.getTransaction();
-            entityTransaction.commit();
-            entityManager.flush();
-            entityManager.clear();
+//            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
+//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
+////            EntityTransaction entityTransaction= entityManager.getTransaction();
+////            entityTransaction.commit();
+//            entityManager.flush();
+//            entityManager.clear();
+//            entityManager.close();
 
-
-
-            ConnectResponse postOneForm  = connectClient.postOneForm(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
-            if(postOneForm != null) {
-    			logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
-    			if(!postOneForm.getProceed().booleanValue()) {
-    				return new ResponseEntity<LoansResponse>(new LoansResponse("Not Eligibile from Matchengine",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
-    			}
-    		}
-            LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.OK.value());
             res.setFlag(true);
             logger.error("data successfully saved");
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
@@ -152,7 +145,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         }
         catch (Exception e)
         {
-
             LoansResponse res=new LoansResponse("error while saving fund seeker input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
             logger.error("error while saving fund seeker input data");
             e.printStackTrace();
@@ -224,4 +216,28 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
         }
     }
+
+
+	@Override
+	public LoansResponse callMatchEngineClient(Long applicationId,Long userId) {
+        ConnectResponse postOneForm;
+		try {
+			postOneForm = connectClient.postOneForm(applicationId,userId);
+			if(postOneForm != null) {
+				logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
+				if(!postOneForm.getProceed().booleanValue()) {
+					return new LoansResponse("Not Eligibile from Matchengine",HttpStatus.BAD_REQUEST.value());
+				}else {
+					return new LoansResponse("Successfully Matched",HttpStatus.OK.value());
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.info("Error while Calling Matchengine after Oneform Submit=============");
+		}
+		return new LoansResponse("Something went wrong while Checking your Eligibility",HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
+    
+    
 }

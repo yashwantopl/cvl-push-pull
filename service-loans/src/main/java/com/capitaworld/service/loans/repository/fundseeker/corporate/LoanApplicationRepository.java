@@ -223,5 +223,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
     
 	@Query("select lm from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL")
 	public LoanApplicationMaster getCorporateLoan(@Param("userId") Long userId);
+	
+	@Modifying
+	@Query("update LoanApplicationMaster lm set lm.isActive  = false where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL")
+	public int inActiveCorporateLoan(@Param("userId") Long userId);
 
 }
