@@ -105,6 +105,11 @@ public class ScoringServiceImpl implements ScoringService{
         String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
+        if(CommonUtils.isObjectNullOrEmpty(loanAmount))
+        {
+            loanAmount=0.0;
+        }
+
         logger.info("LOAN AMOUNT :::: "+loanAmount);
 
         logger.info("APPLICATION ID :::: "+applicationId);
