@@ -193,7 +193,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while calling gateway client");
 						e.printStackTrace();
 					}
+					logger.info("appId->"+loanApplicationMaster.getId());
 					if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
+					    logger.info("received list->"+receivedAppIdList.toString());
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
 							UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
@@ -492,7 +494,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		gatewayRequest.setApplicationId(applicationId);
 		try {
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
-			logger.info("payment response-->"+paymentStatus.toString());
 			logger.info("exit from getPaymentStatuOfApplication()");
 			return paymentStatus;
 		} catch (GatewayException e) {
