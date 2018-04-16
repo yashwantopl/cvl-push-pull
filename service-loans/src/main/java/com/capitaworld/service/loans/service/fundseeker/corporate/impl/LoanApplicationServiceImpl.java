@@ -510,12 +510,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest getLoanBasicDetails(Long id, Long userId) {
-		logger.info("appId->"+id);
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);
 		if (applicationMaster == null) {
 			return null;
 		}
-		logger.info("appId data->"+applicationMaster.toString());
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		/*
