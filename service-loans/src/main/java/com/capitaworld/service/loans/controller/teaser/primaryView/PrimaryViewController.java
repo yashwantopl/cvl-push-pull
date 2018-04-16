@@ -555,6 +555,7 @@ public class PrimaryViewController {
 	//-----------corporate Common
 	@GetMapping(value = "/Corporate/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+		logger.info("into /Corporate/{toApplicationId} and toApplicationId is"+toApplicationId);
 		LoansResponse loansResponse = new LoansResponse();
 
 		//get user id from http servlet request
@@ -602,8 +603,10 @@ public class PrimaryViewController {
 		}else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
+				logger.info("toApplicationId,userType,userId is"+toApplicationId+userType+userId);
 				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(toApplicationId,userType,userId);
 				if(!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)){
+					logger.info("response is"+corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);
 					loansResponse.setMessage("Corporate Primary Details");
 					loansResponse.setStatus(HttpStatus.OK.value());
