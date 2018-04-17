@@ -352,6 +352,11 @@ public class IrrServiceImpl implements IrrService{
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 
+		log.info("App Id::"+aplicationId);
+		log.info("currentYear-1::"+(currentYear-1));
+		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+
+
 
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 			operatingStatementDetails = new OperatingStatementDetails();
@@ -621,6 +626,10 @@ public class IrrServiceImpl implements IrrService{
 		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
 		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
+
+		log.info("App Id::"+aplicationId);
+		log.info("currentYear-1::"+(currentYear-1));
+		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 			operatingStatementDetails = new OperatingStatementDetails();
@@ -891,7 +900,12 @@ public class IrrServiceImpl implements IrrService{
 		
 		// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 1 YR========================================================
-operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-3+"");
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-3+"");
+
+		log.info("App Id::"+aplicationId);
+		log.info("currentYear-1::"+(currentYear-1));
+		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 			operatingStatementDetails = new OperatingStatementDetails();
