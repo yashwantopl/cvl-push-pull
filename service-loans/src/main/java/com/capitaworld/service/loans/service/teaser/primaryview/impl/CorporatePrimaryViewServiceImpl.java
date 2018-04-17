@@ -395,7 +395,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                             + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
                 }
                 corporatePrimaryViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null ? LoanType.getById(primaryCorporateDetail.getProductId()).getValue() : null);
-                corporatePrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount() != null ? String.valueOf(primaryCorporateDetail.getLoanAmount()) : null);
+                corporatePrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
                 corporatePrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 
                 corporatePrimaryViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).toString());
