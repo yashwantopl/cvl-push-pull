@@ -240,12 +240,21 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                        Double customer_ass_concern_year=6.0;
-                        /*try {
+                       /* Double customer_ass_concern_year=6.0;
+                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);*/
+                        Double customer_ass_concern_year=null;
+                        try {
 
                             CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
-                            customer_ass_concern_year = (Double)cibilResponse.getData();
-                            map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                            {
+                                customer_ass_concern_year = (Double)cibilResponse.getData();
+                                map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                            }
+                            else
+                            {
+                                map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                            }
 
                         }
                         catch (Exception e)
@@ -253,8 +262,7 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
                             e.printStackTrace();
                             map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
-                        }*/
-                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                        }
                         break;
 
                     }
@@ -750,8 +758,6 @@ public class ScoringServiceImpl implements ScoringService{
                             e.printStackTrace();
                             map.put("NO_OF_CUSTOMER",null);
                         }
-
-                        map.put("NO_OF_CUSTOMER",null);
                         break;
                     }
                     case ScoreParameter.CONCENTRATION_CUSTOMER:
@@ -772,8 +778,6 @@ public class ScoringServiceImpl implements ScoringService{
                             e.printStackTrace();
                             map.put("CONCENTRATION_CUSTOMER",null);
                         }
-
-                        map.put("CONCENTRATION_CUSTOMER",null);
                         break;
                     }
                     case ScoreParameter.CREDIT_SUMMATION:

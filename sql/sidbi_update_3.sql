@@ -1,0 +1,5 @@
+alter table loan_applications.fs_corporate_primary_details add purpose_of_loan_id INT(2) unsigned;
+
+alter table loan_applications.fs_corporate_primary_details drop column is_business_asset_checked;
+alter table loan_applications.fs_corporate_primary_details drop column is_working_capital_checked;
+alter table loan_applications.fs_corporate_primary_details drop column is_other_general_checked;
