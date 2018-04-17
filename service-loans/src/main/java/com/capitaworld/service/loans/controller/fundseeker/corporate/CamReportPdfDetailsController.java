@@ -42,48 +42,6 @@ public class CamReportPdfDetailsController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsController.class);
 	
-	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
-		
-		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
-				logger.warn("Invalid data or Requested data not found.", applicationId + productId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
-		try {
-
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportFinalDetails(applicationId,productId);
-			ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setParams(response);
-			reportRequest.setTemplate("CAMREPORTSIDBI");
-			reportRequest.setType("CAMREPORTSIDBI");
-			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
-			  JSONObject jsonObj = new JSONObject();
-
-				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId", 362L);
-				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "CAMREPORTSIDBI"+applicationId+".pdf");
-				
-				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
-				if(documentResponse.getStatus() == 200){
-				System.out.println(documentResponse.getData());
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfull", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
-				}
-				else{
-					return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
-				}
-
-		} catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
-	}
-	
 	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
 		
@@ -129,5 +87,46 @@ public class CamReportPdfDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
+		
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
+				logger.warn("Invalid data or Requested data not found.", applicationId + productId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportFinalDetails(applicationId,productId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("CAMREPORTSIDBI");
+			reportRequest.setType("CAMREPORTSIDBI");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			  JSONObject jsonObj = new JSONObject();
+
+				jsonObj.put("applicationId", applicationId);
+				jsonObj.put("productDocumentMappingId", 362L);
+				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put("originalFileName", "CAMREPORTSIDBI"+applicationId+".pdf");
+				
+				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+				if(documentResponse.getStatus() == 200){
+				System.out.println(documentResponse.getData());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfull", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
+				}
+				else{
+					return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+				}
+
+		} catch (Exception e) {
+			logger.error("Error while getting MAP Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 	
 }
