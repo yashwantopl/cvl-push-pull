@@ -34,39 +34,18 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "collateral_security_amt")
     private Double collateralSecurityAmount;
 
-    @Column(name = "is_business_asset_checked")
+    /*@Column(name = "is_business_asset_checked")
     private Boolean isBusinessAssetChecked;
 
     @Column(name = "is_working_capital_checked")
     private Boolean isWorkingCapitalChecked;
 
     @Column(name = "is_other_general_checked")
-    private Boolean isOtherGeneralChecked;
+    private Boolean isOtherGeneralChecked;*/
 
+    @Column(name = "purpose_of_loan_id")
+    private Integer purposeOfLoanId;
 
-    public Boolean getBusinessAssetChecked() {
-        return isBusinessAssetChecked;
-    }
-
-    public void setBusinessAssetChecked(Boolean businessAssetChecked) {
-        isBusinessAssetChecked = businessAssetChecked;
-    }
-
-    public Boolean getWorkingCapitalChecked() {
-        return isWorkingCapitalChecked;
-    }
-
-    public void setWorkingCapitalChecked(Boolean workingCapitalChecked) {
-        isWorkingCapitalChecked = workingCapitalChecked;
-    }
-
-    public Boolean getOtherGeneralChecked() {
-        return isOtherGeneralChecked;
-    }
-
-    public void setOtherGeneralChecked(Boolean otherGeneralChecked) {
-        isOtherGeneralChecked = otherGeneralChecked;
-    }
 
     public PrimaryCorporateDetail() {
     }
@@ -126,5 +105,13 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
         this.collateralSecurityAmount = collateralSecurityAmount;
+    }
+
+    public Integer getPurposeOfLoanId() {
+        return purposeOfLoanId;
+    }
+
+    public void setPurposeOfLoanId(Integer purposeOfLoanId) {
+        this.purposeOfLoanId = purposeOfLoanId;
     }
 }
