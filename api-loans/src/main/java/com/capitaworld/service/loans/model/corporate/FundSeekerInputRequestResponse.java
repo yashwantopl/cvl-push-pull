@@ -24,17 +24,19 @@ public class FundSeekerInputRequestResponse {
     private Double loanAmount;
 
 
-    private Boolean isBusinessAssetChecked;
+ //   private Boolean isBusinessAssetChecked;
 
     private Double businessAssetAmount;
 
-    private Boolean isWorkingCapitalChecked;
+ //   private Boolean isWorkingCapitalChecked;
 
     private Double wcAmount;
 
-    private Boolean isOtherGeneralChecked;
+//    private Boolean isOtherGeneralChecked;
 
     private Double otherAmt;
+
+    private Integer purposeOfLoanId;
 
 
 
@@ -107,13 +109,7 @@ public class FundSeekerInputRequestResponse {
         this.loanAmount = loanAmount;
     }
 
-    public Boolean getBusinessAssetChecked() {
-        return isBusinessAssetChecked;
-    }
 
-    public void setBusinessAssetChecked(Boolean businessAssetChecked) {
-        isBusinessAssetChecked = businessAssetChecked;
-    }
 
     public Double getBusinessAssetAmount() {
         return businessAssetAmount;
@@ -123,13 +119,7 @@ public class FundSeekerInputRequestResponse {
         this.businessAssetAmount = businessAssetAmount;
     }
 
-    public Boolean getWorkingCapitalChecked() {
-        return isWorkingCapitalChecked;
-    }
 
-    public void setWorkingCapitalChecked(Boolean workingCapitalChecked) {
-        isWorkingCapitalChecked = workingCapitalChecked;
-    }
 
     public Double getWcAmount() {
         return wcAmount;
@@ -139,13 +129,7 @@ public class FundSeekerInputRequestResponse {
         this.wcAmount = wcAmount;
     }
 
-    public Boolean getOtherGeneralChecked() {
-        return isOtherGeneralChecked;
-    }
 
-    public void setOtherGeneralChecked(Boolean otherGeneralChecked) {
-        isOtherGeneralChecked = otherGeneralChecked;
-    }
 
     public Double getOtherAmt() {
         return otherAmt;
@@ -185,5 +169,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setDirectorBackgroundDetailRequestsList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList) {
         this.directorBackgroundDetailRequestsList = directorBackgroundDetailRequestsList;
+    }
+
+    public Integer getPurposeOfLoanId() {
+        return purposeOfLoanId;
+    }
+
+    public void setPurposeOfLoanId(Integer purposeOfLoanId) {
+        this.purposeOfLoanId = purposeOfLoanId;
     }
 }
