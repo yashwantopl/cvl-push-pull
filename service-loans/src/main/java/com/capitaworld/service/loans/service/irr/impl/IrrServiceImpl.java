@@ -1163,6 +1163,9 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		// FinancialInput Object Set
 		irrRequest.setFinancialInputRequest(financialInputRequest);
 		//jSONObject.put("irrRequest",irrRequest);
+
+		log.info("LOGGGGGGGGGGGGGGGG::"+financialInputRequest.toString());
+
 		return financialInputRequest;
 	}
 
