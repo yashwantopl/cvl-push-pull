@@ -4495,6 +4495,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
 			if(CommonUtils.isObjectNullOrEmpty(wcLoan)) {
 				wcLoan = new PrimaryWorkingCapitalLoanDetail();
+				wcLoan.setId(loanApplicationMaster.getId());
 				wcLoan.setApplicationId(loanApplicationMaster);
 				primaryWorkingCapitalLoanDetailRepository.save(wcLoan);
 			}
@@ -4503,6 +4504,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
 			if (CommonUtils.isObjectNullOrEmpty(tlLoan)) {
 				tlLoan = new PrimaryTermLoanDetail();
+				tlLoan.setId(loanApplicationMaster.getId());
 				tlLoan.setApplicationId(loanApplicationMaster);
 				primaryTermLoanDetailRepository.save(tlLoan);
 			}
