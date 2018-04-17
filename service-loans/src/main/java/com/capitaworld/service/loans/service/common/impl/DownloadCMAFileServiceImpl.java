@@ -568,6 +568,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  		Double tillYear =(double)calendar.get(Calendar.YEAR);
        		
 		Double totalYear= temp+total_Column-j+1;
+		temp++;
 		if(j==0) {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
@@ -575,10 +576,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
 			j=1;
 		}
-		for (int i = j; temp <totalYear;temp++) {
+		for (int i = j; temp <totalYear;++temp) {
 			if(flag) {
+				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
 				sheet.getRow(4).getCell(++i).setCellValue(temp);
-			
 			}
 			else {
 				sheet.getRow(3).getCell(++i).setCellValue(temp);
