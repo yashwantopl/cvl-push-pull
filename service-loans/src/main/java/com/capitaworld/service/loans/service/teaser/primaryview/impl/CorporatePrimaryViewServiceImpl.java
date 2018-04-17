@@ -379,9 +379,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                 corporatePrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount() != null ? String.valueOf(primaryCorporateDetail.getLoanAmount()) : null);
                 corporatePrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 
-                corporatePrimaryViewResponse.setIsBusinessAssetChecked(primaryCorporateDetail.getBusinessAssetChecked().toString());
-                corporatePrimaryViewResponse.setIsWorkingCapitalChecked(primaryCorporateDetail.getWorkingCapitalChecked().toString());
-                corporatePrimaryViewResponse.setIsOtherGeneralChecked(primaryCorporateDetail.getOtherGeneralChecked().toString());
+                corporatePrimaryViewResponse.setIsBusinessAssetChecked(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessAssetChecked()) ? "false" : primaryCorporateDetail.getBusinessAssetChecked().toString());
+                corporatePrimaryViewResponse.setIsWorkingCapitalChecked(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getWorkingCapitalChecked()) ? "false" : primaryCorporateDetail.getWorkingCapitalChecked().toString());
+                corporatePrimaryViewResponse.setIsOtherGeneralChecked(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getOtherGeneralChecked()) ? "false" : primaryCorporateDetail.getOtherGeneralChecked().toString());
 
                 corporatePrimaryViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null ? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount()) : null);
                 corporatePrimaryViewResponse.setWcAmount(primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount()) : null);
