@@ -578,7 +578,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		}
 		for (int i = j; temp <totalYear;++temp) {
 			if(flag) {
-				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
+//				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
 				sheet.getRow(4).getCell(++i).setCellValue(temp);
 			}
 			else {
