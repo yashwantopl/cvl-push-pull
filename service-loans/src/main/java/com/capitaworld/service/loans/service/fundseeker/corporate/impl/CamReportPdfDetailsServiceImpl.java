@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.oneform.enums.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,12 +64,6 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.Industry;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -646,12 +641,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? primaryCorporateRequest.getLoanAmount() : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
-			if(primaryCorporateRequest.getBusinessAssetChecked()) {
-				map.put("purpose", "Purchase of Business Asset");
-			}else if(primaryCorporateRequest.getWorkingCapitalChecked()) {
-				map.put("purpose", "For Working Capital");
-			}else if(primaryCorporateRequest.getOtherGeneralChecked()) {
-				map.put("purpose", "Other General");
+			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
+				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
+			}else {
+				map.put("purpose", "");
 			}
 			
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
