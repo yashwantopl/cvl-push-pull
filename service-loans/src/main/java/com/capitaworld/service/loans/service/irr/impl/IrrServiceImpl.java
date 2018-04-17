@@ -308,6 +308,7 @@ public class IrrServiceImpl implements IrrService{
 	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
 		// TODO Auto-generated method stub
 		//JSONObject jSONObject = new JSONObject();
+		log.info("APPLICATION ID:::"+aplicationId);
 		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
