@@ -1164,7 +1164,9 @@ operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStat
 		irrRequest.setFinancialInputRequest(financialInputRequest);
 		//jSONObject.put("irrRequest",irrRequest);
 
-		log.info("LOGGGGGGGGGGGGGGGG::"+financialInputRequest.toString());
+		log.info("financialInputRequest.getDepriciationFy()::"+financialInputRequest.getDepriciationFy());
+		log.info("financialInputRequest.getDepriciationSy()::"+financialInputRequest.getDepriciationSy());
+		log.info("financialInputRequest.getDepriciationTy()::"+financialInputRequest.getDepriciationTy());
 
 		return financialInputRequest;
 	}
