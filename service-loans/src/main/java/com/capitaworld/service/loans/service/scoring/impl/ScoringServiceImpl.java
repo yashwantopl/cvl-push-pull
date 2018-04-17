@@ -758,8 +758,6 @@ public class ScoringServiceImpl implements ScoringService{
                             e.printStackTrace();
                             map.put("NO_OF_CUSTOMER",null);
                         }
-
-                        map.put("NO_OF_CUSTOMER",null);
                         break;
                     }
                     case ScoreParameter.CONCENTRATION_CUSTOMER:
@@ -780,8 +778,6 @@ public class ScoringServiceImpl implements ScoringService{
                             e.printStackTrace();
                             map.put("CONCENTRATION_CUSTOMER",null);
                         }
-
-                        map.put("CONCENTRATION_CUSTOMER",null);
                         break;
                     }
                     case ScoreParameter.CREDIT_SUMMATION:
