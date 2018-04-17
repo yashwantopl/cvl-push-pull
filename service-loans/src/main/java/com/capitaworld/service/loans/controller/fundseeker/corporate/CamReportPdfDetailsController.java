@@ -52,9 +52,7 @@ public class CamReportPdfDetailsController {
 		try {
 
 			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId);
-			logger.info("Data Map==================>"+response);
 			ReportRequest reportRequest = new ReportRequest();
-			logger.info("Response",response);
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
 			reportRequest.setType("CAMREPORTPRIMARYSIDBI");

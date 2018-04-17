@@ -949,26 +949,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequest.setBookValueSy(financialInputRequest.getShareHolderFundsSy()/(financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue()));
 		financialInputRequest.setBookValueTy(financialInputRequest.getShareHolderFundsTy()/(financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue()));
 		Object financialInputResp = convertToString(financialInputRequest);
-		System.out.println("Coversion Resp===========>"+financialInputResp.toString());
 		return financialInputResp;
 	}
 	
 	public static Object convertToString (Object obj) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
-		 System.out.println("length : "+fields.length);
+		 logger.info("total length of object : "+fields.length);
 		 for(Field field : fields) {
 			 field.setAccessible(true);
              Object value = field.get(obj);
-             System.out.println("field.getName()====" + field.getName());
+             logger.info("field.getName()====" + field.getName());
              if(!CommonUtils.isObjectNullOrEmpty(value)) {
             	 if(value instanceof Double){
-                	 System.out.println("First Value"+ value);
+            		 logger.info("Initial Value================>"+ value);
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("##.##");
                     	 value = Double.parseDouble(decim.format(value));
-                    	 field.set(obj,value);                		 
+                    	 field.set(obj,value);        
+                    	 logger.info("Converted Value"+ value);
                 	 }
-                	 System.out.println( "Value"+ value);
+                	
                  }
              }
 		 }
