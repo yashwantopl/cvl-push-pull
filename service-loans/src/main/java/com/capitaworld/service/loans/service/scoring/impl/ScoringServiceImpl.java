@@ -241,11 +241,20 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
                         Double customer_ass_concern_year=6.0;
-                        /*try {
+                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                      /*  Double customer_ass_concern_year=null;
+                        try {
 
                             CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
-                            customer_ass_concern_year = (Double)cibilResponse.getData();
-                            map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                            {
+                                customer_ass_concern_year = (Double)cibilResponse.getData();
+                                map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+                            }
+                            else
+                            {
+                                map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                            }
 
                         }
                         catch (Exception e)
@@ -254,7 +263,6 @@ public class ScoringServiceImpl implements ScoringService{
                             e.printStackTrace();
                             map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
                         }*/
-                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
                         break;
 
                     }

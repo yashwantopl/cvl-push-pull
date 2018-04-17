@@ -44,21 +44,54 @@ public class CorporatePrimaryViewResponse {
     private String collateralSecurityAmount;
     private List<Object> profilePic;
 
-    private String  isBusinessAssetChecked;
+    /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
-    private String  isOtherGeneralChecked;
+    private String  isOtherGeneralChecked;*/
 
+    private String purposeOfLoan;
     private String  businessAssetAmount;
     private String  wcAmount;
     private String  otherAmt;
 
     private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
+    private Object FinancialInputRequest;
+    
 
 
+    
 
 
-    public String getKeyVericalSector() {
+	/**
+	 * @return the financialInputRequest
+	 */
+	public Object getFinancialInputRequest() {
+		return FinancialInputRequest;
+	}
+
+	/**
+	 * @param financialInputRequest the financialInputRequest to set
+	 */
+	public void setFinancialInputRequest(Object financialInputRequest) {
+		FinancialInputRequest = financialInputRequest;
+	}
+
+	
+	/**
+	 * @return the purposeOfLoan
+	 */
+	public String getPurposeOfLoan() {
+		return purposeOfLoan;
+	}
+
+	/**
+	 * @param purposeOfLoan the purposeOfLoan to set
+	 */
+	public void setPurposeOfLoan(String purposeOfLoan) {
+		this.purposeOfLoan = purposeOfLoan;
+	}
+
+	public String getKeyVericalSector() {
         return keyVericalSector;
     }
 
@@ -74,29 +107,7 @@ public class CorporatePrimaryViewResponse {
         this.keyVericalSubsector = keyVericalSubsector;
     }
 
-    public String getIsBusinessAssetChecked() {
-        return isBusinessAssetChecked;
-    }
-
-    public void setIsBusinessAssetChecked(String isBusinessAssetChecked) {
-        this.isBusinessAssetChecked = isBusinessAssetChecked;
-    }
-
-    public String getIsWorkingCapitalChecked() {
-        return isWorkingCapitalChecked;
-    }
-
-    public void setIsWorkingCapitalChecked(String isWorkingCapitalChecked) {
-        this.isWorkingCapitalChecked = isWorkingCapitalChecked;
-    }
-
-    public String getIsOtherGeneralChecked() {
-        return isOtherGeneralChecked;
-    }
-
-    public void setIsOtherGeneralChecked(String isOtherGeneralChecked) {
-        this.isOtherGeneralChecked = isOtherGeneralChecked;
-    }
+   
 
     public String getBusinessAssetAmount() {
         return businessAssetAmount;
