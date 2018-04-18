@@ -401,7 +401,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                 corporatePrimaryViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
                 corporatePrimaryViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
 
-                corporatePrimaryViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).toString());
+                corporatePrimaryViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
                 corporatePrimaryViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null ? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount()) : null);
                 corporatePrimaryViewResponse.setWcAmount(primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount()) : null);
                 corporatePrimaryViewResponse.setOtherAmt(primaryCorporateDetail.getOtherAmt() != null ? String.valueOf(primaryCorporateDetail.getOtherAmt()) : null);
