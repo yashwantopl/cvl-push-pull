@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -84,6 +85,9 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -151,6 +155,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
@@ -290,20 +297,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				e.printStackTrace();
 			}
 			
-			//ASSOCIATE ENTITY
-			try {
-				map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			try {
-				map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
-				map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
-				map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
 			
 			//INDUSTRY SECTOR SUBSECTOR
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -343,189 +336,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", primaryCorporateRequest.getAmount());
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//IRR DATA
-		try {
-			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
-			Integer denomination =loanApplicationRequest.getDenominationId();
-			Long denominationValue = denomination.longValue();
-			FinancialInputRequest financialInputRequest= calculateIRRScore(userId, applicationId,null, denominationValue);
-			map.put("financialInputRequest", financialInputRequest);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//MATCHES RESPONSE
-		try {
-			MatchRequest matchRequest = new MatchRequest();
-			matchRequest.setApplicationId(applicationId);
-			matchRequest.setProductId(productId);
-			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", printFields(matchResponse.getMatchDisplayObjectList()));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		
-		//FITCH DATA
-		try {
-		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-		
-		if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-			map.put("fitchResponse",fitchOutputManu);
-			map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
-			map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
-			map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
-			map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
-			map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
-			map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
-			map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
-			map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
-			map.put("fitchTitle","Manufacturing");
-		}
-		if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputTrad);
-			map.put("fitchTitle","Trading");
-		}
-		if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputServ);
-			map.put("fitchTitle","Service");
-		}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		//SCORING DATA
-		try {
-			ScoringRequest scoringRequest = new ScoringRequest();
-			scoringRequest.setApplicationId(applicationId);
-			scoringRequest.setFpProductId(productId);
-			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",proposalScoreResponse);
-			
-			List<ProposalScoreDetailResponse> proposalScoreDetailResponseList=scoringResponse.getDataList();
-			for(ProposalScoreDetailResponse proposalScoreDetailResponse:proposalScoreDetailResponseList)
-			{
-				switch (proposalScoreDetailResponse.getParameterOption()) {
-				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("combinedNetworthScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("customerAssociateConcernScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("cibilTransunionScoreScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("experienceInBusinessScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("debtEquityRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("tolTnwScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgCurrentRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("wcCycleScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgAnnualgrowthGrossScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualgrowthGrossScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgAnnualgrowthNetSaleScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualgrowthNetSaleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgEbidtaScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgEbidtaScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgAnnualGrossCashScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualGrossCashScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("avgIntCovRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgIntCovRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("noOfCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("noOfCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("concentrationCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("concentrationCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", proposalScoreDetailResponse.getParameterOption());
-					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
-					continue;
-				default:
-					break;
-				}
-			}
-		}
-			catch (Exception e) {
-				// TODO: handle exception
-			}
-		
-		//PERFIOS API DATA
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-			Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
-			map.put("bankStatement", printFields(data.getXns().getXn()));
-			map.put("monthlyDetails", printFields(data.getMonthlyDetailList().getMonthlyDetails()));
-			map.put("top5FundReceived", printFields(data.getTop5FundReceivedList().getItem()));
-			map.put("top5FundTransfered", printFields(data.getTop5FundTransferedList().getItem()));
-			map.put("bouncedChequeList", printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
-		}catch (Exception e) {
-			e.printStackTrace();
-		}*/
+		*/
 		return map;
 	}
 	@Override
@@ -533,6 +344,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
+		UserResponse userResponse = usersClient.getEmailMobile(userId);
+		LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+		try {
+			UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+			map.put("mobile", request.getMobile());
+			map.put("email", request.getEmail());
+		} catch (IOException e1) {
+			logger.info("Error while getting registration details");
+			e1.printStackTrace();
+		}
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
 			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
@@ -625,28 +446,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					e.printStackTrace();
 					logger.info("Error in getting directors background details");
 		     }
-		
 		    //FINANCIAL ARRANGEMENTS
+			
 			try {
-				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-					FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-					financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-					financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
-					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-					financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
-					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-					financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-				}
-				map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error in getting Financial arrangements data");
-			}
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
+                        .getFinancialArrangementDetailsList(applicationId, userId);
+                List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
+                for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+                    FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+//				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+                    financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+                    financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                    financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+                    //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+                    financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+                    financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+                    financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                    //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+                    //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+                    financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+                }
+                map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
+
+            } catch (Exception e) {
+                logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+            }
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? primaryCorporateRequest.getLoanAmount() : " ");
@@ -739,6 +563,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 			map.put("proposalScoreResponse",convertToString(proposalScoreResponse));
+			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			
@@ -855,6 +680,61 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting perfios data");
 		}
 		
+		/**********************************************FINAL DETAILS*****************************************************/
+		/*//OWNERSHIP DETAILS :- 
+		try {
+			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
+			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+				ownershipDetailResponse.setShareHoldingCategory(
+						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+				ownershipDetailResponseList.add(ownershipDetailResponse);
+			}
+			map.put("ownership", printFields(ownershipDetailResponseList));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+	}
+		//PROMOTOR BACKGROUND DETAILS
+		try {
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String promotorName = "";
+				if (promotorBackgroundDetailRequest.getSalutationId() != null){
+					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				promotorName += promotorBackgroundDetailRequest.getPromotorsName();
+				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+			}
+			map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//ASSOCIATE ENTITY
+		try {
+			map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
+			map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
+			map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
+		}catch (Exception e) {
+			e.printStackTrace();
+		}*/
 		return map;
 	}
 	public Object calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
@@ -963,10 +843,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             	 if(value instanceof Double){
             		 logger.info("Initial Value================>"+ value);
                 	 if(!Double.isNaN((Double)value)) {
-                		 DecimalFormat decim = new DecimalFormat("##.##");
+                		/* DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
                     	 field.set(obj,value);        
-                    	 logger.info("Converted Value"+ value);
+                    	 logger.info("Converted Value"+ value);*/
+                		 CommonUtils.checkDouble(((Double) value).doubleValue());
                 	 }
                 	
                  }
@@ -974,7 +855,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		 }
 		return obj;
 	}
-	
 	public static Object printFields(Object obj) throws Exception {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
