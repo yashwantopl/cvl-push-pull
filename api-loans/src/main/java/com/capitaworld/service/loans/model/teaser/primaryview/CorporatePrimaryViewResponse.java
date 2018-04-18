@@ -56,11 +56,26 @@ public class CorporatePrimaryViewResponse {
     private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
     private Object FinancialInputRequest;
+    private List<Object> bankStatement;
     
 
 
     
 
+
+	/**
+	 * @return the bankStatement
+	 */
+	public List<Object> getBankStatement() {
+		return bankStatement;
+	}
+
+	/**
+	 * @param bankStatement the bankStatement to set
+	 */
+	public void setBankStatement(List<Object> bankStatement) {
+		this.bankStatement = bankStatement;
+	}
 
 	/**
 	 * @return the financialInputRequest
