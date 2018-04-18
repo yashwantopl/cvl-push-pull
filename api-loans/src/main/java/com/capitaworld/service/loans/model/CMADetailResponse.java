@@ -21,7 +21,9 @@ public class CMADetailResponse implements Serializable{
 		private Double exportSales; //D9
 		private Double netProfitOrLoss; //D78
 		private Double depreciation; //D34
+		private Double interest;  //D62
 		private Double provisionForDeferredTax; //D77
+		
 		
 		public Double getReceivableOtherThanDefferred() {
 			return receivableOtherThanDefferred;
@@ -83,6 +85,14 @@ public class CMADetailResponse implements Serializable{
 		public void setDepreciation(Double depreciation) {
 			this.depreciation = depreciation;
 		}
+		
+		public Double getInterest() {
+			return interest;
+		}
+		public void setInterest(Double interest) {
+			this.interest = interest;
+		}
+		
 		public Double getProvisionForDeferredTax() {
 			return provisionForDeferredTax;
 		}
@@ -91,12 +101,15 @@ public class CMADetailResponse implements Serializable{
 		}
 		@Override
 		public String toString() {
-			return "CMADetailDomain [receivableOtherThanDefferred=" + receivableOtherThanDefferred + ", exportReceivables="
-					+ exportReceivables + ", inventory=" + inventory + ", advanceToSupplierRawMaterials="
-					+ advanceToSupplierRawMaterials + ", sundryCreditors=" + sundryCreditors
-					+ ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers + ", domesticSales=" + domesticSales
-					+ ", exportSales=" + exportSales + ", netProfitOrLoss=" + netProfitOrLoss + ", depreciation="
-					+ depreciation + ", provisionForDeferredTax=" + provisionForDeferredTax + "]";
+			return "CMADetailResponse [receivableOtherThanDefferred=" + receivableOtherThanDefferred
+					+ ", exportReceivables=" + exportReceivables + ", inventory=" + inventory
+					+ ", advanceToSupplierRawMaterials=" + advanceToSupplierRawMaterials + ", sundryCreditors="
+					+ sundryCreditors + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
+					+ ", domesticSales=" + domesticSales + ", exportSales=" + exportSales + ", netProfitOrLoss="
+					+ netProfitOrLoss + ", depreciation=" + depreciation + ", interest=" + interest
+					+ ", provisionForDeferredTax=" + provisionForDeferredTax + "]";
 		}
+		
+		
 		
 }

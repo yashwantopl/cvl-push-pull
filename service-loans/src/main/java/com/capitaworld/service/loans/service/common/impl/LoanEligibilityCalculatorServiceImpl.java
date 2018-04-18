@@ -685,14 +685,16 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			if(operating!=null) {
 				logger.info("==================================>3");
 				cmaDetailResponse.setDomesticSales((Double)operating.get(0)[0]);
+				logger.info("new added ==================================>19");
+				cmaDetailResponse.setInterest((Double)operating.get(0)[1]);
 				logger.info("==================================>4");
-				cmaDetailResponse.setExportSales((Double) operating.get(0)[1]);
+				cmaDetailResponse.setExportSales((Double) operating.get(0)[2]);
 				logger.info("==================================>5");
-				cmaDetailResponse.setNetProfitOrLoss((Double) operating.get(0)[2]);
+				cmaDetailResponse.setNetProfitOrLoss((Double) operating.get(0)[3]);
 				logger.info("==================================>6");
-				cmaDetailResponse.setDepreciation((Double) operating.get(0)[3]);
+				cmaDetailResponse.setDepreciation((Double) operating.get(0)[4]);
 				logger.info("==================================>7");
-				cmaDetailResponse.setProvisionForDeferredTax((Double)operating.get(0)[4]);
+				cmaDetailResponse.setProvisionForDeferredTax((Double)operating.get(0)[5]);
 				logger.info("==================================>8");
 				logger.info("Successfully get from operating ");
 			}
