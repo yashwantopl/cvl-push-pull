@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.auth.model.UserRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,6 +190,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			// TODO Auto-generated method stub
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
+
 			if (applicantDetail == null) {
 				return null;
 			}
@@ -199,6 +201,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+
+
+			try {
+
+				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				UsersRequest userRequest= MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				applicantRequest.setEmail(userRequest.getEmail());
+				applicantRequest.setLandlineNo(userRequest.getMobile());
+			}
+			catch (Exception e)
+			{
+				logger.warn("error while get user data"+e);
+			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
