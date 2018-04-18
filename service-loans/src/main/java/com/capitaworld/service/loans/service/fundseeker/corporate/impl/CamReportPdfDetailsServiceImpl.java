@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,10 +11,10 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import com.capitaworld.service.oneform.enums.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FinancialInputRequestString;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
@@ -37,6 +39,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
+import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -64,6 +67,13 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.Industry;
+import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -641,11 +651,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? primaryCorporateRequest.getLoanAmount() : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
+			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
 			}else {
 				map.put("purpose", "");
 			}
+			
 			
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? primaryCorporateRequest.getCollateralSecurityAmount() : " ");
@@ -658,7 +670,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
 			Integer denomination =loanApplicationRequest.getDenominationId();
 			Long denominationValue = denomination.longValue();
-			FinancialInputRequest financialInputRequest= calculateIRRScore(userId, applicationId, null, denominationValue);
+			Object financialInputRequest= calculateIRRScore(userId, applicationId, null, denominationValue);
 			map.put("financialInputRequest", !CommonUtils.isObjectNullOrEmpty(financialInputRequest) ? financialInputRequest : " ");
 			logger.info("Financial Input",financialInputRequest);
 		}catch (Exception e) {
@@ -726,7 +738,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",proposalScoreResponse);
+			map.put("proposalScoreResponse",convertToString(proposalScoreResponse));
 			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			
@@ -845,7 +857,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		return map;
 	}
-	public FinancialInputRequest calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
+	public Object calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
 		
 		FinancialInputRequest financialInputRequest= irrService.cmaIrrMappingService(userId, applicationId, null, denomination);
 		logger.info("Financial Input=================================>"+financialInputRequest.toString());
@@ -889,9 +901,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		else
 			financialInputRequest.setEquityDividendTy(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy());
 		
-		financialInputRequest.setEarningPerShareFy((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy());
-		financialInputRequest.setEarningPerShareSy((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy());
-		financialInputRequest.setEarningPerShareTy((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy());
+		if(financialInputRequest.getShareCapitalFy() == 0.0 ) {
+			financialInputRequest.setEarningPerShareFy(0.0);
+		}else {
+			financialInputRequest.setEarningPerShareFy((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy());
+		}
+		if(financialInputRequest.getShareCapitalSy() == 0.0 ) {
+			financialInputRequest.setEarningPerShareSy(0.0);
+		}else {
+			financialInputRequest.setEarningPerShareSy((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy());
+		}
+		if(financialInputRequest.getShareCapitalTy() == 0.0 ) {
+			financialInputRequest.setEarningPerShareTy(0.0);
+		}else {
+			financialInputRequest.setEarningPerShareTy((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy());
+		}
+		
 		
 		//Balance Sheet -Equities and Liabilities
 		financialInputRequest.setShareHolderFundsFy(CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy(),financialInputRequest.getRevalationReserveFy(),financialInputRequest.getOtherReserveAndSurplusFy()));
@@ -923,10 +948,33 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequest.setBookValueFy(financialInputRequest.getShareHolderFundsFy()/(financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue()));
 		financialInputRequest.setBookValueSy(financialInputRequest.getShareHolderFundsSy()/(financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue()));
 		financialInputRequest.setBookValueTy(financialInputRequest.getShareHolderFundsTy()/(financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue()));
-		
-		return financialInputRequest;
+		Object financialInputResp = convertToString(financialInputRequest);
+		return financialInputResp;
 	}
-
+	
+	public static Object convertToString (Object obj) throws Exception {
+		Field[] fields = obj.getClass().getDeclaredFields();
+		 logger.info("total length of object : "+fields.length);
+		 for(Field field : fields) {
+			 field.setAccessible(true);
+             Object value = field.get(obj);
+             logger.info("field.getName()====" + field.getName());
+             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+            	 if(value instanceof Double){
+            		 logger.info("Initial Value================>"+ value);
+                	 if(!Double.isNaN((Double)value)) {
+                		 DecimalFormat decim = new DecimalFormat("##.##");
+                    	 value = Double.parseDouble(decim.format(value));
+                    	 field.set(obj,value);        
+                    	 logger.info("Converted Value"+ value);
+                	 }
+                	
+                 }
+             }
+		 }
+		return obj;
+	}
+	
 	public static Object printFields(Object obj) throws Exception {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
@@ -1040,6 +1088,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
+	
+	
 	
 	
 }

@@ -106,7 +106,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(13).getCell(j).setCellValue(operatingStatementDetails.getDeductOtherItems());
 				sheet1.getRow(14).getCell(j).setCellValue(operatingStatementDetails.getNetSales());
 				sheet1.getRow(16).getCell(j).setCellValue(operatingStatementDetails.getPercentageRiseOrFall());
-				sheet1.getRow(16).getCell(j).setCellValue(operatingStatementDetails.getPercentageRiseOrFall());
+
 				sheet1.getRow(19).getCell(j).setCellValue(operatingStatementDetails.getRawMaterials());
 				sheet1.getRow(20).getCell(j).setCellValue(operatingStatementDetails.getRawMaterialsImported());
 				sheet1.getRow(21).getCell(j).setCellValue(operatingStatementDetails.getRawMaterialsIndigenous());
@@ -578,7 +578,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		}
 		for (int i = j; temp <totalYear;++temp) {
 			if(flag) {
-				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
+//				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
 				sheet.getRow(4).getCell(++i).setCellValue(temp);
 			}
 			else {

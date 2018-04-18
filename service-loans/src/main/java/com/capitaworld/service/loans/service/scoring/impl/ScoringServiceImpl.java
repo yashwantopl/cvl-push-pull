@@ -240,7 +240,7 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                       /* Double customer_ass_concern_year=6.0;
+                        /*Double customer_ass_concern_year=6.0;
                         map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);*/
                         Double customer_ass_concern_year=null;
                         try {
@@ -269,8 +269,10 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
 
-                        Double cibil_score_avg_promotor=700.0;
-                        /*try {
+                        /*Double cibil_score_avg_promotor=700.0;
+                        map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);*/
+                        Double cibil_score_avg_promotor=null;
+                        try {
 
                             CibilRequest cibilRequest=new CibilRequest();
                             cibilRequest.setApplicationId(applicationId);
@@ -285,8 +287,8 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
                             e.printStackTrace();
                             map.put("CIBIL_TRANSUNION_SCORE",null);
-                        }*/
-                        map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
+                        }
+
                         break;
                     }
 
@@ -589,44 +591,68 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
+                            logger.info("--------------------------------------START AVERAGE_EBIDTA-----------------------------------");
                             Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
                                 profitBeforeTaxOrLossTy = 0.0;
+
+                            logger.info("profitBeforeTaxOrLossTy::"+profitBeforeTaxOrLossTy);
 
                             Double interestTy = operatingStatementDetailsTY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestTy))
                                 interestTy = 0.0;
 
+                            logger.info("interestTy::"+interestTy);
+
                             Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
                                 profitBeforeTaxOrLossSy = 0.0;
+
+                            logger.info("profitBeforeTaxOrLossSy::"+profitBeforeTaxOrLossSy);
 
                             Double interestSy = operatingStatementDetailsSY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestSy))
                                 interestSy = 0.0;
 
+                            logger.info("interestSy::"+interestSy);
+
                             Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
                                 depreciationTy = 0.0;
+
+                            logger.info("depreciationTy::"+depreciationTy);
 
                             Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
                                 depreciationSy = 0.0;
 
+                            logger.info("depreciationSy::"+depreciationSy);
+
 
                             Double avgEBIDTA = ((profitBeforeTaxOrLossTy + interestTy + depreciationTy) + (profitBeforeTaxOrLossSy + interestSy + depreciationSy)) / 2;
+
+                            logger.info("avgEBIDTA::"+avgEBIDTA);
 
                             Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
                             if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
                                 termLoansTy = 0.0;
 
+                            logger.info("termLoansTy::"+termLoansTy);
+
                             Double termLoansEBIDTA = termLoansTy + loanAmount;
 
+                            logger.info("termLoansEBIDTA::"+termLoansEBIDTA);
 
-                            if(termLoansEBIDTA!=0.0)
-                                map.put("AVERAGE_EBIDTA", (avgEBIDTA/termLoansEBIDTA)*100);
-                            else
+
+                            if(termLoansEBIDTA!=0.0) {
+                                map.put("AVERAGE_EBIDTA", (avgEBIDTA / termLoansEBIDTA) * 100);
+                                logger.info("AVERAGE_EBIDTA::"+(avgEBIDTA / termLoansEBIDTA) * 100);
+                            }
+                            else {
                                 map.put("AVERAGE_EBIDTA", 100.0);
+                            }
+
+                            logger.info("--------------------------------------END AVERAGE_EBIDTA-----------------------------------");
                         }
                         catch (Exception e)
                         {
