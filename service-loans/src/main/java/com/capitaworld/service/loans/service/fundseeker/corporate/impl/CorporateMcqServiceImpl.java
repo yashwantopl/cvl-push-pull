@@ -62,6 +62,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             //setting flag
             loanApplicationRepository.setIsFinalMcqMandatoryFilled(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getFinalMcqFilled()) ? false : corporateMcqRequest.getFinalMcqFilled());
             loanApplicationRepository.setFinalFilledCount(corporateMcqRequest.getApplicationId(), finalUserId,corporateMcqRequest.getFinalFilledCount());
+
             return true;
         } catch (Exception e) {
             logger.error("Error while Saving Corporate final mcq Details:-");
