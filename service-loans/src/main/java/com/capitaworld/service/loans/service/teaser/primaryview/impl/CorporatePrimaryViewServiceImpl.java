@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -48,7 +52,6 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
-import com.capitaworld.service.oneform.enums.RelationshipType;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -562,7 +565,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     		
     	
 
-            /*// get profile pic
+            // get profile pic
             DocumentRequest documentRequest = new DocumentRequest();
             documentRequest.setApplicationId(toApplicationId);
             documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -574,7 +577,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                 corporatePrimaryViewResponse.setProfilePic(documentResponse.getDataList());
             } catch (DocumentException e) {
                 e.printStackTrace();
-            }*/
+            }
 
 
         return corporatePrimaryViewResponse;
