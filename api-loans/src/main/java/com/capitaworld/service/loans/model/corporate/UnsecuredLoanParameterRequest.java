@@ -184,6 +184,66 @@ public class UnsecuredLoanParameterRequest extends ProductMasterRequest implemen
 
 	private Integer ddrFlow;
 
+	private Integer individualCibil;
+
+	private Boolean isIndividualCibilDisplay = false;
+
+	private Boolean isIndividualCibilMandatory = false;
+
+	private Integer commercialCibil;
+
+	private Boolean isCommercialCibilDisplay = false;
+
+	private Boolean isCommercialCibilMandatory = false;
+
+	public Integer getIndividualCibil() {
+		return individualCibil;
+	}
+
+	public void setIndividualCibil(Integer individualCibil) {
+		this.individualCibil = individualCibil;
+	}
+
+	public Boolean getIsIndividualCibilDisplay() {
+		return isIndividualCibilDisplay;
+	}
+
+	public void setIsIndividualCibilDisplay(Boolean individualCibilDisplay) {
+		isIndividualCibilDisplay = individualCibilDisplay;
+	}
+
+	public Boolean getIsIndividualCibilMandatory() {
+		return isIndividualCibilMandatory;
+	}
+
+	public void setIsIndividualCibilMandatory(Boolean individualCibilMandatory) {
+		isIndividualCibilMandatory = individualCibilMandatory;
+	}
+
+	public Integer getCommercialCibil() {
+		return commercialCibil;
+	}
+
+	public void setCommercialCibil(Integer commercialCibil) {
+		this.commercialCibil = commercialCibil;
+	}
+
+	public Boolean getIsCommercialCibilDisplay() {
+		return isCommercialCibilDisplay;
+	}
+
+	public void setIsCommercialCibilDisplay(Boolean commercialCibilDisplay) {
+		isCommercialCibilDisplay = commercialCibilDisplay;
+	}
+
+	public Boolean getIsCommercialCibilMandatory() {
+		return isCommercialCibilMandatory;
+	}
+
+	public void setIsCommercialCibilMandatory(Boolean commercialCibilMandatory) {
+		isCommercialCibilMandatory = commercialCibilMandatory;
+	}
+
 	public Integer getDdrFlow() {
 		return ddrFlow;
 	}

@@ -289,6 +289,72 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	@Column(name="ddr_flow")
 	private Integer ddrFlow;
 
+	@Column(name="individual_cibil")
+	private Integer individualCibil;
+
+	@Column(name="is_individual_cibil_display")
+	private Boolean isIndividualCibilDisplay = false;
+
+	@Column(name="is_individual_cibil_mandatory")
+	private Boolean isIndividualCibilMandatory = false;
+
+	@Column(name="commercial_cibil")
+	private Integer commercialCibil;
+
+	@Column(name="is_Commercial_cibil_display")
+	private Boolean isCommercialCibilDisplay = false;
+
+	@Column(name="is_Commercial_cibil_mandatory")
+	private Boolean isCommercialCibilMandatory = false;
+
+	public Integer getIndividualCibil() {
+		return individualCibil;
+	}
+
+	public void setIndividualCibil(Integer individualCibil) {
+		this.individualCibil = individualCibil;
+	}
+
+	public Boolean getIsIndividualCibilDisplay() {
+		return isIndividualCibilDisplay;
+	}
+
+	public void setIsIndividualCibilDisplay(Boolean individualCibilDisplay) {
+		isIndividualCibilDisplay = individualCibilDisplay;
+	}
+
+	public Boolean getIsIndividualCibilMandatory() {
+		return isIndividualCibilMandatory;
+	}
+
+	public void setIsIndividualCibilMandatory(Boolean individualCibilMandatory) {
+		isIndividualCibilMandatory = individualCibilMandatory;
+	}
+
+	public Integer getCommercialCibil() {
+		return commercialCibil;
+	}
+
+	public void setCommercialCibil(Integer commercialCibil) {
+		this.commercialCibil = commercialCibil;
+	}
+
+	public Boolean getIsCommercialCibilDisplay() {
+		return isCommercialCibilDisplay;
+	}
+
+	public void setIsCommercialCibilDisplay(Boolean commercialCibilDisplay) {
+		isCommercialCibilDisplay = commercialCibilDisplay;
+	}
+
+	public Boolean getIsCommercialCibilMandatory() {
+		return isCommercialCibilMandatory;
+	}
+
+	public void setIsCommercialCibilMandatory(Boolean commercialCibilMandatory) {
+		isCommercialCibilMandatory = commercialCibilMandatory;
+	}
+
 	public Integer getDdrFlow() {
 		return ddrFlow;
 	}
