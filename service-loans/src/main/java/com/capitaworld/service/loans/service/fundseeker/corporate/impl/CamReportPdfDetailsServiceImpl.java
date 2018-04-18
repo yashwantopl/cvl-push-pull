@@ -744,292 +744,320 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		FinancialInputRequestString financialInputRequestString = new FinancialInputRequestString();
 		
-		financialInputRequestString.setGrossSalesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockFy())? String.format ("%.2f", financialInputRequest.getGrossBlockFy()): "0");
-		financialInputRequestString.setGrossSalesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockSy())? String.format ("%.2f", financialInputRequest.getGrossBlockSy()): "0");
-		financialInputRequestString.setGrossSalesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockTy())? String.format ("%.2f", financialInputRequest.getGrossBlockTy()): "0");
+		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossBlockFy()));
+		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossBlockSy()));
+		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossBlockTy()));
 		
-		financialInputRequestString.setLessExciseDuityFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExciseDuityFy())? String.format ("%.2f", financialInputRequest.getLessExciseDuityFy()): "0");
-		financialInputRequestString.setLessExciseDuitySy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExciseDuitySy())? String.format ("%.2f", financialInputRequest.getLessExciseDuitySy()): "0");
-		financialInputRequestString.setLessExciseDuityTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExciseDuityTy())? String.format ("%.2f", financialInputRequest.getLessExciseDuityTy()): "0");
+		financialInputRequestString.setLessExciseDuityFy(convertValue(financialInputRequest.getLessExciseDuityFy()));
+        financialInputRequestString.setLessExciseDuitySy(convertValue(financialInputRequest.getLessExciseDuitySy()));
+        financialInputRequestString.setLessExciseDuityTy(convertValue(financialInputRequest.getLessExciseDuityTy()));
+        
+        financialInputRequestString.setIncreaseDecreaseStockFy(convertValue(financialInputRequest.getIncreaseDecreaseStockFy()));
+        financialInputRequestString.setIncreaseDecreaseStockSy(convertValue(financialInputRequest.getIncreaseDecreaseStockSy()));
+        financialInputRequestString.setIncreaseDecreaseStockTy(convertValue(financialInputRequest.getIncreaseDecreaseStockTy()));
+        
+        financialInputRequestString.setRawMaterialConsumedFy(convertValue(financialInputRequest.getRawMaterialConsumedFy()));
+        financialInputRequestString.setRawMaterialConsumedSy(convertValue(financialInputRequest.getRawMaterialConsumedSy()));
+        financialInputRequestString.setRawMaterialConsumedTy(convertValue(financialInputRequest.getRawMaterialConsumedTy()));
+        
+        financialInputRequestString.setPowerAndFuelCostFy(convertValue(financialInputRequest.getPowerAndFuelCostFy()));
+        financialInputRequestString.setPowerAndFuelCostSy(convertValue(financialInputRequest.getPowerAndFuelCostSy()));
+        financialInputRequestString.setPowerAndFuelCostTy(convertValue(financialInputRequest.getPowerAndFuelCostTy()));
+        
+        financialInputRequestString.setEmployeeCostFy(convertValue(financialInputRequest.getEmployeeCostFy()));
+        financialInputRequestString.setEmployeeCostSy(convertValue(financialInputRequest.getEmployeeCostSy()));
+        financialInputRequestString.setEmployeeCostTy(convertValue(financialInputRequest.getEmployeeCostTy()));
+        
+        financialInputRequestString.setGeneralAndAdminExpeFy(convertValue(financialInputRequest.getGeneralAndAdminExpeFy()));
+        financialInputRequestString.setGeneralAndAdminExpeSy(convertValue(financialInputRequest.getGeneralAndAdminExpeSy()));
+        financialInputRequestString.setGeneralAndAdminExpeTy(convertValue(financialInputRequest.getGeneralAndAdminExpeTy()));
+        
+        financialInputRequestString.setSellingAndDistriExpeFy(convertValue(financialInputRequest.getSellingAndDistriExpeFy()));
+        financialInputRequestString.setSellingAndDistriExpeSy(convertValue(financialInputRequest.getSellingAndDistriExpeSy()));             
+        financialInputRequestString.setSellingAndDistriExpeTy(convertValue(financialInputRequest.getSellingAndDistriExpeTy()));
 		
-		financialInputRequestString.setIncreaseDecreaseStockFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIncreaseDecreaseStockFy())? String.format ("%.2f", financialInputRequest.getIncreaseDecreaseStockFy()): "0");
-		financialInputRequestString.setIncreaseDecreaseStockSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIncreaseDecreaseStockSy())? String.format ("%.2f", financialInputRequest.getIncreaseDecreaseStockSy()): "0");
-		financialInputRequestString.setIncreaseDecreaseStockTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIncreaseDecreaseStockTy())? String.format ("%.2f", financialInputRequest.getIncreaseDecreaseStockTy()): "0");
+        financialInputRequestString.setMiscelExpeFy(convertValue(financialInputRequest.getMiscelExpeFy()));
+        financialInputRequestString.setMiscelExpeSy(convertValue(financialInputRequest.getMiscelExpeSy()));           
+        financialInputRequestString.setMiscelExpeTy(convertValue(financialInputRequest.getMiscelExpeTy()));
+        
+        financialInputRequestString.setLessExpeCapitaFy(convertValue(financialInputRequest.getLessExpeCapitaFy()));
+        financialInputRequestString.setLessExpeCapitaSy(convertValue(financialInputRequest.getLessExpeCapitaSy()));               
+        financialInputRequestString.setLessExpeCapitaTy(convertValue(financialInputRequest.getLessExpeCapitaTy()));
+        
+        financialInputRequestString.setOtherIncomeFy(convertValue(financialInputRequest.getOtherIncomeFy()));
+        financialInputRequestString.setOtherIncomeSy(convertValue(financialInputRequest.getOtherIncomeSy()));
+        financialInputRequestString.setOtherIncomeTy(convertValue(financialInputRequest.getOtherIncomeTy()));
+        
+        financialInputRequestString.setInterestFy(convertValue(financialInputRequest.getInterestFy()));
+        financialInputRequestString.setInterestSy(convertValue(financialInputRequest.getInterestSy()));
+        financialInputRequestString.setInterestTy(convertValue(financialInputRequest.getInterestTy()));
+        
+        financialInputRequestString.setDepriciationFy(convertValue(financialInputRequest.getDepriciationFy()));
+        financialInputRequestString.setDepriciationSy(convertValue(financialInputRequest.getDepriciationSy()));
+        financialInputRequestString.setDepriciationTy(convertValue(financialInputRequest.getDepriciationTy()));
+        
+        financialInputRequestString.setExceptionalIncomeFy(convertValue(financialInputRequest.getExceptionalIncomeFy()));
+        financialInputRequestString.setExceptionalIncomeSy(convertValue(financialInputRequest.getExceptionalIncomeSy()));
+        financialInputRequestString.setExceptionalIncomeTy(convertValue(financialInputRequest.getExceptionalIncomeTy()));
+        
+        financialInputRequestString.setProvisionForTaxFy(convertValue(financialInputRequest.getProvisionForTaxFy()));
+        financialInputRequestString.setProvisionForTaxSy(convertValue(financialInputRequest.getProvisionForTaxSy()));
+        financialInputRequestString.setProvisionForTaxTy(convertValue(financialInputRequest.getProvisionForTaxTy()));
+        
+        financialInputRequestString.setDividendPayOutFy(convertValue(financialInputRequest.getDividendPayOutFy()));
+        financialInputRequestString.setDividendPayOutSy(convertValue(financialInputRequest.getDividendPayOutSy()));
+        financialInputRequestString.setDividendPayOutTy(convertValue(financialInputRequest.getDividendPayOutTy()));
 		
-		financialInputRequestString.setRawMaterialConsumedFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRawMaterialConsumedFy())? String.format ("%.2f", financialInputRequest.getRawMaterialConsumedFy()): "0");
-		financialInputRequestString.setRawMaterialConsumedSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRawMaterialConsumedSy())? String.format ("%.2f", financialInputRequest.getRawMaterialConsumedSy()): "0");
-		financialInputRequestString.setRawMaterialConsumedTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRawMaterialConsumedTy())? String.format ("%.2f", financialInputRequest.getRawMaterialConsumedTy()): "0");
+        financialInputRequestString.setShareCapitalFy(convertValue(financialInputRequest.getShareCapitalFy()));
+        financialInputRequestString.setShareCapitalSy(convertValue(financialInputRequest.getShareCapitalSy()));
+        financialInputRequestString.setShareCapitalTy(convertValue(financialInputRequest.getShareCapitalTy()));
+        
+        financialInputRequestString.setShareWarrantOutstandingsFy(convertValue(financialInputRequest.getShareWarrantOutstandingsFy()));
+        financialInputRequestString.setShareWarrantOutstandingsSy(convertValue(financialInputRequest.getShareWarrantOutstandingsSy()));
+        financialInputRequestString.setShareWarrantOutstandingsTy(convertValue(financialInputRequest.getShareWarrantOutstandingsTy()));
+        
+        financialInputRequestString.setRevalationReserveFy(convertValue(financialInputRequest.getRevalationReserveFy()));
+        financialInputRequestString.setRevalationReserveSy(convertValue(financialInputRequest.getRevalationReserveSy()));
+        financialInputRequestString.setRevalationReserveTy(convertValue(financialInputRequest.getRevalationReserveTy()));
+        
+        financialInputRequestString.setOtherReserveAndSurplusFy(convertValue(financialInputRequest.getOtherReserveAndSurplusFy()));
+        financialInputRequestString.setOtherReserveAndSurplusSy(convertValue(financialInputRequest.getOtherReserveAndSurplusSy()));
+        financialInputRequestString.setOtherReserveAndSurplusTy(convertValue(financialInputRequest.getOtherReserveAndSurplusTy()));
+        
+        financialInputRequestString.setMinorityInterestFy(convertValue(financialInputRequest.getMinorityInterestFy()));
+        financialInputRequestString.setMinorityInterestSy(convertValue(financialInputRequest.getMinorityInterestSy()));
+        financialInputRequestString.setMinorityInterestTy(convertValue(financialInputRequest.getMinorityInterestTy()));
+        
+        financialInputRequestString.setSecuredLoansFy(convertValue(financialInputRequest.getSecuredLoansFy()));
+        financialInputRequestString.setSecuredLoansSy(convertValue(financialInputRequest.getSecuredLoansSy()));
+        financialInputRequestString.setSecuredLoansTy(convertValue(financialInputRequest.getSecuredLoansTy()));
+        
+        financialInputRequestString.setUnsecuredLoansPromotersFy(convertValue(financialInputRequest.getUnsecuredLoansPromotersFy()));
+        financialInputRequestString.setUnsecuredLoansPromotersSy(convertValue(financialInputRequest.getUnsecuredLoansPromotersSy()));
+        financialInputRequestString.setUnsecuredLoansPromotersTy(convertValue(financialInputRequest.getUnsecuredLoansPromotersTy()));
+        
+        financialInputRequestString.setUnsecuredLoansOthersFy(convertValue(financialInputRequest.getUnsecuredLoansOthersFy()));
+        financialInputRequestString.setUnsecuredLoansOthersSy(convertValue(financialInputRequest.getUnsecuredLoansOthersSy()));
+        financialInputRequestString.setUnsecuredLoansOthersTy(convertValue(financialInputRequest.getUnsecuredLoansOthersTy()));
+        
+        financialInputRequestString.setDeferredTaxLiablitiesFy(convertValue(financialInputRequest.getDeferredTaxLiablitiesFy()));
+        financialInputRequestString.setDeferredTaxLiablitiesSy(convertValue(financialInputRequest.getDeferredTaxLiablitiesSy()));
+        financialInputRequestString.setDeferredTaxLiablitiesTy(convertValue(financialInputRequest.getDeferredTaxLiablitiesTy()));
+        
+        financialInputRequestString.setOtherLongTermLiablitiesFy(convertValue(financialInputRequest.getOtherLongTermLiablitiesFy()));
+        financialInputRequestString.setOtherLongTermLiablitiesSy(convertValue(financialInputRequest.getOtherLongTermLiablitiesSy()));
+        financialInputRequestString.setOtherLongTermLiablitiesTy(convertValue(financialInputRequest.getOtherLongTermLiablitiesTy()));
+        
+        financialInputRequestString.setOtherBorrowingFy(convertValue(financialInputRequest.getOtherBorrowingFy()));
+        financialInputRequestString.setOtherBorrowingSy(convertValue(financialInputRequest.getOtherBorrowingSy()));
+        financialInputRequestString.setOtherBorrowingTy(convertValue(financialInputRequest.getOtherBorrowingTy()));
+        
+        financialInputRequestString.setLongTermProvisionFy(convertValue(financialInputRequest.getLongTermProvisionFy()));
+        financialInputRequestString.setLongTermProvisionSy(convertValue(financialInputRequest.getLongTermProvisionSy()));
+        financialInputRequestString.setLongTermProvisionTy(convertValue(financialInputRequest.getLongTermProvisionTy()));
 		
-		financialInputRequestString.setPowerAndFuelCostFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPowerAndFuelCostFy())? String.format ("%.2f", financialInputRequest.getPowerAndFuelCostFy()): "0");
-		financialInputRequestString.setPowerAndFuelCostSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPowerAndFuelCostSy())? String.format ("%.2f", financialInputRequest.getPowerAndFuelCostSy()): "0");
-		financialInputRequestString.setPowerAndFuelCostTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPowerAndFuelCostTy())? String.format ("%.2f", financialInputRequest.getPowerAndFuelCostTy()): "0");
+        financialInputRequestString.setTradePayablesFy(convertValue(financialInputRequest.getTradePayablesFy()));
+        financialInputRequestString.setTradePayablesSy(convertValue(financialInputRequest.getTradePayablesSy()));
+        financialInputRequestString.setTradePayablesTy(convertValue(financialInputRequest.getTradePayablesTy()));
+        
+        financialInputRequestString.setOtherCurruntLiablitiesFy(convertValue(financialInputRequest.getOtherCurruntLiablitiesFy()));
+        financialInputRequestString.setOtherCurruntLiablitiesSy(convertValue(financialInputRequest.getOtherCurruntLiablitiesSy()));
+        financialInputRequestString.setOtherCurruntLiablitiesTy(convertValue(financialInputRequest.getOtherCurruntLiablitiesTy()));
+        
+        financialInputRequestString.setShortTermProvisionFy(convertValue(financialInputRequest.getShortTermProvisionFy()));
+        financialInputRequestString.setShortTermProvisionSy(convertValue(financialInputRequest.getShortTermProvisionSy()));
+        financialInputRequestString.setShortTermProvisionTy(convertValue(financialInputRequest.getShortTermProvisionTy()));
+        
+        financialInputRequestString.setGrossBlockFy(convertValue(financialInputRequest.getGrossBlockFy()));
+        financialInputRequestString.setGrossBlockSy(convertValue(financialInputRequest.getGrossBlockSy()));
+        financialInputRequestString.setGrossBlockTy(convertValue(financialInputRequest.getGrossBlockTy()));
+        
+        financialInputRequestString.setLessAccumulatedDepreFy(convertValue(financialInputRequest.getLessAccumulatedDepreFy()));
+        financialInputRequestString.setLessAccumulatedDepreSy(convertValue(financialInputRequest.getLessAccumulatedDepreSy()));
+        financialInputRequestString.setLessAccumulatedDepreTy(convertValue(financialInputRequest.getLessAccumulatedDepreTy()));
+        
+        financialInputRequestString.setImpairmentofAssetFy(convertValue(financialInputRequest.getImpairmentofAssetFy()));
+        financialInputRequestString.setImpairmentofAssetSy(convertValue(financialInputRequest.getImpairmentofAssetSy()));
+        financialInputRequestString.setImpairmentofAssetTy(convertValue(financialInputRequest.getImpairmentofAssetTy()));
+        
+        financialInputRequestString.setCapitalWorkInProgressFy(convertValue(financialInputRequest.getCapitalWorkInProgressFy()));
+        financialInputRequestString.setCapitalWorkInProgressSy(convertValue(financialInputRequest.getCapitalWorkInProgressSy()));
+        financialInputRequestString.setCapitalWorkInProgressTy(convertValue(financialInputRequest.getCapitalWorkInProgressTy()));
+        
+        financialInputRequestString.setIntengibleAssetsFy(convertValue(financialInputRequest.getIntengibleAssetsFy()));
+        financialInputRequestString.setIntengibleAssetsSy(convertValue(financialInputRequest.getIntengibleAssetsSy()));
+        financialInputRequestString.setIntengibleAssetsTy(convertValue(financialInputRequest.getIntengibleAssetsTy()));
+        
+        financialInputRequestString.setPreOperativeExpeFy(convertValue(financialInputRequest.getPreOperativeExpeFy()));
+        financialInputRequestString.setPreOperativeExpeSy(convertValue(financialInputRequest.getPreOperativeExpeSy()));
+        financialInputRequestString.setPreOperativeExpeTy(convertValue(financialInputRequest.getPreOperativeExpeTy()));
+        
+        financialInputRequestString.setAssetInTransitFy(convertValue(financialInputRequest.getAssetInTransitFy()));
+        financialInputRequestString.setAssetInTransitSy(convertValue(financialInputRequest.getAssetInTransitSy()));
+        financialInputRequestString.setAssetInTransitTy(convertValue(financialInputRequest.getAssetInTransitTy()));
+        
+        financialInputRequestString.setInvestmentInSubsidiariesFy(convertValue(financialInputRequest.getInvestmentInSubsidiariesFy()));
+        financialInputRequestString.setInvestmentInSubsidiariesSy(convertValue(financialInputRequest.getInvestmentInSubsidiariesSy()));
+        financialInputRequestString.setInvestmentInSubsidiariesTy(convertValue(financialInputRequest.getInvestmentInSubsidiariesTy()));
+        
+        financialInputRequestString.setOtherInvestmentFy(convertValue(financialInputRequest.getOtherInvestmentFy()));
+        financialInputRequestString.setOtherInvestmentSy(convertValue(financialInputRequest.getOtherInvestmentSy()));
+        financialInputRequestString.setOtherInvestmentTy(convertValue(financialInputRequest.getOtherInvestmentTy()));
+        
+        financialInputRequestString.setLongTermLoansAndAdvaFy(convertValue(financialInputRequest.getLongTermLoansAndAdvaFy()));
+        financialInputRequestString.setLongTermLoansAndAdvaSy(convertValue(financialInputRequest.getLongTermLoansAndAdvaSy()));
+        financialInputRequestString.setLongTermLoansAndAdvaTy(convertValue(financialInputRequest.getLongTermLoansAndAdvaTy()));
+        
+        financialInputRequestString.setOtheNonCurruntAssetFy(convertValue(financialInputRequest.getOtheNonCurruntAssetFy()));
+        financialInputRequestString.setOtheNonCurruntAssetSy(convertValue(financialInputRequest.getOtheNonCurruntAssetSy()));
+        financialInputRequestString.setOtheNonCurruntAssetTy(convertValue(financialInputRequest.getOtheNonCurruntAssetTy()));
+        
+        financialInputRequestString.setInventoriesFy(convertValue(financialInputRequest.getInventoriesFy()));
+        financialInputRequestString.setInventoriesSy(convertValue(financialInputRequest.getInventoriesSy()));
+        financialInputRequestString.setInventoriesTy(convertValue(financialInputRequest.getInventoriesTy()));
+        
+        financialInputRequestString.setSundryDebtorsFy(convertValue(financialInputRequest.getSundryDebtorsFy()));
+        financialInputRequestString.setSundryDebtorsSy(convertValue(financialInputRequest.getSundryDebtorsSy()));
+        financialInputRequestString.setSundryDebtorsTy(convertValue(financialInputRequest.getSundryDebtorsTy()));
+        
+        financialInputRequestString.setCashAndBankFy(convertValue(financialInputRequest.getCashAndBankFy()));
+        financialInputRequestString.setCashAndBankSy(convertValue(financialInputRequest.getCashAndBankSy()));
+        financialInputRequestString.setCashAndBankTy(convertValue(financialInputRequest.getCashAndBankTy()));
+        
+        financialInputRequestString.setOtherCurruntAssetFy(convertValue(financialInputRequest.getOtherCurruntAssetFy()));
+        financialInputRequestString.setOtherCurruntAssetSy(convertValue(financialInputRequest.getOtherCurruntAssetSy()));
+        financialInputRequestString.setOtherCurruntAssetTy(convertValue(financialInputRequest.getOtherCurruntAssetTy()));
+        
+        financialInputRequestString.setShortTermLoansAdvancesFy(convertValue(financialInputRequest.getShortTermLoansAdvancesFy()));
+        financialInputRequestString.setShortTermLoansAdvancesSy(convertValue(financialInputRequest.getShortTermLoansAdvancesSy()));
+        financialInputRequestString.setShortTermLoansAdvancesTy(convertValue(financialInputRequest.getShortTermLoansAdvancesTy()));
+        
+        financialInputRequestString.setContingentLiablitiesFy(convertValue(financialInputRequest.getContingentLiablitiesFy()));
+        financialInputRequestString.setContingentLiablitiesSy(convertValue(financialInputRequest.getContingentLiablitiesSy()));
+        financialInputRequestString.setContingentLiablitiestTy(convertValue(financialInputRequest.getContingentLiablitiestTy()));
 		
-		financialInputRequestString.setEmployeeCostFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getEmployeeCostFy())? String.format ("%.2f", financialInputRequest.getEmployeeCostFy()): "0");
-		financialInputRequestString.setEmployeeCostSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getEmployeeCostSy())? String.format ("%.2f", financialInputRequest.getEmployeeCostSy()): "0");
-		financialInputRequestString.setEmployeeCostTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getEmployeeCostTy())? String.format ("%.2f", financialInputRequest.getEmployeeCostTy()): "0");
 		
-		financialInputRequestString.setGeneralAndAdminExpeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGeneralAndAdminExpeFy())? String.format ("%.2f", financialInputRequest.getGeneralAndAdminExpeFy()): "0");
-		financialInputRequestString.setGeneralAndAdminExpeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGeneralAndAdminExpeSy())? String.format ("%.2f", financialInputRequest.getGeneralAndAdminExpeSy()): "0");
-		financialInputRequestString.setGeneralAndAdminExpeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGeneralAndAdminExpeTy())? String.format ("%.2f", financialInputRequest.getGeneralAndAdminExpeTy()): "0");
-		
-		financialInputRequestString.setSellingAndDistriExpeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSellingAndDistriExpeFy())? String.format ("%.2f", financialInputRequest.getSellingAndDistriExpeFy()): "0");
-		financialInputRequestString.setSellingAndDistriExpeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSellingAndDistriExpeSy())? String.format ("%.2f", financialInputRequest.getSellingAndDistriExpeSy()): "0");		
-		financialInputRequestString.setSellingAndDistriExpeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSellingAndDistriExpeTy())? String.format ("%.2f", financialInputRequest.getSellingAndDistriExpeTy()): "0");
-		
-		financialInputRequestString.setMiscelExpeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMiscelExpeFy())? String.format ("%.2f", financialInputRequest.getMiscelExpeFy()): "0");
-		financialInputRequestString.setMiscelExpeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMiscelExpeSy())? String.format ("%.2f", financialInputRequest.getMiscelExpeSy()): "0");		
-		financialInputRequestString.setMiscelExpeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMiscelExpeTy())? String.format ("%.2f", financialInputRequest.getMiscelExpeTy()): "0");
-		
-		financialInputRequestString.setLessExpeCapitaFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExpeCapitaFy())? String.format ("%.2f", financialInputRequest.getLessExpeCapitaFy()): "0");
-		financialInputRequestString.setLessExpeCapitaSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExpeCapitaSy())? String.format ("%.2f", financialInputRequest.getLessExpeCapitaSy()): "0");		
-		financialInputRequestString.setLessExpeCapitaTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessExpeCapitaTy())? String.format ("%.2f", financialInputRequest.getLessExpeCapitaTy()): "0");
-		
-		financialInputRequestString.setOtherIncomeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherIncomeFy())? String.format ("%.2f", financialInputRequest.getOtherIncomeFy()): "0");
-		financialInputRequestString.setOtherIncomeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherIncomeSy())? String.format ("%.2f", financialInputRequest.getOtherIncomeSy()): "0");
-		financialInputRequestString.setOtherIncomeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherIncomeTy())? String.format ("%.2f", financialInputRequest.getOtherIncomeTy()): "0");
-		
-		financialInputRequestString.setInterestFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInterestFy())? String.format ("%.2f", financialInputRequest.getInterestFy()): "0");
-		financialInputRequestString.setInterestSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInterestSy())? String.format ("%.2f", financialInputRequest.getInterestSy()): "0");
-		financialInputRequestString.setInterestTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInterestTy())? String.format ("%.2f", financialInputRequest.getInterestTy()): "0");
-		
-		financialInputRequestString.setDepriciationFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDepriciationFy())? String.format ("%.2f", financialInputRequest.getDepriciationFy()): "0");
-		financialInputRequestString.setDepriciationSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDepriciationSy())? String.format ("%.2f", financialInputRequest.getDepriciationSy()): "0");
-		financialInputRequestString.setDepriciationTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDepriciationTy())? String.format ("%.2f", financialInputRequest.getDepriciationTy()): "0");
-		
-		financialInputRequestString.setExceptionalIncomeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getExceptionalIncomeFy())? String.format ("%.2f", financialInputRequest.getExceptionalIncomeFy()): "0");
-		financialInputRequestString.setExceptionalIncomeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getExceptionalIncomeSy())? String.format ("%.2f", financialInputRequest.getExceptionalIncomeSy()): "0");
-		financialInputRequestString.setExceptionalIncomeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getExceptionalIncomeTy())? String.format ("%.2f", financialInputRequest.getExceptionalIncomeTy()): "0");
-		
-		financialInputRequestString.setProvisionForTaxFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProvisionForTaxFy())? String.format ("%.2f", financialInputRequest.getProvisionForTaxFy()): "0");
-		financialInputRequestString.setProvisionForTaxSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProvisionForTaxSy())? String.format ("%.2f", financialInputRequest.getProvisionForTaxSy()): "0");
-		financialInputRequestString.setProvisionForTaxTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProvisionForTaxTy())? String.format ("%.2f", financialInputRequest.getProvisionForTaxTy()): "0");
-		
-		financialInputRequestString.setDividendPayOutFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutFy())? String.format ("%.2f", financialInputRequest.getDividendPayOutFy()): "0");
-		financialInputRequestString.setDividendPayOutSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutSy())? String.format ("%.2f", financialInputRequest.getDividendPayOutSy()): "0");
-		financialInputRequestString.setDividendPayOutTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutTy())? String.format ("%.2f", financialInputRequest.getDividendPayOutTy()): "0");
-		
-		financialInputRequestString.setShareCapitalFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())? String.format ("%.2f", financialInputRequest.getShareCapitalFy()): "0");
-		financialInputRequestString.setShareCapitalSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())? String.format ("%.2f", financialInputRequest.getShareCapitalSy()): "0");
-		financialInputRequestString.setShareCapitalTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())? String.format ("%.2f", financialInputRequest.getShareCapitalTy()): "0");
-		
-		financialInputRequestString.setShareWarrantOutstandingsFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareWarrantOutstandingsFy())? String.format ("%.2f", financialInputRequest.getShareWarrantOutstandingsFy()): "0");
-		financialInputRequestString.setShareWarrantOutstandingsSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareWarrantOutstandingsSy())? String.format ("%.2f", financialInputRequest.getShareWarrantOutstandingsSy()): "0");
-		financialInputRequestString.setShareWarrantOutstandingsTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareWarrantOutstandingsTy())? String.format ("%.2f", financialInputRequest.getShareWarrantOutstandingsTy()): "0");
-		
-		financialInputRequestString.setRevalationReserveFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRevalationReserveFy())? String.format ("%.2f", financialInputRequest.getRevalationReserveFy()): "0");
-		financialInputRequestString.setRevalationReserveSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRevalationReserveSy())? String.format ("%.2f", financialInputRequest.getRevalationReserveSy()): "0");
-		financialInputRequestString.setRevalationReserveTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getRevalationReserveTy())? String.format ("%.2f", financialInputRequest.getRevalationReserveTy()): "0");
-		
-		financialInputRequestString.setOtherReserveAndSurplusFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherReserveAndSurplusFy())? String.format ("%.2f", financialInputRequest.getOtherReserveAndSurplusFy()): "0");
-		financialInputRequestString.setOtherReserveAndSurplusSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherReserveAndSurplusSy())? String.format ("%.2f", financialInputRequest.getOtherReserveAndSurplusSy()): "0");
-		financialInputRequestString.setOtherReserveAndSurplusTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherReserveAndSurplusTy())? String.format ("%.2f", financialInputRequest.getOtherReserveAndSurplusTy()): "0");
-		
-		financialInputRequestString.setMinorityInterestFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMinorityInterestFy())? String.format ("%.2f", financialInputRequest.getMinorityInterestFy()): "0");
-		financialInputRequestString.setMinorityInterestSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMinorityInterestSy())? String.format ("%.2f", financialInputRequest.getMinorityInterestSy()): "0");
-		financialInputRequestString.setMinorityInterestTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getMinorityInterestTy())? String.format ("%.2f", financialInputRequest.getMinorityInterestTy()): "0");
-		
-		financialInputRequestString.setSecuredLoansFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSecuredLoansFy())? String.format ("%.2f", financialInputRequest.getSecuredLoansFy()): "0");
-		financialInputRequestString.setSecuredLoansSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSecuredLoansSy())? String.format ("%.2f", financialInputRequest.getSecuredLoansSy()): "0");
-		financialInputRequestString.setSecuredLoansTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSecuredLoansTy())? String.format ("%.2f", financialInputRequest.getSecuredLoansTy()): "0");
-		
-		financialInputRequestString.setUnsecuredLoansPromotersFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansPromotersFy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansPromotersFy()): "0");
-		financialInputRequestString.setUnsecuredLoansPromotersSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansPromotersSy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansPromotersSy()): "0");
-		financialInputRequestString.setUnsecuredLoansPromotersTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansPromotersTy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansPromotersTy()): "0");
-		
-		financialInputRequestString.setUnsecuredLoansOthersFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansOthersFy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansOthersFy()): "0");
-		financialInputRequestString.setUnsecuredLoansOthersSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansOthersSy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansOthersSy()): "0");
-		financialInputRequestString.setUnsecuredLoansOthersTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getUnsecuredLoansOthersTy())? String.format ("%.2f", financialInputRequest.getUnsecuredLoansOthersTy()): "0");
-		
-		financialInputRequestString.setDeferredTaxLiablitiesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDeferredTaxLiablitiesFy())? String.format ("%.2f", financialInputRequest.getDeferredTaxLiablitiesFy()): "0");
-		financialInputRequestString.setDeferredTaxLiablitiesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDeferredTaxLiablitiesSy())? String.format ("%.2f", financialInputRequest.getDeferredTaxLiablitiesSy()): "0");
-		financialInputRequestString.setDeferredTaxLiablitiesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDeferredTaxLiablitiesTy())? String.format ("%.2f", financialInputRequest.getDeferredTaxLiablitiesTy()): "0");
-		
-		financialInputRequestString.setOtherLongTermLiablitiesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherLongTermLiablitiesFy())? String.format ("%.2f", financialInputRequest.getOtherLongTermLiablitiesFy()): "0");
-		financialInputRequestString.setOtherLongTermLiablitiesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherLongTermLiablitiesSy())? String.format ("%.2f", financialInputRequest.getOtherLongTermLiablitiesSy()): "0");
-		financialInputRequestString.setOtherLongTermLiablitiesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherLongTermLiablitiesTy())? String.format ("%.2f", financialInputRequest.getOtherLongTermLiablitiesTy()): "0");
-		
-		financialInputRequestString.setOtherBorrowingFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherBorrowingFy())? String.format ("%.2f", financialInputRequest.getOtherBorrowingFy()): "0");
-		financialInputRequestString.setOtherBorrowingSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherBorrowingSy())? String.format ("%.2f", financialInputRequest.getOtherBorrowingSy()): "0");
-		financialInputRequestString.setOtherBorrowingTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherBorrowingTy())? String.format ("%.2f", financialInputRequest.getOtherBorrowingTy()): "0");
-		
-		financialInputRequestString.setLongTermProvisionFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermProvisionFy())? String.format ("%.2f", financialInputRequest.getLongTermProvisionFy()): "0");
-		financialInputRequestString.setLongTermProvisionSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermProvisionSy())? String.format ("%.2f", financialInputRequest.getLongTermProvisionSy()): "0");
-		financialInputRequestString.setLongTermProvisionTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermProvisionTy())? String.format ("%.2f", financialInputRequest.getLongTermProvisionTy()): "0");
-
-		financialInputRequestString.setTradePayablesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getTradePayablesFy())? String.format ("%.2f", financialInputRequest.getTradePayablesFy()): "0");
-		financialInputRequestString.setTradePayablesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getTradePayablesSy())? String.format ("%.2f", financialInputRequest.getTradePayablesSy()): "0");
-		financialInputRequestString.setTradePayablesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getTradePayablesTy())? String.format ("%.2f", financialInputRequest.getTradePayablesTy()): "0");
-		
-		financialInputRequestString.setOtherCurruntLiablitiesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntLiablitiesFy())? String.format ("%.2f", financialInputRequest.getOtherCurruntLiablitiesFy()): "0");
-		financialInputRequestString.setOtherCurruntLiablitiesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntLiablitiesSy())? String.format ("%.2f", financialInputRequest.getOtherCurruntLiablitiesSy()): "0");
-		financialInputRequestString.setOtherCurruntLiablitiesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntLiablitiesTy())? String.format ("%.2f", financialInputRequest.getOtherCurruntLiablitiesTy()): "0");
-		
-		financialInputRequestString.setShortTermProvisionFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermProvisionFy())? String.format ("%.2f", financialInputRequest.getShortTermProvisionFy()): "0");
-		financialInputRequestString.setShortTermProvisionSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermProvisionSy())? String.format ("%.2f", financialInputRequest.getShortTermProvisionSy()): "0");
-		financialInputRequestString.setShortTermProvisionTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermProvisionTy())? String.format ("%.2f", financialInputRequest.getShortTermProvisionTy()): "0");
-		
-		financialInputRequestString.setGrossBlockFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockFy())? String.format ("%.2f", financialInputRequest.getGrossBlockFy()): "0");
-		financialInputRequestString.setGrossBlockSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockSy())? String.format ("%.2f", financialInputRequest.getGrossBlockSy()): "0");
-		financialInputRequestString.setGrossBlockTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getGrossBlockTy())? String.format ("%.2f", financialInputRequest.getGrossBlockTy()): "0");
-		
-		financialInputRequestString.setLessAccumulatedDepreFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessAccumulatedDepreFy())? String.format ("%.2f", financialInputRequest.getLessAccumulatedDepreFy()): "0");
-		financialInputRequestString.setLessAccumulatedDepreSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessAccumulatedDepreSy())? String.format ("%.2f", financialInputRequest.getLessAccumulatedDepreSy()): "0");
-		financialInputRequestString.setLessAccumulatedDepreTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLessAccumulatedDepreTy())? String.format ("%.2f", financialInputRequest.getLessAccumulatedDepreTy()): "0");
-		
-		financialInputRequestString.setImpairmentofAssetFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getImpairmentofAssetFy())? String.format ("%.2f", financialInputRequest.getImpairmentofAssetFy()): "0");
-		financialInputRequestString.setImpairmentofAssetSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getImpairmentofAssetSy())? String.format ("%.2f", financialInputRequest.getImpairmentofAssetSy()): "0");
-		financialInputRequestString.setImpairmentofAssetTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getImpairmentofAssetTy())? String.format ("%.2f", financialInputRequest.getImpairmentofAssetTy()): "0");
-		
-		financialInputRequestString.setCapitalWorkInProgressFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCapitalWorkInProgressFy())? String.format ("%.2f", financialInputRequest.getCapitalWorkInProgressFy()): "0");
-		financialInputRequestString.setCapitalWorkInProgressSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCapitalWorkInProgressSy())? String.format ("%.2f", financialInputRequest.getCapitalWorkInProgressSy()): "0");
-		financialInputRequestString.setCapitalWorkInProgressTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCapitalWorkInProgressTy())? String.format ("%.2f", financialInputRequest.getCapitalWorkInProgressTy()): "0");
-		
-		financialInputRequestString.setIntengibleAssetsFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIntengibleAssetsFy())? String.format ("%.2f", financialInputRequest.getIntengibleAssetsFy()): "0");
-		financialInputRequestString.setIntengibleAssetsSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIntengibleAssetsSy())? String.format ("%.2f", financialInputRequest.getIntengibleAssetsSy()): "0");
-		financialInputRequestString.setIntengibleAssetsTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getIntengibleAssetsTy())? String.format ("%.2f", financialInputRequest.getIntengibleAssetsTy()): "0");
-		
-		financialInputRequestString.setPreOperativeExpeFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPreOperativeExpeFy())? String.format ("%.2f", financialInputRequest.getPreOperativeExpeFy()): "0");
-		financialInputRequestString.setPreOperativeExpeSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPreOperativeExpeSy())? String.format ("%.2f", financialInputRequest.getPreOperativeExpeSy()): "0");
-		financialInputRequestString.setPreOperativeExpeTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getPreOperativeExpeTy())? String.format ("%.2f", financialInputRequest.getPreOperativeExpeTy()): "0");
-		
-		financialInputRequestString.setAssetInTransitFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getAssetInTransitFy())? String.format ("%.2f", financialInputRequest.getAssetInTransitFy()): "0");
-		financialInputRequestString.setAssetInTransitSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getAssetInTransitSy())? String.format ("%.2f", financialInputRequest.getAssetInTransitSy()): "0");
-		financialInputRequestString.setAssetInTransitTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getAssetInTransitTy())? String.format ("%.2f", financialInputRequest.getAssetInTransitTy()): "0");
-		
-		financialInputRequestString.setInvestmentInSubsidiariesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInvestmentInSubsidiariesFy())? String.format ("%.2f", financialInputRequest.getInvestmentInSubsidiariesFy()): "0");
-		financialInputRequestString.setInvestmentInSubsidiariesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInvestmentInSubsidiariesSy())? String.format ("%.2f", financialInputRequest.getInvestmentInSubsidiariesSy()): "0");
-		financialInputRequestString.setInvestmentInSubsidiariesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInvestmentInSubsidiariesTy())? String.format ("%.2f", financialInputRequest.getInvestmentInSubsidiariesTy()): "0");
-		
-		financialInputRequestString.setOtherInvestmentFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherInvestmentFy())? String.format ("%.2f", financialInputRequest.getOtherInvestmentFy()): "0");
-		financialInputRequestString.setOtherInvestmentSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherInvestmentSy())? String.format ("%.2f", financialInputRequest.getOtherInvestmentSy()): "0");
-		financialInputRequestString.setOtherInvestmentTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherInvestmentTy())? String.format ("%.2f", financialInputRequest.getOtherInvestmentTy()): "0");
-
-		financialInputRequestString.setLongTermLoansAndAdvaFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermLoansAndAdvaFy())? String.format ("%.2f", financialInputRequest.getLongTermLoansAndAdvaFy()): "0");
-		financialInputRequestString.setLongTermLoansAndAdvaSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermLoansAndAdvaSy())? String.format ("%.2f", financialInputRequest.getLongTermLoansAndAdvaSy()): "0");
-		financialInputRequestString.setLongTermLoansAndAdvaTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getLongTermLoansAndAdvaTy())? String.format ("%.2f", financialInputRequest.getLongTermLoansAndAdvaTy()): "0");
-		
-		financialInputRequestString.setOtheNonCurruntAssetFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtheNonCurruntAssetFy())? String.format ("%.2f", financialInputRequest.getOtheNonCurruntAssetFy()): "0");
-		financialInputRequestString.setOtheNonCurruntAssetSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtheNonCurruntAssetSy())? String.format ("%.2f", financialInputRequest.getOtheNonCurruntAssetSy()): "0");
-		financialInputRequestString.setOtheNonCurruntAssetTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtheNonCurruntAssetTy())? String.format ("%.2f", financialInputRequest.getOtheNonCurruntAssetTy()): "0");
-		
-		financialInputRequestString.setInventoriesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInventoriesFy())? String.format ("%.2f", financialInputRequest.getInventoriesFy()): "0");
-		financialInputRequestString.setInventoriesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInventoriesSy())? String.format ("%.2f", financialInputRequest.getInventoriesSy()): "0");
-		financialInputRequestString.setInventoriesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getInventoriesTy())? String.format ("%.2f", financialInputRequest.getInventoriesTy()): "0");
-		
-		financialInputRequestString.setSundryDebtorsFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSundryDebtorsFy())? String.format ("%.2f", financialInputRequest.getSundryDebtorsFy()): "0");
-		financialInputRequestString.setSundryDebtorsSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSundryDebtorsSy())? String.format ("%.2f", financialInputRequest.getSundryDebtorsSy()): "0");
-		financialInputRequestString.setSundryDebtorsTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getSundryDebtorsTy())? String.format ("%.2f", financialInputRequest.getSundryDebtorsTy()): "0");
-		
-		financialInputRequestString.setCashAndBankFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCashAndBankFy())? String.format ("%.2f", financialInputRequest.getCashAndBankFy()): "0");
-		financialInputRequestString.setCashAndBankSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCashAndBankSy())? String.format ("%.2f", financialInputRequest.getCashAndBankSy()): "0");
-		financialInputRequestString.setCashAndBankTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getCashAndBankTy())? String.format ("%.2f", financialInputRequest.getCashAndBankTy()): "0");
-		
-		financialInputRequestString.setOtherCurruntAssetFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntAssetFy())? String.format ("%.2f", financialInputRequest.getOtherCurruntAssetFy()): "0");
-		financialInputRequestString.setOtherCurruntAssetSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntAssetSy())? String.format ("%.2f", financialInputRequest.getOtherCurruntAssetSy()): "0");
-		financialInputRequestString.setOtherCurruntAssetTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getOtherCurruntAssetTy())? String.format ("%.2f", financialInputRequest.getOtherCurruntAssetTy()): "0");
-		
-		financialInputRequestString.setShortTermLoansAdvancesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermLoansAdvancesFy())? String.format ("%.2f", financialInputRequest.getShortTermLoansAdvancesFy()): "0");
-		financialInputRequestString.setShortTermLoansAdvancesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermLoansAdvancesSy())? String.format ("%.2f", financialInputRequest.getShortTermLoansAdvancesSy()): "0");
-		financialInputRequestString.setShortTermLoansAdvancesTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShortTermLoansAdvancesTy())? String.format ("%.2f", financialInputRequest.getShortTermLoansAdvancesTy()): "0");
-		
-		financialInputRequestString.setContingentLiablitiesFy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getContingentLiablitiesFy())? String.format ("%.2f", financialInputRequest.getContingentLiablitiesFy()): "0");
-		financialInputRequestString.setContingentLiablitiesSy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getContingentLiablitiesSy())? String.format ("%.2f", financialInputRequest.getContingentLiablitiesSy()): "0");
-		financialInputRequestString.setContingentLiablitiestTy(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getContingentLiablitiestTy())? String.format ("%.2f", financialInputRequest.getContingentLiablitiestTy()): "0");
 		
 		//Profit & Loss Statement
-		financialInputRequestString.setNetSaleFy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy())));
-		financialInputRequestString.setNetSaleSy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy())));
-		financialInputRequestString.setNetSaleTy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getGrossSalesTy(), financialInputRequest.getLessExciseDuityTy())));
-		financialInputRequestString.setTotalExpenditureFy(String.format ("%.2f", CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockFy(),financialInputRequest.getRawMaterialConsumedFy(),financialInputRequest.getPowerAndFuelCostFy(),financialInputRequest.getEmployeeCostFy(), financialInputRequest.getGeneralAndAdminExpeFy(),financialInputRequest.getSellingAndDistriExpeFy(),financialInputRequest.getMiscelExpeFy()), financialInputRequest.getLessExpeCapitaFy())));
-		financialInputRequestString.setTotalExpenditureSy(String.format ("%.2f", CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockSy(),financialInputRequest.getRawMaterialConsumedSy(),financialInputRequest.getPowerAndFuelCostSy(),financialInputRequest.getEmployeeCostSy(), financialInputRequest.getGeneralAndAdminExpeSy(),financialInputRequest.getSellingAndDistriExpeSy(),financialInputRequest.getMiscelExpeSy()), financialInputRequest.getLessExpeCapitaSy())));
-		financialInputRequestString.setTotalExpenditureTy(String.format ("%.2f", CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockTy(),financialInputRequest.getRawMaterialConsumedTy(),financialInputRequest.getPowerAndFuelCostTy(),financialInputRequest.getEmployeeCostTy(), financialInputRequest.getGeneralAndAdminExpeTy(),financialInputRequest.getSellingAndDistriExpeTy(),financialInputRequest.getMiscelExpeTy()), financialInputRequest.getLessExpeCapitaTy())));
-		financialInputRequestString.setOperatingProfitExclOiFy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getNetSaleFy(),financialInputRequest.getTotalExpenditureFy())));
-		financialInputRequestString.setOperatingProfitExclOiSy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getNetSaleSy(),financialInputRequest.getTotalExpenditureSy())));
-		financialInputRequestString.setOperatingProfitExclOiTy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getNetSaleTy(),financialInputRequest.getTotalExpenditureTy())));
-		financialInputRequestString.setOperatingProfitEbitadOiFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiFy(),financialInputRequest.getOtherIncomeFy())));
-		financialInputRequestString.setOperatingProfitEbitadOiSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiSy(),financialInputRequest.getOtherIncomeSy())));
-		financialInputRequestString.setOperatingProfitEbitadOiTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiTy(),financialInputRequest.getOtherIncomeTy())));
-		financialInputRequestString.setPbdtFy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(), financialInputRequest.getInterestFy())));
-		financialInputRequestString.setPbdtSy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(), financialInputRequest.getInterestSy())));
-		financialInputRequestString.setPbdtTy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(), financialInputRequest.getInterestTy())));
-		financialInputRequestString.setProfitBeforeTaxationFy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getPbdtFy(), financialInputRequest.getDepriciationFy())));
-		financialInputRequestString.setProfitBeforeTaxationSy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getPbdtSy(), financialInputRequest.getDepriciationSy())));
-		financialInputRequestString.setProfitBeforeTaxationTy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getPbdtTy(), financialInputRequest.getDepriciationTy())));
-		financialInputRequestString.setProfitBeforeTaxFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationFy(), financialInputRequest.getExceptionalIncomeFy())));
-		financialInputRequestString.setProfitBeforeTaxSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy())));
-		financialInputRequestString.setProfitBeforeTaxTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy())));
-		financialInputRequestString.setProfitAfterTaxFy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())));
-		financialInputRequestString.setProfitAfterTaxSy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())));
-		financialInputRequestString.setProfitAfterTaxTy(String.format ("%.2f", CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())));
+		financialInputRequestString.setNetSaleFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy())));
+		financialInputRequestString.setNetSaleSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy())));
+		financialInputRequestString.setNetSaleTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesTy(), financialInputRequest.getLessExciseDuityTy())));
+		financialInputRequestString.setTotalExpenditureFy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockFy(),financialInputRequest.getRawMaterialConsumedFy(),financialInputRequest.getPowerAndFuelCostFy(),financialInputRequest.getEmployeeCostFy(), financialInputRequest.getGeneralAndAdminExpeFy(),financialInputRequest.getSellingAndDistriExpeFy(),financialInputRequest.getMiscelExpeFy()), financialInputRequest.getLessExpeCapitaFy())));
+		financialInputRequestString.setTotalExpenditureSy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockSy(),financialInputRequest.getRawMaterialConsumedSy(),financialInputRequest.getPowerAndFuelCostSy(),financialInputRequest.getEmployeeCostSy(), financialInputRequest.getGeneralAndAdminExpeSy(),financialInputRequest.getSellingAndDistriExpeSy(),financialInputRequest.getMiscelExpeSy()), financialInputRequest.getLessExpeCapitaSy())));
+		financialInputRequestString.setTotalExpenditureTy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockTy(),financialInputRequest.getRawMaterialConsumedTy(),financialInputRequest.getPowerAndFuelCostTy(),financialInputRequest.getEmployeeCostTy(), financialInputRequest.getGeneralAndAdminExpeTy(),financialInputRequest.getSellingAndDistriExpeTy(),financialInputRequest.getMiscelExpeTy()), financialInputRequest.getLessExpeCapitaTy())));
+		financialInputRequestString.setOperatingProfitExclOiFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleFy(),financialInputRequest.getTotalExpenditureFy())));
+		financialInputRequestString.setOperatingProfitExclOiSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleSy(),financialInputRequest.getTotalExpenditureSy())));
+		financialInputRequestString.setOperatingProfitExclOiTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleTy(),financialInputRequest.getTotalExpenditureTy())));
+		financialInputRequestString.setOperatingProfitEbitadOiFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiFy(),financialInputRequest.getOtherIncomeFy())));
+		financialInputRequestString.setOperatingProfitEbitadOiSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiSy(),financialInputRequest.getOtherIncomeSy())));
+		financialInputRequestString.setOperatingProfitEbitadOiTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiTy(),financialInputRequest.getOtherIncomeTy())));
+		financialInputRequestString.setPbdtFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(), financialInputRequest.getInterestFy())));
+		financialInputRequestString.setPbdtSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(), financialInputRequest.getInterestSy())));
+		financialInputRequestString.setPbdtTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(), financialInputRequest.getInterestTy())));
+		financialInputRequestString.setProfitBeforeTaxationFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtFy(), financialInputRequest.getDepriciationFy())));
+		financialInputRequestString.setProfitBeforeTaxationSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtSy(), financialInputRequest.getDepriciationSy())));
+		financialInputRequestString.setProfitBeforeTaxationTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtTy(), financialInputRequest.getDepriciationTy())));
+		financialInputRequestString.setProfitBeforeTaxFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationFy(), financialInputRequest.getExceptionalIncomeFy())));
+		financialInputRequestString.setProfitBeforeTaxSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy())));
+		financialInputRequestString.setProfitBeforeTaxTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy())));
+		financialInputRequestString.setProfitAfterTaxFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())));
+		financialInputRequestString.setProfitAfterTaxSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())));
+		financialInputRequestString.setProfitAfterTaxTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())));
 		
 		
 		if(financialInputRequest.getDividendPayOutFy() == 0)
 			financialInputRequestString.setEquityDividendFy("0.0");
 		else
-			financialInputRequestString.setEquityDividendFy(String.format ("%.2f", (financialInputRequest.getDividendPayOutFy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
+			financialInputRequestString.setEquityDividendFy(convertValue((financialInputRequest.getDividendPayOutFy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		
 		if(financialInputRequest.getDividendPayOutSy() == 0)
 			financialInputRequestString.setEquityDividendSy("0.0");
 		else
-			financialInputRequestString.setEquityDividendSy(String.format ("%.2f", financialInputRequest.getDividendPayOutSy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy()));
+			financialInputRequestString.setEquityDividendSy(convertValue(financialInputRequest.getDividendPayOutSy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy()));
 		
 		if(financialInputRequest.getDividendPayOutTy() == 0)
 			financialInputRequestString.setEquityDividendTy("0.0");
 		else
-			financialInputRequest.setEquityDividendTy(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy());
+			financialInputRequestString.setEquityDividendTy(convertValue(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy()));
 		
 		if(financialInputRequest.getShareCapitalFy() == 0.0 ) {
 			financialInputRequestString.setEarningPerShareFy("0.0");
 		}else {
-			financialInputRequestString.setEarningPerShareFy(String.format ("%.2f", ((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
+			financialInputRequestString.setEarningPerShareFy(convertValue(((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		}
 		if(financialInputRequest.getShareCapitalSy() == 0.0 ) {
 			financialInputRequestString.setEarningPerShareSy("0.0");
 		}else {
-			financialInputRequestString.setEarningPerShareSy(String.format ("%.2f", ((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
+			financialInputRequestString.setEarningPerShareSy(convertValue(((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
 		}
 		if(financialInputRequest.getShareCapitalTy() == 0.0 ) {
 			financialInputRequestString.setEarningPerShareTy("0.0");
 		}else {
-			financialInputRequestString.setEarningPerShareTy(String.format ("%.2f", ((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
+			financialInputRequestString.setEarningPerShareTy(convertValue(((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
 		}
 		
 		
 		//Balance Sheet -Equities and Liabilities
-		financialInputRequestString.setShareHolderFundsFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy(),financialInputRequest.getRevalationReserveFy(),financialInputRequest.getOtherReserveAndSurplusFy())));
-		financialInputRequestString.setShareHolderFundsSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareCapitalSy(),financialInputRequest.getShareWarrantOutstandingsSy(),financialInputRequest.getRevalationReserveSy(),financialInputRequest.getOtherReserveAndSurplusSy())));
-		financialInputRequestString.setShareHolderFundsTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareCapitalTy(),financialInputRequest.getShareWarrantOutstandingsTy(),financialInputRequest.getRevalationReserveTy(),financialInputRequest.getOtherReserveAndSurplusTy())));
-		financialInputRequestString.setTotalNonCurruntLiablitiesFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getMinorityInterestFy(), financialInputRequest.getSecuredLoansFy(), financialInputRequest.getUnsecuredLoansOthersFy(),financialInputRequest.getUnsecuredLoansPromotersFy(),financialInputRequest.getDeferredTaxLiablitiesFy(),financialInputRequest.getOtherLongTermLiablitiesFy(),financialInputRequest.getOtherBorrowingFy(),financialInputRequest.getLongTermProvisionFy())));
-		financialInputRequestString.setTotalNonCurruntLiablitiesSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getMinorityInterestSy(), financialInputRequest.getSecuredLoansSy(), financialInputRequest.getUnsecuredLoansOthersSy(),financialInputRequest.getUnsecuredLoansPromotersSy(),financialInputRequest.getDeferredTaxLiablitiesSy(),financialInputRequest.getOtherLongTermLiablitiesSy(),financialInputRequest.getOtherBorrowingSy(),financialInputRequest.getLongTermProvisionSy())));
-		financialInputRequestString.setTotalNonCurruntLiablitiesTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getMinorityInterestTy(), financialInputRequest.getSecuredLoansTy(), financialInputRequest.getUnsecuredLoansOthersTy(),financialInputRequest.getUnsecuredLoansPromotersTy(),financialInputRequest.getDeferredTaxLiablitiesTy(),financialInputRequest.getOtherLongTermLiablitiesTy(),financialInputRequest.getOtherBorrowingTy(),financialInputRequest.getLongTermProvisionTy())));
-		financialInputRequestString.setTotalCurruntLiablitiesFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getTradePayablesFy(), financialInputRequest.getOtherCurruntLiablitiesFy(), financialInputRequest.getShortTermProvisionFy())));
-		financialInputRequestString.setTotalCurruntLiablitiesSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getTradePayablesSy(), financialInputRequest.getOtherCurruntLiablitiesSy(), financialInputRequest.getShortTermProvisionSy())));
-		financialInputRequestString.setTotalCurruntLiablitiesTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(), financialInputRequest.getShortTermProvisionTy())));
-		financialInputRequestString.setTotalLiablitiesFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy())));
-		financialInputRequestString.setTotalLiablitiesSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy())));
-		financialInputRequestString.setTotalLiablitiesTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy())));
+		financialInputRequestString.setShareHolderFundsFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy(),financialInputRequest.getRevalationReserveFy(),financialInputRequest.getOtherReserveAndSurplusFy())));
+		financialInputRequestString.setShareHolderFundsSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalSy(),financialInputRequest.getShareWarrantOutstandingsSy(),financialInputRequest.getRevalationReserveSy(),financialInputRequest.getOtherReserveAndSurplusSy())));
+		financialInputRequestString.setShareHolderFundsTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalTy(),financialInputRequest.getShareWarrantOutstandingsTy(),financialInputRequest.getRevalationReserveTy(),financialInputRequest.getOtherReserveAndSurplusTy())));
+		financialInputRequestString.setTotalNonCurruntLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestFy(), financialInputRequest.getSecuredLoansFy(), financialInputRequest.getUnsecuredLoansOthersFy(),financialInputRequest.getUnsecuredLoansPromotersFy(),financialInputRequest.getDeferredTaxLiablitiesFy(),financialInputRequest.getOtherLongTermLiablitiesFy(),financialInputRequest.getOtherBorrowingFy(),financialInputRequest.getLongTermProvisionFy())));
+		financialInputRequestString.setTotalNonCurruntLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestSy(), financialInputRequest.getSecuredLoansSy(), financialInputRequest.getUnsecuredLoansOthersSy(),financialInputRequest.getUnsecuredLoansPromotersSy(),financialInputRequest.getDeferredTaxLiablitiesSy(),financialInputRequest.getOtherLongTermLiablitiesSy(),financialInputRequest.getOtherBorrowingSy(),financialInputRequest.getLongTermProvisionSy())));
+		financialInputRequestString.setTotalNonCurruntLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestTy(), financialInputRequest.getSecuredLoansTy(), financialInputRequest.getUnsecuredLoansOthersTy(),financialInputRequest.getUnsecuredLoansPromotersTy(),financialInputRequest.getDeferredTaxLiablitiesTy(),financialInputRequest.getOtherLongTermLiablitiesTy(),financialInputRequest.getOtherBorrowingTy(),financialInputRequest.getLongTermProvisionTy())));
+		financialInputRequestString.setTotalCurruntLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesFy(), financialInputRequest.getOtherCurruntLiablitiesFy(), financialInputRequest.getShortTermProvisionFy())));
+		financialInputRequestString.setTotalCurruntLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesSy(), financialInputRequest.getOtherCurruntLiablitiesSy(), financialInputRequest.getShortTermProvisionSy())));
+		financialInputRequestString.setTotalCurruntLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(), financialInputRequest.getShortTermProvisionTy())));
+		financialInputRequestString.setTotalLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy())));
+		financialInputRequestString.setTotalLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy())));
+		financialInputRequestString.setTotalLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy())));
 		
 		//Balance Sheet -ASSETS
-		financialInputRequestString.setNetBlockFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
-		financialInputRequestString.setNetBlockSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
-		financialInputRequestString.setNetBlockTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
-		financialInputRequestString.setTotalNonCurruntAssetFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy())));
-		financialInputRequestString.setTotalNonCurruntAssetSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy())));
-		financialInputRequestString.setTotalNonCurruntAssetTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy())));
-		financialInputRequestString.setTotalCurruntAssetFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(), financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(), financialInputRequest.getShortTermLoansAdvancesFy())));
-		financialInputRequestString.setTotalCurruntAssetSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(), financialInputRequest.getSundryDebtorsSy(), financialInputRequest.getCashAndBankSy(), financialInputRequest.getOtherCurruntAssetSy(), financialInputRequest.getShortTermLoansAdvancesSy())));
-		financialInputRequestString.setTotalCurruntAssetTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(), financialInputRequest.getSundryDebtorsTy(), financialInputRequest.getCashAndBankTy(), financialInputRequest.getOtherCurruntAssetTy(), financialInputRequest.getShortTermLoansAdvancesTy())));
-		financialInputRequestString.setTotalAssetFy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy())));
-		financialInputRequestString.setTotalAssetSy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy())));
-		financialInputRequestString.setTotalAssetTy(String.format ("%.2f", CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy())));
-		financialInputRequestString.setBookValueFy(String.format ("%.2f", financialInputRequest.getShareHolderFundsFy()/(financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue())));
-		financialInputRequestString.setBookValueSy(String.format ("%.2f", financialInputRequest.getShareHolderFundsSy()/(financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue())));
-		financialInputRequestString.setBookValueTy(String.format ("%.2f", financialInputRequest.getShareHolderFundsTy()/(financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue())));
+		financialInputRequestString.setNetBlockFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
+		financialInputRequestString.setNetBlockSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
+		financialInputRequestString.setNetBlockTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
+		financialInputRequestString.setTotalNonCurruntAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy())));
+		financialInputRequestString.setTotalNonCurruntAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy())));
+		financialInputRequestString.setTotalNonCurruntAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy())));
+		financialInputRequestString.setTotalCurruntAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(), financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(), financialInputRequest.getShortTermLoansAdvancesFy())));
+		financialInputRequestString.setTotalCurruntAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(), financialInputRequest.getSundryDebtorsSy(), financialInputRequest.getCashAndBankSy(), financialInputRequest.getOtherCurruntAssetSy(), financialInputRequest.getShortTermLoansAdvancesSy())));
+		financialInputRequestString.setTotalCurruntAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(), financialInputRequest.getSundryDebtorsTy(), financialInputRequest.getCashAndBankTy(), financialInputRequest.getOtherCurruntAssetTy(), financialInputRequest.getShortTermLoansAdvancesTy())));
+		financialInputRequestString.setTotalAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy())));
+		financialInputRequestString.setTotalAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy())));
+		financialInputRequestString.setTotalAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy())));
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && financialInputRequest.getShareFaceValue() > 0) {
+			double totalValue = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
+			if(totalValue > 0) {
+				financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy()/totalValue));	
+			}
+			
+			double totalValueSy = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
+			if(totalValueSy > 0) {
+				financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy()/totalValueSy));	
+			}
+			
+			double totalValueTy = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
+			if(totalValueTy > 0) {
+				financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy()/totalValueTy));	
+			}
+			
+				
+		} else {
+			financialInputRequestString.setBookValueFy("0");
+			financialInputRequestString.setBookValueSy("0");
+			financialInputRequestString.setBookValueTy("0");
+		}
+		
+		
+		
 		return financialInputRequestString;
 	}
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? String.format ("%.2f", value): "0";
+	}
+	public Double checkDoubleNUll(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
 	}
 	
 	public static Object convertToString (Object obj) throws Exception {
