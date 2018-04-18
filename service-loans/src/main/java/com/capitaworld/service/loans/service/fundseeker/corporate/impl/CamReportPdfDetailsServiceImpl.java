@@ -69,6 +69,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
@@ -492,8 +493,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//IRR DATA
 		try {
 			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
-			Integer denomination =loanApplicationRequest.getDenominationId();
-			Long denominationValue = denomination.longValue();
+			Long denominationValue = Denomination.getById(loanApplicationRequest.getDenominationId()).getDigit();
 			Object financialInputRequest= calculateIRRScore(userId, applicationId, null, denominationValue);
 			map.put("financialInputRequest", !CommonUtils.isObjectNullOrEmpty(financialInputRequest) ? financialInputRequest : " ");
 			logger.info("Financial Input",financialInputRequest);

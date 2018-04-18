@@ -474,7 +474,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                 logger.error("Problem to get Data of Financial Arrangements Details {}", e);
             }
          
-            Long denomination=primaryCorporateDetail.getDenominationId().longValue();
+            Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
              
 			try {
 				FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null, denomination);
