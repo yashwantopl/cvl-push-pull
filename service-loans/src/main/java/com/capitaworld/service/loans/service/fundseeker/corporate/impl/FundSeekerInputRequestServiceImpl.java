@@ -15,7 +15,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
  import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
  import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
  import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
- import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 import org.slf4j.Logger;
@@ -59,6 +60,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     private ConnectClient connectClient;
 
     @Autowired
+    private CorporateApplicantService corporateApplicantService;
+
+    @Autowired
     private JpaTransactionManager jpaTransactionManager;
 
     @Override
@@ -83,6 +87,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             }
 
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
+
+            //----INDUSTRY SECTOR SUBSECTOR SAVE START
+            // industry data save
+            corporateApplicantService.saveIndustry(corporateApplicantDetail.getApplicationId().getId(), fundSeekerInputRequest.getIndustrylist());
+            // Sector data save
+            corporateApplicantService.saveSector(corporateApplicantDetail.getApplicationId().getId(), fundSeekerInputRequest.getSectorlist());
+            // sub sector save
+            corporateApplicantService.saveSubSector(corporateApplicantDetail.getApplicationId().getId(), fundSeekerInputRequest.getSubsectors());
+            //----INDUSTRY SECTOR SUBSECTOR SAVE END
 
             logger.info("getting primaryCorporateDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());

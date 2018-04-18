@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.corporate;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FundSeekerInputRequestResponse {
@@ -51,7 +52,12 @@ public class FundSeekerInputRequestResponse {
 
 
     ///////////
+    private List<Long> industrylist = Collections.emptyList();
 
+    private List<Long> sectorlist = Collections.emptyList();
+
+    private List<Long> subsectors = Collections.emptyList();
+    /////////
 
     public Long getUserId() {
         return userId;
@@ -177,5 +183,30 @@ public class FundSeekerInputRequestResponse {
 
     public void setPurposeOfLoanId(Integer purposeOfLoanId) {
         this.purposeOfLoanId = purposeOfLoanId;
+    }
+
+
+    public List<Long> getIndustrylist() {
+        return industrylist;
+    }
+
+    public void setIndustrylist(List<Long> industrylist) {
+        this.industrylist = industrylist;
+    }
+
+    public List<Long> getSectorlist() {
+        return sectorlist;
+    }
+
+    public void setSectorlist(List<Long> sectorlist) {
+        this.sectorlist = sectorlist;
+    }
+
+    public List<Long> getSubsectors() {
+        return subsectors;
+    }
+
+    public void setSubsectors(List<Long> subsectors) {
+        this.subsectors = subsectors;
     }
 }
