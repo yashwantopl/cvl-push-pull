@@ -56,10 +56,8 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
 
             // Setting Flag to applicantDetailFilled or not
-            loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantDetail.getApplicationId().getId(),
-                    finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false
-                            : corporateFinalInfoRequest.getFinalDetailsFilled());
-
+           // loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
             // Updating Profile Filled Count
            /* loanApplicationRepository.setProfileFilledCount(applicantDetail.getApplicationId().getId(), finalUserId,
                     corporateFinalInfoRequest.getDetailsFilledCount());*/
