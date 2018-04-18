@@ -33,6 +33,6 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	@Query("select o from OperatingStatementDetails o where o.loanApplicationMaster.id = :applicationId and o.isActive = true  and o.year IN :yearList and o.financialYearlyStatement =:financialYearlyStatement ORDER BY o.year ASC ")
 	public List<OperatingStatementDetails> getOperatingStatementDetailsByApplicationId(@Param("applicationId") Long applicationId, @Param("yearList") List<String> yearList, @Param("financialYearlyStatement") String financialYearlyStatement);
 	
-	@Query("select a.domesticSales , a.exportSales ,a.netProfitOrLoss, a.depreciation , a.provisionForDeferredTax from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
+	@Query("select a.domesticSales ,a.interest , a.exportSales ,a.netProfitOrLoss, a.depreciation , a.provisionForDeferredTax from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement );
 }
