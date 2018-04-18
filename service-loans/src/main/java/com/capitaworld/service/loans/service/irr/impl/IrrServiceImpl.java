@@ -309,6 +309,7 @@ public class IrrServiceImpl implements IrrService{
 		// TODO Auto-generated method stub
 		//JSONObject jSONObject = new JSONObject();
 		log.info("APPLICATION ID:::"+aplicationId);
+		log.info("DENO::"+denom);
 		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
@@ -1181,6 +1182,12 @@ public class IrrServiceImpl implements IrrService{
 		log.info("financialInputRequest.getDepriciationFy()::"+financialInputRequest.getDepriciationFy());
 		log.info("financialInputRequest.getDepriciationSy()::"+financialInputRequest.getDepriciationSy());
 		log.info("financialInputRequest.getDepriciationTy()::"+financialInputRequest.getDepriciationTy());
+
+		log.info("financialInputRequest.getPowerAndFuelCostFy()::"+financialInputRequest.getPowerAndFuelCostFy());
+		log.info("financialInputRequest.getPowerAndFuelCostSy()::"+financialInputRequest.getPowerAndFuelCostSy());
+		log.info("financialInputRequest.getPowerAndFuelCostTy()::"+financialInputRequest.getPowerAndFuelCostTy());
+
+		log.info("");
 
 		return financialInputRequest;
 	}
