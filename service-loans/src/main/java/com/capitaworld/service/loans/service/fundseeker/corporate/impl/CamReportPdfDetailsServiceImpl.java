@@ -1028,21 +1028,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return financialInputRequestString;
 	}
 	
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? String.format ("%.2f", value): "0";
+	}
+	
 	public static Object convertToString (Object obj) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
-		 logger.info("total length of object : "+fields.length);
 		 for(Field field : fields) {
 			 field.setAccessible(true);
              Object value = field.get(obj);
-             logger.info("field.getName()====" + field.getName());
              if(!CommonUtils.isObjectNullOrEmpty(value)) {
             	 if(value instanceof Double){
-            		 logger.info("Initial Value================>"+ value);
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
                     	 field.set(obj,value);        
-                    	 logger.info("Converted Value"+ value);
                 	 }
                  }
              }
@@ -1081,9 +1081,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
-			System.out.println(field);
 			Object value = field.get(obj);
-			System.out.println("value"+value);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
 				String a = StringEscapeUtils.escapeXml(value1.toString());
