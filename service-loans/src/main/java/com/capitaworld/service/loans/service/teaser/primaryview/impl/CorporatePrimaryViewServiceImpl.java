@@ -579,6 +579,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                 e.printStackTrace();
             }
 
+            documentRequest.setApplicationId(toApplicationId);
+            documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+            documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
+            try {
+                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+                corporatePrimaryViewResponse.setBankStatement(documentResponse.getDataList());
+            } catch (DocumentException e) {
+                e.printStackTrace();
+            }
 
         return corporatePrimaryViewResponse;
     }
