@@ -4484,6 +4484,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanApplicationMaster.setIsApplicantDetailsFilled(true);
 		loanApplicationMaster.setIsApplicantPrimaryFilled(true);
 		loanApplicationMaster.setIsPrimaryLocked(true);
+		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+			loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());	
+		}
+		
 		LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
 		if (!CommonUtils.isObjectNullOrEmpty(type)) {
 			loanApplicationMaster

@@ -155,3 +155,27 @@ alter table loan_applications.fp_working_capital_details add column ddr_flow int
 alter table loan_applications.fp_term_loan_details add column ddr_flow int(2) default null;
 
 ALTER TABLE `loan_applications`.`fs_loan_application_master` ADD COLUMN `np_org_id` BIGINT(20) NULL AFTER `approved_date`;
+
+alter table loan_applications.fp_working_capital_details add column individual_cibil int(2) default 0;
+alter table loan_applications.fp_working_capital_details add column is_individual_cibil_display bit(1) default 0;
+alter table loan_applications.fp_working_capital_details add column is_individual_cibil_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_working_capital_details add column commercial_cibil int(2) default 0;
+alter table loan_applications.fp_working_capital_details add column is_Commercial_cibil_display bit(1) default 0;
+alter table loan_applications.fp_working_capital_details add column is_Commercial_cibil_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_term_loan_details add column individual_cibil int(2) default 0;
+alter table loan_applications.fp_term_loan_details add column is_individual_cibil_display bit(1) default 0;
+alter table loan_applications.fp_term_loan_details add column is_individual_cibil_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_term_loan_details add column commercial_cibil int(2) default 0;
+alter table loan_applications.fp_term_loan_details add column is_Commercial_cibil_display bit(1) default 0;
+alter table loan_applications.fp_term_loan_details add column is_Commercial_cibil_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_unsecure_loan_details add column individual_cibil int(2) default 0;
+alter table loan_applications.fp_unsecure_loan_details add column is_individual_cibil_display bit(1) default 0;
+alter table loan_applications.fp_unsecure_loan_details add column is_individual_cibil_mandatory bit(1) default 0;
+
+alter table loan_applications.fp_unsecure_loan_details add column commercial_cibil int(2) default 0;
+alter table loan_applications.fp_unsecure_loan_details add column is_Commercial_cibil_display bit(1) default 0;
+alter table loan_applications.fp_unsecure_loan_details add column is_Commercial_cibil_mandatory bit(1) default 0;
