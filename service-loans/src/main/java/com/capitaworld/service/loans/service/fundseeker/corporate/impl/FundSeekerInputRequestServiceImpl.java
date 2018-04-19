@@ -117,7 +117,31 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
 
-            for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
+            try {
+                for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                    FinancialArrangementsDetail saveFinObj = null;
+                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if(CommonUtils.isObjectNullOrEmpty(saveFinObj)){
+                        saveFinObj = new FinancialArrangementsDetail();
+                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+
+                        saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveFinObj.setCreatedDate(new Date());
+                        saveFinObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
+                        saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+                        saveFinObj.setModifiedDate(new Date());
+                    }
+                    financialArrangementDetailsRepository.save(saveFinObj);
+                }
+            }catch (Exception e){
+                logger.info("Financial ===============> Throw Exception While Save Financial/Existing Details -------->");
+                e.printStackTrace();
+            }
+            /*for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
             {
                 FinancialArrangementsDetail financialArrangementsDetail=financialArrangementDetailsRepository.findOne(financialArrangementsDetailRequest.getId());
                 BeanUtils.copyProperties(financialArrangementsDetailRequest,financialArrangementsDetail);
@@ -126,12 +150,36 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 financialArrangementsDetail.setModifiedDate(new Date());
 
                 financialArrangementDetailsRepository.save(financialArrangementsDetail);
-            }
+            }*/
 
 
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 
-            for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
+            try {
+                for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+                    DirectorBackgroundDetail saveDirObj = null;
+                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
+                        saveDirObj = new DirectorBackgroundDetail();
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+
+                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setCreatedDate(new Date());
+                        saveDirObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
+                        saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setModifiedDate(new Date());
+                    }
+                    directorBackgroundDetailsRepository.save(saveDirObj);
+                }
+            }catch (Exception e){
+                logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
+                e.printStackTrace();
+            }
+            /*for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
             {
                 DirectorBackgroundDetail directorBackgroundDetail= directorBackgroundDetailsRepository.findOne(directorBackgroundDetailRequest.getId());
                 BeanUtils.copyProperties(directorBackgroundDetailRequest,directorBackgroundDetail);
@@ -140,7 +188,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 directorBackgroundDetail.setModifiedDate(new Date());
 
                 directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            }
+            }*/
 
             // save and commit transaction
 
