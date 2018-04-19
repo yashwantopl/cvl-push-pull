@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.CMADetailResponse;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
@@ -1307,7 +1308,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditCardsDetailRequest> detailRequests, Long userId,
+	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditRatingOrganizationDetailRequest> detailRequests, Long userId,
 			Long clientId, Long applicationId) throws Exception {
 		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
 				.concat("/" + applicationId + "/" + userId + "/" + clientId);
@@ -1315,7 +1316,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(
+			HttpEntity<List<CreditRatingOrganizationDetailRequest>> entity = new HttpEntity<List<CreditRatingOrganizationDetailRequest>>(
 					detailRequests, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
