@@ -257,8 +257,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMastersList = null;
 		}
 		
-		List<NhbsApplicationsResponse> nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
+		List<NhbsApplicationsResponse> nhbsApplicationsResponseList =null;
 		if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
+			nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
 			for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
@@ -382,12 +383,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
-		}else{
-			nhbsApplicationsResponseList = null;
+			if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
+				nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
+			}	
 		}
-		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-			nhbsApplicationsResponseList.sort(Comparator.comparing(NhbsApplicationsResponse::getApplicationDate));	
-		}		
+			
 		logger.info("exit from getListOfAssignedProposals()");
 		return nhbsApplicationsResponseList; 				
 	}
