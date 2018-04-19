@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingOrganizationDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
@@ -98,6 +100,23 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	@Override
+	public Boolean saveOrUpdateFromCibil(List<CreditRatingOrganizationDetailRequest> creditRatingList,
+			Long applicationId, Long userId) {
+		logger.info("Enter in saveOrUpdateFromCibil()");
+		creditRatingOrganizationDetailsRepository.inActive(userId, applicationId);
+		for (CreditRatingOrganizationDetailRequest req : creditRatingList) {
+			CreditRatingOrganizationDetail arrangementsDetail = new CreditRatingOrganizationDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setIsActive(true);
+			creditRatingOrganizationDetailsRepository.save(arrangementsDetail);
+		}
+		logger.info("Exit in saveOrUpdateFromCibil()");
+		return true;
 	}
 
 	@Override

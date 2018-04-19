@@ -18,5 +18,7 @@ public interface CreditRatingOrganizationDetailsService {
 	public List<Integer> getShortTermCreditRatingForTeaser(Long id,Long userId) throws Exception;
 	
 	public List<Integer> getLongTermCreditRatingForTeaser(Long id,Long userId) throws Exception;
+	
+	public Boolean saveOrUpdateFromCibil(List<CreditRatingOrganizationDetailRequest> creditRatingList,Long applicationId, Long userId);
 
 }
