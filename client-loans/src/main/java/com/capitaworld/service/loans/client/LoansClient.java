@@ -122,6 +122,7 @@ public class LoansClient {
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
 
@@ -1303,6 +1304,23 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException(url + " in Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditCardsDetailRequest> detailRequests, Long userId,
+			Long clientId, Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
+				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<CreditCardsDetailRequest>> entity = new HttpEntity<List<CreditCardsDetailRequest>>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(url + " in Loans service is not available");
 		}
 	}
 
