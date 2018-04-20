@@ -565,10 +565,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     		
     	
 
-            // get profile pic
+            //GET DOCUMENTS
             DocumentRequest documentRequest = new DocumentRequest();
-            documentRequest.setApplicationId(toApplicationId);
-            documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
             documentRequest.setApplicationId(toApplicationId);
             documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
             documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
@@ -578,9 +576,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
-
-            documentRequest.setApplicationId(toApplicationId);
-            documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
             documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
             try {
                 DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
@@ -588,7 +583,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
-
+            documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_COMPANY);
+            try {
+                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+                corporatePrimaryViewResponse.setCibilReport(documentResponse.getDataList());
+            } catch (DocumentException e) {
+                e.printStackTrace();
+            }
         return corporatePrimaryViewResponse;
     }
 }
