@@ -57,11 +57,19 @@ public class CorporatePrimaryViewResponse {
     private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
     private Object FinancialInputRequest;
     private List<Object> bankStatement;
+    private List<Object> cibilReport;
     
 
 
     
+    
 
+	public List<Object> getCibilReport() {
+		return cibilReport;
+	}
+	public void setCibilReport(List<Object> cibilReport) {
+		this.cibilReport = cibilReport;
+	}
 
 	/**
 	 * @return the bankStatement
