@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -38,6 +39,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRe
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
@@ -53,19 +55,57 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
+import com.capitaworld.service.oneform.enums.AccountingQuality;
+import com.capitaworld.service.oneform.enums.BorrowerInvoked;
+import com.capitaworld.service.oneform.enums.BusinessCommitment;
+import com.capitaworld.service.oneform.enums.BusinessExperience;
+import com.capitaworld.service.oneform.enums.ChequesReturned;
+import com.capitaworld.service.oneform.enums.CompanyConflicts;
+import com.capitaworld.service.oneform.enums.ComplianceConditions;
 import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.ConstructionContract;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
 import com.capitaworld.service.oneform.enums.CreditRatingTerm;
+import com.capitaworld.service.oneform.enums.CreditRecord;
+import com.capitaworld.service.oneform.enums.CumulativeOverdrawn;
 import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.CustomerQuality;
+import com.capitaworld.service.oneform.enums.DelayInstalments;
+import com.capitaworld.service.oneform.enums.DelaySubmission;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinancialRestructuring;
+import com.capitaworld.service.oneform.enums.FinancialSupport;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.IndustrialRelations;
+import com.capitaworld.service.oneform.enums.InfrastructureAvailability;
+import com.capitaworld.service.oneform.enums.Integrity;
+import com.capitaworld.service.oneform.enums.InternalControl;
+import com.capitaworld.service.oneform.enums.InternalReturn;
+import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
+import com.capitaworld.service.oneform.enums.ManagementCompetence;
+import com.capitaworld.service.oneform.enums.OperatingMargins;
+import com.capitaworld.service.oneform.enums.OrderBook;
+import com.capitaworld.service.oneform.enums.ProductSeasonality;
+import com.capitaworld.service.oneform.enums.ProjectedRatio;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.SensititivityAnalysis;
+import com.capitaworld.service.oneform.enums.StatusClearances;
+import com.capitaworld.service.oneform.enums.StatusFinancialClosure;
+import com.capitaworld.service.oneform.enums.SubmissionReports;
+import com.capitaworld.service.oneform.enums.SuccessionPlanning;
+import com.capitaworld.service.oneform.enums.SupplierQuality;
+import com.capitaworld.service.oneform.enums.SustainabilityProduct;
+import com.capitaworld.service.oneform.enums.TechnologyRisk;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.UnhedgedCurrency;
+import com.capitaworld.service.oneform.enums.VarianceSales;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -142,6 +182,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
     
     @Autowired
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
+    
+    @Autowired
+    private CorporateMcqService corporateMcqService;
 
     
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -646,6 +689,55 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			try {
+				CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(userId, toApplicationId);
+				
+				corporateFinalViewResponse.setTechnologyRiskId(corporateMcqRequest.getTechnologyRiskId() != null ? TechnologyRisk.getById(corporateMcqRequest.getTechnologyRiskId()).getValue() : null);
+				corporateFinalViewResponse.setCustomerQuality(corporateMcqRequest.getCustomerQuality() != null ? CustomerQuality.getById(corporateMcqRequest.getCustomerQuality()).getValue() : null);
+				corporateFinalViewResponse.setSupplierQuality(corporateMcqRequest.getSupplierQuality() != null ? SupplierQuality.getById(corporateMcqRequest.getSupplierQuality()).getValue() : null);
+				corporateFinalViewResponse.setSustainabilityProduct(corporateMcqRequest.getSustainabilityProduct() != null ? SustainabilityProduct.getById(corporateMcqRequest.getSustainabilityProduct()).getValue() : null);
+				corporateFinalViewResponse.setEmployeeRelations(corporateMcqRequest.getEmployeeRelations() != null ? IndustrialRelations.getById(corporateMcqRequest.getEmployeeRelations()).getValue() : null);
+				corporateFinalViewResponse.setProductSeasonality(corporateMcqRequest.getProductSeasonality() != null ? ProductSeasonality.getById(corporateMcqRequest.getProductSeasonality()).getValue() : null);
+				corporateFinalViewResponse.setImpactOnOperatingMargins(corporateMcqRequest.getImpactOnOperatingMargins() != null ? OperatingMargins.getById(corporateMcqRequest.getImpactOnOperatingMargins()).getValue() : null);
+				corporateFinalViewResponse.setOrderBookPosition(corporateMcqRequest.getOrderBookPosition() != null ? OrderBook.getById(corporateMcqRequest.getOrderBookPosition()).getValue() : null);
+				corporateFinalViewResponse.setEnvironmentalImpact(corporateMcqRequest.getEnvironmentalImpact() != null ? EnvironmentalImpact.getById(corporateMcqRequest.getEnvironmentalImpact()).getValue() : null);
+				corporateFinalViewResponse.setAccountingQuality(corporateMcqRequest.getAccountingQuality() != null ? AccountingQuality.getById(corporateMcqRequest.getAccountingQuality()).getValue() : null);
+				corporateFinalViewResponse.setFinancialRestructuringHistory(corporateMcqRequest.getFinancialRestructuringHistory() != null ? FinancialRestructuring.getById(corporateMcqRequest.getFinancialRestructuringHistory()).getValue() : null);
+				corporateFinalViewResponse.setIntegrity(corporateMcqRequest.getIntegrity() != null ? Integrity.getById(corporateMcqRequest.getIntegrity()).getValue() : null);
+				corporateFinalViewResponse.setBusinessCommitment(corporateMcqRequest.getBusinessCommitment() != null ? BusinessCommitment.getById(corporateMcqRequest.getBusinessCommitment()).getValue() : null);
+				corporateFinalViewResponse.setManagementCompetence(corporateMcqRequest.getManagementCompetence() != null ? ManagementCompetence.getById(corporateMcqRequest.getManagementCompetence()).getValue() : null);
+				corporateFinalViewResponse.setBusinessExperience(corporateMcqRequest.getBusinessExperience() != null ? BusinessExperience.getById(corporateMcqRequest.getBusinessExperience()).getValue() : null);
+				corporateFinalViewResponse.setSuccessionPlanning(corporateMcqRequest.getSuccessionPlanning() != null ? SuccessionPlanning.getById(corporateMcqRequest.getSuccessionPlanning()).getValue() : null);
+				corporateFinalViewResponse.setFinancialStrength(corporateMcqRequest.getFinancialStrength() != null ? FinancialSupport.getById(corporateMcqRequest.getFinancialStrength()).getValue() : null);
+				corporateFinalViewResponse.setAbilityToRaiseFunds(corporateMcqRequest.getAbilityToRaiseFunds() != null ? AbilityRaiseFunds.getById(corporateMcqRequest.getAbilityToRaiseFunds()).getValue() : null);
+				corporateFinalViewResponse.setIntraCompany(corporateMcqRequest.getIntraCompany() != null ? CompanyConflicts.getById(corporateMcqRequest.getIntraCompany()).getValue() : null);
+				corporateFinalViewResponse.setInternalControl(corporateMcqRequest.getInternalControl() != null ? InternalControl.getById(corporateMcqRequest.getInternalControl()).getValue() : null);
+				corporateFinalViewResponse.setCreditTrackRecord(corporateMcqRequest.getCreditTrackRecord() != null ? CreditRecord.getById(corporateMcqRequest.getCreditTrackRecord()).getValue() : null);
+				corporateFinalViewResponse.setStatusOfProjectClearances(corporateMcqRequest.getStatusOfProjectClearances() != null ? StatusClearances.getById(corporateMcqRequest.getStatusOfProjectClearances()).getValue() : null);
+				corporateFinalViewResponse.setStatusOfFinancialClosure(corporateMcqRequest.getStatusOfFinancialClosure() != null ? StatusFinancialClosure.getById(corporateMcqRequest.getStatusOfFinancialClosure()).getValue() : null);
+				corporateFinalViewResponse.setInfrastructureAvailability(corporateMcqRequest.getInfrastructureAvailability() != null ? InfrastructureAvailability.getById(corporateMcqRequest.getInfrastructureAvailability()).getValue() : null);
+				corporateFinalViewResponse.setConstructionContract(corporateMcqRequest.getConstructionContract() != null ? ConstructionContract.getById(corporateMcqRequest.getConstructionContract()).getValue() : null);
+				corporateFinalViewResponse.setNumberOfCheques(corporateMcqRequest.getNumberOfCheques() != null ? ChequesReturned.getById(corporateMcqRequest.getNumberOfCheques()).getValue() : null);
+				corporateFinalViewResponse.setNumberOfTimesDp(corporateMcqRequest.getNumberOfTimesDp() != null ? LimitOverdrawn.getById(corporateMcqRequest.getNumberOfTimesDp()).getValue() : null);
+				corporateFinalViewResponse.setCumulativeNoOfDaysDp(corporateMcqRequest.getCumulativeNoOfDaysDp() != null ? CumulativeOverdrawn.getById(corporateMcqRequest.getCumulativeNoOfDaysDp()).getValue() : null);
+				corporateFinalViewResponse.setComplianceWithSanctioned(corporateMcqRequest.getComplianceWithSanctioned() != null ? ComplianceConditions.getById(corporateMcqRequest.getComplianceWithSanctioned()).getValue() : null);
+				corporateFinalViewResponse.setProgressReports(corporateMcqRequest.getProgressReports() != null ? SubmissionReports.getById(corporateMcqRequest.getProgressReports()).getValue() : null);
+				corporateFinalViewResponse.setDelayInReceipt(corporateMcqRequest.getDelayInReceipt() != null ? DelayInstalments.getById(corporateMcqRequest.getDelayInReceipt()).getValue() : null);
+				corporateFinalViewResponse.setDelayInSubmission(corporateMcqRequest.getDelayInSubmission() != null ? DelaySubmission.getById(corporateMcqRequest.getDelayInSubmission()).getValue() : null);
+				corporateFinalViewResponse.setNumberOfLc(corporateMcqRequest.getNumberOfLc() != null ? BorrowerInvoked.getById(corporateMcqRequest.getNumberOfLc()).getValue() : null);
+				corporateFinalViewResponse.setUnhedgedForeignCurrency(corporateMcqRequest.getUnhedgedForeignCurrency() != null ? UnhedgedCurrency.getById(corporateMcqRequest.getUnhedgedForeignCurrency()).getValue() : null);
+				corporateFinalViewResponse.setProjectedDebtService(corporateMcqRequest.getProjectedDebtService() != null ? ProjectedRatio.getById(corporateMcqRequest.getProjectedDebtService()).getValue() : null);
+				corporateFinalViewResponse.setInternalRateReturn(corporateMcqRequest.getInternalRateReturn() != null ? InternalReturn.getById(corporateMcqRequest.getInternalRateReturn()).getValue() : null);
+				corporateFinalViewResponse.setSensititivityAnalysis(corporateMcqRequest.getSensititivityAnalysis() != null ? SensititivityAnalysis.getById(corporateMcqRequest.getSensititivityAnalysis()).getValue() : null);
+				corporateFinalViewResponse.setVarianceInProjectedSales(corporateMcqRequest.getVarianceInProjectedSales() != null ? VarianceSales.getById(corporateMcqRequest.getVarianceInProjectedSales()).getValue() : null);
+				
+			} catch (Exception e) {
+				logger.info("Error while getting mcq");
+				e.printStackTrace();
+			}
+				
+			
         return corporateFinalViewResponse;
 	}
 
