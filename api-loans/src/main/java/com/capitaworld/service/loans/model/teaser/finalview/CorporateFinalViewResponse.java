@@ -117,6 +117,24 @@ public class CorporateFinalViewResponse implements Serializable{
     private String varianceInProjectedSales;
     
     
+    private List<Object> auditedAnnualReport;
+    private List<Object> itr;
+    private List<Object> bankStatementFinalView;
+    private List<Object> sanctionLetter;
+    private List<Object> provisionalFinancials;
+    private List<Object> netWorthStatements ;
+    private List<Object> financialsOfHolding;
+    private List<Object> assessmentOrders;
+    private List<Object> momAndAoa;
+    private List<Object> gstCertificate;
+    private List<Object> certificateOfIncorporation;
+    private List<Object> copyOfPanCard;
+    private List<Object> panOfAllDirectors;
+    private List<Object> photosOfDirectors;
+    private List<Object> residenceAddOfDirectors;
+
+    
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -660,6 +678,186 @@ public class CorporateFinalViewResponse implements Serializable{
 	}
 	public void setVarianceInProjectedSales(String varianceInProjectedSales) {
 		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+	/**
+	 * @return the auditedAnnualReport
+	 */
+	public List<Object> getAuditedAnnualReport() {
+		return auditedAnnualReport;
+	}
+	/**
+	 * @param auditedAnnualReport the auditedAnnualReport to set
+	 */
+	public void setAuditedAnnualReport(List<Object> auditedAnnualReport) {
+		this.auditedAnnualReport = auditedAnnualReport;
+	}
+	/**
+	 * @return the itr
+	 */
+	public List<Object> getItr() {
+		return itr;
+	}
+	/**
+	 * @param itr the itr to set
+	 */
+	public void setItr(List<Object> itr) {
+		this.itr = itr;
+	}
+	/**
+	 * @return the bankStatementFinalView
+	 */
+	public List<Object> getBankStatementFinalView() {
+		return bankStatementFinalView;
+	}
+	/**
+	 * @param bankStatementFinalView the bankStatementFinalView to set
+	 */
+	public void setBankStatementFinalView(List<Object> bankStatementFinalView) {
+		this.bankStatementFinalView = bankStatementFinalView;
+	}
+	/**
+	 * @return the sanctionLetter
+	 */
+	public List<Object> getSanctionLetter() {
+		return sanctionLetter;
+	}
+	/**
+	 * @param sanctionLetter the sanctionLetter to set
+	 */
+	public void setSanctionLetter(List<Object> sanctionLetter) {
+		this.sanctionLetter = sanctionLetter;
+	}
+	/**
+	 * @return the provisionalFinancials
+	 */
+	public List<Object> getProvisionalFinancials() {
+		return provisionalFinancials;
+	}
+	/**
+	 * @param provisionalFinancials the provisionalFinancials to set
+	 */
+	public void setProvisionalFinancials(List<Object> provisionalFinancials) {
+		this.provisionalFinancials = provisionalFinancials;
+	}
+	/**
+	 * @return the netWorthStatements
+	 */
+	public List<Object> getNetWorthStatements() {
+		return netWorthStatements;
+	}
+	/**
+	 * @param netWorthStatements the netWorthStatements to set
+	 */
+	public void setNetWorthStatements(List<Object> netWorthStatements) {
+		this.netWorthStatements = netWorthStatements;
+	}
+	/**
+	 * @return the financialsOfHolding
+	 */
+	public List<Object> getFinancialsOfHolding() {
+		return financialsOfHolding;
+	}
+	/**
+	 * @param financialsOfHolding the financialsOfHolding to set
+	 */
+	public void setFinancialsOfHolding(List<Object> financialsOfHolding) {
+		this.financialsOfHolding = financialsOfHolding;
+	}
+	/**
+	 * @return the assessmentOrders
+	 */
+	public List<Object> getAssessmentOrders() {
+		return assessmentOrders;
+	}
+	/**
+	 * @param assessmentOrders the assessmentOrders to set
+	 */
+	public void setAssessmentOrders(List<Object> assessmentOrders) {
+		this.assessmentOrders = assessmentOrders;
+	}
+	/**
+	 * @return the momAndAoa
+	 */
+	public List<Object> getMomAndAoa() {
+		return momAndAoa;
+	}
+	/**
+	 * @param momAndAoa the momAndAoa to set
+	 */
+	public void setMomAndAoa(List<Object> momAndAoa) {
+		this.momAndAoa = momAndAoa;
+	}
+	/**
+	 * @return the gstCertificate
+	 */
+	public List<Object> getGstCertificate() {
+		return gstCertificate;
+	}
+	/**
+	 * @param gstCertificate the gstCertificate to set
+	 */
+	public void setGstCertificate(List<Object> gstCertificate) {
+		this.gstCertificate = gstCertificate;
+	}
+	/**
+	 * @return the certificateOfIncorporation
+	 */
+	public List<Object> getCertificateOfIncorporation() {
+		return certificateOfIncorporation;
+	}
+	/**
+	 * @param certificateOfIncorporation the certificateOfIncorporation to set
+	 */
+	public void setCertificateOfIncorporation(List<Object> certificateOfIncorporation) {
+		this.certificateOfIncorporation = certificateOfIncorporation;
+	}
+	/**
+	 * @return the copyOfPanCard
+	 */
+	public List<Object> getCopyOfPanCard() {
+		return copyOfPanCard;
+	}
+	/**
+	 * @param copyOfPanCard the copyOfPanCard to set
+	 */
+	public void setCopyOfPanCard(List<Object> copyOfPanCard) {
+		this.copyOfPanCard = copyOfPanCard;
+	}
+	/**
+	 * @return the panOfAllDirectors
+	 */
+	public List<Object> getPanOfAllDirectors() {
+		return panOfAllDirectors;
+	}
+	/**
+	 * @param panOfAllDirectors the panOfAllDirectors to set
+	 */
+	public void setPanOfAllDirectors(List<Object> panOfAllDirectors) {
+		this.panOfAllDirectors = panOfAllDirectors;
+	}
+	/**
+	 * @return the photosOfDirectors
+	 */
+	public List<Object> getPhotosOfDirectors() {
+		return photosOfDirectors;
+	}
+	/**
+	 * @param photosOfDirectors the photosOfDirectors to set
+	 */
+	public void setPhotosOfDirectors(List<Object> photosOfDirectors) {
+		this.photosOfDirectors = photosOfDirectors;
+	}
+	/**
+	 * @return the residenceAddOfDirectors
+	 */
+	public List<Object> getResidenceAddOfDirectors() {
+		return residenceAddOfDirectors;
+	}
+	/**
+	 * @param residenceAddOfDirectors the residenceAddOfDirectors to set
+	 */
+	public void setResidenceAddOfDirectors(List<Object> residenceAddOfDirectors) {
+		this.residenceAddOfDirectors = residenceAddOfDirectors;
 	}
     
     
