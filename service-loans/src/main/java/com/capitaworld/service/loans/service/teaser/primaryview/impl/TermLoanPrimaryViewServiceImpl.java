@@ -591,7 +591,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 //				}
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
 				if (financialArrangementsDetailRequest.getLoanType() != null){
-					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+					financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
 				}
 				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				//	financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
