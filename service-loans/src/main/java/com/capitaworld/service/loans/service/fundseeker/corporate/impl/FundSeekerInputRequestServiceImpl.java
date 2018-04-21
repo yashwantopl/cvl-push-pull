@@ -11,10 +11,7 @@ import com.capitaworld.connect.client.ConnectClient;
  import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
  import com.capitaworld.service.loans.model.LoansResponse;
  import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
- import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
- import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
- import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -64,6 +61,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
     @Autowired
     private JpaTransactionManager jpaTransactionManager;
+
+    @Autowired
+    private LoanApplicationRepository loanApplicationRepository;
 
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
@@ -127,6 +127,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                         saveFinObj = new FinancialArrangementsDetail();
                         BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
 
+                        saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
                         saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
@@ -165,6 +166,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                         saveDirObj = new DirectorBackgroundDetail();
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
 
+                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
                         saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setCreatedDate(new Date());
                         saveDirObj.setIsActive(true);
