@@ -19,6 +19,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -159,6 +162,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
@@ -440,13 +446,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+					CibilRequest cibilRequest = new CibilRequest();
+					cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+					CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+					map.put("cibilScore", !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()) ? cibilResponse.getData() : " ");
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
 	        }
 				catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error in getting directors background details");
-		     }
+		    }
+			
 		    //FINANCIAL ARRANGEMENTS
 			try {
                 List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
