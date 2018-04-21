@@ -991,20 +991,52 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		else
 			financialInputRequestString.setEquityDividendTy(convertValue(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy()));
 		
-		if(financialInputRequest.getShareCapitalFy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy()) || financialInputRequest.getProfitAfterTaxFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxFy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxFy()) && financialInputRequest.getProfitAfterTaxFy() !=0) {
+					financialInputRequestString.setEarningPerShareFy(convertValue(financialInputRequest.getProfitAfterTaxFy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareFy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareFy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareFy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareFy(convertValue(((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		}
-		if(financialInputRequest.getShareCapitalSy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy()) || financialInputRequest.getProfitAfterTaxSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxSy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxSy()) && financialInputRequest.getProfitAfterTaxSy() !=0) {
+					financialInputRequestString.setEarningPerShareSy(convertValue(financialInputRequest.getProfitAfterTaxSy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareSy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareSy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareSy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareSy(convertValue(((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
 		}
-		if(financialInputRequest.getShareCapitalTy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy()) || financialInputRequest.getProfitAfterTaxTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxTy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
-			financialInputRequestString.setEarningPerShareTy("0.0");
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxTy()) && financialInputRequest.getProfitAfterTaxTy() !=0) {
+					financialInputRequestString.setEarningPerShareTy(convertValue(financialInputRequest.getProfitAfterTaxTy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareTy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareTy("0.0");
+			}
 		}else {
-			financialInputRequestString.setEarningPerShareTy(convertValue(((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
+			financialInputRequestString.setEarningPerShareTy("0.0");
 		}
 		
 		
