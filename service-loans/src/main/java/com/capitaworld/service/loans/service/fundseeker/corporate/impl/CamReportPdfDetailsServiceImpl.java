@@ -346,6 +346,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		*/
 		return map;
 	}
+	DecimalFormat decim = new DecimalFormat("##.##");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -485,7 +486,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? String.valueOf(primaryCorporateRequest.getLoanAmount()) : " ");
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValue(primaryCorporateRequest.getLoanAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
 			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
@@ -496,7 +497,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? primaryCorporateRequest.getCollateralSecurityAmount() : " ");
+				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -975,32 +976,32 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setProfitAfterTaxTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())));
 		
 		
-		if(financialInputRequest.getDividendPayOutFy() == 0)
+		if(financialInputRequest.getDividendPayOutFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutFy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy()))
 			financialInputRequestString.setEquityDividendFy("0.0");
 		else
 			financialInputRequestString.setEquityDividendFy(convertValue((financialInputRequest.getDividendPayOutFy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		
-		if(financialInputRequest.getDividendPayOutSy() == 0)
+		if(financialInputRequest.getDividendPayOutSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutSy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy()))
 			financialInputRequestString.setEquityDividendSy("0.0");
 		else
 			financialInputRequestString.setEquityDividendSy(convertValue(financialInputRequest.getDividendPayOutSy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy()));
 		
-		if(financialInputRequest.getDividendPayOutTy() == 0)
+		if(financialInputRequest.getDividendPayOutTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutTy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy()))
 			financialInputRequestString.setEquityDividendTy("0.0");
 		else
 			financialInputRequestString.setEquityDividendTy(convertValue(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy()));
 		
-		if(financialInputRequest.getShareCapitalFy() == 0.0 ) {
+		if(financialInputRequest.getShareCapitalFy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy()) || financialInputRequest.getProfitAfterTaxFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxFy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
 			financialInputRequestString.setEarningPerShareFy("0.0");
 		}else {
 			financialInputRequestString.setEarningPerShareFy(convertValue(((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		}
-		if(financialInputRequest.getShareCapitalSy() == 0.0 ) {
+		if(financialInputRequest.getShareCapitalSy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy()) || financialInputRequest.getProfitAfterTaxSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxSy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
 			financialInputRequestString.setEarningPerShareSy("0.0");
 		}else {
 			financialInputRequestString.setEarningPerShareSy(convertValue(((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
 		}
-		if(financialInputRequest.getShareCapitalTy() == 0.0 ) {
+		if(financialInputRequest.getShareCapitalTy() == 0.0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy()) || financialInputRequest.getProfitAfterTaxTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxTy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue())) {
 			financialInputRequestString.setEarningPerShareTy("0.0");
 		}else {
 			financialInputRequestString.setEarningPerShareTy(convertValue(((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
@@ -1063,7 +1064,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return financialInputRequestString;
 
 	}
-	DecimalFormat decim = new DecimalFormat("##.##");
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
