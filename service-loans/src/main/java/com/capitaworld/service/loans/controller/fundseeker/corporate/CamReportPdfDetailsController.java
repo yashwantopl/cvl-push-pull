@@ -51,7 +51,7 @@ public class CamReportPdfDetailsController {
 		}
 		try {
 
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
@@ -94,7 +94,7 @@ public class CamReportPdfDetailsController {
 		}
 		try {
 
-			Map<String,Object> response = camReportPdfDetailsService.getCamReportFinalDetails(applicationId,productId);
+			Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,true);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("CAMREPORTSIDBI");
