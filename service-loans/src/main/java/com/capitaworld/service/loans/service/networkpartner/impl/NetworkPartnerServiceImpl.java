@@ -519,7 +519,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		
 		try {
 
-			logger.info("Sending SMS notification for Successful sign Up=========>");
+			logger.info("Sending SMS notification to FS when Checker Assign Maker=========>");
 		
 			
 			UsersRequest usersRequest = new UsersRequest();
@@ -557,7 +557,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 			notificationClient.send(notificationRequest);
 
-			logger.info("End SMS notification for Successful sign Up=====>");
+			logger.info("End SMS notification to FS when Checker Assign Maker=====>");
 
 			return true;
 		} catch (Exception e) {
