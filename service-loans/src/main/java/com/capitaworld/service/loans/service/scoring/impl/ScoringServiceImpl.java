@@ -835,6 +835,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             }
                         } catch (Exception e) {
+                            totalCredit=0.0;
                             e.printStackTrace();
                             logger.error("error while calling analyzer client");
                         }
