@@ -1379,7 +1379,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			
 			// sending SMS Notification to FS when FP clicks Submit Disbursement Details
 			
-	   try {
+	  /* try {
 
 			logger.info("Starting SMS service when FP Submit Disbursement Details=====>");
 			
@@ -1418,7 +1418,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 
 		}
-			
+			*/
 			
 			return (Boolean) mappingResponse.getData();
 			
