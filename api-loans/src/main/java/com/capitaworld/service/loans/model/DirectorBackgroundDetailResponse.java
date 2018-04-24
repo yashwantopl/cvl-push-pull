@@ -46,6 +46,8 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private String gender;
 
 		private String relationshipType;
+		
+		private String cibilScore;
 
 
 		public String getAddress() {
@@ -231,6 +233,14 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	 */
 	public void setStateCode(String stateCode) {
 		this.stateCode = stateCode;
+	}
+
+	public String getCibilScore() {
+		return cibilScore;
+	}
+
+	public void setCibilScore(String cibilScore) {
+		this.cibilScore = cibilScore;
 	}
 	
 	
