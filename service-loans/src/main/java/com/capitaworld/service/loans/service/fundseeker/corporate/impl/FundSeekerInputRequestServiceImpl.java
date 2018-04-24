@@ -154,6 +154,75 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             }*/
 
 
+            /*List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
+
+            try {
+                for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+                    DirectorBackgroundDetail saveDirObj = null;
+                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
+                        saveDirObj = new DirectorBackgroundDetail();
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+
+                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setCreatedDate(new Date());
+                        saveDirObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
+                        saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setModifiedDate(new Date());
+                    }
+                    directorBackgroundDetailsRepository.save(saveDirObj);
+                }
+            }catch (Exception e){
+                logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
+                e.printStackTrace();
+            }*/
+            /*for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
+            {
+                DirectorBackgroundDetail directorBackgroundDetail= directorBackgroundDetailsRepository.findOne(directorBackgroundDetailRequest.getId());
+                BeanUtils.copyProperties(directorBackgroundDetailRequest,directorBackgroundDetail);
+
+                directorBackgroundDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+                directorBackgroundDetail.setModifiedDate(new Date());
+
+                directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+            }*/
+
+            // save and commit transaction
+
+//            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
+//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
+////            EntityTransaction entityTransaction= entityManager.getTransaction();
+////            entityTransaction.commit();
+//            entityManager.flush();
+//            entityManager.clear();
+//            entityManager.close();
+
+            LoansResponse res=new LoansResponse("one form data successfully saved",HttpStatus.OK.value());
+            res.setFlag(true);
+            logger.error("one form successfully saved");
+            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+
+        }
+        catch (Exception e)
+        {
+            LoansResponse res=new LoansResponse("error while saving one form data",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("error while saving one form data");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+        }
+    }
+
+
+
+    @Override
+    public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+        try {
+
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 
             try {
@@ -181,37 +250,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
                 e.printStackTrace();
             }
-            /*for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
-            {
-                DirectorBackgroundDetail directorBackgroundDetail= directorBackgroundDetailsRepository.findOne(directorBackgroundDetailRequest.getId());
-                BeanUtils.copyProperties(directorBackgroundDetailRequest,directorBackgroundDetail);
 
-                directorBackgroundDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-                directorBackgroundDetail.setModifiedDate(new Date());
-
-                directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            }*/
-
-            // save and commit transaction
-
-//            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-////            EntityTransaction entityTransaction= entityManager.getTransaction();
-////            entityTransaction.commit();
-//            entityManager.flush();
-//            entityManager.clear();
-//            entityManager.close();
-
-            LoansResponse res=new LoansResponse("data successfully saved",HttpStatus.OK.value());
+            LoansResponse res=new LoansResponse("director detail successfully saved",HttpStatus.OK.value());
             res.setFlag(true);
-            logger.error("data successfully saved");
+            logger.error("director detail successfully saved");
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
 
         }
         catch (Exception e)
         {
-            LoansResponse res=new LoansResponse("error while saving fund seeker input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while saving fund seeker input data");
+            LoansResponse res=new LoansResponse("error while saving director detail",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("error while saving director detail");
             e.printStackTrace();
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
         }
@@ -256,6 +305,44 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailResponseList);
 
 
+           /* List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
+
+            for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
+            {
+                DirectorBackgroundDetailRequest directorBackgroundDetailRequest=new DirectorBackgroundDetailRequest();
+                BeanUtils.copyProperties(directorBackgroundDetail,directorBackgroundDetailRequest);
+                directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
+            }
+
+            fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);*/
+
+            LoansResponse res=new LoansResponse("one form data successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            res.setData(fundSeekerInputResponse);
+            logger.info("one form data successfully fetched");
+            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+
+        }
+        catch (Exception e)
+        {
+            LoansResponse res=new LoansResponse("error while fetching one form input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("error while fetching one form data");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<LoansResponse> getDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+
+        FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
+
+        fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
+
+        List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
+
+        try {
+
             List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
 
             for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
@@ -267,16 +354,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
 
-            LoansResponse res=new LoansResponse("data successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse res=new LoansResponse("director detail successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setData(fundSeekerInputResponse);
-            logger.info("data successfully fetched");
+            logger.info("director detail successfully fetched");
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
 
         }
         catch (Exception e)
         {
-            LoansResponse res=new LoansResponse("error while fetching fund seeker input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while fetching fund seeker input data");
+            LoansResponse res=new LoansResponse("error while fetching director detail",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error("error while fetching director detail");
             e.printStackTrace();
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
         }
