@@ -88,9 +88,9 @@ public class AssetsDetailsExcelReader
              */
       
        System.out.println("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
         if(loanApplicationMaster.getProductId()!=15){
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected",assetsDetailsRepository);

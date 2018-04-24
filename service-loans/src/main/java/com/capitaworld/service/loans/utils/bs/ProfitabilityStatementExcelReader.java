@@ -98,9 +98,9 @@ public class ProfitabilityStatementExcelReader {
 		 */
 		
 		System.out.println("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());       
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"F",String.valueOf(sheet.getRow(3).getCell(5).getNumericCellValue()),"Estimated",profitibilityStatementDetailRepository);
         if(loanApplicationMaster.getProductId()!=15){
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()),"Projected", profitibilityStatementDetailRepository);
