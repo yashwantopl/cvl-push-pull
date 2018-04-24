@@ -37,7 +37,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	private Date loanDate;
 
 	@Column(name = "loan_type")
-	private Integer loanType;
+	private String loanType;
 
 	private Double emi;
 
@@ -169,11 +169,11 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.loanDate = loanDate;
 	}
 
-	public Integer getLoanType() {
+	public String getLoanType() {
 		return loanType;
 	}
 
-	public void setLoanType(Integer loanType) {
+	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
 

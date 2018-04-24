@@ -23,7 +23,7 @@ public class FinancialArrangementsDetailRequest {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date loanDate;
 
-	private Integer loanType;
+	private String loanType;
 
 	/* private Integer lenderType; */
 
@@ -80,11 +80,11 @@ public class FinancialArrangementsDetailRequest {
 		this.loanDate = loanDate;
 	}
 
-	public Integer getLoanType() {
+	public String getLoanType() {
 		return loanType;
 	}
 
-	public void setLoanType(Integer loanType) {
+	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
 

@@ -19,6 +19,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -159,189 +162,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
+	DecimalFormat decim = new DecimalFormat("##.##");
 	@Override
-	public Map<String, Object> getCamReportFinalDetails(Long applicationId, Long productId) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
-		//ONE-FORM DATA
-		/*try {
-			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-			map.put("corporateApplicant", printFields(corporateApplicantRequest));
-			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
-			//REGISTERED OFFICE ADDRESS
-			try {
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress())) {
-					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
-					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
-					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
-					map.put("registeredAddCountry", escapeXml(getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId())));
-					map.put("registeredAddState", escapeXml(getStateName(corporateApplicantRequest.getFirstAddress().getStateId())));
-					map.put("registeredAddCity", escapeXml(getCityName(corporateApplicantRequest.getFirstAddress().getCityId())));
-					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
-				}
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
-			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
-				try {
-					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						establishMentYear += " "+ masterResponse.getValue();
-					} 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? printFields(establishMentYear) : "NA");
-			
-			//PROMOTOR BACKGROUND DETAILS
-			try {
-				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
-				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-					String promotorName = "";
-					if (promotorBackgroundDetailRequest.getSalutationId() != null){
-						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
-					}
-					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
-					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
-				}
-				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			//DIRECTOR'S BACKGROUND
-			try {
-				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-				List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
-				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-					DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
-					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : " " )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
-					String directorName = "";
-					if (directorBackgroundDetailRequest.getSalutationId() != null){
-						directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
-					}
-					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
-					directorBackgroundDetailResponse.setDirectorsName(directorName);
-					//.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
-					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
-					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
-					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
-				}
-				map.put("dirBackground", printFields(directorBackgroundDetailResponseList));
-	        }
-				catch (Exception e) {
-					e.printStackTrace();
-		}
-			//OWNERSHIP DETAILS :- 
-			try {
-				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
-				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-					ownershipDetailResponse.setShareHoldingCategory(
-							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-					ownershipDetailResponseList.add(ownershipDetailResponse);
-				}
-				map.put("ownership", printFields(ownershipDetailResponseList));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-		}
-			
-		//FINANCIAL ARRANGEMENTS
-			try {
-				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-					FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-					financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-					financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
-					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-					financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
-					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-					financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-				}
-				map.put("financialArrangments",printFields(financialArrangementsDetailResponseList));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			
-			//INDUSTRY SECTOR SUBSECTOR
-			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
-			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
-			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
-			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
-			industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
-			industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
-			industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
-			try {
-				OneFormResponse oneFormResponse = oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
-			map.put("industry", oneFormResponse.getListData());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			Integer industry =  corporateApplicantRequest.getKeyVericalFunding().intValue();
-			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
-			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
-			
-			
-			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
-			//ADMIN OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) + ", " : "");
-				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName()) + ", " : "");
-				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark()) + ", " : "");
-				map.put("adminAddCountry", getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId()));
-				map.put("adminAddState", getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId()));
-				map.put("adminAddCity", getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId()));
-				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
-			}
-			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
-			map.put("aboutUs", printFields(corporateFinalInfoRequest.getAboutUs()));
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
-		return map;
-	}
-	@Override
-	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId) {
+	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
@@ -439,6 +268,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+					CibilRequest cibilRequest = new CibilRequest();
+					cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+					CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+					directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()) ? cibilResponse.getData().toString() : " ");
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
@@ -446,7 +279,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error in getting directors background details");
-		     }
+		    }
+			
 		    //FINANCIAL ARRANGEMENTS
 			try {
                 List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
@@ -460,7 +294,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                     financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                    financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+                    financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                     financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                     //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
@@ -474,7 +308,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? String.valueOf(primaryCorporateRequest.getLoanAmount()) : " ");
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValue(primaryCorporateRequest.getLoanAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
 			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
@@ -485,7 +319,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? primaryCorporateRequest.getCollateralSecurityAmount() : " ");
+				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -525,31 +359,33 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FITCH DATA
 		try {
 		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-		if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-			map.put("fitchResponse",fitchOutputManu);
-			map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
-			map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
-			map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
-			map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
-			map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
-			map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
-			map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
-			map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
-			map.put("fitchTitle","Manufacturing");
-		}
-		if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputTrad);
-			map.put("fitchTitle","Trading");
-		}
-		if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputServ);
-			map.put("fitchTitle","Service");
+		if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
+			if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
+			{
+				FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
+				map.put("fitchResponse",fitchOutputManu);
+				map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
+				map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
+				map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
+				map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
+				map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
+				map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
+				map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
+				map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
+				map.put("fitchTitle","Manufacturing");
+			}
+			if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
+			{
+				FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+				map.put("fitchResponse",fitchOutputTrad);
+				map.put("fitchTitle","Trading");
+			}
+			if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
+			{
+				FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+				map.put("fitchResponse",fitchOutputServ);
+				map.put("fitchTitle","Service");
+			}
 		}
 		}
 		catch (Exception e) {
@@ -681,60 +517,64 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		/**********************************************FINAL DETAILS*****************************************************/
-		/*//OWNERSHIP DETAILS :- 
-		try {
-			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
-			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-				ownershipDetailResponse.setShareHoldingCategory(
-						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-				ownershipDetailResponseList.add(ownershipDetailResponse);
-			}
-			map.put("ownership", printFields(ownershipDetailResponseList));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-	}
-		//PROMOTOR BACKGROUND DETAILS
-		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
-			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-				String promotorName = "";
-				if (promotorBackgroundDetailRequest.getSalutationId() != null){
-					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+		
+		if(isFinalView) {
+			//OWNERSHIP DETAILS :- 
+			try {
+				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
+				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+					ownershipDetailResponse.setShareHoldingCategory(
+							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+					ownershipDetailResponseList.add(ownershipDetailResponse);
 				}
-				promotorName += promotorBackgroundDetailRequest.getPromotorsName();
-				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+				map.put("ownership", printFields(ownershipDetailResponseList));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+		}
+			//PROMOTOR BACKGROUND DETAILS
+			try {
+				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					String promotorName = "";
+					if (promotorBackgroundDetailRequest.getSalutationId() != null){
+						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+					}
+					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
+					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+				}
+				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
-		} catch (Exception e) {
-			e.printStackTrace();
+			//ASSOCIATE ENTITY
+			try {
+				map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
+				map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
+				map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-		//ASSOCIATE ENTITY
-		try {
-			map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
-			map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
-			map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
-		}catch (Exception e) {
-			e.printStackTrace();
-		}*/
+		
 		return map;
 	}
 	public Object calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
@@ -964,35 +804,67 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setProfitAfterTaxTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())));
 		
 		
-		if(financialInputRequest.getDividendPayOutFy() == 0)
+		if(financialInputRequest.getDividendPayOutFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutFy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy()))
 			financialInputRequestString.setEquityDividendFy("0.0");
 		else
 			financialInputRequestString.setEquityDividendFy(convertValue((financialInputRequest.getDividendPayOutFy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		
-		if(financialInputRequest.getDividendPayOutSy() == 0)
+		if(financialInputRequest.getDividendPayOutSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutSy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy()))
 			financialInputRequestString.setEquityDividendSy("0.0");
 		else
 			financialInputRequestString.setEquityDividendSy(convertValue(financialInputRequest.getDividendPayOutSy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy()));
 		
-		if(financialInputRequest.getDividendPayOutTy() == 0)
+		if(financialInputRequest.getDividendPayOutTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutTy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy()))
 			financialInputRequestString.setEquityDividendTy("0.0");
 		else
 			financialInputRequestString.setEquityDividendTy(convertValue(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy()));
 		
-		if(financialInputRequest.getShareCapitalFy() == 0.0 ) {
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxFy()) && financialInputRequest.getProfitAfterTaxFy() !=0) {
+					financialInputRequestString.setEarningPerShareFy(convertValue(financialInputRequest.getProfitAfterTaxFy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareFy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareFy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareFy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareFy(convertValue(((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		}
-		if(financialInputRequest.getShareCapitalSy() == 0.0 ) {
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxSy()) && financialInputRequest.getProfitAfterTaxSy() !=0) {
+					financialInputRequestString.setEarningPerShareSy(convertValue(financialInputRequest.getProfitAfterTaxSy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareSy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareSy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareSy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareSy(convertValue(((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
 		}
-		if(financialInputRequest.getShareCapitalTy() == 0.0 ) {
-			financialInputRequestString.setEarningPerShareTy("0.0");
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxTy()) && financialInputRequest.getProfitAfterTaxTy() !=0) {
+					financialInputRequestString.setEarningPerShareTy(convertValue(financialInputRequest.getProfitAfterTaxTy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareTy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareTy("0.0");
+			}
 		}else {
-			financialInputRequestString.setEarningPerShareTy(convertValue(((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
+			financialInputRequestString.setEarningPerShareTy("0.0");
 		}
 		
 		
@@ -1024,35 +896,55 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy())));
 		financialInputRequestString.setTotalAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy())));
 		
-		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && financialInputRequest.getShareFaceValue() > 0) {
-			double totalValue = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
-			if(totalValue > 0) {
-				financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy()/totalValue));	
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
+				double total = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsFy()) && financialInputRequest.getShareHolderFundsFy() !=0) {
+					financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy() * total));
+				}else {
+					financialInputRequestString.setBookValueFy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueFy("0.0");
 			}
-			
-			double totalValueSy = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
-			if(totalValueSy > 0) {
-				financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy()/totalValueSy));	
-			}
-			
-			double totalValueTy = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
-			if(totalValueTy > 0) {
-				financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy()/totalValueTy));	
-			}
-			
-				
-		} else {
-			financialInputRequestString.setBookValueFy("0");
-			financialInputRequestString.setBookValueSy("0");
-			financialInputRequestString.setBookValueTy("0");
+		}else {
+			financialInputRequestString.setBookValueFy("0.0");
 		}
 		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
+				double total = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsSy()) && financialInputRequest.getShareHolderFundsSy() !=0) {
+					financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy() * total));
+				}else {
+					financialInputRequestString.setBookValueSy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueSy("0.0");
+			}
+		}else {
+			financialInputRequestString.setBookValueSy("0.0");
+		}
 		
-		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
+				double total = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsTy()) && financialInputRequest.getShareHolderFundsTy() !=0) {
+					financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy() * total));
+				}else {
+					financialInputRequestString.setBookValueTy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueTy("0.0");
+			}
+		}else {
+			financialInputRequestString.setBookValueTy("0.0");
+		}
+	
 		return financialInputRequestString;
 
 	}
-	DecimalFormat decim = new DecimalFormat("##.##");
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
