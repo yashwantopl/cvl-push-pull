@@ -4074,26 +4074,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
 				}
+				logger.info("Call Connector client for update payment status");
+//				if ("Success".equals(paymentRequest.getStatus())) {
+				if(updatePayment) {
+					try {
+						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
+								userId);
+						if (!CommonUtils.isObjectListNull(connectResponse)) {
+							logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+						} else {
+							logger.info("Connector Response null or empty");
+						}
+					} catch (Exception e) {
+						logger.info("Throw Exception While Call Connector Service`");
+						e.printStackTrace();
+					}
+				}
 				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
 
-			logger.info("Call Connector client for update payment status");
-//			if ("Success".equals(paymentRequest.getStatus())) {
-			if(updatePayment) {
-				try {
-					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-							userId);
-					if (!CommonUtils.isObjectListNull(connectResponse)) {
-						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-					} else {
-						logger.info("Connector Response null or empty");
-					}
-				} catch (Exception e) {
-					logger.info("Throw Exception While Call Connector Service`");
-					e.printStackTrace();
-				}
-			}
+			
 
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 
