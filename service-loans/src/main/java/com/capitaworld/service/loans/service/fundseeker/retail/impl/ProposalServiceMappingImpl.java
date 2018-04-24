@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,12 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.model.Notification;
+import com.capitaworld.service.notification.model.NotificationRequest;
+import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -108,6 +115,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 	
 	@Autowired
 	private LogService logService;
@@ -1365,6 +1375,51 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			//set branch id to proposal request
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "+request.toString());
 			ProposalMappingResponse mappingResponse=proposalDetailsClient.saveDisbursementDetails(request);
+		
+			
+			// sending SMS Notification to FS when FP clicks Submit Disbursement Details
+			
+	   try {
+
+			logger.info("Starting SMS service when FP Submit Disbursement Details=====>");
+			
+			UserResponse response = usersClient.getEmailMobile(finalUserId);
+			
+			UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), UsersRequest.class);
+			
+			String mobile = applicantRequest.getMobile();
+			
+		
+			String[] to = { 91+mobile };
+			NotificationRequest notificationRequest = new NotificationRequest();
+			notificationRequest.setClientRefId("123");
+			Notification notification = new Notification();
+			notification.setContentType(ContentType.TEMPLATE);
+
+		
+
+				notification.setTemplateId(NotificationAlias.SMS_FS_PAYS_PAYUMONEY);
+				notification.setTo(to);
+				notification.setType(NotificationType.SMS);
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put("bankerName", "");
+				parameters.put("productType", "");
+				notification.setParameters(parameters);
+				notificationRequest.addNotification(notification);
+
+				notificationClient.send(notificationRequest);
+
+				logger.info("End SMS service when FP Submit Disbursement Details=====>");
+			
+		} catch (Exception e) {
+
+			logger.info("Error while sending when FP Submit Disbursement Details=====>");
+			e.printStackTrace();
+
+		}
+			
+			
 			return (Boolean) mappingResponse.getData();
 			
 		} catch (Exception e) {
