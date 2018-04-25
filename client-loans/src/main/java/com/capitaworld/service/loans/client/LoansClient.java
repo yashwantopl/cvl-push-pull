@@ -126,6 +126,7 @@ public class LoansClient {
 	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
+	private static final String INACTIVE_APPLICATION_BY_APPLICATION_ID = "/loan_application/inactive_application";
 
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
 	
@@ -1709,4 +1710,23 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available");
 		}
 	}
+	public LoansResponse inactiveApplication(Long applicationId,Long userId) throws LoansException {
+		String url = loansBaseUrl.concat(INACTIVE_APPLICATION_BY_APPLICATION_ID).concat("/" + applicationId).concat("/" + userId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			/*
+			 * return restTemplate.postForObject(url, request, LoansResponse.class);
+			 */
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	
 }
