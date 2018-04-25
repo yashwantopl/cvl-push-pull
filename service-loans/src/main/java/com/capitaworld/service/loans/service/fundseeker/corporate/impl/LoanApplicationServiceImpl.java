@@ -4244,20 +4244,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			// SETTING ADDRESS
 			String address = null;
-			int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
-			if (CommonUtils.UserMainType.CORPORATE == mainType) {
-				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
-						.findOneByApplicationIdId(id);
-				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-					address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
+				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
+				if (CommonUtils.UserMainType.CORPORATE == mainType) {
+					CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(id);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+						address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+					}
+				} else {
+					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
+					}
 				}
-			} else {
-				RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
-				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-					address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
-				}
+				applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
+			}else {
+				logger.info("No ProductId Found========>");	
 			}
-			applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
