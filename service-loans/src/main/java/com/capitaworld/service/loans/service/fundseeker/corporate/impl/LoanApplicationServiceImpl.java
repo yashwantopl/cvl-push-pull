@@ -4075,8 +4075,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					e.printStackTrace();
 				}
 				logger.info("Call Connector client for update payment status");
-//				if ("Success".equals(paymentRequest.getStatus())) {
-				if(updatePayment) {
+				if ("Success".equals(paymentRequest.getStatus())) {
+//				if(updatePayment) {
 					try {
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
 								userId);
