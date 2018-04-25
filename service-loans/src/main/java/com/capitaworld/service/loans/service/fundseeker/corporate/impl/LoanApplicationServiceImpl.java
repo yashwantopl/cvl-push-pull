@@ -4527,4 +4527,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return true;
 	}
 
+	@Override
+	public int inActiveApplication(Long id, Long userId) {
+		logger.info("Entry in inActiveApplication");
+		int inActiveApplication = loanApplicationRepository.inActiveApplication(id, userId);
+		logger.info("Inactivated Count==================>{}",inActiveApplication);
+		logger.info("Exit in inActiveApplication");
+		return 0;
+	}
+	
+
 }
