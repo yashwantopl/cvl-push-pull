@@ -930,6 +930,15 @@ public class CommonUtils {
 		return sub;
 	}
 	
+	public static Double substractThreeNumbers(Double a, Double b, Double c){
+		a= isObjectNullOrEmpty(a) ? 0.0 : a;
+		b= isObjectNullOrEmpty(b) ? 0.0 : b;
+		c= isObjectNullOrEmpty(c) ? 0.0 : c;
+		
+		Double sub= a-b-c;
+		return sub;
+	}
+	
 
 
 }
