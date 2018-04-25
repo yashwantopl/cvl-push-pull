@@ -268,11 +268,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					CibilRequest cibilRequest = new CibilRequest();
-					cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-					cibilRequest.setApplicationId(applicationId);
-					CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-					directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
+					try {
+						CibilRequest cibilRequest = new CibilRequest();
+						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+						cibilRequest.setApplicationId(applicationId);
+						CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+						directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
+					}catch(Exception e) {
+						e.printStackTrace();
+						logger.info("Error while getting cibil details",e);
+					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
