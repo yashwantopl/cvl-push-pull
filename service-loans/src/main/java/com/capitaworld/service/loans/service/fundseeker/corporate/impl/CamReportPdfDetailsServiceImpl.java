@@ -261,8 +261,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
-					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
+					directorBackgroundDetailResponse.setTotalExperience(convertValue(directorBackgroundDetailRequest.getTotalExperience()));
+					directorBackgroundDetailResponse.setNetworth(convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
@@ -591,9 +591,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		FinancialInputRequestString financialInputRequestString = new FinancialInputRequestString();
 		
-		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossBlockFy()));
-		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossBlockSy()));
-		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossBlockTy()));
+		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossSalesFy()));
+		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossSalesSy()));
+		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossSalesTy()));
 		
 		financialInputRequestString.setLessExciseDuityFy(convertValue(financialInputRequest.getLessExciseDuityFy()));
         financialInputRequestString.setLessExciseDuitySy(convertValue(financialInputRequest.getLessExciseDuitySy()));
