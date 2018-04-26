@@ -32,6 +32,7 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -553,8 +554,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
+			if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
+				return applicationRequest;
+			}
 			applicationRequest.setHasAlreadyApplied(
-					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));			
+			
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				applicationRequest.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -641,6 +646,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
+				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+					continue;
+				}
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
