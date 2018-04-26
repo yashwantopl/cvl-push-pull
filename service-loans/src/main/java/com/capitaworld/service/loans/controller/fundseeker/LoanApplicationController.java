@@ -1762,7 +1762,7 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	@RequestMapping(value = "/inactive_application/{id}{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/inactive_application/{id}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> inActiveApplication(@PathVariable("id") Long id,@PathVariable("userId") Long userId) {
 		// request must not be null
 		try {
