@@ -524,8 +524,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						}
 						directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 						directorBackgroundDetailResponse.setDirectorsName(directorName);*/
-				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
 				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());

@@ -470,8 +470,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                     directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
                     directorBackgroundDetailResponse.setDirectorsName(directorName);
                     //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
                     directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
                     directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
                     directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
@@ -577,9 +577,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 	    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy()));
 	    		
 	    		//Balance Sheet -ASSETS
-	    		financialInputRequest.setNetBlockFy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
-	    		financialInputRequest.setNetBlockSy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
-	    		financialInputRequest.setNetBlockTy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
+	    		financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
+	    		financialInputRequest.setNetBlockSy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
+	    		financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
 	    		financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
 	    		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
 	    		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));

@@ -4074,26 +4074,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
 				}
+				logger.info("Call Connector client for update payment status");
+				if ("Success".equals(paymentRequest.getStatus())) {
+//				if(updatePayment) {
+					try {
+						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
+								userId);
+						if (!CommonUtils.isObjectListNull(connectResponse)) {
+							logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+						} else {
+							logger.info("Connector Response null or empty");
+						}
+					} catch (Exception e) {
+						logger.info("Throw Exception While Call Connector Service`");
+						e.printStackTrace();
+					}
+				}
 				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
 
-			logger.info("Call Connector client for update payment status");
-//			if ("Success".equals(paymentRequest.getStatus())) {
-			if(updatePayment) {
-				try {
-					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-							userId);
-					if (!CommonUtils.isObjectListNull(connectResponse)) {
-						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-					} else {
-						logger.info("Connector Response null or empty");
-					}
-				} catch (Exception e) {
-					logger.info("Throw Exception While Call Connector Service`");
-					e.printStackTrace();
-				}
-			}
+			
 
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 
@@ -4243,20 +4244,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			// SETTING ADDRESS
 			String address = null;
-			int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
-			if (CommonUtils.UserMainType.CORPORATE == mainType) {
-				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
-						.findOneByApplicationIdId(id);
-				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-					address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
+				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
+				if (CommonUtils.UserMainType.CORPORATE == mainType) {
+					CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(id);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+						address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+					}
+				} else {
+					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
+					}
 				}
-			} else {
-				RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
-				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-					address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
-				}
+				applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
+			}else {
+				logger.info("No ProductId Found========>");	
 			}
-			applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
@@ -4521,5 +4526,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		return true;
 	}
+
+	@Override
+	public int inActiveApplication(Long id, Long userId) {
+		logger.info("Entry in inActiveApplication");
+		int inActiveApplication = loanApplicationRepository.inActiveApplication(id, userId);
+		logger.info("Inactivated Count==================>{}",inActiveApplication);
+		logger.info("Exit in inActiveApplication");
+		return 0;
+	}
+	
 
 }

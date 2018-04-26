@@ -13,7 +13,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String address;
 
-		private Double networth;
+		private String networth;
 
 		private Long applicationId;
 
@@ -30,7 +30,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String directorsName;
 
-		private Double totalExperience;
+		private String totalExperience;
 
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 		private Date dob;
@@ -47,7 +47,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String relationshipType;
 		
-		private String cibilScore;
+		private Double cibilScore;
 
 
 		public String getAddress() {
@@ -57,17 +57,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		public void setAddress(String address) {
 			this.address = address;
 		}
-
-
-
-		public Double getNetworth() {
-			return networth;
-		}
-
-		public void setNetworth(Double networth) {
-			this.networth = networth;
-		}
-
+		
 		public Long getApplicationId() {
 			return applicationId;
 		}
@@ -124,13 +114,19 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 			this.directorsName = directorsName;
 		}
 
+	public String getNetworth() {
+			return networth;
+		}
 
+		public void setNetworth(String networth) {
+			this.networth = networth;
+		}
 
-		public Double getTotalExperience() {
+		public String getTotalExperience() {
 			return totalExperience;
 		}
 
-		public void setTotalExperience(Double totalExperience) {
+		public void setTotalExperience(String totalExperience) {
 			this.totalExperience = totalExperience;
 		}
 
@@ -235,13 +231,15 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		this.stateCode = stateCode;
 	}
 
-	public String getCibilScore() {
+	public Double getCibilScore() {
 		return cibilScore;
 	}
 
-	public void setCibilScore(String cibilScore) {
+	public void setCibilScore(Double cibilScore) {
 		this.cibilScore = cibilScore;
 	}
+	
+	
 	
 	
 }

@@ -1762,7 +1762,25 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	@RequestMapping(value = "/inactive_application/{id}{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> inActiveApplication(@PathVariable("id") Long id,@PathVariable("userId") Long userId) {
+		// request must not be null
+		try {
+			logger.info("Entry inActiveApplication");
+			logger.info("Application Require to Inactive Loan Application Details ==>" + id);
+			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.inActiveApplication(id, userId));
+			logger.info("Exit inActiveApplication");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
+		} catch (Exception e) {
+			logger.error("Error while Inactivating Loan Application Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 }
 

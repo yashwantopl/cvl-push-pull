@@ -261,17 +261,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+					directorBackgroundDetailResponse.setTotalExperience(convertValue(directorBackgroundDetailRequest.getTotalExperience()));
+					directorBackgroundDetailResponse.setNetworth(convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					CibilRequest cibilRequest = new CibilRequest();
-					cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-					CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-					directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()) ? cibilResponse.getData().toString() : " ");
+					try {
+						CibilRequest cibilRequest = new CibilRequest();
+						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+						cibilRequest.setApplicationId(applicationId);
+						CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+						directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
+					}catch(Exception e) {
+						e.printStackTrace();
+						logger.info("Error while getting cibil details",e);
+					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
@@ -309,7 +315,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValue(primaryCorporateRequest.getLoanAmount()) : " ");
-			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
+			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getLoanTypeName(primaryCorporateRequest.getProductId()) : " ");
 			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
@@ -356,41 +362,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					e.printStackTrace();
 				}
-		//FITCH DATA
-		try {
-		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-		if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
-			if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
-			{
-				FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-				map.put("fitchResponse",fitchOutputManu);
-				map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
-				map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
-				map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
-				map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
-				map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
-				map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
-				map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
-				map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
-				map.put("fitchTitle","Manufacturing");
-			}
-			if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
-			{
-				FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-				map.put("fitchResponse",fitchOutputTrad);
-				map.put("fitchTitle","Trading");
-			}
-			if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
-			{
-				FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-				map.put("fitchResponse",fitchOutputServ);
-				map.put("fitchTitle","Service");
-			}
-		}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		//SCORING DATA
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
@@ -519,6 +491,42 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
+			
+			//FITCH DATA
+			try {
+			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
+			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
+				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
+					map.put("fitchResponse",fitchOutputManu);
+					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
+					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
+					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
+					map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
+					map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
+					map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
+					map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
+					map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
+					map.put("fitchTitle","Manufacturing");
+				}
+				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+					map.put("fitchResponse",fitchOutputTrad);
+					map.put("fitchTitle","Trading");
+				}
+				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+					map.put("fitchResponse",fitchOutputServ);
+					map.put("fitchTitle","Service");
+				}
+			}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 			//OWNERSHIP DETAILS :- 
 			try {
 				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
@@ -583,9 +591,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		FinancialInputRequestString financialInputRequestString = new FinancialInputRequestString();
 		
-		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossBlockFy()));
-		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossBlockSy()));
-		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossBlockTy()));
+		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossSalesFy()));
+		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossSalesSy()));
+		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossSalesTy()));
 		
 		financialInputRequestString.setLessExciseDuityFy(convertValue(financialInputRequest.getLessExciseDuityFy()));
         financialInputRequestString.setLessExciseDuitySy(convertValue(financialInputRequest.getLessExciseDuitySy()));
@@ -883,9 +891,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy())));
 		
 		//Balance Sheet -ASSETS
-		financialInputRequestString.setNetBlockFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
-		financialInputRequestString.setNetBlockSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
-		financialInputRequestString.setNetBlockTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
+		financialInputRequestString.setNetBlockFy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
+		financialInputRequestString.setNetBlockSy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
+		financialInputRequestString.setNetBlockTy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
 		financialInputRequestString.setTotalNonCurruntAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy())));
 		financialInputRequestString.setTotalNonCurruntAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy())));
 		financialInputRequestString.setTotalNonCurruntAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy())));

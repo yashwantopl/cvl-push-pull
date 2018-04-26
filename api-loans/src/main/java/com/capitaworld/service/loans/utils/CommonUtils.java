@@ -172,6 +172,27 @@ public class CommonUtils {
 			}
 			return null;
 		}
+		public static String getLoanTypeName(Integer x) {
+			switch (x) {
+			case 1:
+				return "WORKING CAPITAL";
+			case 2:
+				return "TERM LOAN";
+			case 3:
+				return "HOME LOAN";
+			case 12:
+				return "CAR_LOAN";
+			case 7:
+				return "PERSONALLOAN";
+			case 13:
+				return "LAP LOAN";
+			case 14:
+				return "LAS LOAN";
+			case 15:
+				return "UNSECURED LOAN";
+			}
+			return null;
+		}
 
 	}
 
@@ -906,6 +927,15 @@ public class CommonUtils {
 		b= isObjectNullOrEmpty(b) ? 0.0 : b;
 		
 		Double sub= a-b;
+		return sub;
+	}
+	
+	public static Double substractThreeNumbers(Double a, Double b, Double c){
+		a= isObjectNullOrEmpty(a) ? 0.0 : a;
+		b= isObjectNullOrEmpty(b) ? 0.0 : b;
+		c= isObjectNullOrEmpty(c) ? 0.0 : c;
+		
+		Double sub= a-b-c;
 		return sub;
 	}
 	

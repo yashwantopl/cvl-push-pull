@@ -148,9 +148,9 @@ public class BalanceSheetExcelReader
              */
             
             System.out.println("BalanceSheetExcelReader -----------> "+sheet.getRow(4).getCell(2).getNumericCellValue());       
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
+//            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", balanceSheetDetailRepository);
+//            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
+//            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
             extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Estimated",balanceSheetDetailRepository);
             if(loanApplicationMaster.getProductId()!=15){
             extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected", balanceSheetDetailRepository);
