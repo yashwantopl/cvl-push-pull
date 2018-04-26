@@ -66,7 +66,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     private LoanApplicationRepository loanApplicationRepository;
 
     @Override
-    public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
         try {
             logger.info("getting corporateApplicantDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
@@ -116,104 +116,33 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
-
-            try {
-                for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-                    FinancialArrangementsDetail saveFinObj = null;
-                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveFinObj)){
-                        saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveFinObj.setCreatedDate(new Date());
-                        saveFinObj.setIsActive(true);
-                    } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
-                        saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-                        saveFinObj.setModifiedDate(new Date());
-                    }
-                    financialArrangementDetailsRepository.save(saveFinObj);
+            for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                FinancialArrangementsDetail saveFinObj = null;
+                if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                    saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                 }
-            }catch (Exception e){
-                logger.info("Financial ===============> Throw Exception While Save Financial/Existing Details -------->");
-                e.printStackTrace();
+                if(CommonUtils.isObjectNullOrEmpty(saveFinObj)){
+                    saveFinObj = new FinancialArrangementsDetail();
+                    BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+
+                    saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                    saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                    saveFinObj.setCreatedDate(new Date());
+                    saveFinObj.setIsActive(true);
+                } else {
+                    BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
+                    saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+                    saveFinObj.setModifiedDate(new Date());
+                }
+                financialArrangementDetailsRepository.save(saveFinObj);
             }
-            /*for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
-            {
-                FinancialArrangementsDetail financialArrangementsDetail=financialArrangementDetailsRepository.findOne(financialArrangementsDetailRequest.getId());
-                BeanUtils.copyProperties(financialArrangementsDetailRequest,financialArrangementsDetail);
 
-                financialArrangementsDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-                financialArrangementsDetail.setModifiedDate(new Date());
+           return true;
 
-                financialArrangementDetailsRepository.save(financialArrangementsDetail);
-            }*/
-
-
-            /*List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
-
-            try {
-                for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
-                    DirectorBackgroundDetail saveDirObj = null;
-                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
-                        saveDirObj = new DirectorBackgroundDetail();
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setCreatedDate(new Date());
-                        saveDirObj.setIsActive(true);
-                    } else {
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
-                        saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setModifiedDate(new Date());
-                    }
-                    directorBackgroundDetailsRepository.save(saveDirObj);
-                }
-            }catch (Exception e){
-                logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
-                e.printStackTrace();
-            }*/
-            /*for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
-            {
-                DirectorBackgroundDetail directorBackgroundDetail= directorBackgroundDetailsRepository.findOne(directorBackgroundDetailRequest.getId());
-                BeanUtils.copyProperties(directorBackgroundDetailRequest,directorBackgroundDetail);
-
-                directorBackgroundDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-                directorBackgroundDetail.setModifiedDate(new Date());
-
-                directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            }*/
-
-            // save and commit transaction
-
-//            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-////            EntityTransaction entityTransaction= entityManager.getTransaction();
-////            entityTransaction.commit();
-//            entityManager.flush();
-//            entityManager.clear();
-//            entityManager.close();
-
-            LoansResponse res=new LoansResponse("one form data successfully saved",HttpStatus.OK.value());
-            res.setFlag(true);
-            logger.error("one form successfully saved");
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
-
-        }
-        catch (Exception e)
-        {
-            LoansResponse res=new LoansResponse("error while saving one form data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while saving one form data");
+        } catch (Exception e) {
+            logger.info("Throw Exception while save and update Fundseeker input request !!");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            throw new Exception();
         }
     }
 
