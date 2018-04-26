@@ -1712,6 +1712,7 @@ public class LoansClient {
 	}
 	public LoansResponse inactiveApplication(Long applicationId,Long userId) throws LoansException {
 		String url = loansBaseUrl.concat(INACTIVE_APPLICATION_BY_APPLICATION_ID).concat("/" + applicationId).concat("/" + userId);
+		System.out.println("url to Inactive Application==>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");

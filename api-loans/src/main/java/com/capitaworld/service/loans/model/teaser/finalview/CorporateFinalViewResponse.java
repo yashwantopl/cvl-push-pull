@@ -132,6 +132,8 @@ public class CorporateFinalViewResponse implements Serializable{
     private List<Object> panOfAllDirectors;
     private List<Object> photosOfDirectors;
     private List<Object> residenceAddOfDirectors;
+    private List<Object> cibilReport;
+    private List<Object> bankStatement;
 
     
     
@@ -858,6 +860,18 @@ public class CorporateFinalViewResponse implements Serializable{
 	 */
 	public void setResidenceAddOfDirectors(List<Object> residenceAddOfDirectors) {
 		this.residenceAddOfDirectors = residenceAddOfDirectors;
+	}
+	public List<Object> getCibilReport() {
+		return cibilReport;
+	}
+	public void setCibilReport(List<Object> cibilReport) {
+		this.cibilReport = cibilReport;
+	}
+	public List<Object> getBankStatement() {
+		return bankStatement;
+	}
+	public void setBankStatement(List<Object> bankStatement) {
+		this.bankStatement = bankStatement;
 	}
     
     
