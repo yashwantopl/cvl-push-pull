@@ -168,7 +168,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	
-	DecimalFormat decim = new DecimalFormat("##.##");
+	DecimalFormat decim = new DecimalFormat("#,###.00");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -289,15 +289,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		    //FINANCIAL ARRANGEMENTS
 			try {
-                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
-                        .getFinancialArrangementDetailsList(applicationId, userId);
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
                 List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
                     FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 //				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-                    financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+                    financialArrangementsDetailResponse.setOutstandingAmount(convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
                     financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                    financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+                    financialArrangementsDetailResponse.setAmount(convertValue(financialArrangementsDetailRequest.getAmount()));
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                     financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
@@ -550,18 +549,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					//promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 					String promotorName = "";
 					if (promotorBackgroundDetailRequest.getSalutationId() != null){
 						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
 					}
 					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
 					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
 					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
 				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));

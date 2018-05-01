@@ -27,7 +27,7 @@ public class PromotorBackgroundDetailResponse implements Serializable{
 
     private Double totalExperience;
     
-    private Double networth;
+    private String networth;
 
     public String getAchievements() {
         return achievements;
@@ -84,15 +84,15 @@ public class PromotorBackgroundDetailResponse implements Serializable{
     public void setTotalExperience(Double totalExperience) {
         this.totalExperience = totalExperience;
     }
-
-	public Double getNetworth() {
+	
+	public String getNetworth() {
 		return networth;
 	}
 
-	public void setNetworth(Double networth) {
+	public void setNetworth(String networth) {
 		this.networth = networth;
 	}
-	
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = PromotorBackgroundDetailResponse.class.getDeclaredFields();
         System.out.println("length : "+fields.length);

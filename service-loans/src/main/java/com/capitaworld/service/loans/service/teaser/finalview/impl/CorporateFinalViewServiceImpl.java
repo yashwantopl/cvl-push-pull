@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -196,13 +197,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 
     
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat decim = new DecimalFormat("#,###.00");
 	@Override
 	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId) {
 		
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
-        
         
         
         //===================== MATCHES DATA ======================//
@@ -442,7 +443,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                 corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null ? LoanType.getById(primaryCorporateDetail.getProductId()).getValue() : null);
                 corporateFinalViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
                 corporateFinalViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
-                corporateFinalViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).toString());
+                corporateFinalViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
                 corporateFinalViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null ? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount()) : null);
                 corporateFinalViewResponse.setWcAmount(primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount()) : null);
                 corporateFinalViewResponse.setOtherAmt(primaryCorporateDetail.getOtherAmt() != null ? String.valueOf(primaryCorporateDetail.getOtherAmt()) : null);
@@ -498,9 +499,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
                     FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 //				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-                    financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+                    financialArrangementsDetailResponse.setOutstandingAmount(convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
                     financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                    financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+                    financialArrangementsDetailResponse.setAmount(convertValue(financialArrangementsDetailRequest.getAmount()));
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                     financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
@@ -681,18 +682,19 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					//promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 					String promotorName = "";
 					if (promotorBackgroundDetailRequest.getSalutationId() != null){
 						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
 					}
 					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
 					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
 					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
 				corporateFinalViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
@@ -1090,8 +1092,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				
 				
 				
-				
         return corporateFinalViewResponse;
+	}
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
 	}
 
 }
