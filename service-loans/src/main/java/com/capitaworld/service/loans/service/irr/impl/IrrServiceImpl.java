@@ -951,7 +951,7 @@ public class IrrServiceImpl implements IrrService{
 
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
 			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
-		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
+		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
