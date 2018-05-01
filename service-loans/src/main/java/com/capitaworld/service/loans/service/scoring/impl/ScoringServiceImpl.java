@@ -956,6 +956,8 @@ public class ScoringServiceImpl implements ScoringService{
 
             }
 
+            logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
 
             try {
