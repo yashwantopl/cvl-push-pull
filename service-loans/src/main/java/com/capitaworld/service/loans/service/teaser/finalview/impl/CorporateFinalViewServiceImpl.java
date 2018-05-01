@@ -499,9 +499,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
                     FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
 //				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-                    financialArrangementsDetailResponse.setOutstandingAmount(convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
+                    financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
                     financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                    financialArrangementsDetailResponse.setAmount(convertValue(financialArrangementsDetailRequest.getAmount()));
+                    financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                     financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
@@ -689,10 +689,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 					}
 					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
-					promotorBackgroundDetailResponse.setDin(promotorBackgroundDetailRequest.getDin().toString());
+					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? promotorBackgroundDetailRequest.getDin().toString() : " ");
 					promotorBackgroundDetailResponse.setTotalExperience(convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
