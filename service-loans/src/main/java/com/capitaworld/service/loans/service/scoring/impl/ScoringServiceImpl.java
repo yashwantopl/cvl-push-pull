@@ -90,6 +90,8 @@ public class ScoringServiceImpl implements ScoringService{
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
         logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
 
         logger.info("APPLICATION ID   :: "+ applicationId);
         logger.info("FP PRODUCT ID    :: "+ fpProductId);
@@ -156,7 +158,6 @@ public class ScoringServiceImpl implements ScoringService{
 
         ///////////////
 
-        logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
 
 
@@ -166,10 +167,6 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
-
-            logger.info("Application Id::"+applicationId);
-            logger.info("Fp Product Id::"+fpProductId);
-            logger.info("Score Model Id::"+scoreModelId);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
@@ -651,43 +648,36 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
                                 profitBeforeTaxOrLossTy = 0.0;
 
-                            logger.info("profitBeforeTaxOrLossTy::"+profitBeforeTaxOrLossTy);
 
                             Double interestTy = operatingStatementDetailsTY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestTy))
                                 interestTy = 0.0;
 
-                            logger.info("interestTy::"+interestTy);
 
                             Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
                                 profitBeforeTaxOrLossSy = 0.0;
 
-                            logger.info("profitBeforeTaxOrLossSy::"+profitBeforeTaxOrLossSy);
 
                             Double interestSy = operatingStatementDetailsSY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestSy))
                                 interestSy = 0.0;
 
-                            logger.info("interestSy::"+interestSy);
 
                             Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
                                 depreciationTy = 0.0;
 
-                            logger.info("depreciationTy::"+depreciationTy);
 
                             Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
                                 depreciationSy = 0.0;
 
-                            logger.info("depreciationSy::"+depreciationSy);
 
                             Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
                             if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
                                 termLoansTy = 0.0;
 
-                            logger.info("termLoansTy::"+termLoansTy);
 
                             scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
                             scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
@@ -963,7 +953,9 @@ public class ScoringServiceImpl implements ScoringService{
 
             logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
 
-            logger.info("----------------------------END------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
