@@ -62,8 +62,8 @@ public class CorporateFinalViewResponse implements Serializable{
     private String udhyogAadharNo;
     private String creditRating;
     
-    private List<AchievementDetailRequest> AchievementDetailList;
-    private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
+    private List<AchievementDetailRequest> achievementDetailList;
+    private List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList;
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
@@ -392,17 +392,17 @@ public class CorporateFinalViewResponse implements Serializable{
 		this.creditRating = creditRating;
 	}
 	public List<AchievementDetailRequest> getAchievementDetailList() {
-		return AchievementDetailList;
+		return achievementDetailList;
 	}
 	public void setAchievementDetailList(List<AchievementDetailRequest> achievementDetailList) {
-		AchievementDetailList = achievementDetailList;
+		this.achievementDetailList = achievementDetailList;
 	}
 	public List<CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
-		return CreditRatingOrganizationDetailResponse;
+		return creditRatingOrganizationDetailResponse;
 	}
 	public void setCreditRatingOrganizationDetailResponse(
 			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
-		CreditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
+		this.creditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
 	}
 	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
