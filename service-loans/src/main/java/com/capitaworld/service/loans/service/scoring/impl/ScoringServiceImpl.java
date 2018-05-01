@@ -275,10 +275,16 @@ public class ScoringServiceImpl implements ScoringService{
                             cibilRequest.setApplicationId(applicationId);
 
                             CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
-                            cibil_score_avg_promotor = (Double)cibilResponse.getData();
-
-                            scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
-                            scoringParameterRequest.setCibilTransunionScore_p(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                            {
+                                cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                                scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                scoringParameterRequest.setCibilTransunionScore_p(true);
+                            }
+                            else
+                            {
+                                scoringParameterRequest.setCibilTransunionScore_p(false);
+                            }
 
                             /*map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);*/
 
