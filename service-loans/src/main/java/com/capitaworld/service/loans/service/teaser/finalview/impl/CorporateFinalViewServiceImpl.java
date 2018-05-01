@@ -691,10 +691,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
 					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				//	promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-				//	promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				//	promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDin(promotorBackgroundDetailRequest.getDin().toString());
+					promotorBackgroundDetailResponse.setTotalExperience(convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
+					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDesignation(promotorBackgroundDetailRequest.getDesignation());
+					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
 				corporateFinalViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);

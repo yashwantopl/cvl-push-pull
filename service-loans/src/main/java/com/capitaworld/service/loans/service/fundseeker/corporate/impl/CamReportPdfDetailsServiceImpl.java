@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,7 +74,9 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
@@ -167,7 +170,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private CIBILClient cibilClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-	
+	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
@@ -558,16 +561,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
 					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				//	promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-				//	promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				//	promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDin(promotorBackgroundDetailRequest.getDin().toString());
+					promotorBackgroundDetailResponse.setTotalExperience(convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
+					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDesignation(promotorBackgroundDetailRequest.getDesignation());
+					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
 				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
 			//ASSOCIATE ENTITY
 			try {
 				map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
