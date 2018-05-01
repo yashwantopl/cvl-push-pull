@@ -999,9 +999,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+			//	promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+			//	promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
 				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 				String promotorName = "";
 				if (promotorBackgroundDetailRequest.getSalutationId() != null){
@@ -1009,9 +1009,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				}
 				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
 				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse
-						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+			//	promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+			//	promotorBackgroundDetailResponse
+			//			.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			response.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
