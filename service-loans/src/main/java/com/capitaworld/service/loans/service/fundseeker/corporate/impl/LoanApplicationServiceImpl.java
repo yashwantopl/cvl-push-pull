@@ -4353,7 +4353,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			// set fp details
 			disbursementRequest
-					.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getFpName());
+					.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getName());
 			ProductMaster productMaster = productMasterRepository.findOne(disbursementRequest.getProductMappingId());
 
 			UsersRequest request = new UsersRequest();
@@ -4362,12 +4362,53 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
-			System.out.println("response is" + userResponse.toString());
 
-			disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
+			//disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
 			String fpAddress = "";
-			fpAddress = fundProviderDetailsRequest.getStateName() + ",";
-			fpAddress += fundProviderDetailsRequest.getCountryName();
+			
+			
+			List<Long> stateList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getStateId()))
+				stateList.add(Long.valueOf(fundProviderDetailsRequest.getStateId()));
+			if (!CommonUtils.isListNullOrEmpty(stateList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						fpAddress = masterResponse.getValue() + ",";
+					} else {
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			disbursementRequest.setFpOrganisationName(fundProviderDetailsRequest.getOrganizationName());
+
+			List<Long> countryList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCountryId()))
+				countryList.add(Long.valueOf(fundProviderDetailsRequest.getCountryId()));
+			if (!CommonUtils.isListNullOrEmpty(countryList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						fpAddress += masterResponse.getValue();
+					} else {
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
+			
 			disbursementRequest.setFpAddress(fpAddress);
 
 			disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());

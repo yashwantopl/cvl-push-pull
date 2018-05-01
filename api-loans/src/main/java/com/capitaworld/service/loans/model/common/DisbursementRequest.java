@@ -13,6 +13,7 @@ private String fpDesignation;
 private String fsImage;
 private String fpImage;
 private String loanName;
+private String fpOrganisationName;
 
 public Long getApplicationId() {
 	return applicationId;
@@ -80,6 +81,13 @@ public String getLoanName() {
 public void setLoanName(String loanName) {
 	this.loanName = loanName;
 }
+public String getFpOrganisationName() {
+	return fpOrganisationName;
+}
+public void setFpOrganisationName(String fpOrganisationName) {
+	this.fpOrganisationName = fpOrganisationName;
+}
+
 
 
 
