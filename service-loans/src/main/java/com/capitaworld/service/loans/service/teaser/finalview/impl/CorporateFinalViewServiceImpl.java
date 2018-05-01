@@ -691,9 +691,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
 					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				//	promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+				//	promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+				//	promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}

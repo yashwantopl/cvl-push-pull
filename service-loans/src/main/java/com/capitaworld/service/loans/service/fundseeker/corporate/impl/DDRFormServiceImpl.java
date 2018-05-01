@@ -12,6 +12,7 @@ import java.util.Map;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
 import com.capitaworld.service.loans.model.ddr.*;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
+import com.capitaworld.service.oneform.enums.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,11 +62,6 @@ import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFi
 import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.Constitution;
-import com.capitaworld.service.oneform.enums.EstablishmentMonths;
-import com.capitaworld.service.oneform.enums.NatureFacility;
-import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
@@ -947,9 +943,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 			for (PromotorBackgroundDetailRequest promBackReq : promoBackReqList) {
 				promoBackResp = new PromotorBackgroundDetailResponse();
 				BeanUtils.copyProperties(promBackReq, promoBackResp);
-				promoBackResp.setAchievements(promBackReq.getAchivements());
+				//promoBackResp.setAchievements(promBackReq.getAchivements());
 				promoBackResp.setPanNo(promBackReq.getPanNo().toUpperCase());
+				promoBackResp.setGender(promBackReq.getGender() != null ? Gender.getById(promBackReq.getGender()).getValue() : null);
+				promoBackResp.setRelationshipType(promBackReq.getRelationshipType() != null ? DirectorRelationshipType.getById(promBackReq.getRelationshipType()).getValue() : null);
 				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() : null )+ " " + promBackReq.getPromotorsName());
+				promoBackResp.setDob(promBackReq.getDob()!= null ? promBackReq.getDob().toString() : null);
+				promoBackResp.setAppointmentDate(promBackReq.getAppointmentDate() != null ? promBackReq.getAppointmentDate().toString() : null);
 				PromotorBackgroundDetailResponse.printFields(promoBackResp);
 				promoBackRespList.add(promoBackResp);
 			}
