@@ -610,9 +610,9 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestments(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+			assetsDetails.setOtherCurrentAssets(0.0);
+		financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
@@ -883,9 +883,9 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestments(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+			assetsDetails.setOtherCurrentAssets(0.0);
+		financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
@@ -1159,9 +1159,9 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setInvestments(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 					assetsDetails.setInstalmentsDeferred(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-					assetsDetails.setAdvancePaymentTaxes(0.0);
-				financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+					assetsDetails.setOtherCurrentAssets(0.0);
+				financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 					assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
