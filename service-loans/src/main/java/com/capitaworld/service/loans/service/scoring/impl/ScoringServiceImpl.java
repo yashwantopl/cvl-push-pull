@@ -167,6 +167,10 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
 
+            logger.info("Application Id::"+applicationId);
+            logger.info("Fp Product Id::"+fpProductId);
+            logger.info("Score Model Id::"+scoreModelId);
+
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
             try {
