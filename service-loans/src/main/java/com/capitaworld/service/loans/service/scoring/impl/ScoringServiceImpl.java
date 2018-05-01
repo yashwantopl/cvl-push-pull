@@ -636,7 +636,6 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-                            logger.info("--------------------------------------START AVERAGE_EBIDTA-----------------------------------");
                             Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
                                 profitBeforeTaxOrLossTy = 0.0;
@@ -708,7 +707,6 @@ public class ScoringServiceImpl implements ScoringService{
                                 map.put("AVERAGE_EBIDTA", 100.0);
                             }*/
 
-                            logger.info("--------------------------------------END AVERAGE_EBIDTA-----------------------------------");
                         }
                         catch (Exception e)
                         {
@@ -761,7 +759,7 @@ public class ScoringServiceImpl implements ScoringService{
                             scoringParameterRequest.setDepriciationTy(depreciationTy);
                             scoringParameterRequest.setTotalAsset(totalAsset);
 
-                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
+                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
 
                             /*Double avgGrossCashAccruals = ((netProfitOrLossTY + depreciationTy + interestTy) + (netProfitOrLossSY + depreciationSy + interestSy)) / 2;
                             if (CommonUtils.isObjectNullOrEmpty(avgGrossCashAccruals))
@@ -778,7 +776,7 @@ public class ScoringServiceImpl implements ScoringService{
                         {
                             logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
                             e.printStackTrace();
-                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
+                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
                             /*map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS",null);*/
                         }
 
@@ -949,14 +947,11 @@ public class ScoringServiceImpl implements ScoringService{
                         break;
                     }
                 }
-
-                System.out.println("Score Parameter ::"+scoringParameterRequest.toString());
-
-                logger.info("----------------------------END------------------------------");
-
             }
 
             logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
+            logger.info("----------------------------END------------------------------");
 
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
 
