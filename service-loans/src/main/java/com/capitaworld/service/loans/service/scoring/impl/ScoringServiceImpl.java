@@ -183,6 +183,7 @@ public class ScoringServiceImpl implements ScoringService{
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
             for (int i=0;i<dataList.size();i++){
 
@@ -951,12 +952,14 @@ public class ScoringServiceImpl implements ScoringService{
                         break;
                     }
                 }
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
             logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
 
             logger.info("----------------------------END------------------------------");
 
+            scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
 
             try {
