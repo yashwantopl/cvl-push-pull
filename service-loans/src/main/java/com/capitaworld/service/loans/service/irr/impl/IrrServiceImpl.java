@@ -399,10 +399,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostFy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
@@ -672,10 +672,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostSy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
@@ -948,10 +948,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostTy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
