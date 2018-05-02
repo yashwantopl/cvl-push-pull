@@ -172,7 +172,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	DecimalFormat decim = new DecimalFormat("#,###");
+	DecimalFormat decim = new DecimalFormat("#,###.00");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
