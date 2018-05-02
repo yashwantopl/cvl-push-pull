@@ -111,11 +111,11 @@ public class CamReportPdfDetailsController {
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				System.out.println(documentResponse.getData());
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfull", HttpStatus.OK.value(),documentResponse.getData()), HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
-					return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 				}
 
 		} catch (Exception e) {

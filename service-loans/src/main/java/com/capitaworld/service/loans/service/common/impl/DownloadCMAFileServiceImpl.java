@@ -140,7 +140,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				//sheet1.getRow(51).getCell(j).setCellValue(operatingStatementDetails.getTotalCostSales());
 				
 				sheet1.getRow(53).getCell(j).setCellValue(operatingStatementDetails.getSellingAndDistributionExpenses());
-				sheet1.getRow(55).getCell(j).setCellValue(operatingStatementDetails.getSellingGenlAdmnExpenses());
+				sheet1.getRow(55).getCell(j).setCellValue(operatingStatementDetails.getGeneralAdminExp());
 				
 				//sheet1.getRow(57).getCell(j).setCellValue(operatingStatementDetails.getSubTotalCostSalesAndSelling());
 				

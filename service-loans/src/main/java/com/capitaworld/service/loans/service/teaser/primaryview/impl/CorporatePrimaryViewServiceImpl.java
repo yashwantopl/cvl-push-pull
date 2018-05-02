@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +112,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     private IrrService irrService;
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat decim = new DecimalFormat("#,###.00");
     @Override
     public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId) {
 
@@ -592,4 +594,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             }
         return corporatePrimaryViewResponse;
     }
+    public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
 }

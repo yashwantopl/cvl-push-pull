@@ -122,21 +122,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -277,21 +277,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
