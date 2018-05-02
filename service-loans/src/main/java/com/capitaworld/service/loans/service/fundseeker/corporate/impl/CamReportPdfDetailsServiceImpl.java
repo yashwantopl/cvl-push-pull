@@ -172,7 +172,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-	DecimalFormat decim = new DecimalFormat("#,###.00");
+	DecimalFormat decim = new DecimalFormat("#,###");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -664,6 +664,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         financialInputRequestString.setDividendPayOutSy(convertValue(financialInputRequest.getDividendPayOutSy()));
         financialInputRequestString.setDividendPayOutTy(convertValue(financialInputRequest.getDividendPayOutTy()));
 		
+        financialInputRequest.setShareCapitalFy(financialInputRequest.getShareCapitalFy());
+        financialInputRequest.setShareCapitalSy(financialInputRequest.getShareCapitalSy());
+        financialInputRequest.setShareCapitalTy(financialInputRequest.getShareCapitalTy());
+        
         financialInputRequestString.setShareCapitalFy(convertValue(financialInputRequest.getShareCapitalFy()));
         financialInputRequestString.setShareCapitalSy(convertValue(financialInputRequest.getShareCapitalSy()));
         financialInputRequestString.setShareCapitalTy(convertValue(financialInputRequest.getShareCapitalTy()));
