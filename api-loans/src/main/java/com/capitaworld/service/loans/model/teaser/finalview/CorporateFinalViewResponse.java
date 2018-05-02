@@ -134,6 +134,7 @@ public class CorporateFinalViewResponse implements Serializable{
     private List<Object> residenceAddOfDirectors;
     private List<Object> cibilReport;
     private List<Object> bankStatement;
+    private List<Object> cmaList;
 
     
     
@@ -872,6 +873,12 @@ public class CorporateFinalViewResponse implements Serializable{
 	}
 	public void setBankStatement(List<Object> bankStatement) {
 		this.bankStatement = bankStatement;
+	}
+	public List<Object> getCmaList() {
+		return cmaList;
+	}
+	public void setCmaList(List<Object> cmaList) {
+		this.cmaList = cmaList;
 	}
     
     

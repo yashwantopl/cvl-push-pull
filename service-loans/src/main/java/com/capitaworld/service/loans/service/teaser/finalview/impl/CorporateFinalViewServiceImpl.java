@@ -877,6 +877,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.WC_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
 			
 			}
 			if(primaryCorporateDetail.getProductId() == 2) {
@@ -985,6 +992,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.TL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
 			}
 			if(primaryCorporateDetail.getProductId() == 15) {
 				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT);
@@ -1089,6 +1103,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				try{
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.USL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
