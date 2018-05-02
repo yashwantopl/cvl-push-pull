@@ -272,7 +272,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					/*try {
+					try {
 						CibilRequest cibilRequest = new CibilRequest();
 						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
 						cibilRequest.setApplicationId(applicationId);
@@ -281,7 +281,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}catch(Exception e) {
 						e.printStackTrace();
 						logger.info("Error while getting cibil details",e);
-					}*/
+					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
