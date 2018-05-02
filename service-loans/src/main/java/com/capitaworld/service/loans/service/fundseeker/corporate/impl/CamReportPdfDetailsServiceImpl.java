@@ -521,7 +521,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
-					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
 					map.put("fitchResponse",fitchOutputServ);
 					map.put("fitchTitle","Service");
 				}
@@ -1011,7 +1011,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
 				double total = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
 				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsFy()) && financialInputRequest.getShareHolderFundsFy() !=0) {
-					financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy() * total));
+					financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy() / total));
 				}else {
 					financialInputRequestString.setBookValueFy("0.0");
 				}
@@ -1026,7 +1026,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
 				double total = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
 				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsSy()) && financialInputRequest.getShareHolderFundsSy() !=0) {
-					financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy() * total));
+					financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy() / total));
 				}else {
 					financialInputRequestString.setBookValueSy("0.0");
 				}
@@ -1041,7 +1041,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
 				double total = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
 				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsTy()) && financialInputRequest.getShareHolderFundsTy() !=0) {
-					financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy() * total));
+					financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy() / total));
 				}else {
 					financialInputRequestString.setBookValueTy("0.0");
 				}
