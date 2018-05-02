@@ -44,7 +44,7 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	
 	private Boolean isActive = true;
 
-	/*@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")*/
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dob;
 
 	private String mobile;
