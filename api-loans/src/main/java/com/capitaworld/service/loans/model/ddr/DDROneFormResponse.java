@@ -31,7 +31,6 @@ public class DDROneFormResponse implements Serializable {
 	private String currency;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
-	private String age;
 
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -227,14 +226,6 @@ public class DDROneFormResponse implements Serializable {
 	public void setDirectorBackgroundDetailResponses(
 			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
 		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
-	}
-	
-	public String getAge() {
-		return age;
-	}
-
-	public void setAge(String age) {
-		this.age = age;
 	}
 
 	public static void printFields(Object obj) throws Exception {
