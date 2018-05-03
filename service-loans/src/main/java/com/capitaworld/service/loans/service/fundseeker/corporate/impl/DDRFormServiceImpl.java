@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
@@ -29,7 +28,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.ReferencesRetailDetail;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -160,7 +160,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
-
+	
+	DecimalFormat decim = new DecimalFormat("#,##0.00");
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 * @throws Exception 
@@ -1025,12 +1026,42 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//DIRECTOR BACKGROUND  DETAIL :- LINENO:12
 		try {
-			response.setDirectorBackgroundDetailList(backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId));
-		} catch (Exception e) {
-			logger.info("Throw Exception While Get Primary Directory Backgoud Details in DDR OneForm");
-			e.printStackTrace();
-		}
-		
+            List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
+            List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+            for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+                DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+                //directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
+                directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+                //directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
+                //directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
+                directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+                directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
+                String directorName = "";
+                if (directorBackgroundDetailRequest.getSalutationId() != null){
+                    directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
+                }
+                directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+                directorBackgroundDetailResponse.setDirectorsName(directorName);
+                //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
+                directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+                directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
+                directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
+                directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
+                directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+                directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
+                response.setAge(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob())? convertValue(CommonUtils.getAgeFromBirthDate(directorBackgroundDetailRequest.getDob())): "-");
+                directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+                directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+                directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+                directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+                directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
+                directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+                directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+            }
+            response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+        } catch (Exception e) {
+            logger.error("Problem to get Data of Director's Background {}", e);
+        }
 		//PRODUCT DETAILS PROPOSED AND EXISTING (Description of Products) :- LINENO:111
 		try {
 			response.setProposedProductDetailList(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId));
@@ -2320,5 +2351,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 			throw new Exception();
 		}
 	}
+	public String convertValue(Integer value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? value.toString(): "0";
+	}
+	
 	
 }
