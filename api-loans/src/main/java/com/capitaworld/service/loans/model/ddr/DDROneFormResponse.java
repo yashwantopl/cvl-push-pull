@@ -7,14 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
-import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -34,6 +31,7 @@ public class DDROneFormResponse implements Serializable {
 	private String currency;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
+	private String age;
 
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -53,8 +51,9 @@ public class DDROneFormResponse implements Serializable {
 	List<DDRCMACalculationResponse> dDRCMACalculationList = null;
 	//List<ReferenceRetailDetailsRequest> referencesResponseList = null;
 	//List<SecurityCorporateDetailRequest> securityCorporateDetailList = null;
-	List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
-
+	//List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	
 	public DDROneFormResponse() {
 		//securityCorporateDetailList = Collections.emptyList();
 		//referencesResponseList = Collections.emptyList();
@@ -65,7 +64,7 @@ public class DDROneFormResponse implements Serializable {
 		fincArrngDetailResList = Collections.emptyList();
 		/*ownershipRespList = Collections.emptyList();*/
 		promoBackRespList = Collections.emptyList();
-		directorBackgroundDetailList = Collections.emptyList();
+		//directorBackgroundDetailList = Collections.emptyList();
 	}
 
 	public String getNameOfBorrower() {
@@ -187,7 +186,7 @@ public class DDROneFormResponse implements Serializable {
 	public void setdDRCMACalculationList(List<DDRCMACalculationResponse> dDRCMACalculationList) {
 		this.dDRCMACalculationList = dDRCMACalculationList;
 	}
-
+	
 	/*public List<ReferenceRetailDetailsRequest> getReferencesResponseList() {
 		return referencesResponseList;
 	}
@@ -204,13 +203,14 @@ public class DDROneFormResponse implements Serializable {
 		this.securityCorporateDetailList = securityCorporateDetailList;
 	}*/
 
-	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
+	/*public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
 		return directorBackgroundDetailList;
 	}
 
 	public void setDirectorBackgroundDetailList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailList) {
 		this.directorBackgroundDetailList = directorBackgroundDetailList;
-	}
+	}*/
+
 
 	public String getCurrency() {
 		return currency;
@@ -219,9 +219,25 @@ public class DDROneFormResponse implements Serializable {
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
-	
 
-	  public static void printFields(Object obj) throws Exception {
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+	
+	public String getAge() {
+		return age;
+	}
+
+	public void setAge(String age) {
+		this.age = age;
+	}
+
+	public static void printFields(Object obj) throws Exception {
 	         Field[] fields = DDROneFormResponse.class.getDeclaredFields();
 	         System.out.println("length : "+fields.length);
 	         for(Field field : fields) {
