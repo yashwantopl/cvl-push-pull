@@ -502,7 +502,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-					map.put("fitchResponse",fitchOutputManu);
+					map.put("fitchResponse",convertToString(fitchOutputManu));
 					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
 					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
 					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
@@ -516,13 +516,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-					map.put("fitchResponse",fitchOutputTrad);
+					map.put("fitchResponse",convertToString(fitchOutputTrad));
 					map.put("fitchTitle","Trading");
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
-					map.put("fitchResponse",fitchOutputServ);
+					map.put("fitchResponse",convertToString(fitchOutputServ));
 					map.put("fitchTitle","Service");
 				}
 			}
