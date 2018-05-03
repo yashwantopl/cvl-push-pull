@@ -22,5 +22,6 @@ public interface DDRFormService {
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
 	
 }

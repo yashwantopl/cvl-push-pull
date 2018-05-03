@@ -194,6 +194,17 @@ public class DDRFormController {
 		else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
 		}
+		Boolean isDDRApproved =false;
+		try {
+			isDDRApproved = ddrFormService.isDDRApproved(userId, appId);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if(!isDDRApproved) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.DDR_NOT_APPROVED, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}
 		
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
