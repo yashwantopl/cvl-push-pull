@@ -203,7 +203,7 @@ public class DDRFormController {
 		}
 		if(!isDDRApproved) {
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.DDR_NOT_APPROVED, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+					new LoansResponse(CommonUtils.DDR_NOT_APPROVED, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		try {
