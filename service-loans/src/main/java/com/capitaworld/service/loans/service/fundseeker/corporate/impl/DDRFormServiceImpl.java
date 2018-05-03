@@ -874,7 +874,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		
 		//Contact Details  :- LINENO:8
-		response.setContactNo(applicantDetail.getLandlineNo());
+		//response.setContactNo(applicantDetail.getLandlineNo());
 		
 		//GET ADMINISRATIVE (Corporate Office) ADDRESS  :- LINENO:9
 		String admntOfficeAdd = "";
@@ -1998,7 +1998,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				dDRFormDetails.setModifyDate(new Date());
 				break;
 				
-			case 331:
+			case 354:
 				dDRFormDetails.setBankStatementOfLast12months("Yes");
 				dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
 				dDRFormDetails.setModifyDate(new Date());
