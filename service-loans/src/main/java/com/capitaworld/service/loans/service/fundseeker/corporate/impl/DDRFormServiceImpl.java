@@ -2301,5 +2301,24 @@ public class DDRFormServiceImpl implements DDRFormService{
 		return 0L;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService#isDDRApproved(java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception {
+		try {
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
+					userId);
+
+			if (loanApplicationMaster.getDdrStatusId() == CommonUtils.ApplicationStatus.APPROVED) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception();
+		}
+	}
 	
 }
