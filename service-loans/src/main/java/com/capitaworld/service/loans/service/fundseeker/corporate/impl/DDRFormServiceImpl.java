@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -166,6 +167,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
 	 * @throws Exception 
 	 */
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	@Override
 	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception {
 		
@@ -1049,8 +1051,7 @@ public class DDRFormServiceImpl implements DDRFormService{
                 directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
                 directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
                 directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-                response.setAge(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob())? convertValue(CommonUtils.getAgeFromBirthDate(directorBackgroundDetailRequest.getDob())): "-");
-                directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+                directorBackgroundDetailResponse.setDob(DATE_FORMAT.parse(DATE_FORMAT.format(directorBackgroundDetailRequest.getDob())));
                 directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
                 directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
                 directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
