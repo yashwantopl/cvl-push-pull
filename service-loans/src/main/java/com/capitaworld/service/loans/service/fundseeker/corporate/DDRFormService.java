@@ -24,4 +24,6 @@ public interface DDRFormService {
 	
 	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
 	
+	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
+	
 }
