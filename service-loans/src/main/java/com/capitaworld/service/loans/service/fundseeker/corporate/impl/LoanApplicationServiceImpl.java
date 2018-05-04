@@ -4584,6 +4584,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Exit in inActiveApplication");
 		return 0;
 	}
+
+	@Override
+	public boolean savePhese1DataToSidbi(Long applicationId, Long userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean savePhese2DataToSidbi(Long applicationId, Long userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	
 
 }
