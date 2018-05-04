@@ -18,10 +18,12 @@ public interface DDRFormService {
 	
 	public List<JSONObject> getFinancialSummaryToBeFieldsList();
 	
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long productId);
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId);
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	
 	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
+	
+	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 }

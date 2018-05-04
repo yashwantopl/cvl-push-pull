@@ -142,7 +142,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,productId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(),oneFormDetails), HttpStatus.OK);
@@ -182,8 +182,8 @@ public class DDRFormController {
 	}
 	
 	
-	@RequestMapping(value = "/generateDDRPDF/{appId}/{productId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, @PathVariable(value = "productId") Long productId, HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "clientId", required = false) Long clientId){
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -208,7 +208,7 @@ public class DDRFormController {
 		
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId,userId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,productId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();
