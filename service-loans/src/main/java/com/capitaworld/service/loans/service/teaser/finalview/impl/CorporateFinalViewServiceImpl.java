@@ -771,6 +771,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 	            } catch (DocumentException e) {
 	                e.printStackTrace();
 	            }
+	            documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+	            try {
+	                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+	                corporateFinalViewResponse.setIrtPdfReport(documentResponse.getDataList());
+	            } catch (DocumentException e) {
+	                e.printStackTrace();
+	            }
 			if(primaryCorporateDetail.getProductId() == 1) {
 				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 				try{

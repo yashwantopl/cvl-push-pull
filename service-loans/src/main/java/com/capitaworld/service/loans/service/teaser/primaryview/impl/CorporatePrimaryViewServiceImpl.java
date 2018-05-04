@@ -592,6 +592,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
+            documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+            try {
+                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+                corporatePrimaryViewResponse.setIrtPdfReport(documentResponse.getDataList());
+            } catch (DocumentException e) {
+                e.printStackTrace();
+            }
         return corporatePrimaryViewResponse;
     }
     public String convertValue(Double value) {
