@@ -39,6 +39,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -161,6 +162,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
+	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
 	/**
@@ -845,7 +849,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long productId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
@@ -857,6 +861,21 @@ public class DDRFormServiceImpl implements DDRFormService{
 		if(CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
 			return response;
+		}
+		//GET ORGANIZATION TYPE
+		try {
+			
+			Long orgId = productMasterRepository.getUserOrgId(productId);
+				if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
+    				String orgName = CommonUtils.getOrganizationName(orgId.intValue());
+    				response.setOrgName(orgName);
+    			}else {
+    				logger.info("No org Id found");
+    			}
+    		
+		} catch(Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting user org id",e);
 		}
 		
 		//ORGANIZATION NAME :- LINENO:6

@@ -29,6 +29,7 @@ public class DDROneFormResponse implements Serializable {
 	private String establishMentYear;
 	private String aboutMe;
 	private String currency;
+	private String orgName;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
 	
@@ -237,6 +238,13 @@ public class DDROneFormResponse implements Serializable {
 	public void setDirectorBackgroundDetailResponses(
 			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
 		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
 	}
 
 	public static void printFields(Object obj) throws Exception {
