@@ -85,6 +85,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetai
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
@@ -128,6 +129,11 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.ScoreParameterResult;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
@@ -143,6 +149,7 @@ import com.capitaworld.sidbi.integration.model.CurrentFinancialArrangementsDetai
 import com.capitaworld.sidbi.integration.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.LoanMasterRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
+import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
 
 @Service
 @Transactional
@@ -200,7 +207,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LogService logService;
+	
+	@Autowired
+	private ScoringClient scoringClient;
 
+	@Autowired
+	private ProposalService proposalService;
+	
 	@Autowired
 	private GatewayClient gatewayClient;
 
@@ -4630,13 +4643,53 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		ProfileReqRes prelimData = getPrelimData(applicationId,userId);
 		if(prelimData == null)
 			return false;
-		
+
 		try {
-			return sidbiIntegrationClient.savePrelimInfo(prelimData);
+			sidbiIntegrationClient.savePrelimInfo(prelimData);
 		}catch(Exception e) {
 			e.printStackTrace();
-			return false;
+
 		}
+		// TODO Auto-generated method stub
+        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+        proposalMappingRequest.setApplicationId(applicationId);
+        ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
+        if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())){
+			Long productId=null;
+        	List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+			try {
+				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+                        ProposalMappingRequest.class);
+				productId = proposalMappingRequest1.getFpProductId();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setFpProductId(productId);
+			try {
+				ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
+				if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
+					try {
+						ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+                                ScoreParameterResult.class);
+						ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
+						BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
+						try {
+							sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (ScoringException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return true;
 	}
 
 	@Override
