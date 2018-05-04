@@ -940,7 +940,39 @@ public class CommonUtils {
 		Double sub= a-b-c;
 		return sub;
 	}
-	
+	public static String getOrganizationName(Integer x) {
+		switch (x) {
+		case 1:
+			return "UNION";
+		case 2:
+			return "SARASWAT";
+		case 3:
+			return "Axis";
+		case 4:
+			return "ICICI";
+		case 5:
+			return "IDBI";
+		case 6:
+			return "RBL";
+		case 7:
+			return "Tata Capital";
+		case 8:
+			return "IDFC";
+		case 9:
+			return "Dena Bank";
+		case 10:
+			return "SIDBI";
+		case 11:
+			return "NHBS";
+		case 12:
+			return "CANARA BANK";
+		case 13:
+			return "Indian Bank";
+		case 14:
+			return "BOI";
+		}
+		return null;
+	}
 
 
 }
