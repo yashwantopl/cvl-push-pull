@@ -146,6 +146,10 @@ public interface LoanApplicationService {
 	
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
+	public boolean savePhese1DataToSidbi(Long applicationId,Long userId);
+	
+	public boolean savePhese2DataToSidbi(Long applicationId,Long userId);
+	
 	
 }
 
