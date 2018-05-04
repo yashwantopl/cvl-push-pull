@@ -81,9 +81,9 @@ public class CreditRatingOrganizationDetailsController {
 
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean primaryLocked = loanApplicationService.isPrimaryLocked(frameRequest.getApplicationId(),
+			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(),
 					finalUserId);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -171,8 +171,8 @@ public class CreditRatingOrganizationDetailsController {
 		try {
 			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
-			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
-			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+			Boolean finalLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);

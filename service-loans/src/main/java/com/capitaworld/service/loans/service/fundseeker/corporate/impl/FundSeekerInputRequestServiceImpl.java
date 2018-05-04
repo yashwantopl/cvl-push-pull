@@ -7,10 +7,12 @@ import com.capitaworld.connect.client.ConnectClient;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
- import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
  import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
  import com.capitaworld.service.loans.model.LoansResponse;
- import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
@@ -151,7 +153,26 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
-
+            //==== Applicant Address
+            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+                logger.info("corporateApplicantDetail is null created new object");
+                corporateApplicantDetail=new CorporateApplicantDetail();
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","isActive");
+                corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setCreatedDate(new Date());
+                corporateApplicantDetail.setIsActive(true);
+            } else {
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+                corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setModifiedDate(new Date());
+            }
+            copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+            corporateApplicantDetailRepository.save(corporateApplicantDetail);
+            //==== Director details
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 
             try {
@@ -271,7 +292,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
         try {
-
+            //=== Applicant Address
+            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
+            {
+                corporateApplicantDetail=new CorporateApplicantDetail();
+            }
+            BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
+            copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+            //=== Director
             List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
 
             for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
@@ -319,6 +348,70 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return new LoansResponse("Something went wrong while Checking your Eligibility",HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
-    
-    
+
+    private static void copyAddressFromRequestToDomain(FundSeekerInputRequestResponse from, CorporateApplicantDetail to) {
+        // Setting Regsiterd Address
+        if (from.getFirstAddress() != null) {
+            to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
+            to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
+            to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
+            to.setRegisteredPincode(from.getFirstAddress().getPincode());
+            to.setRegisteredCityId(from.getFirstAddress().getCityId());
+            to.setRegisteredStateId(from.getFirstAddress().getStateId());
+            to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+        }
+
+		/*// Setting Administrative Address
+		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
+			if (from.getFirstAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
+				to.setAdministrativePincode(from.getFirstAddress().getPincode());
+				to.setAdministrativeCityId(from.getFirstAddress().getCityId());
+				to.setAdministrativeStateId(from.getFirstAddress().getStateId());
+				to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			}
+		} else {
+			if (from.getSecondAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
+				to.setAdministrativePincode(from.getSecondAddress().getPincode());
+				to.setAdministrativeCityId(from.getSecondAddress().getCityId());
+				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
+				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			}
+		}*/
+    }
+
+    private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from, FundSeekerInputRequestResponse to) {
+        // Setting Regsiterd Address
+        Address address = new Address();
+
+        address.setPremiseNumber(from.getRegisteredPremiseNumber());
+        address.setLandMark(from.getRegisteredLandMark());
+        address.setStreetName(from.getRegisteredStreetName());
+        address.setPincode(from.getRegisteredPincode());
+        address.setCityId(from.getRegisteredCityId());
+        address.setStateId(from.getRegisteredStateId());
+        address.setCountryId(from.getRegisteredCountryId());
+        to.setFirstAddress(address);
+		/*if (from.getSameAs() != null && from.getSameAs()) {
+			to.setSecondAddress(address);
+		} else {
+			address = new Address();
+			address.setPremiseNumber(from.getAdministrativePremiseNumber());
+			address.setLandMark(from.getAdministrativeLandMark());
+			address.setStreetName(from.getAdministrativeStreetName());
+			address.setPincode(from.getAdministrativePincode());
+			address.setCityId(from.getAdministrativeCityId());
+			address.setStateId(from.getAdministrativeStateId());
+			address.setCountryId(from.getAdministrativeCountryId());
+			to.setSecondAddress(address);
+
+		}*/
+
+        // Setting Administrative Address
+    }
 }
