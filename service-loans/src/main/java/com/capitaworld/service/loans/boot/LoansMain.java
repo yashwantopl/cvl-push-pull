@@ -26,6 +26,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
 //import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 
 /**
  * @author win7
@@ -88,6 +89,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.connect.url}")
 	private String connectBaseUrl;
+	
+	@Value("${capitaworld.service.sidbi.integration.url}")
+	private String sidbiIntegrationBaseUrl;
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -190,6 +194,13 @@ public class LoansMain {
 		ConnectClient connectClient = new ConnectClient(connectBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
+	}
+	
+	@Bean
+	public SidbiIntegrationClient sidbiIntegrationClient() {
+		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
+		return sidbiIntegrationClient;
 	}
 
 }

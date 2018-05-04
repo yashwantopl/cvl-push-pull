@@ -38,6 +38,8 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryUnsecuredLoanDetail;
@@ -65,13 +67,14 @@ import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
-import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
@@ -112,9 +115,12 @@ import com.capitaworld.service.oneform.enums.CampaignCode;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.SubSector;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -130,7 +136,11 @@ import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
+import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
+import com.capitaworld.sidbi.integration.model.AddressRequest;
 import com.capitaworld.sidbi.integration.model.CorporateProfileRequest;
+import com.capitaworld.sidbi.integration.model.CurrentFinancialArrangementsDetailRequest;
+import com.capitaworld.sidbi.integration.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.sidbi.integration.model.LoanMasterRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 
@@ -145,6 +155,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private SidbiIntegrationClient  sidbiIntegrationClient;  
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -211,6 +224,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RatingClient ratingClient;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository; 
 
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -4608,8 +4627,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId) {
 		//Create Prelim Sheet Object
-		getPrelimData(applicationId);
-		return false;
+		ProfileReqRes prelimData = getPrelimData(applicationId,userId);
+		if(prelimData == null)
+			return false;
+		
+		try {
+			return sidbiIntegrationClient.savePrelimInfo(prelimData);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
@@ -4618,7 +4645,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return false;
 	}
 	
-	private ProfileReqRes getPrelimData(Long applicationId) {
+	private ProfileReqRes getPrelimData(Long applicationId, Long userId) {
 		//Get and Create Loan Master
 		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		if(applicationMaster == null) {
@@ -4640,9 +4667,147 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		profileReqRes.setLoanMasterRequest(loanMasterRequest);
 		
 		//Create Corporate Profile Object
-		CorporateProfileRequest corporateProfileRequest = new CorporateProfileRequest();
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		if(corporateApplicantDetail != null) {
+			CorporateProfileRequest corporateProfileRequest = new CorporateProfileRequest();
+			corporateProfileRequest.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+			corporateProfileRequest.setGstin(corporateApplicantDetail.getGstIn());
+			if(corporateApplicantDetail.getConstitutionId() != null) {
+				corporateProfileRequest.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());				
+			}
+			corporateProfileRequest.setEstablishmentYear(corporateApplicantDetail.getEstablishmentYear());
+			corporateProfileRequest.setPan(corporateApplicantDetail.getPanNo());
+			UsersRequest usersRequest = null;
+			try {
+				UserResponse emailMobile = userClient.getEmailMobile(userId);
+				usersRequest = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+				corporateProfileRequest.setContactNo(usersRequest.getMobile());
+				corporateProfileRequest.setEmail(usersRequest.getEmail());
+			} catch (Exception e) {
+				logger.info("Throw Exception While Get User Email and Mobile");
+				e.printStackTrace();
+			}
+			
+			//setting Registered Address
+			AddressRequest addressRequest = new AddressRequest();
+			addressRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+			addressRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+			addressRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+			if(corporateApplicantDetail.getRegisteredPincode() != null) {
+				addressRequest.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());				
+			}
+			try {
+				addressRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				addressRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				addressRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			corporateProfileRequest.setRegisteredAddress(addressRequest);
+			
+			//setting Registered Address
+			AddressRequest administrativeRequest = new AddressRequest();
+			administrativeRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+			administrativeRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+			administrativeRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+			if(corporateApplicantDetail.getRegisteredPincode() != null) {
+				administrativeRequest.setPincode(corporateApplicantDetail.getAdministrativePincode().toString());				
+			}
+			try {
+				administrativeRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				administrativeRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				administrativeRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			corporateProfileRequest.setAdministrativeAddress(administrativeRequest);
+			if(corporateApplicantDetail.getKeyVericalFunding() != null) {
+				corporateProfileRequest.setIndustry(Industry.getById(corporateApplicantDetail.getKeyVericalFunding().intValue()).getValue());				
+			}
+			
+			if(corporateApplicantDetail.getKeyVerticalSector() != null) {
+//				corporateProfileRequest.setIndustry(Sector.getById(corporateApplicantDetail.getKeyVerticalSector().intValue()).getValue());				
+			}
+			
+			if(corporateApplicantDetail.getKeyVerticalSubsector() != null) {
+				corporateProfileRequest.setIndustry(SubSector.getById(corporateApplicantDetail.getKeyVerticalSubsector().intValue()).getValue());				
+			}
+			profileReqRes.setCorporateProfileRequest(corporateProfileRequest);
+			//Setting Director Details
+			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationId));
+			//Setting Current Financial Details
+			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationId));
+			return profileReqRes;
+		}else {
+			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationId);
+		}
 		
 		return null;
+	}
+	
+	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId){
+		List<DirectorBackgroundDetail> direcotors = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+		if(CommonUtils.isListNullOrEmpty(direcotors)) {
+			logger.warn("No Directors Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
+			for(DirectorBackgroundDetail source : direcotors) {
+				DirectorBackgroundDetailRequest target = new DirectorBackgroundDetailRequest();
+				target.setName(source.getDirectorsName());
+				if(source.getGender() != null) {
+					target.setGender(Gender.getById(source.getGender()).getValue());						
+				}
+				target.setAddress(source.getAddress());
+				target.setPanNo(source.getPanNo());
+				if(source.getRelationshipType() != null) {
+					target.setRelationshipType(DirectorRelationshipType.getById(source.getRelationshipType()).getValue());						
+				}
+				target.setMobile(source.getMobile());
+				target.setDob(source.getDob());
+				target.setTotalExperience(source.getTotalExperience());
+				target.setNetworth(source.getNetworth());
+				listData.add(target);
+			}
+			return listData;
+		}
+	}
+	
+	private List<CurrentFinancialArrangementsDetailRequest> getCurrentFinancialDetaisForSidbi(Long applicationId){
+		List<FinancialArrangementsDetail> financialDetails = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
+		if(CommonUtils.isListNullOrEmpty(financialDetails)) {
+			logger.warn("No Current Financial Details Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<CurrentFinancialArrangementsDetailRequest> listData = new ArrayList<>(financialDetails.size());
+			for(FinancialArrangementsDetail source : financialDetails) {
+				CurrentFinancialArrangementsDetailRequest target = new CurrentFinancialArrangementsDetailRequest();
+				target.setLenderName(source.getFinancialInstitutionName());
+				target.setSanctionedAmount(source.getAmount());
+				target.setAmount(source.getOutstandingAmount());
+				listData.add(target);
+			}
+			return listData;
+		}
 	}
 
 }
