@@ -9,7 +9,7 @@ import java.util.List;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,6 +31,7 @@ public class DDROneFormResponse implements Serializable {
 	private String currency;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
+	
 
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -43,7 +44,7 @@ public class DDROneFormResponse implements Serializable {
 
 	List<PromotorBackgroundDetailResponse> promoBackRespList = null;
 	/*List<OwnershipDetailResponse> ownershipRespList = null;*/
-	List<FinancialArrangementsDetailResponse> fincArrngDetailResList = null;
+	//List<FinancialArrangementsDetailResponse> fincArrngDetailResList = null;
 	List<ProposedProductDetailRequest> proposedProductDetailList = null;
 	List<ExistingProductDetailRequest> existingProductDetailList = null;
 	List<AssociatedConcernDetailRequest> associatedConcernDetailList = null;
@@ -52,6 +53,7 @@ public class DDROneFormResponse implements Serializable {
 	//List<SecurityCorporateDetailRequest> securityCorporateDetailList = null;
 	//List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
 	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	private List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList;
 	
 	public DDROneFormResponse() {
 		//securityCorporateDetailList = Collections.emptyList();
@@ -60,7 +62,7 @@ public class DDROneFormResponse implements Serializable {
 		associatedConcernDetailList = Collections.emptyList();
 		existingProductDetailList = Collections.emptyList();
 		proposedProductDetailList = Collections.emptyList();
-		fincArrngDetailResList = Collections.emptyList();
+		//fincArrngDetailResList = Collections.emptyList();
 		/*ownershipRespList = Collections.emptyList();*/
 		promoBackRespList = Collections.emptyList();
 		//directorBackgroundDetailList = Collections.emptyList();
@@ -146,13 +148,13 @@ public class DDROneFormResponse implements Serializable {
 		this.ownershipRespList = ownershipRespList;
 	}*/
 
-	public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
+	/*public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
 		return fincArrngDetailResList;
 	}
 
 	public void setFincArrngDetailResList(List<FinancialArrangementsDetailResponse> fincArrngDetailResList) {
 		this.fincArrngDetailResList = fincArrngDetailResList;
-	}
+	}*/
 
 	public List<ProposedProductDetailRequest> getProposedProductDetailList() {
 		return proposedProductDetailList;
@@ -209,10 +211,19 @@ public class DDROneFormResponse implements Serializable {
 	public void setDirectorBackgroundDetailList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailList) {
 		this.directorBackgroundDetailList = directorBackgroundDetailList;
 	}*/
-
+	
 
 	public String getCurrency() {
 		return currency;
+	}
+
+	public List<FinancialArrangementDetailResponseString> getFinancialArrangementsDetailResponseList() {
+		return financialArrangementsDetailResponseList;
+	}
+
+	public void setFinancialArrangementsDetailResponseList(
+			List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList) {
+		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
 	}
 
 	public void setCurrency(String currency) {

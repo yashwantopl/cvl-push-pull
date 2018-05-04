@@ -31,8 +31,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatem
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -985,36 +985,27 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :- LINENO:21
 		try {
-			List<FinancialArrangementsDetailRequest> fincArrngDetailReqList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-			List<FinancialArrangementsDetailResponse> fincArrngDetailResList = new ArrayList<>(fincArrngDetailReqList.size());
-			FinancialArrangementsDetailResponse fincArragDetailResp = null;
-			for (FinancialArrangementsDetailRequest fincArrngDetailReq : fincArrngDetailReqList) {
-				fincArragDetailResp = new FinancialArrangementsDetailResponse();
-				BeanUtils.copyProperties(fincArrngDetailReq, fincArragDetailResp);
-				//fincArragDetailResp.setFacilityNature(NatureFacility.getById(fincArrngDetailReq.getFacilityNatureId()).getValue());
-				/*if(!CommonUtils.isObjectNullOrEmpty(fincArrngDetailReq.getRelationshipSince())) {
-					try {
-						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(fincArrngDetailReq.getRelationshipSince().longValue());
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							fincArragDetailResp.setRelationshipSinceInYear(masterResponse.getValue());
-						}	
-					} catch (Exception e) {
-						logger.info("Throw Exception while get relationship sinc year in DDR OneForm");
-						e.printStackTrace();
-					}	
-				}*/
-				FinancialArrangementsDetailResponse.printFields(fincArragDetailResp);
-				fincArrngDetailResList.add(fincArragDetailResp);
-			}
-			response.setFincArrngDetailResList(fincArrngDetailResList);
-		} catch (Exception e) {
-			logger.info("Throw Exception While Get Current Financial Arangement Details in DDR OneForm");
-			e.printStackTrace();
-		}
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+            	financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+                financialArrangementsDetailResponse.setOutstandingAmount(convertDouble(financialArrangementsDetailRequest.getOutstandingAmount()));
+                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                financialArrangementsDetailResponse.setAmount(convertDouble(financialArrangementsDetailRequest.getAmount()));
+                //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+                //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+            }
+            response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+
+        } catch (Exception e) {
+            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+        }
 		
 		
 		/*//SECURITY DETAIL :- LINENO:12
@@ -2354,6 +2345,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	public String convertValue(Integer value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? value.toString(): "0";
+	}
+	public String convertDouble(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value): "0";
 	}
 	
 	
