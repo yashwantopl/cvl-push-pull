@@ -849,7 +849,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long productId) {
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
 		DDROneFormResponse response = new DDROneFormResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
@@ -864,10 +864,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 		//GET ORGANIZATION TYPE
 		try {
-			
-			Long orgId = productMasterRepository.getUserOrgId(productId);
+			Integer productId = loanApplicationMaster.getProductId();
+			Integer orgId = productMasterRepository.getUserOrgId(productId);
 				if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
-    				String orgName = CommonUtils.getOrganizationName(orgId.intValue());
+    				String orgName = CommonUtils.getOrganizationName(orgId);
     				response.setOrgName(orgName);
     			}else {
     				logger.info("No org Id found");
@@ -895,9 +895,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 		regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode())?applicantDetail.getRegisteredPincode() : "";
 		response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		
-		//Contact Details  :- LINENO:8
-		response.setContactNo(applicantDetail.getLandlineNo());
-		
 		//GET ADMINISRATIVE (Corporate Office) ADDRESS  :- LINENO:9
 		String admntOfficeAdd = "";
 		admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber()) ? applicantDetail.getAdministrativePremiseNumber() + ", " : "";
@@ -920,6 +917,8 @@ public class DDRFormServiceImpl implements DDRFormService{
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				response.setRegEmailId(request.getEmail());
+    				//Contact Details  :- LINENO:8
+    				response.setContactNo(request.getMobile());
     			}
     		}	
 		} catch(Exception e) {
