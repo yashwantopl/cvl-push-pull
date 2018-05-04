@@ -18,7 +18,7 @@ public interface DDRFormService {
 	
 	public List<JSONObject> getFinancialSummaryToBeFieldsList();
 	
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId);
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId, Long productId);
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	
