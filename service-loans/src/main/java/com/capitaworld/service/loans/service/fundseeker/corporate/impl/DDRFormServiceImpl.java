@@ -1039,11 +1039,11 @@ public class DDRFormServiceImpl implements DDRFormService{
 		}
 		//GET ORGANIZATION TYPE
 		try {
-			Integer productId = loanApplicationMaster.getProductId();
-			Integer orgId = productMasterRepository.getUserOrgId(productId);
+			Long orgId = loanApplicationMaster.getNpOrgId();
 				if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
-    				String orgName = CommonUtils.getOrganizationName(orgId);
+    				String orgName = CommonUtils.getOrganizationName(orgId.intValue());
     				response.setOrgName(orgName);
+    				logger.info("Org name",orgName);
     			}else {
     				logger.info("No org Id found");
     			}

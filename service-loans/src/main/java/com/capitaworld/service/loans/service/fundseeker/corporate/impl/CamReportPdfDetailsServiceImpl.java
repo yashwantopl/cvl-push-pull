@@ -32,6 +32,7 @@ import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
@@ -246,9 +247,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//DIRECTOR'S BACKGROUND
 			try {
 				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-				List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+				List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-					DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
@@ -262,11 +263,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(convertValue(directorBackgroundDetailRequest.getTotalExperience()));
+					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
 					directorBackgroundDetailResponse.setNetworth(convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin().toString());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					try {
