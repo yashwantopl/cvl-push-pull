@@ -5155,25 +5155,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		//setting Registered Address
 		AddressRequest administrativeRequest = new AddressRequest();
-		administrativeRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
-		administrativeRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
-		administrativeRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
-		if(corporateApplicantDetail.getRegisteredPincode() != null) {
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativePremiseNumber()))
+		    administrativeRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStreetName()))
+		    administrativeRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeLandMark()))
+            administrativeRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+		if(corporateApplicantDetail.getAdministrativePincode() != null) {
 			administrativeRequest.setPincode(corporateApplicantDetail.getAdministrativePincode().toString());				
 		}
 		try {
-			administrativeRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
+            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+			    administrativeRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			administrativeRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			    administrativeRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			administrativeRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+			    administrativeRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
