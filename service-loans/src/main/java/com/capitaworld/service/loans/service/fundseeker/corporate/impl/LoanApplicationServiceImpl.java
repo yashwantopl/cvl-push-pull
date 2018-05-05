@@ -4850,7 +4850,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
 			}
             irrRequest.setApplicationId(applicationId.intValue());
-			irrRequest.setBusinessTypeId(irrRequest.getBusinessTypeId());
+			irrRequest.setBusinessTypeId(rtResponse.getBusinessTypeId());
 			try {
 				Boolean result = sidbiIntegrationClient.saveIrrDetails(irrRequest);
 				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), result);
