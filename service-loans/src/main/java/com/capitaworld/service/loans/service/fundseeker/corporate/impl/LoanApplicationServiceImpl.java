@@ -4797,6 +4797,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				profileReqRes.setGuaDetailList(getGuarantorDetailsForSidbi(applicationId));
 				profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
 				profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
+				profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
 				try {
 					logger.info("Going to Save Detailed Infor==>");
 					Boolean result = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
