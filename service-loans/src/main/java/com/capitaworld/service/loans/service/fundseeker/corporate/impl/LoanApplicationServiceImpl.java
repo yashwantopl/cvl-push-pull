@@ -4826,7 +4826,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			logger.info("Before -----------------data->"+ratingResponse.getBusinessTypeId());
+			logger.info("Before -----------------data->"+ratingResponse.getData());
 			/*IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
 			logger.info("After -----------------data->"+ irrReq.toString());*/
 			BeanUtils.copyProperties(ratingResponse.getData(),irrRequest);
