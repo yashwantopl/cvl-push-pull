@@ -4825,10 +4825,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			//To save irr details
 			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
-			logger.info("ratingResponse response ----->" + ratingResponse.toString());
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			logger.info("data->"+ratingResponse.getData());
-			BeanUtils.copyProperties((IrrRequest) ratingResponse.getData(),irrRequest);
+			logger.info("Before -----------------data->"+ratingResponse.getData());
+			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
+			logger.info("After -----------------data->"+ irrReq.toString());
+			BeanUtils.copyProperties(irrReq,irrRequest);
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == irrRequest.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputManufacturingRequest(),irrOutputManufacturingRequest);
