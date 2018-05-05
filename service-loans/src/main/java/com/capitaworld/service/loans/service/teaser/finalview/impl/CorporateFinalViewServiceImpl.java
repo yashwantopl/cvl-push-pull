@@ -1121,6 +1121,121 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 					e.printStackTrace();
 				}
 			}
+			
+			if(primaryCorporateDetail.getProductId() == 16) {
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_AUDITED_ANNUAL_REPORT);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_IT_RETURN);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setItr(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_BANK_STATEMENT);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_SANCTION_LETTER_COPY);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PROVISIONAL_FINANCIALS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_FINANCIALS_OF_SUBSIDIARIES);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_ASSESSMENT_ORDERS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				/*documentRequest.setProductDocumentMappingId(DocumentAlias.USL_MOM_AOA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}*/
+				/*documentRequest.setProductDocumentMappingId(DocumentAlias.USL_GST_APPLIED);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}*/
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_COPY_OF_PAN_CARD);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PHOTO_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_DIRECTOR_ADDRESS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.WCTL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+			}
 				
 				
 				
