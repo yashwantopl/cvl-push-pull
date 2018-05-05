@@ -4829,7 +4829,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Before -----------------data->"+ratingResponse.getData());
 			/*IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
 			logger.info("After -----------------data->"+ irrReq.toString());*/
-			BeanUtils.copyProperties(ratingResponse.getData(),irrRequest);
+			BeanUtils.copyProperties((IrrRequest)ratingResponse.getData(),irrRequest);
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputManufacturingRequest(),irrOutputManufacturingRequest);
