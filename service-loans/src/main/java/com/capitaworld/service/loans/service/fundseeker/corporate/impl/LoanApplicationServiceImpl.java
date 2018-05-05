@@ -5193,7 +5193,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		
 		if(corporateApplicantDetail.getKeyVerticalSubsector() != null) {
-			corporateProfileRequest.setIndustry(SubSector.getById(corporateApplicantDetail.getKeyVerticalSubsector().intValue()).getValue());				
+			//key vertical Subsector
+			try{
+				OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+				if(!CommonUtils.isObjectNullOrEmpty(oneFormResponse.getData()))
+					corporateProfileRequest.setSubSector((String)oneFormResponse.getData());
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+				logger.warn("error while getting key vertical sub-sector");
+			}
+
 		}
 		corporateProfileRequest.setUdhyogAdhaar(corporateApplicantDetail.getAadhar());
 		corporateProfileRequest.setAbout(corporateApplicantDetail.getAboutUs());
