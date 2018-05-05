@@ -4781,7 +4781,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Loan Application Found Null====>{}",applicationId);
 				return false;
 			}
-			
+			userId = applicationMaster.getUserId();
 			ProfileReqRes profileReqRes = new  ProfileReqRes();
 			//Create Corporate Profile Object
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
@@ -4800,9 +4800,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					logger.info("Going to Save Detailed Infor==>");
 					Boolean result = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId, result);
+					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), result);
 				}catch(Exception e) {
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId, false);
+					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), false);
 					e.printStackTrace();
 					logger.info("Error while Calling Client====>");
 				}
@@ -4812,11 +4812,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
 				try {
 					Boolean result = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails);
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId, result);
+					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), result);
 					logger.info("ddr saved==========>{}",result);
 				}catch(Exception e) {
 					e.printStackTrace();
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, userId, false);
+					auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), false);
 					logger.error("Error while calling DDRForm Details==>");
 				}
 			}
@@ -4847,9 +4847,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 			try {
 				Boolean result = sidbiIntegrationClient.saveIrrDetails(irrRequest);
-				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId, result);
+				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), result);
 			} catch (Exception e) {
-				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId, false);
+				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), false);
 				e.printStackTrace();
 			}
 
