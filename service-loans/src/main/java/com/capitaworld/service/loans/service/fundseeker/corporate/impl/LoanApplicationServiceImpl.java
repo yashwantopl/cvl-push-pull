@@ -4827,9 +4827,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
 			logger.info("Before -----------------data->"+ratingResponse.getData());
-			/*IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
-			logger.info("After -----------------data->"+ irrReq.toString());*/
-			BeanUtils.copyProperties((IrrRequest)ratingResponse.getData(),irrRequest);
+			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
+			logger.info("After -----------------data->"+ irrReq.toString());
+			BeanUtils.copyProperties(irrReq,irrRequest);
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputManufacturingRequest(),irrOutputManufacturingRequest);
