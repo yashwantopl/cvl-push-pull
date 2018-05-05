@@ -4736,7 +4736,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
 				if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
 					try {
-						ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+						ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
                                 ScoreParameterResult.class);
 						ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
 						BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
