@@ -84,7 +84,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("select distinct(pm.productId) from ProductMaster pm where pm.isActive = true and pm.userOrgId =:orgId")
 	public List<Integer> getProductsByOrgId(@Param("orgId")Long orgId);
 	
-	@Query("select user_org_id FROM fp_product_master pm where pm.id=:productId and pm.isActive = true")
+	@Query("select userOrgId FROM ProductMaster pm where pm.productId=:productId and pm.isActive = true")
 	public Integer getUserOrgId(@Param("productId") Integer productId);
 	
 }
