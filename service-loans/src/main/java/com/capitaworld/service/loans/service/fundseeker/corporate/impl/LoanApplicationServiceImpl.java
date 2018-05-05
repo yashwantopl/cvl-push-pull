@@ -13,6 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.service.irr.IrrService;
+import com.capitaworld.service.rating.model.RatingResponse;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -329,6 +334,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private DDRFormService dDRFormService; 
 
+	@Autowired
+	private IrrService irrService;
 	/*
 	 * @Autowired private AsyncComponent asyncComponent;
 	 */
@@ -4793,6 +4800,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error("Error while calling DDRForm Details==>");
 			}
 		}
+
+		//To save irr details
+		RatingResponse ratingResponse = irrService.calculateIrrRating(applicationId,userId).getBody();
+		com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
+		if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
+			IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
+			BeanUtils.copyProperties((IRROutputManufacturingRequest)ratingResponse.getData(),irrOutputManufacturingRequest);
+			irrOutputManufacturingRequest.setApplicationId(applicationId);
+			irrOutputManufacturingRequest.setUserId(userId);
+			irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
+		}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
+			IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
+			BeanUtils.copyProperties((IRROutputServiceRequest)ratingResponse.getData(),irrOutputServiceRequest);
+			irrOutputServiceRequest.setApplicationId(applicationId);
+			irrOutputServiceRequest.setUserId(userId);
+			irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
+		}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
+			IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
+			BeanUtils.copyProperties((IRROutputTradingRequest)ratingResponse.getData(),irrOutputTradingRequest);
+			irrOutputTradingRequest.setApplicationId(applicationId);
+			irrOutputTradingRequest.setUserId(userId);
+			irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
+		}
+
+		irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
+		try {
+			sidbiIntegrationClient.saveIrrDetails(irrRequest);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		logger.info("End savePhese2DataToSidbi()==>");
 		return false;
 	}
