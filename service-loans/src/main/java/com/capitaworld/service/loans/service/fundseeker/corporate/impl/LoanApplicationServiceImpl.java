@@ -4883,7 +4883,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setDob(source.getDob());
 				target.setTotalExperience(source.getTotalExperience());
 				target.setNetworth(source.getNetworth());
-				target.setDin(source.getDin().toString());
+				if(!CommonUtils.isObjectNullOrEmpty(source.getDin()))
+				    target.setDin(source.getDin().toString());
 				if(source.getSalutationId() != null) {
 					target.setTitle(Title.getById(source.getSalutationId()).getValue());					
 				}
