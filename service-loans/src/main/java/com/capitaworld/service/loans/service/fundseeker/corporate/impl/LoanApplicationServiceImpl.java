@@ -4828,23 +4828,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
 			logger.info("Before -----------------data->"+ratingResponse.getData());
 			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
-			logger.info("After -----------------data->"+ irrReq.toString());
-			BeanUtils.copyProperties(irrReq,irrRequest);
+			/*logger.info("After -----------------data->"+ irrReq.toString());
+			BeanUtils.copyProperties(irrReq,irrRequest);*/
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
-				BeanUtils.copyProperties(irrRequest.getIrrOutputManufacturingRequest(),irrOutputManufacturingRequest);
+				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputManufacturingRequest);
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
-				BeanUtils.copyProperties(irrRequest.getIrrOutputServiceRequest(),irrOutputServiceRequest);
+				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputServiceRequest);
 				irrOutputServiceRequest.setApplicationId(applicationId);
 				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
-				BeanUtils.copyProperties(irrRequest.getIrrOutputTradingRequest(),irrOutputTradingRequest);
+				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputTradingRequest);
 				irrOutputTradingRequest.setApplicationId(applicationId);
 				irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
