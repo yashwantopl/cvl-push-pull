@@ -4826,23 +4826,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			logger.info("Before -----------------data->"+ratingResponse.getData());
+			logger.info("Before -----------------data->"+ratingResponse.getBusinessTypeId());
 			/*IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
 			logger.info("After -----------------data->"+ irrReq.toString());*/
 			BeanUtils.copyProperties(ratingResponse.getData(),irrRequest);
-			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == irrRequest.getBusinessTypeId()){
+			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputManufacturingRequest(),irrOutputManufacturingRequest);
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
-			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == irrRequest.getBusinessTypeId()){
+			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputServiceRequest(),irrOutputServiceRequest);
 				irrOutputServiceRequest.setApplicationId(applicationId);
 				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
-			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == irrRequest.getBusinessTypeId()){
+			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
 				BeanUtils.copyProperties(irrRequest.getIrrOutputTradingRequest(),irrOutputTradingRequest);
 				irrOutputTradingRequest.setApplicationId(applicationId);
@@ -4850,7 +4850,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
 			}
             irrRequest.setApplicationId(applicationId.intValue());
-			irrRequest.setBusinessTypeId(rtResponse.getBusinessTypeId());
+			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 			try {
 				Boolean result = sidbiIntegrationClient.saveIrrDetails(irrRequest);
 				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), result);
