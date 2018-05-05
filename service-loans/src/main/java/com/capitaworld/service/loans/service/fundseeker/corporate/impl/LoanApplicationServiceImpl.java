@@ -4770,7 +4770,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		//Create Corporate Profile Object
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(corporateApplicantDetail != null) {
-			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,userId));
+			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
 			
 			//Save Achievement
 			profileReqRes.setAchievementList(getAchievementDetaisForSidbi(applicationId));
@@ -4802,25 +4802,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		//To save irr details
-		RatingResponse ratingResponse = irrService.calculateIrrRating(applicationId,userId).getBody();
+		RatingResponse ratingResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 		com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
 		if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 			IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
 			BeanUtils.copyProperties((IRROutputManufacturingRequest)ratingResponse.getData(),irrOutputManufacturingRequest);
 			irrOutputManufacturingRequest.setApplicationId(applicationId);
-			irrOutputManufacturingRequest.setUserId(userId);
+			irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 			irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
 		}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 			IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
 			BeanUtils.copyProperties((IRROutputServiceRequest)ratingResponse.getData(),irrOutputServiceRequest);
 			irrOutputServiceRequest.setApplicationId(applicationId);
-			irrOutputServiceRequest.setUserId(userId);
+			irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 			irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
 		}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 			IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
 			BeanUtils.copyProperties((IRROutputTradingRequest)ratingResponse.getData(),irrOutputTradingRequest);
 			irrOutputTradingRequest.setApplicationId(applicationId);
-			irrOutputTradingRequest.setUserId(userId);
+			irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 			irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
 		}
 
@@ -4847,7 +4847,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		//Create Corporate Profile Object
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(corporateApplicantDetail != null) {
-			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,userId));
+			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
 			//Setting Director Details
 			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationId));
 			//Setting Current Financial Details
