@@ -2,7 +2,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
-import java.security.acl.Owner;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -109,6 +108,7 @@ import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -179,6 +179,7 @@ import com.capitaworld.sidbi.integration.model.MonthlyTurnoverDetailRequest;
 import com.capitaworld.sidbi.integration.model.OwnershipDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
+import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
 
 @Service
@@ -324,6 +325,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
     private PrimaryCorporateDetailRepository primaryCorporateRepository;
+	
+	@Autowired
+	private DDRFormService dDRFormService; 
 
 	/*
 	 * @Autowired private AsyncComponent asyncComponent;
@@ -4749,6 +4753,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean savePhese2DataToSidbi(Long applicationId, Long userId) {
 		logger.info("Start savePhese2DataToSidbi()==>");
+		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+		if(applicationMaster == null) {
+			logger.info("Loan Application Found Null====>{}",applicationId);
+			return false;
+		}
+		
 		ProfileReqRes profileReqRes = new  ProfileReqRes();
 		//Create Corporate Profile Object
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
@@ -4772,6 +4782,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Error while Calling Client====>");
 			}
 			//Setting DDR
+			logger.info("Going to Save DDR Form Data===>");
+			
+			DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
+			try {
+				Boolean saveDDRFormDetails = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails);
+				logger.info("ddr saved==========>{}",saveDDRFormDetails);
+			}catch(Exception e) {
+				e.printStackTrace();
+				logger.error("Error while calling DDRForm Details==>");
+			}
 		}
 		logger.info("End savePhese2DataToSidbi()==>");
 		return false;
