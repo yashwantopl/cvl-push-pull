@@ -4823,7 +4823,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 			//To save irr details
-			RatingResponse ratingResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
+			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			logger.info("ratingResponse response ----->" + ratingResponse.toString());
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
