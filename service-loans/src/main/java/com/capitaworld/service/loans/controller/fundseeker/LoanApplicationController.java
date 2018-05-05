@@ -1715,15 +1715,15 @@ public class LoanApplicationController {
 			
 			logger.info("Start savePhese1DataToSidbi()");
 			logger.info("ApplicationId=====>{}",applicationId);
-			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+			Long userId = 2700l;
+			/*if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()
 					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
+			}*/
 			if (userId == null) {
 				logger.warn("UsrId must not be null==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
