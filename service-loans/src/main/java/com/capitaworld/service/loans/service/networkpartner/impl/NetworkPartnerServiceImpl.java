@@ -539,7 +539,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 			String[] to = { 91 + mobile };
 			NotificationRequest notificationRequest = new NotificationRequest();
-			notificationRequest.setClientRefId("123");
+			notificationRequest.setClientRefId(assignedUserId.toString());
 			Notification notification = new Notification();
 			notification.setContentType(ContentType.TEMPLATE);
 
@@ -553,7 +553,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			
 			notification.setParameters(parameters);
 			notificationRequest.addNotification(notification);
-			notificationRequest.addNotification(notification);
+//			notificationRequest.addNotification(notification);
 
 			notificationClient.send(notificationRequest);
 
