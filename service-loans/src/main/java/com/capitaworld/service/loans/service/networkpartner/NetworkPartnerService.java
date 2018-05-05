@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.networkpartner;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -19,4 +20,6 @@ public interface NetworkPartnerService {
 	public JSONObject getNhbsProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId);
 	
 	public GatewayRequest getPaymentStatuOfApplication(Long applicationId);
+	
+	public boolean sendSMSNotificationWhenCheckerAssignMaker(Long applicationId,Long assignedUserId);
 }
