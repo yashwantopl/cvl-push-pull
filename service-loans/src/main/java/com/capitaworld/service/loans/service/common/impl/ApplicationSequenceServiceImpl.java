@@ -75,6 +75,12 @@ public class ApplicationSequenceServiceImpl implements ApplicationSequenceServic
                 applicationSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
                 CommonDocumentUtils.endHook(logger, "getApplicationSequenceNumber");
                 return "CW-AUSL-"+sequenceNumber;
+            case 16://WORKING CAPITAL TERM LOAN
+                sequenceNumber = applicationSequenceRepository.getApplicationSequenceNumber(Long.valueOf(productId));
+                sequenceNumber+=1;
+                applicationSequenceRepository.updateSequenceNumber(sequenceNumber, Long.valueOf(productId));
+                CommonDocumentUtils.endHook(logger, "getApplicationSequenceNumber");
+                return "CW-AWCTL-"+sequenceNumber;
             default:
                 return null;
         }

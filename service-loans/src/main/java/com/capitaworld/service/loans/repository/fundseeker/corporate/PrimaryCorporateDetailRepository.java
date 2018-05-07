@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 
 public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryCorporateDetail, Long> {
 

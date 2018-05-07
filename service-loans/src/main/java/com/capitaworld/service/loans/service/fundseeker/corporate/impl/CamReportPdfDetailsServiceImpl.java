@@ -32,6 +32,7 @@ import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
@@ -168,6 +169,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
+	DecimalFormat decim2 = new DecimalFormat("#,###");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -246,9 +248,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//DIRECTOR'S BACKGROUND
 			try {
 				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-				List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+				List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-					DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
@@ -262,11 +264,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(convertValue(directorBackgroundDetailRequest.getTotalExperience()));
+					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
 					directorBackgroundDetailResponse.setNetworth(convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
+					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin().toString());
 					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					try {
@@ -314,7 +316,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValue(primaryCorporateRequest.getLoanAmount()) : " ");
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getLoanTypeName(primaryCorporateRequest.getProductId()) : " ");
 			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
@@ -370,7 +372,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",convertToString(proposalScoreResponse));
+			map.put("proposalScoreResponse",proposalScoreResponse);
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -1055,6 +1057,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
+	public String convertValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;

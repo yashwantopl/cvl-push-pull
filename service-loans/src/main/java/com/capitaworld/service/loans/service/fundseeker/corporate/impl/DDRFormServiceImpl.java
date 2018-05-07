@@ -31,14 +31,15 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatem
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -162,6 +163,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
 	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
+	
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
 	/**
 	 * SAVE DDR FORM DETAILS EXCPET FRAMES AND ONEFORM DETAILS
@@ -247,6 +251,181 @@ public class DDRFormServiceImpl implements DDRFormService{
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
 			dDRFormDetailsRequest.setCurrency(getCurrency(appId, userId));
 		}
+		return dDRFormDetailsRequest;
+	}
+	
+	@Override
+	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId) {
+		com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest dDRFormDetailsRequest = new com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest();
+		
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(appId);
+		if(CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			return dDRFormDetailsRequest;
+		}
+		BeanUtils.copyProperties(dDRFormDetails, dDRFormDetailsRequest);
+		dDRFormDetailsRequest.setUserId(userId);
+		dDRFormDetailsRequest.setApplicationId(appId);
+		try {
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(appId);
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+				//GET REGISTERED ADDRESS :- LINENO:7
+				String regOfficeAdd = "";
+				regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPremiseNumber()) ? applicantDetail.getRegisteredPremiseNumber() + ", " : "";
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStreetName()) ? applicantDetail.getRegisteredStreetName() + ", " : "";
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredLandMark()) ? applicantDetail.getRegisteredLandMark() + ", " : "";
+				String countryName = getCountryName(applicantDetail.getRegisteredCountryId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(countryName) ? countryName + ", " : "";
+				String stateName = getStateName(applicantDetail.getRegisteredStateId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(stateName) ? stateName+ ", " : "";
+				String cityName = getCityName(applicantDetail.getRegisteredCityId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(cityName) ? cityName : "";
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode())?applicantDetail.getRegisteredPincode() : "";
+				dDRFormDetailsRequest.setRegisteredOfficeAddressDetails(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
+				
+				
+				//GET ADMINISRATIVE (Corporate Office) ADDRESS  :- LINENO:9
+				String admntOfficeAdd = "";
+				admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber()) ? applicantDetail.getAdministrativePremiseNumber() + ", " : "";
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStreetName()) ? applicantDetail.getAdministrativeStreetName() + ", " : "";
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeLandMark()) ? applicantDetail.getAdministrativeLandMark() + ", " : "";
+				String admntCountryName = getCountryName(applicantDetail.getAdministrativeCountryId());
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCountryName) ? admntCountryName + ", " : "";
+				String admntStateName = getStateName(applicantDetail.getAdministrativeStateId());
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntStateName) ? admntStateName+ ", " : "";
+				String admntCityName = getCityName(applicantDetail.getAdministrativeCityId());
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCityName) ? admntCityName : "";
+				admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePincode()) ? applicantDetail.getAdministrativePincode() : "";
+				dDRFormDetailsRequest.setRegisteredOfficeAddressDetails(!CommonUtils.isObjectNullOrEmpty(admntOfficeAdd) ? admntOfficeAdd : "NA");
+			}
+			
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Corporate Details");
+			e.printStackTrace();
+		}
+		
+		Long ddrFormId = dDRFormDetails.getId();
+		
+		List<DDRAuthorizedSignDetails> listByDDRFormId = authorizedSignDetailsRepository.getListByDDRFormId(ddrFormId);
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest> authorResponseList = new ArrayList<>(listByDDRFormId.size());
+		if(!CommonUtils.isListNullOrEmpty(listByDDRFormId)) {
+			for(DDRAuthorizedSignDetails authorizedSignDetails : listByDDRFormId) {
+				com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRAuthorizedSignDetailsRequest();
+				BeanUtils.copyProperties(authorizedSignDetails, response);
+				response.setApplicationId(appId);
+				authorResponseList.add(response);
+			}
+		}
+		dDRFormDetailsRequest.setdDRAuthSignDetailsList(authorResponseList);
+		
+		
+		List<DDRCreditCardDetails> creditCardList = cardDetailsRepository.getListByDDRFormId(ddrFormId);
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest> creditResponseList = new ArrayList<>(creditCardList.size());
+		if(!CommonUtils.isListNullOrEmpty(creditCardList)) {
+			for(DDRCreditCardDetails obj : creditCardList) {
+				com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRCreditCardDetailsRequest();
+				BeanUtils.copyProperties(obj, response);
+				response.setApplicationId(appId);
+				creditResponseList.add(response);
+			}
+		}
+		dDRFormDetailsRequest.setdDRCreditCardDetailsList(creditResponseList);
+		
+		
+		List<DDRCreditorsDetails> creditorsDetailsList = creditorsDetailsRepository.getListByDDRFormId(ddrFormId);
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest> creditorsList = new ArrayList<>(creditorsDetailsList.size());
+		if(!CommonUtils.isListNullOrEmpty(creditorsDetailsList)) {
+			for(DDRCreditorsDetails obj : creditorsDetailsList) {
+				com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRCreditorsDetailsRequest();
+				BeanUtils.copyProperties(obj, response);
+				response.setApplicationId(appId);
+				creditorsList.add(response);
+			}
+		}
+		dDRFormDetailsRequest.setdDRCreditorsDetailsList(creditorsList);
+		
+		List<DDROtherBankLoanDetails> otherBankLoanList = bankLoanDetailsRepository.getListByDDRFormId(ddrFormId);
+		List<com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest> otherBankLoanReqList = new ArrayList<>(otherBankLoanList.size());
+		if(!CommonUtils.isListNullOrEmpty(otherBankLoanList)) {
+			for(DDROtherBankLoanDetails obj : otherBankLoanList) {
+				com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDROtherBankLoanDetailsRequest();
+				BeanUtils.copyProperties(obj, response);
+				response.setApplicationId(appId);
+				otherBankLoanReqList.add(response);
+			}
+		}
+		dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(otherBankLoanReqList);
+		
+		
+		List<DDRVehiclesOwnedDetails> vehiclesOwnedList = vehiclesOwnedDetailsRepository.getListByDDRFormId(ddrFormId);
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest> vehiclesList = new ArrayList<>(vehiclesOwnedList.size());
+		if(!CommonUtils.isListNullOrEmpty(vehiclesOwnedList)) {
+			for(DDRVehiclesOwnedDetails obj : vehiclesOwnedList) {
+				com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRVehiclesOwnedDetailsRequest();
+				BeanUtils.copyProperties(obj, response);
+				response.setApplicationId(appId);
+				vehiclesList.add(response);
+			}
+		}
+		dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(vehiclesList);
+		
+		
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest> financialSummuryList = null;
+		if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+			List<DDRFinancialSummary> objList = financialSummaryRepository.getListByDDRFormId(ddrFormId);
+			if(!CommonUtils.isListNullOrEmpty(objList)) {
+				financialSummuryList = new ArrayList<>(objList.size());
+				for(DDRFinancialSummary obj : objList) {
+					com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest response = new com.capitaworld.sidbi.integration.model.ddr.DDRFinancialSummaryRequest();
+					BeanUtils.copyProperties(obj, response);
+					response.setDiffPfPrvsnlAndLastYear(CommonUtils.checkDouble(obj.getDiffPfPrvsnlAndLastYear()));
+				     response.setLastToLastYear(CommonUtils.checkDouble(obj.getLastToLastYear()));
+				     response.setLastYear(CommonUtils.checkDouble(obj.getLastYear()));
+				     response.setProvisionalYear(CommonUtils.checkDouble(obj.getProvisionalYear()));
+				     response.setApplicationId(appId);
+					financialSummuryList.add(response);
+				}
+			}	
+		}
+		dDRFormDetailsRequest.setdDRFinancialSummaryList(financialSummuryList);
+		
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest> familyDirectorsList = null;
+		if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+			List<DDRFamilyDirectorsDetails> familyDirectorList = familyDirectorsDetailsRepository.getListByDDRFormId(ddrFormId);
+			if(!CommonUtils.isListNullOrEmpty(familyDirectorList)) {
+				familyDirectorsList = new ArrayList<>(familyDirectorList.size());
+				com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest response = null;
+				for(DDRFamilyDirectorsDetails obj : familyDirectorList) {
+					response = new com.capitaworld.sidbi.integration.model.ddr.DDRFamilyDirectorsDetailsRequest();
+					BeanUtils.copyProperties(obj, response);
+					if(!CommonUtils.isObjectNullOrEmpty(obj.getMaritalStatus())) {
+						MaritalStatus maritalStatus = MaritalStatus.getById(obj.getMaritalStatus());
+						response.setMaritalStatusName(!CommonUtils.isObjectNullOrEmpty(maritalStatus) ? maritalStatus.getValue() : null);
+					}
+					response.setApplicationId(appId);
+					familyDirectorsList.add(response);
+				}
+			}	
+		}
+		
+		dDRFormDetailsRequest.setdDRFamilyDirectorsList(familyDirectorsList);
+		
+		
+		List<com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest> existingBankerDetailsList = null;
+		if(!CommonUtils.isObjectNullOrEmpty(ddrFormId)) {
+			List<DDRExistingBankerDetails> existingBankList = ddrExistingBankerDetailsRepository.getListByDDRFormId(ddrFormId);
+			if(!CommonUtils.isListNullOrEmpty(existingBankList)) {
+				existingBankerDetailsList = new ArrayList<>(existingBankList.size());
+				com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest response = null;
+				for(DDRExistingBankerDetails obj : existingBankList) {
+					response = new com.capitaworld.sidbi.integration.model.ddr.DDRExistingBankerDetailRequest();
+					BeanUtils.copyProperties(obj, response);
+					response.setApplicationId(appId);
+					existingBankerDetailsList.add(response);
+				}
+			}
+		}
+		dDRFormDetailsRequest.setExistingBankerDetailList(existingBankerDetailsList);
+		
 		return dDRFormDetailsRequest;
 	}
 	
@@ -858,6 +1037,21 @@ public class DDRFormServiceImpl implements DDRFormService{
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
 			return response;
 		}
+		//GET ORGANIZATION TYPE
+		try {
+			Long orgId = loanApplicationMaster.getNpOrgId();
+				if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
+    				String orgName = CommonUtils.getOrganizationName(orgId.intValue());
+    				response.setOrgName(orgName);
+    				logger.info("Org name",orgName);
+    			}else {
+    				logger.info("No org Id found");
+    			}
+    		
+		} catch(Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting user org id",e);
+		}
 		
 		//ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
@@ -876,9 +1070,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 		regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode())?applicantDetail.getRegisteredPincode() : "";
 		response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		
-		//Contact Details  :- LINENO:8
-		response.setContactNo(applicantDetail.getLandlineNo());
-		
 		//GET ADMINISRATIVE (Corporate Office) ADDRESS  :- LINENO:9
 		String admntOfficeAdd = "";
 		admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber()) ? applicantDetail.getAdministrativePremiseNumber() + ", " : "";
@@ -895,12 +1086,14 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//GET RERGISTERED EMAIL ID  :- LINENO:11
 		try {
-			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+			UserResponse userResponse = usersClient.getEmailMobile(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 				UsersRequest request = MultipleJSONObjectHelper
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
     			if(!CommonUtils.isObjectNullOrEmpty(request)) {
     				response.setRegEmailId(request.getEmail());
+    				//Contact Details  :- LINENO:8
+    				response.setContactNo(request.getMobile());
     			}
     		}	
 		} catch(Exception e) {
@@ -985,36 +1178,27 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :- LINENO:21
 		try {
-			List<FinancialArrangementsDetailRequest> fincArrngDetailReqList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-			List<FinancialArrangementsDetailResponse> fincArrngDetailResList = new ArrayList<>(fincArrngDetailReqList.size());
-			FinancialArrangementsDetailResponse fincArragDetailResp = null;
-			for (FinancialArrangementsDetailRequest fincArrngDetailReq : fincArrngDetailReqList) {
-				fincArragDetailResp = new FinancialArrangementsDetailResponse();
-				BeanUtils.copyProperties(fincArrngDetailReq, fincArragDetailResp);
-				//fincArragDetailResp.setFacilityNature(NatureFacility.getById(fincArrngDetailReq.getFacilityNatureId()).getValue());
-				/*if(!CommonUtils.isObjectNullOrEmpty(fincArrngDetailReq.getRelationshipSince())) {
-					try {
-						OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(fincArrngDetailReq.getRelationshipSince().longValue());
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							fincArragDetailResp.setRelationshipSinceInYear(masterResponse.getValue());
-						}	
-					} catch (Exception e) {
-						logger.info("Throw Exception while get relationship sinc year in DDR OneForm");
-						e.printStackTrace();
-					}	
-				}*/
-				FinancialArrangementsDetailResponse.printFields(fincArragDetailResp);
-				fincArrngDetailResList.add(fincArragDetailResp);
-			}
-			response.setFincArrngDetailResList(fincArrngDetailResList);
-		} catch (Exception e) {
-			logger.info("Throw Exception While Get Current Financial Arangement Details in DDR OneForm");
-			e.printStackTrace();
-		}
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+            	financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+                financialArrangementsDetailResponse.setOutstandingAmount(convertDouble(financialArrangementsDetailRequest.getOutstandingAmount()));
+                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                financialArrangementsDetailResponse.setAmount(convertDouble(financialArrangementsDetailRequest.getAmount()));
+                //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+                //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+            }
+            response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+
+        } catch (Exception e) {
+            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+        }
 		
 		
 		/*//SECURITY DETAIL :- LINENO:12
@@ -2354,6 +2538,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 	}
 	public String convertValue(Integer value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? value.toString(): "0";
+	}
+	public String convertDouble(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value): "0";
 	}
 	
 	

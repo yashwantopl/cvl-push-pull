@@ -10,7 +10,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
+
+import com.capitaworld.service.loans.utils.CommonUtils.CampaignCodes;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
+import com.capitaworld.service.loans.utils.CommonUtils.DenominationId;
+import com.capitaworld.service.loans.utils.CommonUtils.DenominationInAmount;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 public class CommonUtils {
 
@@ -129,7 +136,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl");
 		private int value;
 		private String name;
 		private String code;
@@ -171,6 +178,8 @@ public class CommonUtils {
 				return LAS_LOAN;
 			case 15:
 				return UNSECURED_LOAN;
+			case 16:
+				return WCTL_LOAN;
 			}
 			return null;
 		}
@@ -192,6 +201,8 @@ public class CommonUtils {
 				return "LAS LOAN";
 			case 15:
 				return "UNSECURED LOAN";
+			case 16:
+				return "WCTL_LOAN";
 			}
 			return null;
 		}
@@ -940,7 +951,39 @@ public class CommonUtils {
 		Double sub= a-b-c;
 		return sub;
 	}
-	
+	public static String getOrganizationName(Integer x) {
+		switch (x) {
+		case 1:
+			return "UNION";
+		case 2:
+			return "SARASWAT";
+		case 3:
+			return "Axis";
+		case 4:
+			return "ICICI";
+		case 5:
+			return "IDBI";
+		case 6:
+			return "RBL";
+		case 7:
+			return "Tata Capital";
+		case 8:
+			return "IDFC";
+		case 9:
+			return "Dena Bank";
+		case 10:
+			return "SIDBI";
+		case 11:
+			return "NHBS";
+		case 12:
+			return "CANARA BANK";
+		case 13:
+			return "Indian Bank";
+		case 14:
+			return "BOI";
+		}
+		return null;
+	}
 
 
 }
