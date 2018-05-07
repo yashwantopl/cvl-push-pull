@@ -682,7 +682,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			
 		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,"Audited");
 		logger.info("==================================>2");
-			if(operating!=null) {
+			if(!CommonUtils.isObjectListNull(operating)) {
 				logger.info("==================================>3");
 				cmaDetailResponse.setDomesticSales((Double)operating.get(0)[0]);
 				logger.info("new added ==================================>19");
@@ -700,7 +700,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,"Audited");
 			logger.info("==================================>9");
-			if(liabilitie!=null) {
+			if(!CommonUtils.isObjectListNull(liabilitie)) {
 				logger.info("==================================>10");
 				cmaDetailResponse.setSundryCreditors((Double)liabilitie.get(0)[0]);
 				logger.info("==================================>11");
@@ -710,7 +710,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
 			logger.info("==================================>13");
-			if(asset!=null) {
+			if(!CommonUtils.isObjectListNull(asset)) {
 				logger.info("==================================>14");
 				cmaDetailResponse.setReceivableOtherThanDefferred((Double)asset.get(0)[0]);
 				logger.info("==================================>15");

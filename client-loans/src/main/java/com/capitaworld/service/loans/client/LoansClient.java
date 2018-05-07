@@ -165,6 +165,7 @@ public class LoansClient {
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
+	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
@@ -1744,6 +1745,22 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException(SAVE_PHASE_ONE + " Loans service is not available");
+		}
+	}
+	
+	public LoansResponse savePhase2Sidbi(LoanApplicationRequest loanApplicationRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_PHASE_TWO);
+		System.out.println("Enter in " + SAVE_PHASE_TWO + " -------- URL ---------->" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanApplicationRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException(SAVE_PHASE_TWO + " Loans service is not available");
 		}
 	}
 	

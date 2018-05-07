@@ -246,9 +246,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 				}
 			}
-		}else{
+		}/*else{
 			nhbsApplicationsResponseList = null;
-		}
+		}*/
 		logger.info("exit form getListOfProposals()");
 		return nhbsApplicationsResponseList;
 		
