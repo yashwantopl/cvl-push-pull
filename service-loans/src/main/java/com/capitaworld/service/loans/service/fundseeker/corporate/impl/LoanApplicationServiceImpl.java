@@ -4836,18 +4836,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
+				logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
 				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputServiceRequest);
 				irrOutputServiceRequest.setApplicationId(applicationId);
 				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
+                logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
 				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputTradingRequest);
 				irrOutputTradingRequest.setApplicationId(applicationId);
 				irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
+                logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
 			}
             irrRequest.setApplicationId(applicationId.intValue());
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
