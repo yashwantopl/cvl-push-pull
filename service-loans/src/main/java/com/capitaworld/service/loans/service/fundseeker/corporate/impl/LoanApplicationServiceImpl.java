@@ -4826,7 +4826,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			logger.info("Before -----------------data->"+ratingResponse.getData());
+			//logger.info("Before -----------------data->"+ratingResponse.getData());
 			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
 			/*logger.info("After -----------------data->"+ irrReq.toString());
 			BeanUtils.copyProperties(irrReq,irrRequest);*/
@@ -4837,21 +4837,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
-				logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
+				//logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputServiceRequest);
+				IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputServiceRequest.class);
+				BeanUtils.copyProperties(irrOutputServiceRequest1,irrOutputServiceRequest);
 				irrOutputServiceRequest.setApplicationId(applicationId);
 				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
-                logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
+                //logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputTradingRequest);
+				IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputTradingRequest.class);
+				BeanUtils.copyProperties(irrOutputTradingRequest1,irrOutputTradingRequest);
 				irrOutputTradingRequest.setApplicationId(applicationId);
 				irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
-                logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
+                //logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
 			}
             irrRequest.setApplicationId(applicationId.intValue());
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
