@@ -206,6 +206,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			saveVehiclesOwnedDetails(ddrFormDetailsRequest.getdDRVehiclesOwnedDetailsList(), userId,dDRFormDetails.getId());*/
 			saveFinancialSummary(ddrFormDetailsRequest.getdDRFinancialSummaryList(), userId,dDRFormDetails.getId());
 			saveFamilyDirectorsDetails(ddrFormDetailsRequest.getdDRFamilyDirectorsList(), userId, dDRFormDetails.getId());
+			saveExistingBankerDetails(ddrFormDetailsRequest.getExistingBankerDetailList(),userId, dDRFormDetails.getId());
 			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "+dDRFormDetails.getId());	
 		} catch (Exception e) {
 			logger.info("DDR ===============> Throw Exception while saving ddr form");
@@ -980,6 +981,35 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		return Collections.emptyList();
+	}
+	
+	public void saveExistingBankerDetails(List<DDRExistingBankerDetailRequest> requestList, Long userId, Long ddrFormId) {
+		try {
+			for(DDRExistingBankerDetailRequest reqObj : requestList) {
+				DDRExistingBankerDetails saveObj = null;
+				if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+					saveObj = ddrExistingBankerDetailsRepository.getByIdAndIsActive(reqObj.getId());
+				}
+				
+				if(CommonUtils.isObjectNullOrEmpty(saveObj)){
+					saveObj = new DDRExistingBankerDetails();
+					BeanUtils.copyProperties(reqObj, saveObj,"id","createdBy","createdDate","modifyBy","modifyDate","ddrFormId","isActive");
+					saveObj.setDdrFormId(ddrFormId);
+					saveObj.setCreatedBy(userId);
+					saveObj.setCreatedDate(new Date());
+					saveObj.setActive(true);
+				} else {
+					BeanUtils.copyProperties(reqObj, saveObj,"id","createdBy","createdDate","modifyBy","modifyDate","ddrFormId");
+					saveObj.setModifyBy(userId);
+					saveObj.setModifyDate(new Date());
+				}
+				ddrExistingBankerDetailsRepository.save(saveObj);
+			}	
+		} catch(Exception e) {
+			logger.info("DDR ===============> Throw Exception While Save Existing Loan Details -------------DDR FORM ID-->" + ddrFormId);
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void saveFamilyDirectorsDetails(List<DDRFamilyDirectorsDetailsRequest> requestList, Long userId, Long ddrFormId) {
