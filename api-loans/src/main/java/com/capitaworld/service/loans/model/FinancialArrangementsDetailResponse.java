@@ -37,14 +37,9 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     private String loanType;
     
     private String address;
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
+    
+    
+    
    /* public String getFacilityNature() {
         return facilityNature;
     }
@@ -53,11 +48,27 @@ public class FinancialArrangementsDetailResponse implements Serializable{
         this.facilityNature = facilityNature;
     }*/
 
-    public String getFinancialInstitutionName() {
+	public String getFinancialInstitutionName() {
         return financialInstitutionName;
     }
 
-    public void setFinancialInstitutionName(String financialInstitutionName) {
+    public Double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public Double getOutstandingAmount() {
+		return outstandingAmount;
+	}
+
+	public void setOutstandingAmount(Double outstandingAmount) {
+		this.outstandingAmount = outstandingAmount;
+	}
+
+	public void setFinancialInstitutionName(String financialInstitutionName) {
         this.financialInstitutionName = financialInstitutionName;
     }
 
@@ -76,14 +87,6 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 	public void setLenderType(String lenderType) {
 		this.lenderType = lenderType;
 	}*/
-
-	public Double getOutstandingAmount() {
-		return outstandingAmount;
-	}
-
-	public void setOutstandingAmount(Double outstandingAmount) {
-		this.outstandingAmount = outstandingAmount;
-	}
 
 	public String getSecurityDetails() {
 		return securityDetails;

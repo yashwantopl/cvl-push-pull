@@ -1,8 +1,10 @@
 package com.capitaworld.service.loans.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 /**
@@ -19,11 +21,7 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 
 	private Long id;
 
-	private String achivements;
-
 	private String address;
-
-	private Double age;
 	
 	private Double networth;
 
@@ -31,17 +29,29 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 
 	private Integer salutationId;
 
+	private Double din;
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date appointmentDate;
+
+	private String designation;
+
 	private String panNo;
 
 	private String promotorsName;
 
-	private String qualification;
-
 	private Double totalExperience;
 	
 	private Boolean isActive = true;
-	
-	
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date dob;
+
+	private String mobile;
+
+	private Integer gender;
+
+	private Integer relationshipType;
 	
 
 	public Boolean getIsActive() {
@@ -63,13 +73,6 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 		this.id = id;
 	}
 
-	public String getAchivements() {
-		return this.achivements;
-	}
-
-	public void setAchivements(String achivements) {
-		this.achivements = achivements;
-	}
 
 	public String getAddress() {
 		return this.address;
@@ -79,13 +82,6 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 		this.address = address;
 	}
 
-	public Double getAge() {
-		return this.age;
-	}
-
-	public void setAge(Double age) {
-		this.age = age;
-	}
 
 	public Long getApplicationId() {
 		return this.applicationId;
@@ -119,14 +115,6 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 		this.promotorsName = promotorsName;
 	}
 
-	public String getQualification() {
-		return this.qualification;
-	}
-
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
-	}
-
 	public Double getTotalExperience() {
 		return this.totalExperience;
 	}
@@ -142,7 +130,60 @@ public class PromotorBackgroundDetailRequest implements Serializable {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
-	
-	
 
+	public Double getDin() {
+		return din;
+	}
+
+	public void setDin(Double din) {
+		this.din = din;
+	}
+
+	public Date getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Integer getGender() {
+		return gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public Integer getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setRelationshipType(Integer relationshipType) {
+		this.relationshipType = relationshipType;
+	}
 }

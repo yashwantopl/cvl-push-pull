@@ -4,6 +4,7 @@ package com.capitaworld.service.loans.controller.fundseeker;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -1704,6 +1705,88 @@ public class LoanApplicationController {
 			logger.error("Error while getting Loan Application Details from Client==>", e);
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/save_phase1_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(@RequestBody Long applicationId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			
+			logger.info("Start savePhese1DataToSidbi()");
+			logger.info("ApplicationId=====>{}",applicationId);
+			Long userId = 2700l;
+			/*if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}*/
+			if (userId == null) {
+				logger.warn("UsrId must not be null==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+			}
+			
+			if (applicationId == null) {
+				logger.warn("applicationId must not be null==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(applicationId,userId);
+			logger.info("Result in savePhese1DataToSidbi== {}",isSavePhase1Data);
+			loansResponse.setData(isSavePhase1Data);
+			logger.info("End savePhese1DataToSidbi()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Saving Phse1 Details of SIDBI==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/save_phase2_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> savePhese2DataToSidbi(@RequestBody Long applicationId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		// request must not be null
+		try {
+			
+			logger.info("Start savePhese2DataToSidbi()");
+			logger.info("ApplicationId=====>{}",applicationId);
+			Long userId = 2700l;
+			/*if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}*/
+			if (userId == null) {
+				logger.warn("UsrId must not be null==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+			}
+			
+			if (applicationId == null) {
+				logger.warn("applicationId must not be null==>");
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			boolean isSavePhase2Data = loanApplicationService.savePhese2DataToSidbi(applicationId,userId);
+			logger.info("Result in savePhese2DataToSidbi== {}",isSavePhase2Data);
+			loansResponse.setData(isSavePhase2Data);
+			logger.info("End savePhese2DataToSidbi()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Saving Phase2 Details of SIDBI==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 	

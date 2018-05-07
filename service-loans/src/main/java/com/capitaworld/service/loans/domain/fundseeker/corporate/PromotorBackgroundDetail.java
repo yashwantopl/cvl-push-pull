@@ -31,13 +31,15 @@ public class PromotorBackgroundDetail implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@Lob
-	private String achivements;
+	/*@Lob
+	private String achivements;*/
 
 	@Lob
 	private String address;
 
-	private Double age;
+	/*private Double age;*/
+
+	private Double din;
 
 	private Double networth;
 	
@@ -62,20 +64,39 @@ public class PromotorBackgroundDetail implements Serializable {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="appointment_date")
+	private Date appointmentDate;
+
 	@Column(name="salutation_id")
 	private Integer salutationId;
 
 	@Column(name="pan_no")
 	private String panNo;
 
+	@Column(name="designation")
+	private String designation;
+
 	@Column(name="promotors_name")
 	private String promotorsName;
 
-	@Lob
-	private String qualification;
+	/*@Lob
+	private String qualification;*/
 
 	@Column(name="total_experience")
 	private Double totalExperience;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="dob")
+	private Date dob;
+
+	private String mobile;
+
+	@Column(name="gender")
+	private Integer gender;
+
+	@Column(name="relationship_type")
+	private Integer relationshipType;
 
 	public PromotorBackgroundDetail() {
 	}
@@ -88,28 +109,12 @@ public class PromotorBackgroundDetail implements Serializable {
 		this.id = id;
 	}
 
-	public String getAchivements() {
-		return this.achivements;
-	}
-
-	public void setAchivements(String achivements) {
-		this.achivements = achivements;
-	}
-
 	public String getAddress() {
 		return this.address;
 	}
 
 	public void setAddress(String address) {
 		this.address = address;
-	}
-
-	public Double getAge() {
-		return this.age;
-	}
-
-	public void setAge(Double age) {
-		this.age = age;
 	}
 
 	public LoanApplicationMaster getApplicationId() {
@@ -184,14 +189,6 @@ public class PromotorBackgroundDetail implements Serializable {
 		this.promotorsName = promotorsName;
 	}
 
-	public String getQualification() {
-		return this.qualification;
-	}
-
-	public void setQualification(String qualification) {
-		this.qualification = qualification;
-	}
-
 	public Double getTotalExperience() {
 		return this.totalExperience;
 	}
@@ -207,7 +204,60 @@ public class PromotorBackgroundDetail implements Serializable {
 	public void setNetworth(Double networth) {
 		this.networth = networth;
 	}
-	
-	
 
+	public Double getDin() {
+		return din;
+	}
+
+	public void setDin(Double din) {
+		this.din = din;
+	}
+
+	public Date getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Integer getGender() {
+		return gender;
+	}
+
+	public void setGender(Integer gender) {
+		this.gender = gender;
+	}
+
+	public Integer getRelationshipType() {
+		return relationshipType;
+	}
+
+	public void setRelationshipType(Integer relationshipType) {
+		this.relationshipType = relationshipType;
+	}
 }

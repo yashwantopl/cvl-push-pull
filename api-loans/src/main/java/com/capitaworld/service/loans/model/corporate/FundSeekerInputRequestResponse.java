@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model.corporate;
 
+import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
@@ -20,6 +21,9 @@ public class FundSeekerInputRequestResponse {
 
     private Long keyVerticalSubsector;
 
+    private Address firstAddress;
+
+    private String organisationName;
     ////////////////////
 
     private Double loanAmount;
@@ -208,5 +212,21 @@ public class FundSeekerInputRequestResponse {
 
     public void setSubsectors(List<Long> subsectors) {
         this.subsectors = subsectors;
+    }
+
+    public Address getFirstAddress() {
+        return firstAddress;
+    }
+
+    public void setFirstAddress(Address firstAddress) {
+        this.firstAddress = firstAddress;
+    }
+
+    public String getOrganisationName() {
+        return organisationName;
+    }
+
+    public void setOrganisationName(String organisationName) {
+        this.organisationName = organisationName;
     }
 }
