@@ -4826,28 +4826,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
 			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
 			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			logger.info("Before -----------------data->"+ratingResponse.getData());
+			//logger.info("Before -----------------data->"+ratingResponse.getData());
 			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
 			/*logger.info("After -----------------data->"+ irrReq.toString());
 			BeanUtils.copyProperties(irrReq,irrRequest);*/
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputManufacturingRequest);
+				IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputManufacturingRequest.class);
+				BeanUtils.copyProperties(irrOutputManufacturingRequest1,irrOutputManufacturingRequest);
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
+				//logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
 				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputServiceRequest);
+				IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputServiceRequest.class);
+				BeanUtils.copyProperties(irrOutputServiceRequest1,irrOutputServiceRequest);
 				irrOutputServiceRequest.setApplicationId(applicationId);
 				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
+                //logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
 			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
 				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputTradingRequest);
+				IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputTradingRequest.class);
+				BeanUtils.copyProperties(irrOutputTradingRequest1,irrOutputTradingRequest);
 				irrOutputTradingRequest.setApplicationId(applicationId);
 				irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
+                //logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
 			}
             irrRequest.setApplicationId(applicationId.intValue());
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
@@ -5134,11 +5140,50 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(applicationMaster.getApplicationStatusMaster() != null) {
 			loanMasterRequest.setStatus(applicationMaster.getApplicationStatusMaster().getStatus());			
 		}
+        loanMasterRequest.setBusinessTypeId(getIndustryIrrByApplication(applicationMaster.getId()));
 		loanMasterRequest.setAmount(applicationMaster.getAmount());
 		loanMasterRequest.setHaveCollateralSecurities(applicationMaster.getHaveCollateralSecurity());
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
 		loanMasterRequest.setApplicationId(applicationMaster.getId());
 		loanMasterRequest.setApplicationCode(applicationMaster.getApplicationCode());
+
+		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+		proposalMappingRequest.setApplicationId(applicationMaster.getId());
+		Long fpProductId=null;
+		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
+		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
+			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+
+			try {
+				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+						ProposalMappingRequest.class);
+				fpProductId = proposalMappingRequest1.getFpProductId();
+				loanMasterRequest.setFpProductId(proposalMappingRequest1.getFpProductId());
+				loanMasterRequest.setRoi(proposalMappingRequest1.getElRoi());
+				loanMasterRequest.setProcessingFee(proposalMappingRequest1.getProcessingFee());
+                loanMasterRequest.setEmi(proposalMappingRequest1.getEmi());
+			} catch (IOException e) {
+				logger.error("error while setting details from proposal details");
+				e.printStackTrace();
+			}
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(fpProductId)){
+			ProductMaster master = productMasterRepository.findOne(fpProductId);
+			if (master.getIsActive()) {
+				UsersRequest request = new UsersRequest();
+				request.setId(master.getUserId());
+				UserResponse userResponse = userClient.getFPDetails(request);
+				FundProviderDetailsRequest fundProviderDetailsRequest = null;
+				try {
+					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+                            (LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+				} catch (IOException e) {
+					logger.error("error while setting users details from proposal details");
+					e.printStackTrace();
+				}
+				loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
+			}
+		}
 		return loanMasterRequest;
 	}
 	
