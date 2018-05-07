@@ -127,7 +127,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WC_TL_LOAN(16,"Working Capital Term Loan","wctl");
 		private int value;
 		private String name;
 		private String code;
@@ -169,6 +169,8 @@ public class CommonUtils {
 				return LAS_LOAN;
 			case 15:
 				return UNSECURED_LOAN;
+			case 16:
+				return WC_TL_LOAN;
 			}
 			return null;
 		}
@@ -190,6 +192,8 @@ public class CommonUtils {
 				return "LAS LOAN";
 			case 15:
 				return "UNSECURED LOAN";
+			case 16:
+				return "Working Capital Term LOAN";
 			}
 			return null;
 		}
