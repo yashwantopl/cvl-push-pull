@@ -125,8 +125,8 @@ public class DDRFormController {
 		}
 	}
 	
-	@RequestMapping(value = "/getAutoFilledDetails/{appId}/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,@PathVariable("productId") Long productId, HttpServletRequest request,
+	@RequestMapping(value = "/getAutoFilledDetails/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
 		
