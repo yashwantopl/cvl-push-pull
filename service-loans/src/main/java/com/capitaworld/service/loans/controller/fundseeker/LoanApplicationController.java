@@ -1709,32 +1709,31 @@ public class LoanApplicationController {
 	}
 	
 	@RequestMapping(value = "/save_phase1_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(@RequestBody Long applicationId,@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(@RequestBody LoanApplicationRequest loanApplicationRequest,HttpServletRequest request) {
 		// request must not be null
 		try {
 			
 			logger.info("Start savePhese1DataToSidbi()");
-			logger.info("ApplicationId=====>{}",applicationId);
-			Long userId = 2700l;
-			/*if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
-				userId = clientId;
+			Long userId = null;
+			if(CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);	
+				}
 			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}*/
+				userId = loanApplicationRequest.getUserId();
+			}
 			if (userId == null) {
-				logger.warn("UsrId must not be null==>");
+				logger.warn("UserId must not be null==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
 			}
 			
-			if (applicationId == null) {
+			if (loanApplicationRequest.getId() == null) {
 				logger.warn("applicationId must not be null==>");
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
 			}
+			logger.info("Save Phase one Application id -------------------->" + loanApplicationRequest.getId());
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(applicationId,userId);
+			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(loanApplicationRequest.getId(),userId);
 			logger.info("Result in savePhese1DataToSidbi== {}",isSavePhase1Data);
 			loansResponse.setData(isSavePhase1Data);
 			logger.info("End savePhese1DataToSidbi()");
