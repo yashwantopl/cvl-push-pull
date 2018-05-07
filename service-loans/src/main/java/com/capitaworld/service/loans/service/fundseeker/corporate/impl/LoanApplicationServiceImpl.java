@@ -4751,7 +4751,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 							try {
 								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, result);
+								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, scoringDetails);
 							} catch (Exception e) {
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, false);
 								e.printStackTrace();
