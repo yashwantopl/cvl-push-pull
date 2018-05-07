@@ -1086,7 +1086,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//GET RERGISTERED EMAIL ID  :- LINENO:11
 		try {
-			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+			UserResponse userResponse = usersClient.getEmailMobile(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 				UsersRequest request = MultipleJSONObjectHelper
     					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
