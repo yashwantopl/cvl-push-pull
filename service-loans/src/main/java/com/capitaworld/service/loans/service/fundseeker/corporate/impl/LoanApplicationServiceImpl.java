@@ -4097,7 +4097,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
-
+				Long orgId = null;
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 						.findOne(paymentRequest.getApplicationId());
 				
@@ -4111,7 +4111,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
 					if(response!=null && response.getData()!=null) {
 					logger.info("Inside Congratulations");
-					Long orgId;	
+					
 					Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
 //					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
 //					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
@@ -4210,6 +4210,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								userId);
 						if (!CommonUtils.isObjectListNull(connectResponse)) {
 							logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+							logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+							if(orgId==10L) {
+								logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+							}
+							
 						} else {
 							logger.info("Connector Response null or empty");
 						}
