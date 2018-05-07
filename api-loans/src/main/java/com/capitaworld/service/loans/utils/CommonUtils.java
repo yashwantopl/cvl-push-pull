@@ -10,7 +10,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
+
+import com.capitaworld.service.loans.utils.CommonUtils.CampaignCodes;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
+import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
+import com.capitaworld.service.loans.utils.CommonUtils.DenominationId;
+import com.capitaworld.service.loans.utils.CommonUtils.DenominationInAmount;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 public class CommonUtils {
 

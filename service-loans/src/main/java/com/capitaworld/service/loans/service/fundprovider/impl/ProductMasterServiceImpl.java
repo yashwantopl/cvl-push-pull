@@ -29,6 +29,7 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
@@ -40,6 +41,7 @@ import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
+import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
@@ -64,6 +66,7 @@ import com.capitaworld.service.loans.service.fundprovider.PersonalLoanParameterS
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
+import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -142,6 +145,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
+	
+	@Autowired
+	private WcTlParameterService wcTlParameterService;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -176,6 +182,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case UNSECURED_LOAN:
 					productMaster = new UnsecureLoanParameter();
+					break;
+				case WCTL_LOAN:
+					productMaster = new WcTlParameter();
 					break;
 
 				case HOME_LOAN:
@@ -510,6 +519,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					} else if (master.getProductId() == 15) {
 						requests.add(unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId()));
 					}
+					else if (master.getProductId() == 16) {
+						requests.add(wcTlParameterService.getWcTlRequest(master.getId()));
+					}
 				}
 			}
 		}
@@ -563,6 +575,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return unsecuredLoanParameterService.saveOrUpdate(unsecuredLoanParameterRequest);
+				}
+				else if (corporateProduct.getProductId() == CommonUtils.LoanType.WC_TL_LOAN.getValue()) {
+					WcTlParameterRequest wcTlParameterRequest= new WcTlParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest);
 				}
 			}
 		}
