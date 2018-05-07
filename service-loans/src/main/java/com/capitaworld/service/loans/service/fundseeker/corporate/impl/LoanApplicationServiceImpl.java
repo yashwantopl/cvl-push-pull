@@ -4706,14 +4706,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId) {
+		Boolean savePrelimInfo = false;
+		Boolean scoringDetails = false;
 		try {
+			
 			//Create Prelim Sheet Object
 			ProfileReqRes prelimData = getPrelimData(applicationId,userId);
 			if(prelimData == null)
 				return false;
 
 			try {
-				Boolean savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData);
+				savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData);
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, savePrelimInfo);
 			}catch(Exception e) {
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, false);
@@ -4746,7 +4749,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
 							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 							try {
-								Boolean result = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
+								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, result);
 							} catch (Exception e) {
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, false);
@@ -4768,12 +4771,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 		}
+		
+		if(savePrelimInfo && scoringDetails) {
+			return true;
+		}
 		return false;
 	}
 		
 
 	@Override
 	public boolean savePhese2DataToSidbi(Long applicationId, Long userId) {
+		
+		Boolean saveDetailsInfo = false;
+		Boolean saveDDRInfo = false;
+		Boolean saveIRRInfo = false;
 		try {
 			logger.info("Start savePhese2DataToSidbi()==>");
 			PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
@@ -4800,8 +4811,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
 				try {
 					logger.info("Going to Save Detailed Infor==>");
-					Boolean result = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), result);
+					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
+					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), saveDetailsInfo);
 				}catch(Exception e) {
 					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), false);
 					e.printStackTrace();
@@ -4812,9 +4823,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
 				try {
-					Boolean result = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails);
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), result);
-					logger.info("ddr saved==========>{}",result);
+					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails);
+					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), saveDDRInfo);
+					logger.info("ddr saved==========>{}",saveDDRInfo);
 				}catch(Exception e) {
 					e.printStackTrace();
 					auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), false);
@@ -4858,20 +4869,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
             irrRequest.setApplicationId(applicationId.intValue());
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 			try {
-				Boolean result = sidbiIntegrationClient.saveIrrDetails(irrRequest);
-				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), result);
+				saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest);
+				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), saveIRRInfo);
 			} catch (Exception e) {
 				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), false);
 				e.printStackTrace();
 			}
 
 			logger.info("End savePhese2DataToSidbi()==>");
-			return true;
 		} catch (Exception e) {
 			auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId, false);
 			auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, userId, false);
 			auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId, false);
 			e.printStackTrace();
+		}
+		if(saveDetailsInfo && saveDDRInfo && saveIRRInfo) {
+			return true;
 		}
 		return false;
 	}
