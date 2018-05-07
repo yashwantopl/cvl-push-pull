@@ -576,7 +576,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return unsecuredLoanParameterService.saveOrUpdate(unsecuredLoanParameterRequest);
 				}
-				else if (corporateProduct.getProductId() == CommonUtils.LoanType.WC_TL_LOAN.getValue()) {
+				else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest= new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
