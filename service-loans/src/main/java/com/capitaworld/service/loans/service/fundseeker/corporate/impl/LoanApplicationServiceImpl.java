@@ -146,6 +146,7 @@ import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.SubSector;
@@ -5159,6 +5160,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
 		loanMasterRequest.setApplicationId(applicationMaster.getId());
 		loanMasterRequest.setApplicationCode(applicationMaster.getApplicationCode());
+		if(applicationMaster.getPurposeOfLoanId() != null) {
+			loanMasterRequest.setLoanPurpose(PurposeOfLoan.getById(applicationMaster.getPurposeOfLoanId()).getValue());			
+		}
+		loanMasterRequest.setApplicationDate(applicationMaster.getCreatedDate());
 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
