@@ -5139,6 +5139,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
 		loanMasterRequest.setApplicationId(applicationMaster.getId());
 		loanMasterRequest.setApplicationCode(applicationMaster.getApplicationCode());
+
+		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+		proposalMappingRequest.setApplicationId(applicationMaster.getId());
+		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
+		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
+			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+			try {
+				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+						ProposalMappingRequest.class);
+				loanMasterRequest.setFpProductId(proposalMappingRequest1.getFpProductId());
+				loanMasterRequest.setRoi(proposalMappingRequest1.getElRoi());
+				loanMasterRequest.setProcessingFee(proposalMappingRequest1.getProcessingFee());
+			} catch (IOException e) {
+				logger.info("error while setting details from proposal details");
+				e.printStackTrace();
+			}
+		}
 		return loanMasterRequest;
 	}
 	
