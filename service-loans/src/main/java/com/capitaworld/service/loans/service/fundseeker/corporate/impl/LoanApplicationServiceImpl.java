@@ -5163,7 +5163,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		if(!CommonUtils.isObjectNullOrEmpty(fpProductId)){
 			ProductMaster master = productMasterRepository.findOne(fpProductId);
-			if (!master.getIsActive()) {
+			if (master.getIsActive()) {
 				UsersRequest request = new UsersRequest();
 				request.setId(master.getUserId());
 				UserResponse userResponse = userClient.getFPDetails(request);
