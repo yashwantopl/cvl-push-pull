@@ -7,14 +7,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
-import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -32,8 +29,10 @@ public class DDROneFormResponse implements Serializable {
 	private String establishMentYear;
 	private String aboutMe;
 	private String currency;
+	private String orgName;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
+	
 
 	public Date getApprovedDate() {
 		return approvedDate;
@@ -46,15 +45,17 @@ public class DDROneFormResponse implements Serializable {
 
 	List<PromotorBackgroundDetailResponse> promoBackRespList = null;
 	/*List<OwnershipDetailResponse> ownershipRespList = null;*/
-	List<FinancialArrangementsDetailResponse> fincArrngDetailResList = null;
+	//List<FinancialArrangementsDetailResponse> fincArrngDetailResList = null;
 	List<ProposedProductDetailRequest> proposedProductDetailList = null;
 	List<ExistingProductDetailRequest> existingProductDetailList = null;
 	List<AssociatedConcernDetailRequest> associatedConcernDetailList = null;
 	List<DDRCMACalculationResponse> dDRCMACalculationList = null;
 	//List<ReferenceRetailDetailsRequest> referencesResponseList = null;
 	//List<SecurityCorporateDetailRequest> securityCorporateDetailList = null;
-	List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
-
+	//List<DirectorBackgroundDetailRequest> directorBackgroundDetailList = null;
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	private List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList;
+	
 	public DDROneFormResponse() {
 		//securityCorporateDetailList = Collections.emptyList();
 		//referencesResponseList = Collections.emptyList();
@@ -62,10 +63,10 @@ public class DDROneFormResponse implements Serializable {
 		associatedConcernDetailList = Collections.emptyList();
 		existingProductDetailList = Collections.emptyList();
 		proposedProductDetailList = Collections.emptyList();
-		fincArrngDetailResList = Collections.emptyList();
+		//fincArrngDetailResList = Collections.emptyList();
 		/*ownershipRespList = Collections.emptyList();*/
 		promoBackRespList = Collections.emptyList();
-		directorBackgroundDetailList = Collections.emptyList();
+		//directorBackgroundDetailList = Collections.emptyList();
 	}
 
 	public String getNameOfBorrower() {
@@ -148,13 +149,13 @@ public class DDROneFormResponse implements Serializable {
 		this.ownershipRespList = ownershipRespList;
 	}*/
 
-	public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
+	/*public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
 		return fincArrngDetailResList;
 	}
 
 	public void setFincArrngDetailResList(List<FinancialArrangementsDetailResponse> fincArrngDetailResList) {
 		this.fincArrngDetailResList = fincArrngDetailResList;
-	}
+	}*/
 
 	public List<ProposedProductDetailRequest> getProposedProductDetailList() {
 		return proposedProductDetailList;
@@ -187,7 +188,7 @@ public class DDROneFormResponse implements Serializable {
 	public void setdDRCMACalculationList(List<DDRCMACalculationResponse> dDRCMACalculationList) {
 		this.dDRCMACalculationList = dDRCMACalculationList;
 	}
-
+	
 	/*public List<ReferenceRetailDetailsRequest> getReferencesResponseList() {
 		return referencesResponseList;
 	}
@@ -204,24 +205,49 @@ public class DDROneFormResponse implements Serializable {
 		this.securityCorporateDetailList = securityCorporateDetailList;
 	}*/
 
-	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
+	/*public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList() {
 		return directorBackgroundDetailList;
 	}
 
 	public void setDirectorBackgroundDetailList(List<DirectorBackgroundDetailRequest> directorBackgroundDetailList) {
 		this.directorBackgroundDetailList = directorBackgroundDetailList;
-	}
+	}*/
+	
 
 	public String getCurrency() {
 		return currency;
 	}
 
+	public List<FinancialArrangementDetailResponseString> getFinancialArrangementsDetailResponseList() {
+		return financialArrangementsDetailResponseList;
+	}
+
+	public void setFinancialArrangementsDetailResponseList(
+			List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList) {
+		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
+	}
+
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
-	
 
-	  public static void printFields(Object obj) throws Exception {
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+	public String getOrgName() {
+		return orgName;
+	}
+
+	public void setOrgName(String orgName) {
+		this.orgName = orgName;
+	}
+
+	public static void printFields(Object obj) throws Exception {
 	         Field[] fields = DDROneFormResponse.class.getDeclaredFields();
 	         System.out.println("length : "+fields.length);
 	         for(Field field : fields) {

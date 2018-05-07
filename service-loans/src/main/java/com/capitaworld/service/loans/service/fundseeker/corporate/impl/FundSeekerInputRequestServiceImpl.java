@@ -7,10 +7,12 @@ import com.capitaworld.connect.client.ConnectClient;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
  import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
- import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
  import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
  import com.capitaworld.service.loans.model.LoansResponse;
- import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
@@ -66,7 +68,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     private LoanApplicationRepository loanApplicationRepository;
 
     @Override
-    public ResponseEntity<LoansResponse> saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
         try {
             logger.info("getting corporateApplicantDetail from applicationId::"+fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
@@ -116,104 +118,33 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
-
-            try {
-                for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-                    FinancialArrangementsDetail saveFinObj = null;
-                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveFinObj)){
-                        saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveFinObj.setCreatedDate(new Date());
-                        saveFinObj.setIsActive(true);
-                    } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
-                        saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-                        saveFinObj.setModifiedDate(new Date());
-                    }
-                    financialArrangementDetailsRepository.save(saveFinObj);
+            for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+                FinancialArrangementsDetail saveFinObj = null;
+                if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                    saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                 }
-            }catch (Exception e){
-                logger.info("Financial ===============> Throw Exception While Save Financial/Existing Details -------->");
-                e.printStackTrace();
+                if(CommonUtils.isObjectNullOrEmpty(saveFinObj)){
+                    saveFinObj = new FinancialArrangementsDetail();
+                    BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+
+                    saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                    saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                    saveFinObj.setCreatedDate(new Date());
+                    saveFinObj.setIsActive(true);
+                } else {
+                    BeanUtils.copyProperties(reqObj, saveFinObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
+                    saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+                    saveFinObj.setModifiedDate(new Date());
+                }
+                financialArrangementDetailsRepository.save(saveFinObj);
             }
-            /*for(FinancialArrangementsDetailRequest financialArrangementsDetailRequest:financialArrangementsDetailRequestsList)
-            {
-                FinancialArrangementsDetail financialArrangementsDetail=financialArrangementDetailsRepository.findOne(financialArrangementsDetailRequest.getId());
-                BeanUtils.copyProperties(financialArrangementsDetailRequest,financialArrangementsDetail);
 
-                financialArrangementsDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-                financialArrangementsDetail.setModifiedDate(new Date());
+           return true;
 
-                financialArrangementDetailsRepository.save(financialArrangementsDetail);
-            }*/
-
-
-            /*List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
-
-            try {
-                for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
-                    DirectorBackgroundDetail saveDirObj = null;
-                    if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
-                        saveDirObj = new DirectorBackgroundDetail();
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setCreatedDate(new Date());
-                        saveDirObj.setIsActive(true);
-                    } else {
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
-                        saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setModifiedDate(new Date());
-                    }
-                    directorBackgroundDetailsRepository.save(saveDirObj);
-                }
-            }catch (Exception e){
-                logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
-                e.printStackTrace();
-            }*/
-            /*for(DirectorBackgroundDetailRequest directorBackgroundDetailRequest:directorBackgroundDetailRequestList)
-            {
-                DirectorBackgroundDetail directorBackgroundDetail= directorBackgroundDetailsRepository.findOne(directorBackgroundDetailRequest.getId());
-                BeanUtils.copyProperties(directorBackgroundDetailRequest,directorBackgroundDetail);
-
-                directorBackgroundDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-                directorBackgroundDetail.setModifiedDate(new Date());
-
-                directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            }*/
-
-            // save and commit transaction
-
-//            EntityManagerFactory emf = jpaTransactionManager.getEntityManagerFactory();
-//            EntityManager entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
-////            EntityTransaction entityTransaction= entityManager.getTransaction();
-////            entityTransaction.commit();
-//            entityManager.flush();
-//            entityManager.clear();
-//            entityManager.close();
-
-            LoansResponse res=new LoansResponse("one form data successfully saved",HttpStatus.OK.value());
-            res.setFlag(true);
-            logger.error("one form successfully saved");
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
-
-        }
-        catch (Exception e)
-        {
-            LoansResponse res=new LoansResponse("error while saving one form data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while saving one form data");
+        } catch (Exception e) {
+            logger.info("Throw Exception while save and update Fundseeker input request !!");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            throw new Exception();
         }
     }
 
@@ -222,7 +153,26 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     @Override
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
-
+            //==== Applicant Address
+            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+                logger.info("corporateApplicantDetail is null created new object");
+                corporateApplicantDetail=new CorporateApplicantDetail();
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","isActive");
+                corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setCreatedDate(new Date());
+                corporateApplicantDetail.setIsActive(true);
+            } else {
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+                corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+                corporateApplicantDetail.setModifiedDate(new Date());
+            }
+            copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+            corporateApplicantDetailRepository.save(corporateApplicantDetail);
+            //==== Director details
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 
             try {
@@ -342,7 +292,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
         List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
         try {
-
+            //=== Applicant Address
+            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
+            {
+                corporateApplicantDetail=new CorporateApplicantDetail();
+            }
+            BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
+            copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+            //=== Director
             List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
 
             for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
@@ -390,6 +348,70 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return new LoansResponse("Something went wrong while Checking your Eligibility",HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
-    
-    
+
+    private static void copyAddressFromRequestToDomain(FundSeekerInputRequestResponse from, CorporateApplicantDetail to) {
+        // Setting Regsiterd Address
+        if (from.getFirstAddress() != null) {
+            to.setRegisteredPremiseNumber(from.getFirstAddress().getPremiseNumber());
+            to.setRegisteredLandMark(from.getFirstAddress().getLandMark());
+            to.setRegisteredStreetName(from.getFirstAddress().getStreetName());
+            to.setRegisteredPincode(from.getFirstAddress().getPincode());
+            to.setRegisteredCityId(from.getFirstAddress().getCityId());
+            to.setRegisteredStateId(from.getFirstAddress().getStateId());
+            to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+        }
+
+		/*// Setting Administrative Address
+		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
+			if (from.getFirstAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
+				to.setAdministrativePincode(from.getFirstAddress().getPincode());
+				to.setAdministrativeCityId(from.getFirstAddress().getCityId());
+				to.setAdministrativeStateId(from.getFirstAddress().getStateId());
+				to.setAdministrativeCountryId(from.getFirstAddress().getCountryId());
+			}
+		} else {
+			if (from.getSecondAddress() != null) {
+				to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber());
+				to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
+				to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
+				to.setAdministrativePincode(from.getSecondAddress().getPincode());
+				to.setAdministrativeCityId(from.getSecondAddress().getCityId());
+				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
+				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
+			}
+		}*/
+    }
+
+    private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from, FundSeekerInputRequestResponse to) {
+        // Setting Regsiterd Address
+        Address address = new Address();
+
+        address.setPremiseNumber(from.getRegisteredPremiseNumber());
+        address.setLandMark(from.getRegisteredLandMark());
+        address.setStreetName(from.getRegisteredStreetName());
+        address.setPincode(from.getRegisteredPincode());
+        address.setCityId(from.getRegisteredCityId());
+        address.setStateId(from.getRegisteredStateId());
+        address.setCountryId(from.getRegisteredCountryId());
+        to.setFirstAddress(address);
+		/*if (from.getSameAs() != null && from.getSameAs()) {
+			to.setSecondAddress(address);
+		} else {
+			address = new Address();
+			address.setPremiseNumber(from.getAdministrativePremiseNumber());
+			address.setLandMark(from.getAdministrativeLandMark());
+			address.setStreetName(from.getAdministrativeStreetName());
+			address.setPincode(from.getAdministrativePincode());
+			address.setCityId(from.getAdministrativeCityId());
+			address.setStateId(from.getAdministrativeStateId());
+			address.setCountryId(from.getAdministrativeCountryId());
+			to.setSecondAddress(address);
+
+		}*/
+
+        // Setting Administrative Address
+    }
 }

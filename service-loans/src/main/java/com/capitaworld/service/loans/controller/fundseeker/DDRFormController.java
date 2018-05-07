@@ -125,8 +125,8 @@ public class DDRFormController {
 		}
 	}
 	
-	@RequestMapping(value = "/getAutoFilledDetails/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,HttpServletRequest request,
+	@RequestMapping(value = "/getAutoFilledDetails/{appId}/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,@PathVariable("productId") Long productId, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
 		
@@ -168,6 +168,19 @@ public class DDRFormController {
 		}
 	}
 	
+	@RequestMapping(value = "/getSIDBI/{appId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getSidbi(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
+		try {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully get data", HttpStatus.OK.value(),ddrFormService.getSIDBIDetails(appId, userId)), HttpStatus.OK);
+		} catch(Exception e) {
+			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
 	@RequestMapping(value = "/getFinancialAutoFilledMaster", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinancialAutoFilled() {
 		try {
@@ -183,7 +196,7 @@ public class DDRFormController {
 	
 	
 	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,HttpServletRequest request, HttpServletResponse response,
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, HttpServletRequest request, HttpServletResponse response,
 			@RequestParam(value = "clientId", required = false) Long clientId){
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -193,6 +206,17 @@ public class DDRFormController {
 		}
 		else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
 			userId = clientId;
+		}
+		Boolean isDDRApproved =false;
+		try {
+			isDDRApproved = ddrFormService.isDDRApproved(userId, appId);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if(!isDDRApproved) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.DDR_NOT_APPROVED, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		try {

@@ -58,7 +58,7 @@ public class CorporatePrimaryViewResponse {
     private Object FinancialInputRequest;
     private List<Object> bankStatement;
     private List<Object> cibilReport;
-    
+    private List<Object> irtPdfReport;
 
 
     
@@ -420,4 +420,11 @@ public class CorporatePrimaryViewResponse {
     public void setCollateralSecurityAmount(String collateralSecurityAmount) {
         this.collateralSecurityAmount = collateralSecurityAmount;
     }
+	public List<Object> getIrtPdfReport() {
+		return irtPdfReport;
+	}
+	public void setIrtPdfReport(List<Object> irtPdfReport) {
+		this.irtPdfReport = irtPdfReport;
+	}
+    
 }

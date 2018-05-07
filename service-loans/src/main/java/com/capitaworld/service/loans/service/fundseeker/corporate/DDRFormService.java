@@ -22,5 +22,8 @@ public interface DDRFormService {
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
+	
+	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 }

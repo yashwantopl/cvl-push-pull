@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,12 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.model.Notification;
+import com.capitaworld.service.notification.model.NotificationRequest;
+import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.NotificationAlias;
+import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
@@ -65,6 +72,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 	
 	@Autowired
 	private OneFormClient  oneFormClient;
@@ -122,21 +132,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());	
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -277,21 +287,21 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
 					try {
 						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
 							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient));
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
 						}
 
 						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStateId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
 							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 						}
 
 						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeCountryId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
 							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
 						// TODO: handle exception
@@ -502,6 +512,63 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			e.printStackTrace();			
 		}
 		return null;
+	}
+
+	@Override
+	public boolean sendSMSNotificationWhenCheckerAssignMaker(Long applicationId, Long assignedUserId) {
+		
+		try {
+
+			logger.info("Sending SMS notification to FS when Checker Assign Maker=========>");
+		
+			
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setId(assignedUserId);
+			
+			UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
+			NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+						NetworkPartnerDetailsRequest.class);
+			
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+			UserResponse response = usersClient.getEmailMobile(applicationMaster.getUserId());
+			UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), UsersRequest.class);
+			
+			
+			String mobile = applicantRequest.getMobile();
+
+			String[] to = { 91 + mobile };
+			NotificationRequest notificationRequest = new NotificationRequest();
+			notificationRequest.setClientRefId(assignedUserId.toString());
+			Notification notification = new Notification();
+			notification.setContentType(ContentType.TEMPLATE);
+
+			notification.setTemplateId(NotificationAlias.SMS_CHECKER_ASSIGNED_MAKER);
+			notification.setTo(to);
+			notification.setType(NotificationType.SMS);
+			Map<String, Object> parameters = new HashMap<String, Object>();
+
+			parameters.put("maker", networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
+			parameters.put("url", "www.bitly.com");
+			
+			notification.setParameters(parameters);
+			notificationRequest.addNotification(notification);
+//			notificationRequest.addNotification(notification);
+
+			notificationClient.send(notificationRequest);
+
+			logger.info("End SMS notification to FS when Checker Assign Maker=====>");
+
+			return true;
+		} catch (Exception e) {
+
+			logger.info("Error while sending SMS =====>");
+			e.printStackTrace();
+
+		}
+
+		
+		return false;
 	}
 
 }

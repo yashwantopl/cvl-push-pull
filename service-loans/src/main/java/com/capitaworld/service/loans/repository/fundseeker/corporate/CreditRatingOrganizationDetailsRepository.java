@@ -18,6 +18,9 @@ public interface CreditRatingOrganizationDetailsRepository extends JpaRepository
 	@Query("select o from CreditRatingOrganizationDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true")
 	public List<CreditRatingOrganizationDetail> listCreditRatingOrganizationDetailsFromAppId(@Param("id")Long id, @Param("userId") Long userId);
 	
+	@Query("select o from CreditRatingOrganizationDetail o where o.applicationId.id = :id and o.isActive = true")
+	public List<CreditRatingOrganizationDetail> listCreditRatingOrganizationDetailsFromAppId(@Param("id")Long id);
+	
 
 	@Query("select o.creditRatingOptionId from CreditRatingOrganizationDetail o where o.applicationId.id = :id and o.applicationId.userId =:userId and o.isActive = true and o.creditRatingTermId!=2")
 	public List<Integer> listLongCreditRatingOptionDetailsFromAppId(@Param("id")Long id, @Param("userId") Long userId);

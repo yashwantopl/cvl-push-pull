@@ -34,21 +34,35 @@ public class FundSeekerInputRequestController {
         		fundSeekerInputRequestResponse.setUserId((Long) request.getAttribute(CommonUtils.USER_ID));        		
         	}
 
+        	logger.info("ENTER IN SAVE FUNDSEEKER INPUT REQUEST----------------------------------->");
+
             if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
                 logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            return fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
+            logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + userId + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
+            boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
+        	if(result){
+        	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value()),
+                        HttpStatus.OK);
+            } else {
+                logger.info("FUNDSEEKER INPUT NOT SAVED");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Oneform Not Saved", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
 
         } catch (Exception e) {
             logger.error("Error while saving one form data");
             e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.OK);
         }
     }
 

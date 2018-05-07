@@ -99,10 +99,16 @@ public class NhbsController {
 			nhbsApplicationRequest.setUserId(userId);
 			LoansResponse loansResponse = new LoansResponse();
 			boolean isDataUpdated = networkPartnerService.setMaker(nhbsApplicationRequest);
-			if(isDataUpdated){
+			
+				if(isDataUpdated){
 				logger.info("Data Updated.");
+				
 				loansResponse.setMessage("Data Updated.");
-			}else{
+				
+				boolean status = networkPartnerService.sendSMSNotificationWhenCheckerAssignMaker(nhbsApplicationRequest.getApplicationId(),nhbsApplicationRequest.getAssignedUserId());
+				logger.info("SMS notification status is:-"+status);
+				
+			} else {
 				logger.info("Data Not Updated.");
 				loansResponse.setMessage("Data Not Updated.");
 			}
