@@ -5134,6 +5134,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(applicationMaster.getApplicationStatusMaster() != null) {
 			loanMasterRequest.setStatus(applicationMaster.getApplicationStatusMaster().getStatus());			
 		}
+        loanMasterRequest.setBusinessTypeId(getIndustryIrrByApplication(applicationMaster.getId()));
 		loanMasterRequest.setAmount(applicationMaster.getAmount());
 		loanMasterRequest.setHaveCollateralSecurities(applicationMaster.getHaveCollateralSecurity());
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
