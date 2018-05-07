@@ -5143,7 +5143,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
-		Long fpProductId=null;
+		Long fpProductId=0l;
 		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
 		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
 			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
@@ -5177,9 +5177,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 			}
-				
 		}
-
 		return loanMasterRequest;
 	}
 	
