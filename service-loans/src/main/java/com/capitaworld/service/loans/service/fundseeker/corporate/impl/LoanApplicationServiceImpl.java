@@ -4832,7 +4832,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(irrReq,irrRequest);*/
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
 				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
-				BeanUtils.copyProperties(ratingResponse.getData(),irrOutputManufacturingRequest);
+				IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputManufacturingRequest.class);
+				BeanUtils.copyProperties(irrOutputManufacturingRequest1,irrOutputManufacturingRequest);
 				irrOutputManufacturingRequest.setApplicationId(applicationId);
 				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
