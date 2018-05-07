@@ -5134,6 +5134,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(applicationMaster.getApplicationStatusMaster() != null) {
 			loanMasterRequest.setStatus(applicationMaster.getApplicationStatusMaster().getStatus());			
 		}
+        loanMasterRequest.setBusinessTypeId(getIndustryIrrByApplication(applicationMaster.getId()));
 		loanMasterRequest.setAmount(applicationMaster.getAmount());
 		loanMasterRequest.setHaveCollateralSecurities(applicationMaster.getHaveCollateralSecurity());
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
@@ -5142,20 +5143,43 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
+		Long fpProductId=null;
 		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
 		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
 			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+
 			try {
 				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
 						ProposalMappingRequest.class);
+				fpProductId = proposalMappingRequest1.getFpProductId();
 				loanMasterRequest.setFpProductId(proposalMappingRequest1.getFpProductId());
 				loanMasterRequest.setRoi(proposalMappingRequest1.getElRoi());
 				loanMasterRequest.setProcessingFee(proposalMappingRequest1.getProcessingFee());
+                loanMasterRequest.setEmi(proposalMappingRequest1.getEmi());
 			} catch (IOException e) {
-				logger.info("error while setting details from proposal details");
+				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
 			}
 		}
+		if(!CommonUtils.isObjectNullOrEmpty(fpProductId)){
+			ProductMaster master = productMasterRepository.findOne(fpProductId);
+			if (!master.getIsActive()) {
+				UsersRequest request = new UsersRequest();
+				request.setId(master.getUserId());
+				UserResponse userResponse = userClient.getFPDetails(request);
+				FundProviderDetailsRequest fundProviderDetailsRequest = null;
+				try {
+					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+                            (LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+				} catch (IOException e) {
+					logger.error("error while setting users details from proposal details");
+					e.printStackTrace();
+				}
+				loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
+			}
+				
+		}
+
 		return loanMasterRequest;
 	}
 	
