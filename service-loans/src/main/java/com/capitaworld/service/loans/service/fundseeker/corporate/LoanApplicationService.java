@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -149,6 +150,8 @@ public interface LoanApplicationService {
 	public boolean savePhese1DataToSidbi(Long applicationId,Long userId);
 	
 	public boolean savePhese2DataToSidbi(Long applicationId,Long userId);
+	
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
 	
 }

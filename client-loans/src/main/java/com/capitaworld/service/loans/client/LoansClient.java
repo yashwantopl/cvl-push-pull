@@ -164,7 +164,7 @@ public class LoansClient {
 	
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
-
+	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "getFpDetailsByFpProductId";
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -1729,5 +1729,19 @@ public class LoansClient {
 		}
 	}
 	
+	
+	public LoansResponse getFpDetailsByFpProductId(Long fpProductId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FPDETAILS_BY_FPPRODUCTID).concat("/"+fpProductId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
 	
 }

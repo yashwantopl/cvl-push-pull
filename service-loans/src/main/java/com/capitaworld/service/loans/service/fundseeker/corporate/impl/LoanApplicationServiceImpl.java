@@ -5215,4 +5215,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return corporateProfileRequest;
 	}
 
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception{
+		 Map<String, Object> map= null;
+		try {
+			 map = new HashMap<String, Object>();
+		ProductMaster productMaster = productMasterRepository.findOne(fpProductId);
+		if(productMaster!=null) {
+		UsersRequest request = new UsersRequest();
+		request.setId(productMaster.getUserId());
+		UserResponse resp = userClient.getEmailMobile(productMaster.getUserId());
+		UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
+				(Map<String, Object>) resp.getData(), UsersRequest.class);
+		map.put("fpName", applicantRequest.getName());
+		map.put("mobileNo", applicantRequest.getMobile());
+		map.put("fpUserId", productMaster.getUserId());
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
 }
