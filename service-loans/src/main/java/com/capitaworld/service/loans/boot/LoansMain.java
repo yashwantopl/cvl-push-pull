@@ -3,6 +3,9 @@ package com.capitaworld.service.loans.boot;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.scoring.ScoringClient;
+
+import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -93,6 +96,12 @@ public class LoansMain {
 	@Value("${capitaworld.service.sidbi.integration.url}")
 	private String sidbiIntegrationBaseUrl;
 
+	@Value("${capitaworld.sidbi.integration.username}")
+	private String sidbiUserName;
+
+	@Value("${capitaworld.sidbi.integration.password}")
+	private String sidbiPassword;
+	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -198,7 +207,11 @@ public class LoansMain {
 	
 	@Bean
 	public SidbiIntegrationClient sidbiIntegrationClient() {
-		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl);
+		String keyToEncode = sidbiUserName + ":" + sidbiPassword;
+		System.out.println("keyToEncode===============>" + keyToEncode);
+		String encodedString = /*"Basic " + */Base64.getEncoder().encodeToString(keyToEncode.getBytes());
+		System.out.println("encodedString===============>" + encodedString);
+		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl,encodedString);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
 		return sidbiIntegrationClient;
 	}

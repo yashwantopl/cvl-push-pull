@@ -125,8 +125,8 @@ public class DDRFormController {
 		}
 	}
 	
-	@RequestMapping(value = "/getAutoFilledDetails/{appId}/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId,@PathVariable("productId") Long productId, HttpServletRequest request,
+	@RequestMapping(value = "/getAutoFilledDetails/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFinancial(@PathVariable("appId") Long appId, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
 		
@@ -160,6 +160,19 @@ public class DDRFormController {
 		try {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(),ddrFormService.getFinancialSummaryToBeFieldsList()), HttpStatus.OK);
+		} catch(Exception e) {
+			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/getSIDBI/{appId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getSidbi(@PathVariable("appId") Long appId, @PathVariable("userId") Long userId) {
+		try {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully get data", HttpStatus.OK.value(),ddrFormService.getSIDBIDetails(appId, userId)), HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
 			e.printStackTrace();
