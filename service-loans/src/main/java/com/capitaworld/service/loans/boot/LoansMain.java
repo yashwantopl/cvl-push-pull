@@ -209,7 +209,7 @@ public class LoansMain {
 	public SidbiIntegrationClient sidbiIntegrationClient() {
 		String keyToEncode = sidbiUserName + ":" + sidbiPassword;
 		System.out.println("keyToEncode===============>" + keyToEncode);
-		String encodedString = /*"Basic " + */Base64.getEncoder().encodeToString(keyToEncode.getBytes());
+		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
 		System.out.println("encodedString===============>" + encodedString);
 		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl,encodedString);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
