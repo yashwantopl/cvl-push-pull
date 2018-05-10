@@ -279,6 +279,9 @@ public class DDRFormDetails implements Serializable {
 	
 	@Column(name = "remark_of_doc_checklist")
 	private String remarkOfDocCheckList;
+
+	@Column(name = "remark_of_existing_banker")
+	private String remarkOfExistingBankerDetails;
 	
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -1009,6 +1012,14 @@ public class DDRFormDetails implements Serializable {
 
 	public void setRemarkOfDocCheckList(String remarkOfDocCheckList) {
 		this.remarkOfDocCheckList = remarkOfDocCheckList;
+	}
+
+	public String getRemarkOfExistingBankerDetails() {
+		return remarkOfExistingBankerDetails;
+	}
+
+	public void setRemarkOfExistingBankerDetails(String remarkOfExistingBankerDetails) {
+		this.remarkOfExistingBankerDetails = remarkOfExistingBankerDetails;
 	}
 
 	@Override
