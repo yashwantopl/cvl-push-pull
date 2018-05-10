@@ -255,7 +255,7 @@ public class CommonUtils {
 	}
 
 	public static int getUserMainType(int productId) {
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return 2;
 		else
 			return 1;
