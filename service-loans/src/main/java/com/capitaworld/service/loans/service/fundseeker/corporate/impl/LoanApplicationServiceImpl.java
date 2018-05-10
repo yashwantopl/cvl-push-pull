@@ -13,11 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.service.irr.IrrService;
-import com.capitaworld.service.rating.model.RatingResponse;
-import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
-import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
-import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +111,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApp
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -128,6 +124,7 @@ import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
+import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
@@ -149,7 +146,6 @@ import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
-import com.capitaworld.service.oneform.enums.SubSector;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.IrrBySectorAndSubSector;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -158,6 +154,7 @@ import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.IndustryResponse;
 import com.capitaworld.service.rating.model.IrrRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ScoreParameterResult;
@@ -187,6 +184,9 @@ import com.capitaworld.sidbi.integration.model.OwnershipDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
+import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
 import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
 
 @Service
@@ -1019,6 +1019,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			notificationClient.send(notificationRequest);
 			// send FP notification end
 
+			//SMS
+			
+			UsersRequest resp = getEmailMobile(applicationMaster.getNpAssigneeId());
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put("url", "www.bitly.com");
+			parameters.put("maker_name", getNPName(applicationMaster.getNpUserId()));
+			parameters.put("checker_name", getNPName(applicationMaster.getNpAssigneeId()));
+			sendSMSNotification(applicationMaster.getNpAssigneeId().toString(), parameters, NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
 			// create log when teaser submit
 			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 			return loanApplicationRequest;
@@ -1029,7 +1037,55 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		}
 	}
+	
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to) throws NotificationException  {
+//		String to[] = {toNo};
+		NotificationRequest req = new NotificationRequest();
+		req.setClientRefId(userId);
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setTo(to);
+		notification.setType(NotificationType.SMS);
+		notification.setParameters(parameters);
+		req.addNotification(notification);
+		
+		notificationClient.send(req);
+		
+	}
+	private String getNPName(Long npUserId) throws IOException {
+		if (CommonUtils.isObjectNullOrEmpty(npUserId)) {
+			logger.warn("Np Usesr Id is NULL===>");
+			return null;
+		}
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setId(npUserId);
+		UserResponse userResponse = userClient.getNPDetails(usersRequest);
+		if (CommonUtils.isObjectListNull(userResponse, userResponse.getData())) {
+			logger.warn("User Response or Data in UserResponse must not be null===>{}", userResponse);
+			return null;
+		}
 
+		NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+				(LinkedHashMap<String, Object>) userResponse.getData(), NetworkPartnerDetailsRequest.class);
+		return (networkPartnerDetailsRequest.getFirstName() + " " + networkPartnerDetailsRequest.getLastName());
+	}
+
+	private UsersRequest getEmailMobile(Long userId) throws IOException {
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.warn("Usesr Id is NULL===>");
+			return null;
+		}
+		UserResponse emailMobile = userClient.getEmailMobile(userId);
+		if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+			logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+			return null;
+		}
+
+		UsersRequest request = MultipleJSONObjectHelper
+				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+		return request;
+	}
 	private Object[] getFPName(Long fpMappingId) {
 		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
 		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
@@ -5323,4 +5379,39 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return corporateProfileRequest;
 	}
 
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception{
+		 Map<String, Object> map= null;
+		try {
+			 map = new HashMap<String, Object>();
+		ProductMaster productMaster = productMasterRepository.findOne(fpProductId);
+		if(productMaster!=null) {
+		UsersRequest request = new UsersRequest();
+		request.setId(productMaster.getUserId());
+		UserResponse resp = userClient.getEmailMobile(productMaster.getUserId());
+		UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
+				(Map<String, Object>) resp.getData(), UsersRequest.class);
+		map.put("fpName", applicantRequest.getName());
+		map.put("mobileNo", applicantRequest.getMobile());
+		map.put("fpUserId", productMaster.getUserId());
+		}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
+	
+	
+	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
+		
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		
+		
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		
+		BeanUtils.copyProperties(applicationMaster, applicationRequest);
+		
+		return applicationRequest;
+	}
 }
