@@ -153,7 +153,7 @@ public interface LoanApplicationService {
 	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
-	
+	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
 }
 
 
