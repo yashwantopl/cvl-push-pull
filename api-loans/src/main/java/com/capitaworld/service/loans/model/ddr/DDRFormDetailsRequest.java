@@ -96,6 +96,7 @@ public class DDRFormDetailsRequest implements Serializable {
 //	private String remarkOfLatestCredList;
 	private String remarkOfBusinessDetails;
 	private String remarkOfPersonalDetails;
+	private String remarkOfExistingBankerDetails;
 //	private String remarkOfNameOfAuthSignatory;
 //	private String remarkOfOtherDetail;
 //	private String remarkOfDetailOfCredCard;
@@ -1252,7 +1253,13 @@ public class DDRFormDetailsRequest implements Serializable {
 		this.remarkOfPersonalDetails = remarkOfPersonalDetails;
 	}
 
+	public String getRemarkOfExistingBankerDetails() {
+		return remarkOfExistingBankerDetails;
+	}
 
+	public void setRemarkOfExistingBankerDetails(String remarkOfExistingBankerDetails) {
+		this.remarkOfExistingBankerDetails = remarkOfExistingBankerDetails;
+	}
 
 	/*public String getRemarkOfNameOfAuthSignatory() {
 		return remarkOfNameOfAuthSignatory;
@@ -1400,11 +1407,13 @@ public class DDRFormDetailsRequest implements Serializable {
 				", remarkOfFinSummary='" + remarkOfFinSummary + '\'' +
 				", remarkOfBusinessDetails='" + remarkOfBusinessDetails + '\'' +
 				", remarkOfPersonalDetails='" + remarkOfPersonalDetails + '\'' +
+				", remarkOfExistingBankerDetails='" + remarkOfExistingBankerDetails + '\'' +
 				", outsideLoansString='" + outsideLoansString + '\'' +
 				", loansFromFamilyMembersRelativeString='" + loansFromFamilyMembersRelativeString + '\'' +
 				", dDRRegisteredOfficeList=" + dDRRegisteredOfficeList +
 				", dDROperatingOfficeList=" + dDROperatingOfficeList +
 				", dDRFinancialSummaryList=" + dDRFinancialSummaryList +
+				", existingBankerDetailList=" + existingBankerDetailList +
 				", dDRFamilyDirectorsList=" + dDRFamilyDirectorsList +
 				'}';
 	}
