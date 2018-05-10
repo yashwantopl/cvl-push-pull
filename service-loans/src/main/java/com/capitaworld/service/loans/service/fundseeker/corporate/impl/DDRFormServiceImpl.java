@@ -1221,7 +1221,8 @@ public class DDRFormServiceImpl implements DDRFormService{
                 financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                 financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                 //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-                //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+                financialArrangementsDetailResponse.setRelationshipSinceInYear(financialArrangementsDetailRequest.getRelationshipSince().toString());
+                financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
             }
             response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);

@@ -304,8 +304,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private MonthlyTurnoverDetailRepository monthlyTurnoverDetailRepository;
 	
 	@Autowired
-	private AssociatedConcernDetailRepository associatedConcernDetailRepository; 
-
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
 
@@ -5186,6 +5186,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				loanMasterRequest.setRoi(proposalMappingRequest1.getElRoi());
 				loanMasterRequest.setProcessingFee(proposalMappingRequest1.getProcessingFee());
                 loanMasterRequest.setEmi(proposalMappingRequest1.getEmi());
+                ProductMaster productMstr = productMasterRepository.findOne(proposalMappingRequest1.getFpProductId());
+                if(productMstr != null) {
+                	loanMasterRequest.setFpProductName(productMstr.getName());                	
+                }
 			} catch (IOException e) {
 				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
