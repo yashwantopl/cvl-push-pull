@@ -1071,7 +1071,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 		try {
 			Long orgId = loanApplicationMaster.getNpOrgId();
 				if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
-    				String orgName = CommonUtils.getOrganizationName(orgId.intValue());
+					logger.info("OrgId",orgId);
+    				String orgName = CommonUtils.getOrganizationName(orgId);
     				response.setOrgName(orgName);
     				logger.info("Org name",orgName);
     			}else {
