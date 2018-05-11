@@ -60,6 +60,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private Integer relationshipType;
 
+	private String firstName;
+
+	private String lastName;
+
+	private String middleName;
+
+	private String title;
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -222,16 +230,66 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setRelationshipType(Integer relationshipType) {
 		this.relationshipType = relationshipType;
 	}
-	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	@Override
 	public String toString() {
-		return "DirectorBackgroundDetailRequest [id=" + id + ", address=" + address + ", networth=" + networth
-				+ ", applicationId=" + applicationId + ", salutationId=" + salutationId + ", din=" + din
-				+ ", appointmentDate=" + appointmentDate + ", designation=" + designation + ", panNo=" + panNo
-				+ ", directorsName=" + directorsName + ", totalExperience=" + totalExperience + ", isActive=" + isActive
-				+ ", pincode=" + pincode + ", stateCode=" + stateCode + ", city=" + city + ", dob=" + dob + ", mobile="
-				+ mobile + ", gender=" + gender + ", relationshipType=" + relationshipType + "]";
+		return "DirectorBackgroundDetailRequest{" +
+				"id=" + id +
+				", address='" + address + '\'' +
+				", networth=" + networth +
+				", applicationId=" + applicationId +
+				", salutationId=" + salutationId +
+				", din=" + din +
+				", appointmentDate=" + appointmentDate +
+				", designation='" + designation + '\'' +
+				", panNo='" + panNo + '\'' +
+				", directorsName='" + directorsName + '\'' +
+				", totalExperience=" + totalExperience +
+				", isActive=" + isActive +
+				", pincode='" + pincode + '\'' +
+				", stateCode='" + stateCode + '\'' +
+				", city='" + city + '\'' +
+				", dob=" + dob +
+				", mobile='" + mobile + '\'' +
+				", gender=" + gender +
+				", relationshipType=" + relationshipType +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", middleName='" + middleName + '\'' +
+				", title='" + title + '\'' +
+				'}';
 	}
 
 	public static void printFields(Object obj) throws Exception {
