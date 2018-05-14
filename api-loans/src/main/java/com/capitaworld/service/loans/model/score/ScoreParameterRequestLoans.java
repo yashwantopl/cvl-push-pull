@@ -3,22 +3,22 @@ package com.capitaworld.service.loans.model.score;
 public class ScoreParameterRequestLoans {
 
 
-    private Boolean isCombinedNetworth_p = false;
-    private Boolean isCustomerAsscociateConcern_p= false;
-    private Boolean isCibilTransunionScore_p= false;
-    private Boolean isDebtEquityRatio_p= false;
-    private Boolean isTolTnw_p= false;
-    private Boolean isAvgCurrentRatio_p= false;
-    private Boolean isWorkingCapitalCycle_p= false;
-    private Boolean isAvgAnnualGrowthGrossCash_p= false;
-    private Boolean isAvgAnnualGrowthNetSale_p= false;
-    private Boolean isAvgEBIDTA_p= false;
-    private Boolean isAvgAnnualGrossCashAccuruals_p= false;
-    private Boolean isAvgInterestCovRatio_p= false;
-    private Boolean isNoOfCustomer_p= false;
-    private Boolean isConcentrationCustomer_p= false;
-    private Boolean isExperienceInTheBusiness_p= false;
-    private Boolean isCreditSummation_p= false;
+    private Boolean isCombinedNetworth_p;
+    private Boolean isCustomerAsscociateConcern_p;
+    private Boolean isCibilTransunionScore_p;
+    private Boolean isDebtEquityRatio_p;
+    private Boolean isTolTnw_p;
+    private Boolean isAvgCurrentRatio_p;
+    private Boolean isWorkingCapitalCycle_p;
+    private Boolean isAvgAnnualGrowthGrossCash_p;
+    private Boolean isAvgAnnualGrowthNetSale_p;
+    private Boolean isAvgEBIDTA_p;
+    private Boolean isAvgAnnualGrossCashAccuruals_p;
+    private Boolean isAvgInterestCovRatio_p;
+    private Boolean isNoOfCustomer_p;
+    private Boolean isConcentrationCustomer_p;
+    private Boolean isExperienceInTheBusiness_p;
+    private Boolean isCreditSummation_p;
 
     private Double networthSum;
 
