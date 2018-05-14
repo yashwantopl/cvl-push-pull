@@ -997,6 +997,8 @@ public class ScoringServiceImpl implements ScoringService{
 
         ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
 
+        logger.info("SCORE PARAMETER BEFORE::::::::::"+scoringRequestLoans.getScoreParameterRequestLoans().toString());
+
         BeanUtils.copyProperties(scoringRequestLoans.getScoreParameterRequestLoans(),scoringParameterRequest);
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
