@@ -1075,6 +1075,8 @@ public class ScoringServiceImpl implements ScoringService{
             {
                 logger.error("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                loansResponse.setData(scoringResponseMain.getDataObject());
+                loansResponse.setListData(scoringResponseMain.getDataList());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
             else
