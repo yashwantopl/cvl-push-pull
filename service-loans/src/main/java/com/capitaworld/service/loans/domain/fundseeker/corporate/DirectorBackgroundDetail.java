@@ -106,6 +106,18 @@ public class DirectorBackgroundDetail implements Serializable {
 	@Column(name="relationship_type")
 	private Integer relationshipType;
 
+	@Column(name="first_name")
+	private String firstName;
+
+	@Column(name="last_name")
+	private String lastName;
+
+	@Column(name="middle_name")
+	private String middleName;
+
+	@Column(name="title")
+	private String title;
+
 	public DirectorBackgroundDetail() {
 	}
 
@@ -297,5 +309,37 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	public void setRelationshipType(Integer relationshipType) {
 		this.relationshipType = relationshipType;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

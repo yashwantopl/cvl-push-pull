@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -42,6 +44,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -478,6 +481,12 @@ public class AsyncComponent {
 		    				}
 		    				String[] toIds = {request.getEmail()};
 		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_VIEW_MORE_DETAILS,fpName,false,null);
+		    				//SMS
+		    				LoanApplicationRequest respLoans = loanApplicationService.getLoanApplicationDetails(userId, applicationId);
+		    				UsersRequest resp = getEmailMobile(respLoans.getNpUserId());
+		    				
+		    				sendSMSNotification(respLoans.getNpUserId().toString(), parameters, NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
+		    				
 		    				logger.info("Exits, Successfully sent mail when fp view more details but fs not filled final details ---->"+request.getEmail());
 		    			}
 		    		}
@@ -488,7 +497,37 @@ public class AsyncComponent {
 			e.printStackTrace();
 		}
 	}
-	
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to) throws NotificationException  {
+//		String to[] = {toNo};
+		NotificationRequest req = new NotificationRequest();
+		req.setClientRefId(userId);
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setTo(to);
+		notification.setType(NotificationType.SMS);
+		notification.setParameters(parameters);
+		req.addNotification(notification);
+		
+		notificationClient.send(req);
+		
+	}
+
+	private UsersRequest getEmailMobile(Long userId) throws IOException {
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.warn("Usesr Id is NULL===>");
+			return null;
+		}
+		UserResponse emailMobile = usersClient.getEmailMobile(userId);
+		if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+			logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+			return null;
+		}
+
+		UsersRequest request = MultipleJSONObjectHelper
+				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+		return request;
+	}
 	/**
 	 * FS Mail Number :- 14
 	 *  Send Mail when FP Send Direct request to fundseeker

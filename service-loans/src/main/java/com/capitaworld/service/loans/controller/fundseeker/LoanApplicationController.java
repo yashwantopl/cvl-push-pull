@@ -1862,6 +1862,24 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/getFpDetailsByFpProductId/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpDetailsByFpProductId(@PathVariable("fpProductId")Long fpProductId){
+		try {
+			logger.info("Entry getFpDetailsByFpProductId");
+			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getFpDetailsByFpProductId(fpProductId));
+			logger.info("Exit getFpDetailsByFpProductId");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getFpDetailsByFpProductId==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 }
 

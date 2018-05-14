@@ -951,38 +951,38 @@ public class CommonUtils {
 		Double sub= a-b-c;
 		return sub;
 	}
-	public static String getOrganizationName(Integer x) {
-		switch (x) {
-		case 1:
+	public static String getOrganizationName(Long x) {
+		if(x == 1) {
 			return "UNION";
-		case 2:
+		}else if(x == 2) {
 			return "SARASWAT";
-		case 3:
-			return "Axis";
-		case 4:
+		}else if(x == 3) {
+			return "AXIS";
+		}else if(x == 4) {
 			return "ICICI";
-		case 5:
+		}else if(x == 5) {
 			return "IDBI";
-		case 6:
+		}else if(x == 6) {
 			return "RBL";
-		case 7:
+		}else if(x == 7) {
 			return "Tata Capital";
-		case 8:
+		}else if(x == 8) {
 			return "IDFC";
-		case 9:
+		}else if(x == 9) {
 			return "Dena Bank";
-		case 10:
+		}else if(x == 10) {
 			return "SIDBI";
-		case 11:
+		}else if(x == 11) {
 			return "NHBS";
-		case 12:
+		}else if(x == 12) {
 			return "CANARA BANK";
-		case 13:
+		}else if(x == 13) {
 			return "Indian Bank";
-		case 14:
+		}else if(x == 14) {
 			return "BOI";
+		}else {
+			return null;
 		}
-		return null;
 	}
 
 
