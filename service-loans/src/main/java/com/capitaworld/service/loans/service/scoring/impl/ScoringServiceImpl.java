@@ -1002,6 +1002,7 @@ public class ScoringServiceImpl implements ScoringService{
         BeanUtils.copyProperties(scoringRequestLoans.getScoreParameterRequestLoans(),scoringParameterRequest);
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
 
         logger.info("----------------------------START------------------------------");
         logger.info("---------------------------------------------------------------");
@@ -1020,6 +1021,7 @@ public class ScoringServiceImpl implements ScoringService{
         {
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setApplicationId(applicationId);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
