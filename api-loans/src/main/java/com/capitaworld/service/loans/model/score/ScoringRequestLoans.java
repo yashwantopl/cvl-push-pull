@@ -10,6 +10,16 @@ public class ScoringRequestLoans {
 
     private Long applicationId;
 
+    private ScoreParameterRequestLoans scoreParameterRequestLoans;
+
+    public ScoreParameterRequestLoans getScoreParameterRequestLoans() {
+        return scoreParameterRequestLoans;
+    }
+
+    public void setScoreParameterRequestLoans(ScoreParameterRequestLoans scoreParameterRequestLoans) {
+        this.scoreParameterRequestLoans = scoreParameterRequestLoans;
+    }
+
     public Long getScoringModelId() {
         return scoringModelId;
     }
