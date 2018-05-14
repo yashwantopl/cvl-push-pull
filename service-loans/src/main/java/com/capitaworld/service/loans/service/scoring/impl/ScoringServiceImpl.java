@@ -1059,6 +1059,7 @@ public class ScoringServiceImpl implements ScoringService{
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
+            scoringRequest.setTestingApiCall(true);
 
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
