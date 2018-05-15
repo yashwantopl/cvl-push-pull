@@ -269,6 +269,14 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					case DocumentAlias.WCTL_CMA: {
+						flag = excelExtractionService.readCMA(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
+					case DocumentAlias.WCTL_COMPANY_ACT: {
+						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
 					case DocumentAlias.TL_DPR_OUR_FORMAT: {
 						flag = excelExtractionService.readDPR(applicationId, response.getStorageId(), multipartFiles);
 						break;
