@@ -520,10 +520,10 @@ public class CorporateUploadController {
 		
         try {
         	  httpServletResponse.setContentType("application/csv");  
-          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA|| productDocumentMappingId==(long)DocumentAlias.TL_CMA ||productDocumentMappingId==(long)DocumentAlias.USL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA) {
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA|| productDocumentMappingId==(long)DocumentAlias.TL_CMA ||productDocumentMappingId==(long)DocumentAlias.USL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA_DOC) {
             httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
-          }else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT ) {
+          }else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
         	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
