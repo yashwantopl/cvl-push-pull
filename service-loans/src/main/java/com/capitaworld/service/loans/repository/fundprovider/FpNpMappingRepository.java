@@ -16,6 +16,6 @@ public interface FpNpMappingRepository extends JpaRepository<FpNpMapping,Long>{
     @Query("from FpNpMapping where npUserId =:npUserId and isActive=1")
     public List<FpNpMapping> listOfNpCheckerAssignedByBoForPagination(Pageable pageable, @Param("npUserId")Long npUserId);
 
-    @Query("from FpNpMapping where applicationId=:applicationId and fpProductId:=fpProductId and isActive=1")
+    @Query("from FpNpMapping where applicationId=:applicationId and fpProductId=:fpProductId and isActive=1")
     public FpNpMapping getNpCheckerUserIdBasedOnAppIdAndProdId(@Param("applicationId")Long applicationId,@Param("fpProductId")Long fpProductId);
 }
