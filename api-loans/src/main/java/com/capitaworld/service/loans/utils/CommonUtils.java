@@ -181,8 +181,9 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			default :
+				return null;
 			}
-			return null;
 		}
 		public static String getLoanTypeName(Integer x) {
 			switch (x) {
@@ -204,8 +205,9 @@ public class CommonUtils {
 				return "UNSECURED LOAN";
 			case 16:
 				return "WCTL_LOAN";
+			default :
+				return null;
 			}
-			return null;
 		}
 
 	}
