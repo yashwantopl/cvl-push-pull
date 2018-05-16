@@ -37,4 +37,17 @@ public class ScoringController {
         }
         return scoringService.calculateScoring(scoringRequestLoans);
     }
+
+    @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreTest(@RequestBody ScoringRequestLoans scoringRequestLoans) {
+
+        if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getScoringModelId()))
+        {
+            logger.warn("request parameter is null or empty");
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse("request parameter is null or empty.", HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.OK);
+        }
+        return scoringService.calculateScoringTest(scoringRequestLoans);
+    }
 }

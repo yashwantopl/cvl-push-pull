@@ -40,6 +40,12 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     private String aboutUs;
 
+    private Double totalCostOfEstimate;
+    private Double totalMeansOfFinance;
+    private Double sharePriceFace;
+    private Double sharePriceMarket;
+    private Double totalCollateralDetails;
+
     public Boolean getSameAs() {
         return sameAs;
     }
@@ -167,5 +173,45 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     public void setAboutUs(String aboutUs) {
         this.aboutUs = aboutUs;
+    }
+
+    public Double getTotalCostOfEstimate() {
+        return totalCostOfEstimate;
+    }
+
+    public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+        this.totalCostOfEstimate = totalCostOfEstimate;
+    }
+
+    public Double getTotalMeansOfFinance() {
+        return totalMeansOfFinance;
+    }
+
+    public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
+        this.totalMeansOfFinance = totalMeansOfFinance;
+    }
+
+    public Double getSharePriceFace() {
+        return sharePriceFace;
+    }
+
+    public void setSharePriceFace(Double sharePriceFace) {
+        this.sharePriceFace = sharePriceFace;
+    }
+
+    public Double getSharePriceMarket() {
+        return sharePriceMarket;
+    }
+
+    public void setSharePriceMarket(Double sharePriceMarket) {
+        this.sharePriceMarket = sharePriceMarket;
+    }
+
+    public Double getTotalCollateralDetails() {
+        return totalCollateralDetails;
+    }
+
+    public void setTotalCollateralDetails(Double totalCollateralDetails) {
+        this.totalCollateralDetails = totalCollateralDetails;
     }
 }

@@ -7,4 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface ScoringService {
 
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans);
+
+    public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans);
 }

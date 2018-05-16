@@ -372,7 +372,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",proposalScoreResponse);
+			map.put("proposalScoreResponse",convertToString(proposalScoreResponse));
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();

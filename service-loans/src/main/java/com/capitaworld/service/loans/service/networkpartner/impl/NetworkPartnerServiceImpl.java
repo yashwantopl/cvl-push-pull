@@ -570,7 +570,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			Map<String, Object> parameters = new HashMap<String, Object>();
 
 			parameters.put("maker", networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
-			parameters.put("url", "www.bitly.com");
+			parameters.put("url", "https://bit.ly/2IGwvBF");
 			
 			notification.setParameters(parameters);
 			notificationRequest.addNotification(notification);

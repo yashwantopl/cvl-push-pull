@@ -26,6 +26,7 @@ import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.ibm.icu.util.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -974,6 +975,110 @@ public class ScoringServiceImpl implements ScoringService{
             {
                 logger.error("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+        }
+
+        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans) {
+
+        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
+
+        logger.info("SCORE PARAMETER BEFORE::::::::::"+scoringRequestLoans.getScoreParameterRequestLoans().toString());
+
+        BeanUtils.copyProperties(scoringRequestLoans.getScoreParameterRequestLoans(),scoringParameterRequest);
+
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
+
+        logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
+
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+        ScoringResponse scoringResponseMain=null;
+
+        ///////////////
+
+        // GET SCORE CORPORATE LOAN PARAMETERS
+
+
+        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+        {
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setApplicationId(applicationId);
+
+            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+            ScoringResponse scoringResponse=null;
+            try {
+                scoringResponse = scoringClient.listField(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while getting field list");
+                e.printStackTrace();
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+            }
+
+            logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
+
+            scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoringParameterRequest(scoringParameterRequest);
+            scoringRequest.setTestingApiCall(true);
+
+            try {
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while calling scoring");
+                e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.error("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                loansResponse.setData(scoringResponseMain.getDataObject());
+                loansResponse.setListData(scoringResponseMain.getDataList());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
             else
