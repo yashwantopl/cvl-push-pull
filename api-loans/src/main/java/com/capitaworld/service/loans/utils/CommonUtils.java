@@ -162,6 +162,11 @@ public class CommonUtils {
 		}
 
 		public static LoanType getType(Integer x) {
+			System.out.println("GetType----------------->" + x);
+			if(x == null) {
+				return null;
+			}
+			
 			switch (x) {
 			case 1:
 				return WORKING_CAPITAL;
