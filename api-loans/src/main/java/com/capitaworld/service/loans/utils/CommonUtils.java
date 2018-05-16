@@ -262,14 +262,14 @@ public class CommonUtils {
 		public static final int CORPORATE = 2;
 	}
 
-	public static int getUserMainType(int productId) {
+	public static int getUserMainType(Integer productId) {
 		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return 2;
 		else
 			return 1;
 	}
 
-	public static String getUserMainTypeName(int productId) {
+	public static String getUserMainTypeName(Integer productId) {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
@@ -279,7 +279,7 @@ public class CommonUtils {
 			return RETAIL;
 	}
 
-	public static String getCorporateLoanType(int productId) {
+	public static String getCorporateLoanType(Integer productId) {
 		if (productId == 1 || productId == 2 || productId == 15)
 			return "DEBT";
 		else
@@ -295,7 +295,7 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 	}
 
-	public static String getDdrStatusString(int ddrStatusId) {
+	public static String getDdrStatusString(Integer ddrStatusId) {
 		if (isObjectNullOrEmpty(ddrStatusId)) {
 			return "NA";
 		}
