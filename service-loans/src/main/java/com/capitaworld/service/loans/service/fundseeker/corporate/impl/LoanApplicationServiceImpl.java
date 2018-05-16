@@ -2677,7 +2677,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							currency = currency
 									.concat(" in " + CommonDocumentUtils.getDenomination(loanMstr.getDenominationId()));
 						}
-					} else {
+					} else if (userMainType == CommonUtils.UserMainType.RETAIL) {
 						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(),
 								loanMstr.getId());
 						currency = CommonDocumentUtils.getCurrency(currencyId);

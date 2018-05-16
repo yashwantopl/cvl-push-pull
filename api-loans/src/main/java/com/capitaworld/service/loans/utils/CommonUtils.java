@@ -263,6 +263,9 @@ public class CommonUtils {
 	}
 
 	public static int getUserMainType(Integer productId) {
+		if (isObjectNullOrEmpty(productId)) {
+			return 0;
+		}
 		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return 2;
 		else
