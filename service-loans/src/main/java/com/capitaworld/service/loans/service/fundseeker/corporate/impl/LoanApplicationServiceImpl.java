@@ -1023,7 +1023,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			UsersRequest resp = getEmailMobile(applicationMaster.getNpAssigneeId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("url", "www.bitly.com");
+			parameters.put("url", "https://bit.ly/2IGwvBF");
 			parameters.put("maker_name", getNPName(applicationMaster.getNpUserId()));
 			parameters.put("checker_name", getNPName(applicationMaster.getNpAssigneeId()));
 			sendSMSNotification(applicationMaster.getNpAssigneeId().toString(), parameters, NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
