@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.service.networkpartner;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -11,7 +13,7 @@ import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 
 public interface NetworkPartnerService {
 	
-	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request,Long npOrgId);
+	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request,Long npOrgId,Long userId);
 	
 	public List<NhbsApplicationsResponse> getListOfAssignedProposals(NhbsApplicationRequest request);
 	
@@ -22,4 +24,8 @@ public interface NetworkPartnerService {
 	public GatewayRequest getPaymentStatuOfApplication(Long applicationId);
 	
 	public boolean sendSMSNotificationWhenCheckerAssignMaker(Long applicationId,Long assignedUserId);
+
+	public List<LoanApplicationMaster> getApplicationListToAssignedCheckerFromBoFp(Long userId,Long appStatusId,Boolean forPagination,int pageIndex,int size);
+
+	public String getCheckerName(FpNpMappingRequest fpNpMappingRequest);
 }
