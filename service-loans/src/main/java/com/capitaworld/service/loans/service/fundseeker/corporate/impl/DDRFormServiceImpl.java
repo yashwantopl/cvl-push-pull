@@ -1434,29 +1434,29 @@ public class DDRFormServiceImpl implements DDRFormService{
 					logger.info("User not filled CMA or CO Act Sheet");
 					return responseList;
 				}
-				coAct2018OSDetails = profitibilityStatementList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				coAct2018OSDetails = profitibilityStatementList.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear()) ).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2018OSDetails)) {
 					coAct2018OSDetails = new ProfitibilityStatementDetail();
 				}
-				coAct2017OSDetails = profitibilityStatementList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				coAct2017OSDetails = profitibilityStatementList.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2017OSDetails)) {
 					coAct2017OSDetails = new ProfitibilityStatementDetail();
 				}
-				coAct2016OSDetails = profitibilityStatementList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				coAct2016OSDetails = profitibilityStatementList.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2016OSDetails)) {
 					coAct2016OSDetails = new ProfitibilityStatementDetail();
 				}
 			} else {
 				isCMAUpload = true;
-				cma2018OSDetails = operatingStatementDetails.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				cma2018OSDetails = operatingStatementDetails.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2018OSDetails)) {
 					cma2018OSDetails = new OperatingStatementDetails();
 				}
-				cma2017OSDetails = operatingStatementDetails.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				cma2017OSDetails = operatingStatementDetails.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2017OSDetails)) {
 					cma2017OSDetails = new OperatingStatementDetails();
 				}
-				cma2016OSDetails = operatingStatementDetails.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				cma2016OSDetails = operatingStatementDetails.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2016OSDetails)) {
 					cma2016OSDetails = new OperatingStatementDetails();
 				}
