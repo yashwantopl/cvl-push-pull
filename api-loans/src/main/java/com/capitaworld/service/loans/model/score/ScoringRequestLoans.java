@@ -14,7 +14,7 @@ public class ScoringRequestLoans {
 
     private Long scoringModelId;
 	private Long applicationId;
-	private Map<String,Object> scoreParameterRequestLoans;
+	private ScoreParameterRequestLoans scoreParameterRequestLoans;
 	public Long getFsDigit() {
 		return fsDigit;
 	}
@@ -39,12 +39,15 @@ public class ScoringRequestLoans {
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
-	public Map<String, Object> getScoreParameterRequestLoans() {
+
+	public ScoreParameterRequestLoans getScoreParameterRequestLoans() {
 		return scoreParameterRequestLoans;
 	}
-	public void setScoreParameterRequestLoans(Map<String, Object> scoreParameterRequestLoans) {
+
+	public void setScoreParameterRequestLoans(ScoreParameterRequestLoans scoreParameterRequestLoans) {
 		this.scoreParameterRequestLoans = scoreParameterRequestLoans;
 	}
+
 	@Override
 	public String toString() {
 		return "ScoringRequestLoans [fsDigit=" + fsDigit + ", fpProductId=" + fpProductId + ", scoringModelId="
