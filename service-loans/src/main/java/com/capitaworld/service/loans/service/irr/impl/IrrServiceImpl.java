@@ -576,13 +576,13 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestmentsInSubsidiary(0.0);
 		financialInputRequest.setInvestmentInSubsidiariesFy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-			assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+			assetsDetails.setOthersOther(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 			assetsDetails.setDeferredReceviables(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentFy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+		financialInputRequest.setOtherInvestmentFy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
@@ -849,13 +849,13 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestmentsInSubsidiary(0.0);
 		financialInputRequest.setInvestmentInSubsidiariesSy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-			assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+			assetsDetails.setOthersOther(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 			assetsDetails.setDeferredReceviables(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentSy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+		financialInputRequest.setOtherInvestmentSy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
@@ -1125,13 +1125,13 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setInvestmentsInSubsidiary(0.0);
 				financialInputRequest.setInvestmentInSubsidiariesTy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 				
-				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-					assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+					assetsDetails.setOthersOther(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 					assetsDetails.setDeferredReceviables(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 					assetsDetails.setOthers(0.0);
-				financialInputRequest.setOtherInvestmentTy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+				financialInputRequest.setOtherInvestmentTy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 					assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
