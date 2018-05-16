@@ -27,12 +27,18 @@ import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -49,9 +55,15 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqSe
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.finalview.CorporateFinalViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.impl.CorporatePrimaryViewServiceImpl;
@@ -83,6 +95,7 @@ import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.FinancialRestructuring;
 import com.capitaworld.service.oneform.enums.FinancialSupport;
 import com.capitaworld.service.oneform.enums.Gender;
@@ -93,15 +106,16 @@ import com.capitaworld.service.oneform.enums.InternalControl;
 import com.capitaworld.service.oneform.enums.InternalReturn;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
 import com.capitaworld.service.oneform.enums.OperatingMargins;
 import com.capitaworld.service.oneform.enums.OrderBook;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProductSeasonality;
 import com.capitaworld.service.oneform.enums.ProjectedRatio;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.SensititivityAnalysis;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.StatusClearances;
 import com.capitaworld.service.oneform.enums.StatusFinancialClosure;
 import com.capitaworld.service.oneform.enums.SubmissionReports;
@@ -194,6 +208,24 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
     
     @Autowired
     private DocumentManagementService documentManagementService;
+    
+    @Autowired
+    private OwnershipDetailsService ownerShipDetailsService;
+    
+    @Autowired
+	private TotalCostOfProjectService costOfProjectService;
+
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
 
     
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -752,7 +784,97 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				logger.info("Error while getting mcq");
 				e.printStackTrace();
 			}
+			// OwnerShipDetails
+			try {
+				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownerShipDetailsService
+						.getOwnershipDetailList(toApplicationId, userId);
+				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+					ownershipDetailResponse.setShareHoldingCategory(
+							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+					ownershipDetailResponseList.add(ownershipDetailResponse);
+				}
+				corporateFinalViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
+
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Ownership Details {}", e);
+			}
 			
+			//cost of project
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+						.getCostOfProjectDetailList(toApplicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+					TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+					BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular
+								.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					costOfProjectResponses.add(costOfProjectResponse);
+				}
+				corporateFinalViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+			
+			// Means of finance
+			
+		
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+						.getMeansOfFinanceList(toApplicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory
+								.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+								.getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				corporateFinalViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			//Security
+			
+			try {
+				corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
+						securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+			
+			// Share Price
+			corporateFinalViewResponse.setSharePriceFace(corporateApplicantDetail.getSharePriceFace());
+			corporateFinalViewResponse.setSharePriceMarket(corporateApplicantDetail.getSharePriceMarket());
+			
+			// get data of Details of Guarantors
+			try {
+				corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
+						guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+
+			// get data of Monthly Turnover
+			try {
+				corporateFinalViewResponse.setMonthlyTurnoverDetailRequestList(
+						monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Monthly Turnover {}", e);
+			}
+			
+
 			//GET DOCUMENTS
 			 DocumentRequest documentRequest = new DocumentRequest();
 	         documentRequest.setApplicationId(toApplicationId);
