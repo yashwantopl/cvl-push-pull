@@ -20,7 +20,27 @@ public class NhbsApplicationRequest implements Serializable{
 	private Long applicationId;
 	
 	private Long ddrStatusId;
-		
+
+	private int pageIndex;
+
+	private int size;
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
 	public Long getDdrStatusId() {
 		return ddrStatusId;
 	}
