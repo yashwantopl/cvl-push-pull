@@ -2798,7 +2798,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					? loanApplicationMaster.getCreatedDate()
 					: null);
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
-			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
+			
+			LoanType loanType = CommonUtils.LoanType.getType(loanApplicationMaster.getProductId());
+			response.setSubProduct(!CommonUtils.isObjectNullOrEmpty(loanType) ? loanType.getName() : "NA");
 			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(loanApplicationMaster.getAmount());
 			response.setAmounInRuppes(false);
@@ -2815,7 +2817,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						response.setAbsoluteDisplayAmount(absoluteAmount);
 					}
 				}
-			} else {
+			} else if (userMainType == CommonUtils.UserMainType.RETAIL) {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(),
 						loanApplicationMaster.getId());
 				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
