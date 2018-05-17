@@ -321,7 +321,14 @@ public class IrrServiceImpl implements IrrService{
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-		financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
+        Double shareFaceVal=1.00;
+
+		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace()))
+            shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+
+		financialInputRequest.setShareFaceValue(shareFaceVal);
+
 		LoanApplicationMaster applicationMaster = null;
 		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
