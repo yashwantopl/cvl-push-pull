@@ -19,10 +19,12 @@ public interface ProductMasterService {
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId);
 
 	public ProductMaster getProductMaster(Long id);
+	
+	public Object getProductMasterWithAllData(Long id);
 
 	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	
-	public List<Object> getListByUserType(Long userId,Integer userType,Long userOrgId);
+	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Long userOrgId);
 
 	public String getUserNameByApplicationId(Long productId, Long userId);
 
