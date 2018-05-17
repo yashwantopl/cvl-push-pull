@@ -164,6 +164,21 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "not_applicable")
 	private Boolean notApplicable;
 
+	@Column(name = "total_cost_of_estimate")
+	private Double totalCostOfEstimate;
+
+	@Column(name = "total_means_of_finance")
+	private Double totalMeansOfFinance;
+
+	@Column(name = "share_price_face_value")
+	private Double sharePriceFace;
+
+	@Column(name = "share_price_market_value")
+	private Double sharePriceMarket;
+
+	@Column(name = "collateral_security_amt_total")
+	private Double totalCollateralDetails;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -534,5 +549,45 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setContLiabilityTyAmt(Double contLiabilityTyAmt) {
 		this.contLiabilityTyAmt = contLiabilityTyAmt;
+	}
+
+	public Double getTotalCostOfEstimate() {
+		return totalCostOfEstimate;
+	}
+
+	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+		this.totalCostOfEstimate = totalCostOfEstimate;
+	}
+
+	public Double getTotalMeansOfFinance() {
+		return totalMeansOfFinance;
+	}
+
+	public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
+		this.totalMeansOfFinance = totalMeansOfFinance;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
+	}
+
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
 	}
 }

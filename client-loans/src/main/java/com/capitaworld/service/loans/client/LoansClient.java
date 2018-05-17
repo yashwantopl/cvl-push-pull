@@ -168,7 +168,8 @@ public class LoansClient {
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
-
+    private static final String GET_CORPORATE_SCORE="/score/calculate_score/corporate/test";
+    
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -1779,4 +1780,23 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getCorporateScore(ScoringRequestLoans scoringRequestLoans) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CORPORATE_SCORE);
+		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			/*
+			 * return restTemplate.postForObject(url, request, LoansResponse.class);
+			 */
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			throw e;//("Loans service is not available");
+		}
+}
 }

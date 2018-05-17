@@ -196,14 +196,14 @@ public class DDRFormServiceImpl implements DDRFormService{
 			
 			
 			//SAVE ALL LIST DATA
-			/*saveAuthorizedSignDetails(ddrFormDetailsRequest.getdDRAuthSignDetailsList(), userId,dDRFormDetails.getId());
+			saveAuthorizedSignDetails(ddrFormDetailsRequest.getdDRAuthSignDetailsList(), userId,dDRFormDetails.getId());
 			saveCreaditorsDetails(ddrFormDetailsRequest.getdDRCreditorsDetailsList(), userId, dDRFormDetails.getId());
-			saveCreditCardDetails(ddrFormDetailsRequest.getdDRCreditCardDetailsList(), userId, dDRFormDetails.getId());*/
+			saveCreditCardDetails(ddrFormDetailsRequest.getdDRCreditCardDetailsList(), userId, dDRFormDetails.getId());
 			saveOfficeDetails(ddrFormDetailsRequest.getdDROperatingOfficeList(), userId,DDRFrames.OPERATING_OFFICE.getValue(),dDRFormDetails.getId());
 			saveOfficeDetails(ddrFormDetailsRequest.getdDRRegisteredOfficeList(), userId,DDRFrames.REGISTERED_OFFICE.getValue(),dDRFormDetails.getId());
-			/*saveOtherBankLoanDetails(ddrFormDetailsRequest.getdDROtherBankLoanDetailsList(), userId,dDRFormDetails.getId());
-			saveRelWithDBSDetails(ddrFormDetailsRequest.getdDRRelWithDbsDetailsList(), userId,dDRFormDetails.getId());
-			saveVehiclesOwnedDetails(ddrFormDetailsRequest.getdDRVehiclesOwnedDetailsList(), userId,dDRFormDetails.getId());*/
+			saveOtherBankLoanDetails(ddrFormDetailsRequest.getdDROtherBankLoanDetailsList(), userId,dDRFormDetails.getId());
+		//	saveRelWithDBSDetails(ddrFormDetailsRequest.getdDRRelWithDbsDetailsList(), userId,dDRFormDetails.getId());
+			saveVehiclesOwnedDetails(ddrFormDetailsRequest.getdDRVehiclesOwnedDetailsList(), userId,dDRFormDetails.getId());
 			saveFinancialSummary(ddrFormDetailsRequest.getdDRFinancialSummaryList(), userId,dDRFormDetails.getId());
 			saveFamilyDirectorsDetails(ddrFormDetailsRequest.getdDRFamilyDirectorsList(), userId, dDRFormDetails.getId());
 			saveExistingBankerDetails(ddrFormDetailsRequest.getExistingBankerDetailList(),userId, dDRFormDetails.getId());
@@ -230,14 +230,14 @@ public class DDRFormServiceImpl implements DDRFormService{
 			BeanUtils.copyProperties(dDRFormDetails, dDRFormDetailsRequest);
 			dDRFormDetailsRequest.setOutsideLoansString(CommonUtils.checkString(dDRFormDetails.getOutsideLoans()));
 			dDRFormDetailsRequest.setLoansFromFamilyMembersRelativeString(CommonUtils.checkString(dDRFormDetails.getLoansFromFamilyMembersRelative()));
-			/*dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRCreditCardDetailsList(getCreditCardDetails(ddrFormId));
-			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));*/
+			dDRFormDetailsRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDROperatingOfficeList(getOfficeDetails(ddrFormId, DDRFrames.OPERATING_OFFICE.getValue()));
 			dDRFormDetailsRequest.setdDRRegisteredOfficeList(getOfficeDetails(ddrFormId, DDRFrames.REGISTERED_OFFICE.getValue()));
-			/*dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
-			dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
-			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));*/
+			dDRFormDetailsRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
+			//dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
+			dDRFormDetailsRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
 			dDRFormDetailsRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
 			dDRFormDetailsRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId,appId,userId));
 			dDRFormDetailsRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId,appId,userId));
@@ -1189,7 +1189,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			e.printStackTrace();
 		}
 		
-		/*//OWNERSHIP DETAILS :- LINENO:12
+		//OWNERSHIP DETAILS :- LINENO:12
 		try {
 			List<OwnershipDetailRequest> ownershipReqList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
 			List<OwnershipDetailResponse> ownershipRespList = new ArrayList<>(ownershipReqList.size());
@@ -1205,7 +1205,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Primary Ownership Details in DDR OneForm");
 			e.printStackTrace();
-		}*/
+		}
 		
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :- LINENO:21
 		try {
@@ -1233,13 +1233,13 @@ public class DDRFormServiceImpl implements DDRFormService{
         }
 		
 		
-		/*//SECURITY DETAIL :- LINENO:12
+		//SECURITY DETAIL :- LINENO:12
 		try {
 			response.setSecurityCorporateDetailList(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId));
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get Primary Security Details in DDR OneForm");
 			e.printStackTrace();
-		}*/
+		}
 		
 		
 		//DIRECTOR BACKGROUND  DETAIL :- LINENO:12
@@ -1252,13 +1252,18 @@ public class DDRFormServiceImpl implements DDRFormService{
                 directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
                 //directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
                 //directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-                directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
+                //directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
                 directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
                 String directorName = "";
-                if (directorBackgroundDetailRequest.getSalutationId() != null){
-                    directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
-                }
-                directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+                if(directorBackgroundDetailRequest.getDirectorsName() != null){
+					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
+				}else{
+					if (directorBackgroundDetailRequest.getTitle() != null)
+						directorName += " "+directorBackgroundDetailRequest.getTitle();
+					directorName += " "+directorBackgroundDetailRequest.getFirstName();
+					directorName += " "+directorBackgroundDetailRequest.getMiddleName();
+					directorName += " "+directorBackgroundDetailRequest.getLastName();
+				}
                 directorBackgroundDetailResponse.setDirectorsName(directorName);
                 //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
                 directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
@@ -1429,29 +1434,29 @@ public class DDRFormServiceImpl implements DDRFormService{
 					logger.info("User not filled CMA or CO Act Sheet");
 					return responseList;
 				}
-				coAct2018OSDetails = profitibilityStatementList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				coAct2018OSDetails = profitibilityStatementList.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear()) ).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2018OSDetails)) {
 					coAct2018OSDetails = new ProfitibilityStatementDetail();
 				}
-				coAct2017OSDetails = profitibilityStatementList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				coAct2017OSDetails = profitibilityStatementList.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2017OSDetails)) {
 					coAct2017OSDetails = new ProfitibilityStatementDetail();
 				}
-				coAct2016OSDetails = profitibilityStatementList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				coAct2016OSDetails = profitibilityStatementList.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2016OSDetails)) {
 					coAct2016OSDetails = new ProfitibilityStatementDetail();
 				}
 			} else {
 				isCMAUpload = true;
-				cma2018OSDetails = operatingStatementDetails.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				cma2018OSDetails = operatingStatementDetails.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2018OSDetails)) {
 					cma2018OSDetails = new OperatingStatementDetails();
 				}
-				cma2017OSDetails = operatingStatementDetails.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				cma2017OSDetails = operatingStatementDetails.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2017OSDetails)) {
 					cma2017OSDetails = new OperatingStatementDetails();
 				}
-				cma2016OSDetails = operatingStatementDetails.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				cma2016OSDetails = operatingStatementDetails.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2016OSDetails)) {
 					cma2016OSDetails = new OperatingStatementDetails();
 				}

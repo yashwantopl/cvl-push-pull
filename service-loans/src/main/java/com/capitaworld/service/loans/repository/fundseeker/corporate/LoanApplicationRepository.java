@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.repository.fundseeker.corporate;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -174,48 +175,72 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 			@Param("eligibleAmnt") Double amount);
 	
 	//nhbs
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=null and lm.isActive = true order by lm.modifiedDate desc")
-	public List<LoanApplicationMaster> getProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=null and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getProposalsByApplicationStatus(@Param("id") Long applicationStatusId,@Param("paymentStatus")String paymentStatus);
+
+	//nhbs-pagination
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=null and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getProposalsByApplicationStatusForPagination(Pageable pageable,@Param("id") Long applicationStatusId,@Param("paymentStatus")String paymentStatus);
 	
 	//to get count of proposal based on application status
 	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=null and lm.isActive = true ")
 	public int getCountOfProposalsByApplicationStatus(@Param("id") Long applicationStatusId);
 
 	//nhbs
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=:npOrgId and lm.isActive = true order by lm.modifiedDate desc")
-	public List<LoanApplicationMaster> getProposalsByApplicationStatusAndNpOrgId(@Param("id") Long applicationStatusId,@Param("npOrgId")Long npOrgId);
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getProposalsByApplicationStatusAndNpOrgId(@Param("id") Long applicationStatusId,@Param("npOrgId")Long npOrgId,@Param("paymentStatus")String paymentStatus);
+
+	//nhbs-pagination
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getProposalsByApplicationStatusAndNpOrgIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
 
     //to get count of proposal based on application status and npOrgId
     @Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.typeOfPayment<>null and lm.npOrgId=:npOrgId and lm.isActive = true ")
     public int getCountOfProposalsByApplicationStatusAndNpOrgId(@Param("id") Long applicationStatusId,@Param("npOrgId")Long npOrgId);
 
 	//nhbs	
+	//@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	//public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+
+	//nhbs-pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
-	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeIdForPagination(Pageable pageable,@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 
 	//to get count of assigned proposals based on assignee id
 	@Query("select count(*) from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public int getCountOfAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 	
 	//nhbs	
+	//@Query("select lm from LoanApplicationMaster lm where lm.npUserId=:npUserId and  lm.isActive = true ")
+	//public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("npUserId") Long npUserId);
+
+	//nhbs-pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.npUserId=:npUserId and  lm.isActive = true ")
-	public List<LoanApplicationMaster> getAssignedProposalsByNpUserId(@Param("npUserId") Long npUserId);
+	public List<LoanApplicationMaster> getAssignedProposalsByNpUserIdForPagination(Pageable pageable,@Param("npUserId") Long npUserId);
 	
 	//to get count of proposal based on NpUserId
 	@Query("select count(*) from LoanApplicationMaster lm where lm.npUserId=:npUserId and  lm.isActive = true ")
 	public int getCountOfAssignedProposalsByNpUserId(@Param("npUserId") Long npUserId);
 	
 	//nhbs
+	//@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
+	//public List<LoanApplicationMaster> getProposalsByDdrStatus(@Param("id") Long ddrStatusId);
+
+	//nhbs-pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
-	public List<LoanApplicationMaster> getProposalsByDdrStatus(@Param("id") Long ddrStatusId);
-	
+	public List<LoanApplicationMaster> getProposalsByDdrStatusForPagination(Pageable pageable,@Param("id") Long ddrStatusId);
+
 	//nhbs
 	@Query("select count(*) from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.isActive = true ")
 	public int getCountOfProposalsByDdrStatus(@Param("id") Long ddrStatusId);
 
     //nhbs
-    @Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npOrgId=:npOrgId and lm.isActive = true ")
-    public List<LoanApplicationMaster> getProposalsByDdrStatusAndNpOrgId(@Param("id") Long ddrStatusId,@Param("npOrgId")Long npOrgId);
+    //@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npOrgId=:npOrgId and lm.isActive = true ")
+    //public List<LoanApplicationMaster> getProposalsByDdrStatusAndNpOrgId(@Param("id") Long ddrStatusId,@Param("npOrgId")Long npOrgId);
+
+	//nhbs-pagination
+	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npOrgId=:npOrgId and lm.isActive = true ")
+	public List<LoanApplicationMaster> getProposalsByDdrStatusAndNpOrgIdForPagination(Pageable pageable,@Param("id") Long ddrStatusId,@Param("npOrgId")Long npOrgId);
 
     //nhbs
     @Query("select count(*) from LoanApplicationMaster lm where lm.ddrStatusId =:id and npOrgId=:npOrgId and lm.isActive = true ")

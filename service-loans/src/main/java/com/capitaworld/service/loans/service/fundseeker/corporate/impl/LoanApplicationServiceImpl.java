@@ -1023,7 +1023,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			UsersRequest resp = getEmailMobile(applicationMaster.getNpAssigneeId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put("url", "www.bitly.com");
+			parameters.put("url", "https://bit.ly/2IGwvBF");
 			parameters.put("maker_name", getNPName(applicationMaster.getNpUserId()));
 			parameters.put("checker_name", getNPName(applicationMaster.getNpAssigneeId()));
 			sendSMSNotification(applicationMaster.getNpAssigneeId().toString(), parameters, NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
@@ -2677,7 +2677,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							currency = currency
 									.concat(" in " + CommonDocumentUtils.getDenomination(loanMstr.getDenominationId()));
 						}
-					} else {
+					} else if (userMainType == CommonUtils.UserMainType.RETAIL) {
 						Integer currencyId = retailApplicantDetailRepository.getCurrency(users.getUserId(),
 								loanMstr.getId());
 						currency = CommonDocumentUtils.getCurrency(currencyId);
@@ -2798,7 +2798,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					? loanApplicationMaster.getCreatedDate()
 					: null);
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
-			response.setSubProduct(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).name());
+			
+			LoanType loanType = CommonUtils.LoanType.getType(loanApplicationMaster.getProductId());
+			response.setSubProduct(!CommonUtils.isObjectNullOrEmpty(loanType) ? loanType.getName() : "NA");
 			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
 			response.setAbsoluteDisplayAmount(loanApplicationMaster.getAmount());
 			response.setAmounInRuppes(false);
@@ -2815,7 +2817,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						response.setAbsoluteDisplayAmount(absoluteAmount);
 					}
 				}
-			} else {
+			} else if (userMainType == CommonUtils.UserMainType.RETAIL) {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(),
 						loanApplicationMaster.getId());
 				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
@@ -4262,6 +4264,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if ("Success".equals(paymentRequest.getStatus())) {
 //				if(updatePayment) {
 					try {
+						loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+						loanApplicationRepository.save(loanApplicationMaster);
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
 								userId);
 						if (!CommonUtils.isObjectListNull(connectResponse)) {
@@ -4279,6 +4283,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Throw Exception While Call Connector Service`");
 						e.printStackTrace();
 					}
+				}
+				else {
+					loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.PENDING);
+					loanApplicationRepository.save(loanApplicationMaster);
 				}
 				logger.info("End of Congratulations");
 				return applicationRequest;
