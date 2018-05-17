@@ -4,7 +4,7 @@ package com.capitaworld.service.loans.controller.fundseeker;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
+//import javax.ws.rs.Path;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;

@@ -200,6 +200,25 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "approved_date")
 	private Date approvedDate;
+	
+	@Column(name="payment_status")
+	private String paymentStatus;
+	
+	
+
+	/**
+	 * @return the paymentStatus
+	 */
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	/**
+	 * @param paymentStatus the paymentStatus to set
+	 */
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
 
 	public Long getNpOrgId() {
 		return npOrgId;

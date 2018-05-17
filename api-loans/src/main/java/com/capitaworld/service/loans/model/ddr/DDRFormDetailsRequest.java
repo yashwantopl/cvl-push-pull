@@ -16,8 +16,8 @@ public class DDRFormDetailsRequest implements Serializable {
 	private Long applicationId;
 //	private String referenceNo;
 	private Long userId;
-//	private String godownStockyard;
-//	private String companySuccessPlan;
+	private String godownStockyard;
+	private String companySuccessPlan;
 //	private String detailsOfBankingArrangement;
 //	private Double salesOfAutomobileDivision;
 //	private Double othersSales;
@@ -25,28 +25,28 @@ public class DDRFormDetailsRequest implements Serializable {
 //	private Double corporateSale;
 //	private Double corporateSaleToTotalSale;
 //	private Double corporateSaleToAutomobileDivSale;
-//	private Double outsideLoans;
-//	private Double loansFromFamilyMembersRelative;
-//	private String fallInSales;
-//	private String reasonForSalesDecline;
-//	private String negativeProfit;
-//	private String fallInProfit;
-//	private String reasonForProfitDecline;
+	private Double outsideLoans;
+	private Double loansFromFamilyMembersRelative;
+	private String fallInSales;
+	private String reasonForSalesDecline;
+	private String negativeProfit;
+	private String fallInProfit;
+	private String reasonForProfitDecline;
 //	private String provisionalSalesFigure;
 //	private String salesBreakupByProduct;
 //	private String isAnySeasonalPatternInSales;
 //	private String outstandingDuesAmount;
 //	private String outstandingDuesAge;
 //	private String outstandingDuesComment;
-//	private Double summaryOfDebtorsAgeing0_30Days;
-//	private Double summaryOfDebtorsAgeing31_60Days;
-//	private Double summaryOfDebtorsAgeing61_90Days;
-//	private Double summaryOfDebtorsAgeing91_180Days;
-//	private Double summaryOfDebtorsAgeingGreater180Days;
-//	private Double summaryOfDebtorsAgeingTotal;
+	private Double summaryOfDebtorsAgeing0_30Days;
+	private Double summaryOfDebtorsAgeing31_60Days;
+	private Double summaryOfDebtorsAgeing61_90Days;
+	private Double summaryOfDebtorsAgeing91_180Days;
+	private Double summaryOfDebtorsAgeingGreater180Days;
+	private Double summaryOfDebtorsAgeingTotal;
 //	private String avgDebtorTurnoverPeriod;
-//	private String chequeBouncesDuringLast6months;
-//	private String summaryOfDebtorsAgeingComment;
+	private String chequeBouncesDuringLast6months;
+	private String summaryOfDebtorsAgeingComment;
 	private String avgTurnoverPeriod;
 	private String creditorsComment;
 	private Integer businessWhetherSsiOrNot;
@@ -58,28 +58,28 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String otherBusinessInFamilyName;
 	private String operatingAddComment;
 	private String businessDetailsComment;
-//	private String othersDetailsComment;
+	private String othersDetailsComment;
 	private String creaditCardHeldByCustComment;
-//	private String fieldAuditReport;
-//	private String auditedFinancialsForLast3years;
-//	private String provisionalFinancialsForCurrentYear;
-//	private String itrForLast3years;
-//	private String sanctionLetter;
-//	private String bankStatementOfLast12months;
-//	private String debtorsList;
-//	private String financialFigures;
-//	private String moaOfTheCompany;
-//	private String panCardOfTheCompany;
-//	private String resolutionAndForm32forAdditionOfDirector;
-//	private String centralSalesTaxRegistrationOfCompany;
-//	private String centralExciseRegistrationOfCompany;
-//	private String vatRegistrationOfCompany;
-//	private String letterOfIntentFromFundProviders;
-//	private String panCardAndResidenceAddProofOfDirectors;
-//	private String caCertifiedNetworthStatement;
-//	private String irrOfAllDirectorsForLast2years;
-//	private String listOfDirectors;
-//	private String listOfShareholdersAndShareHoldingPatter;
+	private String fieldAuditReport;
+	private String auditedFinancialsForLast3years;
+	private String provisionalFinancialsForCurrentYear;
+	private String itrForLast3years;
+	private String sanctionLetter;
+	private String bankStatementOfLast12months;
+	private String debtorsList;
+	private String financialFigures;
+	private String moaOfTheCompany;
+	private String panCardOfTheCompany;
+	private String resolutionAndForm32forAdditionOfDirector;
+	private String centralSalesTaxRegistrationOfCompany;
+	private String centralExciseRegistrationOfCompany;
+	private String vatRegistrationOfCompany;
+	private String letterOfIntentFromFundProviders;
+	private String panCardAndResidenceAddProofOfDirectors;
+	private String caCertifiedNetworthStatement;
+	private String irrOfAllDirectorsForLast2years;
+	private String listOfDirectors;
+	private String listOfShareholdersAndShareHoldingPatter;
 //	private String summaryOfBservations;
 	private Double provisionalTotalSales;
 	private Double lastYearTotalSales;
@@ -87,35 +87,35 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String currency;
 	private Boolean isActive;
 	
-//	private String remarkOfCompanyInfo;
+	private String remarkOfCompanyInfo;
 //	private String remarkOfDetailBankArrangement;
 	private String remarkOfFinSummary;
 //	private String remarkOfTotalSales;
-//	private String remarkOfTotalDebt;
-//	private String remarkOfLatestDebtList;
-//	private String remarkOfLatestCredList;
+	private String remarkOfTotalDebt;
+	private String remarkOfLatestDebtList;
+	private String remarkOfLatestCredList;
 	private String remarkOfBusinessDetails;
 	private String remarkOfPersonalDetails;
 	private String remarkOfExistingBankerDetails;
-//	private String remarkOfNameOfAuthSignatory;
-//	private String remarkOfOtherDetail;
-//	private String remarkOfDetailOfCredCard;
+	private String remarkOfNameOfAuthSignatory;
+	private String remarkOfOtherDetail;
+	private String remarkOfDetailOfCredCard;
 //	private String remarkOfPastPreRelationship;
-//	private String remarkOfAnyOtherBankLoan;
-//	private String remarkOfDocCheckList;
+	private String remarkOfAnyOtherBankLoan;
+	private String remarkOfDocCheckList;
 	
 	private String outsideLoansString;
 	private String loansFromFamilyMembersRelativeString;
 	
 	
-//	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
-//	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();
-//	List<DDRCreditorsDetailsRequest> dDRCreditorsDetailsList = new ArrayList<DDRCreditorsDetailsRequest>();
+	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
+	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();
+	List<DDRCreditorsDetailsRequest> dDRCreditorsDetailsList = new ArrayList<DDRCreditorsDetailsRequest>();
 	List<DDROfficeDetailsRequest> dDRRegisteredOfficeList = new ArrayList<DDROfficeDetailsRequest>();
 	List<DDROfficeDetailsRequest> dDROperatingOfficeList = new ArrayList<DDROfficeDetailsRequest>();
-//	List<DDROtherBankLoanDetailsRequest> dDROtherBankLoanDetailsList = new ArrayList<DDROtherBankLoanDetailsRequest>();
+	List<DDROtherBankLoanDetailsRequest> dDROtherBankLoanDetailsList = new ArrayList<DDROtherBankLoanDetailsRequest>();
 //	List<DDRRelWithDbsDetailsRequest> dDRRelWithDbsDetailsList = new ArrayList<DDRRelWithDbsDetailsRequest>();
-//	List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList = new ArrayList<DDRVehiclesOwnedDetailsRequest>();
+	List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList = new ArrayList<DDRVehiclesOwnedDetailsRequest>();
 	List<DDRFinancialSummaryRequest> dDRFinancialSummaryList = new ArrayList<DDRFinancialSummaryRequest>();
 	List<DDRExistingBankerDetailRequest> existingBankerDetailList = new ArrayList<DDRExistingBankerDetailRequest>();
 	List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList = new ArrayList<DDRFamilyDirectorsDetailsRequest>();
@@ -170,18 +170,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public String getReferenceNo() {
-		return referenceNo;
-	}
-
-
-
-	public void setReferenceNo(String referenceNo) {
-		this.referenceNo = referenceNo;
-	}*/
-
-
-
 	public Long getUserId() {
 		return userId;
 	}
@@ -194,7 +182,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public String getGodownStockyard() {
+	public String getGodownStockyard() {
 		return godownStockyard;
 	}
 
@@ -214,90 +202,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setCompanySuccessPlan(String companySuccessPlan) {
 		this.companySuccessPlan = companySuccessPlan;
-	}
-
-
-
-	public String getDetailsOfBankingArrangement() {
-		return detailsOfBankingArrangement;
-	}
-
-
-
-	public void setDetailsOfBankingArrangement(String detailsOfBankingArrangement) {
-		this.detailsOfBankingArrangement = detailsOfBankingArrangement;
-	}
-
-
-
-	public Double getSalesOfAutomobileDivision() {
-		return salesOfAutomobileDivision;
-	}
-
-
-
-	public void setSalesOfAutomobileDivision(Double salesOfAutomobileDivision) {
-		this.salesOfAutomobileDivision = salesOfAutomobileDivision;
-	}
-
-
-
-	public Double getOthersSales() {
-		return othersSales;
-	}
-
-
-
-	public void setOthersSales(Double othersSales) {
-		this.othersSales = othersSales;
-	}
-
-
-
-	public Double getTotalConsolidatedSales() {
-		return totalConsolidatedSales;
-	}
-
-
-
-	public void setTotalConsolidatedSales(Double totalConsolidatedSales) {
-		this.totalConsolidatedSales = totalConsolidatedSales;
-	}
-
-
-
-	public Double getCorporateSale() {
-		return corporateSale;
-	}
-
-
-
-	public void setCorporateSale(Double corporateSale) {
-		this.corporateSale = corporateSale;
-	}
-
-
-
-	public Double getCorporateSaleToTotalSale() {
-		return corporateSaleToTotalSale;
-	}
-
-
-
-	public void setCorporateSaleToTotalSale(Double corporateSaleToTotalSale) {
-		this.corporateSaleToTotalSale = corporateSaleToTotalSale;
-	}
-
-
-
-	public Double getCorporateSaleToAutomobileDivSale() {
-		return corporateSaleToAutomobileDivSale;
-	}
-
-
-
-	public void setCorporateSaleToAutomobileDivSale(Double corporateSaleToAutomobileDivSale) {
-		this.corporateSaleToAutomobileDivSale = corporateSaleToAutomobileDivSale;
 	}
 
 
@@ -386,77 +290,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	public String getProvisionalSalesFigure() {
-		return provisionalSalesFigure;
-	}
-
-
-
-	public void setProvisionalSalesFigure(String provisionalSalesFigure) {
-		this.provisionalSalesFigure = provisionalSalesFigure;
-	}
-
-
-
-	public String getSalesBreakupByProduct() {
-		return salesBreakupByProduct;
-	}
-
-
-
-	public void setSalesBreakupByProduct(String salesBreakupByProduct) {
-		this.salesBreakupByProduct = salesBreakupByProduct;
-	}
-
-
-
-	public String getIsAnySeasonalPatternInSales() {
-		return isAnySeasonalPatternInSales;
-	}
-
-
-
-	public void setIsAnySeasonalPatternInSales(String isAnySeasonalPatternInSales) {
-		this.isAnySeasonalPatternInSales = isAnySeasonalPatternInSales;
-	}
-
-
-
-	public String getOutstandingDuesAmount() {
-		return outstandingDuesAmount;
-	}
-
-
-
-	public void setOutstandingDuesAmount(String outstandingDuesAmount) {
-		this.outstandingDuesAmount = outstandingDuesAmount;
-	}
-
-
-
-	public String getOutstandingDuesAge() {
-		return outstandingDuesAge;
-	}
-
-
-
-	public void setOutstandingDuesAge(String outstandingDuesAge) {
-		this.outstandingDuesAge = outstandingDuesAge;
-	}
-
-
-
-	public String getOutstandingDuesComment() {
-		return outstandingDuesComment;
-	}
-
-
-
-	public void setOutstandingDuesComment(String outstandingDuesComment) {
-		this.outstandingDuesComment = outstandingDuesComment;
-	}
-
-
 
 	public Double getSummaryOfDebtorsAgeing0_30Days() {
 		return summaryOfDebtorsAgeing0_30Days;
@@ -530,18 +363,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	public String getAvgDebtorTurnoverPeriod() {
-		return avgDebtorTurnoverPeriod;
-	}
-
-
-
-	public void setAvgDebtorTurnoverPeriod(String avgDebtorTurnoverPeriod) {
-		this.avgDebtorTurnoverPeriod = avgDebtorTurnoverPeriod;
-	}
-
-
-
 	public String getChequeBouncesDuringLast6months() {
 		return chequeBouncesDuringLast6months;
 	}
@@ -562,7 +383,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setSummaryOfDebtorsAgeingComment(String summaryOfDebtorsAgeingComment) {
 		this.summaryOfDebtorsAgeingComment = summaryOfDebtorsAgeingComment;
-	}*/
+	}
 
 
 
@@ -686,7 +507,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public String getOthersDetailsComment() {
+	public String getOthersDetailsComment() {
 		return othersDetailsComment;
 	}
 
@@ -695,7 +516,6 @@ public class DDRFormDetailsRequest implements Serializable {
 	public void setOthersDetailsComment(String othersDetailsComment) {
 		this.othersDetailsComment = othersDetailsComment;
 	}
-*/
 
 
 	public String getCreaditCardHeldByCustComment() {
@@ -710,7 +530,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-/*	public String getFieldAuditReport() {
+	public String getFieldAuditReport() {
 		return fieldAuditReport;
 	}
 
@@ -949,19 +769,6 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 
 
-
-	public String getSummaryOfBservations() {
-		return summaryOfBservations;
-	}
-
-
-
-	public void setSummaryOfBservations(String summaryOfBservations) {
-		this.summaryOfBservations = summaryOfBservations;
-	}*/
-
-
-
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -974,7 +781,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public List<DDRAuthorizedSignDetailsRequest> getdDRAuthSignDetailsList() {
+	public List<DDRAuthorizedSignDetailsRequest> getdDRAuthSignDetailsList() {
 		return dDRAuthSignDetailsList;
 	}
 
@@ -1006,7 +813,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setdDRCreditorsDetailsList(List<DDRCreditorsDetailsRequest> dDRCreditorsDetailsList) {
 		this.dDRCreditorsDetailsList = dDRCreditorsDetailsList;
-	}*/
+	}
 
 
 
@@ -1034,7 +841,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public List<DDROtherBankLoanDetailsRequest> getdDROtherBankLoanDetailsList() {
+	public List<DDROtherBankLoanDetailsRequest> getdDROtherBankLoanDetailsList() {
 		return dDROtherBankLoanDetailsList;
 	}
 
@@ -1045,19 +852,6 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 
 
-
-	public List<DDRRelWithDbsDetailsRequest> getdDRRelWithDbsDetailsList() {
-		return dDRRelWithDbsDetailsList;
-	}
-
-
-
-	public void setdDRRelWithDbsDetailsList(List<DDRRelWithDbsDetailsRequest> dDRRelWithDbsDetailsList) {
-		this.dDRRelWithDbsDetailsList = dDRRelWithDbsDetailsList;
-	}
-
-
-
 	public List<DDRVehiclesOwnedDetailsRequest> getdDRVehiclesOwnedDetailsList() {
 		return dDRVehiclesOwnedDetailsList;
 	}
@@ -1066,7 +860,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setdDRVehiclesOwnedDetailsList(List<DDRVehiclesOwnedDetailsRequest> dDRVehiclesOwnedDetailsList) {
 		this.dDRVehiclesOwnedDetailsList = dDRVehiclesOwnedDetailsList;
-	}*/
+	}
 
 
 
@@ -1147,7 +941,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 
 
-	/*public String getRemarkOfCompanyInfo() {
+	public String getRemarkOfCompanyInfo() {
 		return remarkOfCompanyInfo;
 	}
 
@@ -1158,19 +952,6 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 
 
-
-	public String getRemarkOfDetailBankArrangement() {
-		return remarkOfDetailBankArrangement;
-	}
-
-
-
-	public void setRemarkOfDetailBankArrangement(String remarkOfDetailBankArrangement) {
-		this.remarkOfDetailBankArrangement = remarkOfDetailBankArrangement;
-	}
-*/
-
-
 	public String getRemarkOfFinSummary() {
 		return remarkOfFinSummary;
 	}
@@ -1179,18 +960,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setRemarkOfFinSummary(String remarkOfFinSummary) {
 		this.remarkOfFinSummary = remarkOfFinSummary;
-	}
-
-
-
-	/*public String getRemarkOfTotalSales() {
-		return remarkOfTotalSales;
-	}
-
-
-
-	public void setRemarkOfTotalSales(String remarkOfTotalSales) {
-		this.remarkOfTotalSales = remarkOfTotalSales;
 	}
 
 
@@ -1227,7 +996,7 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public void setRemarkOfLatestCredList(String remarkOfLatestCredList) {
 		this.remarkOfLatestCredList = remarkOfLatestCredList;
-	}*/
+	}
 
 
 
@@ -1261,17 +1030,6 @@ public class DDRFormDetailsRequest implements Serializable {
 		this.remarkOfExistingBankerDetails = remarkOfExistingBankerDetails;
 	}
 
-	/*public String getRemarkOfNameOfAuthSignatory() {
-		return remarkOfNameOfAuthSignatory;
-	}
-
-
-
-	public void setRemarkOfNameOfAuthSignatory(String remarkOfNameOfAuthSignatory) {
-		this.remarkOfNameOfAuthSignatory = remarkOfNameOfAuthSignatory;
-	}
-
-
 
 	public String getRemarkOfOtherDetail() {
 		return remarkOfOtherDetail;
@@ -1296,18 +1054,13 @@ public class DDRFormDetailsRequest implements Serializable {
 	}
 
 
-
-	public String getRemarkOfPastPreRelationship() {
-		return remarkOfPastPreRelationship;
+	public String getRemarkOfNameOfAuthSignatory() {
+		return remarkOfNameOfAuthSignatory;
 	}
 
-
-
-	public void setRemarkOfPastPreRelationship(String remarkOfPastPreRelationship) {
-		this.remarkOfPastPreRelationship = remarkOfPastPreRelationship;
+	public void setRemarkOfNameOfAuthSignatory(String remarkOfNameOfAuthSignatory) {
+		this.remarkOfNameOfAuthSignatory = remarkOfNameOfAuthSignatory;
 	}
-
-
 
 	public String getRemarkOfAnyOtherBankLoan() {
 		return remarkOfAnyOtherBankLoan;
@@ -1330,56 +1083,6 @@ public class DDRFormDetailsRequest implements Serializable {
 	public void setRemarkOfDocCheckList(String remarkOfDocCheckList) {
 		this.remarkOfDocCheckList = remarkOfDocCheckList;
 	}
-*/
-
-
-	/*@Override
-	public String toString() {
-		return "DDRFormDetailsRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", userId=" + userId
-				+ ", godownStockyard=" + godownStockyard + ", companySuccessPlan=" + companySuccessPlan
-				+ ", detailsOfBankingArrangement=" + detailsOfBankingArrangement + ", salesOfAutomobileDivision="
-				+ salesOfAutomobileDivision + ", othersSales=" + othersSales + ", totalConsolidatedSales="
-				+ totalConsolidatedSales + ", corporateSale=" + corporateSale + ", corporateSaleToTotalSale="
-				+ corporateSaleToTotalSale + ", corporateSaleToAutomobileDivSale=" + corporateSaleToAutomobileDivSale
-				+ ", outsideLoans=" + outsideLoans + ", loansFromFamilyMembersRelative="
-				+ loansFromFamilyMembersRelative + ", fallInSales=" + fallInSales + ", reasonForSalesDecline="
-				+ reasonForSalesDecline + ", negativeProfit=" + negativeProfit + ", fallInProfit=" + fallInProfit
-				+ ", reasonForProfitDecline=" + reasonForProfitDecline + ", provisionalSalesFigure="
-				+ provisionalSalesFigure + ", salesBreakupByProduct=" + salesBreakupByProduct
-				+ ", isAnySeasonalPatternInSales=" + isAnySeasonalPatternInSales + ", outstandingDuesAmount="
-				+ outstandingDuesAmount + ", outstandingDuesAge=" + outstandingDuesAge + ", outstandingDuesComment="
-				+ outstandingDuesComment + ", summaryOfDebtorsAgeing0_30Days=" + summaryOfDebtorsAgeing0_30Days
-				+ ", summaryOfDebtorsAgeing31_60Days=" + summaryOfDebtorsAgeing31_60Days
-				+ ", summaryOfDebtorsAgeing61_90Days=" + summaryOfDebtorsAgeing61_90Days
-				+ ", summaryOfDebtorsAgeing91_180Days=" + summaryOfDebtorsAgeing91_180Days
-				+ ", summaryOfDebtorsAgeingGreater180Days=" + summaryOfDebtorsAgeingGreater180Days
-				+ ", summaryOfDebtorsAgeingTotal=" + summaryOfDebtorsAgeingTotal + ", avgDebtorTurnoverPeriod="
-				+ avgDebtorTurnoverPeriod + ", chequeBouncesDuringLast6months=" + chequeBouncesDuringLast6months
-				+ ", summaryOfDebtorsAgeingComment=" + summaryOfDebtorsAgeingComment + ", avgTurnoverPeriod="
-				+ avgTurnoverPeriod + ", creditorsComment=" + creditorsComment + ", businessWhetherSsiOrNot="
-				+ businessWhetherSsiOrNot + ", investmentInPlantAndMachinery=" + investmentInPlantAndMachinery
-				+ ", majorClients=" + majorClients + ", creditPeriodEnjoyedFromSuppliers="
-				+ creditPeriodEnjoyedFromSuppliers + ", creditPeriodExtendedToBuyers=" + creditPeriodExtendedToBuyers
-				+ ", otherSourceOfIncome=" + otherSourceOfIncome + ", otherBusinessInFamilyName="
-				+ otherBusinessInFamilyName + ", operatingAddComment=" + operatingAddComment + ", othersDetailsComment="
-				+ othersDetailsComment + ", creaditCardHeldByCustComment=" + creaditCardHeldByCustComment
-				+ ", fieldAuditReport=" + fieldAuditReport + ", auditedFinancialsForLast3years="
-				+ auditedFinancialsForLast3years + ", provisionalFinancialsForCurrentYear="
-				+ provisionalFinancialsForCurrentYear + ", itrForLast3years=" + itrForLast3years + ", sanctionLetter="
-				+ sanctionLetter + ", bankStatementOfLast12months=" + bankStatementOfLast12months + ", debtorsList="
-				+ debtorsList + ", financialFigures=" + financialFigures + ", moaOfTheCompany=" + moaOfTheCompany
-				+ ", panCardOfTheCompany=" + panCardOfTheCompany + ", resolutionAndForm32forAdditionOfDirector="
-				+ resolutionAndForm32forAdditionOfDirector + ", centralSalesTaxRegistrationOfCompany="
-				+ centralSalesTaxRegistrationOfCompany + ", centralExciseRegistrationOfCompany="
-				+ centralExciseRegistrationOfCompany + ", vatRegistrationOfCompany=" + vatRegistrationOfCompany
-				+ ", letterOfIntentFromFundProviders=" + letterOfIntentFromFundProviders
-				+ ", panCardAndResidenceAddProofOfDirectors=" + panCardAndResidenceAddProofOfDirectors
-				+ ", caCertifiedNetworthStatement=" + caCertifiedNetworthStatement + ", irrOfAllDirectorsForLast2years="
-				+ irrOfAllDirectorsForLast2years + ", listOfDirectors=" + listOfDirectors
-				+ ", listOfShareholdersAndShareHoldingPatter=" + listOfShareholdersAndShareHoldingPatter
-				+ ", summaryOfBservations=" + summaryOfBservations + ", isActive=" + isActive
-				+ "]";
-	}*/
 
 	@Override
 	public String toString() {
@@ -1387,6 +1090,23 @@ public class DDRFormDetailsRequest implements Serializable {
 				"id=" + id +
 				", applicationId=" + applicationId +
 				", userId=" + userId +
+				", godownStockyard='" + godownStockyard + '\'' +
+				", companySuccessPlan='" + companySuccessPlan + '\'' +
+				", outsideLoans=" + outsideLoans +
+				", loansFromFamilyMembersRelative=" + loansFromFamilyMembersRelative +
+				", fallInSales='" + fallInSales + '\'' +
+				", reasonForSalesDecline='" + reasonForSalesDecline + '\'' +
+				", negativeProfit='" + negativeProfit + '\'' +
+				", fallInProfit='" + fallInProfit + '\'' +
+				", reasonForProfitDecline='" + reasonForProfitDecline + '\'' +
+				", summaryOfDebtorsAgeing0_30Days=" + summaryOfDebtorsAgeing0_30Days +
+				", summaryOfDebtorsAgeing31_60Days=" + summaryOfDebtorsAgeing31_60Days +
+				", summaryOfDebtorsAgeing61_90Days=" + summaryOfDebtorsAgeing61_90Days +
+				", summaryOfDebtorsAgeing91_180Days=" + summaryOfDebtorsAgeing91_180Days +
+				", summaryOfDebtorsAgeingGreater180Days=" + summaryOfDebtorsAgeingGreater180Days +
+				", summaryOfDebtorsAgeingTotal=" + summaryOfDebtorsAgeingTotal +
+				", chequeBouncesDuringLast6months='" + chequeBouncesDuringLast6months + '\'' +
+				", summaryOfDebtorsAgeingComment='" + summaryOfDebtorsAgeingComment + '\'' +
 				", avgTurnoverPeriod='" + avgTurnoverPeriod + '\'' +
 				", creditorsComment='" + creditorsComment + '\'' +
 				", businessWhetherSsiOrNot=" + businessWhetherSsiOrNot +
@@ -1398,20 +1118,55 @@ public class DDRFormDetailsRequest implements Serializable {
 				", otherBusinessInFamilyName='" + otherBusinessInFamilyName + '\'' +
 				", operatingAddComment='" + operatingAddComment + '\'' +
 				", businessDetailsComment='" + businessDetailsComment + '\'' +
+				", othersDetailsComment='" + othersDetailsComment + '\'' +
 				", creaditCardHeldByCustComment='" + creaditCardHeldByCustComment + '\'' +
+				", fieldAuditReport='" + fieldAuditReport + '\'' +
+				", auditedFinancialsForLast3years='" + auditedFinancialsForLast3years + '\'' +
+				", provisionalFinancialsForCurrentYear='" + provisionalFinancialsForCurrentYear + '\'' +
+				", itrForLast3years='" + itrForLast3years + '\'' +
+				", sanctionLetter='" + sanctionLetter + '\'' +
+				", bankStatementOfLast12months='" + bankStatementOfLast12months + '\'' +
+				", debtorsList='" + debtorsList + '\'' +
+				", financialFigures='" + financialFigures + '\'' +
+				", moaOfTheCompany='" + moaOfTheCompany + '\'' +
+				", panCardOfTheCompany='" + panCardOfTheCompany + '\'' +
+				", resolutionAndForm32forAdditionOfDirector='" + resolutionAndForm32forAdditionOfDirector + '\'' +
+				", centralSalesTaxRegistrationOfCompany='" + centralSalesTaxRegistrationOfCompany + '\'' +
+				", centralExciseRegistrationOfCompany='" + centralExciseRegistrationOfCompany + '\'' +
+				", vatRegistrationOfCompany='" + vatRegistrationOfCompany + '\'' +
+				", letterOfIntentFromFundProviders='" + letterOfIntentFromFundProviders + '\'' +
+				", panCardAndResidenceAddProofOfDirectors='" + panCardAndResidenceAddProofOfDirectors + '\'' +
+				", caCertifiedNetworthStatement='" + caCertifiedNetworthStatement + '\'' +
+				", irrOfAllDirectorsForLast2years='" + irrOfAllDirectorsForLast2years + '\'' +
+				", listOfDirectors='" + listOfDirectors + '\'' +
+				", listOfShareholdersAndShareHoldingPatter='" + listOfShareholdersAndShareHoldingPatter + '\'' +
 				", provisionalTotalSales=" + provisionalTotalSales +
 				", lastYearTotalSales=" + lastYearTotalSales +
 				", lastToLastYearTotalSales=" + lastToLastYearTotalSales +
 				", currency='" + currency + '\'' +
 				", isActive=" + isActive +
+				", remarkOfCompanyInfo='" + remarkOfCompanyInfo + '\'' +
 				", remarkOfFinSummary='" + remarkOfFinSummary + '\'' +
+				", remarkOfTotalDebt='" + remarkOfTotalDebt + '\'' +
+				", remarkOfLatestDebtList='" + remarkOfLatestDebtList + '\'' +
+				", remarkOfLatestCredList='" + remarkOfLatestCredList + '\'' +
 				", remarkOfBusinessDetails='" + remarkOfBusinessDetails + '\'' +
 				", remarkOfPersonalDetails='" + remarkOfPersonalDetails + '\'' +
 				", remarkOfExistingBankerDetails='" + remarkOfExistingBankerDetails + '\'' +
+				", remarkOfNameOfAuthSignatory='" + remarkOfNameOfAuthSignatory + '\'' +
+				", remarkOfOtherDetail='" + remarkOfOtherDetail + '\'' +
+				", remarkOfDetailOfCredCard='" + remarkOfDetailOfCredCard + '\'' +
+				", remarkOfAnyOtherBankLoan='" + remarkOfAnyOtherBankLoan + '\'' +
+				", remarkOfDocCheckList='" + remarkOfDocCheckList + '\'' +
 				", outsideLoansString='" + outsideLoansString + '\'' +
 				", loansFromFamilyMembersRelativeString='" + loansFromFamilyMembersRelativeString + '\'' +
+				", dDRAuthSignDetailsList=" + dDRAuthSignDetailsList +
+				", dDRCreditCardDetailsList=" + dDRCreditCardDetailsList +
+				", dDRCreditorsDetailsList=" + dDRCreditorsDetailsList +
 				", dDRRegisteredOfficeList=" + dDRRegisteredOfficeList +
 				", dDROperatingOfficeList=" + dDROperatingOfficeList +
+				", dDROtherBankLoanDetailsList=" + dDROtherBankLoanDetailsList +
+				", dDRVehiclesOwnedDetailsList=" + dDRVehiclesOwnedDetailsList +
 				", dDRFinancialSummaryList=" + dDRFinancialSummaryList +
 				", existingBankerDetailList=" + existingBankerDetailList +
 				", dDRFamilyDirectorsList=" + dDRFamilyDirectorsList +

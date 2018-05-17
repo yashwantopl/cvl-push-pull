@@ -44,6 +44,7 @@ public class CommonUtils {
 	public static final Long RETAIL_COAPPLICANT = 2L;
 	public static final Long RETAIL_GUARANTOR = 3L;
 	public static final Long CORPORATE_USER = 4L;
+	public static final Long NP_NHBS = 11L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
@@ -161,6 +162,11 @@ public class CommonUtils {
 		}
 
 		public static LoanType getType(Integer x) {
+			System.out.println("GetType----------------->" + x);
+			if(x == null) {
+				return null;
+			}
+			
 			switch (x) {
 			case 1:
 				return WORKING_CAPITAL;
@@ -180,8 +186,9 @@ public class CommonUtils {
 				return UNSECURED_LOAN;
 			case 16:
 				return WCTL_LOAN;
+			default :
+				return null;
 			}
-			return null;
 		}
 		public static String getLoanTypeName(Integer x) {
 			switch (x) {
@@ -203,8 +210,9 @@ public class CommonUtils {
 				return "UNSECURED LOAN";
 			case 16:
 				return "WCTL_LOAN";
+			default :
+				return null;
 			}
-			return null;
 		}
 
 	}
@@ -254,14 +262,17 @@ public class CommonUtils {
 		public static final int CORPORATE = 2;
 	}
 
-	public static int getUserMainType(int productId) {
+	public static int getUserMainType(Integer productId) {
+		if (isObjectNullOrEmpty(productId)) {
+			return 0;
+		}
 		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return 2;
 		else
 			return 1;
 	}
 
-	public static String getUserMainTypeName(int productId) {
+	public static String getUserMainTypeName(Integer productId) {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
@@ -271,7 +282,7 @@ public class CommonUtils {
 			return RETAIL;
 	}
 
-	public static String getCorporateLoanType(int productId) {
+	public static String getCorporateLoanType(Integer productId) {
 		if (productId == 1 || productId == 2 || productId == 15)
 			return "DEBT";
 		else
@@ -287,7 +298,7 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 	}
 
-	public static String getDdrStatusString(int ddrStatusId) {
+	public static String getDdrStatusString(Integer ddrStatusId) {
 		if (isObjectNullOrEmpty(ddrStatusId)) {
 			return "NA";
 		}
@@ -442,6 +453,8 @@ public class CommonUtils {
 		urlsBrforeLogin = new ArrayList<String>(3);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
+		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
+		
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
