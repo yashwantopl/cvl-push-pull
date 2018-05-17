@@ -30,6 +30,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			throws Exception {
 
 		String requestURI = request.getRequestURI();
+		logger.info("Loan Request URI------------------------------> " + requestURI);
 		if(CommonUtils.urlsBrforeLogin.contains(requestURI)){
 			return true;
 		}
