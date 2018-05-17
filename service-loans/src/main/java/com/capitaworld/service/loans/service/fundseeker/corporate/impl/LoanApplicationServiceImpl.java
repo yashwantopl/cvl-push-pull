@@ -4264,6 +4264,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if ("Success".equals(paymentRequest.getStatus())) {
 //				if(updatePayment) {
 					try {
+						loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
+						loanApplicationRepository.save(loanApplicationMaster);
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
 								userId);
 						if (!CommonUtils.isObjectListNull(connectResponse)) {
@@ -4281,6 +4283,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Throw Exception While Call Connector Service`");
 						e.printStackTrace();
 					}
+				}
+				else {
+					loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.PENDING);
+					loanApplicationRepository.save(loanApplicationMaster);
 				}
 				logger.info("End of Congratulations");
 				return applicationRequest;
