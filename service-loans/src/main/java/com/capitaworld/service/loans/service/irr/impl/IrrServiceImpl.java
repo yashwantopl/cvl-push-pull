@@ -2018,7 +2018,7 @@ public class IrrServiceImpl implements IrrService{
 		// TODO Auto-generated method stub
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
 
-		return setQualitativeInputManu(aplicationId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
+		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2035,7 +2035,7 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
+	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
@@ -2090,8 +2090,48 @@ public class IrrServiceImpl implements IrrService{
 				qualitativeInputSheetManuRequest.setContingentLiabilities((corporateFinalInfoRequest.getContLiabilityFyAmt() / assetsDetails.getTangibleNetWorth()) * denom);//-----formula based
 		}
 
-		//---project size 0.0 WC
-		qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+		Double totalCostEstimate=0.0;
+		Double totalAsset=0.0;
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+			case TERM_LOAN:
+			{
+				CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getTotalCostOfEstimate()))
+					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
+
+				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
+					totalAsset=assetsDetails.getTotalAssets();
+
+				if(totalAsset != 0.0)
+					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
+				else
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+
+			}
+			case  WCTL_LOAN:
+			{
+				CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getTotalCostOfEstimate()))
+					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
+
+				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
+					totalAsset=assetsDetails.getTotalAssets();
+
+				if(totalAsset != 0.0)
+					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
+				else
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+			}
+			case  WORKING_CAPITAL:
+			{
+				qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+			}
+		}
 
 		return qualitativeInputSheetManuRequest;
 	}
