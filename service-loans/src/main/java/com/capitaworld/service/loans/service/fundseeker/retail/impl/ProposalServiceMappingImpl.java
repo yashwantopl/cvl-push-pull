@@ -1335,6 +1335,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+					corporateProposalDetails.setModifiedDate(proposalrequest.getModifiedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
