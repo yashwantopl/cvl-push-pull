@@ -452,7 +452,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			int newPropsalCount = 0;
 			if(!CommonUtils.isObjectListNull(npOrgId) && npOrgId != CommonUtils.NP_NHBS){
 				applicationMastersList = getApplicationListToAssignedCheckerFromBoFp(nhbsApplicationRequest.getUserId(),CommonUtils.ApplicationStatus.OPEN,false,0,0);
-				newPropsalCount = applicationMastersList.size();
+				if(!CommonUtils.isObjectListNull(applicationMastersList))
+					newPropsalCount = applicationMastersList.size();
 			}else{
 				if(!CommonUtils.isObjectListNull(npOrgId)){
 					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
