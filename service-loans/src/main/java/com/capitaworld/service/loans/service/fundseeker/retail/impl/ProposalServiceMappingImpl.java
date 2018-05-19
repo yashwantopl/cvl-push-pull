@@ -343,12 +343,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						}
 					}
 					
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
+					}*/
+					
+					UsersRequest usersRequest=new UsersRequest();
+					usersRequest.setId(request.getUserId());
+					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
+					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+									oneFormClient));
+						}
 					}
+					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+					}
+					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
 							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
@@ -1444,12 +1460,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					corporateProposalDetails.setModifiedDate(proposalrequest.getModifiedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					
+					UsersRequest usersRequest=new UsersRequest();
+					usersRequest.setId(request.getUserId());
+					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
+					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+									oneFormClient));
+						}
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+					}
+					
+					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
-					}
+					}*/
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
 							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
