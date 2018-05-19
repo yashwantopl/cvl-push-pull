@@ -3,7 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,17 +56,13 @@ import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
-import com.capitaworld.service.notification.model.Notification;
-import com.capitaworld.service.notification.model.NotificationRequest;
-import com.capitaworld.service.notification.utils.ContentType;
-import com.capitaworld.service.notification.utils.NotificationAlias;
-import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
@@ -239,6 +235,61 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						}
 					} else {
 						corporateProposalDetails.setIndustry("NA");
+					}
+					
+					List<Long> keyVerticalFundingId = new ArrayList<>();
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+		                try {
+		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+		                    } else {
+		                    	corporateProposalDetails.setKeyVertical("NA");
+		                    }
+		                } catch (Exception e) {
+		                    e.printStackTrace();
+		                }
+		            }
+					
+					//key vertical sector
+		           	List<Long> keyVerticalSectorId = new ArrayList<>();
+		            //getting sector id from mapping
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+		            try
+		            {
+		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
+		            
+		            //get key vertical sector value
+		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                corporateProposalDetails.setSector(masterResponse.getValue());
+		            } else {
+		            	corporateProposalDetails.setSector("NA");
+		            }
+		            }
+		            catch (Exception e) {
+		            	e.printStackTrace();
+					}
+		            //key vertical Subsector
+		            try
+		            {
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+		            {
+		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
+		            }
+		            }
+		            catch (Exception e) {
+						// TODO: handle exception
+		            	logger.warn("error while getting key vertical sub-sector");
 					}
 
 					String amount = "";
@@ -1292,6 +1343,62 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIndustry("NA");
 					}
+					
+					List<Long> keyVerticalFundingId = new ArrayList<>();
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+		                try {
+		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+		                    } else {
+		                    	corporateProposalDetails.setKeyVertical("NA");
+		                    }
+		                } catch (Exception e) {
+		                    e.printStackTrace();
+		                }
+		            }
+					
+					//key vertical sector
+		           	List<Long> keyVerticalSectorId = new ArrayList<>();
+		            //getting sector id from mapping
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+		            try
+		            {
+		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
+		            
+		            //get key vertical sector value
+		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                corporateProposalDetails.setSector(masterResponse.getValue());
+		            } else {
+		            	corporateProposalDetails.setSector("NA");
+		            }
+		            }
+		            catch (Exception e) {
+		            	e.printStackTrace();
+					}
+		            //key vertical Subsector
+		            try
+		            {
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+		            {
+		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
+		            }
+		            }
+		            catch (Exception e) {
+						// TODO: handle exception
+		            	logger.warn("error while getting key vertical sub-sector");
+					}
+					
 
 					String amount = "";
 					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
