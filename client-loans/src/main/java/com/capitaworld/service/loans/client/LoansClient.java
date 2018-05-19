@@ -30,6 +30,7 @@ import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -169,6 +170,9 @@ public class LoansClient {
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
     private static final String GET_CORPORATE_SCORE="/score/calculate_score/corporate/test";
+    
+    private static final String SIDBI_GET_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/get_director_detail";
+    private static final String SIDBI_SAVE_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/save_director_detail";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1798,5 +1802,34 @@ public class LoansClient {
 			
 			throw e;//("Loans service is not available");
 		}
-}
+	}
+		
+	public MobileApiResponse getSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_GET_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public MobileApiResponse saveSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_SAVE_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+		
 }
