@@ -312,7 +312,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
             fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
 
-            LoansResponse res=new LoansResponse("director detail successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse res=new LoansResponse("director detail successfully fetched",HttpStatus.OK.value());
             res.setData(fundSeekerInputResponse);
             logger.info("director detail successfully fetched");
             return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);

@@ -110,15 +110,19 @@ public class FundSeekerInputRequestMobileController {
                 fundSeekerInputRequestResponse.setUserId((Long) fundSeekerInputRequestResponse.getUserId());
             }
             logger.info("Application Id for Getting director detail============>{}",fundSeekerInputRequestResponse.getApplicationId());
-
-            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","true", fundSeekerInputRequestService.getDirectorDetail(fundSeekerInputRequestResponse), MobileCustomizeResponse.SUCCESS200 ), HttpStatus.OK);
-
+            ResponseEntity<LoansResponse> directorDetail = fundSeekerInputRequestService.getDirectorDetail(fundSeekerInputRequestResponse);
+            LoansResponse loansResponse = directorDetail.getBody();
+            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData())) {
+            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully get Data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
+            } else {
+            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);
+            }
         } catch (Exception e) {
             logger.error("Error while fetching director detail");
             e.printStackTrace();
             return new ResponseEntity<MobileApiResponse>(
                     new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG, "false", MobileCustomizeResponse.INTERNALSERVERERROR407),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.OK);
         }
     }
 
@@ -138,9 +142,9 @@ public class FundSeekerInputRequestMobileController {
                 return new ResponseEntity<MobileApiResponse>(
                         new MobileApiResponse("Invalid Request", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
             }
-
-            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","true", fundSeekerInputRequestService.saveOrUpdateDirectorDetail(fundSeekerInputRequestResponse), MobileCustomizeResponse.SUCCESS200 ), HttpStatus.OK);
-
+            ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail = fundSeekerInputRequestService.saveOrUpdateDirectorDetail(fundSeekerInputRequestResponse);
+            LoansResponse loansResponse = saveOrUpdateDirectorDetail.getBody();
+            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully saved data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
 
         } catch (Exception e) {
             logger.error("Error while saving director detail");
