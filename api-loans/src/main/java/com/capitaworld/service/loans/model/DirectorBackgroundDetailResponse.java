@@ -49,7 +49,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		
 		private Double cibilScore;
 
-
+		private Double shareholding;
 		public String getAddress() {
 			return address;
 		}
@@ -238,8 +238,12 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setCibilScore(Double cibilScore) {
 		this.cibilScore = cibilScore;
 	}
-	
-	
-	
-	
+
+	public Double getShareholding() {
+		return shareholding;
+	}
+
+	public void setShareholding(Double shareholding) {
+		this.shareholding = shareholding;
+	}
 }

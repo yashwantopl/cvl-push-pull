@@ -118,6 +118,8 @@ public class DirectorBackgroundDetail implements Serializable {
 	@Column(name="title")
 	private String title;
 
+	private Double shareholding;
+
 	public DirectorBackgroundDetail() {
 	}
 
@@ -341,5 +343,13 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Double getShareholding() {
+		return shareholding;
+	}
+
+	public void setShareholding(Double shareholding) {
+		this.shareholding = shareholding;
 	}
 }

@@ -68,6 +68,8 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private String title;
 
+	private Double shareholding;
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -263,6 +265,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.title = title;
 	}
 
+	public Double getShareholding() {
+		return shareholding;
+	}
+
+	public void setShareholding(Double shareholding) {
+		this.shareholding = shareholding;
+	}
+
 	@Override
 	public String toString() {
 		return "DirectorBackgroundDetailRequest{" +
@@ -289,6 +299,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", lastName='" + lastName + '\'' +
 				", middleName='" + middleName + '\'' +
 				", title='" + title + '\'' +
+				", shareholding=" + shareholding +
 				'}';
 	}
 

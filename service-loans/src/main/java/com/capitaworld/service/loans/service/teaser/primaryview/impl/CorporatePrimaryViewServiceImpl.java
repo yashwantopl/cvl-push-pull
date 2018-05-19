@@ -435,7 +435,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                     directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
                     directorBackgroundDetailResponse.setDirectorsName(directorName);
                     //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString()+" Years");
                     directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
                     directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
                     directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
