@@ -4264,8 +4264,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if ("Success".equals(paymentRequest.getStatus())) {
 //				if(updatePayment) {
 					try {
+					
 						loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 						loanApplicationRepository.save(loanApplicationMaster);
+						ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
 								userId);
 						if (!CommonUtils.isObjectListNull(connectResponse)) {
