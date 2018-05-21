@@ -173,6 +173,8 @@ public class LoansClient {
     
     private static final String SIDBI_GET_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/get_director_detail";
     private static final String SIDBI_SAVE_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/save_director_detail";
+    private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
+    
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1826,6 +1828,20 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updateProductDetails(LoanApplicationRequest loanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(UPDATE_PRODUCT_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
