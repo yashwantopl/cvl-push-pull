@@ -4763,8 +4763,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} else if (CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
 			PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository
 					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			unsLoan.setApplicationId(loanApplicationMaster);
-			primaryUnsecuredLoanDetailRepository.save(unsLoan);
+			if(CommonUtils.isObjectNullOrEmpty(unsLoan)) {
+				unsLoan = new PrimaryUnsecuredLoanDetail();
+				unsLoan.setId(loanApplicationMaster.getId());
+				unsLoan.setApplicationId(loanApplicationMaster);
+				primaryUnsecuredLoanDetailRepository.save(unsLoan);
+			}
 		}
 		return true;
 	}

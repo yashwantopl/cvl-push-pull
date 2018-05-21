@@ -289,6 +289,32 @@ public class ProductMasterController {
 		}
 	}
 
+	@RequestMapping(value = "/getFPProduct/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFPProduct(HttpServletRequest request,
+			@PathVariable(value = "id") Long id
+			) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getFPProduct");
+		try {
+			
+			
+			
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(productMasterService.getProductMasterWithAllData(id));
+			CommonDocumentUtils.endHook(logger, "getListByUserType");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Products Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
+	
 	@RequestMapping(value = "/getUserNameByProductId", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUserNameByProductId(@RequestBody Long productId) {
 		// request must not be null

@@ -101,9 +101,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			if(!CommonUtils.isObjectListNull(npOrgId) && npOrgId != CommonUtils.NP_NHBS){
 				applicationMastersList = getApplicationListToAssignedCheckerFromBoFp(userId,CommonUtils.ApplicationStatus.OPEN,true,request.getPageIndex(),request.getSize());
 			}else if(!CommonUtils.isObjectListNull(npOrgId)){
-				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId);
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 			}else{
-				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId());
+				applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 			}
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
             if(!CommonUtils.isObjectListNull(npOrgId)){
@@ -197,7 +197,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 
-					List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+					/*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 					List<Long> receivedAppIdList = new ArrayList<>();
 					if(npOrgId == CommonUtils.NP_NHBS){
 						PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
@@ -215,9 +215,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error("error while calling gateway client");
 							e.printStackTrace();
 						}
-					}
+					}*/
 					//logger.info("appId->"+loanApplicationMaster.getId());
-					if((npOrgId != CommonUtils.NP_NHBS) || (!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId()))){
+					//if((npOrgId != CommonUtils.NP_NHBS) || (!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId()))){
 					    //logger.info("received list->"+receivedAppIdList.toString());
 						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 						try{
@@ -231,7 +231,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error("error while calling users clients while calling checkUserUnderSp()");
 							e.printStackTrace();
 						}
-						if(npOrgId != CommonUtils.NP_NHBS){
+						nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+						/*if(npOrgId != CommonUtils.NP_NHBS){
 							nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 						}else{
 							if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
@@ -244,8 +245,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							}else{
 								nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 							}
-						}
-					}
+						}*/
+					//}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.APPROVER == request.getUserRoleId()){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
@@ -451,14 +452,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			int newPropsalCount = 0;
 			if(!CommonUtils.isObjectListNull(npOrgId) && npOrgId != CommonUtils.NP_NHBS){
 				applicationMastersList = getApplicationListToAssignedCheckerFromBoFp(nhbsApplicationRequest.getUserId(),CommonUtils.ApplicationStatus.OPEN,false,0,0);
-				newPropsalCount = applicationMastersList.size();
+				if(!CommonUtils.isObjectListNull(applicationMastersList))
+					newPropsalCount = applicationMastersList.size();
 			}else{
 				if(!CommonUtils.isObjectListNull(npOrgId)){
-					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId);
+					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatusAndNpOrgId(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 				}else{
-					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN);
+					applicationMastersList = loanApplicationRepository.getProposalsByApplicationStatus(CommonUtils.ApplicationStatus.OPEN,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
 				}
-				List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
+				/*List<Map<String, Object>> receivedPaymentList = new ArrayList<>();
 				List<Long> receivedAppIdList = new ArrayList<>();
 				PaymentTypeRequest paymentTypeRequest = new PaymentTypeRequest();
 				paymentTypeRequest.setListType(com.capitaworld.service.gateway.utils.CommonUtils.PAYMENT_PENDING_LIST);
@@ -474,9 +476,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}catch (Exception e){
 					logger.error("error while calling gateway client");
 					e.printStackTrace();
-				}
+				}*/
 				if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
-					for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
+					newPropsalCount = applicationMastersList.size();
+					/*for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
 						if(!CommonUtils.isObjectListNull(receivedAppIdList) && receivedAppIdList.contains(loanApplicationMaster.getId())){
 							if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment()) && loanApplicationMaster.getTypeOfPayment().equals(CommonUtils.PaymentMode.ONLINE)){
 								GatewayRequest gatewayRequest = getPaymentStatuOfApplication(loanApplicationMaster.getId());
@@ -489,7 +492,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								newPropsalCount++;
 							}
 						}
-					}
+					}*/
 				}
 			}
 
