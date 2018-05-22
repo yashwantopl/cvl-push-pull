@@ -59,6 +59,7 @@ public class CorporatePrimaryViewResponse {
     private List<Object> bankStatement;
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
+    private Long npOrgId;
 
 
     
@@ -426,5 +427,18 @@ public class CorporatePrimaryViewResponse {
 	public void setIrtPdfReport(List<Object> irtPdfReport) {
 		this.irtPdfReport = irtPdfReport;
 	}
+	/**
+	 * @return the npOrgId
+	 */
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+	/**
+	 * @param npOrgId the npOrgId to set
+	 */
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
+	}
+	
     
 }

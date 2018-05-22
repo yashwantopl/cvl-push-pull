@@ -146,7 +146,7 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
-	
+
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
@@ -162,7 +162,10 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
-	
+
+	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE = "/fundseeker_input_request_mobile/save_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_GET_MOBILE = "/fundseeker_input_request_mobile/get_oneform";
+
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
 	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "getFpDetailsByFpProductId";
@@ -1847,5 +1850,34 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
-		
+
+	public LoansResponse saveOneFormForMobile(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<DirectorBackgroundDetailRequest> getOneFormForMobile(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE).concat("/" + applicationId);
+		System.out.println("url for Getting Oneform details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
 }
