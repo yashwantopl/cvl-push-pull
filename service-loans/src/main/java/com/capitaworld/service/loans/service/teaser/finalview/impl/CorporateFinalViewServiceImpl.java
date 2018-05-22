@@ -47,7 +47,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -205,9 +204,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
     
     @Autowired
     private CorporateMcqService corporateMcqService;
-    
-    @Autowired
-    private DocumentManagementService documentManagementService;
     
     @Autowired
     private OwnershipDetailsService ownerShipDetailsService;

@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.auth.model.UserRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +20,13 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
-import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -78,9 +74,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private CorporateCoApplicantService coApplicantService;
-
-	@Autowired
-	private CorporateCoApplicantService corporateCoApplicantService;
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -195,6 +188,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			try {
 
 				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				@SuppressWarnings("unchecked")
 				UsersRequest userRequest= MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				applicantRequest.setEmail(userRequest.getEmail());
@@ -664,6 +658,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			try {
 				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+					@SuppressWarnings("unchecked")
 					UsersRequest request = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 					paymentRequest.setEmailAddress(request.getEmail());
@@ -701,6 +696,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return applicantRequest;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getOrgAndPanByAppId(Long applicationId) {
 		logger.info("Start Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);

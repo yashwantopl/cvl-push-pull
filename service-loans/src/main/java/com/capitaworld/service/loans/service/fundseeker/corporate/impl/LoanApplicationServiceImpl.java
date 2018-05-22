@@ -1,4 +1,4 @@
-
+s
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
@@ -3013,6 +3013,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
 			return null;
 		}
+		@SuppressWarnings("unchecked")
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
 		for (LinkedHashMap<String, Object> data : dataList) {
@@ -3036,7 +3037,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			if (loanApplicationMaster.getEligibleAmnt() == null) {
 				AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
