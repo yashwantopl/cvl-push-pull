@@ -965,33 +965,33 @@ public class CommonUtils {
 		return sub;
 	}
 	public static String getOrganizationName(Long x) {
-		if(x == 1) {
+		if(x == 1L) {
 			return "UNION";
-		}else if(x == 2) {
+		}else if(x == 2L) {
 			return "SARASWAT";
-		}else if(x == 3) {
+		}else if(x == 3L) {
 			return "AXIS";
-		}else if(x == 4) {
+		}else if(x == 4L) {
 			return "ICICI";
-		}else if(x == 5) {
+		}else if(x == 5L) {
 			return "IDBI";
-		}else if(x == 6) {
+		}else if(x == 6L) {
 			return "RBL";
-		}else if(x == 7) {
+		}else if(x == 7L) {
 			return "Tata Capital";
-		}else if(x == 8) {
+		}else if(x == 8L) {
 			return "IDFC";
-		}else if(x == 9) {
+		}else if(x == 9L) {
 			return "Dena Bank";
-		}else if(x == 10) {
+		}else if(x == 10L) {
 			return "SIDBI";
-		}else if(x == 11) {
+		}else if(x == 11L) {
 			return "NHBS";
-		}else if(x == 12) {
+		}else if(x == 12L) {
 			return "CANARA BANK";
-		}else if(x == 13) {
+		}else if(x == 13L) {
 			return "Indian Bank";
-		}else if(x == 14) {
+		}else if(x == 14L) {
 			return "BOI";
 		}else {
 			return null;
