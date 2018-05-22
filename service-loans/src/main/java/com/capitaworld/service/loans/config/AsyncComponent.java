@@ -15,24 +15,23 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -44,7 +43,6 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -374,7 +372,7 @@ public class AsyncComponent {
 		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		if(loanBasicDetails != null) {
 			parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-			parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+			parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		} else {
 			parameters.put("application_id", "NA");
 			parameters.put("loan", "NA");
@@ -441,7 +439,7 @@ public class AsyncComponent {
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
 		    					parameters.put("application_id",  !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		        				parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		    				} else {
 		    					parameters.put("application_id", "NA");
 		        				parameters.put("loan", "NA");
@@ -557,8 +555,8 @@ public class AsyncComponent {
 		    				if(loanBasicDetails != null) {
 		    					logger.info("FPSentDirectRequestToFS, Application Code ----->"+loanBasicDetails.getApplicationCode());
 		    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));
-		    					parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+LoanType.getType(loanBasicDetails.getProductId()).getName());
+		    					parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		    				} else {
 		    					parameters.put("application_id", "NA");
 		        				parameters.put("loan", "NA");
@@ -762,7 +760,7 @@ public class AsyncComponent {
 			parameters.put("maker_name",makerUserName.getName());
 			parameters.put("checker_name",checkerUserName.getName());
 			parameters.put("fs_name",fsName);
-			parameters.put("lone_type", CommonUtils.getLoanName(productId));
+			parameters.put("lone_type", LoanType.getType(productId).getName());
 			String[] toIds = {checkerUserName.getEmail()};
 			String subject = makerUserName.getName()+ " has lock final details for " + applicationCode;
 			sendNotification(toIds,checkerId.toString(),parameters, NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);

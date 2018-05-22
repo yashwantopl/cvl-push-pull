@@ -190,30 +190,30 @@ public class CommonUtils {
 				return null;
 			}
 		}
-		public static String getLoanTypeName(Integer x) {
-			switch (x) {
-			case 1:
-				return "WORKING CAPITAL";
-			case 2:
-				return "TERM LOAN";
-			case 3:
-				return "HOME LOAN";
-			case 12:
-				return "CAR_LOAN";
-			case 7:
-				return "PERSONALLOAN";
-			case 13:
-				return "LAP LOAN";
-			case 14:
-				return "LAS LOAN";
-			case 15:
-				return "UNSECURED LOAN";
-			case 16:
-				return "WCTL_LOAN";
-			default :
-				return null;
-			}
-		}
+//		public static String getLoanTypeName(Integer x) {
+//			switch (x) {
+//			case 1:
+//				return "WORKING CAPITAL";
+//			case 2:
+//				return "TERM LOAN";
+//			case 3:
+//				return "HOME LOAN";
+//			case 12:
+//				return "CAR_LOAN";
+//			case 7:
+//				return "PERSONALLOAN";
+//			case 13:
+//				return "LAP LOAN";
+//			case 14:
+//				return "LAS LOAN";
+//			case 15:
+//				return "UNSECURED LOAN";
+//			case 16:
+//				return "WCTL_LOAN";
+//			default :
+//				return null;
+//			}
+//		}
 
 	}
 
@@ -267,23 +267,23 @@ public class CommonUtils {
 			return 0;
 		}
 		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
-			return 2;
+			return UserMainType.CORPORATE;
 		else
-			return 1;
+			return UserMainType.RETAIL;
 	}
 
 	public static String getUserMainTypeName(Integer productId) {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return CORPORATE;
 		else
 			return RETAIL;
 	}
 
 	public static String getCorporateLoanType(Integer productId) {
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return "DEBT";
 		else
 			return "EQUITY";
@@ -522,51 +522,51 @@ public class CommonUtils {
 		 */
 	}
 
-	public static String getLoanName(Integer x) {
-		switch (x) {
-		case 1:
-			return "Working Capital";
-		case 2:
-			return "Term Loan";
-		case 3:
-			return "Home Loan";
-		case 12:
-			return "Car Loan";
-		case 7:
-			return "Personal Loan";
-		case 13:
-			return "Loan Against Property";
-		case 14:
-			return "Loan Against Securities & Shares";
-		case 15:
-			return "Unsecured Loan";
-		default:
-			return null;
-		}
-	}
-
-	public static String getLoanNameForMail(Integer x) {
-		switch (x) {
-		case 1:
-			return "Working Capital";
-		case 2:
-			return "Term";
-		case 3:
-			return "Home";
-		case 12:
-			return "Car";
-		case 7:
-			return "Personal";
-		case 13:
-			return "Loan Against Property";
-		case 14:
-			return "Loan Against Securities & Shares";
-		case 15:
-			return "Unsecured ";
-		default:
-			return null;
-		}
-	}
+//	public static String getLoanName(Integer x) {
+//		switch (x) {
+//		case 1:
+//			return "Working Capital";
+//		case 2:
+//			return "Term Loan";
+//		case 3:
+//			return "Home Loan";
+//		case 12:
+//			return "Car Loan";
+//		case 7:
+//			return "Personal Loan";
+//		case 13:
+//			return "Loan Against Property";
+//		case 14:
+//			return "Loan Against Securities & Shares";
+//		case 15:
+//			return "Unsecured Loan";
+//		default:
+//			return null;
+//		}
+//	}
+//
+//	public static String getLoanNameForMail(Integer x) {
+//		switch (x) {
+//		case 1:
+//			return "Working Capital";
+//		case 2:
+//			return "Term";
+//		case 3:
+//			return "Home";
+//		case 12:
+//			return "Car";
+//		case 7:
+//			return "Personal";
+//		case 13:
+//			return "Loan Against Property";
+//		case 14:
+//			return "Loan Against Securities & Shares";
+//		case 15:
+//			return "Unsecured ";
+//		default:
+//			return null;
+//		}
+//	}
 
 	public static LoanType getProductByLoanCode(String code) {
 		code = code.toUpperCase();
@@ -586,6 +586,8 @@ public class CommonUtils {
 			return LoanType.LAS_LOAN;
 		} else if ("USL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN;
+		} else if ("WCTL".equalsIgnoreCase(code)) {
+			return LoanType.WCTL_LOAN;
 		} else {
 			return null;
 		}
