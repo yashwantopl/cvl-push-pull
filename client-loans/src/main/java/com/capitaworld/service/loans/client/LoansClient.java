@@ -1,16 +1,20 @@
 package com.capitaworld.service.loans.client;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -28,6 +32,13 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
 import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
@@ -178,6 +189,7 @@ public class LoansClient {
     private static final String SIDBI_SAVE_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/save_director_detail";
     private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
     
+    private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1879,6 +1891,33 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
+		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
+		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.set("req_auth", "true");
+            MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+            ByteArrayResource contentsAsResource = new ByteArrayResource(multipartFile.getBytes()){
+                @Override
+                public String getFilename(){
+                    return "";
+                }
+            };
+            map.add("file", contentsAsResource);
+           /* map.add("applicationId", applicationId);*/
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+          return  restTemplate.postForObject(url, request,LoansResponse.class);
+            
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			throw new ExcelException("Loans service is not available");
+			//throw e;//("Loans service is not available");
 		}
 	}
 }

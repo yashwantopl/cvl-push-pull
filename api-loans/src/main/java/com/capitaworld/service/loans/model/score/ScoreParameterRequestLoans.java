@@ -20,7 +20,9 @@ public class ScoreParameterRequestLoans {
     private Boolean isExperienceInTheBusiness_p=true;
     private Boolean isCreditSummation_p=true;
 
-    private Double networthSum;
+    private Long testId;
+    
+	private Double networthSum;
 
     private Double termLoanTy;
 
@@ -128,6 +130,7 @@ public class ScoreParameterRequestLoans {
                 ", isConcentrationCustomer_p=" + isConcentrationCustomer_p +
                 ", isExperienceInTheBusiness_p=" + isExperienceInTheBusiness_p +
                 ", isCreditSummation_p=" + isCreditSummation_p +
+                ", testId =" + testId +
                 ", networthSum=" + networthSum +
                 ", termLoanTy=" + termLoanTy +
                 ", loanAmount=" + loanAmount +
@@ -167,6 +170,13 @@ public class ScoreParameterRequestLoans {
                 '}';
     }
 
+    public Long getTestId() {
+		return testId;
+	}
+
+	public void setTestId(Long testId) {
+		this.testId = testId;
+	}
     public Boolean getCombinedNetworth_p() {
         return isCombinedNetworth_p;
     }
