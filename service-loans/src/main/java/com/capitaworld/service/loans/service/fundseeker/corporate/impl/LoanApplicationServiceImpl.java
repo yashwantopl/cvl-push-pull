@@ -1594,7 +1594,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
 				response.put("result", false);
@@ -1605,7 +1605,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			// if
 			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
 			// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
@@ -1623,7 +1623,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
-			if (!isPrimaryLocked) {
+			/*if (!isPrimaryLocked) {
 				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
 				response.put("result", false);
 				return response;
@@ -1633,7 +1633,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			// if
 			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 			// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
@@ -1671,7 +1671,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
 					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
 				response.put("message", "Please Fill PROFILE details to Move Next !");
 				response.put("result", false);
@@ -1682,7 +1682,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
 				response.put("result", false);
 				return response;
-			}
+			}*/
 			/*
 			 * if
 			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
@@ -1703,22 +1703,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			if (applicationMaster.getProductId() != LoanType.TERM_LOAN.getValue()) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
 						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
 					response.put("message", "Please Fill Financial Model details to Move Next !");
 					response.put("result", false);
 					return response;
-				}
 			}
-			if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) {
+
+			/*if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
 						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
 					response.put("message", "Please Fill DPR details to Move Next !");
 					response.put("result", false);
 					return response;
 				}
-			}
+			}*/
 			break;
 		default:
 			break;
@@ -4129,7 +4128,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+				loanApplicationMaster.setPaymentStatus(paymentRequest.getStatus());
+				loanApplicationRepository.save(loanApplicationMaster);
 				try {
+					
+					if ("Success".equals(paymentRequest.getStatus())) {
+						
+					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
+					logger.info("Call Connector client for update payment status");
+					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
+							userId);
+					
+					if (!CommonUtils.isObjectListNull(connectResponse)) {
+						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+						if(orgId==10L) {
+							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+						}
+						
+					} else {
+						logger.info("Connector Response null or empty");
+					}
+					
 					ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
 					if(response!=null && response.getData()!=null) {
 					logger.info("Inside Congratulations");
@@ -4147,113 +4168,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					applicationRequest.setOnlinePaymentSuccess(updatePayment);
 					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
 					orgId =proposalresp.get("org_id")!=null ? Long.valueOf(proposalresp.get("org_id").toString()): null;
-					if(orgId==1L) {
-						applicationRequest.setFundProvider("Union");
 					
-					}
-					else if(orgId==2L){
-						
-						applicationRequest.setFundProvider("Saraswat");
-						
-					}
-                    else if(orgId==3L){
-						
-						applicationRequest.setFundProvider("Axis");
-						
-					}
-                    else if(orgId==4L){
-						
-						applicationRequest.setFundProvider("ICICI");
-						
-					}
-                    else if(orgId==5L){
-						
-						applicationRequest.setFundProvider("IDBI");
-						
-					}
-                    else if(orgId==6L) {
-						applicationRequest.setFundProvider("RBL");
+					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
 					
-					}
-					else if(orgId==7L){
-						
-						applicationRequest.setFundProvider("Tata Capital");
-						
-					}
-                    else if(orgId==8L){
-						
-						applicationRequest.setFundProvider("IDFC");
-						
-					}
-                    else if(orgId==9L){
-						
-						applicationRequest.setFundProvider("DENA Bank");
-						
-					}
-                    else if(orgId==10L){
-						
-						applicationRequest.setFundProvider("SIDBI");
-						
-					}
-                    else if(orgId==11L){
-						
-						applicationRequest.setFundProvider("NHBS");
-						
-					}
-                    else if(orgId==12L){
-						
-						applicationRequest.setFundProvider("CANARA BANK");
-						
-					}
-                    else if(orgId==13L){
-						
-						applicationRequest.setFundProvider("Indian Bank");
-						
-					}
-                    else {
-                    	applicationRequest.setFundProvider("BOI");
-                    	
-                    }
 
 			  }
 					
 				}else {
-						throw new NullPointerException("Invaslid user");
+						throw new NullPointerException("Invalid user");
+					}
+				}
+					else {
+						logger.info("Payment Failed");
 					}
 				} catch (Exception e) {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
 				}
-				logger.info("Call Connector client for update payment status");
-				if ("Success".equals(paymentRequest.getStatus())) {
-//				if(updatePayment) {
-					try {
-					
-						loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS);
-						loanApplicationRepository.save(loanApplicationMaster);
-						ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
-						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-								userId);
-						if (!CommonUtils.isObjectListNull(connectResponse)) {
-							logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-							logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-							if(orgId==10L) {
-								logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
-							}
-							
-						} else {
-							logger.info("Connector Response null or empty");
-						}
-					} catch (Exception e) {
-						logger.info("Throw Exception While Call Connector Service`");
-						e.printStackTrace();
-					}
-				}
-				else {
-					loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.PENDING);
-					loanApplicationRepository.save(loanApplicationMaster);
-				}
+				
 				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
