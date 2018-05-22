@@ -1851,15 +1851,15 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse saveOneFormForMobile(FrameRequest request) throws ExcelException {
+	public MobileApiResponse saveOneFormForMobile(FundSeekerInputRequestResponse request) throws ExcelException {
 		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
@@ -1867,14 +1867,15 @@ public class LoansClient {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DirectorBackgroundDetailRequest> getOneFormForMobile(Long applicationId) throws ExcelException {
-		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE).concat("/" + applicationId);
-		System.out.println("url for Getting Oneform details From Client=================>" + url + " and For Application Id====>" + applicationId);
+	public MobileApiResponse getOneFormForMobile(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE);
+		System.out.println("url for Getting Oneform details From Client=================>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fundSeekerInputRequestResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
