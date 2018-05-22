@@ -192,8 +192,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-
-
 			try {
 
 				UserResponse userResponse= usersClient.getEmailMobile(userId);
@@ -202,9 +200,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantRequest.setEmail(userRequest.getEmail());
 				applicantRequest.setLandlineNo(userRequest.getMobile());
 			}
-			catch (Exception e)
-			{
-				logger.warn("error while get user data"+e);
+			catch (Exception e){
+				logger.warn("error while get user data");
+				e.printStackTrace();
 			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
@@ -588,20 +586,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return coApplicantService.getList(applicationId, userId);
 	}
 
-	@Override
-	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-		boolean msmeScoreRequired = false;
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-				.findOne(msmeScoreRequest.getApplicationId());
-		if (msmeScoreRequest.isMsmeScoreRequired()) {
-			loanApplicationMaster.setIsMsmeScoreRequired(true);
-			msmeScoreRequired = true;
-		} else {
-			loanApplicationMaster.setIsMsmeScoreRequired(false);
-			msmeScoreRequired = false;
-		}
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+//		boolean msmeScoreRequired = false;
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+//				.findOne(msmeScoreRequest.getApplicationId());
+//		if (msmeScoreRequest.isMsmeScoreRequired()) {
+//			loanApplicationMaster.setIsMsmeScoreRequired(true);
+//			msmeScoreRequired = true;
+//		} else {
+//			loanApplicationMaster.setIsMsmeScoreRequired(false);
+//			msmeScoreRequired = false;
+//		}
+//		return msmeScoreRequired;
+//	}
 
 	/*
 	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
@@ -613,14 +611,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * return companyDetails; }
 	 */
 
-	@Override
-	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
-			return false;
-		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+//		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+//			return false;
+//		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
+//		return msmeScoreRequired;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override

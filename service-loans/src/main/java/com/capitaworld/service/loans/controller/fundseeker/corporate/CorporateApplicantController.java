@@ -395,27 +395,27 @@ public class CorporateApplicantController {
 	 * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	 * } }
 	 */
-	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
-			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-				logger.warn("request cannot be empty");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			} else {
-				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
-				LoansResponse loansResponse = new LoansResponse();
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			logger.error("Error while getting msme score==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
+//			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+//		try {
+//			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+//				logger.warn("request cannot be empty");
+//				return new ResponseEntity<LoansResponse>(
+//						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//			} else {
+//				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
+//				LoansResponse loansResponse = new LoansResponse();
+//				loansResponse.setData(response);
+//				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+//			}
+//		} catch (Exception e) {
+//			logger.error("Error while getting msme score==>", e);
+//			return new ResponseEntity<LoansResponse>(
+//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+//					HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
