@@ -292,6 +292,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			// Email ID
 			UserResponse userResponse = usersClient.getEmailMobile(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				@SuppressWarnings("unchecked")
 				UsersRequest request = MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				cibilFullFillOfferRequest.setEmail(request.getEmail());
