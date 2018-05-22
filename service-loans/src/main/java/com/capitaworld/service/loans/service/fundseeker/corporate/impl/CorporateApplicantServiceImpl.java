@@ -109,16 +109,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 		applicantDetail.setEstablishmentMonth(applicantRequest.getEstablishmentMonth());
 		applicantDetail.setEstablishmentYear(applicantRequest.getEstablishmentYear());
-		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-			Address address = applicantRequest.getFirstAddress();
-			applicantDetail.setRegisteredCityId(address.getCityId());
-			applicantDetail.setRegisteredStateId(address.getStateId());
-			applicantDetail.setRegisteredCountryId(address.getCountryId());
-			applicantDetail.setRegisteredLandMark(address.getLandMark());
-			applicantDetail.setRegisteredPremiseNumber(address.getPremiseNumber());
-			applicantDetail.setRegisteredStreetName(address.getStreetName());
-			applicantDetail.setRegisteredPincode(address.getPincode());
-		}
+		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 		applicantRepository.save(applicantDetail);
 		
 	}
