@@ -366,7 +366,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}else{
-						nhbsApplicationsResponse.setApplicationDate(new Date());
+						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
 						nhbsApplicationsResponse.setPaymentMode(loanApplicationMaster.getTypeOfPayment());
@@ -392,6 +392,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}else{
+						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
