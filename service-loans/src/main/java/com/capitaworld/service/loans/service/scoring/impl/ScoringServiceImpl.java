@@ -1,15 +1,33 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.transaction.Transactional;
-
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.gst.GstCalculation;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.model.*;
+import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.ibm.icu.util.Calendar;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -24,45 +42,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.CibilResponse;
-import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerMobileResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.gst.GstCalculation;
-import com.capitaworld.service.gst.GstResponse;
-import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
-import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
-import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
-import com.capitaworld.service.loans.service.scoring.ScoringService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
-import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
-import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
-import com.capitaworld.service.scoring.model.ModelParameterResponse;
-import com.capitaworld.service.scoring.model.ScoringParameterRequest;
-import com.capitaworld.service.scoring.model.ScoringRequest;
-import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.utils.ScoreParameter;
-import com.ibm.icu.util.Calendar;
+import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -931,7 +918,7 @@ public class ScoringServiceImpl implements ScoringService{
                         ReportRequest reportRequest = new ReportRequest();
                         reportRequest.setApplicationId(applicationId);
                         try {
-                        	AnalyzerMobileResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                        	AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
