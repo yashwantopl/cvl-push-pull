@@ -53,7 +53,9 @@ public class CommonUtils {
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
-
+   
+	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
