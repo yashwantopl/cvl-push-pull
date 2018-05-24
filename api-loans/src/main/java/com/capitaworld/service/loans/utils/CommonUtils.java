@@ -524,7 +524,7 @@ public class CommonUtils {
 		 */
 	}
 
-	public static String getLoanName(Integer x) {
+	public static String getLoanName(Integer x) { 
 		switch (x) {
 		case 1:
 			return "Working Capital";
