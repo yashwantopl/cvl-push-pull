@@ -77,10 +77,10 @@ public class ScoringController {
 	        	scoringService.readScoringExcel(multipartFiles).write(fileOutputStream);
 	        	
 	        	fileOutputStream.flush();
-	        	//fileOutputStream.close();
+	        	fileOutputStream.close();
 	        	logger.info("-----------------Sucessfullly  reading excel file() ---------------- file lenght---- " +file.length()   );
 	             loansResponse =new LoansResponse("Sucessfull created .", HttpStatus.OK.value());
-	            
+	           
 	             loansResponse.setContentInBytes(FileUtils.readFileToByteArray(file));
 	  	       return loansResponse;	             
 	          }catch (NullPointerException |IllegalStateException| InvalidFormatException  |IOException |LoansException e) {
