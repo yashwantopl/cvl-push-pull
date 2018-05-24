@@ -45,10 +45,11 @@ public class ScoreExcelFileGenerator {
 				evaluator = wb.getCreationHelper().createFormulaEvaluator();
 				XSSFFont  font = null;
 				//Set font into style
-			      XSSFCellStyle style = null;
-			      style = wb.createCellStyle();
-			    	 font = wb.createFont();
-			    	font.setBold(true);
+			    XSSFCellStyle style = null;
+			    style = wb.createCellStyle();
+			    font = wb.createFont();
+			    font.setBold(true);
+			    style.setFont(font);
 				System.out.println(sheet.getSheetName());
 				List<Map<String, Object>> listData=null;
 				int i=1,j=0;
@@ -57,37 +58,20 @@ public class ScoreExcelFileGenerator {
 				logger.info("------------------------------ write score list in excel-------------------------- list size ------"+loansResponseList.size());
 			    for (LoansResponse loansResponse: loansResponseList) {
 			    	j=0;
-			    	/*style = wb.createCellStyle();
-			    	 font = wb.createFont();*/
-			    	font.setBold(true);
-			    	style.setFont(font);
-			    	XSSFCell cell =sheet.createRow(--i).createCell(0);
-			    	cell.setCellValue("TEST ID");
-			    	cell.setCellStyle(style);
+			    	sheet.createRow(--i).createCell(0).setCellStyle(style);
+			    	sheet.getRow(i).getCell(0).setCellValue("TEST ID");
 			    	
-			    	//sheet.getRow(i).getCell(0).setCellStyle(style);	
-			    	//XSSFCell cell = sheet.getRow(i).createCell(0);
-			        //cell.setCellValue("Font Style");
-			        //cell.setCellStyle(style);
-			    	//sheet.getRow(i).createCell(1).setCellValue("Parameter Name");
-			    	//sheet.getRow(i).createCell(2).setCellValue("Parameter Option");
-			    	//sheet.getRow(i).createCell(3).setCellValue("Obtained Score");
-			    	//sheet.getRow(i).createCell(4).setCellValue("Max Score");
+			    	sheet.getRow(i).createCell(1).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(1).setCellValue("PARAMETER NAME");
 			    	
+			    	sheet.getRow(i).createCell(2).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(2).setCellValue("PARAMETER OPTION");
 			    	
-			    	cell =sheet.getRow(i).createCell(1);
-			    	cell.setCellValue("PARAMETER NAME");
-			    	cell.setCellStyle(style);
-			    	cell =sheet.getRow(i).createCell(2);
-			    	cell.setCellValue("PARAMETER OPTION");
-			    	cell.setCellStyle(style);
-			    	cell =sheet.getRow(i).createCell(3);
-			    	cell.setCellValue("OBTAINED SCORE");
-			    	cell.setCellStyle(style);
-			    	cell =sheet.getRow(i).createCell(4);
-			    	cell.setCellValue("MAX SCORE");
-			    	cell.setCellStyle(style);
+			    	sheet.getRow(i).createCell(3).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(3).setCellValue("OBTAINED SCORE");
 			    	
+			    	sheet.getRow(i).createCell(4).setCellStyle(style);
+			    	sheet.getRow(i).getCell(4).setCellValue("MAX SCORE");
 			    	
 			    	++i;
 			    	listData = (List<Map<String, Object>>)loansResponse.getListData();
@@ -96,15 +80,8 @@ public class ScoreExcelFileGenerator {
 			    	while(j<listData.size()) {
 			    		
 			    		 proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap(listData.get(j),ProposalScoreDetailResponse.class);
-			    	 style = wb.createCellStyle();
-				    	 font = wb.createFont();
-				    	font.setBold(false);
-				    	style.setFont(font);
 				    	
-			    		 //sheet.createRow(i).createCell(0).setCellValue(proposalScoreResponse.getApplicationId());
-			    		 cell= sheet.createRow(i).createCell(0);
-			    		 cell.setCellValue(proposalScoreResponse.getApplicationId());
-			    		 /*cell.setCellStyle(style);*/
+ 			    		 sheet.createRow(i).createCell(0).setCellValue(proposalScoreResponse.getApplicationId());
 			    		 sheet.getRow(i).createCell(1).setCellValue(proposalScoreDetailResponse.getParameterName());
 			    		 sheet.getRow(i).createCell(2).setCellValue(proposalScoreDetailResponse.getParameterOption());
 			    		 sheet.getRow(i).createCell(3).setCellValue(proposalScoreDetailResponse.getObtainedScore());
