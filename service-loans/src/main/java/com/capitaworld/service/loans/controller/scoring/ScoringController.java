@@ -63,7 +63,7 @@ public class ScoringController {
         }
         return scoringService.calculateScoringTest(scoringRequestLoans);
     }
-    @RequestMapping(value = "/getScoreExcel", method = RequestMethod.POST,produces =MediaType.MULTIPART_FORM_DATA_VALUE,consumes= MediaType.MULTIPART_FORM_DATA_VALUE  )
+    @RequestMapping(value = "/getScoreExcel", method = RequestMethod.POST,consumes= MediaType.MULTIPART_FORM_DATA_VALUE  )
 	public LoansResponse  uploadExcel( @RequestPart("file") MultipartFile multipartFiles) {
 		// Code for read Score Excel
 			logger.info("-----------------In uploadExcel() ----------------multipartfile size---"+multipartFiles.getSize());
@@ -77,7 +77,7 @@ public class ScoringController {
 	        	scoringService.readScoringExcel(multipartFiles).write(fileOutputStream);
 	        	
 	        	fileOutputStream.flush();
-	        	//fileOutputStream.close();
+	        	fileOutputStream.close();
 	        	logger.info("-----------------Sucessfullly  reading excel file() ---------------- file lenght---- " +file.length()   );
 	             loansResponse =new LoansResponse("Sucessfull created .", HttpStatus.OK.value());
 	           
