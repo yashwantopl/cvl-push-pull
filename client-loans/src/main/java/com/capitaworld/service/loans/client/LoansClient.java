@@ -1,16 +1,20 @@
 package com.capitaworld.service.loans.client;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -28,8 +32,16 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -145,7 +157,7 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
-	
+
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
 	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
@@ -161,7 +173,10 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
-	
+
+	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE = "/fundseeker_input_request_mobile/save_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_GET_MOBILE = "/fundseeker_input_request_mobile/get_oneform";
+
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
 	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "getFpDetailsByFpProductId";
@@ -169,6 +184,12 @@ public class LoansClient {
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
     private static final String GET_CORPORATE_SCORE="/score/calculate_score/corporate/test";
+    
+    private static final String SIDBI_GET_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/get_director_detail";
+    private static final String SIDBI_SAVE_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/save_director_detail";
+    private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
+    
+    private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1798,5 +1819,105 @@ public class LoansClient {
 			
 			throw e;//("Loans service is not available");
 		}
-}
+	}
+		
+	public MobileApiResponse getSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_GET_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public MobileApiResponse saveSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_SAVE_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updateProductDetails(LoanApplicationRequest loanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(UPDATE_PRODUCT_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	public MobileApiResponse saveOneFormForMobile(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public MobileApiResponse getOneFormForMobile(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE);
+		System.out.println("url for Getting Oneform details From Client=================>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fundSeekerInputRequestResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
+		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
+		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.set("req_auth", "true");
+            MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+            ByteArrayResource contentsAsResource = new ByteArrayResource(multipartFile.getBytes()){
+                @Override
+                public String getFilename(){
+                    return "";
+                }
+            };
+            map.add("file", contentsAsResource);
+           /* map.add("applicationId", applicationId);*/
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+          return  restTemplate.postForObject(url, request,LoansResponse.class);
+            
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			throw new ExcelException("Loans service is not available");
+			//throw e;//("Loans service is not available");
+		}
+	}
 }

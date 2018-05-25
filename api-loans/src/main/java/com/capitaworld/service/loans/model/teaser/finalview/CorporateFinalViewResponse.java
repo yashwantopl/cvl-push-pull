@@ -148,6 +148,7 @@ public class CorporateFinalViewResponse implements Serializable{
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
 	private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
 	private List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList;
+	private Long npOrgId;
     
     
 	public List<?> getMatchesList() {
@@ -971,6 +972,18 @@ public class CorporateFinalViewResponse implements Serializable{
 	 */
 	public void setMonthlyTurnoverDetailRequestList(List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList) {
 		this.monthlyTurnoverDetailRequestList = monthlyTurnoverDetailRequestList;
+	}
+	/**
+	 * @return the npOrgId
+	 */
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+	/**
+	 * @param npOrgId the npOrgId to set
+	 */
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
 	}
     
       

@@ -35,6 +35,12 @@ public class CorporateProposalDetails {
 	private Date modifiedDate;
 	private String modifiedBy;
 	
+	private String keyVertical;
+	private String sector;
+	private String subSector;
+	private String city;
+	private Integer pincode;
+	
 
 	public String getAddress() {
 		return address;
@@ -163,6 +169,81 @@ public class CorporateProposalDetails {
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+
+	/**
+	 * @return the keyVertical
+	 */
+	public String getKeyVertical() {
+		return keyVertical;
+	}
+
+	/**
+	 * @param keyVertical the keyVertical to set
+	 */
+	public void setKeyVertical(String keyVertical) {
+		this.keyVertical = keyVertical;
+	}
+
+	/**
+	 * @return the sector
+	 */
+	public String getSector() {
+		return sector;
+	}
+
+	/**
+	 * @param sector the sector to set
+	 */
+	public void setSector(String sector) {
+		this.sector = sector;
+	}
+
+	/**
+	 * @return the subSector
+	 */
+	public String getSubSector() {
+		return subSector;
+	}
+
+	/**
+	 * @param subSector the subSector to set
+	 */
+	public void setSubSector(String subSector) {
+		this.subSector = subSector;
+	}
+
+	/**
+	 * @return the city
+	 */
+	public String getCity() {
+		return city;
+	}
+
+	/**
+	 * @param city the city to set
+	 */
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	/**
+	 * @return the pincode
+	 */
+	public Integer getPincode() {
+		return pincode;
+	}
+
+	/**
+	 * @param pincode the pincode to set
+	 */
+	public void setPincode(Integer pincode) {
+		this.pincode = pincode;
+	}
+
+	/**
+	 * @return the pincode
+	 */
+	
 	
 	
 	

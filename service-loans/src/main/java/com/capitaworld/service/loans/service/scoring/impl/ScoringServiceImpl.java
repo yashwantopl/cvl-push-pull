@@ -14,27 +14,42 @@ import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.*;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.ibm.icu.util.Calendar;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -80,6 +95,8 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private CIBILClient cibilClient;
 
+    @Autowired
+	private Environment environment;
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
@@ -901,7 +918,7 @@ public class ScoringServiceImpl implements ScoringService{
                         ReportRequest reportRequest = new ReportRequest();
                         reportRequest.setApplicationId(applicationId);
                         try {
-                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                        	AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
@@ -1093,4 +1110,49 @@ public class ScoringServiceImpl implements ScoringService{
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
+    @SuppressWarnings("resource")
+	@Override
+	public Workbook readScoringExcel(MultipartFile multipartFile) throws IllegalStateException, InvalidFormatException , IOException, LoansException{
+		logger.info("-----------------------------Enter in readScoringExcel()-----------------------------------> MultiPartfile "+ multipartFile);
+          InputStream file;
+		Workbook workbook=null;
+		Sheet scoreSheet;
+		List<ScoreParameterRequestLoans> scoreParameterRequestLoansList = null;
+		try {
+			file = new ByteArrayInputStream(multipartFile.getBytes());
+			workbook = new XSSFWorkbook(file);
+			scoreSheet = workbook.getSheetAt(0);
+			scoreParameterRequestLoansList = ScoreExcelReader.extractCellFromSheet(scoreSheet);
+	
+			// ScoringRequestLoans List
+			List<LoansResponse> loansResponseList = new ArrayList<LoansResponse>();
+     		ScoringRequestLoans scoringRequestLoans = null;
+			logger.info("calculating scorring()----------------------------------->");          
+			for (ScoreParameterRequestLoans scoreParameterRequestLoans : scoreParameterRequestLoansList) {
+				scoringRequestLoans = new ScoringRequestLoans();
+				scoringRequestLoans.setScoreParameterRequestLoans(scoreParameterRequestLoans);
+				scoringRequestLoans.setApplicationId(scoreParameterRequestLoans.getTestId().longValue());
+				scoringRequestLoans.setScoringModelId(1l);
+		           	
+				loansResponseList.add(calculateScoringTest(scoringRequestLoans).getBody());
+				
+			}
+			logger.info("calculating scorring() list size-----------------------> "+ loansResponseList.size());
+		     workbook=generateScoringExcel(loansResponseList);
+		     logger.info("------------------------Exit from readScoringExcel() ---------------name of sheet in workook -----------------------> " + workbook.getSheetName(0));
+		     
+		} catch (NullPointerException | IOException e) {
+			e.printStackTrace();
+			logger.error("----------------Error/Exception while calculating scorring()------------------------------> "+ e.getMessage());
+		    throw e; 
+		}
+		return workbook;
+	}
+
+	@Override
+	public Workbook generateScoringExcel(List<LoansResponse> loansResponseList) throws  LoansException {
+		logger.info("----------------Enter in  generateScoringExcel() ------------------------------>");
+	   return  new ScoreExcelFileGenerator().scoreResultExcel(loansResponseList,environment);
+
+	}
 }

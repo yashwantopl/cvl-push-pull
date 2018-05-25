@@ -33,7 +33,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.util.ArrayList;
- import java.util.Date;
+import java.util.Collections;
+import java.util.Date;
  import java.util.List;
 
 @Service
@@ -286,44 +287,41 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     public ResponseEntity<LoansResponse> getDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
 
         FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
-
         fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
-
-        List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
-
         try {
             //=== Applicant Address
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
             {
-                corporateApplicantDetail=new CorporateApplicantDetail();
+            	fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.EMPTY_LIST);
+                logger.info("Data not found for given applicationid");
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(),fundSeekerInputResponse),HttpStatus.OK);
             }
+            
             BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
             copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
             //=== Director
-            List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
-
-            for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
-            {
-                DirectorBackgroundDetailRequest directorBackgroundDetailRequest=new DirectorBackgroundDetailRequest();
+            List<DirectorBackgroundDetail> directorBackgroundDetailList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
+            
+            List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>(directorBackgroundDetailList.size());
+            
+            DirectorBackgroundDetailRequest directorBackgroundDetailRequest =null; 
+            for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailList) {
+            	
+                directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
                 BeanUtils.copyProperties(directorBackgroundDetail,directorBackgroundDetailRequest);
                 directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
             }
-
             fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
 
-            LoansResponse res=new LoansResponse("director detail successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setData(fundSeekerInputResponse);
             logger.info("director detail successfully fetched");
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",HttpStatus.OK.value(),fundSeekerInputResponse),HttpStatus.OK);
 
         }
-        catch (Exception e)
-        {
-            LoansResponse res=new LoansResponse("error while fetching director detail",HttpStatus.INTERNAL_SERVER_ERROR.value());
+        catch (Exception e) {
             logger.error("error while fetching director detail");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching director detail",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
 

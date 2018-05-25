@@ -23,6 +23,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -199,7 +200,7 @@ public class NotificationServiceImpl implements NotificationService{
 										LoanApplicationRequest loanDetails = loanApplicationService.getLoanBasicDetails(applicationId, Long.valueOf(toUserId));
 										if(!CommonUtils.isObjectNullOrEmpty(loanDetails)) {
 											parameters.put("application_id", loanDetails.getApplicationCode());
-											parameters.put("loan", com.capitaworld.service.loans.utils.CommonUtils.getLoanNameForMail(loanDetails.getProductId()));
+											parameters.put("loan",LoanType.getType(loanDetails.getProductId()).getName());
 										} else {
 											parameters.put("application_id", "NA");
 											parameters.put("loan", "NA");
