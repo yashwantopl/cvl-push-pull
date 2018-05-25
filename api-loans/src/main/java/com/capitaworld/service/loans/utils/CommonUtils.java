@@ -524,51 +524,51 @@ public class CommonUtils {
 		 */
 	}
 
-//	public static String getLoanName(Integer x) {
-//		switch (x) {
-//		case 1:
-//			return "Working Capital";
-//		case 2:
-//			return "Term Loan";
-//		case 3:
-//			return "Home Loan";
-//		case 12:
-//			return "Car Loan";
-//		case 7:
-//			return "Personal Loan";
-//		case 13:
-//			return "Loan Against Property";
-//		case 14:
-//			return "Loan Against Securities & Shares";
-//		case 15:
-//			return "Unsecured Loan";
-//		default:
-//			return null;
-//		}
-//	}
-//
-//	public static String getLoanNameForMail(Integer x) {
-//		switch (x) {
-//		case 1:
-//			return "Working Capital";
-//		case 2:
-//			return "Term";
-//		case 3:
-//			return "Home";
-//		case 12:
-//			return "Car";
-//		case 7:
-//			return "Personal";
-//		case 13:
-//			return "Loan Against Property";
-//		case 14:
-//			return "Loan Against Securities & Shares";
-//		case 15:
-//			return "Unsecured ";
-//		default:
-//			return null;
-//		}
-//	}
+	public static String getLoanName(Integer x) { 
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term Loan";
+		case 3:
+			return "Home Loan";
+		case 12:
+			return "Car Loan";
+		case 7:
+			return "Personal Loan";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured Loan";
+		default:
+			return null;
+		}
+	}
+
+	public static String getLoanNameForMail(Integer x) {
+		switch (x) {
+		case 1:
+			return "Working Capital";
+		case 2:
+			return "Term";
+		case 3:
+			return "Home";
+		case 12:
+			return "Car";
+		case 7:
+			return "Personal";
+		case 13:
+			return "Loan Against Property";
+		case 14:
+			return "Loan Against Securities & Shares";
+		case 15:
+			return "Unsecured ";
+		default:
+			return null;
+		}
+	}
 
 	public static LoanType getProductByLoanCode(String code) {
 		code = code.toUpperCase();

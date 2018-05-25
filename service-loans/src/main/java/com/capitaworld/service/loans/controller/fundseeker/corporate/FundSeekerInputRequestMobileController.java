@@ -112,7 +112,7 @@ public class FundSeekerInputRequestMobileController {
             logger.info("Application Id for Getting director detail============>{}",fundSeekerInputRequestResponse.getApplicationId());
             ResponseEntity<LoansResponse> directorDetail = fundSeekerInputRequestService.getDirectorDetail(fundSeekerInputRequestResponse);
             LoansResponse loansResponse = directorDetail.getBody();
-            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData())) {
+            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData()) &&  (loansResponse.getStatus() == HttpStatus.OK.value())) {
             	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully get Data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
             } else {
             	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);

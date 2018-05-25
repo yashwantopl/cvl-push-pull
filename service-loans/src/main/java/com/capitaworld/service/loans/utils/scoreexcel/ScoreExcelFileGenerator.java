@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +38,18 @@ public class ScoreExcelFileGenerator {
 	@SuppressWarnings("unchecked")
 	public Workbook scoreResultExcel(List<LoansResponse> loansResponseList, Environment environment) throws LoansException  {
 		logger.info("------------------------------In scoreResultExcel() --------------------------");
-		Workbook wb = null;
+		XSSFWorkbook  wb = null;
 			try {
 				wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(SCORE_CALCULATION_RESULT)));
-				Sheet sheet = wb.getSheetAt(0);
+				XSSFSheet  sheet = wb.getSheetAt(0);
 				evaluator = wb.getCreationHelper().createFormulaEvaluator();
-				Font font = wb.createFont();
-				
+				XSSFFont  font = null;
+				//Set font into style
+			    XSSFCellStyle style = null;
+			    style = wb.createCellStyle();
+			    font = wb.createFont();
+			    font.setBold(true);
+			    style.setFont(font);
 				System.out.println(sheet.getSheetName());
 				List<Map<String, Object>> listData=null;
 				int i=1,j=0;
@@ -51,11 +58,21 @@ public class ScoreExcelFileGenerator {
 				logger.info("------------------------------ write score list in excel-------------------------- list size ------"+loansResponseList.size());
 			    for (LoansResponse loansResponse: loansResponseList) {
 			    	j=0;
-			    	sheet.createRow(--i).createCell(0).setCellValue("TEST ID");
-			    	sheet.getRow(i).createCell(1).setCellValue("Parameter Name");
-			    	sheet.getRow(i).createCell(2).setCellValue("Parameter Option");
-			    	sheet.getRow(i).createCell(3).setCellValue("Obtained Score");
-			    	sheet.getRow(i).createCell(4).setCellValue("Max Score");
+			    	sheet.createRow(--i).createCell(0).setCellStyle(style);
+			    	sheet.getRow(i).getCell(0).setCellValue("TEST ID");
+			    	
+			    	sheet.getRow(i).createCell(1).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(1).setCellValue("PARAMETER NAME");
+			    	
+			    	sheet.getRow(i).createCell(2).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(2).setCellValue("PARAMETER OPTION");
+			    	
+			    	sheet.getRow(i).createCell(3).setCellStyle(style);;
+			    	sheet.getRow(i).getCell(3).setCellValue("OBTAINED SCORE");
+			    	
+			    	sheet.getRow(i).createCell(4).setCellStyle(style);
+			    	sheet.getRow(i).getCell(4).setCellValue("MAX SCORE");
+			    	
 			    	++i;
 			    	listData = (List<Map<String, Object>>)loansResponse.getListData();
 			    	Map<String,Object> map=  (Map<String,Object>) loansResponse.getData();
@@ -63,8 +80,8 @@ public class ScoreExcelFileGenerator {
 			    	while(j<listData.size()) {
 			    		
 			    		 proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap(listData.get(j),ProposalScoreDetailResponse.class);
-			    		
-			    		 sheet.createRow(i).createCell(0).setCellValue(proposalScoreResponse.getApplicationId());
+				    	
+ 			    		 sheet.createRow(i).createCell(0).setCellValue(proposalScoreResponse.getApplicationId());
 			    		 sheet.getRow(i).createCell(1).setCellValue(proposalScoreDetailResponse.getParameterName());
 			    		 sheet.getRow(i).createCell(2).setCellValue(proposalScoreDetailResponse.getParameterOption());
 			    		 sheet.getRow(i).createCell(3).setCellValue(proposalScoreDetailResponse.getObtainedScore());
@@ -72,36 +89,40 @@ public class ScoreExcelFileGenerator {
 			    		
 				         i++;j++;
 			    	}
-			        	 
-			    	 sheet.createRow(i).createCell(0).getCellStyle().setFont(font);
+			        
+			         sheet.createRow(i).createCell(0).setCellStyle(style);
 			    	 sheet.getRow(i).getCell(0).setCellValue("TOTAL_SCORE");
-			    	 
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getTotalScore());
-			    	 sheet.createRow(++i).createCell(0).setCellValue("Scale");
+
+			    	 sheet.createRow(++i).createCell(0).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(0).setCellValue("SCALE");
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getScale());
-			    	 sheet.createRow(++i).createCell(0).setCellValue("Interpretation");
+			    	 
+			    	 sheet.createRow(++i).createCell(0).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(0).setCellValue("INTERPRETATION");
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getInterpretation());
 				    
-			    	 sheet.createRow(++i).createCell(0).setCellValue("Financial Risk Score");
+			    	 sheet.createRow(++i).createCell(0).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(0).setCellValue("FINANCIAL RISK SCORE");
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getFinancialRiskScore());
-			    	 sheet.getRow(i).createCell(2).setCellValue("Financial Risk Weight");
+			    	 sheet.getRow(i).createCell(2).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(2).setCellValue("FINANCIAL RISK WEIGHT");
 			    	 sheet.getRow(i).createCell(3).setCellValue(proposalScoreResponse.getFinancialRiskWeight());
 				    
-			    	 
-			    	 sheet.createRow(++i).createCell(0).setCellValue("Business Risk Score");
+			    	 sheet.createRow(++i).createCell(0).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(0).setCellValue("BUSINESS RISK SCORE");
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getBusinessRiskScore());
-			    	 
-			    	 sheet.getRow(i).createCell(2).setCellValue("Business Risk Weight");
-			    	 /*sheet.getRow(i).getCell(2).getCellStyle().setFont(font);*/
+			    	 sheet.getRow(i).createCell(2).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(2).setCellValue("BUSINESS RISK WEIGHT");
 			    	 sheet.getRow(i).createCell(3).setCellValue(proposalScoreResponse.getBusinessRiskWeight());
 				    
-			    	 sheet.createRow(++i).createCell(0).setCellValue("Management Risk Score");
+			    	 sheet.createRow(++i).createCell(0).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(0).setCellValue("MANAGEMENT RISK SCORE");
 			    	 sheet.getRow(i).createCell(1).setCellValue(proposalScoreResponse.getManagementRiskScore());
-			    	 
-			    	 sheet.getRow(i).createCell(2).setCellValue("Management Risk Weight");
-			    	 /*sheet.getRow(i).getCell(2).getCellStyle().setFont(font);*/
+			    	 sheet.getRow(i).createCell(2).setCellStyle(style);
+			    	 sheet.getRow(i).getCell(2).setCellValue("MANAGEMENT RISK WEIGHT");
 			    	 sheet.getRow(i).createCell(3).setCellValue(proposalScoreResponse.getManagementRiskWeight());
-			    	 
+		    	 
 			        i+=5;
 			    }
 			    logger.info("--------------------- writing scoring list in excel complete -------------");
