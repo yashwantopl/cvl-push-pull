@@ -41,9 +41,8 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	private Double emi;
 
-	/*
-	 * @Column(name="lender_type") private Integer lenderType;
-	 */
+	@Column(name="relationship_since") 
+	private Integer relationshipSince;
 
 	@ManyToOne
 	@JoinColumn(name = "application_id")
