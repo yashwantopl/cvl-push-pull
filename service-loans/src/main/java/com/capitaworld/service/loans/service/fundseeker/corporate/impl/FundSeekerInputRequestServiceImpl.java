@@ -219,66 +219,44 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 
     @Override
-    public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+    public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fsInputReq) {
 
-        FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
+        FundSeekerInputRequestResponse fsInputRes = new FundSeekerInputRequestResponse();
+        fsInputRes.setApplicationId(fsInputReq.getApplicationId());
 
-        fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
-
-        List<FinancialArrangementsDetailRequest> financialArrangementsDetailResponseList = new ArrayList<FinancialArrangementsDetailRequest>();
-        List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
         try {
-            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
-            {
-                corporateApplicantDetail=new CorporateApplicantDetail();
+            CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(fsInputReq.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corpApplicantDetail)) {
+            	logger.info("Data not found for given applicationid");
+            	fsInputRes.setFinancialArrangementsDetailRequestsList(Collections.EMPTY_LIST);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(),fsInputRes),HttpStatus.OK);
             }
-            BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
+            
+            BeanUtils.copyProperties(corpApplicantDetail,fsInputRes);
 
-            PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-            if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
-            {
-                primaryCorporateDetail=new PrimaryCorporateDetail();
+            PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(fsInputReq.getApplicationId());
+            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+            	BeanUtils.copyProperties(primaryCorporateDetail,fsInputRes);
             }
-            BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputResponse);
+            
+            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
+            
+            List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(finArngDetailList.size());
 
-
-            List<FinancialArrangementsDetail> financialArrangementsDetailList=financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(fundSeekerInputRequest.getApplicationId());
-
-            for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
-            {
-                FinancialArrangementsDetailRequest financialArrangementsDetailRequest=new FinancialArrangementsDetailRequest();
-                BeanUtils.copyProperties(financialArrangementsDetail,financialArrangementsDetailRequest);
-                financialArrangementsDetailResponseList.add(financialArrangementsDetailRequest);
+            FinancialArrangementsDetailRequest finArrngDetailReq = null;
+            for(FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
+                finArrngDetailReq = new FinancialArrangementsDetailRequest();
+                BeanUtils.copyProperties(finArrngDetail,finArrngDetailReq);
+                finArrngDetailResList.add(finArrngDetailReq);
             }
+            fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
 
-            fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailResponseList);
-
-
-           /* List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
-
-            for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
-            {
-                DirectorBackgroundDetailRequest directorBackgroundDetailRequest=new DirectorBackgroundDetailRequest();
-                BeanUtils.copyProperties(directorBackgroundDetail,directorBackgroundDetailRequest);
-                directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
-            }
-
-            fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);*/
-
-            LoansResponse res=new LoansResponse("one form data successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setData(fundSeekerInputResponse);
-            logger.info("one form data successfully fetched");
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
-
-        }
-        catch (Exception e)
-        {
-            LoansResponse res=new LoansResponse("error while fetching one form input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while fetching one form data");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("One form data successfully fetched",HttpStatus.OK.value(),fsInputRes),HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while fetching one form data");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching one form input data",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
 
@@ -293,7 +271,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
             {
-            	fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.EMPTY_LIST);
+            	fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
                 logger.info("Data not found for given applicationid");
                 return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(),fundSeekerInputResponse),HttpStatus.OK);
             }
