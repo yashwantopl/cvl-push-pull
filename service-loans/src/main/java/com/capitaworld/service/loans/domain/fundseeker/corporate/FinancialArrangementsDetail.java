@@ -78,6 +78,10 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	@Column(name = "security_details")
 	private String securityDetails;
+	
+	@ManyToOne
+	@JoinColumn(name = "director_id")
+	private DirectorBackgroundDetail directorBackgroundDetail;
 
 	public FinancialArrangementsDetail() {
 	}
@@ -206,5 +210,13 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	public void setEmi(Double emi) {
 		this.emi = emi;
+	}
+
+	public DirectorBackgroundDetail getDirectorBackgroundDetail() {
+		return directorBackgroundDetail;
+	}
+
+	public void setDirectorBackgroundDetail(DirectorBackgroundDetail directorBackgroundDetail) {
+		this.directorBackgroundDetail = directorBackgroundDetail;
 	}
 }
