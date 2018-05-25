@@ -119,7 +119,19 @@ public class DirectorBackgroundDetail implements Serializable {
 	private String title;
 
 	private Double shareholding;
-
+	
+	@Column(name="is_itr_completed")
+	private Boolean isItrCompleted;
+	
+	@Column(name="is_cibil_completed")
+	private Boolean isCibilCompleted;
+	
+	@Column(name="is_bank_state_completed")
+	private Boolean isBankStatementCompleted;
+	
+	@Column(name="is_one_form_completed")
+	private Boolean isOneFormCompleted;
+	
 	public DirectorBackgroundDetail() {
 	}
 
@@ -351,5 +363,37 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
 	}
 }
