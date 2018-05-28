@@ -30,6 +30,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilitySt
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
@@ -54,6 +55,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	
 	@Autowired
 	BalanceSheetDetailRepository balanceSheetDetailRepository;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplocationRepo;
 
 	
 	private FormulaEvaluator evaluator;
@@ -69,8 +73,17 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		DocumentResponse documentResponse = null;
 		Workbook wb = null;
 		try {
-	             Double total_Column=12.0;
-	 			String EXCEL_FILE_LOCATION ="cw.mca.cwcmafile.location";
+	             Double total_Column=24.0;
+	 			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
+	 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
+	 			
+	 			double tenure=loanApplocationRepo.getTenure(applicationId)+1;
+	 			
+	 			logger.warn("tenure==>>"+tenure);
+	 			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
+		      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.location";
+		      		 total_Column=0.0;
+				}
 	 			
 			if(productDocumentMappingId==(long)DocumentAlias.USL_CMA) {
 	      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
@@ -90,8 +103,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					.getByApplicationId(applicationId);
 			int j = 1;
 			Double temp=0.0;
+			
 			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
-
+				
 				// save into excel
 				temp=Double.valueOf(operatingStatementDetails.getYear()); 
 				sheet1.getRow(4).getCell(j).setCellValue(temp);
@@ -200,8 +214,21 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				j++;
                 
 			}
-			// Operating Stmt. ends
-                 setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true);
+			//Hide rows dynamically as per tenure in operating statement.
+			int k = 1;
+			for(;j<=24;j++) {
+				if(k<=tenure) {
+	
+				}
+				else {
+					 sheet1.setColumnHidden(j,true);
+				}
+				k++;
+			}
+			// Operating Stmt. ends              
+			setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true);
+			
+			
 			// Liabilities Starts
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
 					.getByApplicationId(applicationId);
@@ -283,9 +310,21 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				j++;
 
 			}
+			//Hide rows dynamically as per tenure in liabilities.
+			int o = 1;
+			for(;j<=24;j++) {
+				if(o<=tenure) {
+				}
+				else {
+					 sheet2.setColumnHidden(j,true);
+				}
+				o++;
+			}
 			// Liabilities Ends
 			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true);
 
+			
+			
 			// Asset Starts
 
 			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
@@ -405,7 +444,16 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				j++;
 
 			}
-
+			//Hide rows dynamically as per tenure in asset.
+			int p = 1;
+			for(;j<=24;j++) {
+				if(p<=tenure) {
+				}
+				else {
+					 sheet3.setColumnHidden(j,true);
+				}
+				p++;
+			}
 			// Asset Ends
 			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true);
 			//documentResponse =fileUpload(wb, applicationId, productDocumentMappingId);
