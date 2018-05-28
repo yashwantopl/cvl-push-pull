@@ -12,3 +12,5 @@ ADD CONSTRAINT `fk_fs_corporate_current_financial_arrangements_details_1`
   REFERENCES `loan_application`.`fs_corporate_director_background_details` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+ALTER TABLE `loan_application`.`fs_loan_application_master` 
+ADD COLUMN `business_type_id` INT(2) NULL AFTER `payment_status`;
