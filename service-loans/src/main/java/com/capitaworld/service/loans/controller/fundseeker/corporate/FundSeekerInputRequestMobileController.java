@@ -186,33 +186,30 @@ public class FundSeekerInputRequestMobileController {
 
 
     @RequestMapping(value = "/match", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest)
-            throws Exception
-    {
-        try
-        {
-            Long userId = mobileLoanRequest.getUserId();
-            if(userId == null) {
+    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest) throws Exception {
+        try {
+            if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
                 return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("Invalid Request", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
+                        new MobileApiResponse("Invalid Request,UserID is null or Empty !!", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
+            }
+            if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getApplicationId())) {
+                return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("Invalid Request,ApplicationId is null or Empty !!", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
             }
             logger.info("Application Id for Getting============>{}",mobileLoanRequest.getApplicationId());
 
-            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),userId);
-            logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),mobileLoanRequest.getUserId());
+            logger.info("Response from Matchengine for mobile ==>{}",callMatchEngineClient.toString());
             if(callMatchEngineClient!=null){
                 if(callMatchEngineClient.getStatus()== HttpStatus.BAD_REQUEST.value()){
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);
-                }
-                else if(callMatchEngineClient.getStatus()==HttpStatus.OK.value()){
+                } else if(callMatchEngineClient.getStatus()==HttpStatus.OK.value()){
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"true", MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);
-                }
-                else {
+                } else {
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
                 }
             }
-            return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
-
+            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG,"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after Oneform Submit");
             e.printStackTrace();

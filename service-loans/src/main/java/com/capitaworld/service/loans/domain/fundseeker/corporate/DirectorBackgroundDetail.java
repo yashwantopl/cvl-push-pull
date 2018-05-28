@@ -134,6 +134,10 @@ public class DirectorBackgroundDetail implements Serializable {
 	
 	public DirectorBackgroundDetail() {
 	}
+	
+	public DirectorBackgroundDetail(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return this.id;

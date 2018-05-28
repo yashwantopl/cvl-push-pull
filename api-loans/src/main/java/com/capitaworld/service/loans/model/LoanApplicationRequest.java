@@ -116,6 +116,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String emiForPaymentayment;
 	private String  feesForPayment;
     private String  fpNameForPayment;
+    
+    private Integer businessTypeId;
 
 
 
@@ -582,4 +584,13 @@ public class LoanApplicationRequest implements Serializable {
     public void setFpNameForPayment(String fpNameForPayment) {
         this.fpNameForPayment = fpNameForPayment;
     }
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+    
 }

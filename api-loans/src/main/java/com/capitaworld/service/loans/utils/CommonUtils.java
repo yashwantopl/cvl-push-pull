@@ -11,14 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.capitaworld.service.loans.utils.CommonUtils.CampaignCodes;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
-import com.capitaworld.service.loans.utils.CommonUtils.DenominationId;
-import com.capitaworld.service.loans.utils.CommonUtils.DenominationInAmount;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
-
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
@@ -52,6 +44,7 @@ public class CommonUtils {
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
+	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
 	public static final String SCORING_EXCEL ="score_result.xlsx"; 
@@ -937,6 +930,51 @@ public class CommonUtils {
 			default:
 				return null;
 			}
+		}
+
+	}
+	
+	public enum BusinessType {
+		
+		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+
+		private Integer id;
+		private String value;
+
+		private BusinessType(Integer id) {
+			this.id = id;
+		}
+
+		private BusinessType(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+		
+		public static BusinessType fromValue(String v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static BusinessType fromId(Integer v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
 		}
 
 	}

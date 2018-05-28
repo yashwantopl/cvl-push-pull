@@ -144,7 +144,7 @@ public interface LoanApplicationService {
 	
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
 	
-	public Long createMsmeLoan(Long userId,Boolean isActive);
+	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
 	
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	

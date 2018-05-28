@@ -4588,7 +4588,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Long createMsmeLoan(Long userId,Boolean isActive) {
+	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId) {
 		logger.info("IsActive======================>{}",isActive);
 		
 		if(isActive != null && isActive) {
@@ -4596,7 +4596,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
 		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
-		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
+		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId,businessTypeId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
 			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
 			return corporateLoan.getId();
@@ -4608,6 +4608,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
 		corporateLoan.setIsActive(true);
+		corporateLoan.setBusinessTypeId(businessTypeId);
         corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
@@ -4624,9 +4625,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
-
+		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
 			return false;
 		}
 		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
@@ -4673,6 +4675,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				primaryUnsecuredLoanDetailRepository.save(unsLoan);
 			}
 		}
+		logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
 		return true;
 	}
 

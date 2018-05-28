@@ -204,6 +204,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name="payment_status")
 	private String paymentStatus;
 	
+	@Column(name = "business_type_id")
+	private Integer businessTypeId;
+	
 	
 
 	/**
@@ -662,6 +665,14 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setIsAcceptConsent(Boolean isAcceptConsent) {
 		this.isAcceptConsent = isAcceptConsent;
+	}
+	
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
 	}
 
 	@Override
