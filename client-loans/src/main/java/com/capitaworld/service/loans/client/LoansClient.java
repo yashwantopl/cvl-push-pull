@@ -191,6 +191,7 @@ public class LoansClient {
     
     private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
     
+    private static final String GET_DATA_FOR_CGTMSE="/common/getDataForCGTMSE";
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -1918,6 +1919,20 @@ public class LoansClient {
 			
 			throw new ExcelException("Loans service is not available");
 			//throw e;//("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDataForCGTMSE(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_CGTMSE).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
 		}
 	}
 }
