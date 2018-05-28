@@ -1829,12 +1829,12 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
 		try {
+			logger.info("Enter in update product details service--------------------------------->" );
 			if (CommonUtils.isObjectListNull(loanRequest.getId(),loanRequest.getProductId())) {
 				logger.warn("All parameter must not be null");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			CommonDocumentUtils.startHook(logger, "updateProductDetails");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.updateProductDetails(loanRequest));
 			CommonDocumentUtils.endHook(logger, "updateProductDetails");
