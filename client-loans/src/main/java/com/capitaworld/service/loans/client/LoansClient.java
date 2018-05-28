@@ -176,6 +176,7 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE = "/fundseeker_input_request_mobile/save_oneform";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET_MOBILE = "/fundseeker_input_request_mobile/get_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE = "/fundseeker_input_request_mobile/match";
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
@@ -1893,6 +1894,23 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public MobileApiResponse matchesForMobile(MobileLoanRequest mobileLoanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE);
+		System.out.println("Url for MATCHES details From Client=================>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	
 	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
 		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
 		System.out.println("url to get Corporate Score Calculation ==>" + url);
