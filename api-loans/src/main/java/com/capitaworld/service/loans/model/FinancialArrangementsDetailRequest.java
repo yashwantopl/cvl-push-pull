@@ -38,6 +38,8 @@ public class FinancialArrangementsDetailRequest {
 	private Double emi;
 
 	private Boolean isActive = true;
+	
+	private Long directorId;
 
 	public Long getId() {
 		return id;
@@ -144,4 +146,13 @@ public class FinancialArrangementsDetailRequest {
 	public void setEmi(Double emi) {
 		this.emi = emi;
 	}
+
+	public Long getDirectorId() {
+		return directorId;
+	}
+
+	public void setDirectorId(Long directorId) {
+		this.directorId = directorId;
+	}
+	
 }

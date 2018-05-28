@@ -1319,9 +1319,9 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
-			Long clientId, Long applicationId) throws ExcelException {
+			Long clientId, Long applicationId,Long directorId) throws ExcelException {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL)
-				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+				.concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + directorId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
