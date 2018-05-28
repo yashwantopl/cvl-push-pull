@@ -4618,9 +4618,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
-
+		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
 			return false;
 		}
 		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
@@ -4667,6 +4668,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				primaryUnsecuredLoanDetailRepository.save(unsLoan);
 			}
 		}
+		logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
 		return true;
 	}
 
