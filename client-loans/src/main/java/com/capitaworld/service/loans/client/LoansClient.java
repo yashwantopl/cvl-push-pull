@@ -1426,8 +1426,8 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getCreateCampaignLoan(Long userId, Boolean isActive, String...code) throws ExcelException {
-		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId + "&isActive = " + isActive;
+	public LoansResponse getCreateCampaignLoan(Long userId, Boolean isActive,Integer businessTypeId, String...code) throws ExcelException {
+		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId + "&isActive = " + isActive + "&businessType = " + businessTypeId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");

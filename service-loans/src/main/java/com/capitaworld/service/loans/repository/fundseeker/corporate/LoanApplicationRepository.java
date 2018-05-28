@@ -246,8 +246,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
     @Query("select count(*) from LoanApplicationMaster lm where lm.ddrStatusId =:id and npOrgId=:npOrgId and lm.isActive = true ")
     public int getCountOfProposalsByDdrStatusAndNpOrgId(@Param("id") Long ddrStatusId,@Param("npOrgId")Long npOrgId);
     
-	@Query("select lm from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL")
-	public LoanApplicationMaster getCorporateLoan(@Param("userId") Long userId);
+	@Query("select lm from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL and lm.businessTypeId =:businessTypeId")
+	public LoanApplicationMaster getCorporateLoan(@Param("userId") Long userId,@Param("businessTypeId") Integer businessTypeId);
 	
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.isActive  = false where lm.userId =:userId and lm.isActive = true and lm.productId IS NULL")
