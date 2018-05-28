@@ -13,6 +13,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -154,6 +155,12 @@ public interface LoanApplicationService {
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 */
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception;
 }
 
 

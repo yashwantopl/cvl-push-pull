@@ -38,6 +38,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
@@ -65,12 +66,14 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -81,6 +84,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
@@ -341,6 +345,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired 
 	private AuditComponent auditComponent;
+	
+	@Autowired
+	private AssetsDetailsRepository assetsDetailsRepository;
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -5327,5 +5334,61 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		
 		return applicationRequest;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService#getDataForCGTMSE(java.lang.Long)
+	 */
+	@Override
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
+		try {
+		CGTMSECalcDataResponse response = new CGTMSECalcDataResponse();
+		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
+		if(applicantDetail!=null) {
+			response.setSubSector(applicantDetail.getKeyVerticalSubsector());
+			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+		}
+		
+		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+		
+		if(loan!=null) {
+			response.setLoanAmount(loan.getAmount());
+		}
+		
+		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+		
+		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+		if(directorList!=null && !directorList.isEmpty()) {
+			for(DirectorBackgroundDetail detail : directorList) {
+				if(detail.getGender()==Gender.FEMALE.getId()) {
+				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+				BeanUtils.copyProperties(detail, directorDetail);
+				directorDetail.setGender(Gender.getById(detail.getGender()).toString());
+				directorDetail.setShareholding(detail.getShareholding());
+				
+				response.addDirectorDetail(directorDetail);
+				}
+			}
+		}
+		Calendar cal = Calendar.getInstance();
+		Integer yearInt = cal.get(Calendar.YEAR);
+		String year = String.valueOf(yearInt);
+		AssetsDetails assetsDetails = null; 
+		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+		if(assetsDetails == null) {
+			year = year+".0";
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+		}
+		
+		if(assetsDetails!=null) {
+			response.setGrossBlock(assetsDetails.getGrossBlock());
+		}
+		
+		return response;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }
