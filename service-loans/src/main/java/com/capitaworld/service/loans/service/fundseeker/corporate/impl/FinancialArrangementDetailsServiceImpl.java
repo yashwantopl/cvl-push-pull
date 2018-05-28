@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -90,7 +91,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public Boolean saveOrUpdateFromCibil(List<FinancialArrangementsDetailRequest> finArrDetailRequest,
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> finArrDetailRequest,
 			Long applicationId, Long userId) {
 		financialArrangementDetailsRepository.inActive(userId, applicationId);
 		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
@@ -99,6 +100,23 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
 			arrangementsDetail.setIsActive(true);
+			financialArrangementDetailsRepository.save(arrangementsDetail);
+		}
+		return true;
+	}
+	
+
+	@Override
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId,
+			Long userId, Long directorId) {
+		financialArrangementDetailsRepository.inActive(userId, applicationId,directorId);
+		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
+			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setIsActive(true);
+			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
 		return true;

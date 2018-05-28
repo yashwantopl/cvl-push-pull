@@ -35,20 +35,24 @@ public class FundSeekerInputRequestMobileController {
 
     {
         try {
-            Long userId = fundSeekerInputRequestResponse.getUserId();
-            if(userId == null) {
-                fundSeekerInputRequestResponse.setUserId((Long) fundSeekerInputRequestResponse.getUserId());
-            }
 
             logger.info("ENTER IN SAVE FUNDSEEKER INPUT REQUEST----------------------------------->");
 
-            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
-                logger.warn("userId/applicationId can not be empty");
-                return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("Invalid Request", "false",MobileCustomizeResponse.ERROR401), HttpStatus.OK);
+            if(fundSeekerInputRequestResponse.getUserId() == null) {
+            	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+            	return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        HttpStatus.BAD_REQUEST);
             }
+            
+            if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+            	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+            	return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        HttpStatus.BAD_REQUEST);
+            }           
 
-            logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + userId + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
+            logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + fundSeekerInputRequestResponse.getUserId() + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
             boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
             if(result){
@@ -76,18 +80,30 @@ public class FundSeekerInputRequestMobileController {
     public ResponseEntity<MobileApiResponse> get(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
             throws Exception
     {
-        try
-        {
-            Long userId = fundSeekerInputRequestResponse.getUserId();
-            if(userId == null) {
-                fundSeekerInputRequestResponse.setUserId((Long) fundSeekerInputRequestResponse.getUserId());
+        try {
+            if(fundSeekerInputRequestResponse.getUserId() == null) {
+            	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+            	return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        HttpStatus.BAD_REQUEST);
             }
-            logger.info("Application Id for Getting one form============>{}",fundSeekerInputRequestResponse.getApplicationId());
-
-            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","true", fundSeekerInputRequestService.get(fundSeekerInputRequestResponse), MobileCustomizeResponse.SUCCESS200 ), HttpStatus.OK);
-
-
-
+            
+            if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+            	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+            	return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        HttpStatus.BAD_REQUEST);
+            }
+            logger.info("Application Id for Getting one form for mobile============>{}",fundSeekerInputRequestResponse.getApplicationId());
+            
+            ResponseEntity<LoansResponse> responseEntity = fundSeekerInputRequestService.get(fundSeekerInputRequestResponse);
+            LoansResponse loansResponse = responseEntity.getBody();
+            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData()) &&  (loansResponse.getStatus() == HttpStatus.OK.value())) {
+            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully get Data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
+            } else {
+            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Data not found","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);
+            }
+            
         } catch (Exception e) {
             logger.error("Error while fetching one form data");
             e.printStackTrace();
@@ -105,17 +121,26 @@ public class FundSeekerInputRequestMobileController {
     {
         try
         {
-            Long userId = fundSeekerInputRequestResponse.getUserId();
-            if(userId == null) {
-                fundSeekerInputRequestResponse.setUserId((Long) fundSeekerInputRequestResponse.getUserId());
-            }
+        	 if(fundSeekerInputRequestResponse.getUserId() == null) {
+             	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+             	return new ResponseEntity<MobileApiResponse>(
+                         new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         HttpStatus.BAD_REQUEST);
+             }
+             
+             if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+             	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+             	return new ResponseEntity<MobileApiResponse>(
+                         new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         HttpStatus.BAD_REQUEST);
+             }
             logger.info("Application Id for Getting director detail============>{}",fundSeekerInputRequestResponse.getApplicationId());
             ResponseEntity<LoansResponse> directorDetail = fundSeekerInputRequestService.getDirectorDetail(fundSeekerInputRequestResponse);
             LoansResponse loansResponse = directorDetail.getBody();
-            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData())) {
+            if(!CommonUtils.isObjectNullOrEmpty(loansResponse.getData()) &&  (loansResponse.getStatus() == HttpStatus.OK.value())) {
             	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully get Data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
             } else {
-            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Response got","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);
+            	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Data not found","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);
             }
         } catch (Exception e) {
             logger.error("Error while fetching director detail");
@@ -132,16 +157,20 @@ public class FundSeekerInputRequestMobileController {
             throws Exception
     {
         try {
-            Long userId = fundSeekerInputRequestResponse.getUserId();
-            if(userId == null) {
-                fundSeekerInputRequestResponse.setUserId((Long) fundSeekerInputRequestResponse.getUserId());
-            }
+        	 if(fundSeekerInputRequestResponse.getUserId() == null) {
+             	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+             	return new ResponseEntity<MobileApiResponse>(
+                         new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         HttpStatus.BAD_REQUEST);
+             }
+             
+             if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+             	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+             	return new ResponseEntity<MobileApiResponse>(
+                         new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         HttpStatus.BAD_REQUEST);
+             }
 
-            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
-                logger.warn("userId/applicationId can not be empty");
-                return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("Invalid Request", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
-            }
             ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail = fundSeekerInputRequestService.saveOrUpdateDirectorDetail(fundSeekerInputRequestResponse);
             LoansResponse loansResponse = saveOrUpdateDirectorDetail.getBody();
             return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully saved data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
@@ -157,33 +186,30 @@ public class FundSeekerInputRequestMobileController {
 
 
     @RequestMapping(value = "/match", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest)
-            throws Exception
-    {
-        try
-        {
-            Long userId = mobileLoanRequest.getUserId();
-            if(userId == null) {
+    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest) throws Exception {
+        try {
+            if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
                 return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("Invalid Request", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
+                        new MobileApiResponse("Invalid Request,UserID is null or Empty !!", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
+            }
+            if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getApplicationId())) {
+                return new ResponseEntity<MobileApiResponse>(
+                        new MobileApiResponse("Invalid Request,ApplicationId is null or Empty !!", "false", MobileCustomizeResponse.ERROR403), HttpStatus.OK);
             }
             logger.info("Application Id for Getting============>{}",mobileLoanRequest.getApplicationId());
 
-            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),userId);
-            logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),mobileLoanRequest.getUserId());
+            logger.info("Response from Matchengine for mobile ==>{}",callMatchEngineClient.toString());
             if(callMatchEngineClient!=null){
                 if(callMatchEngineClient.getStatus()== HttpStatus.BAD_REQUEST.value()){
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);
-                }
-                else if(callMatchEngineClient.getStatus()==HttpStatus.OK.value()){
+                } else if(callMatchEngineClient.getStatus()==HttpStatus.OK.value()){
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"true", MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);
-                }
-                else {
+                } else {
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
                 }
             }
-            return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
-
+            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG,"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after Oneform Submit");
             e.printStackTrace();

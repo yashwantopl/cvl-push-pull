@@ -179,5 +179,34 @@ public class DirectorBackgroundDetailsController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getDirectorList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@RequestBody Long id) {
+		CommonDocumentUtils.startHook(logger, "getDirectorList");
+		
+		// request must not be null
+		try {
+			if (id == null) {
+				logger.warn("ID Require to get director Background Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
+					.getDirectorBackgroundDetailList(id, null);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 }

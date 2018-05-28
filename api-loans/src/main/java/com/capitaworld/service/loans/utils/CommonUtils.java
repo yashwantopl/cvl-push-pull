@@ -11,14 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.capitaworld.service.loans.utils.CommonUtils.CampaignCodes;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryFields;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFinancialSummaryToBeFields;
-import com.capitaworld.service.loans.utils.CommonUtils.DDRFrames;
-import com.capitaworld.service.loans.utils.CommonUtils.DenominationId;
-import com.capitaworld.service.loans.utils.CommonUtils.DenominationInAmount;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
-
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
@@ -54,7 +46,9 @@ public class CommonUtils {
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
-
+   
+	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
@@ -191,30 +185,30 @@ public class CommonUtils {
 				return null;
 			}
 		}
-		public static String getLoanTypeName(Integer x) {
-			switch (x) {
-			case 1:
-				return "WORKING CAPITAL";
-			case 2:
-				return "TERM LOAN";
-			case 3:
-				return "HOME LOAN";
-			case 12:
-				return "CAR_LOAN";
-			case 7:
-				return "PERSONALLOAN";
-			case 13:
-				return "LAP LOAN";
-			case 14:
-				return "LAS LOAN";
-			case 15:
-				return "UNSECURED LOAN";
-			case 16:
-				return "WCTL_LOAN";
-			default :
-				return null;
-			}
-		}
+//		public static String getLoanTypeName(Integer x) {
+//			switch (x) {
+//			case 1:
+//				return "WORKING CAPITAL";
+//			case 2:
+//				return "TERM LOAN";
+//			case 3:
+//				return "HOME LOAN";
+//			case 12:
+//				return "CAR_LOAN";
+//			case 7:
+//				return "PERSONALLOAN";
+//			case 13:
+//				return "LAP LOAN";
+//			case 14:
+//				return "LAS LOAN";
+//			case 15:
+//				return "UNSECURED LOAN";
+//			case 16:
+//				return "WCTL_LOAN";
+//			default :
+//				return null;
+//			}
+//		}
 
 	}
 
@@ -268,23 +262,23 @@ public class CommonUtils {
 			return 0;
 		}
 		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
-			return 2;
+			return UserMainType.CORPORATE;
 		else
-			return 1;
+			return UserMainType.RETAIL;
 	}
 
 	public static String getUserMainTypeName(Integer productId) {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return CORPORATE;
 		else
 			return RETAIL;
 	}
 
 	public static String getCorporateLoanType(Integer productId) {
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return "DEBT";
 		else
 			return "EQUITY";
@@ -523,7 +517,7 @@ public class CommonUtils {
 		 */
 	}
 
-	public static String getLoanName(Integer x) {
+	public static String getLoanName(Integer x) { 
 		switch (x) {
 		case 1:
 			return "Working Capital";
@@ -587,6 +581,8 @@ public class CommonUtils {
 			return LoanType.LAS_LOAN;
 		} else if ("USL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN;
+		} else if ("WCTL".equalsIgnoreCase(code)) {
+			return LoanType.WCTL_LOAN;
 		} else {
 			return null;
 		}
@@ -938,6 +934,51 @@ public class CommonUtils {
 
 	}
 	
+	public enum BusinessType {
+		
+		NEW_TO_BUSINESS(1, "New to Business"),EXISTING_BUSINESS(2, "Existing Business");
+
+		private Integer id;
+		private String value;
+
+		private BusinessType(Integer id) {
+			this.id = id;
+		}
+
+		private BusinessType(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+		
+		public static BusinessType fromValue(String v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static BusinessType fromId(Integer v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
+		}
+
+	}
+	
 	public static Double addNumbers(Double... a){
 		Double sum = 0.0;
 		if(!isObjectNullOrEmpty(a)) {
@@ -966,33 +1007,33 @@ public class CommonUtils {
 		return sub;
 	}
 	public static String getOrganizationName(Long x) {
-		if(x == 1) {
+		if(x == 1L) {
 			return "UNION";
-		}else if(x == 2) {
+		}else if(x == 2L) {
 			return "SARASWAT";
-		}else if(x == 3) {
+		}else if(x == 3L) {
 			return "AXIS";
-		}else if(x == 4) {
+		}else if(x == 4L) {
 			return "ICICI";
-		}else if(x == 5) {
+		}else if(x == 5L) {
 			return "IDBI";
-		}else if(x == 6) {
+		}else if(x == 6L) {
 			return "RBL";
-		}else if(x == 7) {
+		}else if(x == 7L) {
 			return "Tata Capital";
-		}else if(x == 8) {
+		}else if(x == 8L) {
 			return "IDFC";
-		}else if(x == 9) {
+		}else if(x == 9L) {
 			return "Dena Bank";
-		}else if(x == 10) {
+		}else if(x == 10L) {
 			return "SIDBI";
-		}else if(x == 11) {
+		}else if(x == 11L) {
 			return "NHBS";
-		}else if(x == 12) {
+		}else if(x == 12L) {
 			return "CANARA BANK";
-		}else if(x == 13) {
+		}else if(x == 13L) {
 			return "Indian Bank";
-		}else if(x == 14) {
+		}else if(x == 14L) {
 			return "BOI";
 		}else {
 			return null;

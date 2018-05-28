@@ -1,16 +1,11 @@
 package com.capitaworld.service.loans.boot;
 
-import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.scoring.ScoringClient;
-
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,13 +15,16 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
+import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.scoring.ScoringClient;
 //import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;

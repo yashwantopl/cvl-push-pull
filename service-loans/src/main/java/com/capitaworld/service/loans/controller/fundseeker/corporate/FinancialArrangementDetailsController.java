@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -138,10 +139,10 @@ public class FinancialArrangementDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{directorId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<FinancialArrangementsDetailRequest> detailRequests,
 			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
-			@PathVariable("clientId") Long clientId) {
+			@PathVariable("clientId") Long clientId,@PathVariable("directorId") Long directorId) {
 		// request must not be null
 		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
 			logger.warn("frameRequest can not be empty ==>" + detailRequests);
@@ -172,7 +173,14 @@ public class FinancialArrangementDetailsController {
 						HttpStatus.OK);
 			}
 
-			financialArrangementDetailsService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId);
+			if(CibilUtils.isObjectNullOrEmpty(directorId) || directorId <= 0) {
+				logger.info("Going to Save Company Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId);	
+			}else {
+				logger.info("Going to Save Director or Partner Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
+			}
+			
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 
