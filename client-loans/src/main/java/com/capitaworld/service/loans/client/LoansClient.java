@@ -191,6 +191,7 @@ public class LoansClient {
     private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
     
     private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
+    private static final String GET_DIRECTORLIST_BY_APPLICATION_ID = "/director_background_details/getDirectorList";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1936,6 +1937,21 @@ public class LoansClient {
 			
 			throw new ExcelException("Loans service is not available");
 			//throw e;//("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorsListByApplicationId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTORLIST_BY_APPLICATION_ID);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
 		}
 	}
 }
