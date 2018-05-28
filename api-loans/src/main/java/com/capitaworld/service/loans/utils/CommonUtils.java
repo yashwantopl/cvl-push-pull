@@ -44,6 +44,7 @@ public class CommonUtils {
 	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
 	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
+	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
 	public static final String SCORING_EXCEL ="score_result.xlsx"; 

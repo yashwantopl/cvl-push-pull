@@ -101,6 +101,18 @@ public class AssetsDetailsExcelReader
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"N",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"O",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"P",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"Q",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"R",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"S",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"T",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"U",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"V",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
         }
     }
 
