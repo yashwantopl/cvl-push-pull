@@ -69,6 +69,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private String title;
 
 	private Double shareholding;
+	
+	private Boolean isItrCompleted;
+	
+	private Boolean isCibilCompleted;
+	
+	private Boolean isBankStatementCompleted;
+	
+	private Boolean isOneFormCompleted;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -271,6 +279,39 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
+	}
+	
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
 	@Override

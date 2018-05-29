@@ -28,5 +28,21 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	public List<DirectorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
 
 	public DirectorBackgroundDetail findByIdAndIsActive(Long id,Boolean isActive);
+	
+	@Modifying
+	@Query("update DirectorBackgroundDetail pm set pm.is_itr_completed =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateITRFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update DirectorBackgroundDetail pm set pm.is_cibil_completed =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateCIBILFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update DirectorBackgroundDetail pm set pm.is_bank_state_completed =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateBankStatementFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
+	
+	@Modifying
+	@Query("update DirectorBackgroundDetail pm set pm.is_one_form_completed =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
+	public int updateOneFormFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
 
 }
