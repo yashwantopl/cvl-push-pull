@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonUtils.APIFlags;
 
 /**
  * @author Sanket
@@ -98,6 +99,37 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+
+	@Override
+	public Boolean updateFlag(Long directorId, Integer apiId, Boolean apiFlag,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("Enter in updateFlag()");
+		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
+		if(apiFlag == null) {
+			logger.warn("Invalid Flag===>{}",apiId);
+			return false;
+		}
+		int updatedRows = 0;
+		switch (apiFlagObj) {
+		case ITR:
+			updatedRows = directorBackgroundDetailsRepository.updateITRFlag(userId, directorId, apiFlag);
+			break;
+		case CIBIL:
+			updatedRows = directorBackgroundDetailsRepository.updateCIBILFlag(userId, directorId, apiFlag);
+			break;
+		case BANK_STATEMENT:
+			updatedRows = directorBackgroundDetailsRepository.updateBankStatementFlag(userId, directorId, apiFlag);
+			break;
+		case ONE_FORM:
+			updatedRows = directorBackgroundDetailsRepository.updateOneFormFlag(userId, directorId, apiFlag);
+			break;
+
+		default:
+			break;
+		}
+		logger.info("updatedRows====>{}",updatedRows);
+		return updatedRows > 0;
 	}
 
 }

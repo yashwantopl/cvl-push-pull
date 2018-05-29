@@ -157,6 +157,7 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
+	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
 
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
@@ -1573,6 +1574,26 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse updateDirectorAPIFlag(Long directorId,Long userId,Integer apiId, Boolean apiFlag) throws Exception {
+		String url = loansBaseUrl.concat(UPDATE_DIRECTOR_BACKGROUND_API_FLAG) + "?userId=" + userId + "&directorId=" + directorId + "&apiId=" + apiId + "&apiFlag=" + apiFlag;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null,headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("404")) {
+				throw new Exception(url + " Not Found");				
+			}else if(e.getMessage().contains("400")) {
+				throw new Exception(url + " Not Valid Request");				
+			}else {
+				throw new ExcelException("Loans service is not available");
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_GET).concat("/" + applicationId);

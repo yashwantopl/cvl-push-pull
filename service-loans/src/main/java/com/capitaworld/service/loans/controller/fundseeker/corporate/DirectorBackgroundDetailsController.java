@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -205,6 +205,42 @@ public class DirectorBackgroundDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/update_api_flag", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateAPIFlag(@RequestParam(value = "userId", required = false) Long userId,@RequestParam(value = "directorId", required = true) Long directorId,
+			@RequestParam(value = "apiId", required = true)Integer apiId,@RequestParam(value = "apiFlag", required = true)Boolean apiFlag) {
+		
+		// request must not be null
+		try {
+			logger.info("Director Id==>{}",directorId);
+			logger.info("userId==>{}",userId);
+			logger.info("apiId==>{}",apiId);
+			logger.info("apiFlag==>{}",apiFlag);
+			
+			if (directorId == null || apiFlag == null || apiFlag == null) {
+				logger.warn("Something is NULL from DirectorId Or APIFlag or Flag ==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean updateFlag = directorBackgroundDetailsService.updateFlag(directorId, apiId, apiFlag, userId);
+			LoansResponse loansResponse = null;
+			if(updateFlag) {
+				loansResponse = new LoansResponse("Successfully Updated", HttpStatus.OK.value());				
+			}else {
+				loansResponse = new LoansResponse("Something goes wrong while updating API Flag", HttpStatus.OK.value());
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Updating Flag==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 
 	}

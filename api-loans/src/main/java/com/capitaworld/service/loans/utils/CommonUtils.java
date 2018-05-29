@@ -979,6 +979,51 @@ public class CommonUtils {
 
 	}
 	
+public enum APIFlags {
+		
+		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM");
+
+		private Integer id;
+		private String value;
+
+		private APIFlags(Integer id) {
+			this.id = id;
+		}
+
+		private APIFlags(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+		
+		public static APIFlags fromValue(String v) {
+			for (APIFlags c : APIFlags.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static APIFlags fromId(Integer v) {
+			for (APIFlags c : APIFlags.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
+		}
+
+	}
+	
 	public static Double addNumbers(Double... a){
 		Double sum = 0.0;
 		if(!isObjectNullOrEmpty(a)) {
