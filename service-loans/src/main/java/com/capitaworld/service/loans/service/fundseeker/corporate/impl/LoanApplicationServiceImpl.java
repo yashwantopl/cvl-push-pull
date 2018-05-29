@@ -5342,10 +5342,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
 		try {
+			
+			logger.info("In getDataForCGTMSE");
 		CGTMSECalcDataResponse response = new CGTMSECalcDataResponse();
 		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
 		if(applicantDetail!=null) {
-			response.setSubSector(applicantDetail.getKeyVerticalSubsector());
+			//key vertical Subsector
+	        try
+	        {
+	        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector()))
+	        {
+	        	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(applicantDetail.getKeyVerticalSubsector());
+	        	response.setSubSector((String)oneFormResponse.getData());
+	        }
+	        }
+	        catch (Exception e) {
+				// TODO: handle exception
+	        	logger.warn("error while getting key vertical sub-sector");
+			}
 			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
 		}
 		

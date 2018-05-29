@@ -29,7 +29,7 @@ public class CGTMSECalcDataResponse {
 		this.directorRespo = directorRespo;
 	}
 
-	private Long subSector;
+	private String subSector;
 	
 	private Double grossBlock;
 	
@@ -41,14 +41,14 @@ public class CGTMSECalcDataResponse {
 	/**
 	 * @return the subSector
 	 */
-	public Long getSubSector() {
+	public String getSubSector() {
 		return subSector;
 	}
 
 	/**
 	 * @param subSector the subSector to set
 	 */
-	public void setSubSector(Long subSector) {
+	public void setSubSector(String subSector) {
 		this.subSector = subSector;
 	}
 
