@@ -154,6 +154,47 @@ public class DirectorBackgroundDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/save_directors/{noOfDirector}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveDirectors(@RequestBody Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		logger.info("Enter saveDirectors()");
+		Long userId = null;
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (applicationId == null || noOfDirector == null || noOfDirector <= 0) {
+				logger.warn("noOfDirector is not there or is Less than or Equal 0 ==>" + noOfDirector);
+				logger.warn("applicationId Require to get director Background Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean isSaved = directorBackgroundDetailsService.saveDirectors(applicationId, userId, noOfDirector);
+			LoansResponse loansResponse = null;
+			if(isSaved) {
+				loansResponse = new LoansResponse("Successfully Saved", HttpStatus.OK.value());
+			}else {
+				loansResponse = new LoansResponse("Something goes wrong while saving No Of Directors", HttpStatus.BAD_REQUEST.value());
+			}
+			logger.info("Exit saveDirectors()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Saving No Of Directors==>", e);
+			logger.info("Exit saveDirectors()");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+	
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		try {
@@ -166,7 +207,7 @@ public class DirectorBackgroundDetailsController {
 			DirectorBackgroundDetailRequest response = directorBackgroundDetailsService.getDirectorBackgroundDetail(id);
 			LoansResponse loansResponse = null;
 			if(CommonUtils.isObjectNullOrEmpty(response)) {
-				loansResponse = new LoansResponse("Director Details Not Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse("Director Details Not Found.", HttpStatus.BAD_REQUEST.value());
 			}else {
 				loansResponse = new LoansResponse("Director Details Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
