@@ -127,6 +127,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
 		if(apiFlag == null) {
 			logger.warn("Invalid Flag===>{}",apiId);
+			logger.info("Exit in updateFlag()");
 			return false;
 		}
 		int updatedRows = 0;
@@ -148,7 +149,36 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			break;
 		}
 		logger.info("updatedRows====>{}",updatedRows);
+		logger.info("Exit in updateFlag()");
 		return updatedRows > 0;
 	}
+
+	@Override
+	public Boolean saveDirectors(Long applicationId, Long userId, Integer noOfDirector) {
+		logger.info("Enter in saveDirectors()");
+		directorBackgroundDetailsRepository.inActive(userId, applicationId);
+		if(noOfDirector <= 0) {
+			logger.warn("No Of Director Found Less than or Equal 0");
+			return false;
+		}
+		LoanApplicationMaster loanMs = new LoanApplicationMaster(applicationId);
+		for(int i = 0; i < noOfDirector; i++) {
+			DirectorBackgroundDetail backgroundDetail = new DirectorBackgroundDetail();
+			backgroundDetail.setApplicationId(loanMs);
+			backgroundDetail.setIsActive(true);
+			backgroundDetail.setCreatedBy(userId);
+			backgroundDetail.setCreatedDate(new Date());
+			backgroundDetail.setIsItrCompleted(false);
+			backgroundDetail.setIsCibilCompleted(false);
+			backgroundDetail.setIsBankStatementCompleted(false);
+			backgroundDetail.setIsOneFormCompleted(false);
+			directorBackgroundDetailsRepository.save(backgroundDetail);
+		}
+		
+		logger.info("Exit in saveDirectors()");
+		return true;
+	}
+	
+	
 
 }

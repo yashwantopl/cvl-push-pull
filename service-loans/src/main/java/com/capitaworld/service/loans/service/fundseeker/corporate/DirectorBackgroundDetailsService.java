@@ -17,6 +17,8 @@ public interface DirectorBackgroundDetailsService {
 	
 	public Boolean updateFlag(Long directorId,Integer apiId,Boolean apiFlag,Long userId);
 	
+	public Boolean saveDirectors(Long applicationId,Long userId,Integer noOfDirector);
+	
 	public DirectorBackgroundDetailRequest getDirectorBackgroundDetail(Long id);
 
 }
