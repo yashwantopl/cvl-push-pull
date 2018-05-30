@@ -19,8 +19,8 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.APIFlags;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
  * @author Sanket
@@ -98,6 +98,25 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			logger.info("Exception  in getdirectorBackgroundDetail  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@Override
+	public DirectorBackgroundDetailRequest getDirectorBackgroundDetail(Long id){
+		try {
+			DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(id, true);
+			if(CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
+				logger.warn("Director Background Details not found For Id ==>{}",id);
+				return null;
+			}
+			DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+			BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
+			DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
+			return directorBackgroundDetailRequest;
+		} catch (Exception e) {
+			logger.info("Exception  in getdirectorBackgroundDetail  :-");
+			e.printStackTrace();
+			return null;
 		}
 	}
 

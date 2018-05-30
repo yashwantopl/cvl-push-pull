@@ -154,6 +154,36 @@ public class DirectorBackgroundDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		try {
+			if (id == null) {
+				logger.warn("ID  or UserId Require to get director Background Detail ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			DirectorBackgroundDetailRequest response = directorBackgroundDetailsService.getDirectorBackgroundDetail(id);
+			LoansResponse loansResponse = null;
+			if(CommonUtils.isObjectNullOrEmpty(response)) {
+				loansResponse = new LoansResponse("Director Details Not Found.", HttpStatus.OK.value());
+			}else {
+				loansResponse = new LoansResponse("Director Details Found.", HttpStatus.OK.value());
+				loansResponse.setData(response);
+			}
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	
 	@RequestMapping(value = "/getList_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<DirectorBackgroundDetailRequest>> getListClient(@PathVariable("applicationId") Long applicationId) {
