@@ -78,6 +78,20 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	
 	private Boolean isOneFormCompleted;
 
+	private String aadhar;
+
+	private Integer maritalStatus;
+
+	private Integer noOfDependent;
+
+	private Integer residenceType;
+
+	private Integer residenceSince;
+
+	private Boolean isFamilyMemberInBusiness;
+
+	private Long empDetailId;
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -314,6 +328,94 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.isOneFormCompleted = isOneFormCompleted;
 	}
 
+	public Boolean getItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setItrCompleted(Boolean itrCompleted) {
+		isItrCompleted = itrCompleted;
+	}
+
+	public Boolean getCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setCibilCompleted(Boolean cibilCompleted) {
+		isCibilCompleted = cibilCompleted;
+	}
+
+	public Boolean getBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
+		isBankStatementCompleted = bankStatementCompleted;
+	}
+
+	public Boolean getOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setOneFormCompleted(Boolean oneFormCompleted) {
+		isOneFormCompleted = oneFormCompleted;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public Integer getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(Integer maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public Integer getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(Integer residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public Integer getResidenceSince() {
+		return residenceSince;
+	}
+
+	public void setResidenceSince(Integer residenceSince) {
+		this.residenceSince = residenceSince;
+	}
+
+	public Boolean getFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
+		isFamilyMemberInBusiness = familyMemberInBusiness;
+	}
+
+	public Long getEmpDetailId() {
+		return empDetailId;
+	}
+
+	public void setEmpDetailId(Long empDetailId) {
+		this.empDetailId = empDetailId;
+	}
+
 	@Override
 	public String toString() {
 		return "DirectorBackgroundDetailRequest{" +
@@ -341,6 +443,17 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", middleName='" + middleName + '\'' +
 				", title='" + title + '\'' +
 				", shareholding=" + shareholding +
+				", isItrCompleted=" + isItrCompleted +
+				", isCibilCompleted=" + isCibilCompleted +
+				", isBankStatementCompleted=" + isBankStatementCompleted +
+				", isOneFormCompleted=" + isOneFormCompleted +
+				", aadhar='" + aadhar + '\'' +
+				", maritalStatus=" + maritalStatus +
+				", noOfDependent=" + noOfDependent +
+				", residenceType=" + residenceType +
+				", residenceSince=" + residenceSince +
+				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
+				", empDetailId=" + empDetailId +
 				'}';
 	}
 
