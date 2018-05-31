@@ -50,6 +50,21 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private Double cibilScore;
 
 		private Double shareholding;
+
+		private String aadhar;
+
+		private String maritalStatus;
+
+		private String noOfDependent;
+
+		private String residenceType;
+
+		private String residenceSince;
+
+		private String isFamilyMemberInBusiness;
+
+		private Long empDetailId;
+
 		public String getAddress() {
 			return address;
 		}
@@ -245,5 +260,61 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public String getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(String noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public String getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(String residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public String getResidenceSince() {
+		return residenceSince;
+	}
+
+	public void setResidenceSince(String residenceSince) {
+		this.residenceSince = residenceSince;
+	}
+
+	public String getIsFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setIsFamilyMemberInBusiness(String isFamilyMemberInBusiness) {
+		this.isFamilyMemberInBusiness = isFamilyMemberInBusiness;
+	}
+
+	public Long getEmpDetailId() {
+		return empDetailId;
+	}
+
+	public void setEmpDetailId(Long empDetailId) {
+		this.empDetailId = empDetailId;
 	}
 }

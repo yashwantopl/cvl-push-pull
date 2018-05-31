@@ -16,11 +16,11 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double otherAmt;
     private Boolean  haveCollateralSecurity;
     private Double collateralSecurityAmount;
-
-    /*private Boolean isBusinessAssetChecked;
-    private Boolean isWorkingCapitalChecked;
-    private Boolean isOtherGeneralChecked;*/
     private Integer purposeOfLoanId;
+    private Double tenureRequired;
+    private Integer proposedDetailsOfUnit;
+    private Double costOfProject;
+
 
 
     public PrimaryCorporateRequest() {
@@ -82,5 +82,29 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setPurposeOfLoanId(Integer purposeOfLoanId) {
         this.purposeOfLoanId = purposeOfLoanId;
+    }
+
+    public Double getTenureRequired() {
+        return tenureRequired;
+    }
+
+    public void setTenureRequired(Double tenureRequired) {
+        this.tenureRequired = tenureRequired;
+    }
+
+    public Integer getProposedDetailsOfUnit() {
+        return proposedDetailsOfUnit;
+    }
+
+    public void setProposedDetailsOfUnit(Integer proposedDetailsOfUnit) {
+        this.proposedDetailsOfUnit = proposedDetailsOfUnit;
+    }
+
+    public Double getCostOfProject() {
+        return costOfProject;
+    }
+
+    public void setCostOfProject(Double costOfProject) {
+        this.costOfProject = costOfProject;
     }
 }
