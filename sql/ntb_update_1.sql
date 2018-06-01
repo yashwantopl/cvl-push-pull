@@ -21,6 +21,10 @@ ADD COLUMN `residence_type` BIGINT(20) NULL AFTER `no_of_dependent`,
 ADD COLUMN `residence_since` BIGINT(20) NULL AFTER `residence_type`,
 ADD COLUMN `is_family_member_in_business` BIT(1) NULL AFTER `residence_since`,
 ADD COLUMN `emp_detail_id` BIGINT(20) UNSIGNED NULL,
+ADD COLUMN `premise_number` VARCHAR(200) NULL AFTER `emp_detail_id`,
+ADD COLUMN `street_name` VARCHAR(200) NULL AFTER `premise_number`,
+ADD COLUMN `landmark` VARCHAR(200) NULL AFTER `street_name`,
+ADD COLUMN `country_id` INT(20) UNSIGNED NULL AFTER `landmark`,
 ADD INDEX `fk_fs_corporate_director_background_details_1_idx` (`emp_detail_id` ASC);
 ALTER TABLE `loan_application`.`fs_corporate_director_background_details`
 ADD CONSTRAINT `fs_corporate_director_background_details_ibfk_2`

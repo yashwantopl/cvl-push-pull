@@ -92,6 +92,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private Long empDetailId;
 
+	private Integer countryId;
+
+	private String premiseNumber;
+
+	private String streetName;
+
+	private String landmark;
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -414,6 +422,38 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setEmpDetailId(Long empDetailId) {
 		this.empDetailId = empDetailId;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
 	}
 
 	@Override

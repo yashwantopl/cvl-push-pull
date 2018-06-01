@@ -140,6 +140,18 @@ public class DirectorBackgroundDetail implements Serializable {
 	@Column(name="is_family_member_in_business")
 	private Boolean isFamilyMemberInBusiness;
 
+	@Column(name = "country_id")
+	private Integer countryId;
+
+	@Column(name = "premise_number")
+	private String premiseNumber;
+
+	@Column(name = "street_name")
+	private String streetName;
+
+	@Column(name = "landmark")
+	private String landmark;
+
 	@OneToOne
 	@JoinColumn(name="emp_detail_id")
 	private EmploymentDetail empDetailId;
@@ -499,5 +511,37 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	public void setEmpDetailId(EmploymentDetail empDetailId) {
 		this.empDetailId = empDetailId;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
 	}
 }
