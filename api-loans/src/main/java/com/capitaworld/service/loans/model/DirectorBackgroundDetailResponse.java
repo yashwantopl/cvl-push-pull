@@ -65,6 +65,14 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private Long empDetailId;
 
+		private String country;
+
+		private String premiseNumber;
+
+		private String streetName;
+
+		private String landmark;
+
 		public String getAddress() {
 			return address;
 		}
@@ -316,5 +324,37 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 	public void setEmpDetailId(Long empDetailId) {
 		this.empDetailId = empDetailId;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
 	}
 }
