@@ -1941,7 +1941,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getDataForCGTMSE(Long applicationId) throws ExcelException {
+	public LoansResponse getDataForCGTMSE(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_DATA_FOR_CGTMSE).concat("/"+applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1951,7 +1951,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new LoansException("Loans service is not available");
 		}
 	}
 
