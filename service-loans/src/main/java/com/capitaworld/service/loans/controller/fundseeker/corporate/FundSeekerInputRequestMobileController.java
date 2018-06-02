@@ -198,7 +198,7 @@ public class FundSeekerInputRequestMobileController {
             }
             logger.info("Application Id for Getting============>{}",mobileLoanRequest.getApplicationId());
 
-            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),mobileLoanRequest.getUserId());
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),mobileLoanRequest.getUserId(),mobileLoanRequest.getBusinessTypeId());
             logger.info("Response from Matchengine for mobile ==>{}",callMatchEngineClient.toString());
             if(callMatchEngineClient!=null){
                 if(callMatchEngineClient.getStatus()== HttpStatus.BAD_REQUEST.value()){

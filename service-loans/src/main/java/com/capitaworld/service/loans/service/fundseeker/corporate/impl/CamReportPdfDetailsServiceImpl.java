@@ -29,6 +29,9 @@ import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
 import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
 import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
@@ -164,6 +167,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private GstClient gstClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -214,6 +220,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		//GST DATA
+		
+		try {
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.getCalculations(gstr1Request);
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? printFields(response.getData()) : " ");
+			
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 		//ONE-FORM DATA
 		try {

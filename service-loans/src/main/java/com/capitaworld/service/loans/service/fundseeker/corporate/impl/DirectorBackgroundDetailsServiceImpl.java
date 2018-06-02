@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.APIFlags;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 /**
@@ -99,5 +100,85 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public DirectorBackgroundDetailRequest getDirectorBackgroundDetail(Long id){
+		try {
+			DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(id, true);
+			if(CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
+				logger.warn("Director Background Details not found For Id ==>{}",id);
+				return null;
+			}
+			DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+			BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
+			DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
+			return directorBackgroundDetailRequest;
+		} catch (Exception e) {
+			logger.info("Exception  in getdirectorBackgroundDetail  :-");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public Boolean updateFlag(Long directorId, Integer apiId, Boolean apiFlag,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("Enter in updateFlag()");
+		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
+		if(apiFlag == null) {
+			logger.warn("Invalid Flag===>{}",apiId);
+			logger.info("Exit in updateFlag()");
+			return false;
+		}
+		int updatedRows = 0;
+		switch (apiFlagObj) {
+		case ITR:
+			updatedRows = directorBackgroundDetailsRepository.updateITRFlag(userId, directorId, apiFlag);
+			break;
+		case CIBIL:
+			updatedRows = directorBackgroundDetailsRepository.updateCIBILFlag(userId, directorId, apiFlag);
+			break;
+		case BANK_STATEMENT:
+			updatedRows = directorBackgroundDetailsRepository.updateBankStatementFlag(userId, directorId, apiFlag);
+			break;
+		case ONE_FORM:
+			updatedRows = directorBackgroundDetailsRepository.updateOneFormFlag(userId, directorId, apiFlag);
+			break;
+
+		default:
+			break;
+		}
+		logger.info("updatedRows====>{}",updatedRows);
+		logger.info("Exit in updateFlag()");
+		return updatedRows > 0;
+	}
+
+	@Override
+	public Boolean saveDirectors(Long applicationId, Long userId, Integer noOfDirector) {
+		logger.info("Enter in saveDirectors()");
+		directorBackgroundDetailsRepository.inActive(userId, applicationId);
+		if(noOfDirector <= 0) {
+			logger.warn("No Of Director Found Less than or Equal 0");
+			return false;
+		}
+		LoanApplicationMaster loanMs = new LoanApplicationMaster(applicationId);
+		for(int i = 0; i < noOfDirector; i++) {
+			DirectorBackgroundDetail backgroundDetail = new DirectorBackgroundDetail();
+			backgroundDetail.setApplicationId(loanMs);
+			backgroundDetail.setIsActive(true);
+			backgroundDetail.setCreatedBy(userId);
+			backgroundDetail.setCreatedDate(new Date());
+			backgroundDetail.setIsItrCompleted(false);
+			backgroundDetail.setIsCibilCompleted(false);
+			backgroundDetail.setIsBankStatementCompleted(false);
+			backgroundDetail.setIsOneFormCompleted(false);
+			directorBackgroundDetailsRepository.save(backgroundDetail);
+		}
+		
+		logger.info("Exit in saveDirectors()");
+		return true;
+	}
+	
+	
 
 }

@@ -3,17 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
@@ -131,7 +121,41 @@ public class DirectorBackgroundDetail implements Serializable {
 	
 	@Column(name="is_one_form_completed")
 	private Boolean isOneFormCompleted;
-	
+
+	@Column(name="aadhar")
+	private String aadhar;
+
+	@Column(name="marital_status")
+	private Integer maritalStatus;
+
+	@Column(name="no_of_dependent")
+	private Integer noOfDependent;
+
+	@Column(name="residence_type")
+	private Integer residenceType;
+
+	@Column(name="residence_since")
+	private Integer residenceSince;
+
+	@Column(name="is_family_member_in_business")
+	private Boolean isFamilyMemberInBusiness;
+
+	@Column(name = "country_id")
+	private Integer countryId;
+
+	@Column(name = "premise_number")
+	private String premiseNumber;
+
+	@Column(name = "street_name")
+	private String streetName;
+
+	@Column(name = "landmark")
+	private String landmark;
+
+	@OneToOne
+	@JoinColumn(name="emp_detail_id")
+	private EmploymentDetail empDetailId;
+
 	public DirectorBackgroundDetail() {
 	}
 	
@@ -399,5 +423,125 @@ public class DirectorBackgroundDetail implements Serializable {
 
 	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
 		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setItrCompleted(Boolean itrCompleted) {
+		isItrCompleted = itrCompleted;
+	}
+
+	public Boolean getCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setCibilCompleted(Boolean cibilCompleted) {
+		isCibilCompleted = cibilCompleted;
+	}
+
+	public Boolean getBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
+		isBankStatementCompleted = bankStatementCompleted;
+	}
+
+	public Boolean getOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setOneFormCompleted(Boolean oneFormCompleted) {
+		isOneFormCompleted = oneFormCompleted;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public Integer getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(Integer maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public Integer getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(Integer residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public Integer getResidenceSince() {
+		return residenceSince;
+	}
+
+	public void setResidenceSince(Integer residenceSince) {
+		this.residenceSince = residenceSince;
+	}
+
+	public Boolean getFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
+		isFamilyMemberInBusiness = familyMemberInBusiness;
+	}
+
+	public EmploymentDetail getEmpDetailId() {
+		return empDetailId;
+	}
+
+	public void setEmpDetailId(EmploymentDetail empDetailId) {
+		this.empDetailId = empDetailId;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
 	}
 }

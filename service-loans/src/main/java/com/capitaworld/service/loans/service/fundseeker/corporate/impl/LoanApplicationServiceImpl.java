@@ -4144,7 +4144,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 					logger.info("Call Connector client for update payment status");
 					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-							userId);
+							userId,loanApplicationMaster.getBusinessTypeId());
 					
 					if (!CommonUtils.isObjectListNull(connectResponse)) {
 						logger.info("Connector Response ----------------------------->" + connectResponse.toString());

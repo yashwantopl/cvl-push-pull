@@ -69,6 +69,36 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private String title;
 
 	private Double shareholding;
+	
+	private Boolean isItrCompleted;
+	
+	private Boolean isCibilCompleted;
+	
+	private Boolean isBankStatementCompleted;
+	
+	private Boolean isOneFormCompleted;
+
+	private String aadhar;
+
+	private Integer maritalStatus;
+
+	private Integer noOfDependent;
+
+	private Integer residenceType;
+
+	private Integer residenceSince;
+
+	private Boolean isFamilyMemberInBusiness;
+
+	private Long empDetailId;
+
+	private Integer countryId;
+
+	private String premiseNumber;
+
+	private String streetName;
+
+	private String landmark;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -272,6 +302,159 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
 	}
+	
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
+	public Boolean getIsCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setIsCibilCompleted(Boolean isCibilCompleted) {
+		this.isCibilCompleted = isCibilCompleted;
+	}
+
+	public Boolean getIsBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setIsBankStatementCompleted(Boolean isBankStatementCompleted) {
+		this.isBankStatementCompleted = isBankStatementCompleted;
+	}
+
+	public Boolean getIsOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setIsOneFormCompleted(Boolean isOneFormCompleted) {
+		this.isOneFormCompleted = isOneFormCompleted;
+	}
+
+	public Boolean getItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setItrCompleted(Boolean itrCompleted) {
+		isItrCompleted = itrCompleted;
+	}
+
+	public Boolean getCibilCompleted() {
+		return isCibilCompleted;
+	}
+
+	public void setCibilCompleted(Boolean cibilCompleted) {
+		isCibilCompleted = cibilCompleted;
+	}
+
+	public Boolean getBankStatementCompleted() {
+		return isBankStatementCompleted;
+	}
+
+	public void setBankStatementCompleted(Boolean bankStatementCompleted) {
+		isBankStatementCompleted = bankStatementCompleted;
+	}
+
+	public Boolean getOneFormCompleted() {
+		return isOneFormCompleted;
+	}
+
+	public void setOneFormCompleted(Boolean oneFormCompleted) {
+		isOneFormCompleted = oneFormCompleted;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public Integer getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(Integer maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public Integer getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(Integer noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public Integer getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(Integer residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public Integer getResidenceSince() {
+		return residenceSince;
+	}
+
+	public void setResidenceSince(Integer residenceSince) {
+		this.residenceSince = residenceSince;
+	}
+
+	public Boolean getFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
+		isFamilyMemberInBusiness = familyMemberInBusiness;
+	}
+
+	public Long getEmpDetailId() {
+		return empDetailId;
+	}
+
+	public void setEmpDetailId(Long empDetailId) {
+		this.empDetailId = empDetailId;
+	}
+
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Integer countryId) {
+		this.countryId = countryId;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
+	}
 
 	@Override
 	public String toString() {
@@ -300,6 +483,17 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", middleName='" + middleName + '\'' +
 				", title='" + title + '\'' +
 				", shareholding=" + shareholding +
+				", isItrCompleted=" + isItrCompleted +
+				", isCibilCompleted=" + isCibilCompleted +
+				", isBankStatementCompleted=" + isBankStatementCompleted +
+				", isOneFormCompleted=" + isOneFormCompleted +
+				", aadhar='" + aadhar + '\'' +
+				", maritalStatus=" + maritalStatus +
+				", noOfDependent=" + noOfDependent +
+				", residenceType=" + residenceType +
+				", residenceSince=" + residenceSince +
+				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
+				", empDetailId=" + empDetailId +
 				'}';
 	}
 
