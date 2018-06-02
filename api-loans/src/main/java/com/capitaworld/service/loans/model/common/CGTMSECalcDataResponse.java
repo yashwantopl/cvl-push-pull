@@ -37,7 +37,22 @@ public class CGTMSECalcDataResponse {
 	
 	private Double colleteralValue;
 
+	private Long stateId;
 	
+	/**
+	 * @return the stateId
+	 */
+	public Long getStateId() {
+		return stateId;
+	}
+
+	/**
+	 * @param stateId the stateId to set
+	 */
+	public void setStateId(Long stateId) {
+		this.stateId = stateId;
+	}
+
 	/**
 	 * @return the subSector
 	 */

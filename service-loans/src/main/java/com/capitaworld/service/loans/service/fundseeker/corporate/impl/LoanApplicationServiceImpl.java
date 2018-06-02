@@ -5360,6 +5360,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// TODO: handle exception
 	        	logger.warn("error while getting key vertical sub-sector");
 			}
+	        
+	        response.setStateId(applicantDetail.getRegisteredStateId()!=null ? Long.valueOf(applicantDetail.getRegisteredStateId().toString()) : null);
 			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
 		}
 		
