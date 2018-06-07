@@ -738,6 +738,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
 				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+					request.setLoanTypeMain(CommonUtils.CORPORATE);
+					request.setLoanTypeSub("DEBT");
+					requests.add(request);
 					continue;
 				}
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
