@@ -14,6 +14,7 @@ public class MobileLoanRequest implements Serializable{
 	private Integer productId;
 	private Date fromDate;
 	private Date toDate;
+	private Integer businessTypeId;
 	
 	
 	public MobileLoanRequest() {
@@ -37,6 +38,15 @@ public class MobileLoanRequest implements Serializable{
 		this.userId = userId;
 		this.userType = userType;
 		this.productId = productId;
+	}
+	
+	public MobileLoanRequest(Long applicationId, Long userId, Long userType,Integer productId,Integer businessTypeId) {
+		super();
+		this.applicationId = applicationId;
+		this.userId = userId;
+		this.userType = userType;
+		this.productId = productId;
+		this.businessTypeId = businessTypeId;
 	}
 	
 	public MobileLoanRequest(Long userType,Date fromDate,Date toDate) {
@@ -98,7 +108,12 @@ public class MobileLoanRequest implements Serializable{
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
-	
-	
-	
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }

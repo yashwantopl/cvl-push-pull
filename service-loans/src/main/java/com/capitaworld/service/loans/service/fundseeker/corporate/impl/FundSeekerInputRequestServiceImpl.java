@@ -1,41 +1,40 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.client.ConnectClient;
- import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
- import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
- import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
- import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
- import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
- import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
- import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-
-import org.slf4j.Logger;
- import org.slf4j.LoggerFactory;
- import org.springframework.beans.BeanUtils;
- import org.springframework.beans.factory.annotation.Autowired;
- import org.springframework.http.HttpStatus;
- import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.EntityManagerFactoryUtils;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.stereotype.Service;
- import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
- import java.util.List;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -219,66 +218,44 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 
     @Override
-    public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fundSeekerInputRequest) {
+    public ResponseEntity<LoansResponse> get(FundSeekerInputRequestResponse fsInputReq) {
 
-        FundSeekerInputRequestResponse fundSeekerInputResponse=new FundSeekerInputRequestResponse();
+        FundSeekerInputRequestResponse fsInputRes = new FundSeekerInputRequestResponse();
+        fsInputRes.setApplicationId(fsInputReq.getApplicationId());
 
-        fundSeekerInputResponse.setApplicationId(fundSeekerInputRequest.getApplicationId());
-
-        List<FinancialArrangementsDetailRequest> financialArrangementsDetailResponseList = new ArrayList<FinancialArrangementsDetailRequest>();
-        List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList= new ArrayList<DirectorBackgroundDetailRequest>();
 
         try {
-            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-            if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
-            {
-                corporateApplicantDetail=new CorporateApplicantDetail();
+            CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(fsInputReq.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(corpApplicantDetail)) {
+            	logger.info("Data not found for given applicationid");
+            	fsInputRes.setFinancialArrangementsDetailRequestsList(Collections.EMPTY_LIST);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(),fsInputRes),HttpStatus.OK);
             }
-            BeanUtils.copyProperties(corporateApplicantDetail,fundSeekerInputResponse);
+            
+            BeanUtils.copyProperties(corpApplicantDetail,fsInputRes);
 
-            PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-            if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail))
-            {
-                primaryCorporateDetail=new PrimaryCorporateDetail();
+            PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(fsInputReq.getApplicationId());
+            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+            	BeanUtils.copyProperties(primaryCorporateDetail,fsInputRes);
             }
-            BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputResponse);
+            
+            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
+            
+            List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(finArngDetailList.size());
 
-
-            List<FinancialArrangementsDetail> financialArrangementsDetailList=financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(fundSeekerInputRequest.getApplicationId());
-
-            for(FinancialArrangementsDetail financialArrangementsDetail:financialArrangementsDetailList)
-            {
-                FinancialArrangementsDetailRequest financialArrangementsDetailRequest=new FinancialArrangementsDetailRequest();
-                BeanUtils.copyProperties(financialArrangementsDetail,financialArrangementsDetailRequest);
-                financialArrangementsDetailResponseList.add(financialArrangementsDetailRequest);
+            FinancialArrangementsDetailRequest finArrngDetailReq = null;
+            for(FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
+                finArrngDetailReq = new FinancialArrangementsDetailRequest();
+                BeanUtils.copyProperties(finArrngDetail,finArrngDetailReq);
+                finArrngDetailResList.add(finArrngDetailReq);
             }
+            fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
 
-            fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementsDetailResponseList);
-
-
-           /* List<DirectorBackgroundDetail> directorBackgroundDetailList=directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
-
-            for(DirectorBackgroundDetail directorBackgroundDetail:directorBackgroundDetailList)
-            {
-                DirectorBackgroundDetailRequest directorBackgroundDetailRequest=new DirectorBackgroundDetailRequest();
-                BeanUtils.copyProperties(directorBackgroundDetail,directorBackgroundDetailRequest);
-                directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
-            }
-
-            fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);*/
-
-            LoansResponse res=new LoansResponse("one form data successfully fetched",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setData(fundSeekerInputResponse);
-            logger.info("one form data successfully fetched");
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
-
-        }
-        catch (Exception e)
-        {
-            LoansResponse res=new LoansResponse("error while fetching one form input data",HttpStatus.INTERNAL_SERVER_ERROR.value());
-            logger.error("error while fetching one form data");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("One form data successfully fetched",HttpStatus.OK.value(),fsInputRes),HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while fetching one form data");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(res,HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching one form input data",HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
 
@@ -293,7 +270,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail))
             {
-            	fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.EMPTY_LIST);
+            	fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
                 logger.info("Data not found for given applicationid");
                 return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(),fundSeekerInputResponse),HttpStatus.OK);
             }
@@ -327,10 +304,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 
 	@Override
-	public LoansResponse callMatchEngineClient(Long applicationId,Long userId) {
+	public LoansResponse callMatchEngineClient(Long applicationId,Long userId,Integer businessTypeId) {
         ConnectResponse postOneForm;
 		try {
-			postOneForm = connectClient.postOneForm(applicationId,userId);
+			postOneForm = connectClient.postOneForm(applicationId,userId,businessTypeId);
 			if(postOneForm != null) {
 				logger.info("postOneForm=======================>Client Connect Response=============>{}",postOneForm.toString());
 				if(!postOneForm.getProceed().booleanValue()) {

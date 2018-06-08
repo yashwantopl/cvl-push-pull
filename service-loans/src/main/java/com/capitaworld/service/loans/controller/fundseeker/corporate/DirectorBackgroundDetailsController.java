@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -154,6 +154,77 @@ public class DirectorBackgroundDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/save_directors/{noOfDirector}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveDirectors(@RequestBody Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		logger.info("Enter saveDirectors()");
+		Long userId = null;
+		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()){
+			userId = clientId;
+		}else{
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (applicationId == null || noOfDirector == null || noOfDirector <= 0) {
+				logger.warn("noOfDirector is not there or is Less than or Equal 0 ==>" + noOfDirector);
+				logger.warn("applicationId Require to get director Background Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean isSaved = directorBackgroundDetailsService.saveDirectors(applicationId, userId, noOfDirector);
+			LoansResponse loansResponse = null;
+			if(isSaved) {
+				loansResponse = new LoansResponse("Successfully Saved", HttpStatus.OK.value());
+			}else {
+				loansResponse = new LoansResponse("Something goes wrong while saving No Of Directors", HttpStatus.BAD_REQUEST.value());
+			}
+			logger.info("Exit saveDirectors()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Saving No Of Directors==>", e);
+			logger.info("Exit saveDirectors()");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+	
+	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> get(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		try {
+			if (id == null) {
+				logger.warn("ID  or UserId Require to get director Background Detail ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			DirectorBackgroundDetailRequest response = directorBackgroundDetailsService.getDirectorBackgroundDetail(id);
+			LoansResponse loansResponse = null;
+			if(CommonUtils.isObjectNullOrEmpty(response)) {
+				loansResponse = new LoansResponse("Director Details Not Found.", HttpStatus.BAD_REQUEST.value());
+			}else {
+				loansResponse = new LoansResponse("Director Details Found.", HttpStatus.OK.value());
+				loansResponse.setData(response);
+			}
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	
 	@RequestMapping(value = "/getList_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<DirectorBackgroundDetailRequest>> getListClient(@PathVariable("applicationId") Long applicationId) {
@@ -175,6 +246,71 @@ public class DirectorBackgroundDetailsController {
 			logger.error("Error while getting Director Background Details==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(Collections.emptyList(),
+					HttpStatus.OK);
+		}
+
+	}
+	
+	@RequestMapping(value = "/getDirectorList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getList(@RequestBody Long id) {
+		CommonDocumentUtils.startHook(logger, "getDirectorList");
+		
+		// request must not be null
+		try {
+			if (id == null) {
+				logger.warn("ID Require to get director Background Details ==>" + id);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
+					.getDirectorBackgroundDetailList(id, null);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/update_api_flag", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateAPIFlag(@RequestParam(value = "userId", required = false) Long userId,@RequestParam(value = "directorId", required = true) Long directorId,
+			@RequestParam(value = "apiId", required = true)Integer apiId,@RequestParam(value = "apiFlag", required = true)Boolean apiFlag) {
+		
+		// request must not be null
+		try {
+			logger.info("Director Id==>{}",directorId);
+			logger.info("userId==>{}",userId);
+			logger.info("apiId==>{}",apiId);
+			logger.info("apiFlag==>{}",apiFlag);
+			
+			if (directorId == null || apiFlag == null || apiFlag == null) {
+				logger.warn("Something is NULL from DirectorId Or APIFlag or Flag ==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			Boolean updateFlag = directorBackgroundDetailsService.updateFlag(directorId, apiId, apiFlag, userId);
+			LoansResponse loansResponse = null;
+			if(updateFlag) {
+				loansResponse = new LoansResponse("Successfully Updated", HttpStatus.OK.value());				
+			}else {
+				loansResponse = new LoansResponse("Something goes wrong while updating API Flag", HttpStatus.OK.value());
+			}
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Updating Flag==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 

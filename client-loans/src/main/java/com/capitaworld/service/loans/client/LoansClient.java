@@ -155,8 +155,10 @@ public class LoansClient {
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
 	
-	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE = "/director_background_details/save";
-	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS_GET = "/director_background_details/getList_client";
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/getList_client";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAIL = "/director_background_details/get";
+	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
 
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
@@ -176,6 +178,7 @@ public class LoansClient {
 
 	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE = "/fundseeker_input_request_mobile/save_oneform";
 	private static final String FUNDSEEKER_INPUT_REQUEST_GET_MOBILE = "/fundseeker_input_request_mobile/get_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE = "/fundseeker_input_request_mobile/match";
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
@@ -190,7 +193,9 @@ public class LoansClient {
     private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
     
     private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
+    private static final String GET_DIRECTORLIST_BY_APPLICATION_ID = "/director_background_details/getDirectorList";
     
+    private static final String GET_DATA_FOR_CGTMSE="/common/getDataForCGTMSE";
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -1319,9 +1324,9 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
-			Long clientId, Long applicationId) throws ExcelException {
+			Long clientId, Long applicationId,Long directorId) throws ExcelException {
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL)
-				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+				.concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + directorId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
@@ -1424,8 +1429,8 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getCreateCampaignLoan(Long userId, Boolean isActive, String...code) throws ExcelException {
-		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId + "&isActive = " + isActive;
+	public LoansResponse getCreateCampaignLoan(Long userId, Boolean isActive,Integer businessTypeId, String...code) throws ExcelException {
+		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId + "&isActive = " + isActive + "&businessType = " + businessTypeId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
@@ -1557,7 +1562,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
-		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_SAVE);
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1570,9 +1575,29 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse updateDirectorAPIFlag(Long directorId,Long userId,Integer apiId, Boolean apiFlag) throws Exception {
+		String url = loansBaseUrl.concat(UPDATE_DIRECTOR_BACKGROUND_API_FLAG) + "?userId=" + userId + "&directorId=" + directorId + "&apiId=" + apiId + "&apiFlag=" + apiFlag;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null,headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("404")) {
+				throw new Exception(url + " is Not Found");				
+			}else if(e.getMessage().contains("400")) {
+				throw new Exception(url + " is Not Valid Request");				
+			}else {
+				throw new ExcelException("Loans service is not available");
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
-		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS_GET).concat("/" + applicationId);
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS).concat("/" + applicationId);
 		System.out.println("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1582,6 +1607,26 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorBackgroundDetail(Long id) throws Exception {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAIL).concat("/" + id);
+		System.out.println("url for Getting DirectorBackgroundDetail From Client=================>" + url + " and For Id====>" + id);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("404")) {
+				throw new Exception(url + " is Not Found");				
+			}else if(e.getMessage().contains("400")) {
+				throw new Exception(url + " is Not Valid Request");				
+			}else {
+				throw new ExcelException("Loans service is not available");
+			}
 		}
 	}
 	
@@ -1893,6 +1938,23 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public MobileApiResponse matchesForMobile(MobileLoanRequest mobileLoanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE);
+		System.out.println("Url for MATCHES details From Client=================>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	
 	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
 		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
 		System.out.println("url to get Corporate Score Calculation ==>" + url);
@@ -1918,6 +1980,35 @@ public class LoansClient {
 			
 			throw new ExcelException("Loans service is not available");
 			//throw e;//("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDataForCGTMSE(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_CGTMSE).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+
+	public LoansResponse getDirectorsListByApplicationId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTORLIST_BY_APPLICATION_ID);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
 		}
 	}
 }

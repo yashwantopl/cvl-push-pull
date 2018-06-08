@@ -38,6 +38,7 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
@@ -65,12 +66,14 @@ import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.CommonResponse;
 import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.ReportResponse;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -81,6 +84,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
@@ -341,6 +345,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired 
 	private AuditComponent auditComponent;
+	
+	@Autowired
+	private AssetsDetailsRepository assetsDetailsRepository;
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -731,6 +738,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
 				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+					request.setLoanTypeMain(CommonUtils.CORPORATE);
+					request.setLoanTypeSub("DEBT");
+					requests.add(request);
 					continue;
 				}
 				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
@@ -4137,7 +4147,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 					logger.info("Call Connector client for update payment status");
 					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-							userId);
+							userId,loanApplicationMaster.getBusinessTypeId());
 					
 					if (!CommonUtils.isObjectListNull(connectResponse)) {
 						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
@@ -4581,7 +4591,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Long createMsmeLoan(Long userId,Boolean isActive) {
+	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId) {
 		logger.info("IsActive======================>{}",isActive);
 		
 		if(isActive != null && isActive) {
@@ -4589,7 +4599,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
 		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
-		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId);
+		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId,businessTypeId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
 			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
 			return corporateLoan.getId();
@@ -4601,6 +4611,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
 		corporateLoan.setIsActive(true);
+		corporateLoan.setBusinessTypeId(businessTypeId);
         corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
@@ -4617,9 +4628,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
-
+		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
 			return false;
 		}
 		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
@@ -4666,6 +4678,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				primaryUnsecuredLoanDetailRepository.save(unsLoan);
 			}
 		}
+		logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
 		return true;
 	}
 
@@ -5324,5 +5337,77 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		
 		return applicationRequest;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService#getDataForCGTMSE(java.lang.Long)
+	 */
+	@Override
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
+		try {
+			
+			logger.info("In getDataForCGTMSE");
+		CGTMSECalcDataResponse response = new CGTMSECalcDataResponse();
+		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
+		if(applicantDetail!=null) {
+			//key vertical Subsector
+	        try
+	        {
+	        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector()))
+	        {
+	        	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(applicantDetail.getKeyVerticalSubsector());
+	        	response.setSubSector((String)oneFormResponse.getData());
+	        }
+	        }
+	        catch (Exception e) {
+				// TODO: handle exception
+	        	logger.warn("error while getting key vertical sub-sector");
+			}
+	        
+	        response.setStateId(applicantDetail.getRegisteredStateId()!=null ? Long.valueOf(applicantDetail.getRegisteredStateId().toString()) : null);
+			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+		}
+		
+		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+		
+		if(loan!=null) {
+			response.setLoanAmount(loan.getAmount());
+		}
+		
+		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+		
+		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+		if(directorList!=null && !directorList.isEmpty()) {
+			for(DirectorBackgroundDetail detail : directorList) {
+				if(detail.getGender()==Gender.FEMALE.getId()) {
+				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+				BeanUtils.copyProperties(detail, directorDetail);
+				directorDetail.setGender(Gender.getById(detail.getGender()).toString());
+				directorDetail.setShareholding(detail.getShareholding());
+				
+				response.addDirectorDetail(directorDetail);
+				}
+			}
+		}
+		Calendar cal = Calendar.getInstance();
+		Integer yearInt = cal.get(Calendar.YEAR);
+		String year = String.valueOf(yearInt);
+		AssetsDetails assetsDetails = null; 
+		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+		if(assetsDetails == null) {
+			year = year+".0";
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+		}
+		
+		if(assetsDetails!=null) {
+			response.setGrossBlock(assetsDetails.getGrossBlock());
+		}
+		
+		return response;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

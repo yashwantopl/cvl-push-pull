@@ -153,8 +153,8 @@ public class FundSeekerInputRequestController {
     }
 
 
-    @RequestMapping(value = "/match", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,HttpServletRequest request)
+    @RequestMapping(value = "/match/{businessTypeId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,@PathVariable("businessTypeId") Integer businessTypeId,HttpServletRequest request)
             throws Exception
     {
         try
@@ -173,7 +173,7 @@ public class FundSeekerInputRequestController {
 //                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 //            }
 
-            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId);
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId,businessTypeId);
             logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 

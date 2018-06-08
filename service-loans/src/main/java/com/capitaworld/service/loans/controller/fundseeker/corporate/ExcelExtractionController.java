@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.service.common.impl.DownloadCMAFileServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.BalanceSheetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.EntityInformationDetailService;
@@ -54,6 +55,8 @@ public class ExcelExtractionController {
 	@Autowired
 	ProfitibilityStatementDetailService profitibilityStatementDetailService;
 	
+	private static final Logger logger = LoggerFactory.getLogger(ExcelExtractionController.class);
+	
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -92,9 +95,9 @@ public class ExcelExtractionController {
 	
 	@RequestMapping(value = "/inactive_cma", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ExcelResponse> inActiveCMA(@RequestBody ExcelRequest excelRequest) {
-	
+		logger.warn("in inactivate cma");
 		Long storageDetailsId=excelRequest.getStorageDetailsId();
-		
+		logger.warn("storage is==>"+storageDetailsId);
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
@@ -104,6 +107,7 @@ public class ExcelExtractionController {
 		}
 		
 		try {
+			logger.warn("in try to in activate");
 			assetsDetailsService.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
