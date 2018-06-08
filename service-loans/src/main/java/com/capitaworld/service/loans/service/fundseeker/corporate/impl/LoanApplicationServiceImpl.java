@@ -4044,6 +4044,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setAmount(Double.valueOf(nhbsAmount));
 					gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 					gatewayRequest.setUserId(userId);
+					gatewayRequest.setGatewayType(paymentRequest.getGatewayType());
 					gatewayRequest.setProductInfo(paymentRequest.getPurposeCode());
 					gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
@@ -4083,7 +4084,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setPhone("7869585058");
 				}
 				gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
-				
+				gatewayRequest.setGatewayType(paymentRequest.getGatewayType());
 				gatewayRequest.setAmount(Double.valueOf(sidbiAmount));
 				gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 				gatewayRequest.setUserId(userId);
