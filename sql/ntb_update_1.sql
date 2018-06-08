@@ -36,8 +36,8 @@ ADD CONSTRAINT `fs_corporate_director_background_details_ibfk_2`
 
 
 ALTER TABLE `loan_application`.`fs_corporate_primary_details`
-ADD COLUMN `tenure` DOUBLE NULL AFTER `purpose_of_loan_id`,
-ADD COLUMN `proposed_details_of_unit` BIGINT(20) NULL AFTER `tenure`,
+ADD COLUMN `tenure_required` DOUBLE NULL AFTER `purpose_of_loan_id`,
+ADD COLUMN `proposed_details_of_unit` BIGINT(20) NULL AFTER `tenure_required`,
 ADD COLUMN `cost_of_project` DECIMAL(19,2) NULL AFTER `proposed_details_of_unit`,
 ADD COLUMN `created_date` DATETIME NULL AFTER `cost_of_project`,
 ADD COLUMN `modified_date` DATETIME NULL DEFAULT NULL AFTER `created_date`,
