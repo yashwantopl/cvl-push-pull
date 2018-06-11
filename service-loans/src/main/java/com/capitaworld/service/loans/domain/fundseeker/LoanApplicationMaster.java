@@ -207,6 +207,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "business_type_id")
 	private Integer businessTypeId;
 	
+	@Column(name = "company_cin_number")
+	private String companyCinNumber;
+	
 	
 
 	/**
@@ -673,6 +676,22 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+	
+	
+
+	/**
+	 * @return the companyCinNumber
+	 */
+	public String getCompanyCinNumber() {
+		return companyCinNumber;
+	}
+
+	/**
+	 * @param companyCinNumber the companyCinNumber to set
+	 */
+	public void setCompanyCinNumber(String companyCinNumber) {
+		this.companyCinNumber = companyCinNumber;
 	}
 
 	@Override

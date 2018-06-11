@@ -105,6 +105,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 		applicantRepository.save(applicantDetail);
 		
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getCompanyCIN())) {
+			logger.info("Company CIN number saving --------------------->" + applicantRequest.getCompanyCIN());
+			
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicantRequest.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				loanApplicationMaster.setCompanyCinNumber(applicantRequest.getCompanyCIN());
+				loanApplicationMaster.setModifiedDate(new Date());
+				loanApplicationMaster.setModifiedBy(applicantRequest.getUserId());
+				loanApplicationRepository.save(loanApplicationMaster);
+			}	
+		} else {
+			logger.info("Company CIN number null or empty --------------------->" );
+		}
+		
 	}
 	
 	@Override
