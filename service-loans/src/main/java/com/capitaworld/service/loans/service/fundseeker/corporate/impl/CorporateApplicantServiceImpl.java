@@ -106,15 +106,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		applicantRepository.save(applicantDetail);
 		
 		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getCompanyCIN())) {
-			logger.info("Company CIN number saving --------------------->" + applicantRequest.getCompanyCIN());
+			logger.info("Company CIN number saving --------------------->" + applicantRequest.getCompanyCIN() + "-----------------------"  +applicantRequest.getApplicationId());
 			
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicantRequest.getApplicationId());
 			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("LoanApplicationMaster is not null");
 				loanApplicationMaster.setCompanyCinNumber(applicantRequest.getCompanyCIN());
 				loanApplicationMaster.setModifiedDate(new Date());
 				loanApplicationMaster.setModifiedBy(applicantRequest.getUserId());
 				loanApplicationRepository.save(loanApplicationMaster);
-			}	
+			} else {
+				logger.info("LoanApplicationMaster is null or empty");
+			}
 		} else {
 			logger.info("Company CIN number null or empty --------------------->" );
 		}
