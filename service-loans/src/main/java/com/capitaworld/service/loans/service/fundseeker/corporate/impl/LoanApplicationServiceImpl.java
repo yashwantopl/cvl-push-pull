@@ -383,6 +383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setIsActive(true);
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationRequest.getProductId())) {
 					ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
@@ -470,13 +471,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
 			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(type.getValue())) {
-				applicationMaster
-						.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
+			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
-			applicationMaster
-					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			applicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			applicationMaster.setIsActive(true);
 			applicationMaster = loanApplicationRepository.save(applicationMaster);
 			BeanUtils.copyProperties(applicationMaster, request);
 			UsersRequest usersRequest = new UsersRequest();
@@ -518,6 +519,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setIsActive(true);
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
@@ -4608,17 +4610,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Successfully get result");
 		corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
 		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
 		corporateLoan.setBusinessTypeId(businessTypeId);
         corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
 		corporateLoan = loanApplicationRepository.save(corporateLoan);
 		logger.info("Created New Corporate Loan of User Id==>{}", userId);
-		logger.info("Setting Last Application is as Last access Id in User Table");
+		logger.info("Setting Last Application is as Last access Id in User Table---->" +corporateLoan.getIsActive());
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);

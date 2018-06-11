@@ -200,7 +200,7 @@ public class FundSeekerInputRequestMobileController {
 
             LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(mobileLoanRequest.getApplicationId(),mobileLoanRequest.getUserId(),mobileLoanRequest.getBusinessTypeId());
             logger.info("Response from Matchengine for mobile ==>{}",callMatchEngineClient.toString());
-            if(callMatchEngineClient!=null){
+            {
                 if(callMatchEngineClient.getStatus()== HttpStatus.BAD_REQUEST.value()){
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);
                 } else if(callMatchEngineClient.getStatus()==HttpStatus.OK.value()){
@@ -209,7 +209,6 @@ public class FundSeekerInputRequestMobileController {
                     return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(callMatchEngineClient.getMessage(),"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
                 }
             }
-            return new ResponseEntity<MobileApiResponse>(new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG,"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after Oneform Submit");
             e.printStackTrace();

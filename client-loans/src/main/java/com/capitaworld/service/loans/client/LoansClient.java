@@ -32,6 +32,7 @@ import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.common.UserLoanAmountMappingRequest;
 import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
@@ -196,6 +197,13 @@ public class LoansClient {
     private static final String GET_DIRECTORLIST_BY_APPLICATION_ID = "/director_background_details/getDirectorList";
     
     private static final String GET_DATA_FOR_CGTMSE="/common/getDataForCGTMSE";
+    
+    
+    //USERLOANAMOUNTMAPPING TABLE SERVICE
+    private static final String CHECK_AMOUNT_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/check_amount_by_user_and_product";
+    private static final String GET_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/get_by_user_and_product";
+    
+    
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -2009,6 +2017,55 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
+		}
+	}
+	
+	/**
+	 * CHEKCK AMOUNT IS UNDER USER DISBURSEMENT AUTHORITY 
+	 * @param amount
+	 * @param userId
+	 * @param productId
+	 * @return
+	 * @throws LoansException
+	 */
+	public LoansResponse checkAmountByUserIdAndProductId(Long userId, Double amount, Long productId) throws LoansException {
+		String url = loansBaseUrl.concat(CHECK_AMOUNT_BY_USERID_AND_PRODUCTID);
+		logger.info("Enter in LoanClient For Check amount for FP user ----------->" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			UserLoanAmountMappingRequest req = new UserLoanAmountMappingRequest(userId,productId,amount); 
+			HttpEntity<UserLoanAmountMappingRequest> entity = new HttpEntity<UserLoanAmountMappingRequest>(req, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call checkAmountByUserIdAndProductId");
+		}
+	}
+	
+	/**
+	 * GET USER MIN MAX AND PRODUCT MAPPING DATA BY USER ID AND PRODUCT ID 
+	 * @param userId
+	 * @param productId
+	 * @return
+	 * @throws LoansException
+	 */
+	public LoansResponse getUserAmountMapByUserAndProduct(Long userId, Long productId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_BY_USERID_AND_PRODUCTID);
+		logger.info("Enter in GET user amount mapping details by user id and product id -------> "+ url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			UserLoanAmountMappingRequest req = new UserLoanAmountMappingRequest(userId,productId);
+			HttpEntity<UserLoanAmountMappingRequest> entity = new HttpEntity<UserLoanAmountMappingRequest>(req, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getUserAmountMapByUserAndProduct");
 		}
 	}
 }

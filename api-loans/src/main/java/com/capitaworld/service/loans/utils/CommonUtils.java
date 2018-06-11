@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -1084,6 +1085,7 @@ public enum APIFlags {
 			return null;
 		}
 	}
-
-
+	public static String decode(String encryptedString) {
+		return new String(Base64.getDecoder().decode(encryptedString));
+	}
 }
