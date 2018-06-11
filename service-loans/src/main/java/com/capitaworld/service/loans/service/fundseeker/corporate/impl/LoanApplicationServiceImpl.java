@@ -473,6 +473,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster
 						.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
+			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
 			applicationMaster
@@ -4608,6 +4609,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Successfully get result");
 		corporateLoan = new PrimaryCorporateDetail();
 		corporateLoan.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		corporateLoan.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);

@@ -1056,8 +1056,14 @@ public class DDRFormServiceImpl implements DDRFormService{
 	@SuppressWarnings("unchecked")
 	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId) {
 
+		logger.info("Enter in get one form details service");
 		DDROneFormResponse response = new DDROneFormResponse();
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicationId);
+		
+		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			logger.info("Data not found by this application id -------------------> "+applicationId);
+			return null;
+		}
 		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
