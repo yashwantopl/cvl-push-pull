@@ -1,0 +1,91 @@
+package com.capitaworld.service.loans.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class LoanSanctionRequest implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String accountNo;
+	private Long sanctionAmount;
+	private Double roi;
+	private Date sanctionDate;
+	private String branch;
+	private Long applicationId;
+	private Double tenure;
+	private String sanctionAuthority;
+
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
+
+	public Long getSanctionAmount() {
+		return sanctionAmount;
+	}
+
+	public void setSanctionAmount(Long sanctionAmount) {
+		this.sanctionAmount = sanctionAmount;
+	}
+
+	public Double getRoi() {
+		return roi;
+	}
+
+	public void setRoi(Double roi) {
+		this.roi = roi;
+	}
+
+	public Date getSanctionDate() {
+		return sanctionDate;
+	}
+
+	public void setSanctionDate(Date sanctionDate) {
+		this.sanctionDate = sanctionDate;
+	}
+
+	public String getBranch() {
+		return branch;
+	}
+
+	public void setBranch(String branch) {
+		this.branch = branch;
+	}
+
+	public Long getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+
+	public Double getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(Double tenure) {
+		this.tenure = tenure;
+	}
+
+	public String getSanctionAuthority() {
+		return sanctionAuthority;
+	}
+
+	public void setSanctionAuthority(String sanctionAuthority) {
+		this.sanctionAuthority = sanctionAuthority;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanSanctionDomain [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", roi=" + roi
+				+ ", sanctionDate=" + sanctionDate + ", branch=" + branch + ", applicationId=" + applicationId
+				+ ", tenure=" + tenure + ", sanctionAuthority=" + sanctionAuthority + "]";
+	}
+}

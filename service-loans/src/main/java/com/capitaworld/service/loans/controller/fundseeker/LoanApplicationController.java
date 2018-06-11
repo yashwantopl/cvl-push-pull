@@ -25,6 +25,8 @@ import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
@@ -35,6 +37,8 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
+import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -63,6 +67,12 @@ public class LoanApplicationController {
 
 	@Autowired
 	private AutoFillOneFormDetailService autoFillOneFormDetailService;
+	
+	@Autowired
+	private LoanSanctionService loanSanctionService;
+	
+	@Autowired 
+	private LoanDisbursementService  loanDisbursementService; 
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -1206,14 +1216,16 @@ public class LoanApplicationController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/create_loan_from_campaign", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> createLoanFromCampaign(HttpServletRequest request,
-			@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "isActive", required = false) Boolean isActive,@RequestParam(value = "businessType", required = false) Integer busineeTypeId,
+			@RequestParam(value = "clientId", required = false) Long clientId,
+			@RequestParam(value = "isActive", required = false) Boolean isActive,
+			@RequestParam(value = "businessType", required = false) Integer busineeTypeId,
 			@RequestBody List<String> campaignCodes) {
 		try {
 			logger.info("start createLoanFromCampaign()");
-			logger.info("Business Type Id====>{}",busineeTypeId);
-			logger.info("isActive====>{}",isActive);
-			logger.info("clientId====>{}",clientId);
-			logger.info("campaignCodes====>{}",campaignCodes.toString());
+			logger.info("Business Type Id====>{}", busineeTypeId);
+			logger.info("isActive====>{}", isActive);
+			logger.info("clientId====>{}", clientId);
+			logger.info("campaignCodes====>{}", campaignCodes.toString());
 
 			boolean isMsmeUserFromGeneric = false;
 			try {
@@ -1221,11 +1233,13 @@ public class LoanApplicationController {
 				if (!CommonUtils.isListNullOrEmpty(campaignCodes)) {
 					isMsmeUserFromGeneric = campaignCodes.contains(CommonUtils.CampaignCodes.ALL1MSME.getValue());
 					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
-					if(isMsmeUserFromGeneric) {
-						//In this case
-						Long createdId = loanApplicationService.createMsmeLoan(clientId,isActive,busineeTypeId);
-						return new ResponseEntity<LoansResponse>(new LoansResponse(createdId,"Successfully New Loan Created",HttpStatus.OK.value()), HttpStatus.OK);
-						
+					if (isMsmeUserFromGeneric) {
+						// In this case
+						Long createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
+						return new ResponseEntity<LoansResponse>(
+								new LoansResponse(createdId, "Successfully New Loan Created", HttpStatus.OK.value()),
+								HttpStatus.OK);
+
 					}
 					// Integer index = campaignCodes
 					// .indexOf(CommonUtils.CampaignCodes.ALL1MSME.getValue());
@@ -1503,26 +1517,29 @@ public class LoanApplicationController {
 		try {
 			logger.info("start save_payment_info()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue()
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
 					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 							.intValue()) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-			
-			if(CommonUtils.isObjectNullOrEmpty(paymentRequest.getApplicationId())) {
+
+			if (CommonUtils.isObjectNullOrEmpty(paymentRequest.getApplicationId())) {
 				logger.info("Application id is null or empty");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request, Application Id Null Or Empty", HttpStatus.BAD_REQUEST.value()),
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request, Application Id Null Or Empty",
+								HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
-			
+
 			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId);
 			logger.info("Response========>{}", applicationMaster);
 
 			try {
-				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment()) && paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
+				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
+						&& paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
 					logger.info("Start Sent Mail When FS select Online Payment");
 					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
 							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
@@ -1573,8 +1590,7 @@ public class LoanApplicationController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			response.setData(
-					loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, userId));
+			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, userId));
 			logger.info("end updatePaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -1711,34 +1727,38 @@ public class LoanApplicationController {
 			return null;
 		}
 	}
-	
+
 	@RequestMapping(value = "/save_phase1_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(@RequestBody LoanApplicationRequest loanApplicationRequest,HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(
+			@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
 		// request must not be null
 		try {
-			
+
 			logger.info("Start savePhese1DataToSidbi()");
 			Long userId = null;
-			if(CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
-				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
-					userId = (Long) request.getAttribute(CommonUtils.USER_ID);	
+			if (CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				}
 			} else {
 				userId = loanApplicationRequest.getUserId();
 			}
 			if (userId == null) {
 				logger.warn("UserId must not be null==>");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(
+						"Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
+
 			if (loanApplicationRequest.getId() == null) {
 				logger.warn("applicationId must not be null==>");
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			logger.info("Save Phase one Application id -------------------->" + loanApplicationRequest.getId());
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(loanApplicationRequest.getId(),userId);
-			logger.info("Result in savePhese1DataToSidbi== {}",isSavePhase1Data);
+			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(loanApplicationRequest.getId(),
+					userId);
+			logger.info("Result in savePhese1DataToSidbi== {}", isSavePhase1Data);
 			loansResponse.setData(isSavePhase1Data);
 			logger.info("End savePhese1DataToSidbi()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -1751,34 +1771,38 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/save_phase2_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePhese2DataToSidbi(@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
+	public ResponseEntity<LoansResponse> savePhese2DataToSidbi(
+			@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
 		// request must not be null
 		try {
-			
+
 			logger.info("Start savePhese2DataToSidbi()");
 
 			Long userId = null;
-			if(CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
-				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
-					userId = (Long) request.getAttribute(CommonUtils.USER_ID);	
+			if (CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				}
 			} else {
 				userId = loanApplicationRequest.getUserId();
 			}
 			if (userId == null) {
 				logger.warn("UsrId must not be null==>");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(
+						"Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			
-			if (loanApplicationRequest.getId()  == null) {
+
+			if (loanApplicationRequest.getId() == null) {
 				logger.warn("applicationId must not be null==>");
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()) , HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			boolean isSavePhase2Data = loanApplicationService.savePhese2DataToSidbi(loanApplicationRequest.getId(),userId);
-			logger.info("Result in savePhese2DataToSidbi== {}",isSavePhase2Data);
+			boolean isSavePhase2Data = loanApplicationService.savePhese2DataToSidbi(loanApplicationRequest.getId(),
+					userId);
+			logger.info("Result in savePhese2DataToSidbi== {}", isSavePhase2Data);
 			loansResponse.setData(isSavePhase2Data);
 			logger.info("End savePhese2DataToSidbi()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -1791,24 +1815,23 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/getDisbursementDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getDisbursementDetails(@RequestBody DisbursementRequest disbursementRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start getDisbursementDetails()");
-			/*Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}*/
-			
-			if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),disbursementRequest.getProductMappingId()
-					)) {
+			/*
+			 * Long userId = null; if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)
+			 * request.getAttribute(CommonUtils.USER_TYPE)) .intValue() ||
+			 * CommonUtils.UserType.NETWORK_PARTNER == ((Integer)
+			 * request.getAttribute(CommonUtils.USER_TYPE)) .intValue()) { userId =
+			 * clientId; } else { userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			 * }
+			 */
+
+			if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),
+					disbursementRequest.getProductMappingId())) {
 				logger.warn("All parameter must not be null");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -1825,12 +1848,12 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
 		try {
-			logger.info("Enter in update product details service--------------------------------->" );
-			if (CommonUtils.isObjectListNull(loanRequest.getId(),loanRequest.getProductId())) {
+			logger.info("Enter in update product details service--------------------------------->");
+			if (CommonUtils.isObjectListNull(loanRequest.getId(), loanRequest.getProductId())) {
 				logger.warn("All parameter must not be null");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -1847,8 +1870,10 @@ public class LoanApplicationController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 	@RequestMapping(value = "/inactive_application/{id}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> inActiveApplication(@PathVariable("id") Long id,@PathVariable("userId") Long userId) {
+	public ResponseEntity<LoansResponse> inActiveApplication(@PathVariable("id") Long id,
+			@PathVariable("userId") Long userId) {
 		// request must not be null
 		try {
 			logger.info("Entry inActiveApplication");
@@ -1866,9 +1891,9 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
-	
+
 	@RequestMapping(value = "/getFpDetailsByFpProductId/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getFpDetailsByFpProductId(@PathVariable("fpProductId")Long fpProductId){
+	public ResponseEntity<LoansResponse> getFpDetailsByFpProductId(@PathVariable("fpProductId") Long fpProductId) {
 		try {
 			logger.info("Entry getFpDetailsByFpProductId");
 			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
@@ -1885,5 +1910,55 @@ public class LoanApplicationController {
 		}
 	}
 
-}
+	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody LoanSanctionRequest loanSanctionRequest ){
+		try {
+			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> LoanSanctionRequest =====> " , loanSanctionRequest );
+			if(loanSanctionRequest!=null) {
+			LoansResponse loansResponse = new LoansResponse("Successfull saved", HttpStatus.OK.value());
+			loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
+			logger.info("Exit saveLoanSanctionDetail() ---------------->");
+			return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
+			
+			}
+			else {
+				logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ---------------->" +loanSanctionRequest);
+				return  new ResponseEntity<LoansResponse>(
+				new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
 
+		} catch (Exception e) {
+			logger.error("Error while saveLoanSanctionDetail()----------------------> ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/saveLoanDisbursementDetail", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanDisbursementDetail(@RequestBody LoanDisbursementRequest loanDisbursementRequest ){
+		try {
+			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> LoanDisbursementRequest =====> " , loanDisbursementRequest );
+			if(loanDisbursementRequest!=null) {
+			LoansResponse loansResponse = new LoansResponse("Successfull saved", HttpStatus.OK.value());
+			loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
+			logger.info("Exit saveLoanDisbursementDetail() ---------------->");
+			return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
+			}
+			else {
+				logger.info("Null in LoanDisbursementRequest while saveLoanDisbursementDetail() ---------------->" +loanDisbursementRequest);
+				return  new ResponseEntity<LoansResponse>(
+				new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			}
+
+		} catch (Exception e) {
+			logger.error("Error while saveLoanDisbursementDetail()----------------------> ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+}
