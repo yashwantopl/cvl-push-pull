@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.2.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
+		<artifactId>spring-boot-starter-parent</artifactId>
 	</parent>
 	<groupId>com.capitaworld.loans.service.parent</groupId>
 	<artifactId>service-loans</artifactId>
@@ -170,6 +170,11 @@
 		<dependency>
 			<groupId>com.capitaworld.connect.client</groupId>
 			<artifactId>client-connect</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.thirdparty</groupId>
+			<artifactId>client-thirdparty</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<!-- <dependency>

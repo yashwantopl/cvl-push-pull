@@ -4614,14 +4614,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
+		logger.info("Before set is active true");
 		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
 		corporateLoan.setBusinessTypeId(businessTypeId);
         corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
 		corporateLoan = loanApplicationRepository.save(corporateLoan);
 		logger.info("Created New Corporate Loan of User Id==>{}", userId);
-		logger.info("Setting Last Application is as Last access Id in User Table");
+		logger.info("Setting Last Application is as Last access Id in User Table---->" +corporateLoan.getIsActive());
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);
