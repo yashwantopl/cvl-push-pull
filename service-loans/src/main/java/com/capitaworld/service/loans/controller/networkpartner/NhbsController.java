@@ -40,7 +40,7 @@ public class NhbsController {
 		try {
 			
 			if(CommonUtils.isObjectNullOrEmpty(applicationRequest) ||
-					CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserRoleId()) ||
+					CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserRoleIdString()) ||
 					(CommonUtils.isObjectNullOrEmpty(applicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(applicationRequest.getDdrStatusId()))){
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
