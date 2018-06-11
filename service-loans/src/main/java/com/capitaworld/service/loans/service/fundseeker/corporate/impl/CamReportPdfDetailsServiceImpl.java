@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,11 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
@@ -43,9 +47,12 @@ import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -56,12 +63,17 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -76,8 +88,10 @@ import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.Title;
@@ -91,6 +105,8 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -170,6 +186,28 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private GstClient gstClient;
+	
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
+	
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService; 
+	
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
+	@Autowired
+	private ThirdPartyClient thirdPartyClient;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -506,6 +544,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting perfios data");
 		}
 		
+		//CGTMSE DATA
+		try {
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
+			map.put("cgtmseData", printFields(cgtmseDataResponse));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 		/**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
@@ -553,8 +600,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
 					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
 					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-					ownershipDetailResponse.setShareHoldingCategory(
-							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+					ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
 					ownershipDetailResponseList.add(ownershipDetailResponse);
 				}
 				map.put("ownership", printFields(ownershipDetailResponseList));
@@ -575,7 +621,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-					 promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
 					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? convertValue(promotorBackgroundDetailRequest.getDin()) : " ");
@@ -605,6 +651,67 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			//SHARE PRICE
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+			map.put("sharePriceFace", convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceFace()));
+			map.put("sharePriceMarket", convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceMarket()));
+			
+			//DETAILS OF GUARANTER
+			try {
+					map.put("guaDetails", printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId)));
+			} catch (Exception e) {
+					logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+
+		    //MONTHLY TURNOVER
+			try {
+				map.put("monthlyTurnOver", printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId)));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Monthly Turnover {}", e);
+			}
+			
+			//COST ESTIMATES
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService.getCostOfProjectDetailList(applicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+				BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					    costOfProjectResponses.add(costOfProjectResponse);
+				}
+				map.put("costEstimate", printFields(costOfProjectResponses));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+			
+			//MEANS OF FINANCE
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService.getMeansOfFinanceList(applicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString())).getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				map.put("meansOfFinance", printFields(financeMeansDetailResponsesList));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			//COLLATERAL SECURITY			
+			try {
+				map.put("collateralSecurity", printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId)));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+			
 		}
 		
 		return map;
