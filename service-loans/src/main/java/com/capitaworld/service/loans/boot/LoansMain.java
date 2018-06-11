@@ -25,6 +25,7 @@ import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 //import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
@@ -99,6 +100,9 @@ public class LoansMain {
 
 	@Value("${capitaworld.sidbi.integration.password}")
 	private String sidbiPassword;
+	
+	@Value("${capitaworld.service.thirdparty.url}")
+	private String thirdPartyBaseUrl;
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -201,6 +205,13 @@ public class LoansMain {
 		ConnectClient connectClient = new ConnectClient(connectBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
+	}
+	
+	@Bean
+	public ThirdPartyClient thirdPartyClient() {
+		ThirdPartyClient thirdPartyClient = new ThirdPartyClient(thirdPartyBaseUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(thirdPartyClient);
+		return thirdPartyClient;
 	}
 	
 	@Bean
