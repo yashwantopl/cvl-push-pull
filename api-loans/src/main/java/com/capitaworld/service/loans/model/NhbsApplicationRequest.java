@@ -14,6 +14,8 @@ public class NhbsApplicationRequest implements Serializable{
 	private Long userId;
 	
 	private Long userRoleId;
+	
+	private String userRoleIdString;
 
 	private Long assignedUserId;
 	
@@ -88,6 +90,13 @@ public class NhbsApplicationRequest implements Serializable{
 	public void setUserRoleId(Long userRoleId) {
 		this.userRoleId = userRoleId;
 	}
-	
+
+	public String getUserRoleIdString() {
+		return userRoleIdString;
+	}
+
+	public void setUserRoleIdString(String userRoleIdString) {
+		this.userRoleIdString = userRoleIdString;
+	}
 	
 }
