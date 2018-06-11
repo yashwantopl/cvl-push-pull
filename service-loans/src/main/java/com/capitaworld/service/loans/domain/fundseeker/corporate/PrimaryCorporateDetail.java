@@ -56,7 +56,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "cost_of_project")
     private Double costOfProject;
 
-    @Column(name="created_by")
+   /* @Column(name="created_by")
     private Long createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,7 +71,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modified_date")
-    private Date modifiedDate;
+    private Date modifiedDate;*/
 
     public PrimaryCorporateDetail() {
     }
@@ -165,7 +165,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.costOfProject = costOfProject;
     }
 
-    @Override
+   /* @Override
     public Long getCreatedBy() {
         return createdBy;
     }
@@ -211,5 +211,5 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Override
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
-    }
+    }*/
 }
