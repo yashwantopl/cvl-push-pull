@@ -383,6 +383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setIsActive(true);
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationRequest.getProductId())) {
 					ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
@@ -470,14 +471,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
 			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(type.getValue())) {
-				applicationMaster
-						.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
 			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
-			applicationMaster
-					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			applicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			applicationMaster.setIsActive(true);
 			applicationMaster = loanApplicationRepository.save(applicationMaster);
 			BeanUtils.copyProperties(applicationMaster, request);
 			UsersRequest usersRequest = new UsersRequest();
@@ -519,6 +519,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationMaster.setCreatedDate(new Date());
 				applicationMaster.setModifiedBy(userId);
 				applicationMaster.setModifiedDate(new Date());
+				applicationMaster.setIsActive(true);
 				applicationMaster
 						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 				applicationMaster = loanApplicationRepository.save(applicationMaster);
