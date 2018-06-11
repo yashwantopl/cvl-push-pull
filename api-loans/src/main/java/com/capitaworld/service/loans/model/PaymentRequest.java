@@ -29,7 +29,7 @@ public class PaymentRequest implements Serializable {
 	private String status;
 	private String panNo;
 	private Boolean isAcceptConsent;
-
+    private String gatewayType;
 	public PaymentRequest() {
 
 	}
@@ -156,6 +156,14 @@ public class PaymentRequest implements Serializable {
 
 	public void setPanNo(String panNo) {
 		this.panNo = panNo;
+	}
+
+	public String getGatewayType() {
+		return gatewayType;
+	}
+
+	public void setGatewayType(String gatewayType) {
+		this.gatewayType = gatewayType;
 	}
 
 	@Override
