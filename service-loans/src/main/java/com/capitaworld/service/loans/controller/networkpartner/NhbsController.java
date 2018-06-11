@@ -47,6 +47,8 @@ public class NhbsController {
 			}
 			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			
+			applicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(applicationRequest.getUserRoleIdString())));
 			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfProposals(applicationRequest,orgId,userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(applicationsResponseList);
@@ -66,15 +68,15 @@ public class NhbsController {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonUtils.isObjectNullOrEmpty(userId) || 
 					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) ||
-					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleId())){
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString())){
 				logger.warn("userId  can not be empty ==>" + userId);
 				logger.warn("applicationStatusId  can not be empty ==>" + nhbsApplicationRequest.getApplicationStatusId());
-				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleId());
+				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleIdString());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			nhbsApplicationRequest.setUserId(userId);
-			
+			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
 			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfAssignedProposals(nhbsApplicationRequest);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(applicationsResponseList);
@@ -215,15 +217,16 @@ public class NhbsController {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if(CommonUtils.isObjectNullOrEmpty(userId) ||
 					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
-					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleId())){
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString())){
 				logger.warn("userId  can not be empty ==>" + userId);
-				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleId());
+				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleIdString());
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			nhbsApplicationRequest.setUserId(userId);
 			LoansResponse loansResponse = new LoansResponse();
 			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
 			JSONObject jsonCountObj = networkPartnerService.getNhbsProposalCount(nhbsApplicationRequest,orgId);
 			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
 				logger.info("Data Found.");

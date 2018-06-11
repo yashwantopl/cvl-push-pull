@@ -104,13 +104,13 @@ public class DashboardController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
-			if(CommonUtils.isObjectNullOrEmpty(data.getId())){
+			if(CommonUtils.isObjectNullOrEmpty(data.getValue())){
 				logger.warn("UserType must not be Empty");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
+			data.setId(Long.parseLong(CommonUtils.decode(data.getValue())));
 			Integer count = dashboardService.getCount(data.getId().intValue());
 			LoansResponse loansResponse = new LoansResponse("Data Found",
 					HttpStatus.OK.value());
