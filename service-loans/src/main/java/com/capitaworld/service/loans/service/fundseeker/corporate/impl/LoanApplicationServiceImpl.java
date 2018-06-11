@@ -4614,7 +4614,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setCreatedBy(userId);
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
-		logger.info("Before set is active true");
 		corporateLoan.setIsActive(true);
 		logger.info("after set is active true");
 		corporateLoan.setBusinessTypeId(businessTypeId);
