@@ -2,12 +2,13 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.capitaworld.service.loans.utils.AuditActivity;
+
+import com.capitaworld.service.loans.model.common.AuditActivityRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanDisbursementRequest extends AuditActivity implements Serializable {
+public class LoanDisbursementRequest extends AuditActivityRequest implements Serializable {
 
 	/**
 	 * 
@@ -16,7 +17,7 @@ public class LoanDisbursementRequest extends AuditActivity implements Serializab
 
 	private Long applicationId;
 	private Double disbursedAmount;
-	private String mode;
+	private Long mode;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy") 
 	private Date disbursementDate; 
 	
@@ -36,11 +37,11 @@ public class LoanDisbursementRequest extends AuditActivity implements Serializab
 		this.disbursedAmount = disbursedAmount;
 	}
 
-	public String getMode() {
+	public Long getMode() {
 		return mode;
 	}
 
-	public void setMode(String mode) {
+	public void setMode(Long mode) {
 		this.mode = mode;
 	}
 	

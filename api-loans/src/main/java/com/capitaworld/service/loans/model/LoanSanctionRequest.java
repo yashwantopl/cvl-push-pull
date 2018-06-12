@@ -3,12 +3,12 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.capitaworld.service.loans.utils.AuditActivity;
+import com.capitaworld.service.loans.model.common.AuditActivityRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanSanctionRequest extends AuditActivity implements Serializable {
+public class LoanSanctionRequest extends AuditActivityRequest implements Serializable {
 
 	/**
 	 * 
@@ -20,7 +20,7 @@ public class LoanSanctionRequest extends AuditActivity implements Serializable {
 	private Double roi;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date sanctionDate;
-	private String branch;
+	private Long branch;
 	private Long applicationId;
 	private Double tenure;
 	private String sanctionAuthority;
@@ -65,11 +65,11 @@ public class LoanSanctionRequest extends AuditActivity implements Serializable {
 		this.sanctionDate = sanctionDate;
 	}
 
-	public String getBranch() {
+	public Long getBranch() {
 		return branch;
 	}
 
-	public void setBranch(String branch) {
+	public void setBranch(Long branch) {
 		this.branch = branch;
 	}
 
