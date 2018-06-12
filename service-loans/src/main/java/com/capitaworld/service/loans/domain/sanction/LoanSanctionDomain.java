@@ -29,7 +29,7 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 	private String accountNo;
 	                 
 	@Column(name="sanction_amount")
-	private Long sanctionAmount;
+	private Double sanctionAmount;
 	
 	private Double roi;
 	
@@ -66,11 +66,11 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.accountNo = accountNo;
 	}
 
-	public Long getSanctionAmount() {
+	public Double getSanctionAmount() {
 		return sanctionAmount;
 	}
 
-	public void setSanctionAmount(Long sanctionAmount) {
+	public void setSanctionAmount(Double sanctionAmount) {
 		this.sanctionAmount = sanctionAmount;
 	}
 

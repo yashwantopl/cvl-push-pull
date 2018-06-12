@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.capitaworld.service.loans.utils.AuditActivity;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoanSanctionRequest extends AuditActivity implements Serializable {
 
 	/**
@@ -15,6 +18,7 @@ public class LoanSanctionRequest extends AuditActivity implements Serializable {
 	private Double sanctionAmount;
 	private String transectionNo;
 	private Double roi;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date sanctionDate;
 	private String branch;
 	private Long applicationId;

@@ -1943,7 +1943,7 @@ public class LoanApplicationController {
 			if(loanDisbursementRequest!=null) {
 			LoansResponse loansResponse = new LoansResponse("Successfull saved", HttpStatus.OK.value());
 			loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
-			logger.info("Exit saveLoanDisbursementDetail() ---------------->");
+			logger.info("Exit saveLoanDisbursementDetail() {}---------------->");
 			return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 			}
 			else {
