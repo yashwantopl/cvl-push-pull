@@ -4140,6 +4140,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
 				}
+
+				if(connectResponse.getProceed()) {
+					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					}
+				}
 			} else {
 				logger.info("Connector Response null or empty");
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
