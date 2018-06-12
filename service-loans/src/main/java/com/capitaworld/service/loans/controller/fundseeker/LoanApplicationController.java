@@ -2002,5 +2002,34 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	
+	@RequestMapping(value = "/update_skip_payment_status/{appId}/{orgId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateSkipPaymentStatus(@PathVariable("appId") Long appId,@PathVariable("orgId") Long orgId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start updateSkipPaymentStatus()");
+			Long userId = 1878l;
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()
+					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
+							.intValue()) {
+				userId = clientId;  
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			loanApplicationService.updateSkipPayment(userId, appId, orgId);
+			logger.info("end updateSkipPaymentStatus()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 }
