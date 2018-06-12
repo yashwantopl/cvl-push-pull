@@ -26,6 +26,8 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String clientSource;
 	
 	private Date applicationDate;
+
+	private Date proposalTakenDate;
 	
 	private Long userId;
 	
@@ -54,6 +56,16 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String state;
 	
 	private String country;
+
+	private String applicationWith;
+
+	public String getApplicationWith() {
+		return applicationWith;
+	}
+
+	public void setApplicationWith(String applicationWith) {
+		this.applicationWith = applicationWith;
+	}
 
 	public String getCheckerName() {
 		return checkerName;
@@ -191,7 +203,12 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setClientProfilePic(String clientProfilePic) {
 		this.clientProfilePic = clientProfilePic;
 	}
-	
-	
-	
+
+	public Date getProposalTakenDate() {
+		return proposalTakenDate;
+	}
+
+	public void setProposalTakenDate(Date proposalTakenDate) {
+		this.proposalTakenDate = proposalTakenDate;
+	}
 }

@@ -4126,7 +4126,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
-		loanApplicationMaster.setPaymentStatus("BYPASS");
+		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 		
 		//UPDATE CONNECT POST PAYMENT

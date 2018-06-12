@@ -274,6 +274,34 @@ public class NhbsController {
 		}
 	}
 
+	@RequestMapping(value = "/get/fp/assigned/proposals", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFPAssignedProposals(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if(CommonUtils.isObjectNullOrEmpty(userId) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString())){
+				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn("applicationStatusId  can not be empty ==>" + nhbsApplicationRequest.getApplicationStatusId());
+				logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleIdString());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+			List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfAssignedProposalsFP(nhbsApplicationRequest);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(applicationsResponseList);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting assigned proposals ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/get/fpProposalCount", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
 		try {
