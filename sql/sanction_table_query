@@ -1,0 +1,32 @@
+CREATE TABLE `loan_application`.`sanction_detail` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `account_no` varchar(45) DEFAULT NULL,
+  `sanction_amount` double DEFAULT NULL,
+  `branch` varchar(45) DEFAULT NULL,
+  `transection_no` varchar(45) DEFAULT NULL,
+  `tenure` double DEFAULT NULL,
+  `roi` double DEFAULT NULL,
+  `sanction_authority` varchar(45) DEFAULT NULL,
+  `sanction_date` datetime DEFAULT NULL,
+  `application_id` bigint(11) DEFAULT NULL,
+  `created_by` bigint(11) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_by` bigint(11) DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+
+  CREATE TABLE `loan_application`.`disbursement_detail` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `application_id`  BIGINT(11) NULL,
+  `disbursed_amount` double DEFAULT NULL,
+  `mode` VARCHAR(45) NULL,
+  `disbursement_date` DATETIME NULL,
+  `created_by` BIGINT(11) NULL,
+  `created_date` DATETIME NULL,
+  `modified_by` BIGINT(11) NULL,
+  `modified_date` DATETIME NULL,
+  `is_active` BIT(1) NULL,
+	PRIMARY KEY (`id`));
