@@ -39,7 +39,7 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 	@Column(name="sanction_date")
 	private Date sanctionDate;
 	
-	private String branch;
+	private Long branch;
 	
 	@Column(name="application_id")
 	private Long applicationId;
@@ -90,11 +90,11 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.sanctionDate = sanctionDate;
 	}
 
-	public String getBranch() {
+	public Long getBranch() {
 		return branch;
 	}
 
-	public void setBranch(String branch) {
+	public void setBranch(Long branch) {
 		this.branch = branch;
 	}
 

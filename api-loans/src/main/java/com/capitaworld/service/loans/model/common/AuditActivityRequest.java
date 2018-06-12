@@ -1,9 +1,9 @@
-package com.capitaworld.service.loans.utils;
+package com.capitaworld.service.loans.model.common;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class AuditActivity implements Serializable {
+public class AuditActivityRequest implements Serializable {
 
 	/**
 	 * 
@@ -54,7 +54,7 @@ public class AuditActivity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditActivity [createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
+		return "AuditActivityRequest [createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
 				+ ", modifiedDate=" + modifiedDate + ", isActive=" + isActive + "]";
 	}
 	

@@ -34,7 +34,7 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 	@Column(name="disbursed_amount")
 	private Double disbursedAmount;
 	
-	private String mode;
+	private Long mode;
 
 	public Long getId() {
 		return id;
@@ -68,11 +68,11 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 		this.disbursedAmount = disbursedAmount;
 	}
 
-	public String getMode() {
+	public Long getMode() {
 		return mode;
 	}
 
-	public void setMode(String mode) {
+	public void setMode(Long mode) {
 		this.mode = mode;
 	}
 
