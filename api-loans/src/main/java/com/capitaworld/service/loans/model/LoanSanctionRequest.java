@@ -12,7 +12,7 @@ public class LoanSanctionRequest extends AuditActivity implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String accountNo;
-	private Long sanctionAmount;
+	private Double sanctionAmount;
 	private String transectionNo;
 	private Double roi;
 	private Date sanctionDate;
@@ -29,11 +29,11 @@ public class LoanSanctionRequest extends AuditActivity implements Serializable {
 		this.accountNo = accountNo;
 	}
 
-	public Long getSanctionAmount() {
+	public Double getSanctionAmount() {
 		return sanctionAmount;
 	}
 
-	public void setSanctionAmount(Long sanctionAmount) {
+	public void setSanctionAmount(Double sanctionAmount) {
 		this.sanctionAmount = sanctionAmount;
 	}
 

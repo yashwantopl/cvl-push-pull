@@ -12,7 +12,7 @@ public class LoanDisbursementRequest extends AuditActivity implements Serializab
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
-	private Long disbursedAmount;
+	private Double disbursedAmount;
 	private String mode;
 	private Date disbursementDate; 
 	
@@ -24,11 +24,11 @@ public class LoanDisbursementRequest extends AuditActivity implements Serializab
 		this.applicationId = applicationId;
 	}
 
-	public Long getDisbursedAmount() {
+	public Double getDisbursedAmount() {
 		return disbursedAmount;
 	}
 
-	public void setDisbursedAmount(Long disbursedAmount) {
+	public void setDisbursedAmount(Double disbursedAmount) {
 		this.disbursedAmount = disbursedAmount;
 	}
 
