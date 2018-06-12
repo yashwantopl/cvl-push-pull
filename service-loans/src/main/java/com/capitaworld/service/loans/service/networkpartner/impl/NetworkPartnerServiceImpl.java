@@ -749,7 +749,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
         if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
 
         }else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
-        	if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.){
+        	if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),request.getUserId());
 			}else{
 				applicationMastersList = loanApplicationRepository.getFPProposalsIwthOthersByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,request.getUserId());
@@ -873,7 +873,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									e.printStackTrace();
 								}
 							}
-						}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.){
+						}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 							nhbsApplicationsResponse.setApplicationWith("Checker");
 						}
 					}
