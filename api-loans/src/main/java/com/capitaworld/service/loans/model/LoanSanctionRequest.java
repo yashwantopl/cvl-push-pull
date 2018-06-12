@@ -3,7 +3,9 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class LoanSanctionRequest implements Serializable {
+import com.capitaworld.service.loans.utils.AuditActivity;
+
+public class LoanSanctionRequest extends AuditActivity implements Serializable {
 
 	/**
 	 * 
@@ -11,6 +13,7 @@ public class LoanSanctionRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String accountNo;
 	private Long sanctionAmount;
+	private String transectionNo;
 	private Double roi;
 	private Date sanctionDate;
 	private String branch;
@@ -32,6 +35,14 @@ public class LoanSanctionRequest implements Serializable {
 
 	public void setSanctionAmount(Long sanctionAmount) {
 		this.sanctionAmount = sanctionAmount;
+	}
+
+	public String getTransectionNo() {
+		return transectionNo;
+	}
+
+	public void setTransectionNo(String transectionNo) {
+		this.transectionNo = transectionNo;
 	}
 
 	public Double getRoi() {
@@ -84,8 +95,12 @@ public class LoanSanctionRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "LoanSanctionDomain [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", roi=" + roi
-				+ ", sanctionDate=" + sanctionDate + ", branch=" + branch + ", applicationId=" + applicationId
-				+ ", tenure=" + tenure + ", sanctionAuthority=" + sanctionAuthority + "]";
+		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transectionNo="
+				+ transectionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
+				+ ", applicationId=" + applicationId + ", tenure=" + tenure + ", sanctionAuthority=" + sanctionAuthority
+				+ "]";
 	}
+
+
+	
 }

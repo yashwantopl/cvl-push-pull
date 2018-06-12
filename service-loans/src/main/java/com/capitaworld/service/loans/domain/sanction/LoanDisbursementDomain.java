@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.domain.sanction;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,10 +29,10 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 	private Long applicationId;
 	
 	@Column(name="disbursement_date")
-	private Long disbursementDate;
+	private Date disbursementDate;
 	
 	@Column(name="disbursed_amount")
-	private Long disbursedAmount;
+	private Double disbursedAmount;
 	
 	private String mode;
 
@@ -51,19 +52,19 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 		this.applicationId = applicationId;
 	}
 
-	public Long getDisbursementDate() {
+	public Date getDisbursementDate() {
 		return disbursementDate;
 	}
 
-	public void setDisbursementDate(Long disbursementDate) {
+	public void setDisbursementDate(Date disbursementDate) {
 		this.disbursementDate = disbursementDate;
 	}
 
-	public Long getDisbursedAmount() {
+	public Double getDisbursedAmount() {
 		return disbursedAmount;
 	}
 
-	public void setDisbursedAmount(Long disbursedAmount) {
+	public void setDisbursedAmount(Double disbursedAmount) {
 		this.disbursedAmount = disbursedAmount;
 	}
 
