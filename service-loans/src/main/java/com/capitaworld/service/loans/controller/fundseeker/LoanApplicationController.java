@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.fundseeker;
 
 import java.util.List;
 
+
 import javax.servlet.http.HttpServletRequest;
 //import javax.ws.rs.Path;
 
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -42,10 +42,12 @@ import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
 
 @RestController
 @RequestMapping("/loan_application")
@@ -1910,19 +1912,28 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody LoanSanctionRequest loanSanctionRequest ){
+	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString){
 		try {
-			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> LoanSanctionRequest =====> " , loanSanctionRequest );
-			if(loanSanctionRequest!=null) {
-			LoansResponse loansResponse = new LoansResponse("Successfull saved", HttpStatus.OK.value());
-			loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
-			logger.info("Exit saveLoanSanctionDetail() ---------------->");
-			return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
-			
+			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> encryptedString =====> " , encryptedString);
+			if(encryptedString!=null) {
+				String decrypt = AESEncryptionUtility.decrypt(encryptedString);
+				LoanSanctionRequest loanSanctionRequest = MultipleJSONObjectHelper.getObjectFromString(encryptedString, LoanSanctionRequest.class);
+				LoansResponse loansResponse =null;
+				if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest) && loanSanctionRequest.getAccountNo()!=null && loanSanctionRequest.getApplicationId()!=null  &&  loanSanctionRequest.getBranch()!=null  && loanSanctionRequest.getRoi() !=null && loanSanctionRequest.getSanctionAmount()!=null && loanSanctionRequest.getSanctionDate()!=null && loanSanctionRequest.getTenure()!=null )   {
+				
+					loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
+					loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
+					logger.info("Exit saveLoanSanctionDetail() ---------------->");
+					return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
+				}else {
+					logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ----------------> LoanSanctionRequest" + loanSanctionRequest );
+					return  new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				}
 			}
 			else {
-				logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ---------------->" +loanSanctionRequest);
+				logger.info("Null encryptedString saveLoanSanctionDetail() ---------------->encryptedString " + encryptedString );
 				return  new ResponseEntity<LoansResponse>(
 				new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
@@ -1936,20 +1947,31 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/saveLoanDisbursementDetail", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveLoanDisbursementDetail(@RequestBody LoanDisbursementRequest loanDisbursementRequest ){
+	@RequestMapping(value = "/saveLoanDisbursementDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanDisbursementDetail(@RequestBody String encryptedString ){
 		try {
-			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> LoanDisbursementRequest =====> " , loanDisbursementRequest );
-			if(loanDisbursementRequest!=null) {
-			LoansResponse loansResponse = new LoansResponse("Successfull saved", HttpStatus.OK.value());
-			loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
-			logger.info("Exit saveLoanDisbursementDetail() {}---------------->");
-			return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
-			}
-			else {
-				logger.info("Null in LoanDisbursementRequest while saveLoanDisbursementDetail() ---------------->" +loanDisbursementRequest);
+			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> encryptedString =====> " , encryptedString);
+			if(encryptedString!=null) {
+				String decrypt=	AESEncryptionUtility.decrypt(encryptedString);
+				LoanDisbursementRequest loanDisbursementRequest =MultipleJSONObjectHelper.getObjectFromString(decrypt,LoanDisbursementRequest.class);
+				
+				LoansResponse loansResponse=null;
+				if(CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest) && loanDisbursementRequest.getApplicationId()!=null && loanDisbursementRequest.getDisbursedAmount()!=null  && loanDisbursementRequest.getDisbursementDate()!=null && loanDisbursementRequest.getMode()!=null) {
+					
+					loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
+					loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
+					logger.info("Exit saveLoanDisbursementDetail() {}---------------->");
+					return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK);
+					
+				}else {
+					logger.info("Null in LoanDisbursementRequest while saveLoanDisbursementDetail() ----------------> LoanDisbursementRequest" + loanDisbursementRequest  );
+					return  new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				}
+			}else {
+				logger.info("Null in encryptedString while saveLoanDisbursementDetail() ----------------> encryptedString " +encryptedString );
 				return  new ResponseEntity<LoansResponse>(
-				new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
