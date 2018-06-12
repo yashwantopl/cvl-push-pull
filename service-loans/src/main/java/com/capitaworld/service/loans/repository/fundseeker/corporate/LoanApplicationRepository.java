@@ -203,7 +203,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//public List<LoanApplicationMaster> getAssignedProposalsByAssigneeId(@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 
 	//nhbs-pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getAssignedProposalsByAssigneeIdForPagination(Pageable pageable,@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 
 	//to get count of assigned proposals based on assignee id
