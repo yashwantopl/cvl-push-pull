@@ -1930,7 +1930,7 @@ public class LoanApplicationController {
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 				}
 				LoansResponse loansResponse =null;
-				if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest) && loanSanctionRequest.getAccountNo()!=null && loanSanctionRequest.getApplicationId()!=null  &&  loanSanctionRequest.getBranch()!=null  && loanSanctionRequest.getRoi() !=null && loanSanctionRequest.getSanctionAmount()!=null && loanSanctionRequest.getSanctionDate()!=null && loanSanctionRequest.getTenure()!=null )   {
+				if(CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure() ) )   {
 				
 					loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 					loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
