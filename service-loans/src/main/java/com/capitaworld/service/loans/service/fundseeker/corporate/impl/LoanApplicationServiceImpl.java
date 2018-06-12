@@ -34,6 +34,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AuditComponent;
+import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -348,6 +349,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private AssetsDetailsRepository assetsDetailsRepository;
+	
+	@Autowired
+	private MCAAsyncComponent mcaAsyncComponent; 
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -4136,6 +4140,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
 				}
+
+				if(connectResponse.getProceed()) {
+					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					}
+				}
 			} else {
 				logger.info("Connector Response null or empty");
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
@@ -4216,6 +4226,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+						}
+						
+						if(connectResponse.getProceed()) {
+							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+							}
 						}
 						
 					} else {
@@ -4313,6 +4329,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+
 
 	@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {

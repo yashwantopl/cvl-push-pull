@@ -34,4 +34,6 @@ public interface NetworkPartnerService {
     public List<NhbsApplicationsResponse> getListOfAssignedProposalsFP(NhbsApplicationRequest request);
 
 	public boolean setFPMaker(NhbsApplicationRequest request);
+
+	public boolean setFPChecker(NhbsApplicationRequest request);
 }

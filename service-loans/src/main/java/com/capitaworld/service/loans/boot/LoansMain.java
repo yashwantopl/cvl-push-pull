@@ -21,6 +21,7 @@ import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
@@ -103,6 +104,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.thirdparty.url}")
 	private String thirdPartyBaseUrl;
+	
+	@Value("${capitaworld.service.mca.url}")
+	private String mcaClientUrl;
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -223,6 +227,12 @@ public class LoansMain {
 		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl,encodedString);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
 		return sidbiIntegrationClient;
+	}
+	@Bean
+	public McaClient mcaClient() {
+		McaClient mcaClient = new McaClient(mcaClientUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(mcaClient);
+		return mcaClient;
 	}
 
 }
