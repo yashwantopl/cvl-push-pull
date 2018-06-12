@@ -28,4 +28,10 @@ public interface NetworkPartnerService {
 	public List<LoanApplicationMaster> getApplicationListToAssignedCheckerFromBoFp(Long userId,Long appStatusId,Boolean forPagination,int pageIndex,int size);
 
 	public String getCheckerName(FpNpMappingRequest fpNpMappingRequest);
+
+	public List<NhbsApplicationsResponse> getListOfProposalsFP(NhbsApplicationRequest request,Long npOrgId,Long userId);
+
+	public boolean setFPMaker(NhbsApplicationRequest request);
+
+	public boolean setFPChecker(NhbsApplicationRequest request);
 }

@@ -4112,6 +4112,64 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return paymentRequest.getTypeOfPayment();
 	}
 
+	
+	@Override
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception {
+		
+		logger.info("Enter in Update Skip Payment Details !!");
+		
+		//UPDATE PAYMENT STATE IN LOAN MASTER
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		
+		if (loanApplicationMaster == null) {
+			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+		}
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+		loanApplicationMaster.setPaymentStatus("BYPASS");
+		loanApplicationRepository.save(loanApplicationMaster);
+		
+		//UPDATE CONNECT POST PAYMENT
+		try {
+			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
+			
+			if (!CommonUtils.isObjectListNull(connectResponse)) {
+				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				if(orgId==10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+				}
+			} else {
+				logger.info("Connector Response null or empty");
+				throw new Exception("Something went wrong while call connect client for " + applicationId);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call connect client for " + applicationId);
+		}
+		
+		//TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.activateProposalOnPayment(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info("Proposal Mapping Response---------------> "+proposalMappingResponse.toString());
+				if(proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new Exception(proposalMappingResponse.getMessage());	
+				}
+			} else {
+				logger.info("Proposal Mapping Response Null or Empty---------------> ");
+				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+		}
+		
+		logger.info("Exit on Update Skip Payment Details ");		
+	}
+	
+	
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId) throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
