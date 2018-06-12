@@ -132,6 +132,8 @@ public interface LoanApplicationService {
 	
 	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception;
 	
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception;
+	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
