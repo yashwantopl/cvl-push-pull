@@ -178,6 +178,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
 
+	@Column(name = "fp_maker_id")
+	private Long fpMakerId;
+
 	@Column(name = "ddr_status_id")
 	private Long ddrStatusId;
 
@@ -209,8 +212,14 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "company_cin_number")
 	private String companyCinNumber;
-	
-	
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
 
 	/**
 	 * @return the paymentStatus

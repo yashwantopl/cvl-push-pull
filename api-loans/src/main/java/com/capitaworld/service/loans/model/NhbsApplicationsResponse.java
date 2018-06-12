@@ -18,6 +18,8 @@ public class NhbsApplicationsResponse implements Serializable{
 	private Integer applicationType;
 	
 	private String makerName;
+
+	private String checkerName;
 	
 	private String assigneeName;
 	
@@ -52,7 +54,15 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String state;
 	
 	private String country;
-		
+
+	public String getCheckerName() {
+		return checkerName;
+	}
+
+	public void setCheckerName(String checkerName) {
+		this.checkerName = checkerName;
+	}
+
 	public String getCity() {
 		return city;
 	}

@@ -27,6 +27,16 @@ public class NhbsApplicationRequest implements Serializable{
 
 	private int size;
 
+	private Long fpMakerId;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
+
 	public int getPageIndex() {
 		return pageIndex;
 	}
