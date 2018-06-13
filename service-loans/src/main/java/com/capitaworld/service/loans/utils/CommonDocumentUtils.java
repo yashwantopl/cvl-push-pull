@@ -196,9 +196,13 @@ public class CommonDocumentUtils {
 
 	
 	public static boolean isThisClientApplication(HttpServletRequest request) {
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-			|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)) 
-			|| CommonUtils.UserType.FUND_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			return false;
+		}
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType
+			|| CommonUtils.UserType.NETWORK_PARTNER == userType 
+			|| CommonUtils.UserType.FUND_PROVIDER == userType) {
 			return true;
 		}
 		return false;
