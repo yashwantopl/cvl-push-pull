@@ -277,11 +277,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPMakerAssignedAndAssginedToCheckerCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker - all other proposals - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker - all other proposals - count
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for approved or submitted - pagination
