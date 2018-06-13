@@ -28,6 +28,12 @@ public class NhbsApplicationsResponse implements Serializable{
 	private Date applicationDate;
 
 	private Date proposalTakenDate;
+
+	private Date receivedDate;
+
+	private Date revertDate;
+
+	private Date approvalDate;
 	
 	private Long userId;
 	
@@ -210,5 +216,29 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	public void setProposalTakenDate(Date proposalTakenDate) {
 		this.proposalTakenDate = proposalTakenDate;
+	}
+
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
+
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
+
+	public Date getRevertDate() {
+		return revertDate;
+	}
+
+	public void setRevertDate(Date revertDate) {
+		this.revertDate = revertDate;
+	}
+
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
+
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
 	}
 }

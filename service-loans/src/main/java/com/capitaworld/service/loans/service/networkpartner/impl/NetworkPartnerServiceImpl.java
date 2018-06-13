@@ -1,12 +1,14 @@
 package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -15,8 +17,9 @@ import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +57,6 @@ import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -93,6 +93,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	@Autowired
 	private FpNpMappingRepository fpNpMappingRepository;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Override
 	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request,Long npOrgId,Long userId) {
@@ -648,9 +651,29 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Override
 	public List<NhbsApplicationsResponse> getListOfProposalsFP(NhbsApplicationRequest request,Long npOrgId,Long userId) {
 		logger.info("entry in getListOfProposalsFP()");
+		Long branchId = null;
+		UsersRequest usersRequestForBranch = new UsersRequest();
+		usersRequestForBranch.setId(userId);
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequestForBranch);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error("error while FP branch details");
+			e.printStackTrace();
+		}
 		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
+			if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.OPEN){
+				applicationMastersList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),userId);
+			}else{
+				applicationMastersList = loanApplicationRepository.getFPProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,userId);
+			}
+			applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 		}else{
 			applicationMastersList = null;
 		}
@@ -731,10 +754,60 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					logger.error("error while getting profile image");
 					e.printStackTrace();
 				}
-				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
-					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-					nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+
+				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+				List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN);
+				if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED){
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
+						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
+						nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+					}else{
+						nhbsApplicationsResponse.setDdrStatus("NA");
+					}
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
+						nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");
+					}else{
+						nhbsApplicationsResponse.setOneFormFilled("Unlocked");
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
+						UsersRequest usersRequest = new UsersRequest();
+						usersRequest.setId(loanApplicationMaster.getNpUserId());
+						try {
+							UserResponse userResponseForName = usersClient.getFPDetails(usersRequest);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error("error while fetching FP details");
+							e.printStackTrace();
+						}
+					}
+					else {
+						nhbsApplicationsResponse.setCheckerName("NA");
+					}
+					if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED){
+						nhbsApplicationsResponse.setApplicationWith("Maker");
+						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
+							UsersRequest usersRequest = new UsersRequest();
+							usersRequest.setId(loanApplicationMaster.getFpMakerId());
+							try {
+								UserResponse userResponseForName = usersClient.getFPDetails(usersRequest);
+								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+										FundProviderDetailsRequest.class);
+								nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+							} catch (Exception e) {
+								logger.error("error while fetching FP details");
+								e.printStackTrace();
+							}
+						}
+					}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+						nhbsApplicationsResponse.setApplicationWith("Checker");
+					}
 				}
+				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
 		}
 		logger.info("exit form getListOfProposalsFP()");
@@ -742,13 +815,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	}
 
-    @Override
+    /*@Override
     public List<NhbsApplicationsResponse> getListOfAssignedProposalsFP(NhbsApplicationRequest request) {
         logger.info("entry in getListOfAssignedProposalsFP()");
         List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
-        if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
-
-        }else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
+        if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
         	if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),request.getUserId());
 			}else{
@@ -877,17 +948,252 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							nhbsApplicationsResponse.setApplicationWith("Checker");
 						}
 					}
-                }else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
-
                 }
-
                 nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
             }
         }
 
         logger.info("exit from getListOfAssignedProposalsFP()");
         return nhbsApplicationsResponseList;
-    }
+    }*/
+
+	@Override
+	public List<NhbsApplicationsResponse> getListOfCheckerProposalsFP(NhbsApplicationRequest request) {
+		logger.info("entry in getListOfCheckerProposalsFP()");
+		Long branchId = null;
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setId(request.getUserId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error("error while FP branch details");
+			e.printStackTrace();
+		}
+		List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
+            List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,request.getFpProductId());
+
+				if(request.getDdrStatusId()==CommonUtils.DdrStatus.SUBMITTED || request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
+                    applicationMastersList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId());
+                }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
+					applicationMastersList = loanApplicationRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId());
+                }else{
+					applicationMastersList = loanApplicationRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId());
+				}
+			applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+		}else{
+			applicationMastersList = null;
+		}
+
+		List<NhbsApplicationsResponse> nhbsApplicationsResponseList =null;
+		if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
+			nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
+			for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
+				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
+				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
+				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
+				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
+					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
+					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+				}else{
+					nhbsApplicationsResponse.setDdrStatus("-");
+				}
+
+				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				if(applicantDetail != null){
+					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+					try {
+						// Setting City Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+							nhbsApplicationsResponse.setCity(
+									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+						}
+
+						// Setting State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+							nhbsApplicationsResponse.setState(CommonDocumentUtils
+									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+						}
+
+						// Country State Value
+						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.error("error while fetching details from oneform client for city/state/country");
+						e.printStackTrace();
+					}
+				}
+				// get profile pic
+				DocumentRequest documentRequest = new DocumentRequest();
+				documentRequest.setApplicationId(loanApplicationMaster.getId());
+				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+				try {
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse StorsgeResponse = null;
+
+							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+								imagePath = StorsgeResponse.getFilePath();
+							else
+								imagePath=null;
+						}
+					}
+					nhbsApplicationsResponse.setClientProfilePic(imagePath);
+
+				} catch (DocumentException | IOException e) {
+					logger.error("error while getting profile image");
+					e.printStackTrace();
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
+					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");
+				}else{
+					nhbsApplicationsResponse.setOneFormFilled("Unlocked");
+				}
+
+
+					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+                if(request.getDdrStatusId()==CommonUtils.DdrStatus.SUBMITTED){
+                    List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.IN_PROGRESS);
+                    if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+                        nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+                    }
+                }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
+                    List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
+                    if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+                        nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+                    }
+                }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
+                    List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
+                    if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+                        nhbsApplicationsResponse.setApprovalDate(applicationStatusAuditList.get(0).getModifiedDate());
+                    }
+                }
+
+
+
+				if(loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.ASSIGNED){
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
+						UsersRequest usersRequestForMaker = new UsersRequest();
+						usersRequestForMaker.setId(loanApplicationMaster.getFpMakerId());
+						try {
+							UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error("error while fetching FP details");
+							e.printStackTrace();
+						}
+					}
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN);
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				}else{
+					nhbsApplicationsResponse.setMakerName("-");
+				}
+				if(loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
+						UsersRequest usersRequestForMaker = new UsersRequest();
+						usersRequestForMaker.setId(loanApplicationMaster.getNpUserId());
+						try {
+							UserResponse userResponseForName = usersClient.getFPDetails(usersRequestForMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+						} catch (Exception e) {
+							logger.error("error while fetching FP details");
+							e.printStackTrace();
+						}
+					}
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+				}else{
+					nhbsApplicationsResponse.setCheckerName("-");
+				}
+
+				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+			}
+		}
+
+		logger.info("exit from getListOfCheckerProposalsFP()");
+		return nhbsApplicationsResponseList;
+	}
+
+	@Override
+	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId) {
+		logger.info("entry in getFPProposalCount()");
+
+		Long branchId = null;
+		UsersRequest usersRequestForBranch = new UsersRequest();
+		usersRequestForBranch.setId(nhbsApplicationRequest.getUserId());
+		try {
+			UserResponse userResponseForName = usersClient.getBranchDetailsBYUserId(usersRequestForBranch);
+			BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+					BranchBasicDetailsRequest.class);
+			branchId = branchBasicDetailsRequest.getId();
+		} catch (Exception e) {
+			logger.error("error while FP branch details");
+			e.printStackTrace();
+		}
+		List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
+		JSONObject countObj = new JSONObject();
+		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == nhbsApplicationRequest.getUserRoleId()){
+
+			List<LoanApplicationMaster> newApplicationList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+			newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("newProposalCount", newApplicationList.size());
+
+			List<LoanApplicationMaster> assignedToMakerApplicationList = loanApplicationRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId());
+			assignedToMakerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("pendingProposalCount", assignedToMakerApplicationList.size());
+
+			List<LoanApplicationMaster> assignedToCheckerApplicationList = loanApplicationRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER,nhbsApplicationRequest.getUserId());
+			assignedToCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("assignedToCheckerProposalCount", assignedToMakerApplicationList.size());
+
+			List<LoanApplicationMaster> allOtherApplicationList = loanApplicationRepository.getFPProposalsWithOthersCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId());
+			allOtherApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("allOtherProposalCount", allOtherApplicationList.size());
+
+		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()){
+
+			List<LoanApplicationMaster> assignedTocheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId());
+			assignedTocheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("assignedToCheckerProposalCount", assignedTocheckerApplicationList.size());
+
+			List<LoanApplicationMaster> approvedByCheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId());
+			approvedByCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("approvedByCheckerPropsalCount", approvedByCheckerApplicationList.size());
+
+			List<LoanApplicationMaster> revertedByCheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerRevertedCount(CommonUtils.DdrStatus.REVERTED,nhbsApplicationRequest.getUserId());
+			revertedByCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("revertedByCheckerPropsalCount", revertedByCheckerApplicationList.size());
+
+			List<LoanApplicationMaster> allOtherCheckerApplicationList = loanApplicationRepository.getFPCheckerProposalsWithOthersCount(CommonUtils.ApplicationStatus.OPEN,nhbsApplicationRequest.getUserId());
+			allOtherCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			countObj.put("allOtherProposalCount", allOtherCheckerApplicationList.size());
+
+		}
+		logger.info("exit from getFPProposalCount()");
+		return countObj;
+	}
 
 	@Override
 	public boolean setFPMaker(NhbsApplicationRequest request) {

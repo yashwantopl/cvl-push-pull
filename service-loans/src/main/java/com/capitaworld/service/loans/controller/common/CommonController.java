@@ -234,6 +234,8 @@ public class CommonController {
 				spUserId = CommonUtils.UserType.SERVICE_PROVIDER;
 				}else if (CommonUtils.UserType.NETWORK_PARTNER == userType){
 					spUserId = CommonUtils.UserType.NETWORK_PARTNER;
+				}else if (CommonUtils.UserType.FUND_PROVIDER == userType){
+					spUserId = CommonUtils.UserType.FUND_PROVIDER;
 				}
 			}
 			userType = spUserId;

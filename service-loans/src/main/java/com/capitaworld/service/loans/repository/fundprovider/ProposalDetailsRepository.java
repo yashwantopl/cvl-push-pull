@@ -11,7 +11,10 @@ import java.util.List;
 public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails,Long>{
 
     @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE branchId =:branchId and fpProductId=:fpProductId and isActive = 1")
-    public List<BigInteger> getApplicationsBasedOnBranchIdAndFpProductId(@Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
+    public List<Long> getApplicationsBasedOnBranchIdAndFpProductId(@Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
+
+    @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE branchId =:branchId and isActive = 1")
+    public List<Long> getApplicationsBasedOnBranchId(@Param("branchId") Long branchId);
 
     @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
     public Boolean  getApplicationIdByOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);

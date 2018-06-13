@@ -174,6 +174,17 @@ public class ApplicationStatusAudit implements Serializable{
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
 
+	@Column(name = "ddr_status_id")
+	private Long ddrStatusId;
+
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
 	public Long getId() {
 		return id;
 	}
