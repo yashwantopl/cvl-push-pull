@@ -66,11 +66,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 
 	@Override
-	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest) throws IOException {
+	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest, Long orgId) throws IOException {
 		logger.info("Enter in requestValidation() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);  
 		try {
-			Long orgId = usersClient.getOrganisationDetailIdByCredential(loanDisbursementRequest.getUserName(),
-					loanDisbursementRequest.getPassword());
+			
 			if (orgId != null) {
 				Long recCount = proposalDetailsRepository
 						.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
@@ -136,5 +135,11 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	@Override
+	public Long getOrgIdByCredential(String userName, String pwd) {
+		 return usersClient.getOrganisationDetailIdByCredential(userName, pwd);
+		
 	}
 }

@@ -1,4 +1,4 @@
-CREATE TABLE `bank_cw_audit_trail` (
+CREATE TABLE `loan_application`.`bank_cw_audit_trail` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `org_id` bigint(11) unsigned DEFAULT NULL,
   `application_id` bigint(11) unsigned DEFAULT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE `bank_cw_audit_trail` (
   `created_date` datetime DEFAULT NULL,
   `is_active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;

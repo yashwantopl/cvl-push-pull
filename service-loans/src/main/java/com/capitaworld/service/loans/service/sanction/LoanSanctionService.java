@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 public interface LoanSanctionService {
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception ;
 	
-	public String requestValidation(String userName, String password, Long applicationId)  throws Exception ;
+	public String requestValidation( Long applicationId,Long orgId)  throws Exception ;
 	
 	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest, LoansResponse loansResponse, String msg, Long orgId)throws IOException ;
 	
