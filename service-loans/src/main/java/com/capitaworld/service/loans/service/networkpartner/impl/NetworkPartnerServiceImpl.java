@@ -61,6 +61,7 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.users.client.UsersClient;
 
 @Service
@@ -586,7 +587,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			notification.setType(NotificationType.SMS);
 			Map<String, Object> parameters = new HashMap<String, Object>();
 
-			parameters.put("maker", networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
+			parameters.put("maker",Title.getById(networkPartnerDetailsRequest.getTitleId()) +" "+ networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
 			parameters.put("url", "https://bit.ly/2IGwvBF");
 			
 			notification.setParameters(parameters);
