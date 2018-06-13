@@ -1258,7 +1258,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
 			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
-			applicationMaster.setFpMakerId(request.getUserId());
+			applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
 			applicationMaster.setNpAssigneeId(request.getUserId());
 			applicationMaster.setNpUserId(request.getNpUserId());
 			applicationMaster.setModifiedBy(request.getUserId());
