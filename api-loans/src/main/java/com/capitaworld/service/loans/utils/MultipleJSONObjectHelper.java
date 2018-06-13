@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -55,6 +53,13 @@ public class MultipleJSONObjectHelper implements Serializable {
 		return (T) mapper.convertValue(map, clazz);
 	}
 	
+	public static String getStringfromObject(Object object) throws IOException {
+		if (object != null) {
+			return new ObjectMapper().writeValueAsString(object);
+		} else {
+			return "{}";
+		}
+	}
 	/*@SuppressWarnings("unchecked")
 	public static <T extends List<?>> T getListFromObject(Object obj) {
 	    return (T) obj;

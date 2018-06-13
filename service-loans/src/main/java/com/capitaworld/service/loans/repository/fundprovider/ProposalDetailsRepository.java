@@ -16,6 +16,6 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE branchId =:branchId and isActive = 1")
     public List<Long> getApplicationsBasedOnBranchId(@Param("branchId") Long branchId);
 
-    @Query("SELECT pd.applicationId FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
-    public Boolean  getApplicationIdByOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
+    @Query("SELECT count(pd)  FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
+    public Long getApplicationIdCountByOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
 }
