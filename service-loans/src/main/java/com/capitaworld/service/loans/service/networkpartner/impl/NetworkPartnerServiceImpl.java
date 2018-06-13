@@ -1174,7 +1174,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 			List<LoanApplicationMaster> assignedToCheckerApplicationList = loanApplicationRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER,nhbsApplicationRequest.getUserId());
 			assignedToCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
-			countObj.put("assignedToCheckerProposalCount", assignedToMakerApplicationList.size());
+			countObj.put("assignedToCheckerProposalCount", assignedToCheckerApplicationList.size());
 
 			List<LoanApplicationMaster> allOtherApplicationList = loanApplicationRepository.getFPProposalsWithOthersCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId());
 			allOtherApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
