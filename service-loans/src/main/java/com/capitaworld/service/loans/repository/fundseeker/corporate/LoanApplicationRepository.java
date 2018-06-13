@@ -261,11 +261,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public double getTenure(@Param("id") Long applicationId);
 
 	//fp-maker - new proposal - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.typeOfPayment<>null and lm.isActive = true order by lm.modifiedDate desc")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPProposalsByApplicationStatusAndNpOrgIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
 
 	//fp-maker - new proposal - count
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.typeOfPayment<>null and lm.isActive = true")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true")
 	public List<LoanApplicationMaster> getFPMakerNewProposalCount(@Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
 
 	//fp-maker-assigned & assigned to checker - pagination
