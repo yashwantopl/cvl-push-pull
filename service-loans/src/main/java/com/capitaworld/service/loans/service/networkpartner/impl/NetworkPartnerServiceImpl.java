@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowRequest;
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
@@ -25,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.dms.client.DMSClient;
@@ -96,6 +101,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
+
+	@Autowired
+	private WorkflowClient workflowClient;
 
 	@Override
 	public List<NhbsApplicationsResponse> getListOfProposals(NhbsApplicationRequest request,Long npOrgId,Long userId) {
@@ -1208,6 +1216,29 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMaster.setModifiedBy(request.getUserId());
 			applicationMaster.setModifiedDate(new Date());
 			loanApplicationRepository.save(applicationMaster);
+
+			try {
+				WorkflowRequest workflowRequest = new WorkflowRequest();
+				workflowRequest.setApplicationId(applicationMaster.getId());
+				workflowRequest.setUserId(request.getUserId());
+				workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
+				workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
+				WorkflowResponse workflowResponse = workflowClient.createJob(workflowRequest);
+				if (com.capitaworld.service.matchengine.utils.CommonUtils.isObjectNullOrEmpty(workflowResponse)
+						|| workflowResponse.getStatus() != HttpStatus.OK.value()) {
+					logger.error(
+							"Something goes wrong with Creating Process when Generating Matches for Application Id===>{} ===>>{}",
+							applicationMaster.getId(), request.getUserId());
+				} else {
+					logger.info("Status of Creating Proess for Application Id===>{} ===>>{}",
+							applicationMaster.getId(), request.getUserId());
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Error while Creating Process ==>{}", e);
+			}
+
 			logger.info("exit from setFPMaker()");
 			return true;
 		}
