@@ -2019,7 +2019,7 @@ public class LoanApplicationController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
 			loanApplicationService.updateSkipPayment(userId, appId, orgId);
 			logger.info("end updateSkipPaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -2036,10 +2036,11 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getProposalDataFromAppId(@PathVariable("appId") Long appId) {
 		try {
 			logger.info("start getProposalDataFromAppId()");
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
-			loanApplicationService.getProposalDataFromApplicationId(appId);
-			logger.info("end updateSkipPaymentStatus()");
-			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+			LoanApplicationRequest loanResponse = loanApplicationService.getProposalDataFromApplicationId(appId);
+			if(!CommonUtils.isObjectNullOrEmpty(loanResponse)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get result", HttpStatus.OK.value(),loanResponse), HttpStatus.OK);	
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found !!", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getProposalDataFromAppId ==>{}", e);
 			e.printStackTrace();
