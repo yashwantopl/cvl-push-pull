@@ -733,17 +733,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
 					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-					try{
-						UserResponse userResponse = usersClient.checkUserUnderSp(loanApplicationMaster.getUserId());
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse) && userResponse.getStatus() == 200 && (boolean)userResponse.getData()){
-							nhbsApplicationsResponse.setClientSource("SP");
-						}else{
-							nhbsApplicationsResponse.setClientSource("Direct");
-						}
-					}catch (Exception e) {
-						logger.error("error while calling users clients while calling checkUserUnderSp()");
-						e.printStackTrace();
-					}
 					nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 				}
 			}
@@ -752,6 +741,153 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		return nhbsApplicationsResponseList;
 
 	}
+
+    @Override
+    public List<NhbsApplicationsResponse> getListOfAssignedProposalsFP(NhbsApplicationRequest request) {
+        logger.info("entry in getListOfAssignedProposalsFP()");
+        List<LoanApplicationMaster> applicationMastersList = new ArrayList<LoanApplicationMaster>();
+        if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
+
+        }else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
+        	if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),request.getUserId());
+			}else{
+				applicationMastersList = loanApplicationRepository.getFPProposalsIwthOthersByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,request.getUserId());
+			}
+
+        }else{
+            applicationMastersList = null;
+        }
+
+        List<NhbsApplicationsResponse> nhbsApplicationsResponseList =null;
+        if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
+            nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
+            for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
+                NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
+                nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
+                nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
+                nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
+                if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
+                    nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
+                    nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+                }else{
+                    nhbsApplicationsResponse.setDdrStatus("NA");
+                }
+
+                CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+                if(applicantDetail != null){
+                    nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+                    try {
+                        // Setting City Value
+                        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+                            nhbsApplicationsResponse.setCity(
+                                    CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+                        }
+
+                        // Setting State Value
+                        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+                            nhbsApplicationsResponse.setState(CommonDocumentUtils
+                                    .getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+                        }
+
+                        // Country State Value
+                        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+                            nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+                                    .getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+                        }
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                        logger.error("error while fetching details from oneform client for city/state/country");
+                        e.printStackTrace();
+                    }
+                }
+                // get profile pic
+                DocumentRequest documentRequest = new DocumentRequest();
+                documentRequest.setApplicationId(loanApplicationMaster.getId());
+                documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+                documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+                try {
+                    DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+                    String imagePath = null;
+                    if (documentResponse != null && documentResponse.getStatus() == 200) {
+                        List<Map<String, Object>> list = documentResponse.getDataList();
+                        if (!CommonUtils.isListNullOrEmpty(list)) {
+                            StorageDetailsResponse StorsgeResponse = null;
+
+                            StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+                                    StorageDetailsResponse.class);
+
+                            if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+                                imagePath = StorsgeResponse.getFilePath();
+                            else
+                                imagePath=null;
+                        }
+                    }
+                    nhbsApplicationsResponse.setClientProfilePic(imagePath);
+
+                } catch (DocumentException | IOException e) {
+                    logger.error("error while getting profile image");
+                    e.printStackTrace();
+                }
+                if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
+                    nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");
+                }else{
+                    nhbsApplicationsResponse.setOneFormFilled("Unlocked");
+                }
+
+                if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
+					nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+                	List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByNpUserIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+                    if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+                        nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
+                    }
+					if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED){
+						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
+							UsersRequest usersRequest = new UsersRequest();
+							usersRequest.setId(loanApplicationMaster.getNpUserId());
+							try {
+								UserResponse userResponseForName = usersClient.getFPDetails(usersRequest);
+								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+										FundProviderDetailsRequest.class);
+								nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+							} catch (Exception e) {
+								logger.error("error while fetching FP details");
+								e.printStackTrace();
+							}
+						}
+						else {
+							nhbsApplicationsResponse.setCheckerName("NA");
+						}
+						if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED){
+							nhbsApplicationsResponse.setApplicationWith("Maker");
+							if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
+								UsersRequest usersRequest = new UsersRequest();
+								usersRequest.setId(loanApplicationMaster.getFpMakerId());
+								try {
+									UserResponse userResponseForName = usersClient.getFPDetails(usersRequest);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+									nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+								} catch (Exception e) {
+									logger.error("error while fetching FP details");
+									e.printStackTrace();
+								}
+							}
+						}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+							nhbsApplicationsResponse.setApplicationWith("Checker");
+						}
+					}
+                }else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
+
+                }
+
+                nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
+            }
+        }
+
+        logger.info("exit from getListOfAssignedProposalsFP()");
+        return nhbsApplicationsResponseList;
+    }
 
 	@Override
 	public boolean setFPMaker(NhbsApplicationRequest request) {

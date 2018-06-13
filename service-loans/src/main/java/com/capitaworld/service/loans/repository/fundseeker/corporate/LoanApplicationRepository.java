@@ -263,5 +263,12 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//fp-maker-checker-pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.typeOfPayment<>null and lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPProposalsByApplicationStatusAndNpOrgIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
-	
+
+	//fp-maker-pagination
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.fpMakerId=:npUserId and  lm.isActive = true ")
+	public List<LoanApplicationMaster> getFPAssignedProposalsByNPUserIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+
+	//fp-maker-pagination
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
+	public List<LoanApplicationMaster> getFPProposalsIwthOthersByNPUserIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 }
