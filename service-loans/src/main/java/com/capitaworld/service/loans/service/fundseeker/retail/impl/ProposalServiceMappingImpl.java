@@ -347,17 +347,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					UsersRequest usersRequest=new UsersRequest();
 					usersRequest.setId(request.getUserId());
 					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
-					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
-					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
-									oneFormClient));
+					if(!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
+						try {
+							FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+												oneFormClient));
+									}
+								}
+								if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+								}	
+							}
+								
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
+							
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
-						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
-					}
+					
 					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
