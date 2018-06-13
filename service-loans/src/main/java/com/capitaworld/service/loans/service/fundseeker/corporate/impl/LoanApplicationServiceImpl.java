@@ -5529,8 +5529,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					Object orgObject = proposalresp.get("org_id");
 					if(!CommonUtils.isObjectNullOrEmpty(orgObject)) {
-						String orgObjectStng = (String) orgObject;
-						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(Long.valueOf(orgObjectStng)));
+						Integer orgObjectInt = (Integer) orgObject;
+						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(orgObjectInt.longValue()));
+
 					}
 					return applicationRequest;
 				} else{
