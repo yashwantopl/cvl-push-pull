@@ -40,6 +40,7 @@ public class CorporatePrimaryViewResponse {
     private Double sharePriceMarket;
     private String loanAmount;
     private String gstIn;
+    private Integer productId;
     private String haveCollateralSecurity;
     private String collateralSecurityAmount;
     private List<Object> profilePic;
@@ -438,6 +439,18 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setNpOrgId(Long npOrgId) {
 		this.npOrgId = npOrgId;
+	}
+	/**
+	 * @return the productId
+	 */
+	public Integer getProductId() {
+		return productId;
+	}
+	/**
+	 * @param productId the productId to set
+	 */
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 	
     
