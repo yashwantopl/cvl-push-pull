@@ -63,7 +63,7 @@ public class MCAAsyncComponent {
 					companiesHistoryRequest.setPara(historyPara);
 					request.setCompaniesHistory(companiesHistoryRequest);
 					request.setApplicationId(applicationId);
-					
+					request.setUserId(userId);
 					mcaClient.getCompanyHistory(request);
 				}
 			}
