@@ -1,8 +1,8 @@
 package com.capitaworld.service.loans.service.sanctionimpl;
 
+import java.io.IOException;
+
 import java.util.Date;
-
-
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,9 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
-import com.google.gson.Gson;
+
 /**
  * @author Ankit
  *
@@ -61,10 +62,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@Override
 	public String requestValidation(String userName, String password, Long applicationId) {
-		
-		 Long orgId =userClient.getOrganisationDetailIdByCredential(userName, password);
-		 if(orgId!=null) {
-			if(proposalDetailsRepository.getApplicationIdByOrgId(applicationId ,orgId)) {
+	                	
+		 Long orgId =getOrgIdByCredential(userName, password);
+		 if(orgId != null) {
+			 Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(applicationId ,orgId);
+			if(recCount != null && recCount  > 0) {
 					return  "SUCCESS";
 			}else {
 				return "InvalId ApplicationId ";
@@ -74,12 +76,15 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		 }
 	}
 	@Override
-	public void saveBankReqRes(Object sanctionAndDisbursementReq, LoansResponse loansResponse, String msg) {
-		Gson json=new Gson();
+	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest, LoansResponse loansResponse, String msg,Long orgId) throws IOException {
+		
 		 BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
-		 bankCWAuditTrailDomain.setBankRequest(json.toJson(sanctionAndDisbursementReq));
-		 bankCWAuditTrailDomain.setCwResponse(json.toJson(loansResponse.toString()));
+		 bankCWAuditTrailDomain.setApplicationId(loanSanctionRequest.getApplicationId());
+		 bankCWAuditTrailDomain.setOrgId(getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword()));
+		 bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanSanctionRequest));
+		 bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
 		 bankCWAuditTrailDomain.setMsg(msg);
+		 bankCWAuditTrailDomain.setIsActive(true);
 		 bankCWAuditTrailDomain.setCreatedDate(new Date());
 		 if(loansResponse.getStatus()==200) {
 			 bankCWAuditTrailDomain.setStatus("SUCCESS");
@@ -87,6 +92,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			 bankCWAuditTrailDomain.setStatus("FAILURE");
 		 }
 		 		bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
+	}
+	
+	@Override
+	public Long getOrgIdByCredential(String userName, String pwd) {
+		 return userClient.getOrganisationDetailIdByCredential(userName, pwd);
+		
 	}
 
 }
