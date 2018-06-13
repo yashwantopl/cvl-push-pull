@@ -18,12 +18,16 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Double sanctionAmount;
 	private String transectionNo;
 	private Double roi;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date sanctionDate;
 	private Long branch;
 	private Long applicationId;
+	private Long referenceNo; 
 	private Double tenure;
 	private String sanctionAuthority;
+	private String remarks;
+	private String userName;
+	private String password;
 
 	public String getAccountNo() {
 		return accountNo;
@@ -81,6 +85,15 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.applicationId = applicationId;
 	}
 
+	
+	public Long getReferenceNo() {
+		return referenceNo;
+	}
+
+	public void setReferenceNo(Long referenceNo) {
+		this.referenceNo = referenceNo;
+	}
+
 	public Double getTenure() {
 		return tenure;
 	}
@@ -97,14 +110,40 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.sanctionAuthority = sanctionAuthority;
 	}
 
+	
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transectionNo="
 				+ transectionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
-				+ ", applicationId=" + applicationId + ", tenure=" + tenure + ", sanctionAuthority=" + sanctionAuthority
-				+ "]";
+				+ ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remarks=" + remarks + ", userName=" + userName
+				+ ", password=" + password + "]";
 	}
 
-
 	
+
 }

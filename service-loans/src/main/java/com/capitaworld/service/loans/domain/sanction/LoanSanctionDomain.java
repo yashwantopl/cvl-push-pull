@@ -33,8 +33,8 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 	
 	private Double roi;
 	
-	@Column(name="transection_no")
-	private String transectionNo;
+	@Column(name="transaction_no")
+	private String transactionNo;
 	
 	@Column(name="sanction_date")
 	private Date sanctionDate;
@@ -44,11 +44,15 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 	@Column(name="application_id")
 	private Long applicationId;
 	
+	@Column(name="reference_no")
+	private Long referenceNo; 
+	
 	private Double tenure;
 	
 	@Column(name="sanction_authority")
 	private String sanctionAuthority;
-
+	
+	private String remark;
 
 	public Long getId() {
 		return id;
@@ -82,6 +86,14 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.roi = roi;
 	}
 
+	public String getTransectionNo() {
+		return transactionNo;
+	}
+
+	public void setTransectionNo(String transectionNo) {
+		this.transactionNo = transectionNo;
+	}
+
 	public Date getSanctionDate() {
 		return sanctionDate;
 	}
@@ -106,6 +118,14 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.applicationId = applicationId;
 	}
 
+	public Long getReferenceNo() {
+		return referenceNo;
+	}
+
+	public void setReferenceNo(Long referenceNo) {
+		this.referenceNo = referenceNo;
+	}
+
 	public Double getTenure() {
 		return tenure;
 	}
@@ -122,12 +142,23 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.sanctionAuthority = sanctionAuthority;
 	}
 
+	public String getRemarks() {
+		return remark;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remark = remarks;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
-				+ ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch + ", applicationId="
-				+ applicationId + ", tenure=" + tenure + ", sanctionAuthority=" + sanctionAuthority + "]";
+				+ ", roi=" + roi + ", transectionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
+				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remarks=" + remark + "]";
 	}
+
+
 
 	
 }

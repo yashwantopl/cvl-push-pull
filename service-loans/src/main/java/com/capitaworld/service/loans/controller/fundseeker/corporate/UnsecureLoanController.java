@@ -63,9 +63,7 @@ public class UnsecureLoanController {
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				unsecureLoanRequest.setClientId(clientId);
 			}
 			finalUSLService.saveOrUpdate(unsecureLoanRequest, userId);
@@ -89,9 +87,7 @@ public class UnsecureLoanController {
 			try {
 				CommonDocumentUtils.startHook(logger, "getFinal");
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-						 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+				if (CommonDocumentUtils.isThisClientApplication(request)) {
 					userId = clientId;
 				} else {
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -131,9 +127,7 @@ public class UnsecureLoanController {
 			CommonDocumentUtils.startHook(logger, "savePrimary");
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				unsecureLoanRequest.setClientId(clientId);
 			}
 
@@ -169,9 +163,7 @@ public class UnsecureLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getPrimary");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
