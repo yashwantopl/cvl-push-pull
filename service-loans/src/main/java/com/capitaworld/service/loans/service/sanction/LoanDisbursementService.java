@@ -6,9 +6,9 @@ import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 
 public interface LoanDisbursementService {
-	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest);
+	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest)throws IOException ;
 	
-	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest);
+	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest)throws IOException ;
 	
 	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest, LoansResponse loansResponse, String msg, Long orgId) throws IOException  ;
 }

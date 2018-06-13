@@ -43,9 +43,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	@Autowired
 	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository; 
 	@Override
-	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) {
-		
-		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest "+ loanSanctionRequest);
+	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
+		try {
+		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
 		LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ) {
@@ -56,13 +56,20 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		loanSanctionDomain.setCreatedDate(new Date());
 		loanSanctionDomain.setModifiedDate(new Date());
 		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomain);
+		
 		return loanSanctionRepository.save(loanSanctionDomain) != null;
+		}catch (Exception e) {
+			logger.info("Error/Exception in saveLoanSanctionDetail() -----------------------> Message "+e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 
 	}
 	
 	@Override
-	public String requestValidation(String userName, String password, Long applicationId) {
-	                	
+	public String requestValidation(String userName, String password, Long applicationId) throws Exception {
+		logger.info("Enter in requestValidation() ----------------------->  applicationId==> "+ applicationId);
+	        try {        	
 		 Long orgId =getOrgIdByCredential(userName, password);
 		 if(orgId != null) {
 			 Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(applicationId ,orgId);
@@ -74,13 +81,18 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		 }else {
 			 return "Invalid Credential";
 		 }
+	        }catch (Exception e) {
+	        	logger.info("Error/Exception in requestValidation() ----------------------->  Message "+ e.getMessage());
+	        	throw e;
+			}
 	}
 	@Override
 	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest, LoansResponse loansResponse, String msg,Long orgId) throws IOException {
-		
+		logger.info("Enter in saveBankReqRes() -----------------------> LoanSanctionRequest ==>"+ loanSanctionRequest+ " orgId==> "+ orgId);
+		try {
 		 BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
-		 bankCWAuditTrailDomain.setApplicationId(loanSanctionRequest.getApplicationId());
-		 bankCWAuditTrailDomain.setOrgId(getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword()));
+		 bankCWAuditTrailDomain.setApplicationId(loanSanctionRequest !=null?loanSanctionRequest.getApplicationId():null);
+		 bankCWAuditTrailDomain.setOrgId(orgId);
 		 bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanSanctionRequest));
 		 bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
 		 bankCWAuditTrailDomain.setMsg(msg);
@@ -92,6 +104,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			 bankCWAuditTrailDomain.setStatus("FAILURE");
 		 }
 		 		bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
+		}catch (Exception e) {
+			logger.info("Error/Exception in saveBankReqRes() ----------------------->  Message "+ e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} 		
 	}
 	
 	@Override
