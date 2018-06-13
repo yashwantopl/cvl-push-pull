@@ -49,7 +49,7 @@ public class ProposalController {
 		logger.info("request.getSize()::"+request.getSize());
 		
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -84,7 +84,7 @@ public class ProposalController {
 		
 		// request must not be null
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -102,7 +102,7 @@ public class ProposalController {
 	public ResponseEntity<ProposalCountResponse> fundProviderProposalCount(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -123,7 +123,7 @@ public class ProposalController {
 		
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -144,7 +144,7 @@ public class ProposalController {
 	public ResponseEntity<ProposalMappingResponse> changeStatus(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -166,7 +166,7 @@ public class ProposalController {
 		Long userId = null;
 		Long userType = null;
 		Integer loginUserType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -199,7 +199,7 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> connections(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		try {
 			Long userType = null;
-			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest) && !CommonUtils.isObjectNullOrEmpty(clientUserType)) {
 				userType = clientUserType;
 			} else {
 				userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
@@ -252,7 +252,7 @@ public class ProposalController {
 		logger.info("Enter in update assign details for axis bank flow");
 		try {
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId  = clientId;				
 			} else {
 				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
@@ -286,7 +286,7 @@ public class ProposalController {
 		logger.info("request.getSize()::"+request.getSize());
 		
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
