@@ -11,6 +11,6 @@ import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
  */
 public interface LoanDisbursementRepository extends JpaRepository<LoanDisbursementDomain, Long> {
 
-	@Query("SELECT sum(ldd.disbursedAmount) FROM  LoanDisbursementDomain ldd WHERE ldd.applicationId =:applcationId and ldd.isActive =true")
-	public Double getTotalDisbursedAmoount(@Param("applicationId") Long applicationId );
+	@Query("SELECT sum(ldd.disbursedAmount) FROM  LoanDisbursementDomain ldd WHERE ldd.applicationId =:applicationId and ldd.isActive =true")
+	public Double getTotalDisbursedAmount(@Param("applicationId") Long applicationId );
 }

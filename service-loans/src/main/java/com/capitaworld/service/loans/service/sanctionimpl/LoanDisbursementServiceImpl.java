@@ -57,7 +57,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService{
 		Long orgId =usersClient.getOrganisationDetailIdByCredential(loanDisbursementRequest.getUserName(), loanDisbursementRequest.getPassword());
 		if(orgId!=null) {
 			if(proposalDetailsRepository.getApplicationIdByOrgId(loanDisbursementRequest.getApplicationId() ,orgId)) {
-				Double amount=loanDisbursementRepository.getTotalDisbursedAmoount(loanDisbursementRequest.getApplicationId());
+				Double amount=loanDisbursementRepository.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
 				if(amount!=null) {
 					Double totalAmount = amount+loanDisbursementRequest.getDisbursedAmount();
 					if(loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId()).getSanctionAmount() <= totalAmount) {

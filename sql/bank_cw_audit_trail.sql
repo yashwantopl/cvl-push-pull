@@ -6,6 +6,7 @@ CREATE TABLE `bank_cw_audit_trail` (
   `cw_response` blob,
   `status` varchar(100) DEFAULT NULL,
   `msg` varchar(100) DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
   `is_active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
