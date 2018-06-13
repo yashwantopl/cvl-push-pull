@@ -161,6 +161,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+					logger.info("loanApplicationMaster null ot empty !!");
+					continue;
+				}
 
 				if(!loanApplicationMaster.getIsActive()) {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);

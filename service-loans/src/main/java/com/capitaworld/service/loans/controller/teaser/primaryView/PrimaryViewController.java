@@ -638,7 +638,7 @@ public class PrimaryViewController {
 			Long fromUserTypeId = null;
 			Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 			
-			if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+			if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				fromUserId = clientId;
 				fromUserTypeId = clientUserType;
 			} else {
