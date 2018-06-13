@@ -8,6 +8,7 @@ import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 public interface ProposalService {
 
@@ -37,6 +38,6 @@ public interface ProposalService {
 
 	public Boolean saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 
-	public void getMinMaxAmount(userRequest);
+	public void getMinMaxAmount(UsersRequest userRequest);
 	
 }
