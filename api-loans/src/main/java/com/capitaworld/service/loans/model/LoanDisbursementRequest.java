@@ -16,17 +16,35 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
-	private Double disbursedAmount;
-	private Long mode;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy") 
-	private Date disbursementDate; 
 	
+	private Long referenceNo;
+
+	private Double disbursedAmount;
+
+	private Long mode;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	private Date disbursementDate;
+
+	private String userName;
+
+	private String password;
+	private String remark;
+
 	public Long getApplicationId() {
 		return applicationId;
 	}
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+
+	public Long getReferenceNo() {
+		return referenceNo;
+	}
+
+	public void setReferenceNo(Long referenceNo) {
+		this.referenceNo = referenceNo;
 	}
 
 	public Double getDisbursedAmount() {
@@ -44,8 +62,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	public void setMode(Long mode) {
 		this.mode = mode;
 	}
-	
-	
+
 	public Date getDisbursementDate() {
 		return disbursementDate;
 	}
@@ -54,11 +71,35 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.disbursementDate = disbursementDate;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanDisbursementRequest [applicationId=" + applicationId + ", disbursedAmount=" + disbursedAmount
-				+ ", mode=" + mode + ", disbursementDate=" + disbursementDate + "]";
+	public String getUserName() {
+		return userName;
 	}
 
-	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanDisbursementRequest [applicationId=" + applicationId + ", referenceNo=" + referenceNo
+				+ ", disbursedAmount=" + disbursedAmount + ", mode=" + mode + ", disbursementDate=" + disbursementDate
+				+ ", userName=" + userName + ", password=" + password + ", remark=" + remark + "]";
+	}
+
 }
