@@ -13,7 +13,6 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.CompaniesHistoryPara;
 import com.capitaworld.service.mca.model.CompaniesHistoryRequest;
-import com.capitaworld.service.mca.model.CompaniesHistoryResponse;
 import com.capitaworld.service.mca.model.McaRequest;
 import com.capitaworld.service.mca.model.McaRequestPara;
 import com.capitaworld.service.mca.model.SearchCompaniesRequest;
