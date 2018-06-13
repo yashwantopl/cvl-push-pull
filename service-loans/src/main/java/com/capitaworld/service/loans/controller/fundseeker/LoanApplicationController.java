@@ -1856,7 +1856,7 @@ public class LoanApplicationController {
 				
 				try {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
-					loanSanctionRequest = MultipleJSONObjectHelper.getObjectFromString(encryptedString, LoanSanctionRequest.class);
+					loanSanctionRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt, LoanSanctionRequest.class);
 					orgId = loanSanctionService.getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword());	
 				}catch (Exception e) {
 					e.printStackTrace();
@@ -1876,7 +1876,7 @@ public class LoanApplicationController {
 					    	 loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
 					    	 logger.info("Saving Request to DB ===> ");
 					    	 loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse, msg,orgId );
-					    	 logger.info("Exit saveLoanSanctionDetail() ---------------->  msg ==>", "Information Successfully Stored " );
+					    	 logger.info("Exit saveLoanSanctionDetail() ---------------->  msg ==>"+ "Information Successfully Stored " );
 					    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					     }else {
 					    	 loansResponse = new LoansResponse(msg, HttpStatus.BAD_REQUEST.value());
@@ -1915,7 +1915,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/saveLoanDisbursementDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanDisbursementDetail(@RequestBody String encryptedString ){
 		try {
-			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> encryptedString =====> " , encryptedString);
+			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> encryptedString =====> " + encryptedString);
 			LoanDisbursementRequest loanDisbursementRequest = null;
 			LoansResponse loansResponse=null;
 			Long orgId=null;
@@ -1942,7 +1942,7 @@ public class LoanApplicationController {
 				    	 loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
 				    	 logger.info("Saving Request to DB ===> ");
 				    	 loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse, msg ,orgId);
-				    	 logger.info("Exit saveLoanDisbursementDetail() ---------------->  msg ==>", "Information Successfully Stored " );
+				    	 logger.info("Exit saveLoanDisbursementDetail() ---------------->  msg ==>" + "Information Successfully Stored " );
 				    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 				     }else {
 				    	 loansResponse = new LoansResponse(msg, HttpStatus.BAD_REQUEST.value());
