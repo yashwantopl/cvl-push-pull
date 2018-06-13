@@ -23,10 +23,10 @@ public class BankCWAuditTrailDomain implements Serializable{
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name="orgId")
+	@Column(name="org_id")
 	private Long orgId;
 	
-	@Column(name="applicationId")
+	@Column(name="application_id")
 	private Long applicationId;
 	
 	@Column(name="bank_request")
@@ -39,7 +39,7 @@ public class BankCWAuditTrailDomain implements Serializable{
 	
 	private String msg;
 	
-	@Column(name="createdDate")
+	@Column(name="created_date")
 	private Date createdDate;
 	
 	@Column(name="is_active")
