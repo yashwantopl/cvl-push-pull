@@ -419,6 +419,7 @@ public class NhbsController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			nhbsApplicationRequest.setUserId(userId);
 			LoansResponse loansResponse = new LoansResponse();
 			boolean isDataUpdated = networkPartnerService.setFPChecker(nhbsApplicationRequest);
 			if (isDataUpdated) {
