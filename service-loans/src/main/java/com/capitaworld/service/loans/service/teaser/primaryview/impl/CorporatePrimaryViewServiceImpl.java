@@ -78,17 +78,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
     @Autowired
-    private IndustrySectorRepository industrySectorRepository;
-
-    @Autowired
-    private SubSectorRepository subSectorRepository;
-
-    @Autowired
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
     @Autowired
     private DirectorBackgroundDetailsService directorBackgroundDetailsService;
-
 
     @Autowired
     private OneFormClient oneFormClient;
@@ -101,12 +94,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
     @Autowired
     private UsersClient usersClient;
-
-    @Autowired
-    private SectorIndustryMappingRepository sectorIndustryMappingRepository;
-
-    @Autowired
-    private SubSectorMappingRepository subSectorMappingRepository;
     
     @Autowired
     private IrrService irrService;
@@ -120,6 +107,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
 
+        corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 
         /*========= Matches Data ==========*/
         if (userType != null) {
