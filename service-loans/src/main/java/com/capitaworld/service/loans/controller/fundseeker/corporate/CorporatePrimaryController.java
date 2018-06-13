@@ -1,20 +1,25 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryTermLoanService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/corporate_primary")
@@ -39,9 +44,7 @@ public class CorporatePrimaryController {
             CommonDocumentUtils.startHook(logger, "savePrimary");
             // request must not be null
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() ||
-                    CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                            .intValue()) {
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
                 primaryCorporateRequest.setClientId(clientId);
             }
 
@@ -77,9 +80,7 @@ public class CorporatePrimaryController {
         try {
             CommonDocumentUtils.startHook(logger, "getPrimary");
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-            if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() ||
-                    CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                            .intValue()) {
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
                 userId = clientId;
             } else {
                 userId = (Long) request.getAttribute(CommonUtils.USER_ID);

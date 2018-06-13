@@ -163,6 +163,8 @@ public interface LoanApplicationService {
 	 * @return
 	 */
 	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception;
+
+	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId);
 }
 
 

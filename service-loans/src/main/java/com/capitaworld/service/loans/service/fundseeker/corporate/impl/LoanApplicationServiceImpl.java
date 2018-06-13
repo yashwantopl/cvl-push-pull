@@ -5491,4 +5491,60 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw e;
 		}
 	}
+
+	@Override
+	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId) {
+		
+		try {
+			logger.info("ENter in get Proposal Data From ApplicationId ------------------->" + applicationId);
+			LoanApplicationRequest applicationRequest= new LoanApplicationRequest();
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+			
+			if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("Application MAster response null or empty by above applicaiton iD");
+				return null;
+			}
+			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+			ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(applicationId);
+			if (response != null && response.getData() != null) {
+				Map<String, Object> proposalresp = null;
+				try {
+					proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+				} catch (IOException e) {
+					logger.info("could not extract data");
+					e.printStackTrace();
+				}
+				 
+				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
+					applicationRequest.setLoanAmount(proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
+					applicationRequest.setTenure(proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
+					applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null ? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
+					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+					applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null ? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
+					applicationRequest.setOnlinePaymentSuccess(true);
+
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+						applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+					}
+					Object orgObject = proposalresp.get("org_id");
+					if(!CommonUtils.isObjectNullOrEmpty(orgObject)) {
+						Integer orgObjectInt = (Integer) orgObject;
+						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(orgObjectInt.longValue()));
+
+					}
+					return applicationRequest;
+				} else{
+					logger.info("Proposal Map is null or empty !!");
+					return null;
+				}
+			} else {
+				logger.info("Proposal Response is null or empty !!");
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception WHile Get Proposal Detaisl By APplicationId");
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

@@ -53,9 +53,7 @@ public class DirectorBackgroundDetailsController {
 		
 		//==============
 		
-				if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && (CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString()) || 
-						 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue())){
+				if(CommonDocumentUtils.isThisClientApplication(request)){
 					frameRequest.setClientId(clientId);
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				}else{
@@ -89,7 +87,7 @@ public class DirectorBackgroundDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+//			if(CommonDocumentUtils.isThisClientApplication(request)).intValue()){
 //				frameRequest.setClientId(clientId);
 //			}
 			
@@ -122,9 +120,7 @@ public class DirectorBackgroundDetailsController {
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -158,9 +154,7 @@ public class DirectorBackgroundDetailsController {
 	public ResponseEntity<LoansResponse> saveDirectors(@RequestBody Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		logger.info("Enter saveDirectors()");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);

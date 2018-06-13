@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.boot;
 
 import java.util.Base64;
 
+import com.capitaworld.client.workflow.WorkflowClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -107,6 +108,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.mca.url}")
 	private String mcaClientUrl;
+
+	@Value("${capitaworld.service.workflow.url}")
+	private String workFlowClientUrl;
 	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -234,5 +238,10 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(mcaClient);
 		return mcaClient;
 	}
-
+	@Bean
+	public WorkflowClient workFlowClient() {
+		WorkflowClient workflowClient = new WorkflowClient(workFlowClientUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
+		return workflowClient;
+	}
 }

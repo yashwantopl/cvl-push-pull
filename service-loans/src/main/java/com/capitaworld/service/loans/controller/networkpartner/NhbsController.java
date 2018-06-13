@@ -247,8 +247,8 @@ public class NhbsController {
 		}
 	}
 
-	@RequestMapping(value = "/get/proposalsList/fp", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getProposalsListFP(@RequestBody NhbsApplicationRequest applicationRequest,HttpServletRequest request) {
+	@RequestMapping(value = "/get/proposalsList/fpMaker", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProposalsListFPMaker(@RequestBody NhbsApplicationRequest applicationRequest,HttpServletRequest request) {
 		try {
 
 			if(CommonUtils.isObjectNullOrEmpty(applicationRequest) ||
@@ -274,7 +274,7 @@ public class NhbsController {
 		}
 	}
 
-	@RequestMapping(value = "/get/fp/assigned/proposals", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/get/fp/assigned/proposals", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPAssignedProposals(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -300,7 +300,37 @@ public class NhbsController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+	}*/
+
+    @RequestMapping(value = "/get/fp/checker/proposals", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getFPCheckerProposals(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
+        try {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(CommonUtils.isObjectNullOrEmpty(userId) ||
+					(CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationStatusId()) && CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getDdrStatusId()))||
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getUserRoleIdString()) ||
+                    CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getFpProductId())){
+                logger.warn("userId  can not be empty ==>" + userId);
+                logger.warn("applicationStatusId or ddrStatusId can not be empty ==>" + nhbsApplicationRequest.getApplicationStatusId());
+                logger.warn("userRoleId  can not be empty ==>" + nhbsApplicationRequest.getUserRoleIdString());
+                logger.warn("fpProduct  can not be empty ==>" + nhbsApplicationRequest.getFpProductId());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            nhbsApplicationRequest.setUserId(userId);
+            nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
+            List<NhbsApplicationsResponse> applicationsResponseList = networkPartnerService.getListOfCheckerProposalsFP(nhbsApplicationRequest);
+            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            loansResponse.setListData(applicationsResponseList);
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while getting assigned proposals ", e);
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 	@RequestMapping(value = "/get/fpProposalCount", method = RequestMethod.POST,consumes=MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPProposalCount(@RequestBody NhbsApplicationRequest nhbsApplicationRequest,HttpServletRequest request) {
@@ -318,7 +348,7 @@ public class NhbsController {
 			LoansResponse loansResponse = new LoansResponse();
 			Long orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			nhbsApplicationRequest.setUserRoleId(Long.parseLong(CommonUtils.decode(nhbsApplicationRequest.getUserRoleIdString())));
-			JSONObject jsonCountObj = networkPartnerService.getNhbsProposalCount(nhbsApplicationRequest,orgId);
+			JSONObject jsonCountObj = networkPartnerService.getFPProposalCount(nhbsApplicationRequest,orgId);
 			if(!CommonUtils.isObjectNullOrEmpty(jsonCountObj)){
 				logger.info("Data Found.");
 				loansResponse.setMessage("Data Found.");
