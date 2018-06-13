@@ -233,9 +233,11 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	public Boolean inActiveCMA(Long storageDetailsId) {
 		// TODO Auto-generated method stub
 		try {
+			System.out.println("trying to inActivate CMA file");
 			assetsDetailsService.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
+			System.out.println("exit from in activation method");
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.error("Error while inactive CMA");
