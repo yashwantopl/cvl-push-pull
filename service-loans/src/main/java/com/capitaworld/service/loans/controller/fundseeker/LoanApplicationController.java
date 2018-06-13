@@ -2009,7 +2009,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start updateSkipPaymentStatus()");
-			Long userId = 1878l;
+			Long userId = null;
 			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
 					.intValue()
 					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
@@ -2019,7 +2019,7 @@ public class LoanApplicationController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
-			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
 			loanApplicationService.updateSkipPayment(userId, appId, orgId);
 			logger.info("end updateSkipPaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -2029,6 +2029,22 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/getProposalDataFromAppId/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProposalDataFromAppId(@PathVariable("appId") Long appId) {
+		try {
+			logger.info("start getProposalDataFromAppId()");
+			LoanApplicationRequest loanResponse = loanApplicationService.getProposalDataFromApplicationId(appId);
+			if(!CommonUtils.isObjectNullOrEmpty(loanResponse)) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get result", HttpStatus.OK.value(),loanResponse), HttpStatus.OK);	
+			}
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found !!", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getProposalDataFromAppId ==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
 
