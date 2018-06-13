@@ -5498,6 +5498,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			logger.info("ENter in get Proposal Data From ApplicationId ------------------->" + applicationId);
 			LoanApplicationRequest applicationRequest= new LoanApplicationRequest();
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+			
+			if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("Application MAster response null or empty by above applicaiton iD");
+				return null;
+			}
+			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 			ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(applicationId);
 			if (response != null && response.getData() != null) {
 				Map<String, Object> proposalresp = null;
@@ -5507,6 +5514,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("could not extract data");
 					e.printStackTrace();
 				}
+				 
 				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
 					applicationRequest.setLoanAmount(proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
 					applicationRequest.setTenure(proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
