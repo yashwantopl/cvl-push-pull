@@ -676,12 +676,14 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.OPEN){
 				applicationMastersList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+				applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED || request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),userId);
+				applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			}else{
 				applicationMastersList = loanApplicationRepository.getFPProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,userId);
+				applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			}
-			applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 		}else{
 			applicationMastersList = null;
 		}
@@ -986,12 +988,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 				if(request.getDdrStatusId()==CommonUtils.DdrStatus.SUBMITTED || request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
                     applicationMastersList = loanApplicationRepository.getFPAssignedToCheckerProposalsByNPUserIdPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId());
+					applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
 					applicationMastersList = loanApplicationRepository.getFPAssignedToCheckerReverted(new PageRequest(request.getPageIndex(),request.getSize()),request.getDdrStatusId(),request.getUserId());
+					applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
                 }else{
 					applicationMastersList = loanApplicationRepository.getFPCheckerProposalsWithOthersForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.OPEN,request.getUserId());
+					applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 				}
-			applicationMastersList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+
 		}else{
 			applicationMastersList = null;
 		}
@@ -1177,7 +1182,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			countObj.put("assignedToCheckerProposalCount", assignedToMakerApplicationList.size());
 
 			List<LoanApplicationMaster> allOtherApplicationList = loanApplicationRepository.getFPProposalsWithOthersCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId());
-			allOtherApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			allOtherApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("allOtherProposalCount", allOtherApplicationList.size());
 
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()){
@@ -1186,7 +1191,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			assignedTocheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("assignedToCheckerProposalCount", assignedTocheckerApplicationList.size());
 
-			List<LoanApplicationMaster> approvedByCheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId());
+			List<LoanApplicationMaster> approvedByCheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.APPROVED,nhbsApplicationRequest.getUserId());
 			approvedByCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("approvedByCheckerPropsalCount", approvedByCheckerApplicationList.size());
 
@@ -1195,7 +1200,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			countObj.put("revertedByCheckerPropsalCount", revertedByCheckerApplicationList.size());
 
 			List<LoanApplicationMaster> allOtherCheckerApplicationList = loanApplicationRepository.getFPCheckerProposalsWithOthersCount(CommonUtils.ApplicationStatus.OPEN,nhbsApplicationRequest.getUserId());
-			allOtherCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
+			allOtherCheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("allOtherProposalCount", allOtherCheckerApplicationList.size());
 
 		}
