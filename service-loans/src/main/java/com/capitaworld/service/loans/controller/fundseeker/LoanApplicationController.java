@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.controller.fundseeker;
 
 import java.util.List;
 
-
 import javax.servlet.http.HttpServletRequest;
 //import javax.ws.rs.Path;
 
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -30,7 +30,6 @@ import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
-import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -96,9 +95,7 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			commonRequest.setUserId(userId);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				commonRequest.setClientId(clientId);
 			}
 
@@ -154,9 +151,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -190,7 +185,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getIrrByApplicationId");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -227,9 +222,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -261,9 +254,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "inActive");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -321,9 +312,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "setLastApplicationAccess");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -454,7 +443,7 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "lockPrimary");
 			Long userId = null;
 			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-			if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -487,10 +476,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "lockFinal");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -529,10 +515,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "updateFinalInformationFlag");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -565,10 +548,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isProfileAndPrimaryFilled");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -601,10 +581,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isPrimaryLocked");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -652,10 +629,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isFinalFilled");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -739,10 +713,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isPrimaryAndFinalLocked");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -778,10 +749,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getSelfViewAndPrimaryLocked");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -814,10 +782,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getCurrencyAndDenomination");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -852,10 +817,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isAllowToMoveAhead");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -889,10 +851,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getBowlCount");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1114,10 +1073,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1177,10 +1133,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1463,10 +1416,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetails");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1492,10 +1442,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start updateFlow()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1519,10 +1466,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start save_payment_info()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1583,10 +1527,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start updatePaymentStatus()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1610,10 +1551,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start getPaymentStatus()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1640,10 +1578,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "updateDDRStatus");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1681,10 +1616,7 @@ public class LoanApplicationController {
 		logger.info("=========== Enter in copyOrImportLoan() ==============");
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -2048,10 +1980,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start updateSkipPaymentStatus()");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;  
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
