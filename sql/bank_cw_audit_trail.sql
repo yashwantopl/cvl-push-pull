@@ -1,0 +1,11 @@
+CREATE TABLE `bank_cw_audit_trail` (
+  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
+  `org_id` bigint(11) unsigned DEFAULT NULL,
+  `application_id` bigint(11) unsigned DEFAULT NULL,
+  `bank_request` blob,
+  `cw_response` blob,
+  `status` varchar(100) DEFAULT NULL,
+  `msg` varchar(100) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

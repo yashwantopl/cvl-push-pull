@@ -28,6 +28,9 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 	@Column(name="application_id") 
 	private Long applicationId;
 	
+	@Column(name="reference_no")
+	private Long referenceNo;
+	
 	@Column(name="disbursement_date")
 	private Date disbursementDate;
 	
@@ -35,53 +38,88 @@ public class LoanDisbursementDomain extends AuditActivity implements Serializabl
 	private Double disbursedAmount;
 	
 	private Long mode;
+		
+	private String remark;
 
+	
 	public Long getId() {
 		return id;
 	}
+
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+
 	public Long getApplicationId() {
 		return applicationId;
 	}
+
 
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
 	}
 
+
+	public Long getReferenceNo() {
+		return referenceNo;
+	}
+
+
+	public void setReferenceNo(Long referenceNo) {
+		this.referenceNo = referenceNo;
+	}
+
+
 	public Date getDisbursementDate() {
 		return disbursementDate;
 	}
+
 
 	public void setDisbursementDate(Date disbursementDate) {
 		this.disbursementDate = disbursementDate;
 	}
 
+
 	public Double getDisbursedAmount() {
 		return disbursedAmount;
 	}
+
 
 	public void setDisbursedAmount(Double disbursedAmount) {
 		this.disbursedAmount = disbursedAmount;
 	}
 
+
 	public Long getMode() {
 		return mode;
 	}
+
 
 	public void setMode(Long mode) {
 		this.mode = mode;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanDisbursementDomain [id=" + id + ",  applicationId=" + applicationId
-				+ ", disbursementDate=" + disbursementDate + ", disbursedAmount=" + disbursedAmount + ", mode=" + mode
-				+ "]";
+
+	public String getRemark() {
+		return remark;
 	}
 
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+
+	@Override
+	public String toString() {
+		return "LoanDisbursementDomain [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
+				+ ", disbursementDate=" + disbursementDate + ", disbursedAmount=" + disbursedAmount + ", mode=" + mode
+				+ ", remark=" + remark + "]";
+	}
 	
+	
+	
+		
 }
