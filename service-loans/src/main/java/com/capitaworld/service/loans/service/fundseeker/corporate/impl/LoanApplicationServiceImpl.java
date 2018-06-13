@@ -5527,7 +5527,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
 						applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 					}
-					applicationRequest.setFundProvider(proposalresp.get("org_id") !=null ? CommonUtils.getOrganizationName((Long)proposalresp.get("org_id")) : null);
+					Object orgObject = proposalresp.get("org_id");
+					if(!CommonUtils.isObjectNullOrEmpty(orgObject)) {
+						String orgObjectStng = (String) orgObject;
+						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(Long.valueOf(orgObjectStng)));
+					}
 					return applicationRequest;
 				} else{
 					logger.info("Proposal Map is null or empty !!");
