@@ -34,6 +34,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AuditComponent;
+import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -348,6 +349,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private AssetsDetailsRepository assetsDetailsRepository;
+	
+	@Autowired
+	private MCAAsyncComponent mcaAsyncComponent; 
 	
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -4108,6 +4112,70 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return paymentRequest.getTypeOfPayment();
 	}
 
+	
+	@Override
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception {
+		
+		logger.info("Enter in Update Skip Payment Details !!");
+		
+		//UPDATE PAYMENT STATE IN LOAN MASTER
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		
+		if (loanApplicationMaster == null) {
+			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+		}
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+		loanApplicationRepository.save(loanApplicationMaster);
+		
+		//UPDATE CONNECT POST PAYMENT
+		try {
+			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
+			
+			if (!CommonUtils.isObjectListNull(connectResponse)) {
+				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				if(orgId==10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+				}
+
+				if(connectResponse.getProceed()) {
+					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					}
+				}
+			} else {
+				logger.info("Connector Response null or empty");
+				throw new Exception("Something went wrong while call connect client for " + applicationId);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call connect client for " + applicationId);
+		}
+		
+		//TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.activateProposalOnPayment(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info("Proposal Mapping Response---------------> "+proposalMappingResponse.toString());
+				if(proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new Exception(proposalMappingResponse.getMessage());	
+				}
+			} else {
+				logger.info("Proposal Mapping Response Null or Empty---------------> ");
+				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+		}
+		
+		logger.info("Exit on Update Skip Payment Details ");		
+	}
+	
+	
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId) throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
@@ -4158,6 +4226,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+						}
+						
+						if(connectResponse.getProceed()) {
+							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+							}
 						}
 						
 					} else {
@@ -4255,6 +4329,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+
 
 	@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
@@ -4615,13 +4691,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setCreatedDate(new Date());
 		corporateLoan.setUserId(userId);
 		corporateLoan.setIsActive(true);
+		logger.info("after set is active true");
 		corporateLoan.setBusinessTypeId(businessTypeId);
         corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
 		corporateLoan = loanApplicationRepository.save(corporateLoan);
 		logger.info("Created New Corporate Loan of User Id==>{}", userId);
-		logger.info("Setting Last Application is as Last access Id in User Table");
+		logger.info("Setting Last Application is as Last access Id in User Table---->" +corporateLoan.getIsActive());
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);
@@ -5413,5 +5490,61 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+
+	@Override
+	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId) {
+		
+		try {
+			logger.info("ENter in get Proposal Data From ApplicationId ------------------->" + applicationId);
+			LoanApplicationRequest applicationRequest= new LoanApplicationRequest();
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+			
+			if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("Application MAster response null or empty by above applicaiton iD");
+				return null;
+			}
+			BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+			ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(applicationId);
+			if (response != null && response.getData() != null) {
+				Map<String, Object> proposalresp = null;
+				try {
+					proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+				} catch (IOException e) {
+					logger.info("could not extract data");
+					e.printStackTrace();
+				}
+				 
+				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
+					applicationRequest.setLoanAmount(proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
+					applicationRequest.setTenure(proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
+					applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null ? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
+					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+					applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null ? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
+					applicationRequest.setOnlinePaymentSuccess(true);
+
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+						applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+					}
+					Object orgObject = proposalresp.get("org_id");
+					if(!CommonUtils.isObjectNullOrEmpty(orgObject)) {
+						Integer orgObjectInt = (Integer) orgObject;
+						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(orgObjectInt.longValue()));
+
+					}
+					return applicationRequest;
+				} else{
+					logger.info("Proposal Map is null or empty !!");
+					return null;
+				}
+			} else {
+				logger.info("Proposal Response is null or empty !!");
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception WHile Get Proposal Detaisl By APplicationId");
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

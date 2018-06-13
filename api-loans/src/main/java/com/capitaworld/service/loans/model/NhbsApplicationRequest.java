@@ -14,6 +14,8 @@ public class NhbsApplicationRequest implements Serializable{
 	private Long userId;
 	
 	private Long userRoleId;
+	
+	private String userRoleIdString;
 
 	private Long assignedUserId;
 	
@@ -24,6 +26,19 @@ public class NhbsApplicationRequest implements Serializable{
 	private int pageIndex;
 
 	private int size;
+
+	private Long fpMakerId;
+
+	//added by Dhaval
+	private Long npUserId;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
 
 	public int getPageIndex() {
 		return pageIndex;
@@ -88,6 +103,20 @@ public class NhbsApplicationRequest implements Serializable{
 	public void setUserRoleId(Long userRoleId) {
 		this.userRoleId = userRoleId;
 	}
-	
-	
+
+	public String getUserRoleIdString() {
+		return userRoleIdString;
+	}
+
+	public void setUserRoleIdString(String userRoleIdString) {
+		this.userRoleIdString = userRoleIdString;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
 }

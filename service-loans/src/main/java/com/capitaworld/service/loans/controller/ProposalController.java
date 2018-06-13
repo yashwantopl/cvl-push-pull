@@ -4,6 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.auth.model.UserRequest;
+import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +26,6 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -48,7 +51,10 @@ public class ProposalController {
 		logger.info("request.getSize()::"+request.getSize());
 		
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -68,7 +74,10 @@ public class ProposalController {
 		
 		// request must not be null
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -83,7 +92,10 @@ public class ProposalController {
 		
 		// request must not be null
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -101,7 +113,10 @@ public class ProposalController {
 	public ResponseEntity<ProposalCountResponse> fundProviderProposalCount(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -122,7 +137,10 @@ public class ProposalController {
 		
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -143,7 +161,10 @@ public class ProposalController {
 	public ResponseEntity<ProposalMappingResponse> changeStatus(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		Long userId = null;
 		Long userType = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -165,7 +186,10 @@ public class ProposalController {
 		Long userId = null;
 		Long userType = null;
 		Integer loginUserType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 			userType = clientUserType;
 		} else {
@@ -198,7 +222,10 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> connections(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
 		try {
 			Long userType = null;
-			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue() || 
+					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
+						.intValue()) {
 				userType = clientUserType;
 			} else {
 				userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
@@ -250,8 +277,10 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> updateAssignDetails(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in update assign details for axis bank flow");
 		try {
+			Integer userTypeInt = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(httpServletRequest)) {
+			if (CommonUtils.UserType.SERVICE_PROVIDER == userTypeInt || CommonUtils.UserType.NETWORK_PARTNER == userTypeInt) {
 				userId  = clientId;				
 			} else {
 				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
@@ -285,7 +314,10 @@ public class ProposalController {
 		logger.info("request.getSize()::"+request.getSize());
 		
 		Long userId = null;
-		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
+		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+				.intValue() || 
+				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
+					.intValue()) {
 			userId = clientId;
 		} else {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
@@ -307,7 +339,19 @@ public class ProposalController {
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		
 	}
-	
+
+	@RequestMapping(value = "/checkFpMakerAccess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkFpMakerAccess(@RequestBody UsersRequest userRequest, HttpServletRequest httpServletRequest) {
+
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		userRequest.setId(userId);
+		userRequest.setApplicationId(Long.parseLong(CommonUtils.decode(userRequest.getApplicationIdString())));
+
+
+		LoansResponse loansResponse=proposalService.checkMinMaxAmount(userRequest);
+		loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+	}
 	
 	
 }
