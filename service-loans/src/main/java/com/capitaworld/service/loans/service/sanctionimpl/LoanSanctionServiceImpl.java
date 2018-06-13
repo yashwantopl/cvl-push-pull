@@ -67,10 +67,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 	
 	@Override
-	public String requestValidation(String userName, String password, Long applicationId) throws Exception {
+	public String requestValidation( Long applicationId,Long orgId) throws Exception {
 		logger.info("Enter in requestValidation() ----------------------->  applicationId==> "+ applicationId);
 	        try {        	
-		 Long orgId =getOrgIdByCredential(userName, password);
+		 
 		 if(orgId != null) {
 			 Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(applicationId ,orgId);
 			if(recCount != null && recCount  > 0) {

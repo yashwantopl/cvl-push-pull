@@ -1869,7 +1869,7 @@ public class LoanApplicationController {
 				}
 				
 				if(CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ))   {
-					String msg=loanSanctionService.requestValidation(loanSanctionRequest.getUserName(),loanSanctionRequest.getPassword(), loanSanctionRequest.getApplicationId() );
+					String msg=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
 					
 					     if("SUCCESS".equalsIgnoreCase(msg)){
 					    	 loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
@@ -1924,7 +1924,7 @@ public class LoanApplicationController {
 				try {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
 					loanDisbursementRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt,LoanDisbursementRequest.class);
-					orgId = loanSanctionService.getOrgIdByCredential(loanDisbursementRequest .getUserName(), loanDisbursementRequest .getPassword());
+					orgId = loanDisbursementService.getOrgIdByCredential(loanDisbursementRequest .getUserName(), loanDisbursementRequest .getPassword());
 				}catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error while Converting Encrypted Object to LoanDisbursementRequest  saveLoanDisbursementDetail(){} -------------------------> ", e.getMessage());
@@ -1935,7 +1935,7 @@ public class LoanApplicationController {
 				}
 				if(!CommonUtils.isObjectListNull(loanDisbursementRequest,loanDisbursementRequest.getApplicationId(), loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo())) {
 					
-					String msg=loanDisbursementService.requestValidation(loanDisbursementRequest);	
+					String msg=loanDisbursementService.requestValidation(loanDisbursementRequest ,orgId);	
 					
 					if("SUCCESS".equalsIgnoreCase(msg) || "First Disbursement".equalsIgnoreCase(msg)){
 				    	 loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
