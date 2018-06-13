@@ -36,5 +36,7 @@ public interface ProposalService {
 	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request)  throws Exception;
 
 	public Boolean saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
+
+	public void getMinMaxAmount(userRequest);
 	
 }

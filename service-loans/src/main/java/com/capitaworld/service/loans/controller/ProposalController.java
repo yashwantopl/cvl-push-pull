@@ -4,7 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.auth.model.UserRequest;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -336,7 +339,26 @@ public class ProposalController {
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		
 	}
-	
+
+	@RequestMapping(value = "/checkFpMakerAccess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> checkFpMakerAccess(@RequestBody UsersRequest userRequest, HttpServletRequest httpServletRequest) {
+
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		userRequest.setId(userId);
+		userRequest.setApplicationId(Long.parseLong(CommonUtils.decode(userRequest.getApplicationIdString())));
+
+
+		proposalService.getMinMaxAmount(userRequest);
+
+		return null;
+/*		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));
+		}
+		request.setLastActionPerformedBy(userType);
+		request.setUserId(userId);
+		request.setClientId(clientId);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);*/
+	}
 	
 	
 }
