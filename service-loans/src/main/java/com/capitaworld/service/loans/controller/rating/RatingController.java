@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.service.irr.IrrService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.exception.RatingException;
@@ -35,7 +36,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-		if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
+		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -49,7 +50,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 		
 		Long userId = null;
 		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-		if(CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType){
+		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);

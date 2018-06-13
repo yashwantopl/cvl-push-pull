@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -57,9 +55,7 @@ public class CorporateCoApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 
 			}
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				applicantRequest.setClientId(clientId);
 			}
 			coApplicantService.save(applicantRequest, applicantRequest.getApplicationId(), userId);
@@ -81,9 +77,7 @@ public class CorporateCoApplicantController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
