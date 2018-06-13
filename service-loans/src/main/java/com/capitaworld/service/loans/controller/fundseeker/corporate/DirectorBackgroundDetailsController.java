@@ -53,7 +53,7 @@ public class DirectorBackgroundDetailsController {
 		
 		//==============
 		
-				if(CommonDocumentUtils.isThisClientApplication(request)){
+				if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 					frameRequest.setClientId(clientId);
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				}else{
@@ -87,7 +87,7 @@ public class DirectorBackgroundDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-//			if(CommonDocumentUtils.isThisClientApplication(request)).intValue()){
+//			if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)).intValue()){
 //				frameRequest.setClientId(clientId);
 //			}
 			
@@ -120,7 +120,7 @@ public class DirectorBackgroundDetailsController {
 	public ResponseEntity<LoansResponse> getList(@PathVariable Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonDocumentUtils.isThisClientApplication(request)){
+		if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -154,7 +154,7 @@ public class DirectorBackgroundDetailsController {
 	public ResponseEntity<LoansResponse> saveDirectors(@RequestBody Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		logger.info("Enter saveDirectors()");
 		Long userId = null;
-		if(CommonDocumentUtils.isThisClientApplication(request)){
+		if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
