@@ -1,9 +1,9 @@
-CREATE TABLE `sanction_detail` (
+CREATE TABLE `loan_application` .`sanction_detail` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `account_no` varchar(45) DEFAULT NULL,
   `sanction_amount` double DEFAULT NULL,
   `branch` bigint(11) DEFAULT NULL,
-  `transection_no` varchar(45) DEFAULT NULL,
+  `transaction_no` varchar(45) DEFAULT NULL,
   `tenure` double DEFAULT NULL,
   `roi` double DEFAULT NULL,
   `sanction_authority` varchar(45) DEFAULT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE `sanction_detail` (
 
 
 
-CREATE TABLE `disbursement_detail` (
+CREATE TABLE `loan_application`.`disbursement_detail` (
   `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT,
   `application_id` bigint(11) DEFAULT NULL,
   `disbursed_amount` double DEFAULT NULL,
@@ -35,4 +35,4 @@ CREATE TABLE `disbursement_detail` (
   `modified_date` datetime DEFAULT NULL,
   `is_active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
