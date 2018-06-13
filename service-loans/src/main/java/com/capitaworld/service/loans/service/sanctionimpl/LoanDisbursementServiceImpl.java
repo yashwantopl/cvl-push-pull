@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
@@ -78,24 +79,29 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 							.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
 					if (amount != null) {
 						Double totalAmount = amount + loanDisbursementRequest.getDisbursedAmount();
-						if (loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId())
-								.getSanctionAmount() <= totalAmount) {
-							logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+						LoanSanctionDomain loanSanctionDomain  =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
+						
+						if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
+							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId() );
+							return "Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId();
+						}
+						if (loanSanctionDomain.getSanctionAmount() <= totalAmount) {
+							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
 							return "SUCCESS";
 						} else {
-							logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
 							return "Total Disbursement Amount EXCEED Sanction Amount";
 						}
 					} else {
-						logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
 						return "First Disbursement";
 					}
 				} else {
-					logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid ApplicationId ");
 					return "Invalid ApplicationId ";
 				}
 			} else {
-				logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
+				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid Credential");
 				return "Invalid Credential";
 			}
 		} catch (Exception e) {
