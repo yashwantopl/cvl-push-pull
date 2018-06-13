@@ -324,10 +324,12 @@ public class CorporateUploadController {
 				} else {
 
 					// code for inactive CMA BS and DPR recored
+					System.out.println("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
+					System.out.println("excel file's storage id is====>>>>"+response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
-
+					
 					logger.error("Error While Uploading Document==>");
 					CommonDocumentUtils.endHook(logger, "uploadExcel");
 					return new ResponseEntity<LoansResponse>(
@@ -404,7 +406,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> removeExcelDoc(@PathVariable("docId") Long docId,
 			@PathVariable("productDocumentMappingId") Integer productDocumentMappingId, HttpServletRequest request) {
 		try {
+			System.out.println("in /excel/delete/doc");
 			CommonDocumentUtils.startHook(logger, "removeExcelDoc");
+			System.out.println("product documet id is===>>>>>"+productDocumentMappingId);
 			if (CommonUtils.isObjectNullOrEmpty(docId) && CommonUtils.isObjectNullOrEmpty(productDocumentMappingId)) {
 				logger.warn("Document Id and ProductDocumentMappingId not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -412,12 +416,15 @@ public class CorporateUploadController {
 			}
 
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
+			
+			System.out.println("dms client url is====>>>>"+dmsClient);
 
 			// code for inactive CMA BS and DPR recored
 
 			try {
 
 				JSONObject json = new JSONObject();
+				System.out.println("docis====>>"+docId);
 				json.put("id", docId);
 				DocumentResponse response = dmsClient.deleteProductDocument(json.toJSONString());
 
@@ -427,8 +434,10 @@ public class CorporateUploadController {
 							|| productDocumentMappingId == DocumentAlias.TL_DPR_OUR_FORMAT)
 						excelExtractionService.inActiveDPR(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
-							|| productDocumentMappingId == DocumentAlias.TL_CMA|| productDocumentMappingId==DocumentAlias.USL_CMA)
-						excelExtractionService.inActiveCMA(docId);
+							|| productDocumentMappingId == DocumentAlias.TL_CMA || productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId==DocumentAlias.USL_CMA)
+						{
+						System.out.println("in else if for cma inactivate...===>>>>"+docId);
+						excelExtractionService.inActiveCMA(docId);}
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
 							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
 							productDocumentMappingId==DocumentAlias.USL_COMPANY_ACT)
@@ -437,6 +446,8 @@ public class CorporateUploadController {
 
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+					
+					System.out.println("fina response is====>>"+finalResponse);
 					finalResponse.setListData(response.getDataList());
 					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
 					return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);

@@ -5491,4 +5491,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw e;
 		}
 	}
+
+	@Override
+	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId) {
+		LoanApplicationRequest applicationRequest= new LoanApplicationRequest();
+		ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(applicationId);
+		if (response != null && response.getData() != null) {
+			Map<String, Object> proposalresp = null;
+			try {
+				proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+			} catch (IOException e) {
+				logger.info("could not extract data");
+				e.printStackTrace();
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
+				applicationRequest.setLoanAmount(proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
+				applicationRequest.setTenure(proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
+				applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null ? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
+				applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+				applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null ? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
+				applicationRequest.setOnlinePaymentSuccess(true);
+
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+					applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+				}
+				applicationRequest.setFundProvider(proposalresp.get("org_id") !=null ? CommonUtils.getOrganizationName((Long)proposalresp.get("org_id")) : null);
+			}else{
+				throw new NullPointerException("could not extract data");
+			}
+		}
+		return applicationRequest;
+	}
 }
