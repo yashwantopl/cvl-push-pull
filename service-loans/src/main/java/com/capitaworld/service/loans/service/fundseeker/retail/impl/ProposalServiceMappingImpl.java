@@ -1569,4 +1569,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 	}
 
+	@Overide
+	public void getMinMaxAmount(UserRequest userRequest)
+	{
+		loanApplicationService.findOne(userRequest.getApplicationId());
+
+	}
+
 }
