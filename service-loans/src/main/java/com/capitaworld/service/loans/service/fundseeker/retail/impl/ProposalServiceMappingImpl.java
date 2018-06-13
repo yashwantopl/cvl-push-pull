@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.users.model.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -31,10 +32,6 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.CorporateProposalDetails;
-import com.capitaworld.service.loans.model.FundProviderProposalDetails;
-import com.capitaworld.service.loans.model.ProposalResponse;
-import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -1567,26 +1564,47 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public void getMinMaxAmount(UsersRequest userRequest) {
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
+		LoansResponse loansResponse=new LoansResponse();
 
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+		try {
 
-		// Check If Requested Application is assigned to Currunt Fp Cheker  or not
-		if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
-		{
-			UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
+			loansResponse.setFlag(true);
 
-			CheckerDetailRequest checkerDetailRequest= (CheckerDetailRequest) userResponse.getData();
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
 
-			if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
+			// Check If Requested Application is assigned to Currunt Fp Cheker  or not
+			if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
 			{
+				UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
 
+				CheckerDetailRequest checkerDetailRequest= MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+
+				if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
+				{
+					if(!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount()))
+					{
+						loansResponse.setFlag(false);
+						loansResponse.setMessage("You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+					}
+				}
+			}
+			else
+			{
+				// You dont have Authorised for this Action
+				loansResponse.setFlag(false);
+				loansResponse.setMessage("You do not have rights to take action for this proposal.");
 			}
 		}
-		else
-		{
-			// You dont have Authorised for this Action
+		catch (Exception e){
+
+			e.printStackTrace();
+
+			loansResponse.setFlag(false);
+			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
+		return loansResponse;
 	}
 
 

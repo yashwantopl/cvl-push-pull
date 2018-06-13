@@ -341,23 +341,16 @@ public class ProposalController {
 	}
 
 	@RequestMapping(value = "/checkFpMakerAccess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ProposalMappingResponse> checkFpMakerAccess(@RequestBody UsersRequest userRequest, HttpServletRequest httpServletRequest) {
+	public ResponseEntity<LoansResponse> checkFpMakerAccess(@RequestBody UsersRequest userRequest, HttpServletRequest httpServletRequest) {
 
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		userRequest.setId(userId);
 		userRequest.setApplicationId(Long.parseLong(CommonUtils.decode(userRequest.getApplicationIdString())));
 
 
-		proposalService.getMinMaxAmount(userRequest);
-
-		return null;
-/*		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
-			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));
-		}
-		request.setLastActionPerformedBy(userType);
-		request.setUserId(userId);
-		request.setClientId(clientId);
-		return new ResponseEntity<ProposalMappingResponse>(proposalService.changeStatus(request),HttpStatus.OK);*/
+		LoansResponse loansResponse=proposalService.checkMinMaxAmount(userRequest);
+		loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
 	
 	
