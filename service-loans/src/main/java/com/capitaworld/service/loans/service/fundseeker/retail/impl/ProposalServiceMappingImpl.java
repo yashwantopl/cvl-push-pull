@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.users.model.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +65,6 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -1569,11 +1566,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 	}
 
-	@Overide
-	public void getMinMaxAmount(UserRequest userRequest)
-	{
-		loanApplicationService.findOne(userRequest.getApplicationId());
+	@Override
+	public void getMinMaxAmount(UsersRequest userRequest) {
 
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+
+		// Check If Requested Application is assigned to Currunt Fp Cheker  or not
+		if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
+		{
+			UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
+
+			CheckerDetailRequest checkerDetailRequest= (CheckerDetailRequest) userResponse.getData();
+
+			if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
+			{
+
+			}
+		}
+		else
+		{
+			// You dont have Authorised for this Action
+		}
 	}
+
 
 }
