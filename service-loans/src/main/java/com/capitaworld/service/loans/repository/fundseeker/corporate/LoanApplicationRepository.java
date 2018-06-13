@@ -269,7 +269,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPMakerNewProposalCount(@Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
 
 	//fp-maker-assigned & assigned to checker - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.fpMakerId=:npUserId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.fpMakerId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPAssignedProposalsByNPUserIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker-assigned & assigned to checker - count
@@ -277,7 +277,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPMakerAssignedAndAssginedToCheckerCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker - all other proposals - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.fpMakerId!=:npUserId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.fpMakerId!=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker - all other proposals - count
@@ -285,7 +285,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for approved or submitted - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npUserId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for approved or submitted - count
@@ -293,7 +293,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
     //fp - checker - for reverted applications - pagination
-    @Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npAssigneeId=:npUserId and  lm.isActive = true ")
+    @Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npAssigneeId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
     public List<LoanApplicationMaster> getFPAssignedToCheckerReverted(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for reverted applications - count
@@ -301,10 +301,10 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPAssignedToCheckerRevertedCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for other applications - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId=:npUserId and lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId!=:npUserId and lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPCheckerProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for other applications - count
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId=:npUserId and lm.isActive = true ")
+	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId!=:npUserId and lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPCheckerProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 }
