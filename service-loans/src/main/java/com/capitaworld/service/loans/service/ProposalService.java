@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
@@ -38,6 +39,6 @@ public interface ProposalService {
 
 	public Boolean saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 
-	public void getMinMaxAmount(UsersRequest userRequest);
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest);
 	
 }
