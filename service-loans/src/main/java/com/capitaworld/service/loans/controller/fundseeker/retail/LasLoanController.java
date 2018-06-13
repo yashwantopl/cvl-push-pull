@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.PrimaryLasLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryLasLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -55,9 +56,7 @@ public class LasLoanController {
 						HttpStatus.OK);
 			}
 
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				lasDetailRequest.setClientId(clientId);
 			}
 
@@ -84,9 +83,7 @@ public class LasLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.PrimaryHomeLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryPersonalLoanRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryPersonalLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -53,9 +53,7 @@ public class PersonalLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				personalLoanRequest.setClientId(clientId);
 			}
 			primaryPersonalLoanService.saveOrUpdate(personalLoanRequest, userId);
@@ -75,9 +73,7 @@ public class PersonalLoanController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

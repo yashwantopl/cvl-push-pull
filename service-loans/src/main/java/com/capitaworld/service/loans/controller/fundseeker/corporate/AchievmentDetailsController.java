@@ -68,9 +68,7 @@ public class AchievmentDetailsController {
 		}
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				frameRequest.setClientId(clientId);
 			}
 			
@@ -104,9 +102,7 @@ public class AchievmentDetailsController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

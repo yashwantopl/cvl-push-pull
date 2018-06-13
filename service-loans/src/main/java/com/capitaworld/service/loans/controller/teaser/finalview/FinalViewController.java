@@ -34,6 +34,7 @@ import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalV
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.WorkingCapitalFinalService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -74,15 +75,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	private CorporateFinalViewService corporateFinalViewService;
 	
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -111,8 +110,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -142,15 +141,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/CarLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -179,8 +176,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -210,15 +207,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewPersonalLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewPersonalLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -247,8 +242,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -278,15 +273,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/LapLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> finalViewLapLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> finalViewLapLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -313,8 +306,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					}}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -344,15 +337,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 
 	@GetMapping(value = "/WorkingCapital/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> finalViewWrokingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewWrokingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -380,8 +371,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -411,15 +402,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 
 	@GetMapping(value = "/TermLoan/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> finalViewTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -447,8 +436,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -478,15 +467,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	@GetMapping(value = "/UnsecuredLoan/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> finalViewUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> finalViewUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -514,8 +501,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -546,14 +533,14 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	
 		 //COMMON FINAL CORPORATE TEASER VIEW
 		@GetMapping(value = "/Corporate/{toApplicationId}")
-		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 			logger.info("IN FINAL CORPORATE TEASER VIEW======>"+toApplicationId);
 			LoansResponse loansResponse = new LoansResponse();
 			//GET USERID 
 			Long userId = null;
 			Integer userType = null;
 
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue() || CommonUtils.UserType.NETWORK_PARTNER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 					//FOR FS,FP UNDER SP OR NP
 					userId = clientId;
@@ -579,8 +566,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					}
 				}
 			} else {
-				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-				userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 			}
 			if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
 				logger.warn("Invalid data or Requested data not found.", toApplicationId);

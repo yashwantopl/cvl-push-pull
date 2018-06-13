@@ -132,9 +132,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -483,9 +481,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadFlag");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
