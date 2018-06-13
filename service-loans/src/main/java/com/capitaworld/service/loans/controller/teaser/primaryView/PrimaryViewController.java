@@ -584,11 +584,17 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
+				}
+				/*if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 					userType = CommonUtils.UserType.SERVICE_PROVIDER;
 				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
 					userType = CommonUtils.UserType.NETWORK_PARTNER;
-				}
+				}*/
 			}
 
 		} else {
