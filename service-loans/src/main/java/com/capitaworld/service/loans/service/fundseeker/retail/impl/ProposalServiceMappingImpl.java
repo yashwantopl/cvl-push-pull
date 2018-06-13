@@ -1589,10 +1589,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						loansResponse.setMessage("You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
 					}
 				}
+				else
+				{
+					// You dont have Authorised for this Action
+					loansResponse.setFlag(false);
+					loansResponse.setMessage("You do not have rights to take action for this proposal.");
+				}
 			}
 			else
 			{
 				// You dont have Authorised for this Action
+				logger.error("Not getting min max loan amount for this user");
 				loansResponse.setFlag(false);
 				loansResponse.setMessage("You do not have rights to take action for this proposal.");
 			}
@@ -1600,7 +1607,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		catch (Exception e){
 
 			e.printStackTrace();
-
+			logger.error("Error while Getting Min Max Loan Amount");
 			loansResponse.setFlag(false);
 			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
