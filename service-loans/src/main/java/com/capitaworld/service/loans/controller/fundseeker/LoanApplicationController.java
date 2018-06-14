@@ -1868,7 +1868,7 @@ public class LoanApplicationController {
 						
 				}
 				
-				if(CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ))   {
+				if(!CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ))   {
 					String msg=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
 					
 					     if("SUCCESS".equalsIgnoreCase(msg)){
@@ -1889,7 +1889,7 @@ public class LoanApplicationController {
 				}else {
 					logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ----------------> LoanSanctionRequest" + loanSanctionRequest );
 					loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
-					
+					logger.info("Saving Request to DB ===> ");
 					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse , "Mandatory Fields Must Not be Null" ,orgId);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);  
 					
