@@ -700,7 +700,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws Exception {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
-		request.setClientRefId(userId.toString());
+		if(userId != null) {
+			request.setClientRefId(userId.toString());			
+		}
 		NotificationResponse notificationResponse = null;
 		try {
 			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByProdId(request);

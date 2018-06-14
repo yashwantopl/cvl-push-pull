@@ -192,6 +192,17 @@
 			<artifactId>client-sidbi-integration</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+
+			<groupId>com.capitaworld.mca</groupId>
+			<version>0.0.1</version>
+			<artifactId>client-mca</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.workflow</groupId>
+			<artifactId>client-workflow</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

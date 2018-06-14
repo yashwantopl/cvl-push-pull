@@ -18,12 +18,22 @@ public class NhbsApplicationsResponse implements Serializable{
 	private Integer applicationType;
 	
 	private String makerName;
+
+	private String checkerName;
 	
 	private String assigneeName;
 	
 	private String clientSource;
 	
 	private Date applicationDate;
+
+	private Date proposalTakenDate;
+
+	private Date receivedDate;
+
+	private Date revertDate;
+
+	private Date approvalDate;
 	
 	private Long userId;
 	
@@ -52,7 +62,25 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String state;
 	
 	private String country;
-		
+
+	private String applicationWith;
+
+	public String getApplicationWith() {
+		return applicationWith;
+	}
+
+	public void setApplicationWith(String applicationWith) {
+		this.applicationWith = applicationWith;
+	}
+
+	public String getCheckerName() {
+		return checkerName;
+	}
+
+	public void setCheckerName(String checkerName) {
+		this.checkerName = checkerName;
+	}
+
 	public String getCity() {
 		return city;
 	}
@@ -181,7 +209,36 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setClientProfilePic(String clientProfilePic) {
 		this.clientProfilePic = clientProfilePic;
 	}
-	
-	
-	
+
+	public Date getProposalTakenDate() {
+		return proposalTakenDate;
+	}
+
+	public void setProposalTakenDate(Date proposalTakenDate) {
+		this.proposalTakenDate = proposalTakenDate;
+	}
+
+	public Date getReceivedDate() {
+		return receivedDate;
+	}
+
+	public void setReceivedDate(Date receivedDate) {
+		this.receivedDate = receivedDate;
+	}
+
+	public Date getRevertDate() {
+		return revertDate;
+	}
+
+	public void setRevertDate(Date revertDate) {
+		this.revertDate = revertDate;
+	}
+
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
+
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
+	}
 }

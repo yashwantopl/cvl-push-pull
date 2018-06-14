@@ -65,7 +65,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -134,7 +134,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -205,7 +205,7 @@ public class CommonController {
 		obj.put("userType", userType);
 
 		Integer spUserId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			// SP LOGIN
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				// MEANS FS, FP VIEW
@@ -234,6 +234,8 @@ public class CommonController {
 				spUserId = CommonUtils.UserType.SERVICE_PROVIDER;
 				}else if (CommonUtils.UserType.NETWORK_PARTNER == userType){
 					spUserId = CommonUtils.UserType.NETWORK_PARTNER;
+				}else if (CommonUtils.UserType.FUND_PROVIDER == userType){
+					spUserId = CommonUtils.UserType.FUND_PROVIDER;
 				}
 			}
 			userType = spUserId;

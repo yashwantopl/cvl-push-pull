@@ -71,8 +71,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
@@ -108,7 +107,7 @@ public class DDRFormController {
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		
@@ -132,7 +131,7 @@ public class DDRFormController {
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		
@@ -204,7 +203,7 @@ public class DDRFormController {
 		if(CommonUtils.UserType.FUND_PROVIDER == userType){
 			userId = loanApplicationService.getUserIdByApplicationId(appId);
 		}
-		else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+		else if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		}
 		Boolean isDDRApproved =false;
@@ -290,7 +289,7 @@ public class DDRFormController {
 			if(CommonUtils.UserType.FUND_PROVIDER == userType){
 				userId = loanApplicationService.getUserIdByApplicationId(documentRequest.getApplicationId());
 			}
-			else if (CommonUtils.UserType.NETWORK_PARTNER == userType || CommonUtils.UserType.SERVICE_PROVIDER == userType) {
+			else if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			}
 			documentRequest.setUserId(userId);

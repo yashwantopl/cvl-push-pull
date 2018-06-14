@@ -292,6 +292,7 @@ public class CommonUtils {
 		public static final Long SUBMITTED_TO_APPROVER = 4l;
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
+		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
 
 	public static String getDdrStatusString(Integer ddrStatusId) {

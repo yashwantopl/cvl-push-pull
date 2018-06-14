@@ -32,6 +32,15 @@ import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.CompaniesHistoryPara;
+import com.capitaworld.service.mca.model.CompaniesHistoryRequest;
+import com.capitaworld.service.mca.model.CompaniesHistoryResponse;
+import com.capitaworld.service.mca.model.McaRequest;
+import com.capitaworld.service.mca.model.McaRequestPara;
+import com.capitaworld.service.mca.model.SearchCompaniesRequest;
+import com.capitaworld.service.mca.model.SearchCompaniesResponse;
+import com.capitaworld.service.mca.model.SearchCriteria;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -882,5 +891,6 @@ public class AsyncComponent {
 		}
 		return null;
 	}
+	
 	
 }

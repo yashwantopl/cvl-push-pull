@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.users.model.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +32,6 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.CorporateProposalDetails;
-import com.capitaworld.service.loans.model.FundProviderProposalDetails;
-import com.capitaworld.service.loans.model.ProposalResponse;
-import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -64,10 +62,6 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -167,8 +161,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+					logger.info("loanApplicationMaster null ot empty !!");
+					continue;
+				}
 
-				if(!loanApplicationMaster.getIsActive()) {
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsActive()) || !loanApplicationMaster.getIsActive()) {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
@@ -353,17 +352,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					UsersRequest usersRequest=new UsersRequest();
 					usersRequest.setId(request.getUserId());
 					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
-					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
-					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
-									oneFormClient));
+					if(!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
+						try {
+							FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+												oneFormClient));
+									}
+								}
+								if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+								}	
+							}
+								
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
+							
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
-						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
-					}
+					
 					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
@@ -1568,5 +1578,61 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return false;
 		}
 	}
+
+	@Override
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
+		LoansResponse loansResponse=new LoansResponse();
+
+		try {
+
+			loansResponse.setFlag(true);
+
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+
+			// Check If Requested Application is assigned to Currunt Fp Cheker  or not
+			if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
+			{
+				UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
+
+				CheckerDetailRequest checkerDetailRequest=null;
+				if(!CommonUtils.isObjectListNull(userResponse) || !(CommonUtils.isObjectNullOrEmpty(userResponse.getData())))
+				{
+					checkerDetailRequest= MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				}
+
+				if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
+				{
+					if(!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount()))
+					{
+						loansResponse.setFlag(false);
+						loansResponse.setMessage("You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+					}
+				}
+				else
+				{
+					// You dont have Authorised for this Action
+					loansResponse.setFlag(false);
+					loansResponse.setMessage("You do not have rights to take action for this proposal.");
+				}
+			}
+			else
+			{
+				// You dont have Authorised for this Action
+				logger.error("Not getting min max loan amount for this user");
+				loansResponse.setFlag(false);
+				loansResponse.setMessage("You do not have rights to take action for this proposal.");
+			}
+		}
+		catch (Exception e){
+
+			e.printStackTrace();
+			logger.error("Error while Getting Min Max Loan Amount");
+			loansResponse.setFlag(false);
+			loansResponse.setMessage("You do not have rights to take action for this proposal.");
+		}
+		return loansResponse;
+	}
+
 
 }

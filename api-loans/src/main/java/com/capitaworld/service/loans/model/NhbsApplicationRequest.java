@@ -27,6 +27,29 @@ public class NhbsApplicationRequest implements Serializable{
 
 	private int size;
 
+	private Long fpMakerId;
+
+	private Long fpProductId;
+
+	//added by Dhaval
+	private Long npUserId;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
+
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+
 	public int getPageIndex() {
 		return pageIndex;
 	}
@@ -98,5 +121,12 @@ public class NhbsApplicationRequest implements Serializable{
 	public void setUserRoleIdString(String userRoleIdString) {
 		this.userRoleIdString = userRoleIdString;
 	}
-	
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
 }
