@@ -78,6 +78,8 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Long npAssigneeId;
 
+	private Long fpMakerId;
+
 	private String email;
 
 	private String mobile;
@@ -116,8 +118,16 @@ public class LoanApplicationRequest implements Serializable {
 	private String emiForPaymentayment;
 	private String  feesForPayment;
     private String  fpNameForPayment;
+    
+    private Integer businessTypeId;
 
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
 
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
 
 	public Long getNpOrgId() {
 		return npOrgId;
@@ -582,4 +592,13 @@ public class LoanApplicationRequest implements Serializable {
     public void setFpNameForPayment(String fpNameForPayment) {
         this.fpNameForPayment = fpNameForPayment;
     }
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+    
 }

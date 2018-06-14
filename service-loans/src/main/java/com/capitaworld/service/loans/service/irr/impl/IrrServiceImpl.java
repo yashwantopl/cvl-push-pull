@@ -246,8 +246,10 @@ public class IrrServiceImpl implements IrrService{
 		try {
 			 
 			 ratingResponse=ratingClient.calculateIrrRating(irrRequest);
+			 log.info("rating respo->"+ratingResponse.toString());
+			 //ratingResponse.setData(irrRequest);
 			 ratingResponse.setBusinessTypeId(businessTypeId);
-			 
+
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
@@ -319,7 +321,14 @@ public class IrrServiceImpl implements IrrService{
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
 		
 		//---SHARE FACE VALUE SET-----
-		financialInputRequest.setShareFaceValue(1.00); // ------CAlculation Remained
+        Double shareFaceVal=1.00;
+
+		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace()))
+            shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+
+		financialInputRequest.setShareFaceValue(shareFaceVal);
+
 		LoanApplicationMaster applicationMaster = null;
 		/*applicationMaster = loanApplicationRepository.findOne(aplicationId);
 		LoanType type = CommonUtils.LoanType.getType(applicationMaster.getProductId());
@@ -399,10 +408,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostFy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
@@ -574,13 +583,13 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestmentsInSubsidiary(0.0);
 		financialInputRequest.setInvestmentInSubsidiariesFy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-			assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+			assetsDetails.setOthersOther(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 			assetsDetails.setDeferredReceviables(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentFy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+		financialInputRequest.setOtherInvestmentFy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
@@ -610,9 +619,9 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestments(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+			assetsDetails.setOtherCurrentAssets(0.0);
+		financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
@@ -672,10 +681,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostSy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
@@ -847,13 +856,13 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestmentsInSubsidiary(0.0);
 		financialInputRequest.setInvestmentInSubsidiariesSy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-			assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+			assetsDetails.setOthersOther(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 			assetsDetails.setDeferredReceviables(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentSy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+		financialInputRequest.setOtherInvestmentSy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
@@ -883,9 +892,9 @@ public class IrrServiceImpl implements IrrService{
 			assetsDetails.setInvestments(0.0);
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+			assetsDetails.setOtherCurrentAssets(0.0);
+		financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
@@ -948,10 +957,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
 			operatingStatementDetails.setDirectLabour(0.0);
 		financialInputRequest.setEmployeeCostTy(operatingStatementDetails.getDirectLabour() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getGeneralAdminExp()))
-			operatingStatementDetails.setGeneralAdminExp(0.0);
-		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getGeneralAdminExp() * denom);
+
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
 			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
@@ -1123,13 +1132,13 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setInvestmentsInSubsidiary(0.0);
 				financialInputRequest.setInvestmentInSubsidiariesTy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 				
-				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalOtherNonCurrentAssets()))
-					assetsDetails.setTotalOtherNonCurrentAssets(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+					assetsDetails.setOthersOther(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
 					assetsDetails.setDeferredReceviables(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 					assetsDetails.setOthers(0.0);
-				financialInputRequest.setOtherInvestmentTy((assetsDetails.getTotalOtherNonCurrentAssets() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+				financialInputRequest.setOtherInvestmentTy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 					assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
@@ -1159,9 +1168,9 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setInvestments(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
 					assetsDetails.setInstalmentsDeferred(0.0);
-				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-					assetsDetails.setAdvancePaymentTaxes(0.0);
-				financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+					assetsDetails.setOtherCurrentAssets(0.0);
+				financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 					assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
@@ -2016,7 +2025,7 @@ public class IrrServiceImpl implements IrrService{
 		// TODO Auto-generated method stub
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
 
-		return setQualitativeInputManu(aplicationId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
+		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2033,7 +2042,7 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
+	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
@@ -2088,8 +2097,48 @@ public class IrrServiceImpl implements IrrService{
 				qualitativeInputSheetManuRequest.setContingentLiabilities((corporateFinalInfoRequest.getContLiabilityFyAmt() / assetsDetails.getTangibleNetWorth()) * denom);//-----formula based
 		}
 
-		//---project size 0.0 WC
-		qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+		Double totalCostEstimate=0.0;
+		Double totalAsset=0.0;
+		LoanType type = CommonUtils.LoanType.getType(productId);
+		switch (type) {
+			case TERM_LOAN:
+			{
+				CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getTotalCostOfEstimate()))
+					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
+
+				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
+					totalAsset=assetsDetails.getTotalAssets();
+
+				if(totalAsset != 0.0)
+					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
+				else
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+
+			}
+			case  WCTL_LOAN:
+			{
+				CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getTotalCostOfEstimate()))
+					totalCostEstimate=corporateApplicantDetail.getTotalCostOfEstimate();
+
+				int c_Year = Calendar.getInstance().get(Calendar.YEAR);
+				AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, c_Year-1+"");
+				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails.getTotalAssets()))
+					totalAsset=assetsDetails.getTotalAssets();
+
+				if(totalAsset != 0.0)
+					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
+				else
+					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+			}
+			case  WORKING_CAPITAL:
+			{
+				qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+			}
+		}
 
 		return qualitativeInputSheetManuRequest;
 	}

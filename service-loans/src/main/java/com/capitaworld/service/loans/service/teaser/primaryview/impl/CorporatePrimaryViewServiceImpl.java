@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,17 +78,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
     @Autowired
-    private IndustrySectorRepository industrySectorRepository;
-
-    @Autowired
-    private SubSectorRepository subSectorRepository;
-
-    @Autowired
     private FinancialArrangementDetailsService financialArrangementDetailsService;
 
     @Autowired
     private DirectorBackgroundDetailsService directorBackgroundDetailsService;
-
 
     @Autowired
     private OneFormClient oneFormClient;
@@ -100,17 +94,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
     @Autowired
     private UsersClient usersClient;
-
-    @Autowired
-    private SectorIndustryMappingRepository sectorIndustryMappingRepository;
-
-    @Autowired
-    private SubSectorMappingRepository subSectorMappingRepository;
     
     @Autowired
     private IrrService irrService;
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat decim = new DecimalFormat("#,###.00");
     @Override
     public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId) {
 
@@ -118,6 +107,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
 
+        corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 
         /*========= Matches Data ==========*/
         if (userType != null) {
@@ -408,6 +398,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
                 corporatePrimaryViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
                 corporatePrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
+                corporatePrimaryViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
                 //workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
                 //workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
                 if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
@@ -433,8 +424,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                     directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
                     directorBackgroundDetailResponse.setDirectorsName(directorName);
                     //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString()+" Years");
+                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
                     directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
                     directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
                     directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
@@ -465,7 +456,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
                     financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                    financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+                    financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                     financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                     //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
@@ -540,9 +531,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy()));
 	    		
 	    		//Balance Sheet -ASSETS
-	    		financialInputRequest.setNetBlockFy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
-	    		financialInputRequest.setNetBlockSy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
-	    		financialInputRequest.setNetBlockTy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
+	    		financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
+	    		financialInputRequest.setNetBlockSy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
+	    		financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
 	    		financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
 	    		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
 	    		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));
@@ -590,6 +581,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
+            documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+            try {
+                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+                corporatePrimaryViewResponse.setIrtPdfReport(documentResponse.getDataList());
+            } catch (DocumentException e) {
+                e.printStackTrace();
+            }
         return corporatePrimaryViewResponse;
     }
+    public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
 }

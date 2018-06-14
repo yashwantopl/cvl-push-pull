@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
@@ -12,6 +13,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -35,6 +37,8 @@ public interface LoanApplicationService {
 	public Long getIrrByApplicationId(Long id) throws Exception;
 
 	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception;
+	
+	public int inActiveApplication(Long id, Long userId);
 
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception;
 
@@ -128,6 +132,8 @@ public interface LoanApplicationService {
 	
 	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception;
 	
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception;
+	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
@@ -140,11 +146,25 @@ public interface LoanApplicationService {
 	
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
 	
-	public Long createMsmeLoan(Long userId,Boolean isActive);
+	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
 	
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
+	public boolean savePhese1DataToSidbi(Long applicationId,Long userId);
 	
+	public boolean savePhese2DataToSidbi(Long applicationId,Long userId);
+	
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
+	
+	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 */
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception;
+
+	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId);
 }
 
 

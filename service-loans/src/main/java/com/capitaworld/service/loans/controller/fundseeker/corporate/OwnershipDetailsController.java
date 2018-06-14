@@ -51,9 +51,7 @@ public class OwnershipDetailsController {
 		
 		//==============
 		
-		if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && (CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString()) || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue())){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			frameRequest.setClientId(clientId);
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		}else{
@@ -86,7 +84,7 @@ public class OwnershipDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+//			if(CommonDocumentUtils.isThisClientApplication(request)).intValue()){
 //				frameRequest.setClientId(clientId);
 //			}
 			ownershipDetailsService.saveOrUpdate(frameRequest);
@@ -109,9 +107,7 @@ public class OwnershipDetailsController {
 		
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);

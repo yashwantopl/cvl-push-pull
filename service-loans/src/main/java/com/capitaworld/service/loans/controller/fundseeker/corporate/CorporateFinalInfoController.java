@@ -50,10 +50,7 @@ public class CorporateFinalInfoController {
             // ==============
 
             if ((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE)))
-                    && (CommonUtils.UserType.SERVICE_PROVIDER == Integer
-                    .parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())
-                    || CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request
-                    .getAttribute(CommonUtils.USER_TYPE)).intValue())) {
+                    && (CommonDocumentUtils.isThisClientApplication(request))) {
                 corporateFinalInfoRequest.setClientId(clientId);
                 userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             } else {
@@ -119,10 +116,7 @@ public class CorporateFinalInfoController {
         try {
             CommonDocumentUtils.startHook(logger, "get");
             Long id = null;
-            if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                    .intValue()
-                    || CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                    .intValue()) {
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
                 id = clientId;
             } else {
                 id = (Long) request.getAttribute(CommonUtils.USER_ID);

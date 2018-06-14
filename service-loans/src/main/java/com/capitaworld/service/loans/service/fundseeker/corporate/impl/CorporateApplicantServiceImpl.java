@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.auth.model.UserRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +20,13 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
-import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -80,9 +76,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	private CorporateCoApplicantService coApplicantService;
 
 	@Autowired
-	private CorporateCoApplicantService corporateCoApplicantService;
-
-	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
 	@Autowired
@@ -109,17 +102,25 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		}
 		applicantDetail.setEstablishmentMonth(applicantRequest.getEstablishmentMonth());
 		applicantDetail.setEstablishmentYear(applicantRequest.getEstablishmentYear());
-		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-			Address address = applicantRequest.getFirstAddress();
-			applicantDetail.setRegisteredCityId(address.getCityId());
-			applicantDetail.setRegisteredStateId(address.getStateId());
-			applicantDetail.setRegisteredCountryId(address.getCountryId());
-			applicantDetail.setRegisteredLandMark(address.getLandMark());
-			applicantDetail.setRegisteredPremiseNumber(address.getPremiseNumber());
-			applicantDetail.setRegisteredStreetName(address.getStreetName());
-			applicantDetail.setRegisteredPincode(address.getPincode());
-		}
+		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 		applicantRepository.save(applicantDetail);
+		
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getCompanyCIN())) {
+			logger.info("Company CIN number saving --------------------->" + applicantRequest.getCompanyCIN() + "-----------------------"  +applicantRequest.getApplicationId());
+			
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicantRequest.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("LoanApplicationMaster is not null");
+				loanApplicationMaster.setCompanyCinNumber(applicantRequest.getCompanyCIN());
+				loanApplicationMaster.setModifiedDate(new Date());
+				loanApplicationMaster.setModifiedBy(applicantRequest.getUserId());
+				loanApplicationRepository.save(loanApplicationMaster);
+			} else {
+				logger.info("LoanApplicationMaster is null or empty");
+			}
+		} else {
+			logger.info("Company CIN number null or empty --------------------->" );
+		}
 		
 	}
 	
@@ -201,19 +202,18 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-
-
 			try {
 
 				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				@SuppressWarnings("unchecked")
 				UsersRequest userRequest= MultipleJSONObjectHelper
 						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				applicantRequest.setEmail(userRequest.getEmail());
 				applicantRequest.setLandlineNo(userRequest.getMobile());
 			}
-			catch (Exception e)
-			{
-				logger.warn("error while get user data"+e);
+			catch (Exception e){
+				logger.warn("error while get user data");
+				e.printStackTrace();
 			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
@@ -597,20 +597,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return coApplicantService.getList(applicationId, userId);
 	}
 
-	@Override
-	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-		boolean msmeScoreRequired = false;
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-				.findOne(msmeScoreRequest.getApplicationId());
-		if (msmeScoreRequest.isMsmeScoreRequired()) {
-			loanApplicationMaster.setIsMsmeScoreRequired(true);
-			msmeScoreRequired = true;
-		} else {
-			loanApplicationMaster.setIsMsmeScoreRequired(false);
-			msmeScoreRequired = false;
-		}
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+//		boolean msmeScoreRequired = false;
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+//				.findOne(msmeScoreRequest.getApplicationId());
+//		if (msmeScoreRequest.isMsmeScoreRequired()) {
+//			loanApplicationMaster.setIsMsmeScoreRequired(true);
+//			msmeScoreRequired = true;
+//		} else {
+//			loanApplicationMaster.setIsMsmeScoreRequired(false);
+//			msmeScoreRequired = false;
+//		}
+//		return msmeScoreRequired;
+//	}
 
 	/*
 	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
@@ -622,14 +622,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * return companyDetails; }
 	 */
 
-	@Override
-	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
-			return false;
-		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+//		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+//			return false;
+//		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
+//		return msmeScoreRequired;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -675,6 +675,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			try {
 				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+					@SuppressWarnings("unchecked")
 					UsersRequest request = MultipleJSONObjectHelper
 							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 					paymentRequest.setEmailAddress(request.getEmail());
@@ -712,6 +713,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return applicantRequest;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getOrgAndPanByAppId(Long applicationId) {
 		logger.info("Start Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);

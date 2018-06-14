@@ -4,6 +4,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "fs_corporate_primary_details")
@@ -46,6 +47,31 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "purpose_of_loan_id")
     private Integer purposeOfLoanId;
 
+    @Column(name = "tenure_required")
+    private Double tenureRequired;
+
+    @Column(name = "proposed_details_of_unit")
+    private Integer proposedDetailsOfUnit;
+
+    @Column(name = "cost_of_project")
+    private Double costOfProject;
+
+   /* @Column(name="created_by")
+    private Long createdBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="created_date")
+    private Date createdDate;
+
+    @Column(name="is_active")
+    private Boolean isActive;
+
+    @Column(name="modified_by")
+    private Long modifiedBy;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="modified_date")
+    private Date modifiedDate;*/
 
     public PrimaryCorporateDetail() {
     }
@@ -114,4 +140,76 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setPurposeOfLoanId(Integer purposeOfLoanId) {
         this.purposeOfLoanId = purposeOfLoanId;
     }
+
+    public Double getTenureRequired() {
+        return tenureRequired;
+    }
+
+    public void setTenureRequired(Double tenureRequired) {
+        this.tenureRequired = tenureRequired;
+    }
+
+    public Integer getProposedDetailsOfUnit() {
+        return proposedDetailsOfUnit;
+    }
+
+    public void setProposedDetailsOfUnit(Integer proposedDetailsOfUnit) {
+        this.proposedDetailsOfUnit = proposedDetailsOfUnit;
+    }
+
+    public Double getCostOfProject() {
+        return costOfProject;
+    }
+
+    public void setCostOfProject(Double costOfProject) {
+        this.costOfProject = costOfProject;
+    }
+
+   /* @Override
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    @Override
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    @Override
+    public Long getModifiedBy() {
+        return modifiedBy;
+    }
+
+    @Override
+    public void setModifiedBy(Long modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    @Override
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    @Override
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }*/
 }

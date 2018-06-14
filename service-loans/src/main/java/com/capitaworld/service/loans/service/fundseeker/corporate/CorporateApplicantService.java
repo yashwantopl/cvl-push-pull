@@ -33,11 +33,11 @@ public interface CorporateApplicantService {
 	public Integer getCorporateEstablishmentYear(Long applicationId,Long userId) throws Exception;
 	
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception;
-	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
+//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
 	
 	//public CompanyDetails getCompanyDetails(Long applicationId,Long userId)throws Exception;
 	
-	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
+//	public boolean getIsMsmeScoreRequired(Long applicationId)throws Exception;
 	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -69,9 +70,7 @@ public class FinancialArrangementDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				frameRequest.setClientId(clientId);
 			}
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
@@ -103,9 +102,7 @@ public class FinancialArrangementDetailsController {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-				 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -138,10 +135,10 @@ public class FinancialArrangementDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{directorId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<FinancialArrangementsDetailRequest> detailRequests,
 			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
-			@PathVariable("clientId") Long clientId) {
+			@PathVariable("clientId") Long clientId,@PathVariable("directorId") Long directorId) {
 		// request must not be null
 		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
 			logger.warn("frameRequest can not be empty ==>" + detailRequests);
@@ -172,7 +169,14 @@ public class FinancialArrangementDetailsController {
 						HttpStatus.OK);
 			}
 
-			financialArrangementDetailsService.saveOrUpdateFromCibil(detailRequests, applicationId, finalUserId);
+			if(CibilUtils.isObjectNullOrEmpty(directorId) || directorId <= 0) {
+				logger.info("Going to Save Company Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId);	
+			}else {
+				logger.info("Going to Save Director or Partner Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
+			}
+			
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 

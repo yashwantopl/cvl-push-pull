@@ -5,12 +5,12 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 
 public class CommonUtils {
 
@@ -37,13 +37,19 @@ public class CommonUtils {
 	public static final Long RETAIL_COAPPLICANT = 2L;
 	public static final Long RETAIL_GUARANTOR = 3L;
 	public static final Long CORPORATE_USER = 4L;
+	public static final Long NP_NHBS = 11L;
 	public static final Long CORPORATE_COAPPLICANT = 7L;
 	public static final Long CW_SP_USER_ID = 101L;
 	public static final Long TL_LESS_TWO = 20000000L;
 	
+	public static final String DDR_NOT_APPROVED= "DDR is not yet approved by Approver !";
+	
 	public static final String CW_CMA_EXCEL = "cw_cma.xlsx";
+	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
-
+   
+	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
@@ -127,7 +133,7 @@ public class CommonUtils {
 
 	public enum LoanType {
 		WORKING_CAPITAL(1,"Working Capital","WC"), TERM_LOAN(2,"Term Loan","TL"), HOME_LOAN(3,"Home Loan","HL"), CAR_LOAN(12,"Car Loan","CL"), PERSONAL_LOAN(7,"Personal Loan","PL"), LAP_LOAN(13,"Loan Against Property","LAP"), LAS_LOAN(
-				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL");
+				14,"Loan Against Shares","LAS"), UNSECURED_LOAN(15,"UnSecured Loan","USL"), WCTL_LOAN(16,"Working Capital Term Loan","wctl");
 		private int value;
 		private String name;
 		private String code;
@@ -152,6 +158,11 @@ public class CommonUtils {
 		}
 
 		public static LoanType getType(Integer x) {
+			System.out.println("GetType----------------->" + x);
+			if(x == null) {
+				return null;
+			}
+			
 			switch (x) {
 			case 1:
 				return WORKING_CAPITAL;
@@ -169,9 +180,36 @@ public class CommonUtils {
 				return LAS_LOAN;
 			case 15:
 				return UNSECURED_LOAN;
+			case 16:
+				return WCTL_LOAN;
+			default :
+				return null;
 			}
-			return null;
 		}
+//		public static String getLoanTypeName(Integer x) {
+//			switch (x) {
+//			case 1:
+//				return "WORKING CAPITAL";
+//			case 2:
+//				return "TERM LOAN";
+//			case 3:
+//				return "HOME LOAN";
+//			case 12:
+//				return "CAR_LOAN";
+//			case 7:
+//				return "PERSONALLOAN";
+//			case 13:
+//				return "LAP LOAN";
+//			case 14:
+//				return "LAS LOAN";
+//			case 15:
+//				return "UNSECURED LOAN";
+//			case 16:
+//				return "WCTL_LOAN";
+//			default :
+//				return null;
+//			}
+//		}
 
 	}
 
@@ -220,25 +258,28 @@ public class CommonUtils {
 		public static final int CORPORATE = 2;
 	}
 
-	public static int getUserMainType(int productId) {
-		if (productId == 1 || productId == 2 || productId == 15)
-			return 2;
+	public static int getUserMainType(Integer productId) {
+		if (isObjectNullOrEmpty(productId)) {
+			return 0;
+		}
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
+			return UserMainType.CORPORATE;
 		else
-			return 1;
+			return UserMainType.RETAIL;
 	}
 
-	public static String getUserMainTypeName(int productId) {
+	public static String getUserMainTypeName(Integer productId) {
 		if (isObjectNullOrEmpty(productId)) {
 			return "NA";
 		}
-		if (productId == 1 || productId == 2 || productId == 15)
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return CORPORATE;
 		else
 			return RETAIL;
 	}
 
-	public static String getCorporateLoanType(int productId) {
-		if (productId == 1 || productId == 2 || productId == 15)
+	public static String getCorporateLoanType(Integer productId) {
+		if (productId == 1 || productId == 2 || productId == 15 || productId == 16)
 			return "DEBT";
 		else
 			return "EQUITY";
@@ -251,9 +292,10 @@ public class CommonUtils {
 		public static final Long SUBMITTED_TO_APPROVER = 4l;
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
+		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
 
-	public static String getDdrStatusString(int ddrStatusId) {
+	public static String getDdrStatusString(Integer ddrStatusId) {
 		if (isObjectNullOrEmpty(ddrStatusId)) {
 			return "NA";
 		}
@@ -408,6 +450,8 @@ public class CommonUtils {
 		urlsBrforeLogin = new ArrayList<String>(3);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
+		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
+		
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -475,7 +519,7 @@ public class CommonUtils {
 		 */
 	}
 
-	public static String getLoanName(Integer x) {
+	public static String getLoanName(Integer x) { 
 		switch (x) {
 		case 1:
 			return "Working Capital";
@@ -539,6 +583,8 @@ public class CommonUtils {
 			return LoanType.LAS_LOAN;
 		} else if ("USL".equalsIgnoreCase(code)) {
 			return LoanType.UNSECURED_LOAN;
+		} else if ("WCTL".equalsIgnoreCase(code)) {
+			return LoanType.WCTL_LOAN;
 		} else {
 			return null;
 		}
@@ -890,6 +936,96 @@ public class CommonUtils {
 
 	}
 	
+	public enum BusinessType {
+		
+		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+
+		private Integer id;
+		private String value;
+
+		private BusinessType(Integer id) {
+			this.id = id;
+		}
+
+		private BusinessType(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+		
+		public static BusinessType fromValue(String v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static BusinessType fromId(Integer v) {
+			for (BusinessType c : BusinessType.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
+		}
+
+	}
+	
+public enum APIFlags {
+		
+		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM");
+
+		private Integer id;
+		private String value;
+
+		private APIFlags(Integer id) {
+			this.id = id;
+		}
+
+		private APIFlags(Integer id, String value) {
+			this.id = id;
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public int getId() {
+			return id;
+		}
+		
+		public static APIFlags fromValue(String v) {
+			for (APIFlags c : APIFlags.values()) {
+				if (c.value.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v);
+		}
+
+		public static APIFlags fromId(Integer v) {
+			for (APIFlags c : APIFlags.values()) {
+				if (c.id.equals(v)) {
+					return c;
+				}
+			}
+			throw new IllegalArgumentException(v.toString());
+
+		}
+
+	}
+	
 	public static Double addNumbers(Double... a){
 		Double sum = 0.0;
 		if(!isObjectNullOrEmpty(a)) {
@@ -909,6 +1045,48 @@ public class CommonUtils {
 		return sub;
 	}
 	
-
-
+	public static Double substractThreeNumbers(Double a, Double b, Double c){
+		a= isObjectNullOrEmpty(a) ? 0.0 : a;
+		b= isObjectNullOrEmpty(b) ? 0.0 : b;
+		c= isObjectNullOrEmpty(c) ? 0.0 : c;
+		
+		Double sub= a-b-c;
+		return sub;
+	}
+	public static String getOrganizationName(Long x) {
+		if(x == 1L) {
+			return "UNION";
+		}else if(x == 2L) {
+			return "SARASWAT";
+		}else if(x == 3L) {
+			return "AXIS";
+		}else if(x == 4L) {
+			return "ICICI";
+		}else if(x == 5L) {
+			return "IDBI";
+		}else if(x == 6L) {
+			return "RBL";
+		}else if(x == 7L) {
+			return "Tata Capital";
+		}else if(x == 8L) {
+			return "IDFC";
+		}else if(x == 9L) {
+			return "Dena Bank";
+		}else if(x == 10L) {
+			return "SIDBI";
+		}else if(x == 11L) {
+			return "NHBS";
+		}else if(x == 12L) {
+			return "CANARA BANK";
+		}else if(x == 13L) {
+			return "Indian Bank";
+		}else if(x == 14L) {
+			return "BOI";
+		}else {
+			return null;
+		}
+	}
+	public static String decode(String encryptedString) {
+		return new String(Base64.getDecoder().decode(encryptedString));
+	}
 }

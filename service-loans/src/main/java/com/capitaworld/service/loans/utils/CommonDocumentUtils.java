@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
@@ -192,4 +194,18 @@ public class CommonDocumentUtils {
 		return permAdd;
 	}
 
+	
+	public static boolean isThisClientApplication(HttpServletRequest request) {
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			return false;
+		}
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType
+			|| CommonUtils.UserType.NETWORK_PARTNER == userType 
+			|| CommonUtils.UserType.FUND_PROVIDER == userType) {
+			return true;
+		}
+		return false;
+	}
+	
 }

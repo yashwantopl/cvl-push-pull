@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
-
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -99,10 +96,7 @@ public class CorporateApplicantController {
 			// ==============
 
 			if ((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE)))
-					&& (CommonUtils.UserType.SERVICE_PROVIDER == Integer
-							.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())
-							|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request
-									.getAttribute(CommonUtils.USER_TYPE)).intValue())) {
+					&& (CommonDocumentUtils.isThisClientApplication(request))) {
 				applicantRequest.setClientId(clientId);
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			} else {
@@ -167,10 +161,7 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
 			Long id = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				id = clientId;
 			} else {
 				id = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -267,10 +258,7 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getGraphs");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -301,10 +289,7 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveLatLon");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -335,10 +320,7 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getLatLon");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -395,27 +377,27 @@ public class CorporateApplicantController {
 	 * HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 	 * } }
 	 */
-	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
-			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
-		try {
-			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
-				logger.warn("request cannot be empty");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			} else {
-				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
-				LoansResponse loansResponse = new LoansResponse();
-				loansResponse.setData(response);
-				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-			}
-		} catch (Exception e) {
-			logger.error("Error while getting msme score==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@RequestMapping(value = "/getMsmeScoreRequired", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<LoansResponse> getMsmeScoreRequired(@RequestBody Long applicationId,
+//			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+//		try {
+//			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+//				logger.warn("request cannot be empty");
+//				return new ResponseEntity<LoansResponse>(
+//						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//			} else {
+//				boolean response = applicantService.getIsMsmeScoreRequired(applicationId);
+//				LoansResponse loansResponse = new LoansResponse();
+//				loansResponse.setData(response);
+//				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+//			}
+//		} catch (Exception e) {
+//			logger.error("Error while getting msme score==>", e);
+//			return new ResponseEntity<LoansResponse>(
+//					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+//					HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 
 	@RequestMapping(value = "/get_coapplicants/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoApplicants(@PathVariable("applicationId") Long applicationId,
@@ -423,9 +405,7 @@ public class CorporateApplicantController {
 		// request must not be null
 		try {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -454,9 +434,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			userId = clientId;
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -486,9 +464,7 @@ public class CorporateApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "npUserId", required = false) Long npUserId) {
 		logger.info("Enter in getCoapAndGuarIds for retail profile");
 		Long userId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-				|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(npUserId)){
 				userId = npUserId;	
 			}else{
@@ -524,9 +500,7 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getPrimary");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() ||
-					CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

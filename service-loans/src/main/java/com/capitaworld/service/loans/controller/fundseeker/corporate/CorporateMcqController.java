@@ -52,9 +52,7 @@ public class CorporateMcqController {
                         new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
                         HttpStatus.OK);
             }
-            if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() ||
-                    CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                            .intValue()) {
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
                 corporateMcqRequest.setClientId(clientId);
             }
             corporateMcqService.saveOrUpdate(corporateMcqRequest, userId);
@@ -78,9 +76,7 @@ public class CorporateMcqController {
             try {
                 CommonDocumentUtils.startHook(logger, "get");
                 Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-                if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() ||
-                        CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-                                .intValue()) {
+                if (CommonDocumentUtils.isThisClientApplication(request)) {
                     userId = clientId;
                 } else {
                     userId = (Long) request.getAttribute(CommonUtils.USER_ID);

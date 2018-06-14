@@ -132,9 +132,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -269,6 +267,14 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					case DocumentAlias.WCTL_CMA: {
+						flag = excelExtractionService.readCMA(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
+					case DocumentAlias.WCTL_COMPANY_ACT: {
+						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
+						break;
+					}
 					case DocumentAlias.TL_DPR_OUR_FORMAT: {
 						flag = excelExtractionService.readDPR(applicationId, response.getStorageId(), multipartFiles);
 						break;
@@ -316,10 +322,12 @@ public class CorporateUploadController {
 				} else {
 
 					// code for inactive CMA BS and DPR recored
+					System.out.println("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
+					System.out.println("excel file's storage id is====>>>>"+response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
-
+					
 					logger.error("Error While Uploading Document==>");
 					CommonDocumentUtils.endHook(logger, "uploadExcel");
 					return new ResponseEntity<LoansResponse>(
@@ -396,7 +404,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> removeExcelDoc(@PathVariable("docId") Long docId,
 			@PathVariable("productDocumentMappingId") Integer productDocumentMappingId, HttpServletRequest request) {
 		try {
+			System.out.println("in /excel/delete/doc");
 			CommonDocumentUtils.startHook(logger, "removeExcelDoc");
+			System.out.println("product documet id is===>>>>>"+productDocumentMappingId);
 			if (CommonUtils.isObjectNullOrEmpty(docId) && CommonUtils.isObjectNullOrEmpty(productDocumentMappingId)) {
 				logger.warn("Document Id and ProductDocumentMappingId not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -404,12 +414,15 @@ public class CorporateUploadController {
 			}
 
 			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
+			
+			System.out.println("dms client url is====>>>>"+dmsClient);
 
 			// code for inactive CMA BS and DPR recored
 
 			try {
 
 				JSONObject json = new JSONObject();
+				System.out.println("docis====>>"+docId);
 				json.put("id", docId);
 				DocumentResponse response = dmsClient.deleteProductDocument(json.toJSONString());
 
@@ -419,8 +432,10 @@ public class CorporateUploadController {
 							|| productDocumentMappingId == DocumentAlias.TL_DPR_OUR_FORMAT)
 						excelExtractionService.inActiveDPR(docId);
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
-							|| productDocumentMappingId == DocumentAlias.TL_CMA|| productDocumentMappingId==DocumentAlias.USL_CMA)
-						excelExtractionService.inActiveCMA(docId);
+							|| productDocumentMappingId == DocumentAlias.TL_CMA || productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId==DocumentAlias.USL_CMA)
+						{
+						System.out.println("in else if for cma inactivate...===>>>>"+docId);
+						excelExtractionService.inActiveCMA(docId);}
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
 							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
 							productDocumentMappingId==DocumentAlias.USL_COMPANY_ACT)
@@ -429,6 +444,8 @@ public class CorporateUploadController {
 
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+					
+					System.out.println("fina response is====>>"+finalResponse);
 					finalResponse.setListData(response.getDataList());
 					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
 					return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
@@ -464,9 +481,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadFlag");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -520,10 +535,18 @@ public class CorporateUploadController {
 		
         try {
         	  httpServletResponse.setContentType("application/csv");  
-          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA|| productDocumentMappingId==(long)DocumentAlias.TL_CMA ||productDocumentMappingId==(long)DocumentAlias.USL_CMA ) {
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
             httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
-          }else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT) {
+          }
+          
+          else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
+        	  httpServletResponse.setContentType("application/csv");
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+              downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+		}
+          else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
+        	  httpServletResponse.setContentType("application/csv");
         	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }

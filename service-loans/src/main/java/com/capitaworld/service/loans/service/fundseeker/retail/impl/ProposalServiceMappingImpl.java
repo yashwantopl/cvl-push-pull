@@ -3,10 +3,13 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.users.model.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +32,6 @@ import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.model.CorporateProposalDetails;
-import com.capitaworld.service.loans.model.FundProviderProposalDetails;
-import com.capitaworld.service.loans.model.ProposalResponse;
-import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -54,17 +53,15 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
-import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -108,6 +105,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 	
 	@Autowired
 	private LogService logService;
@@ -161,8 +161,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+					logger.info("loanApplicationMaster null ot empty !!");
+					continue;
+				}
 
-				if(!loanApplicationMaster.getIsActive()) {
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsActive()) || !loanApplicationMaster.getIsActive()) {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
@@ -230,6 +235,61 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIndustry("NA");
 					}
+					
+					List<Long> keyVerticalFundingId = new ArrayList<>();
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+		                try {
+		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+		                    } else {
+		                    	corporateProposalDetails.setKeyVertical("NA");
+		                    }
+		                } catch (Exception e) {
+		                    e.printStackTrace();
+		                }
+		            }
+					
+					//key vertical sector
+		           	List<Long> keyVerticalSectorId = new ArrayList<>();
+		            //getting sector id from mapping
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+		            try
+		            {
+		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
+		            
+		            //get key vertical sector value
+		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                corporateProposalDetails.setSector(masterResponse.getValue());
+		            } else {
+		            	corporateProposalDetails.setSector("NA");
+		            }
+		            }
+		            catch (Exception e) {
+		            	e.printStackTrace();
+					}
+		            //key vertical Subsector
+		            try
+		            {
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+		            {
+		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
+		            }
+		            }
+		            catch (Exception e) {
+						// TODO: handle exception
+		            	logger.warn("error while getting key vertical sub-sector");
+					}
 
 					String amount = "";
 					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -274,7 +334,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-					corporateProposalDetails.setModifiedDate(proposalrequest.getModifiedDate());
+					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getCreatedDate());
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getModifiedBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
@@ -282,12 +342,39 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						}
 					}
 					
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
+					}*/
+					
+					UsersRequest usersRequest=new UsersRequest();
+					usersRequest.setId(request.getUserId());
+					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
+					if(!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
+						try {
+							FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+												oneFormClient));
+									}
+								}
+								if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+								}	
+							}
+								
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+							
 					}
+					
+					
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
 							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
@@ -1282,6 +1369,62 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIndustry("NA");
 					}
+					
+					List<Long> keyVerticalFundingId = new ArrayList<>();
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+		                try {
+		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+		                    } else {
+		                    	corporateProposalDetails.setKeyVertical("NA");
+		                    }
+		                } catch (Exception e) {
+		                    e.printStackTrace();
+		                }
+		            }
+					
+					//key vertical sector
+		           	List<Long> keyVerticalSectorId = new ArrayList<>();
+		            //getting sector id from mapping
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+		            try
+		            {
+		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
+		            
+		            //get key vertical sector value
+		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+		                corporateProposalDetails.setSector(masterResponse.getValue());
+		            } else {
+		            	corporateProposalDetails.setSector("NA");
+		            }
+		            }
+		            catch (Exception e) {
+		            	e.printStackTrace();
+					}
+		            //key vertical Subsector
+		            try
+		            {
+		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
+		            {
+		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
+		            }
+		            }
+		            catch (Exception e) {
+						// TODO: handle exception
+		            	logger.warn("error while getting key vertical sub-sector");
+					}
+					
 
 					String amount = "";
 					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1325,13 +1468,30 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getCreatedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					
+					UsersRequest usersRequest=new UsersRequest();
+					usersRequest.setId(request.getUserId());
+					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
+					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
+									oneFormClient));
+						}
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+					}
+					
+					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setAssignBy(usersRequest.getName());
 						}
-					}
+					}*/
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
 							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
@@ -1365,6 +1525,51 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			//set branch id to proposal request
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "+request.toString());
 			ProposalMappingResponse mappingResponse=proposalDetailsClient.saveDisbursementDetails(request);
+		
+			
+			// sending SMS Notification to FS when FP clicks Submit Disbursement Details
+			
+	  /* try {
+
+			logger.info("Starting SMS service when FP Submit Disbursement Details=====>");
+			
+			UserResponse response = usersClient.getEmailMobile(finalUserId);
+			
+			UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), UsersRequest.class);
+			
+			String mobile = applicantRequest.getMobile();
+			
+		
+			String[] to = { 91+mobile };
+			NotificationRequest notificationRequest = new NotificationRequest();
+			notificationRequest.setClientRefId("123");
+			Notification notification = new Notification();
+			notification.setContentType(ContentType.TEMPLATE);
+
+		
+
+				notification.setTemplateId(NotificationAlias.SMS_FS_PAYS_PAYUMONEY);
+				notification.setTo(to);
+				notification.setType(NotificationType.SMS);
+				Map<String, Object> parameters = new HashMap<String, Object>();
+				parameters.put("bankerName", "");
+				parameters.put("productType", "");
+				notification.setParameters(parameters);
+				notificationRequest.addNotification(notification);
+
+				notificationClient.send(notificationRequest);
+
+				logger.info("End SMS service when FP Submit Disbursement Details=====>");
+			
+		} catch (Exception e) {
+
+			logger.info("Error while sending when FP Submit Disbursement Details=====>");
+			e.printStackTrace();
+
+		}
+			*/
+			
 			return (Boolean) mappingResponse.getData();
 			
 		} catch (Exception e) {
@@ -1373,5 +1578,61 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return false;
 		}
 	}
+
+	@Override
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
+		LoansResponse loansResponse=new LoansResponse();
+
+		try {
+
+			loansResponse.setFlag(true);
+
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+
+			// Check If Requested Application is assigned to Currunt Fp Cheker  or not
+			if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
+			{
+				UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
+
+				CheckerDetailRequest checkerDetailRequest=null;
+				if(!CommonUtils.isObjectListNull(userResponse) || !(CommonUtils.isObjectNullOrEmpty(userResponse.getData())))
+				{
+					checkerDetailRequest= MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				}
+
+				if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
+				{
+					if(!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount()))
+					{
+						loansResponse.setFlag(false);
+						loansResponse.setMessage("You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+					}
+				}
+				else
+				{
+					// You dont have Authorised for this Action
+					loansResponse.setFlag(false);
+					loansResponse.setMessage("You do not have rights to take action for this proposal.");
+				}
+			}
+			else
+			{
+				// You dont have Authorised for this Action
+				logger.error("Not getting min max loan amount for this user");
+				loansResponse.setFlag(false);
+				loansResponse.setMessage("You do not have rights to take action for this proposal.");
+			}
+		}
+		catch (Exception e){
+
+			e.printStackTrace();
+			logger.error("Error while Getting Min Max Loan Amount");
+			loansResponse.setFlag(false);
+			loansResponse.setMessage("You do not have rights to take action for this proposal.");
+		}
+		return loansResponse;
+	}
+
 
 }

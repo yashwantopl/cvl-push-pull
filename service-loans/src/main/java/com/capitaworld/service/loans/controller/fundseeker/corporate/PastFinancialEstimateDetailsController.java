@@ -56,9 +56,7 @@ public class PastFinancialEstimateDetailsController {
 		
 		//==============
 		
-				if((!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) && (CommonUtils.UserType.SERVICE_PROVIDER  == Integer.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString()) || 
-						 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-							.intValue())){
+				if(CommonDocumentUtils.isThisClientApplication(request)){
 					frameRequest.setClientId(clientId);
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 				}else{
@@ -91,7 +89,7 @@ public class PastFinancialEstimateDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-//			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+//			if(CommonDocumentUtils.isThisClientApplication(request)).intValue()){
 //				frameRequest.setClientId(clientId);
 //			}
 			pastFinancialEstiamateDetailsService.saveOrUpdate(frameRequest);
@@ -120,9 +118,7 @@ public class PastFinancialEstimateDetailsController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue() || 
-					 CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-						.intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
 				userId = (Long)request.getAttribute(CommonUtils.USER_ID);

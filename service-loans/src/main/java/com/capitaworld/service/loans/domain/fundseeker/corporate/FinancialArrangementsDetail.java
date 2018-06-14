@@ -37,13 +37,12 @@ public class FinancialArrangementsDetail implements Serializable {
 	private Date loanDate;
 
 	@Column(name = "loan_type")
-	private Integer loanType;
+	private String loanType;
 
 	private Double emi;
 
-	/*
-	 * @Column(name="lender_type") private Integer lenderType;
-	 */
+	@Column(name="relationship_since") 
+	private Integer relationshipSince;
 
 	@ManyToOne
 	@JoinColumn(name = "application_id")
@@ -78,8 +77,16 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	@Column(name = "security_details")
 	private String securityDetails;
+	
+	@ManyToOne
+	@JoinColumn(name = "director_id")
+	private DirectorBackgroundDetail directorBackgroundDetail;
 
 	public FinancialArrangementsDetail() {
+	}
+	
+	public FinancialArrangementsDetail(Long id) {
+		this.id = id;
 	}
 
 	public Long getId() {
@@ -169,11 +176,11 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.loanDate = loanDate;
 	}
 
-	public Integer getLoanType() {
+	public String getLoanType() {
 		return loanType;
 	}
 
-	public void setLoanType(Integer loanType) {
+	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
 
@@ -206,5 +213,13 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	public void setEmi(Double emi) {
 		this.emi = emi;
+	}
+
+	public DirectorBackgroundDetail getDirectorBackgroundDetail() {
+		return directorBackgroundDetail;
+	}
+
+	public void setDirectorBackgroundDetail(DirectorBackgroundDetail directorBackgroundDetail) {
+		this.directorBackgroundDetail = directorBackgroundDetail;
 	}
 }

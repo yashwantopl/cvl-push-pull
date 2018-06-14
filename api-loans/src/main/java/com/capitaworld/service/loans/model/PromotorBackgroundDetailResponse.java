@@ -13,29 +13,29 @@ public class PromotorBackgroundDetailResponse implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    private String achievements;
+    private String promotorsName;
 
-    private String address;
-
-    private Double age;
+    private String gender;
 
     private String panNo;
 
-    private String promotorsName;
+    private String relationshipType;
 
-    private String qualification;
+    private String din;
 
-    private Double totalExperience;
+    private String designation;
+
+    private String address;
+
+    private String mobile;
+
+    private String dob;
+
+    private String totalExperience;
     
-    private Double networth;
+    private String networth;
 
-    public String getAchievements() {
-        return achievements;
-    }
-
-    public void setAchievements(String achievements) {
-        this.achievements = achievements;
-    }
+    private String appointmentDate;
 
     public String getAddress() {
         return address;
@@ -45,13 +45,7 @@ public class PromotorBackgroundDetailResponse implements Serializable{
         this.address = address;
     }
 
-    public Double getAge() {
-        return age;
-    }
 
-    public void setAge(Double age) {
-        this.age = age;
-    }
 
     public String getPanNo() {
         return panNo;
@@ -69,31 +63,82 @@ public class PromotorBackgroundDetailResponse implements Serializable{
         this.promotorsName = promotorsName;
     }
 
-    public String getQualification() {
-        return qualification;
-    }
 
-    public void setQualification(String qualification) {
-        this.qualification = qualification;
-    }
 
-    public Double getTotalExperience() {
-        return totalExperience;
-    }
-
-    public void setTotalExperience(Double totalExperience) {
-        this.totalExperience = totalExperience;
-    }
-
-	public Double getNetworth() {
+	
+	public String getNetworth() {
 		return networth;
 	}
 
-	public void setNetworth(Double networth) {
+	public void setNetworth(String networth) {
 		this.networth = networth;
 	}
-	
-	public static void printFields(Object obj) throws Exception {
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getRelationshipType() {
+        return relationshipType;
+    }
+
+    public void setRelationshipType(String relationshipType) {
+        this.relationshipType = relationshipType;
+    }
+
+    public String getDin() {
+        return din;
+    }
+
+    public void setDin(String din) {
+        this.din = din;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getTotalExperience() {
+        return totalExperience;
+    }
+
+    public void setTotalExperience(String totalExperience) {
+        this.totalExperience = totalExperience;
+    }
+
+    public String getAppointmentDate() {
+        return appointmentDate;
+    }
+
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public static void printFields(Object obj) throws Exception {
         Field[] fields = PromotorBackgroundDetailResponse.class.getDeclaredFields();
         System.out.println("length : "+fields.length);
         for(Field field : fields) {

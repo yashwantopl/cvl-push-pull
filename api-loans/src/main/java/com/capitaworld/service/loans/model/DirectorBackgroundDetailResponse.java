@@ -13,7 +13,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String address;
 
-		private Double networth;
+		private String networth;
 
 		private Long applicationId;
 
@@ -30,7 +30,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String directorsName;
 
-		private Double totalExperience;
+		private String totalExperience;
 
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 		private Date dob;
@@ -46,7 +46,32 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private String gender;
 
 		private String relationshipType;
+		
+		private Double cibilScore;
 
+		private Double shareholding;
+
+		private String aadhar;
+
+		private String maritalStatus;
+
+		private String noOfDependent;
+
+		private String residenceType;
+
+		private String residenceSince;
+
+		private String isFamilyMemberInBusiness;
+
+		private Long empDetailId;
+
+		private String country;
+
+		private String premiseNumber;
+
+		private String streetName;
+
+		private String landmark;
 
 		public String getAddress() {
 			return address;
@@ -55,17 +80,7 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		public void setAddress(String address) {
 			this.address = address;
 		}
-
-
-
-		public Double getNetworth() {
-			return networth;
-		}
-
-		public void setNetworth(Double networth) {
-			this.networth = networth;
-		}
-
+		
 		public Long getApplicationId() {
 			return applicationId;
 		}
@@ -122,13 +137,19 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 			this.directorsName = directorsName;
 		}
 
+	public String getNetworth() {
+			return networth;
+		}
 
+		public void setNetworth(String networth) {
+			this.networth = networth;
+		}
 
-		public Double getTotalExperience() {
+		public String getTotalExperience() {
 			return totalExperience;
 		}
 
-		public void setTotalExperience(Double totalExperience) {
+		public void setTotalExperience(String totalExperience) {
 			this.totalExperience = totalExperience;
 		}
 
@@ -232,6 +253,108 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setStateCode(String stateCode) {
 		this.stateCode = stateCode;
 	}
-	
-	
+
+	public Double getCibilScore() {
+		return cibilScore;
+	}
+
+	public void setCibilScore(Double cibilScore) {
+		this.cibilScore = cibilScore;
+	}
+
+	public Double getShareholding() {
+		return shareholding;
+	}
+
+	public void setShareholding(Double shareholding) {
+		this.shareholding = shareholding;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public String getNoOfDependent() {
+		return noOfDependent;
+	}
+
+	public void setNoOfDependent(String noOfDependent) {
+		this.noOfDependent = noOfDependent;
+	}
+
+	public String getResidenceType() {
+		return residenceType;
+	}
+
+	public void setResidenceType(String residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public String getResidenceSince() {
+		return residenceSince;
+	}
+
+	public void setResidenceSince(String residenceSince) {
+		this.residenceSince = residenceSince;
+	}
+
+	public String getIsFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setIsFamilyMemberInBusiness(String isFamilyMemberInBusiness) {
+		this.isFamilyMemberInBusiness = isFamilyMemberInBusiness;
+	}
+
+	public Long getEmpDetailId() {
+		return empDetailId;
+	}
+
+	public void setEmpDetailId(Long empDetailId) {
+		this.empDetailId = empDetailId;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPremiseNumber() {
+		return premiseNumber;
+	}
+
+	public void setPremiseNumber(String premiseNumber) {
+		this.premiseNumber = premiseNumber;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getLandmark() {
+		return landmark;
+	}
+
+	public void setLandmark(String landmark) {
+		this.landmark = landmark;
+	}
 }

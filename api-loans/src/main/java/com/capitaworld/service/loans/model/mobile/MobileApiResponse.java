@@ -1,4 +1,6 @@
 package com.capitaworld.service.loans.model.mobile;
+import com.capitaworld.service.loans.utils.MobileCustomizeResponse;
+
 import java.io.Serializable;
 
 public class MobileApiResponse implements Serializable{
@@ -57,6 +59,23 @@ public class MobileApiResponse implements Serializable{
         this.response_code = response_code;
         this.response_code_message = response_code_message;
         this.message = message;
+    }
+
+    public MobileApiResponse(String message, String success, MobileCustomizeResponse mobileCustomizeResponse){
+        super();
+        this.message = message;
+        this.success = success;
+        this.response_code = mobileCustomizeResponse.getStatusCode();
+        this.response_code_message = mobileCustomizeResponse.getDescription();
+    }
+
+    public MobileApiResponse(String message, String success, Object data, MobileCustomizeResponse mobileCustomizeResponse){
+        super();
+        this.message = message;
+        this.success = success;
+        this.data = data;
+        this.response_code = mobileCustomizeResponse.getStatusCode();
+        this.response_code_message = mobileCustomizeResponse.getDescription();
     }
 
     public MobileApiResponse() {

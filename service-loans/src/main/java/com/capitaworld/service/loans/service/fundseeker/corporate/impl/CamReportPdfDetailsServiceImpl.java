@@ -3,8 +3,8 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +19,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -27,20 +30,29 @@ import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
 import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
 import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -51,15 +63,19 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -70,12 +86,15 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
+import com.capitaworld.service.oneform.enums.Particular;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.Title;
-import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -86,6 +105,8 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -159,191 +180,45 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private CIBILClient cibilClient;
+	
+	@Autowired
+	private GstClient gstClient;
+	
+	@Autowired
+	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
+	
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService; 
+	
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
+	@Autowired
+	private ThirdPartyClient thirdPartyClient;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-	
+	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	DecimalFormat decim = new DecimalFormat("#,##0.00");
+	DecimalFormat decim2 = new DecimalFormat("#,###");
 	@Override
-	public Map<String, Object> getCamReportFinalDetails(Long applicationId, Long productId) {
+	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
-		//ONE-FORM DATA
-		/*try {
-			CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
-			map.put("corporateApplicant", printFields(corporateApplicantRequest));
-			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
-			//REGISTERED OFFICE ADDRESS
-			try {
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress())) {
-					map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getPremiseNumber()) + ", " : "");
-					map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getStreetName()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getStreetName()) + ", " : "");
-					map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getLandMark()) ? escapeXml(corporateApplicantRequest.getFirstAddress().getLandMark()) + ", " : "");
-					map.put("registeredAddCountry", escapeXml(getCountryName(corporateApplicantRequest.getFirstAddress().getCountryId())));
-					map.put("registeredAddState", escapeXml(getStateName(corporateApplicantRequest.getFirstAddress().getStateId())));
-					map.put("registeredAddCity", escapeXml(getCityName(corporateApplicantRequest.getFirstAddress().getCityId())));
-					map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getFirstAddress().getPincode())?corporateApplicantRequest.getFirstAddress().getPincode() : "");
-				}
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : "NA");
-			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
-			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear())) {
-				try {
-					OneFormResponse establishmentYearResponse = oneFormClient.getYearByYearId(CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentYear()) ? null : corporateApplicantRequest.getEstablishmentYear().longValue());
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) establishmentYearResponse.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						establishMentYear += " "+ masterResponse.getValue();
-					} 
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? printFields(establishMentYear) : "NA");
-			
-			//PROMOTOR BACKGROUND DETAILS
-			try {
-				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
-				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-					String promotorName = "";
-					if (promotorBackgroundDetailRequest.getSalutationId() != null){
-						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
-					}
-					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
-					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
-				}
-				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			//DIRECTOR'S BACKGROUND
-			try {
-				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-				List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
-				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-					DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
-					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
-					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
-					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : " " )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo().toUpperCase());
-					String directorName = "";
-					if (directorBackgroundDetailRequest.getSalutationId() != null){
-						directorName = Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
-					}
-					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
-					directorBackgroundDetailResponse.setDirectorsName(directorName);
-					//.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
-					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
-					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
-					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
-				}
-				map.put("dirBackground", printFields(directorBackgroundDetailResponseList));
-	        }
-				catch (Exception e) {
-					e.printStackTrace();
-		}
-			//OWNERSHIP DETAILS :- 
-			try {
-				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
-				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-					ownershipDetailResponse.setShareHoldingCategory(
-							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-					ownershipDetailResponseList.add(ownershipDetailResponse);
-				}
-				map.put("ownership", printFields(ownershipDetailResponseList));
-
-			} catch (Exception e) {
-				e.printStackTrace();
-		}
-			
-		//FINANCIAL ARRANGEMENTS
-			try {
-				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-					FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-					financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-					financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
-					financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-					financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-					financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
-					financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-					financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-				}
-				map.put("financialArrangments",printFields(financialArrangementsDetailResponseList));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			
-			//INDUSTRY SECTOR SUBSECTOR
-			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
-			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
-			List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
-			IndustrySectorSubSectorTeaserRequest industrySectorSubSectorTeaserRequest = new IndustrySectorSubSectorTeaserRequest();
-			industrySectorSubSectorTeaserRequest.setIndustryList(industryList);
-			industrySectorSubSectorTeaserRequest.setSectorList(sectorList);
-			industrySectorSubSectorTeaserRequest.setSubSectorList(subSectorList);
-			try {
-				OneFormResponse oneFormResponse = oneFormClient.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
-			map.put("industry", oneFormResponse.getListData());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			Integer industry =  corporateApplicantRequest.getKeyVericalFunding().intValue();
-			//Integer sector = (int)(long) corporateApplicantRequest.getKeyVerticalSector();
-			//Integer subsector = (int)(long) corporateApplicantRequest.getKeyVerticalSubsector();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? printFields(Industry.getById(industry).getValue()) : " ");
-			
-			
-			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
-			//ADMIN OFFICE ADDRESS
-			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) + ", " : "");
-				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName()) + ", " : "");
-				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark()) + ", " : "");
-				map.put("adminAddCountry", getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId()));
-				map.put("adminAddState", getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId()));
-				map.put("adminAddCity", getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId()));
-				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
-			}
-			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
-			map.put("aboutUs", printFields(corporateFinalInfoRequest.getAboutUs()));
-			
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		*/
-		return map;
-	}
-	@Override
-	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
 		LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
@@ -384,6 +259,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		//GST DATA
+		
+		try {
+			GSTR1Request gstr1Request = new GSTR1Request();
+			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
+			GstResponse response = gstClient.getCalculations(gstr1Request);
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? printFields(response.getData()) : " ");
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
@@ -416,9 +302,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//DIRECTOR'S BACKGROUND
 			try {
 				List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-				List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
+				List<DirectorBackgroundDetailResponseString> directorBackgroundDetailResponseList = new ArrayList<>();
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
-					DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
+					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
 					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
@@ -432,13 +318,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-					directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+					directorBackgroundDetailResponse.setNetworth(convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
-					directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
+					directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?convertValue(directorBackgroundDetailRequest.getDin()) : "");
+					directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
+					try {
+						CibilRequest cibilRequest = new CibilRequest();
+						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+						cibilRequest.setApplicationId(applicationId);
+						CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+						directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
+					}catch(Exception e) {
+						e.printStackTrace();
+						logger.info("Error while getting cibil details",e);
+					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? printFields(directorBackgroundDetailResponseList) : " ");
@@ -446,21 +342,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error in getting directors background details");
-		     }
+		    }
+			
 		    //FINANCIAL ARRANGEMENTS
 			try {
-                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
-                        .getFinancialArrangementDetailsList(applicationId, userId);
-                List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
+                List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+                List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-                    FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+                	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
 //				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-                    financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+                    financialArrangementsDetailResponse.setOutstandingAmount(convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
                     financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                    financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+                    financialArrangementsDetailResponse.setAmount(convertValue(financialArrangementsDetailRequest.getAmount()));
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                    financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+                    financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                     financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                     //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
@@ -474,8 +370,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? String.valueOf(primaryCorporateRequest.getLoanAmount()) : " ");
-			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? LoanType.getType(primaryCorporateRequest.getProductId()) : " ");
+			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");
+			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
 			
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
@@ -485,7 +381,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			
 			if(primaryCorporateRequest.getHaveCollateralSecurity()) {
-				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? primaryCorporateRequest.getCollateralSecurityAmount() : " ");
+				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -522,39 +418,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				catch (Exception e) {
 					e.printStackTrace();
 				}
-		//FITCH DATA
-		try {
-		RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-		if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-			map.put("fitchResponse",fitchOutputManu);
-			map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
-			map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
-			map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
-			map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
-			map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
-			map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
-			map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
-			map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
-			map.put("fitchTitle","Manufacturing");
-		}
-		if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputTrad);
-			map.put("fitchTitle","Trading");
-		}
-		if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
-		{
-			FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-			map.put("fitchResponse",fitchOutputServ);
-			map.put("fitchTitle","Service");
-		}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 		//SCORING DATA
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
@@ -680,61 +544,176 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting perfios data");
 		}
 		
+		//CGTMSE DATA
+		try {
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
+			map.put("cgtmseData", printFields(cgtmseDataResponse));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 		/**********************************************FINAL DETAILS*****************************************************/
-		/*//OWNERSHIP DETAILS :- 
-		try {
-			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
-			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-				ownershipDetailResponse.setShareHoldingCategory(
-						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-				ownershipDetailResponseList.add(ownershipDetailResponse);
-			}
-			map.put("ownership", printFields(ownershipDetailResponseList));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-	}
-		//PROMOTOR BACKGROUND DETAILS
-		try {
-			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
-			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-				String promotorName = "";
-				if (promotorBackgroundDetailRequest.getSalutationId() != null){
-					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+		
+		if(isFinalView) {
+			
+			//FITCH DATA
+			try {
+			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
+			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
+				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
+					map.put("fitchResponse",convertToString(fitchOutputManu));
+					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
+					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
+					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
+					map.put("financialStrength",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialStrengthScore()) ? fitchOutputManu.getFinancialStrengthScore() : "NA");
+					map.put("infrastructureAvailability",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getInfrastructureAvailabilityScore()) ? fitchOutputManu.getInfrastructureAvailabilityScore() : "NA");
+					map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
+					map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
+					map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
+					map.put("fitchTitle","Manufacturing");
 				}
-				promotorName += promotorBackgroundDetailRequest.getPromotorsName();
-				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
+					map.put("fitchResponse",convertToString(fitchOutputTrad));
+					map.put("fitchTitle","Trading");
+				}
+				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
+				{
+					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
+					map.put("fitchResponse",convertToString(fitchOutputServ));
+					map.put("fitchTitle","Service");
+				}
 			}
-			map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
-		} catch (Exception e) {
-			e.printStackTrace();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			//OWNERSHIP DETAILS :- 
+			try {
+				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
+				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+					ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+					ownershipDetailResponseList.add(ownershipDetailResponse);
+				}
+				map.put("ownership", printFields(ownershipDetailResponseList));
+
+			} catch (Exception e) {
+				e.printStackTrace();
 		}
-		//ASSOCIATE ENTITY
-		try {
-			map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
-		} catch (Exception e) {
-			e.printStackTrace();
+			//PROMOTOR BACKGROUND DETAILS
+			try {
+				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+					//promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+					String promotorName = "";
+					if (promotorBackgroundDetailRequest.getSalutationId() != null){
+						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+					}
+					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
+					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+					promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? convertValue(promotorBackgroundDetailRequest.getDin()) : " ");
+					promotorBackgroundDetailResponse.setTotalExperience(convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
+					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
+					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDesignation(promotorBackgroundDetailRequest.getDesignation());
+					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
+					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+				}
+				map.put("promotorsbckgrnd", printFields(promotorBackgroundDetailResponseList));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			//ASSOCIATE ENTITY
+			try {
+				map.put("associatedConcerns",printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
+				map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
+				map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			//SHARE PRICE
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+			map.put("sharePriceFace", convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceFace()));
+			map.put("sharePriceMarket", convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceMarket()));
+			
+			//DETAILS OF GUARANTER
+			try {
+					map.put("guaDetails", printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId)));
+			} catch (Exception e) {
+					logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+
+		    //MONTHLY TURNOVER
+			try {
+				map.put("monthlyTurnOver", printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId)));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Monthly Turnover {}", e);
+			}
+			
+			//COST ESTIMATES
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService.getCostOfProjectDetailList(applicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+				TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+				BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					    costOfProjectResponses.add(costOfProjectResponse);
+				}
+				map.put("costEstimate", printFields(costOfProjectResponses));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+			
+			//MEANS OF FINANCE
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService.getMeansOfFinanceList(applicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString())).getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				map.put("meansOfFinance", printFields(financeMeansDetailResponsesList));
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			//COLLATERAL SECURITY			
+			try {
+				map.put("collateralSecurity", printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId)));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+			
 		}
-		try {
-			map.put("proposedProduct",printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
-			map.put("existingProduct",printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
-			map.put("achievementDetails",printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
-		}catch (Exception e) {
-			e.printStackTrace();
-		}*/
+		
 		return map;
 	}
 	public Object calculateIRRScore(Long userId, Long applicationId, String industry, Long denomination) throws Exception {
@@ -743,9 +722,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		FinancialInputRequestString financialInputRequestString = new FinancialInputRequestString();
 		
-		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossBlockFy()));
-		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossBlockSy()));
-		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossBlockTy()));
+		financialInputRequestString.setGrossSalesFy(convertValue(financialInputRequest.getGrossSalesFy()));
+		financialInputRequestString.setGrossSalesSy(convertValue(financialInputRequest.getGrossSalesSy()));
+		financialInputRequestString.setGrossSalesTy(convertValue(financialInputRequest.getGrossSalesTy()));
 		
 		financialInputRequestString.setLessExciseDuityFy(convertValue(financialInputRequest.getLessExciseDuityFy()));
         financialInputRequestString.setLessExciseDuitySy(convertValue(financialInputRequest.getLessExciseDuitySy()));
@@ -807,6 +786,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         financialInputRequestString.setDividendPayOutSy(convertValue(financialInputRequest.getDividendPayOutSy()));
         financialInputRequestString.setDividendPayOutTy(convertValue(financialInputRequest.getDividendPayOutTy()));
 		
+        financialInputRequest.setShareCapitalFy(financialInputRequest.getShareCapitalFy());
+        financialInputRequest.setShareCapitalSy(financialInputRequest.getShareCapitalSy());
+        financialInputRequest.setShareCapitalTy(financialInputRequest.getShareCapitalTy());
+        
         financialInputRequestString.setShareCapitalFy(convertValue(financialInputRequest.getShareCapitalFy()));
         financialInputRequestString.setShareCapitalSy(convertValue(financialInputRequest.getShareCapitalSy()));
         financialInputRequestString.setShareCapitalTy(convertValue(financialInputRequest.getShareCapitalTy()));
@@ -938,124 +921,268 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		
 		//Profit & Loss Statement
-		financialInputRequestString.setNetSaleFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy())));
-		financialInputRequestString.setNetSaleSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy())));
-		financialInputRequestString.setNetSaleTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesTy(), financialInputRequest.getLessExciseDuityTy())));
+        
+        
+        //FOR CALCULATION OF NET SALE
+        financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy()));
+      	financialInputRequest.setNetSaleSy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy()));
+      	financialInputRequest.setNetSaleTy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesTy(), financialInputRequest.getLessExciseDuityTy()));
+      	//FOR DISPLAY OF NET SALE
+      	financialInputRequestString.setNetSaleFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(), financialInputRequest.getLessExciseDuityFy())));
+      	financialInputRequestString.setNetSaleSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesSy(), financialInputRequest.getLessExciseDuitySy())));
+      	financialInputRequestString.setNetSaleTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesTy(), financialInputRequest.getLessExciseDuityTy())));
+		
+      	//FOR CALCULATION OF TOTAL EXPENDITUR
+		financialInputRequest.setTotalExpenditureFy(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockFy(),financialInputRequest.getRawMaterialConsumedFy(),financialInputRequest.getPowerAndFuelCostFy(),financialInputRequest.getEmployeeCostFy(), financialInputRequest.getGeneralAndAdminExpeFy(),financialInputRequest.getSellingAndDistriExpeFy(),financialInputRequest.getMiscelExpeFy()), financialInputRequest.getLessExpeCapitaFy()));
+		financialInputRequest.setTotalExpenditureSy(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockSy(),financialInputRequest.getRawMaterialConsumedSy(),financialInputRequest.getPowerAndFuelCostSy(),financialInputRequest.getEmployeeCostSy(), financialInputRequest.getGeneralAndAdminExpeSy(),financialInputRequest.getSellingAndDistriExpeSy(),financialInputRequest.getMiscelExpeSy()), financialInputRequest.getLessExpeCapitaSy()));
+		financialInputRequest.setTotalExpenditureTy(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockTy(),financialInputRequest.getRawMaterialConsumedTy(),financialInputRequest.getPowerAndFuelCostTy(),financialInputRequest.getEmployeeCostTy(), financialInputRequest.getGeneralAndAdminExpeTy(),financialInputRequest.getSellingAndDistriExpeTy(),financialInputRequest.getMiscelExpeTy()), financialInputRequest.getLessExpeCapitaTy()));
+		//FOR DISPLAY OF TOTAL EXPENDITURE
 		financialInputRequestString.setTotalExpenditureFy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockFy(),financialInputRequest.getRawMaterialConsumedFy(),financialInputRequest.getPowerAndFuelCostFy(),financialInputRequest.getEmployeeCostFy(), financialInputRequest.getGeneralAndAdminExpeFy(),financialInputRequest.getSellingAndDistriExpeFy(),financialInputRequest.getMiscelExpeFy()), financialInputRequest.getLessExpeCapitaFy())));
 		financialInputRequestString.setTotalExpenditureSy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockSy(),financialInputRequest.getRawMaterialConsumedSy(),financialInputRequest.getPowerAndFuelCostSy(),financialInputRequest.getEmployeeCostSy(), financialInputRequest.getGeneralAndAdminExpeSy(),financialInputRequest.getSellingAndDistriExpeSy(),financialInputRequest.getMiscelExpeSy()), financialInputRequest.getLessExpeCapitaSy())));
 		financialInputRequestString.setTotalExpenditureTy(convertValue(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequest.getIncreaseDecreaseStockTy(),financialInputRequest.getRawMaterialConsumedTy(),financialInputRequest.getPowerAndFuelCostTy(),financialInputRequest.getEmployeeCostTy(), financialInputRequest.getGeneralAndAdminExpeTy(),financialInputRequest.getSellingAndDistriExpeTy(),financialInputRequest.getMiscelExpeTy()), financialInputRequest.getLessExpeCapitaTy())));
+		
+		//FOR CALCULATION OF OPERATING PROFIT EXCL
+		financialInputRequest.setOperatingProfitExclOiFy(CommonUtils.substractNumbers(financialInputRequest.getNetSaleFy(),financialInputRequest.getTotalExpenditureFy()));
+		financialInputRequest.setOperatingProfitExclOiSy(CommonUtils.substractNumbers(financialInputRequest.getNetSaleSy(),financialInputRequest.getTotalExpenditureSy()));
+		financialInputRequest.setOperatingProfitExclOiTy(CommonUtils.substractNumbers(financialInputRequest.getNetSaleTy(),financialInputRequest.getTotalExpenditureTy()));
+		//FOR DISPLAY OF OPERATING PROFIT EXCL
 		financialInputRequestString.setOperatingProfitExclOiFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleFy(),financialInputRequest.getTotalExpenditureFy())));
 		financialInputRequestString.setOperatingProfitExclOiSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleSy(),financialInputRequest.getTotalExpenditureSy())));
 		financialInputRequestString.setOperatingProfitExclOiTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getNetSaleTy(),financialInputRequest.getTotalExpenditureTy())));
+		
+		//FOR CALCULATION OF OPERATING PROFIT EBITAD
+		financialInputRequest.setOperatingProfitEbitadOiFy(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiFy(),financialInputRequest.getOtherIncomeFy()));
+		financialInputRequest.setOperatingProfitEbitadOiSy(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiSy(),financialInputRequest.getOtherIncomeSy()));
+		financialInputRequest.setOperatingProfitEbitadOiTy(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiTy(),financialInputRequest.getOtherIncomeTy()));
+		//FOR DISPLAY OF OPERATING PROFIT EBITAD
 		financialInputRequestString.setOperatingProfitEbitadOiFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiFy(),financialInputRequest.getOtherIncomeFy())));
 		financialInputRequestString.setOperatingProfitEbitadOiSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiSy(),financialInputRequest.getOtherIncomeSy())));
 		financialInputRequestString.setOperatingProfitEbitadOiTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getOperatingProfitExclOiTy(),financialInputRequest.getOtherIncomeTy())));
+		
+		//FOR CALCULATION OF PBDT
+		financialInputRequest.setPbdtFy(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(), financialInputRequest.getInterestFy()));
+		financialInputRequest.setPbdtSy(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(), financialInputRequest.getInterestSy()));
+		financialInputRequest.setPbdtTy(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(), financialInputRequest.getInterestTy()));
+		//FOR DISPLAY OF PBDT
 		financialInputRequestString.setPbdtFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(), financialInputRequest.getInterestFy())));
 		financialInputRequestString.setPbdtSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(), financialInputRequest.getInterestSy())));
 		financialInputRequestString.setPbdtTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(), financialInputRequest.getInterestTy())));
+		
+		//FOR CALCULATION OF PROFIT BEFORE TAXATION
+		financialInputRequest.setProfitBeforeTaxationFy(CommonUtils.substractNumbers(financialInputRequest.getPbdtFy(), financialInputRequest.getDepriciationFy()));
+		financialInputRequest.setProfitBeforeTaxationSy(CommonUtils.substractNumbers(financialInputRequest.getPbdtSy(), financialInputRequest.getDepriciationSy()));
+		financialInputRequest.setProfitBeforeTaxationTy(CommonUtils.substractNumbers(financialInputRequest.getPbdtTy(), financialInputRequest.getDepriciationTy()));
+		//FOR DISPLAY OF PROFIT BEFORE TAXATION
 		financialInputRequestString.setProfitBeforeTaxationFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtFy(), financialInputRequest.getDepriciationFy())));
 		financialInputRequestString.setProfitBeforeTaxationSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtSy(), financialInputRequest.getDepriciationSy())));
 		financialInputRequestString.setProfitBeforeTaxationTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getPbdtTy(), financialInputRequest.getDepriciationTy())));
+		//FOR CALCULATION OF PROFIT BEFORE TAX
+		financialInputRequest.setProfitBeforeTaxFy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationFy(), financialInputRequest.getExceptionalIncomeFy()));
+		financialInputRequest.setProfitBeforeTaxSy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy()));
+		financialInputRequest.setProfitBeforeTaxTy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy()));
+		//FOR DISPLAY OF PROFIT BEFORE TAX
 		financialInputRequestString.setProfitBeforeTaxFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationFy(), financialInputRequest.getExceptionalIncomeFy())));
 		financialInputRequestString.setProfitBeforeTaxSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy())));
 		financialInputRequestString.setProfitBeforeTaxTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy())));
+		//FOR CALCULATION OF PROFIT AFTER TAX
+		financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy()));
+		financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy()));
+		financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy()));
+		//FOR DISPLAY OF PROFIT AFTER TAX
 		financialInputRequestString.setProfitAfterTaxFy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())));
 		financialInputRequestString.setProfitAfterTaxSy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())));
 		financialInputRequestString.setProfitAfterTaxTy(convertValue(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())));
 		
 		
-		if(financialInputRequest.getDividendPayOutFy() == 0)
+		if(financialInputRequest.getDividendPayOutFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutFy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalFy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy()))
 			financialInputRequestString.setEquityDividendFy("0.0");
 		else
 			financialInputRequestString.setEquityDividendFy(convertValue((financialInputRequest.getDividendPayOutFy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		
-		if(financialInputRequest.getDividendPayOutSy() == 0)
+		if(financialInputRequest.getDividendPayOutSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutSy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalSy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy()))
 			financialInputRequestString.setEquityDividendSy("0.0");
 		else
 			financialInputRequestString.setEquityDividendSy(convertValue(financialInputRequest.getDividendPayOutSy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy()));
 		
-		if(financialInputRequest.getDividendPayOutTy() == 0)
+		if(financialInputRequest.getDividendPayOutTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getDividendPayOutTy()) || financialInputRequest.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) || financialInputRequest.getShareCapitalTy() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy()))
 			financialInputRequestString.setEquityDividendTy("0.0");
 		else
 			financialInputRequestString.setEquityDividendTy(convertValue(financialInputRequest.getDividendPayOutTy()*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy()));
 		
-		if(financialInputRequest.getShareCapitalFy() == 0.0 ) {
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxFy()) && financialInputRequest.getProfitAfterTaxFy() !=0) {
+					financialInputRequestString.setEarningPerShareFy(convertValue(financialInputRequest.getProfitAfterTaxFy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareFy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareFy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareFy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareFy(convertValue(((financialInputRequest.getProfitAfterTaxFy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalFy())));
 		}
-		if(financialInputRequest.getShareCapitalSy() == 0.0 ) {
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxSy()) && financialInputRequest.getProfitAfterTaxSy() !=0) {
+					financialInputRequestString.setEarningPerShareSy(convertValue(financialInputRequest.getProfitAfterTaxSy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareSy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareSy("0.0");
+			}
+		}else {
 			financialInputRequestString.setEarningPerShareSy("0.0");
-		}else {
-			financialInputRequestString.setEarningPerShareSy(convertValue(((financialInputRequest.getProfitAfterTaxSy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalSy())));
 		}
-		if(financialInputRequest.getShareCapitalTy() == 0.0 ) {
-			financialInputRequestString.setEarningPerShareTy("0.0");
+		
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
+				double total = financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getProfitAfterTaxTy()) && financialInputRequest.getProfitAfterTaxTy() !=0) {
+					financialInputRequestString.setEarningPerShareTy(convertValue(financialInputRequest.getProfitAfterTaxTy() * total));
+				}else {
+					financialInputRequestString.setEarningPerShareTy("0.0");
+				}
+			}else {
+				financialInputRequestString.setEarningPerShareTy("0.0");
+			}
 		}else {
-			financialInputRequestString.setEarningPerShareTy(convertValue(((financialInputRequest.getProfitAfterTaxTy())*financialInputRequest.getShareFaceValue()/financialInputRequest.getShareCapitalTy())));
+			financialInputRequestString.setEarningPerShareTy("0.0");
 		}
 		
 		
 		//Balance Sheet -Equities and Liabilities
+		
+		//FOR CALCULATION OF SHARE HOLDING
+		financialInputRequest.setShareHolderFundsFy(CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy(),financialInputRequest.getRevalationReserveFy(),financialInputRequest.getOtherReserveAndSurplusFy()));
+		financialInputRequest.setShareHolderFundsSy(CommonUtils.addNumbers(financialInputRequest.getShareCapitalSy(),financialInputRequest.getShareWarrantOutstandingsSy(),financialInputRequest.getRevalationReserveSy(),financialInputRequest.getOtherReserveAndSurplusSy()));
+		financialInputRequest.setShareHolderFundsTy(CommonUtils.addNumbers(financialInputRequest.getShareCapitalTy(),financialInputRequest.getShareWarrantOutstandingsTy(),financialInputRequest.getRevalationReserveTy(),financialInputRequest.getOtherReserveAndSurplusTy()));
+		//FOR DISPLAY OF SHARE HOLDING
 		financialInputRequestString.setShareHolderFundsFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy(),financialInputRequest.getRevalationReserveFy(),financialInputRequest.getOtherReserveAndSurplusFy())));
 		financialInputRequestString.setShareHolderFundsSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalSy(),financialInputRequest.getShareWarrantOutstandingsSy(),financialInputRequest.getRevalationReserveSy(),financialInputRequest.getOtherReserveAndSurplusSy())));
 		financialInputRequestString.setShareHolderFundsTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareCapitalTy(),financialInputRequest.getShareWarrantOutstandingsTy(),financialInputRequest.getRevalationReserveTy(),financialInputRequest.getOtherReserveAndSurplusTy())));
+		
+		//FOR CALCULATION OF TOTAL NON CURRUNT LIABILITIES
+		financialInputRequest.setTotalNonCurruntLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestFy(), financialInputRequest.getSecuredLoansFy(), financialInputRequest.getUnsecuredLoansOthersFy(),financialInputRequest.getUnsecuredLoansPromotersFy(),financialInputRequest.getDeferredTaxLiablitiesFy(),financialInputRequest.getOtherLongTermLiablitiesFy(),financialInputRequest.getOtherBorrowingFy(),financialInputRequest.getLongTermProvisionFy()));
+		financialInputRequest.setTotalNonCurruntLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestSy(), financialInputRequest.getSecuredLoansSy(), financialInputRequest.getUnsecuredLoansOthersSy(),financialInputRequest.getUnsecuredLoansPromotersSy(),financialInputRequest.getDeferredTaxLiablitiesSy(),financialInputRequest.getOtherLongTermLiablitiesSy(),financialInputRequest.getOtherBorrowingSy(),financialInputRequest.getLongTermProvisionSy()));
+		financialInputRequest.setTotalNonCurruntLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestTy(), financialInputRequest.getSecuredLoansTy(), financialInputRequest.getUnsecuredLoansOthersTy(),financialInputRequest.getUnsecuredLoansPromotersTy(),financialInputRequest.getDeferredTaxLiablitiesTy(),financialInputRequest.getOtherLongTermLiablitiesTy(),financialInputRequest.getOtherBorrowingTy(),financialInputRequest.getLongTermProvisionTy()));
+		//FOR DISPLAY OF TOTAL NON CURRUNT LIABILITIES
 		financialInputRequestString.setTotalNonCurruntLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestFy(), financialInputRequest.getSecuredLoansFy(), financialInputRequest.getUnsecuredLoansOthersFy(),financialInputRequest.getUnsecuredLoansPromotersFy(),financialInputRequest.getDeferredTaxLiablitiesFy(),financialInputRequest.getOtherLongTermLiablitiesFy(),financialInputRequest.getOtherBorrowingFy(),financialInputRequest.getLongTermProvisionFy())));
 		financialInputRequestString.setTotalNonCurruntLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestSy(), financialInputRequest.getSecuredLoansSy(), financialInputRequest.getUnsecuredLoansOthersSy(),financialInputRequest.getUnsecuredLoansPromotersSy(),financialInputRequest.getDeferredTaxLiablitiesSy(),financialInputRequest.getOtherLongTermLiablitiesSy(),financialInputRequest.getOtherBorrowingSy(),financialInputRequest.getLongTermProvisionSy())));
 		financialInputRequestString.setTotalNonCurruntLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getMinorityInterestTy(), financialInputRequest.getSecuredLoansTy(), financialInputRequest.getUnsecuredLoansOthersTy(),financialInputRequest.getUnsecuredLoansPromotersTy(),financialInputRequest.getDeferredTaxLiablitiesTy(),financialInputRequest.getOtherLongTermLiablitiesTy(),financialInputRequest.getOtherBorrowingTy(),financialInputRequest.getLongTermProvisionTy())));
+		//FOR CALCULATION OF TOTAL CURRUNT LIABLITIES
+		financialInputRequest.setTotalCurruntLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesFy(), financialInputRequest.getOtherCurruntLiablitiesFy(), financialInputRequest.getShortTermProvisionFy()));
+		financialInputRequest.setTotalCurruntLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesSy(), financialInputRequest.getOtherCurruntLiablitiesSy(), financialInputRequest.getShortTermProvisionSy()));
+		financialInputRequest.setTotalCurruntLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(), financialInputRequest.getShortTermProvisionTy()));
+		//FOR DISPLAY OF TOTAL CURRUNT LIABLITIES
 		financialInputRequestString.setTotalCurruntLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesFy(), financialInputRequest.getOtherCurruntLiablitiesFy(), financialInputRequest.getShortTermProvisionFy())));
 		financialInputRequestString.setTotalCurruntLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesSy(), financialInputRequest.getOtherCurruntLiablitiesSy(), financialInputRequest.getShortTermProvisionSy())));
 		financialInputRequestString.setTotalCurruntLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(), financialInputRequest.getShortTermProvisionTy())));
+		//FOR CALCULATION OF TOTAL LIABILITIES
+		financialInputRequest.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy()));
+		financialInputRequest.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy()));
+		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy()));
+		//FOR DISPLAY OF TOTAL LIABLITIES
 		financialInputRequestString.setTotalLiablitiesFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy())));
 		financialInputRequestString.setTotalLiablitiesSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy())));
 		financialInputRequestString.setTotalLiablitiesTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy())));
 		
 		//Balance Sheet -ASSETS
-		financialInputRequestString.setNetBlockFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
-		financialInputRequestString.setNetBlockSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
-		financialInputRequestString.setNetBlockTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
+		//FOR CALCULATION OF NET BLOCK
+		financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
+		financialInputRequest.setNetBlockSy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
+		financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
+		//FOR DISPLAY OF NET BLOCK
+		financialInputRequestString.setNetBlockFy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy())));
+		financialInputRequestString.setNetBlockSy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy())));
+		financialInputRequestString.setNetBlockTy(convertValue(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy())));
+		//FOR CALCULATION OF TOTAL NON CURRUNT ASSET
+		financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
+		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
+		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));
+		//FOR DISPLAY OF TOTAL NON CURRUNT ASSET
 		financialInputRequestString.setTotalNonCurruntAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy())));
 		financialInputRequestString.setTotalNonCurruntAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy())));
 		financialInputRequestString.setTotalNonCurruntAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy())));
+		//FOR CALCULATION OF TOTAL CURRENT ASSET
+		financialInputRequest.setTotalCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(), financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(), financialInputRequest.getShortTermLoansAdvancesFy()));
+		financialInputRequest.setTotalCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(), financialInputRequest.getSundryDebtorsSy(), financialInputRequest.getCashAndBankSy(), financialInputRequest.getOtherCurruntAssetSy(), financialInputRequest.getShortTermLoansAdvancesSy()));
+		financialInputRequest.setTotalCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(), financialInputRequest.getSundryDebtorsTy(), financialInputRequest.getCashAndBankTy(), financialInputRequest.getOtherCurruntAssetTy(), financialInputRequest.getShortTermLoansAdvancesTy()));
+		//FOR DISPLAY OF TOTAL CURRENT ASSET
 		financialInputRequestString.setTotalCurruntAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(), financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(), financialInputRequest.getShortTermLoansAdvancesFy())));
 		financialInputRequestString.setTotalCurruntAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(), financialInputRequest.getSundryDebtorsSy(), financialInputRequest.getCashAndBankSy(), financialInputRequest.getOtherCurruntAssetSy(), financialInputRequest.getShortTermLoansAdvancesSy())));
 		financialInputRequestString.setTotalCurruntAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(), financialInputRequest.getSundryDebtorsTy(), financialInputRequest.getCashAndBankTy(), financialInputRequest.getOtherCurruntAssetTy(), financialInputRequest.getShortTermLoansAdvancesTy())));
+		//FOR CALCULATION OF TOTAL ASSET
+		financialInputRequest.setTotalAssetFy(CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy()));
+		financialInputRequest.setTotalAssetSy(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy()));
+		financialInputRequest.setTotalAssetTy(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy()));
+		//FOR DISPLAY OF TOTAL ASSET
 		financialInputRequestString.setTotalAssetFy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy())));
 		financialInputRequestString.setTotalAssetSy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy())));
 		financialInputRequestString.setTotalAssetTy(convertValue(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy())));
 		
-		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && financialInputRequest.getShareFaceValue() > 0) {
-			double totalValue = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
-			if(totalValue > 0) {
-				financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy()/totalValue));	
+		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalFy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalFy() !=0) {
+				double total = financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsFy()) && financialInputRequest.getShareHolderFundsFy() !=0) {
+					financialInputRequestString.setBookValueFy(convertValue(financialInputRequest.getShareHolderFundsFy() / total));
+				}else {
+					financialInputRequestString.setBookValueFy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueFy("0.0");
 			}
-			
-			double totalValueSy = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
-			if(totalValueSy > 0) {
-				financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy()/totalValueSy));	
-			}
-			
-			double totalValueTy = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
-			if(totalValueTy > 0) {
-				financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy()/totalValueTy));	
-			}
-			
-				
-		} else {
-			financialInputRequestString.setBookValueFy("0");
-			financialInputRequestString.setBookValueSy("0");
-			financialInputRequestString.setBookValueTy("0");
+		}else {
+			financialInputRequestString.setBookValueFy("0.0");
 		}
 		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalSy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalSy() !=0) {
+				double total = financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsSy()) && financialInputRequest.getShareHolderFundsSy() !=0) {
+					financialInputRequestString.setBookValueSy(convertValue(financialInputRequest.getShareHolderFundsSy() / total));
+				}else {
+					financialInputRequestString.setBookValueSy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueSy("0.0");
+			}
+		}else {
+			financialInputRequestString.setBookValueSy("0.0");
+		}
 		
-		
+		if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareFaceValue()) && !CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareCapitalTy())) {
+			if(financialInputRequest.getShareFaceValue() !=0 && financialInputRequest.getShareCapitalTy() !=0) {
+				double total = financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue();
+				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequest.getShareHolderFundsTy()) && financialInputRequest.getShareHolderFundsTy() !=0) {
+					financialInputRequestString.setBookValueTy(convertValue(financialInputRequest.getShareHolderFundsTy() / total));
+				}else {
+					financialInputRequestString.setBookValueTy("0.0");
+				}
+			}else {
+				financialInputRequestString.setBookValueTy("0.0");
+			}
+		}else {
+			financialInputRequestString.setBookValueTy("0.0");
+		}
+	
 		return financialInputRequestString;
 
 	}
-	DecimalFormat decim = new DecimalFormat("##.##");
 	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
+	public String convertValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;

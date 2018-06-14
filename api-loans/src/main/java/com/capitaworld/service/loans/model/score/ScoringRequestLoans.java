@@ -1,44 +1,59 @@
 package com.capitaworld.service.loans.model.score;
 
+import java.util.Map;
+
 public class ScoringRequestLoans {
 
-    private Long scoringModelId;
+    /*private Long scoringModelId;*/
 
     private Long fsDigit;
 
     private Long fpProductId;
 
-    private Long applicationId;
+    /*private Long applicationId;*/
 
-    public Long getScoringModelId() {
-        return scoringModelId;
-    }
+    private Long scoringModelId;
+	private Long applicationId;
+	private ScoreParameterRequestLoans scoreParameterRequestLoans;
+	public Long getFsDigit() {
+		return fsDigit;
+	}
+	public void setFsDigit(Long fsDigit) {
+		this.fsDigit = fsDigit;
+	}
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+	public Long getScoringModelId() {
+		return scoringModelId;
+	}
+	public void setScoringModelId(Long scoringModelId) {
+		this.scoringModelId = scoringModelId;
+	}
+	public Long getApplicationId() {
+		return applicationId;
+	}
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 
-    public void setScoringModelId(Long scoringModelId) {
-        this.scoringModelId = scoringModelId;
-    }
+	public ScoreParameterRequestLoans getScoreParameterRequestLoans() {
+		return scoreParameterRequestLoans;
+	}
 
-    public Long getFsDigit() {
-        return fsDigit;
-    }
+	public void setScoreParameterRequestLoans(ScoreParameterRequestLoans scoreParameterRequestLoans) {
+		this.scoreParameterRequestLoans = scoreParameterRequestLoans;
+	}
 
-    public void setFsDigit(Long fsDigit) {
-        this.fsDigit = fsDigit;
-    }
+	@Override
+	public String toString() {
+		return "ScoringRequestLoans [fsDigit=" + fsDigit + ", fpProductId=" + fpProductId + ", scoringModelId="
+				+ scoringModelId + ", applicationId=" + applicationId + ", scoreParameterRequestLoans="
+				+ scoreParameterRequestLoans + "]";
+	}
 
-    public Long getFpProductId() {
-        return fpProductId;
-    }
-
-    public void setFpProductId(Long fpProductId) {
-        this.fpProductId = fpProductId;
-    }
-
-    public Long getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
-    }
+	
 }

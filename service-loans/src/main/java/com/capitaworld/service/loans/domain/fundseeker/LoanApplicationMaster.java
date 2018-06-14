@@ -178,6 +178,9 @@ public class LoanApplicationMaster implements Serializable {
 	@Column(name = "np_assignee_id")
 	private Long npAssigneeId;
 
+	@Column(name = "fp_maker_id")
+	private Long fpMakerId;
+
 	@Column(name = "ddr_status_id")
 	private Long ddrStatusId;
 
@@ -200,6 +203,37 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "approved_date")
 	private Date approvedDate;
+	
+	@Column(name="payment_status")
+	private String paymentStatus;
+	
+	@Column(name = "business_type_id")
+	private Integer businessTypeId;
+	
+	@Column(name = "company_cin_number")
+	private String companyCinNumber;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
+
+	/**
+	 * @return the paymentStatus
+	 */
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	/**
+	 * @param paymentStatus the paymentStatus to set
+	 */
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
 
 	public Long getNpOrgId() {
 		return npOrgId;
@@ -643,6 +677,30 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setIsAcceptConsent(Boolean isAcceptConsent) {
 		this.isAcceptConsent = isAcceptConsent;
+	}
+	
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+	
+	
+
+	/**
+	 * @return the companyCinNumber
+	 */
+	public String getCompanyCinNumber() {
+		return companyCinNumber;
+	}
+
+	/**
+	 * @param companyCinNumber the companyCinNumber to set
+	 */
+	public void setCompanyCinNumber(String companyCinNumber) {
+		this.companyCinNumber = companyCinNumber;
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class FinancialArrangementsDetailRequest {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date loanDate;
 
-	private Integer loanType;
+	private String loanType;
 
 	/* private Integer lenderType; */
 
@@ -38,6 +38,8 @@ public class FinancialArrangementsDetailRequest {
 	private Double emi;
 
 	private Boolean isActive = true;
+	
+	private Long directorId;
 
 	public Long getId() {
 		return id;
@@ -80,11 +82,11 @@ public class FinancialArrangementsDetailRequest {
 		this.loanDate = loanDate;
 	}
 
-	public Integer getLoanType() {
+	public String getLoanType() {
 		return loanType;
 	}
 
-	public void setLoanType(Integer loanType) {
+	public void setLoanType(String loanType) {
 		this.loanType = loanType;
 	}
 
@@ -144,4 +146,13 @@ public class FinancialArrangementsDetailRequest {
 	public void setEmi(Double emi) {
 		this.emi = emi;
 	}
+
+	public Long getDirectorId() {
+		return directorId;
+	}
+
+	public void setDirectorId(Long directorId) {
+		this.directorId = directorId;
+	}
+	
 }

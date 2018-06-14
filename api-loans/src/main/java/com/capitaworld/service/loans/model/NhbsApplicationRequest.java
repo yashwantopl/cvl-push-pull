@@ -14,13 +14,58 @@ public class NhbsApplicationRequest implements Serializable{
 	private Long userId;
 	
 	private Long userRoleId;
+	
+	private String userRoleIdString;
 
 	private Long assignedUserId;
 	
 	private Long applicationId;
 	
 	private Long ddrStatusId;
-		
+
+	private int pageIndex;
+
+	private int size;
+
+	private Long fpMakerId;
+
+	private Long fpProductId;
+
+	//added by Dhaval
+	private Long npUserId;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
+
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
 	public Long getDdrStatusId() {
 		return ddrStatusId;
 	}
@@ -68,6 +113,20 @@ public class NhbsApplicationRequest implements Serializable{
 	public void setUserRoleId(Long userRoleId) {
 		this.userRoleId = userRoleId;
 	}
-	
-	
+
+	public String getUserRoleIdString() {
+		return userRoleIdString;
+	}
+
+	public void setUserRoleIdString(String userRoleIdString) {
+		this.userRoleIdString = userRoleIdString;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
 }

@@ -556,8 +556,8 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 				directorBackgroundDetailResponse.setDirectorsName(directorName);
 				//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+				directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+				directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
 				directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 				directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
@@ -617,7 +617,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
 				//	financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
 				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
 //				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 //				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 //				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)

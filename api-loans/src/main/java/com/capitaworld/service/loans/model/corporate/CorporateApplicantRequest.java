@@ -69,6 +69,8 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private String gstIn;
 	private String email;
+	
+	private String companyCIN;
 
 	public Long getUserId() {
 		return userId;
@@ -271,6 +273,22 @@ public class CorporateApplicantRequest implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	
+
+	/**
+	 * @return the companyCIN
+	 */
+	public String getCompanyCIN() {
+		return companyCIN;
+	}
+
+	/**
+	 * @param companyCIN the companyCIN to set
+	 */
+	public void setCompanyCIN(String companyCIN) {
+		this.companyCIN = companyCIN;
+	}
 
 	@Override
 	public String toString() {
@@ -283,7 +301,7 @@ public class CorporateApplicantRequest implements Serializable {
 				+ ", subsectors=" + subsectors + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
 				+ ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId + ", keyVerticalSector="
 				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
-				+ email + "]";
+				+ email + ",companyCIN=" + companyCIN + "]";
 	}
 	
 	

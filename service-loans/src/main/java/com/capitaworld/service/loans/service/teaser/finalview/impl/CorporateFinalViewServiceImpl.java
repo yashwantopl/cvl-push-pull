@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -24,12 +27,18 @@ import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -38,7 +47,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
-import com.capitaworld.service.loans.service.common.DocumentManagementService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -46,9 +54,15 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqSe
 import com.capitaworld.service.loans.service.fundseeker.corporate.CreditRatingOrganizationDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.finalview.CorporateFinalViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.impl.CorporatePrimaryViewServiceImpl;
@@ -80,6 +94,7 @@ import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.FinancialRestructuring;
 import com.capitaworld.service.oneform.enums.FinancialSupport;
 import com.capitaworld.service.oneform.enums.Gender;
@@ -90,15 +105,16 @@ import com.capitaworld.service.oneform.enums.InternalControl;
 import com.capitaworld.service.oneform.enums.InternalReturn;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
 import com.capitaworld.service.oneform.enums.OperatingMargins;
 import com.capitaworld.service.oneform.enums.OrderBook;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProductSeasonality;
 import com.capitaworld.service.oneform.enums.ProjectedRatio;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.SensititivityAnalysis;
+import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.StatusClearances;
 import com.capitaworld.service.oneform.enums.StatusFinancialClosure;
 import com.capitaworld.service.oneform.enums.SubmissionReports;
@@ -190,17 +206,32 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
     private CorporateMcqService corporateMcqService;
     
     @Autowired
-    private DocumentManagementService documentManagementService;
+    private OwnershipDetailsService ownerShipDetailsService;
+    
+    @Autowired
+	private TotalCostOfProjectService costOfProjectService;
+
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
 
     
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    DecimalFormat decim = new DecimalFormat("#,###.00");
 	@Override
 	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId) {
 		
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
-        
         
         
         //===================== MATCHES DATA ======================//
@@ -440,12 +471,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                 corporateFinalViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null ? LoanType.getById(primaryCorporateDetail.getProductId()).getValue() : null);
                 corporateFinalViewResponse.setLoanAmount(primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount()) : null);
                 corporateFinalViewResponse.setGstIn(corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn()) : null);
-                corporateFinalViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).toString());
+                corporateFinalViewResponse.setPurposeOfLoan(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
                 corporateFinalViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null ? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount()) : null);
                 corporateFinalViewResponse.setWcAmount(primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount()) : null);
                 corporateFinalViewResponse.setOtherAmt(primaryCorporateDetail.getOtherAmt() != null ? String.valueOf(primaryCorporateDetail.getOtherAmt()) : null);
                 corporateFinalViewResponse.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null ? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity()) : null);
                 corporateFinalViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
+                corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
                 //workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
                 //workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
                 if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
@@ -470,8 +502,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                     directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
                     directorBackgroundDetailResponse.setDirectorsName(directorName);
                     //directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience());
-                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth());
+                    directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString()+" Years");
+                    directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.getNetworth().toString());
                     directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
                     directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
                     directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
@@ -501,7 +533,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
                     financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
                     //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                     financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-                    financialArrangementsDetailResponse.setLoanType(LoanTypeNatureFacility.getById(financialArrangementsDetailRequest.getLoanType()).getValue());
+                    financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
                     financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
                     //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
@@ -577,9 +609,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 	    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy()));
 	    		
 	    		//Balance Sheet -ASSETS
-	    		financialInputRequest.setNetBlockFy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
-	    		financialInputRequest.setNetBlockSy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
-	    		financialInputRequest.setNetBlockTy(CommonUtils.addNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
+	    		financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
+	    		financialInputRequest.setNetBlockSy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockSy(), financialInputRequest.getLessAccumulatedDepreSy(),financialInputRequest.getImpairmentofAssetSy()));
+	    		financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),financialInputRequest.getImpairmentofAssetTy()));
 	    		financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
 	    		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
 	    		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));
@@ -679,18 +711,23 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 				for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 					PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-					promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-					promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-	                promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					//promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 					String promotorName = "";
 					if (promotorBackgroundDetailRequest.getSalutationId() != null){
 						promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
 					}
 					promotorName += promotorBackgroundDetailRequest.getPromotorsName();
 					promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-					promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-					promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+					promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? promotorBackgroundDetailRequest.getDin().toString() : " ");
+					promotorBackgroundDetailResponse.setTotalExperience(convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
+					promotorBackgroundDetailResponse.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
+					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+					promotorBackgroundDetailResponse.setDesignation(promotorBackgroundDetailRequest.getDesignation());
+					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
 				corporateFinalViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
@@ -744,244 +781,587 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
 				logger.info("Error while getting mcq");
 				e.printStackTrace();
 			}
+			// OwnerShipDetails
+			try {
+				List<OwnershipDetailRequest> ownershipDetailRequestsList = ownerShipDetailsService
+						.getOwnershipDetailList(toApplicationId, userId);
+				List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+				for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+					OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+					ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+					ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+					ownershipDetailResponse.setShareHoldingCategory(
+							ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+					ownershipDetailResponseList.add(ownershipDetailResponse);
+				}
+				corporateFinalViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
+
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Ownership Details {}", e);
+			}
 			
+			//cost of project
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+						.getCostOfProjectDetailList(toApplicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+					TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+					BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular
+								.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					costOfProjectResponses.add(costOfProjectResponse);
+				}
+				corporateFinalViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+			
+			// Means of finance
+			
+		
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+						.getMeansOfFinanceList(toApplicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory
+								.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+								.getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				corporateFinalViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			//Security
+			
+			try {
+				corporateFinalViewResponse.setSecurityCorporateDetailRequestList(
+						securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+			
+			// Share Price
+			corporateFinalViewResponse.setSharePriceFace(corporateApplicantDetail.getSharePriceFace());
+			corporateFinalViewResponse.setSharePriceMarket(corporateApplicantDetail.getSharePriceMarket());
+			
+			// get data of Details of Guarantors
+			try {
+				corporateFinalViewResponse.setGuarantorsCorporateDetailRequestList(
+						guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+
+			// get data of Monthly Turnover
+			try {
+				corporateFinalViewResponse.setMonthlyTurnoverDetailRequestList(
+						monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Monthly Turnover {}", e);
+			}
+			
+
+			//GET DOCUMENTS
+			 DocumentRequest documentRequest = new DocumentRequest();
+	         documentRequest.setApplicationId(toApplicationId);
+	         documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+	         documentRequest.setProductDocumentMappingId(DocumentAlias.CIBIL_REPORT_MSME_COMPANY);
+	            try {
+	                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+	                corporateFinalViewResponse.setCibilReport(documentResponse.getDataList());
+	            } catch (DocumentException e) {
+	                e.printStackTrace();
+	            }
+	            documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
+	            try {
+	                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+	                corporateFinalViewResponse.setBankStatement(documentResponse.getDataList());
+	            } catch (DocumentException e) {
+	                e.printStackTrace();
+	            }
+	            documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+	            try {
+	                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+	                corporateFinalViewResponse.setIrtPdfReport(documentResponse.getDataList());
+	            } catch (DocumentException e) {
+	                e.printStackTrace();
+	            }
 			if(primaryCorporateDetail.getProductId() == 1) {
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
 				try{
-					corporateFinalViewResponse.setAuditedAnnualReport(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN);
 				try{
-					corporateFinalViewResponse.setItr(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setItr(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 				try{
-					corporateFinalViewResponse.setBankStatementFinalView(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY);
 				try{
-					corporateFinalViewResponse.setSanctionLetter(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS);
 				try{
-					corporateFinalViewResponse.setProvisionalFinancials(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS);
 				try{
-					corporateFinalViewResponse.setNetWorthStatements(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
-				try {
-					corporateFinalViewResponse.setFinancialsOfHolding(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setAssessmentOrders(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_ASSESSMENT_ORDERS)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setMomAndAoa(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_MOM_AOA)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setGstCertificate(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WC_GST_APPLIED)));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
-				try {
-					corporateFinalViewResponse.setCertificateOfIncorporation(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setCopyOfPanCard(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES);
 				try{
-					corporateFinalViewResponse.setPanOfAllDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_ASSESSMENT_ORDERS);
 				try{
-					corporateFinalViewResponse.setPhotosOfDirectors(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				 try{
-					 corporateFinalViewResponse.setResidenceAddOfDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.WORKING_CAPITAL_DIRECTOR_ADDRESS));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
-				
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WC_MOM_AOA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WC_GST_APPLIED);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_DIRECTOR_ADDRESS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.WC_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+			
 			}
 			if(primaryCorporateDetail.getProductId() == 2) {
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 				try{
-					corporateFinalViewResponse.setAuditedAnnualReport(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_LAST_IT_RETURN);
 				try{
-					corporateFinalViewResponse.setItr(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_IT_RETURN));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setItr(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BANK_STATEMENT);
 				try{
-					corporateFinalViewResponse.setBankStatementFinalView(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_BANK_STATEMENT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY);
 				try{
-					corporateFinalViewResponse.setSanctionLetter(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS);
 				try{
-					corporateFinalViewResponse.setProvisionalFinancials(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 				try{
-					corporateFinalViewResponse.setNetWorthStatements(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
-				try {
-					corporateFinalViewResponse.setFinancialsOfHolding(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setAssessmentOrders(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setMomAndAoa(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_MOM_AOA)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setGstCertificate(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_GST_APPLIED)));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
-				try {
-					corporateFinalViewResponse.setCertificateOfIncorporation(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setCopyOfPanCard(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 				try{
-					corporateFinalViewResponse.setPanOfAllDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS);
 				try{
-					corporateFinalViewResponse.setPhotosOfDirectors(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				 try{
-					 corporateFinalViewResponse.setResidenceAddOfDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TL_MOM_AOA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TL_GST_APPLIED);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.TL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
 			}
 			if(primaryCorporateDetail.getProductId() == 15) {
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT);
 				try{
-					corporateFinalViewResponse.setAuditedAnnualReport(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_LAST_IT_RETURN);
 				try{
-					corporateFinalViewResponse.setItr(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_LAST_IT_RETURN));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setItr(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_BANK_STATEMENT);
 				try{
-					corporateFinalViewResponse.setBankStatementFinalView(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_BANK_STATEMENT));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_SANCTION_LETTER_COPY);
 				try{
-					corporateFinalViewResponse.setSanctionLetter(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_SANCTION_LETTER_COPY));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS);
 				try{
-					corporateFinalViewResponse.setProvisionalFinancials(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 				try{
-					corporateFinalViewResponse.setNetWorthStatements(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
-				try {
-					corporateFinalViewResponse.setFinancialsOfHolding(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setAssessmentOrders(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_ASSESSMENT_ORDERS)));
-				} catch (DocumentException e) {
-					e.printStackTrace();
-				}
-				try {
-					corporateFinalViewResponse.setMomAndAoa(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_MOM_AOA)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setGstCertificate(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_GST_APPLIED)));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
-				try {
-					corporateFinalViewResponse.setCertificateOfIncorporation(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				try {
-					corporateFinalViewResponse.setCopyOfPanCard(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD)));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 				try{
-					corporateFinalViewResponse.setPanOfAllDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 				} catch (DocumentException e) {
 					e.printStackTrace();
 				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_ASSESSMENT_ORDERS);
 				try{
-					corporateFinalViewResponse.setPhotosOfDirectors(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS));
-		        } catch (DocumentException e) {
-		            e.printStackTrace();
-		        }
-				 try{
-					 corporateFinalViewResponse.setResidenceAddOfDirectors(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.UNSECURED_LOAN_DIRECTOR_ADDRESS));
-			    } catch (DocumentException e) {
-			            e.printStackTrace();
-			    }
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.USL_MOM_AOA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.USL_GST_APPLIED);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_DIRECTOR_ADDRESS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.USL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
 			}
-				
+			
+			if(primaryCorporateDetail.getProductId() == 16) {
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_AUDITED_ANNUAL_REPORT);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_IT_RETURN);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setItr(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_BANK_STATEMENT);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_SANCTION_LETTER_COPY);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PROVISIONAL_FINANCIALS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_FINANCIALS_OF_SUBSIDIARIES);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_ASSESSMENT_ORDERS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				/*documentRequest.setProductDocumentMappingId(DocumentAlias.USL_MOM_AOA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}*/
+				/*documentRequest.setProductDocumentMappingId(DocumentAlias.USL_GST_APPLIED);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}*/
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_COPY_OF_PAN_CARD);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PHOTO_OF_DIRECTORS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_DIRECTOR_ADDRESS);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+				documentRequest.setProductDocumentMappingId((long)DocumentAlias.WCTL_CMA);
+				try{
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
+				} catch (DocumentException e) {
+					e.printStackTrace();
+				}
+			}
 				
 				
 				
         return corporateFinalViewResponse;
+	}
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
 	}
 
 }

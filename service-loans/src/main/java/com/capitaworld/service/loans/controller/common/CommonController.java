@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -63,7 +65,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -132,7 +134,7 @@ public class CommonController {
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 
 		Long finalUserId = userId;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				finalUserId = clientId;
 			}
@@ -203,7 +205,7 @@ public class CommonController {
 		obj.put("userType", userType);
 
 		Integer spUserId = null;
-		if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			// SP LOGIN
 			if (!CommonUtils.isObjectNullOrEmpty(clientId)) {
 				// MEANS FS, FP VIEW
@@ -232,6 +234,8 @@ public class CommonController {
 				spUserId = CommonUtils.UserType.SERVICE_PROVIDER;
 				}else if (CommonUtils.UserType.NETWORK_PARTNER == userType){
 					spUserId = CommonUtils.UserType.NETWORK_PARTNER;
+				}else if (CommonUtils.UserType.FUND_PROVIDER == userType){
+					spUserId = CommonUtils.UserType.FUND_PROVIDER;
 				}
 			}
 			userType = spUserId;
@@ -286,4 +290,33 @@ public class CommonController {
 				HttpStatus.OK);
 	}
 
+	
+	@RequestMapping(value = "/getDataForCGTMSE/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDataForCGTMSE(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		try {
+			
+			if (applicationId == null) {
+				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+//			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByAppId(applicationId,
+//					userId);
+			
+			CGTMSECalcDataResponse response = applicationService.getDataForCGTMSE(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Recent Profile View Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 }

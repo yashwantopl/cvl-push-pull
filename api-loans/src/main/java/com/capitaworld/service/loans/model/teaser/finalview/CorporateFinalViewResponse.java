@@ -8,9 +8,15 @@ import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 
 public class CorporateFinalViewResponse implements Serializable{
 	
@@ -62,8 +68,8 @@ public class CorporateFinalViewResponse implements Serializable{
     private String udhyogAadharNo;
     private String creditRating;
     
-    private List<AchievementDetailRequest> AchievementDetailList;
-    private List<CreditRatingOrganizationDetailResponse> CreditRatingOrganizationDetailResponse;
+    private List<AchievementDetailRequest> achievementDetailList;
+    private List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse;
     private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
     private List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList;
     private List<ExistingProductDetailRequest> existingProductDetailRequestList;
@@ -132,7 +138,17 @@ public class CorporateFinalViewResponse implements Serializable{
     private List<Object> panOfAllDirectors;
     private List<Object> photosOfDirectors;
     private List<Object> residenceAddOfDirectors;
-
+    private List<Object> cibilReport;
+    private List<Object> bankStatement;
+    private List<Object> cmaList;
+    private List<Object> irtPdfReport;
+    private List<OwnershipDetailResponse> ownershipDetailResponseList;
+	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
+	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
+	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
+	private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
+	private List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList;
+	private Long npOrgId;
     
     
 	public List<?> getMatchesList() {
@@ -390,17 +406,17 @@ public class CorporateFinalViewResponse implements Serializable{
 		this.creditRating = creditRating;
 	}
 	public List<AchievementDetailRequest> getAchievementDetailList() {
-		return AchievementDetailList;
+		return achievementDetailList;
 	}
 	public void setAchievementDetailList(List<AchievementDetailRequest> achievementDetailList) {
-		AchievementDetailList = achievementDetailList;
+		this.achievementDetailList = achievementDetailList;
 	}
 	public List<CreditRatingOrganizationDetailResponse> getCreditRatingOrganizationDetailResponse() {
-		return CreditRatingOrganizationDetailResponse;
+		return creditRatingOrganizationDetailResponse;
 	}
 	public void setCreditRatingOrganizationDetailResponse(
 			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponse) {
-		CreditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
+		this.creditRatingOrganizationDetailResponse = creditRatingOrganizationDetailResponse;
 	}
 	public List<ProposedProductDetailRequest> getProposedProductDetailRequestList() {
 		return proposedProductDetailRequestList;
@@ -859,8 +875,118 @@ public class CorporateFinalViewResponse implements Serializable{
 	public void setResidenceAddOfDirectors(List<Object> residenceAddOfDirectors) {
 		this.residenceAddOfDirectors = residenceAddOfDirectors;
 	}
+	public List<Object> getCibilReport() {
+		return cibilReport;
+	}
+	public void setCibilReport(List<Object> cibilReport) {
+		this.cibilReport = cibilReport;
+	}
+	public List<Object> getBankStatement() {
+		return bankStatement;
+	}
+	public void setBankStatement(List<Object> bankStatement) {
+		this.bankStatement = bankStatement;
+	}
+	public List<Object> getCmaList() {
+		return cmaList;
+	}
+	public void setCmaList(List<Object> cmaList) {
+		this.cmaList = cmaList;
+	}
+	public List<Object> getIrtPdfReport() {
+		return irtPdfReport;
+	}
+	public void setIrtPdfReport(List<Object> irtPdfReport) {
+		this.irtPdfReport = irtPdfReport;
+	}
+	/**
+	 * @return the ownershipDetailResponseList
+	 */
+	public List<OwnershipDetailResponse> getOwnershipDetailResponseList() {
+		return ownershipDetailResponseList;
+	}
+	/**
+	 * @param ownershipDetailResponseList the ownershipDetailResponseList to set
+	 */
+	public void setOwnershipDetailResponseList(List<OwnershipDetailResponse> ownershipDetailResponseList) {
+		this.ownershipDetailResponseList = ownershipDetailResponseList;
+	}
+	/**
+	 * @return the totalCostOfProjectResponseList
+	 */
+	public List<TotalCostOfProjectResponse> getTotalCostOfProjectResponseList() {
+		return totalCostOfProjectResponseList;
+	}
+	/**
+	 * @param totalCostOfProjectResponseList the totalCostOfProjectResponseList to set
+	 */
+	public void setTotalCostOfProjectResponseList(List<TotalCostOfProjectResponse> totalCostOfProjectResponseList) {
+		this.totalCostOfProjectResponseList = totalCostOfProjectResponseList;
+	}
+	/**
+	 * @return the financeMeansDetailResponseList
+	 */
+	public List<FinanceMeansDetailResponse> getFinanceMeansDetailResponseList() {
+		return financeMeansDetailResponseList;
+	}
+	/**
+	 * @param financeMeansDetailResponseList the financeMeansDetailResponseList to set
+	 */
+	public void setFinanceMeansDetailResponseList(List<FinanceMeansDetailResponse> financeMeansDetailResponseList) {
+		this.financeMeansDetailResponseList = financeMeansDetailResponseList;
+	}
+	/**
+	 * @return the securityCorporateDetailRequestList
+	 */
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList() {
+		return securityCorporateDetailRequestList;
+	}
+	/**
+	 * @param securityCorporateDetailRequestList the securityCorporateDetailRequestList to set
+	 */
+	public void setSecurityCorporateDetailRequestList(
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList) {
+		this.securityCorporateDetailRequestList = securityCorporateDetailRequestList;
+	}
+	/**
+	 * @return the guarantorsCorporateDetailRequestList
+	 */
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailRequestList() {
+		return guarantorsCorporateDetailRequestList;
+	}
+	/**
+	 * @param guarantorsCorporateDetailRequestList the guarantorsCorporateDetailRequestList to set
+	 */
+	public void setGuarantorsCorporateDetailRequestList(
+			List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList) {
+		this.guarantorsCorporateDetailRequestList = guarantorsCorporateDetailRequestList;
+	}
+	/**
+	 * @return the monthlyTurnoverDetailRequestList
+	 */
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailRequestList() {
+		return monthlyTurnoverDetailRequestList;
+	}
+	/**
+	 * @param monthlyTurnoverDetailRequestList the monthlyTurnoverDetailRequestList to set
+	 */
+	public void setMonthlyTurnoverDetailRequestList(List<MonthlyTurnoverDetailRequest> monthlyTurnoverDetailRequestList) {
+		this.monthlyTurnoverDetailRequestList = monthlyTurnoverDetailRequestList;
+	}
+	/**
+	 * @return the npOrgId
+	 */
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+	/**
+	 * @param npOrgId the npOrgId to set
+	 */
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
+	}
     
-    
+      
     
 
 }

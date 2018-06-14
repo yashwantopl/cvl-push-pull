@@ -14,29 +14,42 @@ import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
+import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.scoring.model.FundSeekerInputRequest;
-import com.capitaworld.service.scoring.model.ModelParameterResponse;
-import com.capitaworld.service.scoring.model.ScoringRequest;
-import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.model.*;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.ibm.icu.util.Calendar;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -82,43 +95,37 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private CIBILClient cibilClient;
 
+    @Autowired
+	private Environment environment;
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
+
+        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
         logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
 
-        logger.info("Application Id   ::"+applicationId);
-        logger.info("Fp Product Id    ::"+fpProductId);
-        logger.info("Scoring Model Id ::"+scoreModelId);
+        logger.info("APPLICATION ID   :: "+ applicationId);
+        logger.info("FP PRODUCT ID    :: "+ fpProductId);
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
 
         ScoringResponse scoringResponseMain=null;
 
         // start Get GST Parameter
 
-        //String gstNumber="33GSPTN1361G1ZD";
-
         String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
-        if(CommonUtils.isObjectNullOrEmpty(loanAmount))
-        {
-            loanAmount=0.0;
-        }
-
-        logger.info("LOAN AMOUNT :::: "+loanAmount);
-
-        logger.info("APPLICATION ID :::: "+applicationId);
 
         GstResponse gstResponse=null;
         GstCalculation gstCalculation=new GstCalculation();
-       /* gstCalculation.setConcentration(20d);
-        gstCalculation.setNoOfCustomer(223d);
-        gstCalculation.setProjectedSales(1000000d);*/
+
         try
         {
             GSTR1Request gstr1Request=new GSTR1Request();
@@ -169,7 +176,6 @@ public class ScoringServiceImpl implements ScoringService{
 
         ///////////////
 
-        logger.info("START GET SCORE CORPORATE LOAN PARAMETERS");
         // GET SCORE CORPORATE LOAN PARAMETERS
 
 
@@ -208,7 +214,6 @@ public class ScoringServiceImpl implements ScoringService{
                 fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
                 fundSeekerInputRequest.setName(modelParameterResponse.getName());
 
-                Map<String, Object> map = new HashMap<>();
                 switch (modelParameterResponse.getName()) {
 
                     case ScoreParameter.COMBINED_NETWORTH:
@@ -219,29 +224,33 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(networthSum))
                                 networthSum = 0.0;
 
-                            Double termLoans = liabilitiesDetailsTY.getTermLoans();
-                            if (CommonUtils.isObjectNullOrEmpty(termLoans))
-                                termLoans = 0.0;
+                            Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                            if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                termLoansTy = 0.0;
 
-                            if((termLoans+loanAmount)!=0.0)
-                                map.put("COMBINED_NETWORTH", ((networthSum)/(termLoans+loanAmount))*100);
+                            scoringParameterRequest.setNetworthSum(networthSum);
+                            scoringParameterRequest.setTermLoanTy(termLoansTy);
+                            scoringParameterRequest.setLoanAmount(loanAmount);
+                            scoringParameterRequest.setCombinedNetworth_p(true);
+
+                            /*if((termLoansTy+loanAmount)!=0.0)
+                                map.put("COMBINED_NETWORTH", ((networthSum)/(termLoansTy+loanAmount))*100);
                             else
-                                map.put("COMBINED_NETWORTH",101.0);
+                                map.put("COMBINED_NETWORTH",101.0);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting COMBINED_NETWORTH parameter");
                             e.printStackTrace();
-                            map.put("COMBINED_NETWORTH",null);
+                            scoringParameterRequest.setCombinedNetworth_p(false);
+                            /*map.put("COMBINED_NETWORTH",null);*/
                         }
 
                         break;
                     }
                     case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
                     {
-                        /*Double customer_ass_concern_year=6.0;
-                        map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);*/
                         Double customer_ass_concern_year=null;
                         try {
 
@@ -249,11 +258,16 @@ public class ScoringServiceImpl implements ScoringService{
                             if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
                             {
                                 customer_ass_concern_year = (Double)cibilResponse.getData();
-                                map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);
+
+                                scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
+                                scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+
+                                /*map.put("CUSTOMER_ASSOCIATE_CONCERN",customer_ass_concern_year);*/
                             }
                             else
                             {
-                                map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                                /*map.put("CUSTOMER_ASSOCIATE_CONCERN",null);*/
+                                scoringParameterRequest.setCustomerAsscociateConcern_p(false);
                             }
 
                         }
@@ -261,16 +275,14 @@ public class ScoringServiceImpl implements ScoringService{
                         {
                             logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
                             e.printStackTrace();
-                            map.put("CUSTOMER_ASSOCIATE_CONCERN",null);
+                            /*map.put("CUSTOMER_ASSOCIATE_CONCERN",null);*/
+                            scoringParameterRequest.setCustomerAsscociateConcern_p(false);
                         }
                         break;
 
                     }
                     case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                     {
-
-                        /*Double cibil_score_avg_promotor=700.0;
-                        map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);*/
                         Double cibil_score_avg_promotor=null;
                         try {
 
@@ -278,15 +290,26 @@ public class ScoringServiceImpl implements ScoringService{
                             cibilRequest.setApplicationId(applicationId);
 
                             CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
-                            cibil_score_avg_promotor = (Double)cibilResponse.getData();
-                            map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                            {
+                                cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                                scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                scoringParameterRequest.setCibilTransunionScore_p(true);
+                            }
+                            else
+                            {
+                                scoringParameterRequest.setCibilTransunionScore_p(false);
+                            }
+
+                            /*map.put("CIBIL_TRANSUNION_SCORE",cibil_score_avg_promotor);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
                             e.printStackTrace();
-                            map.put("CIBIL_TRANSUNION_SCORE",null);
+                            scoringParameterRequest.setCibilTransunionScore_p(false);
+                            /*map.put("CIBIL_TRANSUNION_SCORE",null);*/
                         }
 
                         break;
@@ -298,11 +321,17 @@ public class ScoringServiceImpl implements ScoringService{
 
                         if(!CommonUtils.isObjectNullOrEmpty(directorExperience))
                         {
-                            map.put("EXPERIENCE_IN_THE_BUSINESS",directorExperience);
+                            scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
+                            scoringParameterRequest.setExperienceInTheBusiness_p(true);
+
+                            /*map.put("EXPERIENCE_IN_THE_BUSINESS",directorExperience);*/
+
                         }
                         else
                         {
-                            map.put("EXPERIENCE_IN_THE_BUSINESS",null);
+                            scoringParameterRequest.setExperienceInTheBusiness_p(false);
+
+                            /*map.put("EXPERIENCE_IN_THE_BUSINESS",null);*/
                         }
 
                         break;
@@ -330,17 +359,23 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(debt))
                                 equity = 0.0;
 
-                            if(equity!=0.0)
+                            scoringParameterRequest.setDebt(debt);
+                            scoringParameterRequest.setEquity(equity);
+                            scoringParameterRequest.setDebtEquityRatio_p(true);
+
+                            /*if(equity!=0.0)
                                     map.put("DEBT_EQUITY_RATIO",debt/equity);
                             else
-                                map.put("DEBT_EQUITY_RATIO",3.0);
+                                map.put("DEBT_EQUITY_RATIO",3.0);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting DEBT_EQUITY_RATIO parameter");
                             e.printStackTrace();
-                            map.put("DEBT_EQUITY_RATIO",null);
+                            scoringParameterRequest.setDebtEquityRatio_p(false);
+
+                            /*map.put("DEBT_EQUITY_RATIO",null);*/
                         }
 
                         break;
@@ -357,18 +392,22 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(tnw))
                                 tnw = 0.0;
 
+                            scoringParameterRequest.setTol(tol);
+                            scoringParameterRequest.setTnw(tnw);
+                            scoringParameterRequest.setTolTnw_p(true);
 
-                            if(tnw!=0.0)
+                            /*if(tnw!=0.0)
                                 map.put("TOL_TNW",(tol+loanAmount)/tnw);
                             else
-                                map.put("TOL_TNW",4.0);
+                                map.put("TOL_TNW",4.0);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting TOL_TNW parameter");
                             e.printStackTrace();
-                            map.put("TOL_TNW",null);
+                            scoringParameterRequest.setTolTnw_p(false);
+                            /*map.put("TOL_TNW",null);*/
                         }
 
                         break;
@@ -382,14 +421,18 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(currentRatio))
                                 currentRatio = 0.0;
 
-                            map.put("AVERAGE_CURRENT_RATIO", currentRatio);
+                            scoringParameterRequest.setAvgCurrentRatio(currentRatio);
+                            scoringParameterRequest.setAvgCurrentRatio_p(true);
+
+                            /*map.put("AVERAGE_CURRENT_RATIO", currentRatio);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_CURRENT_RATIO",null);
+                            scoringParameterRequest.setAvgCurrentRatio_p(false);
+                            /*map.put("AVERAGE_CURRENT_RATIO",null);*/
                         }
 
                         break;
@@ -405,6 +448,7 @@ public class ScoringServiceImpl implements ScoringService{
                             }
                             if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
                                 debtorsDays = 0.0;
+
 
 
                             /////////////
@@ -429,17 +473,24 @@ public class ScoringServiceImpl implements ScoringService{
                                 creditorsDays = 0.0;
 
 
-                            if(cogs!=0.0)
+                            scoringParameterRequest.setDebtorsDays(debtorsDays);
+                            scoringParameterRequest.setAvgInventory(averageInventory);
+                            scoringParameterRequest.setCogs(cogs);
+                            scoringParameterRequest.setCreditorsDays(creditorsDays);
+                            scoringParameterRequest.setWorkingCapitalCycle_p(true);
+
+                          /*  if(cogs!=0.0)
                                 map.put("WORKING_CAPITAL_CYCLE",debtorsDays+((averageInventory/cogs)*365)-creditorsDays);
                             else
-                                map.put("WORKING_CAPITAL_CYCLE",0.0);
+                                map.put("WORKING_CAPITAL_CYCLE",0.0);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
                             e.printStackTrace();
-                            map.put("WORKING_CAPITAL_CYCLE",null);
+                            scoringParameterRequest.setWorkingCapitalCycle_p(false);
+                            /*map.put("WORKING_CAPITAL_CYCLE",null);*/
                         }
 
                         break;
@@ -478,7 +529,22 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(interestFy))
                                 interestFy = 0.0;
 
-                            Double avgAnnualGrowthGrossCash=null;
+                            scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
+                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+
+                            scoringParameterRequest.setDepriciationFy(depreciationFy);
+                            scoringParameterRequest.setDepriciationSy(depreciationSy);
+                            scoringParameterRequest.setDepriciationTy(depreciationTy);
+
+                            scoringParameterRequest.setInterestFy(interestFy);
+                            scoringParameterRequest.setInterestSy(interestSy);
+                            scoringParameterRequest.setInterestTy(interestTy);
+
+                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
+
+
+                            /*Double avgAnnualGrowthGrossCash=null;
 
                             Double cashAccrualsSY=0.0;
 
@@ -503,14 +569,15 @@ public class ScoringServiceImpl implements ScoringService{
                             }
 
                             avgAnnualGrowthGrossCash = (((((netProfitOrLossTY + depreciationTy + interestTy) - (netProfitOrLossSY + depreciationSy + interestSy)) / (cashAccrualsSY)) * 100) + ((((netProfitOrLossSY + depreciationSy + interestSy) - (netProfitOrLossFY + depreciationFy + interestFy)) / (cashAccrualsFY)) * 100)) / 2;
-                            map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);
+                            map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH", avgAnnualGrowthGrossCash);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH",null);
+                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
+                            /*map.put("AVERAGE_ANNUAL_GROWTH_GROSS_CASH",null);*/
                         }
                         break;
                     }
@@ -542,8 +609,6 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
                                 exportSalesFy = 0.0;
 
-                            Double avgAnnualGrowthNetSale=null;
-
                             Double totalSale_FY=0.0;
                             if(domesticSalesFy + exportSalesFy == 0.0)
                             {
@@ -574,15 +639,21 @@ public class ScoringServiceImpl implements ScoringService{
                                 totalSale_TY=domesticSalesTy + exportSalesTy;
                             }
 
-                            avgAnnualGrowthNetSale = (((((totalSale_TY) - (totalSale_SY)) / (totalSale_SY)) * 100) + ((((totalSale_SY) - (totalSale_FY)) / (totalSale_FY)) * 100)) / 2;
-                            map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);
+                            scoringParameterRequest.setTotalSaleFy(totalSale_FY);
+                            scoringParameterRequest.setTotalSaleSy(totalSale_SY);
+                            scoringParameterRequest.setTotalSaleTy(totalSale_TY);
+                            scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
+
+                            /*avgAnnualGrowthNetSale = (((((totalSale_TY) - (totalSale_SY)) / (totalSale_SY)) * 100) + ((((totalSale_SY) - (totalSale_FY)) / (totalSale_FY)) * 100)) / 2;
+                            map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE", avgAnnualGrowthNetSale);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE",null);
+                            scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
+                            /*map.put("AVERAGE_ANNUAL_GROWTH_NET_SALE",null);*/
                         }
 
                         break;
@@ -591,53 +662,56 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-                            logger.info("--------------------------------------START AVERAGE_EBIDTA-----------------------------------");
                             Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
                                 profitBeforeTaxOrLossTy = 0.0;
 
-                            logger.info("profitBeforeTaxOrLossTy::"+profitBeforeTaxOrLossTy);
 
                             Double interestTy = operatingStatementDetailsTY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestTy))
                                 interestTy = 0.0;
 
-                            logger.info("interestTy::"+interestTy);
 
                             Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
                             if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
                                 profitBeforeTaxOrLossSy = 0.0;
 
-                            logger.info("profitBeforeTaxOrLossSy::"+profitBeforeTaxOrLossSy);
 
                             Double interestSy = operatingStatementDetailsSY.getInterest();
                             if (CommonUtils.isObjectNullOrEmpty(interestSy))
                                 interestSy = 0.0;
 
-                            logger.info("interestSy::"+interestSy);
 
                             Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
                                 depreciationTy = 0.0;
 
-                            logger.info("depreciationTy::"+depreciationTy);
 
                             Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
                             if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
                                 depreciationSy = 0.0;
 
-                            logger.info("depreciationSy::"+depreciationSy);
-
-
-                            Double avgEBIDTA = ((profitBeforeTaxOrLossTy + interestTy + depreciationTy) + (profitBeforeTaxOrLossSy + interestSy + depreciationSy)) / 2;
-
-                            logger.info("avgEBIDTA::"+avgEBIDTA);
 
                             Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
                             if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
                                 termLoansTy = 0.0;
 
-                            logger.info("termLoansTy::"+termLoansTy);
+
+                            scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
+                            scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
+                            scoringParameterRequest.setInterestTy(interestTy);
+                            scoringParameterRequest.setInterestSy(interestSy);
+                            scoringParameterRequest.setDepriciationTy(depreciationTy);
+                            scoringParameterRequest.setDepriciationSy(depreciationSy);
+                            scoringParameterRequest.setTermLoanTy(termLoansTy);
+                            scoringParameterRequest.setLoanAmount(loanAmount);
+
+                            scoringParameterRequest.setAvgEBIDTA_p(true);
+
+                            /*Double avgEBIDTA = ((profitBeforeTaxOrLossTy + interestTy + depreciationTy) + (profitBeforeTaxOrLossSy + interestSy + depreciationSy)) / 2;
+
+                            logger.info("avgEBIDTA::"+avgEBIDTA);
+
 
                             Double termLoansEBIDTA = termLoansTy + loanAmount;
 
@@ -650,15 +724,15 @@ public class ScoringServiceImpl implements ScoringService{
                             }
                             else {
                                 map.put("AVERAGE_EBIDTA", 100.0);
-                            }
+                            }*/
 
-                            logger.info("--------------------------------------END AVERAGE_EBIDTA-----------------------------------");
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_EBIDTA parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_EBIDTA",null);
+                            scoringParameterRequest.setAvgEBIDTA_p(false);
+                            /*map.put("AVERAGE_EBIDTA",null);*/
                         }
 
                         break;
@@ -692,26 +766,37 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
                                 depreciationSy = 0.0;
 
-                            Double avgGrossCashAccruals = ((netProfitOrLossTY + depreciationTy + interestTy) + (netProfitOrLossSY + depreciationSy + interestSy)) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(avgGrossCashAccruals))
-                                avgGrossCashAccruals = 0.0;
-
-
                             Double totalAsset = assetsDetailsTY.getTotalAssets();
                             if (CommonUtils.isObjectNullOrEmpty(totalAsset))
                                 totalAsset = 0.0;
 
+                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+                            scoringParameterRequest.setInterestSy(interestSy);
+                            scoringParameterRequest.setInterestTy(interestTy);
+                            scoringParameterRequest.setDepriciationSy(depreciationSy);
+                            scoringParameterRequest.setDepriciationTy(depreciationTy);
+                            scoringParameterRequest.setTotalAsset(totalAsset);
+
+                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
+
+                            /*Double avgGrossCashAccruals = ((netProfitOrLossTY + depreciationTy + interestTy) + (netProfitOrLossSY + depreciationSy + interestSy)) / 2;
+                            if (CommonUtils.isObjectNullOrEmpty(avgGrossCashAccruals))
+                                avgGrossCashAccruals = 0.0;
+
+
                             if(totalAsset!=0.0)
                                 map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", (avgGrossCashAccruals/totalAsset)*100);
                             else
-                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 20.0);
+                                map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS", 20.0);*/
 
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS",null);
+                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
+                            /*map.put("AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS",null);*/
                         }
 
                         break;
@@ -737,7 +822,15 @@ public class ScoringServiceImpl implements ScoringService{
                             if (CommonUtils.isObjectNullOrEmpty(interestSy))
                                 interestSy = 0.0;
 
-                            try {
+                            scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
+                            scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
+                            scoringParameterRequest.setInterestTy(interestTy);
+                            scoringParameterRequest.setInterestSy(interestSy);
+
+                            scoringParameterRequest.setAvgInterestCovRatio_p(true);
+
+
+                         /*   try {
 
                                 if(interestTy!= 0.0 && interestSy!=0.0)
                                 {
@@ -755,13 +848,14 @@ public class ScoringServiceImpl implements ScoringService{
                                 logger.error("error while calculating AVERAGE_INTEREST_COV_RATIO");
                                 e.printStackTrace();
                                 map.put("AVERAGE_INTEREST_COV_RATIO",null);
-                            }
+                            }*/
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
                             e.printStackTrace();
-                            map.put("AVERAGE_INTEREST_COV_RATIO",null);
+                            scoringParameterRequest.setAvgInterestCovRatio_p(false);
+                            /*map.put("AVERAGE_INTEREST_COV_RATIO",null);*/
                         }
 
                         break;
@@ -771,18 +865,22 @@ public class ScoringServiceImpl implements ScoringService{
                         try {
                             if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer()))
                             {
-                                map.put("NO_OF_CUSTOMER",gstCalculation.getNoOfCustomer());
+                                scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
+                                scoringParameterRequest.setNoOfCustomer_p(true);
+                                /*map.put("NO_OF_CUSTOMER",gstCalculation.getNoOfCustomer());*/
                             }
                             else
                             {
-                                map.put("NO_OF_CUSTOMER",null);
+                                scoringParameterRequest.setNoOfCustomer_p(false);
+                                /*map.put("NO_OF_CUSTOMER",null);*/
                             }
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting NO_OF_CUSTOMER parameter");
                             e.printStackTrace();
-                            map.put("NO_OF_CUSTOMER",null);
+                            scoringParameterRequest.setNoOfCustomer_p(false);
+                            /*map.put("NO_OF_CUSTOMER",null);*/
                         }
                         break;
                     }
@@ -791,18 +889,22 @@ public class ScoringServiceImpl implements ScoringService{
                         try {
                             if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration()))
                             {
-                                map.put("CONCENTRATION_CUSTOMER",gstCalculation.getConcentration());
+                                scoringParameterRequest.setConcentrationCustomer(gstCalculation.getConcentration());
+                                scoringParameterRequest.setConcentrationCustomer_p(true);
+                                /*map.put("CONCENTRATION_CUSTOMER",gstCalculation.getConcentration());*/
                             }
                             else
                             {
-                                map.put("CONCENTRATION_CUSTOMER",null);
+                                scoringParameterRequest.setConcentrationCustomer_p(false);
+                                /*map.put("CONCENTRATION_CUSTOMER",null);*/
                             }
                         }
                         catch (Exception e)
                         {
                             logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
                             e.printStackTrace();
-                            map.put("CONCENTRATION_CUSTOMER",null);
+                            scoringParameterRequest.setConcentrationCustomer_p(false);
+                            /*map.put("CONCENTRATION_CUSTOMER",null);*/
                         }
                         break;
                     }
@@ -811,13 +913,12 @@ public class ScoringServiceImpl implements ScoringService{
 
                         Double totalCredit=null;
                         Double projctedSales=null;
-                        Double creditSummation=null;
 
                         // start get total credit from Analyser
                         ReportRequest reportRequest = new ReportRequest();
                         reportRequest.setApplicationId(applicationId);
                         try {
-                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                        	AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
@@ -835,6 +936,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             }
                         } catch (Exception e) {
+                            totalCredit=0.0;
                             e.printStackTrace();
                             logger.error("error while calling analyzer client");
                         }
@@ -848,7 +950,11 @@ public class ScoringServiceImpl implements ScoringService{
                         // end get projected sales from GST client
 
 
-                        if(!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0))
+                        scoringParameterRequest.setTotalCredit(totalCredit);
+                        scoringParameterRequest.setProjectedSale(projctedSales);
+                        scoringParameterRequest.setCreditSummation_p(true);
+
+                       /* if(!(CommonUtils.isObjectNullOrEmpty(projctedSales) || projctedSales == 0.0))
                         {
                             creditSummation=(totalCredit*12)/(projctedSales*12);
                             map.put("CREDIT_SUMMATION",creditSummation);
@@ -856,20 +962,21 @@ public class ScoringServiceImpl implements ScoringService{
                         else
                         {
                             map.put("CREDIT_SUMMATION",0.0);
-                        }
+                        }*/
                         break;
                     }
                 }
-
-                System.out.println("MAP::"+map.toString());
-
-                logger.info("----------------------------END------------------------------");
-
-                fundSeekerInputRequest.setMap(map);
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
+            logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
+
             scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoringParameterRequest(scoringParameterRequest);
 
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
@@ -899,4 +1006,153 @@ public class ScoringServiceImpl implements ScoringService{
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
+
+
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateScoringTest(ScoringRequestLoans scoringRequestLoans) {
+
+        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
+
+        logger.info("SCORE PARAMETER BEFORE::::::::::"+scoringRequestLoans.getScoreParameterRequestLoans().toString());
+
+        BeanUtils.copyProperties(scoringRequestLoans.getScoreParameterRequestLoans(),scoringParameterRequest);
+
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
+
+        logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
+
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+        ScoringResponse scoringResponseMain=null;
+
+        ///////////////
+
+        // GET SCORE CORPORATE LOAN PARAMETERS
+
+
+        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+        {
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setApplicationId(applicationId);
+
+            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+            ScoringResponse scoringResponse=null;
+            try {
+                scoringResponse = scoringClient.listField(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while getting field list");
+                e.printStackTrace();
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+            }
+
+            logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
+
+            scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoringParameterRequest(scoringParameterRequest);
+            scoringRequest.setTestingApiCall(true);
+
+            try {
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while calling scoring");
+                e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.info("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                loansResponse.setData(scoringResponseMain.getDataObject());
+                loansResponse.setListData(scoringResponseMain.getDataList());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+        }
+
+        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+    }
+
+    @SuppressWarnings("resource")
+	@Override
+	public Workbook readScoringExcel(MultipartFile multipartFile) throws IllegalStateException, InvalidFormatException , IOException, LoansException{
+		logger.info("-----------------------------Enter in readScoringExcel()-----------------------------------> MultiPartfile "+ multipartFile);
+          InputStream file;
+		Workbook workbook=null;
+		Sheet scoreSheet;
+		List<ScoreParameterRequestLoans> scoreParameterRequestLoansList = null;
+		try {
+			file = new ByteArrayInputStream(multipartFile.getBytes());
+			workbook = new XSSFWorkbook(file);
+			scoreSheet = workbook.getSheetAt(0);
+			scoreParameterRequestLoansList = ScoreExcelReader.extractCellFromSheet(scoreSheet);
+	
+			// ScoringRequestLoans List
+			List<LoansResponse> loansResponseList = new ArrayList<LoansResponse>();
+     		ScoringRequestLoans scoringRequestLoans = null;
+			logger.info("calculating scorring()----------------------------------->");          
+			for (ScoreParameterRequestLoans scoreParameterRequestLoans : scoreParameterRequestLoansList) {
+				scoringRequestLoans = new ScoringRequestLoans();
+				scoringRequestLoans.setScoreParameterRequestLoans(scoreParameterRequestLoans);
+				scoringRequestLoans.setApplicationId(scoreParameterRequestLoans.getTestId().longValue());
+				scoringRequestLoans.setScoringModelId(1l);
+		           	
+				loansResponseList.add(calculateScoringTest(scoringRequestLoans).getBody());
+				
+			}
+			logger.info("calculating scorring() list size-----------------------> "+ loansResponseList.size());
+		     workbook=generateScoringExcel(loansResponseList);
+		     logger.info("------------------------Exit from readScoringExcel() ---------------name of sheet in workook -----------------------> " + workbook.getSheetName(0));
+		     
+		} catch (NullPointerException | IOException e) {
+			e.printStackTrace();
+			logger.error("----------------Error/Exception while calculating scorring()------------------------------> "+ e.getMessage());
+		    throw e; 
+		}
+		return workbook;
+	}
+
+	@Override
+	public Workbook generateScoringExcel(List<LoansResponse> loansResponseList) throws  LoansException {
+		logger.info("----------------Enter in  generateScoringExcel() ------------------------------>");
+	   return  new ScoreExcelFileGenerator().scoreResultExcel(loansResponseList,environment);
+
+	}
 }
