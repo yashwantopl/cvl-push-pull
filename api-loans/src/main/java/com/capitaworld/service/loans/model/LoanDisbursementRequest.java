@@ -1,14 +1,13 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import com.capitaworld.service.loans.model.common.AuditActivityRequest;
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanDisbursementRequest extends AuditActivityRequest implements Serializable {
+public class LoanDisbursementRequest implements Serializable {
 
 	/**
 	 * 
@@ -16,20 +15,20 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationId;
-	
-	private Long referenceNo;
-
+	private String referenceNo;
+	private String transactionNo;
+	private String accountNo;
 	private Double disbursedAmount;
-
-	private Long mode;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date disbursementDate;
 
-	private String userName;
-
-	private String password;
+	private String disbursementAuthority;
+	private Long mode;
 	private String remark;
+	private String userName;
+	private String password;
+	private String actionBy;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -39,12 +38,28 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.applicationId = applicationId;
 	}
 
-	public Long getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Long referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
+	}
+
+	public String getTransactionNo() {
+		return transactionNo;
+	}
+
+	public void setTransactionNo(String transactionNo) {
+		this.transactionNo = transactionNo;
+	}
+
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
 	}
 
 	public Double getDisbursedAmount() {
@@ -55,6 +70,22 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.disbursedAmount = disbursedAmount;
 	}
 
+	public Date getDisbursementDate() {
+		return disbursementDate;
+	}
+
+	public void setDisbursementDate(Date disbursementDate) {
+		this.disbursementDate = disbursementDate;
+	}
+
+	public String getDisbursementAuthority() {
+		return disbursementAuthority;
+	}
+
+	public void setDisbursementAuthority(String disbursementAuthority) {
+		this.disbursementAuthority = disbursementAuthority;
+	}
+
 	public Long getMode() {
 		return mode;
 	}
@@ -63,12 +94,12 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.mode = mode;
 	}
 
-	public Date getDisbursementDate() {
-		return disbursementDate;
+	public String getRemark() {
+		return remark;
 	}
 
-	public void setDisbursementDate(Date disbursementDate) {
-		this.disbursementDate = disbursementDate;
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public String getUserName() {
@@ -87,19 +118,22 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.password = password;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getActionBy() {
+		return actionBy;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setActionBy(String actionBy) {
+		this.actionBy = actionBy;
 	}
 
 	@Override
 	public String toString() {
 		return "LoanDisbursementRequest [applicationId=" + applicationId + ", referenceNo=" + referenceNo
-				+ ", disbursedAmount=" + disbursedAmount + ", mode=" + mode + ", disbursementDate=" + disbursementDate
-				+ ", userName=" + userName + ", password=" + password + ", remark=" + remark + "]";
+				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
+				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
+				+ disbursementAuthority + ", mode=" + mode + ", remark=" + remark + ", userName=" + userName
+				+ ", password=" + password + ", actionBy=" + actionBy + "]";
 	}
+
 
 }

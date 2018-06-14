@@ -1846,10 +1846,11 @@ public class LoanApplicationController {
 
 	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString){
+		LoansResponse loansResponse =null;
 		try {
 			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> encryptedString =====> " , encryptedString);
 			LoanSanctionRequest  loanSanctionRequest= null;
-			LoansResponse loansResponse =null;
+			
 			Long orgId = null;
 			if(encryptedString!=null) {
 				String decrypt = null;
@@ -1862,16 +1863,18 @@ public class LoanApplicationController {
 					e.printStackTrace();
 					logger.info("Error while Converting Encrypted Object to LoanSanctionRequest  saveLoanSanctionDetail(){} -------------------------> ", e.getMessage());
 					loansResponse =	new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
 					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse,  "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanSanctionRequest",orgId);
 					return  new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 						
 				}
 				
-				if(!CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ))   {
+				if(!CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ,loanSanctionRequest.getActionBy()))   {
 					String msg=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
 					
 					     if("SUCCESS".equalsIgnoreCase(msg)){
+					    	 logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + msg) ;
 					    	 loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 					    	 loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
 					    	 logger.info("Saving Request to DB ===> ");
@@ -1879,7 +1882,9 @@ public class LoanApplicationController {
 					    	 logger.info("Exit saveLoanSanctionDetail() ---------------->  msg ==>"+ "Information Successfully Stored " );
 					    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					     }else {
+					    	 logger.info("Failure msg while saveLoanSanctionDetail() ----------------> msg " + msg) ;
 					    	 loansResponse = new LoansResponse(msg, HttpStatus.BAD_REQUEST.value());
+					    	 loansResponse.setData(false);
 					    	 logger.info("Saving Request to DB ===> ");
 					    	 loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse , msg ,orgId);
 					    	 logger.info("Exit saveLoanSanctionDetail() ----------------> msg ==>" +msg);
@@ -1889,6 +1894,7 @@ public class LoanApplicationController {
 				}else {
 					logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ----------------> LoanSanctionRequest" + loanSanctionRequest );
 					loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
 					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse , "Mandatory Fields Must Not be Null" ,orgId);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);  
@@ -1898,6 +1904,7 @@ public class LoanApplicationController {
 			else {
 				logger.info("Null encryptedString saveLoanSanctionDetail() ---------------->encryptedString " + encryptedString );
 				loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+				loansResponse.setData(false);
 				logger.info("Saving Request to DB ===> ");
 				loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse, "Mandatory Fields Must Not be Null" ,orgId);
 				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -1906,18 +1913,20 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while saveLoanSanctionDetail()----------------------> ", e);
 			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+			loansResponse= new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
+			loansResponse.setData(false);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+					
 		}
 	}
 	
 	@RequestMapping(value = "/saveLoanDisbursementDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanDisbursementDetail(@RequestBody String encryptedString ){
+		LoansResponse loansResponse=null;
 		try {
 			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> encryptedString =====> " + encryptedString);
 			LoanDisbursementRequest loanDisbursementRequest = null;
-			LoansResponse loansResponse=null;
+			
 			Long orgId=null;
 			if(encryptedString != null) {
 				String decrypt = null;
@@ -1933,11 +1942,12 @@ public class LoanApplicationController {
 					loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse, "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanDisbursementRequest ", orgId);
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}
-				if(!CommonUtils.isObjectListNull(loanDisbursementRequest,loanDisbursementRequest.getApplicationId(), loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo())) {
+				if(!CommonUtils.isObjectListNull(loanDisbursementRequest,loanDisbursementRequest.getApplicationId(), loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(), loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
 					
 					String msg=loanDisbursementService.requestValidation(loanDisbursementRequest ,orgId);	
 					
 					if("SUCCESS".equalsIgnoreCase(msg) || "First Disbursement".equalsIgnoreCase(msg)){
+						 logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + msg) ;
 				    	 loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 				    	 loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));
 				    	 logger.info("Saving Request to DB ===> ");
@@ -1945,6 +1955,7 @@ public class LoanApplicationController {
 				    	 logger.info("Exit saveLoanDisbursementDetail() ---------------->  msg ==>" + "Information Successfully Stored " );
 				    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 				     }else {
+				    	 logger.info("Failure msg while saveLoanDisbursementDetail() ----------------> msg " + msg) ;
 				    	 loansResponse = new LoansResponse(msg.split("[\\{}]")[0], HttpStatus.BAD_REQUEST.value())  ;
 				    	 logger.info("Saving Request to DB ===> ");
 				    	 loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , msg ,orgId);
@@ -1970,9 +1981,8 @@ public class LoanApplicationController {
 		} catch (Exception e) {
 			logger.error("Error while saveLoanDisbursementDetail()----------------------> ", e);
 			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
+			loansResponse =new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
 	}
 	
