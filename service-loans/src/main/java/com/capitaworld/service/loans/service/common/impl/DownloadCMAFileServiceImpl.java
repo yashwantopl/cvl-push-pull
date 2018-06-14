@@ -34,6 +34,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -77,7 +78,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	 			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
 	 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
 	 			
-	 			double tenure=loanApplocationRepo.getTenure(applicationId)+1;
+	 			Double tenure = loanApplocationRepo.getTenure(applicationId)+1;
+	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure : 0.0;
 	 			
 	 			logger.warn("tenure==>>"+tenure);
 	 			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
