@@ -1270,4 +1270,24 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("exit from setFPChecker()");
 		return false;
 	}
+	
+	@Override
+	public boolean revertApplication(NhbsApplicationRequest request) {
+		logger.info("entry in revertApplication()");
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
+		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
+			applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.REVERTED));
+			applicationMaster.setNpAssigneeId(request.getUserId());
+			applicationMaster.setNpUserId(request.getNpUserId());
+			applicationMaster.setModifiedBy(request.getUserId());
+			applicationMaster.setModifiedDate(new Date());
+			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.REVERTED);
+			loanApplicationRepository.save(applicationMaster);
+			logger.info("exit from revertApplication()");
+			return true;
+		}
+		logger.info("exit from setFPMaker()");
+		return false;
+	}
+
 }
