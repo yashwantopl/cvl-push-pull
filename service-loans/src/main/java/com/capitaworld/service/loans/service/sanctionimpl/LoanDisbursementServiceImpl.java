@@ -54,7 +54,9 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			LoanDisbursementDomain loanDisbursementDomain = new LoanDisbursementDomain();
 			BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain);
 			loanDisbursementDomain.setIsActive(true);
+			loanDisbursementDomain.setCreatedBy(loanDisbursementRequest.getActionBy());
 			loanDisbursementDomain.setCreatedDate(new Date());
+			loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
 			loanDisbursementDomain.setModifiedDate(new Date());
 			logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
 			return loanDisbursementRepository.save(loanDisbursementDomain) != null;

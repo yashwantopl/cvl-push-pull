@@ -47,17 +47,20 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
-		LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ) {
-			loanSanctionDomain = new LoanSanctionDomain();
+		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+		LoanSanctionDomain loanSanctionDomainNew=null;
+		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
+			loanSanctionDomainNew = new LoanSanctionDomain();
+			loanSanctionDomainNew.setCreatedBy(loanSanctionRequest.getActionBy());
+			loanSanctionDomainNew.setCreatedDate(new Date()); 
 		}
-		BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomain);
-		loanSanctionDomain.setIsActive(true);
-		loanSanctionDomain.setCreatedDate(new Date());
-		loanSanctionDomain.setModifiedDate(new Date());
-		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomain);
+		BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainNew);
+		loanSanctionDomainNew.setIsActive(true);
+		loanSanctionDomainNew.setModifiedBy(loanSanctionRequest.getActionBy());
+		loanSanctionDomainNew.setModifiedDate(new Date());
+		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainNew);
 		
-		return loanSanctionRepository.save(loanSanctionDomain) != null;
+		return loanSanctionRepository.save(loanSanctionDomainNew) != null;
 		}catch (Exception e) {
 			logger.info("Error/Exception in saveLoanSanctionDetail() -----------------------> Message "+e.getMessage());
 			e.printStackTrace();
@@ -76,7 +79,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			if(recCount != null && recCount  > 0) {
 					return  "SUCCESS";
 			}else {
-				return "InvalId ApplicationId ";
+				return "Invalid ApplicationId ";
 			}
 		 }else {
 			 return "Invalid Credential";
