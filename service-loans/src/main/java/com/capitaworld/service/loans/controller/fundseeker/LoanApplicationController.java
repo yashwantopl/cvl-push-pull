@@ -1945,7 +1945,7 @@ public class LoanApplicationController {
 				    	 logger.info("Exit saveLoanDisbursementDetail() ---------------->  msg ==>" + "Information Successfully Stored " );
 				    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 				     }else {
-				    	 loansResponse = new LoansResponse(msg.split("{}")[0], HttpStatus.BAD_REQUEST.value())  ;
+				    	 loansResponse = new LoansResponse(msg.split("[\\{}]")[0], HttpStatus.BAD_REQUEST.value())  ;
 				    	 logger.info("Saving Request to DB ===> ");
 				    	 loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , msg ,orgId);
 				    	 logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" +msg);
