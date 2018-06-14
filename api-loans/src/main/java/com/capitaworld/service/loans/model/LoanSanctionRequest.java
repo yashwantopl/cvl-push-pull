@@ -16,7 +16,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private static final long serialVersionUID = 1L;
 	private String accountNo;
 	private Double sanctionAmount;
-	private String transectionNo;
+	private String transactionNo;
 	private Double roi;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date sanctionDate;
@@ -46,11 +46,11 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	}
 
 	public String getTransectionNo() {
-		return transectionNo;
+		return transactionNo;
 	}
 
-	public void setTransectionNo(String transectionNo) {
-		this.transectionNo = transectionNo;
+	public void setTransectionNo(String transactionNo) {
+		this.transactionNo = transactionNo;
 	}
 
 	public Double getRoi() {
@@ -137,8 +137,8 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	@Override
 	public String toString() {
-		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transectionNo="
-				+ transectionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
+		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transactionNo="
+				+ transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
 				+ ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remarks=" + remarks + ", userName=" + userName
 				+ ", password=" + password + "]";
