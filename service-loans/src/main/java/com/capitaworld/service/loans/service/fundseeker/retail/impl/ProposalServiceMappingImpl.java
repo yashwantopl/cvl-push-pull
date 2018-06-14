@@ -1594,8 +1594,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			{
 				UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
 
-				CheckerDetailRequest checkerDetailRequest= MultipleJSONObjectHelper
-						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				CheckerDetailRequest checkerDetailRequest=null;
+				if(!CommonUtils.isObjectListNull(userResponse) || !(CommonUtils.isObjectNullOrEmpty(userResponse.getData())))
+				{
+					checkerDetailRequest= MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				}
 
 				if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
 				{
