@@ -443,4 +443,43 @@ public class NhbsController {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/set/fp/revert", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> revertApplication(@RequestBody NhbsApplicationRequest nhbsApplicationRequest, HttpServletRequest request) {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			if (CommonUtils.isObjectNullOrEmpty(userId) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getApplicationId()) ||
+					CommonUtils.isObjectNullOrEmpty(nhbsApplicationRequest.getNpUserId())) {
+				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn("applicationId  can not be empty ==>" + nhbsApplicationRequest.getApplicationId());
+				logger.warn("npUserId  can not be empty ==>" + nhbsApplicationRequest.getNpUserId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			nhbsApplicationRequest.setUserId(userId);
+			LoansResponse loansResponse = new LoansResponse();
+			boolean isDataUpdated = networkPartnerService.revertApplication(nhbsApplicationRequest);
+			if (isDataUpdated) {
+				logger.info("Data Updated.");
+				loansResponse.setMessage("Data Updated.");
+				/*boolean status = networkPartnerService.sendSMSNotificationWhenCheckerAssignMaker(nhbsApplicationRequest.getApplicationId(),nhbsApplicationRequest.getAssignedUserId());
+				logger.info("SMS notification status is:-"+status);*/
+
+			} else {
+				logger.info("Data Not Updated.");
+				loansResponse.setMessage("Data Not Updated.");
+			}
+			loansResponse.setStatus(HttpStatus.OK.value());
+			loansResponse.setData(isDataUpdated);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while setting maker to proposals ", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

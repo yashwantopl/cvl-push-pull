@@ -40,4 +40,6 @@ public interface NetworkPartnerService {
     public List<NhbsApplicationsResponse> getListOfCheckerProposalsFP(NhbsApplicationRequest request);
 
 	public JSONObject getFPProposalCount(NhbsApplicationRequest nhbsApplicationRequest,Long npOrgId);
+	
+	public boolean revertApplication(NhbsApplicationRequest request);
 }
