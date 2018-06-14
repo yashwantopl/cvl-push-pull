@@ -1164,10 +1164,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			logger.error("error while FP branch details");
 			e.printStackTrace();
 		}
-		List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
+
 		JSONObject countObj = new JSONObject();
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == nhbsApplicationRequest.getUserRoleId()){
-
+			List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			List<LoanApplicationMaster> newApplicationList = loanApplicationRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 			newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("newProposalCount", newApplicationList.size());
@@ -1186,7 +1186,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			countObj.put("allOtherProposalCount", allOtherApplicationList.size());
 
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == nhbsApplicationRequest.getUserRoleId()){
-
+			List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchIdAndFpProductId(branchId,nhbsApplicationRequest.getFpProductId());
 			List<LoanApplicationMaster> assignedTocheckerApplicationList = loanApplicationRepository.getFPAssignedToCheckerProposalsCount(CommonUtils.DdrStatus.SUBMITTED,nhbsApplicationRequest.getUserId());
 			assignedTocheckerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("assignedToCheckerProposalCount", assignedTocheckerApplicationList.size());
