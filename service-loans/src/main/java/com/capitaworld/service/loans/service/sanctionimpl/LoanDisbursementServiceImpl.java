@@ -91,8 +91,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 							return "SUCCESS";
 						} else {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
-							return "Total Disbursement Amount EXCEED Sanction Amount";
-							//{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" oldDisbursedAmount ==> "+oldDisbursedAmount+" newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+"totalDisbursedAmount==>"+totalDisbursedAmount
+							return "Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" oldDisbursedAmount ==> "+oldDisbursedAmount+" newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+"totalDisbursedAmount==>"+totalDisbursedAmount;
 						}
 					} else {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
