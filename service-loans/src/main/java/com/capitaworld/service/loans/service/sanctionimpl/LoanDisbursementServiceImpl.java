@@ -83,8 +83,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId() );
 							return "Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId();
-						}
-						if (loanSanctionDomain.getSanctionAmount() <= totalAmount) {
+						}else if (loanSanctionDomain.getSanctionAmount() == amount) {
+							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"Alread Your Disbursement is Complete");
+							return "Alread Your Disbursement is Complete";
+						}else if (loanSanctionDomain.getSanctionAmount() >= totalAmount) {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
 							return "SUCCESS";
 						} else {
