@@ -1,14 +1,13 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import com.capitaworld.service.loans.model.common.AuditActivityRequest;
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanSanctionRequest extends AuditActivityRequest implements Serializable {
+public class LoanSanctionRequest  implements Serializable {
 
 	/**
 	 * 
@@ -22,12 +21,13 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Date sanctionDate;
 	private Long branch;
 	private Long applicationId;
-	private Long referenceNo; 
+	private Long referenceNo;
 	private Double tenure;
 	private String sanctionAuthority;
-	private String remarks;
+	private String remark;
 	private String userName;
 	private String password;
+	private String actionBy;
 
 	public String getAccountNo() {
 		return accountNo;
@@ -45,11 +45,11 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.sanctionAmount = sanctionAmount;
 	}
 
-	public String getTransectionNo() {
+	public String getTransactionNo() {
 		return transactionNo;
 	}
 
-	public void setTransectionNo(String transactionNo) {
+	public void setTransactionNo(String transactionNo) {
 		this.transactionNo = transactionNo;
 	}
 
@@ -85,7 +85,6 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.applicationId = applicationId;
 	}
 
-	
 	public Long getReferenceNo() {
 		return referenceNo;
 	}
@@ -110,13 +109,12 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.sanctionAuthority = sanctionAuthority;
 	}
 
-	
-	public String getRemarks() {
-		return remarks;
+	public String getRemark() {
+		return remark;
 	}
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
+	public void setRemark(String remarks) {
+		this.remark = remarks;
 	}
 
 	public String getUserName() {
@@ -135,15 +133,21 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.password = password;
 	}
 
+	public String getActionBy() {
+		return actionBy;
+	}
+
+	public void setActionBy(String actionBy) {
+		this.actionBy = actionBy;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transactionNo="
 				+ transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
 				+ ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remarks=" + remarks + ", userName=" + userName
-				+ ", password=" + password + "]";
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
+				+ ", password=" + password + ", actionBy=" + actionBy + "]";
 	}
-
-	
 
 }

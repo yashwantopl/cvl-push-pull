@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.domain.sanction;
 
 import java.io.Serializable;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -9,50 +10,68 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
 @Entity
-@Table(name="sanction_detail")
-public class LoanSanctionDomain extends AuditActivity implements Serializable {
+@Table(name = "sanction_detail")
+public class LoanSanctionDomain implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue (strategy=GenerationType.IDENTITY )
-	private Long id ;
-	
-	@Column(name="account_no")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@Column(name = "account_no")
 	private String accountNo;
-	                 
-	@Column(name="sanction_amount")
+
+	@Column(name = "sanction_amount")
 	private Double sanctionAmount;
-	
+
 	private Double roi;
-	
-	@Column(name="transaction_no")
+
+	@Column(name = "transaction_no")
 	private String transactionNo;
-	
-	@Column(name="sanction_date")
+
+	@Column(name = "sanction_date")
 	private Date sanctionDate;
-	
+
 	private Long branch;
-	
-	@Column(name="application_id")
+
+	@Column(name = "application_id")
 	private Long applicationId;
-	
-	@Column(name="reference_no")
-	private Long referenceNo; 
-	
+
+	@Column(name = "reference_no")
+	private Long referenceNo;
+
 	private Double tenure;
-	
-	@Column(name="sanction_authority")
+
+	@Column(name = "sanction_authority")
 	private String sanctionAuthority;
-	
+
 	private String remark;
+
+	@Column(name = "created_by")
+	private String createdBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created_date")
+	private Date createdDate;
+
+	@Column(name = "modified_by")
+	private String modifiedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "modified_date")
+	private Date modifiedDate;
+
+	@Column(name = "is_active")
+	private Boolean isActive;
 
 	public Long getId() {
 		return id;
@@ -86,12 +105,12 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.roi = roi;
 	}
 
-	public String getTransectionNo() {
+	public String getTransactionNo() {
 		return transactionNo;
 	}
 
-	public void setTransectionNo(String transectionNo) {
-		this.transactionNo = transectionNo;
+	public void setTransactionNo(String transactionNo) {
+		this.transactionNo = transactionNo;
 	}
 
 	public Date getSanctionDate() {
@@ -142,23 +161,62 @@ public class LoanSanctionDomain extends AuditActivity implements Serializable {
 		this.sanctionAuthority = sanctionAuthority;
 	}
 
-	public String getRemarks() {
+	public String getRemark() {
 		return remark;
 	}
 
-	public void setRemarks(String remarks) {
-		this.remark = remarks;
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	@Override
 	public String toString() {
 		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
-				+ ", roi=" + roi + ", transectionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
+				+ ", roi=" + roi + ", transactionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
 				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remarks=" + remark + "]";
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", isActive=" + isActive + "]";
 	}
 
-
-
-	
 }
