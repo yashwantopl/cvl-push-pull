@@ -318,7 +318,6 @@ public class ProposalController {
 
 
 		LoansResponse loansResponse=proposalService.checkMinMaxAmount(userRequest);
-		loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
 	
