@@ -74,8 +74,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				LoanSanctionDomain loanSanctionDomain  =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 				
 				if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
-					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId() );
-					return "Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId();
+					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId==>" +loanDisbursementRequest.getApplicationId() );
+					return "Please Sanction Before Disbursement for this applicationId ==>" +loanDisbursementRequest.getApplicationId();
 				}
 				Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
 				if (recCount != null && recCount > 0) {
@@ -91,7 +91,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 							return "SUCCESS";
 						} else {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
-							return "Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" oldDisbursedAmount ==> "+oldDisbursedAmount+" newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+"totalDisbursedAmount==>"+totalDisbursedAmount;
+							return "Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount;
 						}
 					} else {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
