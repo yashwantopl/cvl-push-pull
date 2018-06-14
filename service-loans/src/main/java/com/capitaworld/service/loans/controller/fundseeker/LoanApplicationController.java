@@ -151,7 +151,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -185,7 +185,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getIrrByApplicationId");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -222,7 +222,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -254,7 +254,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "inActive");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -312,7 +312,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "setLastApplicationAccess");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -443,7 +443,7 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "lockPrimary");
 			Long userId = null;
 			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -476,7 +476,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "lockFinal");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -515,7 +515,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "updateFinalInformationFlag");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -548,7 +548,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isProfileAndPrimaryFilled");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -581,7 +581,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isPrimaryLocked");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -629,7 +629,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isFinalFilled");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -663,7 +663,8 @@ public class LoanApplicationController {
 			CommonDocumentUtils.startHook(logger, "isFinalLocked");
 			Long userId = null;
 			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
-			if (CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType) {
+			if ((CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType
+					 || CommonUtils.UserType.FUND_PROVIDER == userType) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -713,7 +714,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isPrimaryAndFinalLocked");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -749,7 +750,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getSelfViewAndPrimaryLocked");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -782,7 +783,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getCurrencyAndDenomination");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -817,7 +818,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isAllowToMoveAhead");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -851,7 +852,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getBowlCount");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1049,7 +1050,7 @@ public class LoanApplicationController {
 
 	@RequestMapping(value = "/getDetailsForEkycAuthentication", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getDetailsForEkycAuthentication(HttpServletRequest request,
-			@RequestBody EkycRequest ekycRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+			@RequestBody EkycRequest ekycRequest) {
 
 		// request must not be null
 		try {
@@ -1073,7 +1074,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1100,7 +1101,9 @@ public class LoanApplicationController {
 					&& (CommonUtils.UserType.SERVICE_PROVIDER == Integer
 							.parseInt(request.getAttribute(CommonUtils.USER_TYPE).toString())
 							|| CommonUtils.UserType.NETWORK_PARTNER == ((Integer) request
-									.getAttribute(CommonUtils.USER_TYPE)).intValue())) {
+									.getAttribute(CommonUtils.USER_TYPE)).intValue()
+							|| CommonUtils.UserType.FUND_PROVIDER == ((Integer) request
+							.getAttribute(CommonUtils.USER_TYPE)).intValue())) {
 				loanRequest.setClientId(clientId);
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			} else {
@@ -1133,7 +1136,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getMcaCompanyId");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1416,7 +1419,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetails");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1442,7 +1445,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start updateFlow()");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1578,7 +1581,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "updateDDRStatus");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1616,7 +1619,7 @@ public class LoanApplicationController {
 		logger.info("=========== Enter in copyOrImportLoan() ==============");
 		try {
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -1993,7 +1996,7 @@ public class LoanApplicationController {
 		try {
 			logger.info("start updateSkipPaymentStatus()");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;  
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
