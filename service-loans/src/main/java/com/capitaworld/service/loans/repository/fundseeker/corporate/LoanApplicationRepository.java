@@ -258,7 +258,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public int inActiveApplication(@Param("id") Long id, @Param("userId") Long userId);
 	
 	@Query("select tenure from LoanApplicationMaster where id =:id")
-	public double getTenure(@Param("id") Long applicationId);
+	public Double getTenure(@Param("id") Long applicationId);
 
 	//fp-maker - new proposal - pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true order by lm.modifiedDate desc")
