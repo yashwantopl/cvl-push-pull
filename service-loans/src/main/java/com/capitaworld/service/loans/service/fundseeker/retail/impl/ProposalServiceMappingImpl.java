@@ -167,7 +167,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					continue;
 				}
 
-				if(!loanApplicationMaster.getIsActive()) {
+				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsActive()) || !loanApplicationMaster.getIsActive()) {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
