@@ -71,27 +71,27 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		try {
 			
 			if (orgId != null) {
-				Long recCount = proposalDetailsRepository
-						.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
+				LoanSanctionDomain loanSanctionDomain  =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
+				
+				if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
+					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId() );
+					return "Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId();
+				}
+				Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
 				if (recCount != null && recCount > 0) {
-					Double amount = loanDisbursementRepository
-							.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
-					if (amount != null) {
-						Double totalAmount = amount + loanDisbursementRequest.getDisbursedAmount();
-						LoanSanctionDomain loanSanctionDomain  =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
-						
-						if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
-							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId() );
-							return "Please Sanction Before Disbursement for this applicationId" +loanDisbursementRequest.getApplicationId();
-						}else if (loanSanctionDomain.getSanctionAmount() == amount) {
+					Double oldDisbursedAmount = loanDisbursementRepository.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
+					if (oldDisbursedAmount != null) {
+						if (loanSanctionDomain.getSanctionAmount() == oldDisbursedAmount) {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"Alread Your Disbursement is Complete");
 							return "Alread Your Disbursement is Complete";
-						}else if (loanSanctionDomain.getSanctionAmount() >= totalAmount) {
+						}
+						Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
+						if (loanSanctionDomain.getSanctionAmount() >= totalDisbursedAmount) {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
 							return "SUCCESS";
 						} else {
 							logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
-							return "Total Disbursement Amount EXCEED Sanction Amount";
+							return "Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" oldDisbursedAmount ==> "+oldDisbursedAmount+" newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+"totalDisbursedAmount==>"+totalDisbursedAmount;
 						}
 					} else {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
