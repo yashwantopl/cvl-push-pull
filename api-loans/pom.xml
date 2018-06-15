@@ -37,7 +37,16 @@
 			<artifactId>jackson-core-asl</artifactId>
 			<version>1.9.12</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.13</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
 		<dependency>
 		    <groupId>com.ibm.icu</groupId>
