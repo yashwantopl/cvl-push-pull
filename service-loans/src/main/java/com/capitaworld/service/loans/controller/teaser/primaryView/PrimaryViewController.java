@@ -562,9 +562,12 @@ public class PrimaryViewController {
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
+		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+		}
 
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
-			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
 				//MEANS FS, FP VIEW
 				userId = clientId;
 				try {
