@@ -1854,26 +1854,25 @@ public class LoanApplicationController {
 			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> encryptedString =====> " , encryptedString);
 			LoanSanctionRequest  loanSanctionRequest= null;
 			
-			Long orgId = null;
 			if(encryptedString!=null) {
 				String decrypt = null;
 				
 				try {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
 					loanSanctionRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt, LoanSanctionRequest.class);
-					orgId = loanSanctionService.getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword());	
+						
 				}catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error while Converting Encrypted Object to LoanSanctionRequest  saveLoanSanctionDetail(){} -------------------------> ", e.getMessage());
 					loansResponse =	new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
-					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse,  "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanSanctionRequest",orgId);
+					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse,  "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanSanctionRequest",null);
 					return  new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
-						
 				}
 				
 				if(!CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ,loanSanctionRequest.getActionBy()))   {
+					Long orgId = loanSanctionService.getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword());
 					String msg=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
 					
 					     if("SUCCESS".equalsIgnoreCase(msg)){
@@ -1899,7 +1898,7 @@ public class LoanApplicationController {
 					loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
-					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse , "Mandatory Fields Must Not be Null" ,orgId);
+					loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse , "Mandatory Fields Must Not be Null" ,null);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);  
 					
 				}
@@ -1909,7 +1908,7 @@ public class LoanApplicationController {
 				loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 				loansResponse.setData(false);
 				logger.info("Saving Request to DB ===> ");
-				loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse, "Mandatory Fields Must Not be Null" ,orgId);
+				loanSanctionService.saveBankReqRes(loanSanctionRequest, loansResponse, "Mandatory Fields Must Not be Null" ,null);
 				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 
@@ -1930,23 +1929,24 @@ public class LoanApplicationController {
 			logger.info("Entry saveLoanDisbursementDetail(){} -------------------------> encryptedString =====> " + encryptedString);
 			LoanDisbursementRequest loanDisbursementRequest = null;
 			
-			Long orgId=null;
+			
 			if(encryptedString != null) {
 				String decrypt = null;
 				try {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
 					loanDisbursementRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt,LoanDisbursementRequest.class);
-					orgId = loanDisbursementService.getOrgIdByCredential(loanDisbursementRequest .getUserName(), loanDisbursementRequest .getPassword());
+					
 				}catch (Exception e) {
 					e.printStackTrace();
 					logger.info("Error while Converting Encrypted Object to LoanDisbursementRequest  saveLoanDisbursementDetail(){} -------------------------> ", e.getMessage());
 					loansResponse =new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
-					loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse, "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanDisbursementRequest ", orgId);
+					loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse, "ERROR WHILE CONVERTING ENCRYPTED OBJECT TO LoanDisbursementRequest ", null);
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}
 				if(!CommonUtils.isObjectListNull(loanDisbursementRequest,loanDisbursementRequest.getApplicationId(), loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(), loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
-					
+					Long orgId = loanDisbursementService.getOrgIdByCredential(loanDisbursementRequest .getUserName(), loanDisbursementRequest .getPassword());
 					String msg=loanDisbursementService.requestValidation(loanDisbursementRequest ,orgId);	
 					
 					if("SUCCESS".equalsIgnoreCase(msg) || "First Disbursement".equalsIgnoreCase(msg)){
@@ -1960,6 +1960,7 @@ public class LoanApplicationController {
 				     }else {
 				    	 logger.info("Failure msg while saveLoanDisbursementDetail() ----------------> msg " + msg) ;
 				    	 loansResponse = new LoansResponse(msg.split("[\\{}]")[0], HttpStatus.BAD_REQUEST.value())  ;
+				    	 loansResponse.setData(false);
 				    	 logger.info("Saving Request to DB ===> ");
 				    	 loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , msg ,orgId);
 				    	 logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" +msg);
@@ -1969,15 +1970,17 @@ public class LoanApplicationController {
 				}else {
 					logger.info("Null in LoanDisbursementRequest while saveLoanDisbursementDetail() ----------------> LoanDisbursementRequest" + loanDisbursementRequest  );
 					loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
-					loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , "Mandatory Fields Must Not be Null" ,orgId);
+					loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , "Mandatory Fields Must Not be Null" ,null);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				}
 			}else {
 				logger.info("Null in encryptedString while saveLoanDisbursementDetail() ----------------> encryptedString " +encryptedString );
 				loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
+				loansResponse.setData(false);
 				logger.info("Saving Request to DB ===> ");
-				loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , "Mandatory Fields Must Not be Null" ,orgId);
+				loanDisbursementService.saveBankReqRes(loanDisbursementRequest, loansResponse , "Mandatory Fields Must Not be Null" ,null);
 				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 
@@ -1985,6 +1988,7 @@ public class LoanApplicationController {
 			logger.error("Error while saveLoanDisbursementDetail()----------------------> ", e);
 			e.printStackTrace();
 			loansResponse =new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
+			loansResponse.setData(false);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
 	}

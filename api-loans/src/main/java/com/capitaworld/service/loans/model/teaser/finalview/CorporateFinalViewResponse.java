@@ -55,6 +55,7 @@ public class CorporateFinalViewResponse implements Serializable{
     private String haveCollateralSecurity;
     private String collateralSecurityAmount;
     private List<Object> profilePic;
+    private Integer productId;
 
     private String purposeOfLoan;
     private String  businessAssetAmount;
@@ -984,6 +985,18 @@ public class CorporateFinalViewResponse implements Serializable{
 	 */
 	public void setNpOrgId(Long npOrgId) {
 		this.npOrgId = npOrgId;
+	}
+	/**
+	 * @return the productId
+	 */
+	public Integer getProductId() {
+		return productId;
+	}
+	/**
+	 * @param productId the productId to set
+	 */
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
     
       

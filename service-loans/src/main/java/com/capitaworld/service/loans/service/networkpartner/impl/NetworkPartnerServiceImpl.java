@@ -678,8 +678,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.OPEN){
 				applicationMastersList = loanApplicationRepository.getFPProposalsByApplicationStatusAndNpOrgIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 			}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED){
-				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),userId);
-				applicationMastersList.addAll(loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.SUBMITTED,userId));
+				applicationMastersList = loanApplicationRepository.getFPAssignedTabPropsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED,CommonUtils.ApplicationStatus.REVERTED,CommonUtils.ApplicationStatus.SUBMITTED,userId);
 			}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 				applicationMastersList = loanApplicationRepository.getFPAssignedProposalsByNPUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getApplicationStatusId(),userId);
 			}else{
@@ -1172,8 +1171,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("newProposalCount", newApplicationList.size());
 
-			List<LoanApplicationMaster> assignedToMakerApplicationList = loanApplicationRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.ASSIGNED,nhbsApplicationRequest.getUserId());
-			assignedToMakerApplicationList.addAll(loanApplicationRepository.getFPMakerAssignedAndAssginedToCheckerCount(CommonUtils.ApplicationStatus.SUBMITTED,nhbsApplicationRequest.getUserId()));
+			List<LoanApplicationMaster> assignedToMakerApplicationList = loanApplicationRepository.getFPAssignedTabPropsByNPUserIdCount(CommonUtils.ApplicationStatus.ASSIGNED,CommonUtils.ApplicationStatus.REVERTED,CommonUtils.ApplicationStatus.SUBMITTED,nhbsApplicationRequest.getUserId());
 			assignedToMakerApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("pendingProposalCount", assignedToMakerApplicationList.size());
 
