@@ -1204,7 +1204,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				ownershipResp = new OwnershipDetailResponse();
 				BeanUtils.copyProperties(ownershipReq, ownershipResp);
 				ownershipResp.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipReq.getShareHoldingCategoryId()).getValue());
-				OwnershipDetailResponse.printFields(ownershipReq);
+				OwnershipDetailResponse.printFields(ownershipResp);
 				ownershipRespList.add(ownershipResp);
 			}
 			response.setOwnershipRespList(ownershipRespList);
