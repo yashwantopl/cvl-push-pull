@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<!-- <parent>
-		<groupId>com.capitaworld.loans.service.parent</groupId>
-		<artifactId>service-parent-loans</artifactId>
-		<version>0.0.1</version>
-	</parent> -->
+	<!-- <parent> <groupId>com.capitaworld.loans.service.parent</groupId> <artifactId>service-parent-loans</artifactId> 
+		<version>0.0.1</version> </parent> -->
 	<artifactId>api-loans</artifactId>
 	<properties>
 		<java-version>1.8</java-version>
@@ -26,7 +24,7 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.databind-version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
@@ -49,11 +47,17 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.ibm.icu/icu4j -->
 		<dependency>
-		    <groupId>com.ibm.icu</groupId>
-		    <artifactId>icu4j</artifactId>
-		    <version>3.4.4</version>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
 	</dependencies>
 	<version>1.0.1</version>
 	<groupId>com.capitaworld.api.loans</groupId>
