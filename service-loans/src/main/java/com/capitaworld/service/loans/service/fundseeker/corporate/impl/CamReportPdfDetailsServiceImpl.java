@@ -34,7 +34,10 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -43,6 +46,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseStr
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.OperatingStatementDetailsString;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -52,9 +56,12 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
@@ -110,6 +117,7 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.ibm.icu.util.Calendar;
 
 @Service
 @Transactional
@@ -208,6 +216,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
 	
+	@Autowired
+	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	
+	@Autowired
+	LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+	
+	@Autowired
+	AssetsDetailsRepository assetsDetailsRepository;
+	
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -259,13 +276,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//GST DATA
 		
+		//TIMELINE DATES
+		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		
+		//GST DATA
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? printFields(response.getData()) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToString(response.getData()) : " ");
 			
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1178,6 +1198,67 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	}
 	
+	public OperatingStatementDetailsString getCamMappings(Long userId, Long applicationId, String industry, Long denomination) {
+		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		/*==============================================THIRD YEAR===========================================================*/
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+		OperatingStatementDetailsString operatingStatementDetailsString = new OperatingStatementDetailsString();
+		operatingStatementDetailsString.setDomesticSalesFy(convertValue(operatingStatementDetails.getDomesticSales()));
+		operatingStatementDetailsString.setExportSalesFy(convertValue(operatingStatementDetails.getExportSales()));
+		operatingStatementDetailsString.setLessExciseDutyFy(convertValue(operatingStatementDetails.getLessExciseDuty()));
+		operatingStatementDetailsString.setDeductOtherItemsFy(convertValue(operatingStatementDetails.getDeductOtherItems()));
+		operatingStatementDetailsString.setAddOperatingStockFy(convertValue(operatingStatementDetails.getAddOperatingStock()));
+		operatingStatementDetailsString.setDeductStockInProcessFy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
+		operatingStatementDetailsString.setAddOperatingStockFgFy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
+		operatingStatementDetailsString.setDeductClStockFgFy(convertValue(operatingStatementDetails.getDeductClStockFg()));
+		operatingStatementDetailsString.setRetainedProfitFy(convertValue(operatingStatementDetails.getRawMaterials()));
+		operatingStatementDetailsString.setOtherSparesFy(convertValue(operatingStatementDetails.getOtherSpares()));
+		operatingStatementDetailsString.setProvisionForTaxesFy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
+		operatingStatementDetailsString.setProvisionForDeferredTaxFy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+		
+		/*==============================================SECOND YEAR===========================================================*/
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
+		operatingStatementDetailsString.setDomesticSalesSy(convertValue(operatingStatementDetails.getDomesticSales()));
+		operatingStatementDetailsString.setExportSalesSy(convertValue(operatingStatementDetails.getExportSales()));
+		operatingStatementDetailsString.setLessExciseDutySy(convertValue(operatingStatementDetails.getLessExciseDuty()));
+		operatingStatementDetailsString.setDeductOtherItemsSy(convertValue(operatingStatementDetails.getDeductOtherItems()));
+		operatingStatementDetailsString.setAddOperatingStockSy(convertValue(operatingStatementDetails.getAddOperatingStock()));
+		operatingStatementDetailsString.setDeductStockInProcessSy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
+		operatingStatementDetailsString.setAddOperatingStockFgSy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
+		operatingStatementDetailsString.setDeductClStockFgSy(convertValue(operatingStatementDetails.getDeductClStockFg()));
+		operatingStatementDetailsString.setRetainedProfitSy(convertValue(operatingStatementDetails.getRawMaterials()));
+		operatingStatementDetailsString.setOtherSparesSy(convertValue(operatingStatementDetails.getOtherSpares()));
+		operatingStatementDetailsString.setProvisionForTaxesSy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
+		operatingStatementDetailsString.setProvisionForDeferredTaxSy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+
+		/*==============================================FIRST YEAR===========================================================*/
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
+		operatingStatementDetailsString.setDomesticSalesTy(convertValue(operatingStatementDetails.getDomesticSales()));
+		operatingStatementDetailsString.setExportSalesTy(convertValue(operatingStatementDetails.getExportSales()));
+		operatingStatementDetailsString.setLessExciseDutyTy(convertValue(operatingStatementDetails.getLessExciseDuty()));
+		operatingStatementDetailsString.setDeductOtherItemsTy(convertValue(operatingStatementDetails.getDeductOtherItems()));
+		operatingStatementDetailsString.setAddOperatingStockTy(convertValue(operatingStatementDetails.getAddOperatingStock()));
+		operatingStatementDetailsString.setDeductStockInProcessTy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
+		operatingStatementDetailsString.setAddOperatingStockFgTy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
+		operatingStatementDetailsString.setDeductClStockFgTy(convertValue(operatingStatementDetails.getDeductClStockFg()));
+		operatingStatementDetailsString.setRetainedProfitTy(convertValue(operatingStatementDetails.getRawMaterials()));
+		operatingStatementDetailsString.setOtherSparesTy(convertValue(operatingStatementDetails.getOtherSpares()));
+		operatingStatementDetailsString.setProvisionForTaxesTy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
+		operatingStatementDetailsString.setProvisionForDeferredTaxTy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+		
+		return operatingStatementDetailsString;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	/*********************************************************CAM UTILS****************************************************************/
+	
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
 	}
@@ -1187,7 +1268,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
 	}
-	
 	public static Object convertToString (Object obj) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
 		 for(Field field : fields) {
@@ -1250,7 +1330,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return obj;
     }
-	
 	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
@@ -1272,7 +1351,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
-	
 	@SuppressWarnings("unchecked")
 	private String getStateName(Integer stateId) {
 		try {
@@ -1294,7 +1372,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
-	
 	@SuppressWarnings("unchecked")
 	private String getCountryName(Integer country) {
 		try {
@@ -1316,8 +1393,4 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
-	
-	
-	
-	
 }
