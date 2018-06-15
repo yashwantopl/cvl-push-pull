@@ -71,7 +71,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		if (CommonDocumentUtils.isThisClientApplication(request)) {
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
 		if(CommonUtils.isObjectNullOrEmpty(userId)) {
@@ -107,7 +107,7 @@ public class DDRFormController {
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonDocumentUtils.isThisClientApplication(request)) {
+		if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
 		
@@ -131,7 +131,7 @@ public class DDRFormController {
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
-		if (CommonDocumentUtils.isThisClientApplication(request)) {
+		if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
 		
