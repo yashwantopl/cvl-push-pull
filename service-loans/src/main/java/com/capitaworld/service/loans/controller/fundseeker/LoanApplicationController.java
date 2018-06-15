@@ -749,12 +749,12 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getSelfViewAndPrimaryLocked");
-			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			/*if (CommonDocumentUtils.isThisClientApplication(request)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
+			}*/
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.error("Application id must not be null.");
