@@ -268,13 +268,21 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.npOrgId=:npOrgId and lm.paymentStatus=:paymentStatus and lm.isActive = true")
 	public List<LoanApplicationMaster> getFPMakerNewProposalCount(@Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus);
 
-	//fp-maker-assigned & assigned to checker - pagination
+	//fp-maker-assigned to checker - pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.fpMakerId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<LoanApplicationMaster> getFPAssignedProposalsByNPUserIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
-	//fp - maker-assigned & assigned to checker - count
+	//fp - maker-assigned to checker - count
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id =:id and lm.fpMakerId=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPMakerAssignedAndAssginedToCheckerCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+
+	//fp-maker-pending tab - pagination
+	@Query("select lm from LoanApplicationMaster lm where (lm.applicationStatusMaster.id =:id or lm.applicationStatusMaster.id =:revertedId or lm.applicationStatusMaster.id =:submitId) and lm.fpMakerId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getFPAssignedTabPropsByNPUserIdForPagination(Pageable pageable,@Param("id") Long applicationStatusAssignId, @Param("revertedId") Long applicationRevertedStatusId, @Param("submitId") Long applicationSubmitStatusId,@Param("npUserId") Long npUserId);
+
+	//fp-maker-pending tab - count
+	@Query("select lm from LoanApplicationMaster lm where (lm.applicationStatusMaster.id =:id or lm.applicationStatusMaster.id =:revertedId or lm.applicationStatusMaster.id =:submitId) and lm.fpMakerId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
+	public List<LoanApplicationMaster> getFPAssignedTabPropsByNPUserIdCount(@Param("id") Long applicationStatusAssignId, @Param("revertedId") Long applicationRevertedStatusId, @Param("submitId") Long applicationSubmitStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - maker - all other proposals - pagination
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.fpMakerId!=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
