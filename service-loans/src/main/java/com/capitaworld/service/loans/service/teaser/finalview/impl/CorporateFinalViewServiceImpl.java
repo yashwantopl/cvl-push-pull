@@ -233,7 +233,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService{
         LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
         Long userId = loanApplicationMaster.getUserId();
         
-        
+        corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
         //===================== MATCHES DATA ======================//
         if (userType != null) {
             if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // TEASER VIEW FROM FP
