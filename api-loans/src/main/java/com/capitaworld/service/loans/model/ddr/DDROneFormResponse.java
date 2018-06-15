@@ -6,7 +6,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.*;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -230,7 +240,7 @@ public class DDROneFormResponse implements Serializable {
 	         for(Field field : fields) {
 	             Object value = field.get(obj);
 	             if(value instanceof String){
-	              String a = value.toString().replaceAll("&", "&amp;");
+	              String a = StringEscapeUtils.escapeXml(value.toString());
 	              value = a;
 	              field.set(obj, value);
 	             }
