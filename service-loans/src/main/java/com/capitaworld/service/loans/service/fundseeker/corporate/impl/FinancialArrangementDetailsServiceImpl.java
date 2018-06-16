@@ -72,7 +72,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			throws Exception {
 		try {
 			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id, userId);
+					.listSecurityCorporateDetailFromAppId(id);
 			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
