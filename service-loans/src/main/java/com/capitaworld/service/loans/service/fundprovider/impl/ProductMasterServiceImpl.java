@@ -332,8 +332,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				ProductMaster userProduct = null;
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 					userProduct = productMasterRepository.getUserProductByOrgId(fpMappingId, userOrgId);
-				} else {
+				} else if (!CommonUtils.isObjectNullOrEmpty(userId)) {
 					userProduct = productMasterRepository.getUserProduct(fpMappingId, userId);
+				} else {
+					userProduct = productMasterRepository.findByIdAndIsActive(fpMappingId, true);
 				}
 				productDetailsResponse.setProductId(userProduct.getProductId());
 				productDetailsResponse.setProductMappingId(fpMappingId);
