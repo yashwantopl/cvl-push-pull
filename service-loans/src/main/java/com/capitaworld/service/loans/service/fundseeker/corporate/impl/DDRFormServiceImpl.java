@@ -1222,6 +1222,7 @@ public class DDRFormServiceImpl implements DDRFormService{
             	financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
                 financialArrangementsDetailResponse.setOutstandingAmount(convertDouble(financialArrangementsDetailRequest.getOutstandingAmount()));
                 financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 financialArrangementsDetailResponse.setAmount(convertDouble(financialArrangementsDetailRequest.getAmount()));
                 //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                 financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
@@ -1231,7 +1232,6 @@ public class DDRFormServiceImpl implements DDRFormService{
                 if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getRelationshipSince())) {
                 	financialArrangementsDetailResponse.setRelationshipSinceInYear(financialArrangementsDetailRequest.getRelationshipSince().toString());                	
                 }
-                financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
             }
             response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
