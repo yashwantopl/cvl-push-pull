@@ -29,6 +29,8 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private Date proposalTakenDate;
 
+	private Date assignedToCheckerDate;
+
 	private Date receivedDate;
 
 	private Date revertDate;
@@ -64,6 +66,14 @@ public class NhbsApplicationsResponse implements Serializable{
 	private String country;
 
 	private String applicationWith;
+
+	public Date getAssignedToCheckerDate() {
+		return assignedToCheckerDate;
+	}
+
+	public void setAssignedToCheckerDate(Date assignedToCheckerDate) {
+		this.assignedToCheckerDate = assignedToCheckerDate;
+	}
 
 	public String getApplicationWith() {
 		return applicationWith;
