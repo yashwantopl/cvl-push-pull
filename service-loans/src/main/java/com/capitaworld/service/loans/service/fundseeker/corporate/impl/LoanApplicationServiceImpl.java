@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -170,6 +171,7 @@ import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
@@ -4138,7 +4140,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 				if(orgId==10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
 				}
 
 				if(connectResponse.getProceed()) {
@@ -4225,7 +4227,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
 						}
 						
 						if(connectResponse.getProceed()) {
@@ -4773,7 +4775,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean savePhese1DataToSidbi(Long applicationId, Long userId) {
+	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+		
+		try {
+			String token = getToken(organizationId);
+			sidbiIntegrationClient.setToken(token);
+		}catch(Exception e) {
+			logger.error("Something goes wrong while generating Token");
+			e.printStackTrace();
+			return false;
+		}
+		
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
 		try {
@@ -4848,7 +4860,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 
 	@Override
-	public boolean savePhese2DataToSidbi(Long applicationId, Long userId) {
+	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+		
+		try {
+			String token = getToken(organizationId);
+			sidbiIntegrationClient.setToken(token);
+		}catch(Exception e) {
+			logger.error("Something goes wrong while generating Token");
+			e.printStackTrace();
+			return false;
+		}
 		
 		Boolean saveDetailsInfo = false;
 		Boolean saveDDRInfo = false;
@@ -5543,6 +5564,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.info("Throw Exception WHile Get Proposal Detaisl By APplicationId");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getToken(Long organizationId) {
+		// Get Organization Data by OrganizationId
+		try {
+			UserOrganisationRequest organisationRequest = userClient.getByOrgId(organizationId);
+			if (organisationRequest == null) {
+				return null;
+			}
+			return CommonUtils.getEncodedUserNamePassword(organisationRequest.getUsername(),
+					organisationRequest.getPassword());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
