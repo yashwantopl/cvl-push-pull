@@ -1089,4 +1089,12 @@ public enum APIFlags {
 	public static String decode(String encryptedString) {
 		return new String(Base64.getDecoder().decode(encryptedString));
 	}
+	
+	public static String getEncodedUserNamePassword(String userName,String password) {
+		String keyToEncode = userName + ":" + userName;
+		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
+		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
+		System.out.println("encodedString UPdated===============>" + encodedString);
+		return encodedString;
+	}
 }
