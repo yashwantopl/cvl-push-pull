@@ -1478,19 +1478,19 @@ public class DDRFormServiceImpl implements DDRFormService{
 			AssetsDetails cma2015AssetDetails = null;
 			if(isCMAUpload) {
 				cmaAssetsDetails = assetsDetailsRepository.getByApplicationId(applicationId);
-				cma2018AssetDetails = cmaAssetsDetails.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				cma2018AssetDetails = cmaAssetsDetails.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2018AssetDetails)) {
 					cma2018AssetDetails = new AssetsDetails();
 				}
-				cma2017AssetDetails = cmaAssetsDetails.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				cma2017AssetDetails = cmaAssetsDetails.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2017AssetDetails)) {
 					cma2017AssetDetails = new AssetsDetails();
 				}
-				cma2016AssetDetails = cmaAssetsDetails.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				cma2016AssetDetails = cmaAssetsDetails.stream().filter(a -> "2016".equals(a.getYear())|| "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2016AssetDetails)) {
 					cma2016AssetDetails = new AssetsDetails();
 				}
-				cma2015AssetDetails = cmaAssetsDetails.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
+				cma2015AssetDetails = cmaAssetsDetails.stream().filter(a -> "2015".equals(a.getYear())|| "2015.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2015AssetDetails)) {
 					cma2015AssetDetails = new AssetsDetails();
 				}
@@ -1503,19 +1503,19 @@ public class DDRFormServiceImpl implements DDRFormService{
 			LiabilitiesDetails cma2015Liabilities = null;
 			if(isCMAUpload) {
 				liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
-				cma2018Liabilities = liabilitiesDetailsList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				cma2018Liabilities = liabilitiesDetailsList.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2018Liabilities)) {
 					cma2018Liabilities = new LiabilitiesDetails();
 				}
-				cma2017Liabilities = liabilitiesDetailsList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				cma2017Liabilities = liabilitiesDetailsList.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2017Liabilities)) {
 					cma2017Liabilities = new LiabilitiesDetails();
 				}
-				cma2016Liabilities = liabilitiesDetailsList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				cma2016Liabilities = liabilitiesDetailsList.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2016Liabilities)) {
 					cma2016Liabilities = new LiabilitiesDetails();
 				}
-				cma2015Liabilities = liabilitiesDetailsList.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
+				cma2015Liabilities = liabilitiesDetailsList.stream().filter(a -> "2015".equals(a.getYear()) || "2015.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(cma2015Liabilities)) {
 					cma2015Liabilities = new LiabilitiesDetails();
 				}
@@ -1528,19 +1528,19 @@ public class DDRFormServiceImpl implements DDRFormService{
 			BalanceSheetDetail coAct2015BalanceSheet = null;
 			if(!isCMAUpload) {
 				balanceSheetDetailList = balanceSheetDetailRepository.getByApplicationId(applicationId);
-				coAct2018BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2018".equals(a.getYear())).findFirst().orElse(null);
+				coAct2018BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2018".equals(a.getYear()) || "2018.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2018BalanceSheet)) {
 					coAct2018BalanceSheet = new BalanceSheetDetail();
 				}
-				coAct2017BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2017".equals(a.getYear())).findFirst().orElse(null);
+				coAct2017BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2017".equals(a.getYear()) || "2017.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2017BalanceSheet)) {
 					coAct2017BalanceSheet = new BalanceSheetDetail();
 				}
-				coAct2016BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2016".equals(a.getYear())).findFirst().orElse(null);
+				coAct2016BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2016".equals(a.getYear()) || "2016.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2016BalanceSheet)) {
 					coAct2016BalanceSheet = new BalanceSheetDetail();
 				}
-				coAct2015BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2015".equals(a.getYear())).findFirst().orElse(null);
+				coAct2015BalanceSheet = balanceSheetDetailList.stream().filter(a -> "2015".equals(a.getYear()) || "2015.0".equals(a.getYear())).findFirst().orElse(null);
 				if(CommonUtils.isObjectNullOrEmpty(coAct2015BalanceSheet)) {
 					coAct2015BalanceSheet = new BalanceSheetDetail();
 				}

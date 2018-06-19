@@ -170,6 +170,7 @@ import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
@@ -319,6 +320,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Value("${capitaworld.service.gateway.sidbiAmount}")
 	private String sidbiAmount;
+	
+	@Value("${capitaworld.sidbi.integration.is_production}")
+	private String isProduction;
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -4138,7 +4142,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 				if(orgId==10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
 				}
 
 				if(connectResponse.getProceed()) {
@@ -4225,7 +4229,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId);
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
 						}
 						
 						if(connectResponse.getProceed()) {
@@ -4773,7 +4777,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean savePhese1DataToSidbi(Long applicationId, Long userId) {
+	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+		
+		try {
+			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
+			if(!isSet) {
+				logger.warn("Something went wrong while setting URL and Token");
+				return false;
+			}
+		}catch(Exception e) {
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient");
+			e.printStackTrace();
+			return false;
+		}
+		
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
 		try {
@@ -4848,7 +4865,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 
 	@Override
-	public boolean savePhese2DataToSidbi(Long applicationId, Long userId) {
+	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+		
+		try {
+			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
+			if(!isSet) {
+				logger.warn("Something went wrong while setting URL and Token");
+				return false;
+			}
+		}catch(Exception e) {
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient");
+			e.printStackTrace();
+			return false;
+		}
 		
 		Boolean saveDetailsInfo = false;
 		Boolean saveDDRInfo = false;
@@ -5546,5 +5575,42 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public UserOrganisationRequest getOrganizationDetails(Long organizationId) {
+		// Get Organization Data by OrganizationId
+		try {
+			UserOrganisationRequest organisationRequest = userClient.getByOrgId(organizationId);
+			if (organisationRequest == null) {
+				return null;
+			}
+			return organisationRequest;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public boolean setUrlAndTokenInSidbiClient(Long organizationId) {
+		UserOrganisationRequest request = getOrganizationDetails(organizationId);
+		if(request == null) {
+			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+			return false;
+		}
+		String token = CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());
+		sidbiIntegrationClient.setToken(token);
+		
+		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
+			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
+			return false;
+		}
+		
+		if(Boolean.valueOf(isProduction)) {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
+		}else {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
+		}
+		return true;
 	}
 }
