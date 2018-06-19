@@ -1091,7 +1091,7 @@ public enum APIFlags {
 	}
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
-		String keyToEncode = userName + ":" + userName;
+		String keyToEncode = userName + ":" + password;
 		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
 		System.out.println("encodedString UPdated===============>" + encodedString);

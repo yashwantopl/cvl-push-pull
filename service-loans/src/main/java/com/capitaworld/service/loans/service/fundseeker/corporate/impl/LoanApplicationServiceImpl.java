@@ -5598,13 +5598,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
 			return false;
 		}
-		String token = CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());
-		sidbiIntegrationClient.setToken(token);
-		
 		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
 			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
 			return false;
 		}
+
+		String token = CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());
+		sidbiIntegrationClient.setToken(token);
 		
 		if(Boolean.valueOf(isProduction)) {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
