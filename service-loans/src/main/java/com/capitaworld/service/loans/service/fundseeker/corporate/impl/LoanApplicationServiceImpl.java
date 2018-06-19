@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -321,6 +320,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Value("${capitaworld.service.gateway.sidbiAmount}")
 	private String sidbiAmount;
+	
+	@Value("${capitaworld.sidbi.integration.is_production}")
+	private String isProduction;
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -4778,10 +4780,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId) {
 		
 		try {
-			String token = getToken(organizationId);
-			sidbiIntegrationClient.setToken(token);
+			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
+			if(!isSet) {
+				logger.warn("Something went wrong while setting URL and Token");
+				return false;
+			}
 		}catch(Exception e) {
-			logger.error("Something goes wrong while generating Token");
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient");
 			e.printStackTrace();
 			return false;
 		}
@@ -4863,10 +4868,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId) {
 		
 		try {
-			String token = getToken(organizationId);
-			sidbiIntegrationClient.setToken(token);
+			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
+			if(!isSet) {
+				logger.warn("Something went wrong while setting URL and Token");
+				return false;
+			}
 		}catch(Exception e) {
-			logger.error("Something goes wrong while generating Token");
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient");
 			e.printStackTrace();
 			return false;
 		}
@@ -5569,19 +5577,40 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 	
-	public String getToken(Long organizationId) {
+	public UserOrganisationRequest getOrganizationDetails(Long organizationId) {
 		// Get Organization Data by OrganizationId
 		try {
 			UserOrganisationRequest organisationRequest = userClient.getByOrgId(organizationId);
 			if (organisationRequest == null) {
 				return null;
 			}
-			return CommonUtils.getEncodedUserNamePassword(organisationRequest.getUsername(),
-					organisationRequest.getPassword());
+			return organisationRequest;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public boolean setUrlAndTokenInSidbiClient(Long organizationId) {
+		UserOrganisationRequest request = getOrganizationDetails(organizationId);
+		if(request == null) {
+			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+			return false;
+		}
+		String token = CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());
+		sidbiIntegrationClient.setToken(token);
+		
+		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
+			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
+			return false;
+		}
+		
+		if(Boolean.valueOf(isProduction)) {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
+		}else {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
+		}
+		return true;
 	}
 }

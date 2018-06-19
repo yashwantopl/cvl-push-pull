@@ -92,15 +92,6 @@ public class LoansMain {
 	@Value("${capitaworld.service.connect.url}")
 	private String connectBaseUrl;
 
-	@Value("${capitaworld.service.sidbi.integration.url}")
-	private String sidbiIntegrationBaseUrl;
-
-	@Value("${capitaworld.sidbi.integration.username}")
-	private String sidbiUserName;
-
-	@Value("${capitaworld.sidbi.integration.password}")
-	private String sidbiPassword;
-
 	@Value("${capitaworld.service.thirdparty.url}")
 	private String thirdPartyBaseUrl;
 
@@ -221,7 +212,7 @@ public class LoansMain {
 
 	@Bean
 	public SidbiIntegrationClient sidbiIntegrationClient() {
-		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl, null);
+		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
 		return sidbiIntegrationClient;
 	}
