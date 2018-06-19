@@ -5577,14 +5577,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 	
-	public UserOrganisationRequest getOrganizationDetails(Long organizationId) {
+	private UserOrganisationRequest getOrganizationDetails(Long organizationId) {
 		// Get Organization Data by OrganizationId
 		try {
-			UserOrganisationRequest organisationRequest = userClient.getByOrgId(organizationId);
-			if (organisationRequest == null) {
-				return null;
-			}
-			return organisationRequest;
+			return userClient.getByOrgId(organizationId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
