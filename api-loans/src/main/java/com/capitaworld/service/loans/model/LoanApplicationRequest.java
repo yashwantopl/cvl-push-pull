@@ -39,6 +39,8 @@ public class LoanApplicationRequest implements Serializable {
 	private String fundProvider;
 	
 	private Long userId;
+	
+	private Long fpProductId;
 
 	private Integer currencyId;
 
@@ -600,5 +602,12 @@ public class LoanApplicationRequest implements Serializable {
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
 	}
-    
+
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
 }

@@ -26,6 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.BouncedOrPenalXn;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.Item;
+import com.capitaworld.service.analyzer.model.common.MonthlyDetail;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -122,8 +129,12 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
+import com.capitaworld.service.matchengine.model.MatchDisplayObject;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
@@ -190,9 +201,11 @@ import com.capitaworld.sidbi.integration.model.OwnershipDetailRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 import com.capitaworld.sidbi.integration.model.ProposedProductDetailRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
+import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
+import com.capitaworld.sidbi.integration.model.matches.MatchesParameterRequest;
 import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
 
 @Service
@@ -260,6 +273,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private GatewayClient gatewayClient;
+	
+	@Autowired
+	private MatchEngineClient matchEngineClient;
 
 	@Autowired
 	private PrimaryLapLoanDetailRepository primaryLapLoanDetailRepository;
@@ -326,6 +342,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private ConnectClient connectClient;
+	
+	@Autowired
+	private AnalyzerClient analyzerClient;
 
 	@Autowired
 	private NetworkPartnerService networkPartnerService;
@@ -4118,7 +4137,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	
 	@Override
-	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception {
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws Exception {
 		
 		logger.info("Enter in Update Skip Payment Details !!");
 		
@@ -4142,7 +4161,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 				if(orgId==10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
+					Long fpMappingId = null;
+					try {
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 				}
 
 				if(connectResponse.getProceed()) {
@@ -4229,7 +4253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId);
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,null);
 						}
 						
 						if(connectResponse.getProceed()) {
@@ -4777,7 +4801,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		
 		try {
 			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
@@ -4793,6 +4817,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
+		Boolean matchesParameters = false;
 		try {
 			
 			//Create Prelim Sheet Object
@@ -4804,10 +4829,45 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData);
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, savePrelimInfo);
 			}catch(Exception e) {
-				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, false);
+//				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, savePrelimInfo);
 				e.printStackTrace();
 
 			}
+			//Set Match Parameters Starts
+			try {
+				MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId);
+				if(parameterRequest == null) {
+					logger.info("MatchesParameterRequest Not Found for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, matchesParameters);
+				}else {
+					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest);
+					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, matchesParameters);					
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, matchesParameters);
+			}
+			
+			//Set Match Parameters Ends
+			
+			
+			//Set Bank Statement Starts
+			try {
+				com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
+				if(data == null) {
+					logger.info("Bank Statement data Request Not Found for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);
+				}else {
+					matchesParameters = sidbiIntegrationClient.saveBankStatement(data);
+					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);					
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);
+			}
+			
+			//Set Bank Statement Ends
+			
 			// TODO Auto-generated method stub
 	        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 	        proposalMappingRequest.setApplicationId(applicationId);
@@ -4837,7 +4897,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, scoringDetails);
 							} catch (Exception e) {
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, false);
+								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, scoringDetails);
 								e.printStackTrace();
 							}
 						} catch (IOException e) {
@@ -4853,19 +4913,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (Exception e) {
 			auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, false);
 			auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, false);
+			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, false);
+			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 		}
 		
-		if(savePrelimInfo && scoringDetails) {
-			return true;
-		}
-		return false;
+		return (savePrelimInfo && scoringDetails && matchesParameters);
 	}
 		
 
 	@Override
-	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId) {
+	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		
 		try {
 			boolean isSet = setUrlAndTokenInSidbiClient(organizationId);
@@ -5010,6 +5069,241 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		
 		return null;
+	}
+	
+	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId) {
+		MatchRequest request = new MatchRequest();
+		request.setApplicationId(applicationId);
+		request.setProductId(fpProductId);
+		MatchDisplayResponse response = null;
+		try {
+			response = matchEngineClient.displayMatchesOfCorporate(request);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if(response == null || CommonUtils.isListNullOrEmpty(response.getMatchDisplayObjectList())) {
+			return null;
+		}
+		MatchesParameterRequest res = new MatchesParameterRequest();
+		for(int i = 0; i < response.getMatchDisplayObjectList().size(); i++) {
+			MatchDisplayObject displayObject = response.getMatchDisplayObjectList().get(i);
+			switch(i) {
+				case 0:
+					res.setIndustryFp(checkIsNull(displayObject.getFpValue()));
+					res.setIndustryFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 1:
+					res.setInvestmentSizeFp(checkIsNull(displayObject.getFpValue()));
+					res.setInvestmentSizeFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 2:
+					res.setGeoMarketFocusFP(checkIsNull(displayObject.getFpValue()));
+					res.setGeoMarketFocusFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 3:
+					res.setAssetCoverageFp(checkIsNull(displayObject.getFpValue()));
+					res.setAssetCoverageFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 4:
+					res.setDebEqRatioFp(checkIsNull(displayObject.getFpValue()));
+					res.setDebEqRatioFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 5:
+					res.setCurrentRatioFp(checkIsNull(displayObject.getFpValue()));
+					res.setCurrentRatioFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 6:
+					res.setInterestCovRatioFp(checkIsNull(displayObject.getFpValue()));
+					res.setInterestCovRatioFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 7:
+					res.setTolTnwFp(checkIsNull(displayObject.getFpValue()));
+					res.setTolTnwFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 8:
+					res.setCustomerConFp(checkIsNull(displayObject.getFpValue()));
+					res.setCustomerConFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 9:
+					res.setNoOfCheckLastOneFp(checkIsNull(displayObject.getFpValue()));
+					res.setNoOfCheckLastOneFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 10:
+					res.setNoOfMonthLastSixFp(checkIsNull(displayObject.getFpValue()));
+					res.setNoOfMonthLastSixFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 11:
+					res.setRiskModelScoreFp(checkIsNull(displayObject.getFpValue()));
+					res.setRiskModelScoreFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 13:
+					res.setAgeEstaFp(checkIsNull(displayObject.getFpValue()));
+					res.setAgeEstaFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 14:
+					res.setPositiveProfFp(checkIsNull(displayObject.getFpValue()));
+					res.setPositiveProfFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 15:
+					res.setPastTernOverFp(checkIsNull(displayObject.getFpValue()));
+					res.setPastTernOverFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 16:
+					res.setPositiveNetFp(checkIsNull(displayObject.getFpValue()));
+					res.setPositiveNetFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 17:
+					res.setTurnOverToLoanFp(checkIsNull(displayObject.getFpValue()));
+					res.setTurnOverToLoanFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 18:
+					res.setGrossCashAccuralFp(checkIsNull(displayObject.getFpValue()));
+					res.setGrossCashAccuralFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 19:
+					res.setMinimumCibilFp(checkIsNull(displayObject.getFpValue()));
+					res.setMinimumCibilFs(checkIsNull(displayObject.getValue()));
+					break;
+				case 20:
+					res.setCommercialCibilFp(checkIsNull(displayObject.getFpValue()));
+					res.setCommercialCibilFs(checkIsNull(displayObject.getValue()));
+					break;
+			}
+		}
+		return res;
+	}
+	
+	
+	private EligibilityDetailRequest createEligibilityRequest() {return null;}
+	
+	private com.capitaworld.sidbi.integration.model.bankstatement.Data createBankStatementRequest(Long applicationId) {
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		try {
+			AnalyzerResponse detailsFromReport = analyzerClient.getDetailsFromReport(reportRequest);
+			if(detailsFromReport == null || detailsFromReport.getData() == null) {
+				return null;
+			}
+			Data dataResponse =  (Data)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)detailsFromReport.getData(), Data.class);
+			com.capitaworld.sidbi.integration.model.bankstatement.Data dataRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Data();
+			if(!CommonUtils.isObjectNullOrEmpty(dataResponse)) {
+				BeanUtils.copyProperties(dataResponse, dataRequest);
+				//Set Customer Info
+				if(CommonUtils.isObjectNullOrEmpty(dataResponse.getCustomerInfo())) {
+					com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo customerInfo = new com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo();
+					BeanUtils.copyProperties(dataResponse.getCustomerInfo(), customerInfo);
+					dataRequest.setCustomerInfo(customerInfo);
+				}
+				//Set Monthly Details
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList())) {
+					if(!CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail> monthlyDetailList = new ArrayList<>(dataResponse.getMonthlyDetailList().getMonthlyDetails().size());
+						for(MonthlyDetail monResponse :  dataResponse.getMonthlyDetailList().getMonthlyDetails()) {
+							com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail moRequest = new com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail();
+							BeanUtils.copyProperties(monResponse, moRequest);
+							monthlyDetailList.add(moRequest);
+						}
+						dataRequest.setMonthlyDetails(monthlyDetailList);
+					}	
+				}
+				
+				//Set Summary Info
+				
+				if(!CommonUtils.isObjectNullOrEmpty(dataRequest.getSummaryInfo())) {
+					com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfo summaryInfo = new com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfo();
+					BeanUtils.copyProperties(dataResponse.getSummaryInfo(), summaryInfo);
+					
+					//Set SummaryInfoTotalDetail
+					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails())) {
+						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails totalDetails = new  com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails();
+						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails(), totalDetails);
+						summaryInfo.setSummaryInfoTotalDetails(totalDetails);
+					}
+					
+					//Set SummaryInfoAverageDetails
+					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails())) {
+						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails averageDetails = new  com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails();
+						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails(), averageDetails);
+						summaryInfo.setSummaryInfoAverageDetails(averageDetails);
+					}
+					dataRequest.setSummaryInfo(summaryInfo);
+				}
+				
+				//Set Top5 Fund Received List
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList())) {
+					if(!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundReceivedList = new ArrayList<>(dataResponse.getTop5FundReceivedList().getItem().size());
+						for(Item itemResponse :  dataResponse.getTop5FundReceivedList().getItem()) {
+							com.capitaworld.sidbi.integration.model.bankstatement.Item itemRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Item();
+							BeanUtils.copyProperties(itemResponse, itemRequest);
+							top5FundReceivedList.add(itemRequest);
+						}
+						dataRequest.setTop5FundReceivedList(top5FundReceivedList);
+					}	
+				}
+				
+				//Set Top5 Fund Transfered List
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList())) {
+					if(!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundTransferedList = new ArrayList<>(dataResponse.getTop5FundTransferedList().getItem().size());
+						for(Item itemResponse :  dataResponse.getTop5FundTransferedList().getItem()) {
+							com.capitaworld.sidbi.integration.model.bankstatement.Item itemRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Item();
+							BeanUtils.copyProperties(itemResponse, itemRequest);
+							top5FundTransferedList.add(itemRequest);
+						}
+						dataRequest.setTop5FundTransferedList(top5FundTransferedList);
+					}	
+				}
+				
+				//Set BouncedOrPenalXnList
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList())) {
+					if(!CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> bouncedOrPanelXnList = new ArrayList<>(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns().size());
+						for(BouncedOrPenalXn bounceResponse :  dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns()) {
+							com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn bounceRequest = new com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn();
+							BeanUtils.copyProperties(bounceResponse, bounceRequest);
+							bouncedOrPanelXnList.add(bounceRequest);
+						}
+						dataRequest.setBouncedOrPenalXnList(bouncedOrPanelXnList);
+					}	
+				}
+				
+				//Set Panel List
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList())) {
+					if(!CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> panelXnList = new ArrayList<>(dataResponse.getPenalList().getBouncedOrPenalXns().size());
+						for(BouncedOrPenalXn bounceResponse : dataResponse.getPenalList().getBouncedOrPenalXns()) {
+							com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn bounceRequest = new com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn();
+							BeanUtils.copyProperties(bounceResponse, bounceRequest);
+							panelXnList.add(bounceRequest);
+						}
+						dataRequest.setPenalList(panelXnList);
+					}	
+				}
+				
+				//Set Xns
+				
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns())) {
+					com.capitaworld.sidbi.integration.model.bankstatement.Xns xns = new com.capitaworld.sidbi.integration.model.bankstatement.Xns();
+					BeanUtils.copyProperties(dataResponse.getXns(), xns);
+					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns().getXn())) {
+						com.capitaworld.sidbi.integration.model.bankstatement.Xn xn = new com.capitaworld.sidbi.integration.model.bankstatement.Xn();
+						BeanUtils.copyProperties(dataResponse.getXns().getXn(), xn);
+					}
+					dataRequest.setXns(xns);
+				}
+				return dataRequest;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}	
+	
+	
+	private String checkIsNull(Object value) {
+		return CommonUtils.isObjectNullOrEmpty(value) ? null : value.toString();
 	}
 	
 	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId){
