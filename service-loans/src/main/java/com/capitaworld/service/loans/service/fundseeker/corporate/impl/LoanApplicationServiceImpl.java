@@ -4235,6 +4235,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new NullPointerException(
 							"Invalid Loan Application ID==>" + paymentRequest.getApplicationId());
 				}
+				orgId = loanApplicationMaster.getNpOrgId();
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				loanApplicationMaster.setPaymentStatus(paymentRequest.getStatus());
