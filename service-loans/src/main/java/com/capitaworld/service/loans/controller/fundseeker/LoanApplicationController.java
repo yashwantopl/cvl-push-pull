@@ -1691,10 +1691,16 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			
+			if (loanApplicationRequest.getNpOrgId() == null) {
+				logger.warn("Organization Id must not be null==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
 			logger.info("Save Phase one Application id -------------------->" + loanApplicationRequest.getId());
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(loanApplicationRequest.getId(),
-					userId);
+					userId,loanApplicationRequest.getNpOrgId(),loanApplicationRequest.getFpProductId());
 			logger.info("Result in savePhese1DataToSidbi== {}", isSavePhase1Data);
 			loansResponse.setData(isSavePhase1Data);
 			logger.info("End savePhese1DataToSidbi()");
@@ -1736,9 +1742,16 @@ public class LoanApplicationController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
+			
+			if (loanApplicationRequest.getNpOrgId() == null) {
+				logger.warn("Organization Id must not be null==>");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			boolean isSavePhase2Data = loanApplicationService.savePhese2DataToSidbi(loanApplicationRequest.getId(),
-					userId);
+					userId,loanApplicationRequest.getNpOrgId(),loanApplicationRequest.getFpProductId());
 			logger.info("Result in savePhese2DataToSidbi== {}", isSavePhase2Data);
 			loansResponse.setData(isSavePhase2Data);
 			logger.info("End savePhese2DataToSidbi()");
@@ -1994,8 +2007,8 @@ public class LoanApplicationController {
 	}
 	
 	
-	@RequestMapping(value = "/update_skip_payment_status/{appId}/{orgId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> updateSkipPaymentStatus(@PathVariable("appId") Long appId,@PathVariable("orgId") Long orgId,
+	@RequestMapping(value = "/update_skip_payment_status/{appId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateSkipPaymentStatus(@PathVariable("appId") Long appId,@PathVariable("orgId") Long orgId,@PathVariable("fpProductId") Long fprProductId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			logger.info("start updateSkipPaymentStatus()");
@@ -2007,7 +2020,7 @@ public class LoanApplicationController {
 			}
 			
 			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
-			loanApplicationService.updateSkipPayment(userId, appId, orgId);
+			loanApplicationService.updateSkipPayment(userId, appId, orgId,fprProductId);
 			logger.info("end updateSkipPaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {

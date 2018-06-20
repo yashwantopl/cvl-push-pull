@@ -20,6 +20,9 @@ public class AuditComponent {
 	public static final int SCORING_DETAILS = 3;
 	public static final int IRR_DETAILS = 4;
 	public static final int DDR_DETAILS = 5;
+	public static final int BANK_STATEMENT = 6;
+	public static final int MATCHES_PARAMETER = 7;
+	public static final int ELIGIBILITY = 8;
 	
 	@Autowired
 	private AuditMasterRepository auditMasterRepository;

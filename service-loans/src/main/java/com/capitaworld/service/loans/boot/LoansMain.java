@@ -1,8 +1,5 @@
 package com.capitaworld.service.loans.boot;
 
-import java.util.Base64;
-
-import com.capitaworld.client.workflow.WorkflowClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.dms.client.DMSClient;
@@ -78,7 +76,7 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.gateway.url}")
 	private String gatewayBaseUrl;
-	
+
 	@Value("${capitaworld.service.reports.url}")
 	private String reportsBaseUrl;
 
@@ -90,28 +88,19 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.analyzer.url}")
 	private String analyzerBaseUrl;
-	
+
 	@Value("${capitaworld.service.connect.url}")
 	private String connectBaseUrl;
-	
-	@Value("${capitaworld.service.sidbi.integration.url}")
-	private String sidbiIntegrationBaseUrl;
 
-	@Value("${capitaworld.sidbi.integration.username}")
-	private String sidbiUserName;
-
-	@Value("${capitaworld.sidbi.integration.password}")
-	private String sidbiPassword;
-	
 	@Value("${capitaworld.service.thirdparty.url}")
 	private String thirdPartyBaseUrl;
-	
+
 	@Value("${capitaworld.service.mca.url}")
 	private String mcaClientUrl;
 
 	@Value("${capitaworld.service.workflow.url}")
 	private String workFlowClientUrl;
-	
+
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -178,14 +167,13 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(gatewayClient);
 		return gatewayClient;
 	}
-	
+
 	@Bean
 	public ReportsClient reportsClient() {
 		ReportsClient reportsClient = new ReportsClient(reportsBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(reportsClient);
 		return reportsClient;
 	}
-
 
 	@Bean
 	public ScoringClient scoringClient() {
@@ -207,37 +195,35 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(analyzerClient);
 		return analyzerClient;
 	}
-	
+
 	@Bean
 	public ConnectClient connectClient() {
 		ConnectClient connectClient = new ConnectClient(connectBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(connectClient);
 		return connectClient;
 	}
-	
+
 	@Bean
 	public ThirdPartyClient thirdPartyClient() {
 		ThirdPartyClient thirdPartyClient = new ThirdPartyClient(thirdPartyBaseUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(thirdPartyClient);
 		return thirdPartyClient;
 	}
-	
+
 	@Bean
 	public SidbiIntegrationClient sidbiIntegrationClient() {
-		String keyToEncode = sidbiUserName + ":" + sidbiPassword;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
-		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
-		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient(sidbiIntegrationBaseUrl,encodedString);
+		SidbiIntegrationClient sidbiIntegrationClient = new SidbiIntegrationClient();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(sidbiIntegrationClient);
 		return sidbiIntegrationClient;
 	}
+
 	@Bean
 	public McaClient mcaClient() {
 		McaClient mcaClient = new McaClient(mcaClientUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(mcaClient);
 		return mcaClient;
 	}
+
 	@Bean
 	public WorkflowClient workFlowClient() {
 		WorkflowClient workflowClient = new WorkflowClient(workFlowClientUrl);

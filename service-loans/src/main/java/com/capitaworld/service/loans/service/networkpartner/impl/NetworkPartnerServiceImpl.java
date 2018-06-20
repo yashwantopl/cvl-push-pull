@@ -779,7 +779,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-				List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN);
 				if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
@@ -787,8 +786,17 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}else{
 						nhbsApplicationsResponse.setDdrStatus("NA");
 					}
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN);
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
+					}
+					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+						if(applicationStatusAuditListForAssignedToCheckerDate.size()>1){
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
+						}else{
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(0).getModifiedDate());
+						}
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
 						nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? "Locked" : "Unlocked");
@@ -1108,7 +1116,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 
 
-				if(loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.ASSIGNED){
+				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
 						UsersRequest usersRequestForMaker = new UsersRequest();
 						usersRequestForMaker.setId(loanApplicationMaster.getFpMakerId());
@@ -1129,7 +1137,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}else{
 					nhbsApplicationsResponse.setMakerName("-");
 				}
-				if(loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+				if((loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER) ||
+						(loanApplicationMaster.getDdrStatusId()>=CommonUtils.DdrStatus.SUBMITTED)){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequestForMaker = new UsersRequest();
 						usersRequestForMaker.setId(loanApplicationMaster.getNpUserId());

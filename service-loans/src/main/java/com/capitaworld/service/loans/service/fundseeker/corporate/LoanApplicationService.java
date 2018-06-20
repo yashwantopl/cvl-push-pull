@@ -132,7 +132,7 @@ public interface LoanApplicationService {
 	
 	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception;
 	
-	public void updateSkipPayment(Long userId, Long applicationId, Long orgId) throws Exception;
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId,Long fprProductId) throws Exception;
 	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
@@ -150,9 +150,9 @@ public interface LoanApplicationService {
 	
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
-	public boolean savePhese1DataToSidbi(Long applicationId,Long userId);
+	public boolean savePhese1DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
 	
-	public boolean savePhese2DataToSidbi(Long applicationId,Long userId);
+	public boolean savePhese2DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
 	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
