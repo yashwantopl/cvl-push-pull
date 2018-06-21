@@ -4892,7 +4892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
 			}
 			
-			//Set Bank Statement Ends
+			//Set Eligibility Ends
 			
 			// TODO Auto-generated method stub
 	        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
