@@ -24,6 +24,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -297,6 +301,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RatingClient ratingClient;
+	
+	@Autowired
+	private EligibilityClient eligibilityClient; 
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -4818,6 +4825,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
 		Boolean matchesParameters = false;
+		Boolean eligibilityParameters = false;
 		try {
 			
 			//Create Prelim Sheet Object
@@ -4864,6 +4872,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}catch(Exception e) {
 				e.printStackTrace();
 				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);
+			}
+			
+			//Set Bank Statement Ends
+			
+			//Set Bank Statement Starts
+			try {
+				 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+				if(eligibilityRequest == null) {
+					logger.info("Eligibiity data Request Not Found for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
+				}else {
+					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest);
+					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
 			}
 			
 			//Set Bank Statement Ends
@@ -5174,7 +5199,36 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
-	private EligibilityDetailRequest createEligibilityRequest() {return null;}
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId) {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			logger.warn("ApplicationMaster Object Found NUll ForApplication==========>{}",applicationId);
+			return null;
+		}
+		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
+		eligibililityRequest.setApplicationId(applicationMaster.getId());
+		eligibililityRequest.setProductId(applicationMaster.getProductId().longValue());
+		
+		try {
+			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
+			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
+				logger.warn("EligibilityResponse Found NUll for ApplicationId===>{}",applicationId);
+				return null;
+			}
+			CLEligibilityRequest clEligibilityRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResponse.getData(), CLEligibilityRequest.class);
+				if(clEligibilityRequest == null) {
+					logger.warn("Corporate Eligibility Request Found Null====>");
+					return null;
+				}
+				EligibilityDetailRequest target = new EligibilityDetailRequest();
+				BeanUtils.copyProperties(clEligibilityRequest, target);
+				return target;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	private com.capitaworld.sidbi.integration.model.bankstatement.Data createBankStatementRequest(Long applicationId) {
 		ReportRequest reportRequest = new ReportRequest();

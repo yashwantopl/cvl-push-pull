@@ -203,6 +203,11 @@
 			<artifactId>client-workflow</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.eligibilty</groupId>
+			<artifactId>client-eligibility</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

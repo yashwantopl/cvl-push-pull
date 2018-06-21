@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
@@ -100,6 +101,10 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.workflow.url}")
 	private String workFlowClientUrl;
+	
+	@Value("${capitaworld.service.connect.eligibility}")
+	private String eligibilityUrl;
+	
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
@@ -229,5 +234,12 @@ public class LoansMain {
 		WorkflowClient workflowClient = new WorkflowClient(workFlowClientUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
 		return workflowClient;
+	}
+	
+	@Bean
+	public EligibilityClient eligibilityClient() {
+		EligibilityClient eligibilityClient = new EligibilityClient(eligibilityUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
+		return eligibilityClient;
 	}
 }
