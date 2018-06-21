@@ -102,7 +102,7 @@ public class LoansMain {
 	@Value("${capitaworld.service.workflow.url}")
 	private String workFlowClientUrl;
 	
-	@Value("${capitaworld.service.connect.eligibility}")
+	@Value("${capitaworld.service.eligibility.url}")
 	private String eligibilityUrl;
 	
 
