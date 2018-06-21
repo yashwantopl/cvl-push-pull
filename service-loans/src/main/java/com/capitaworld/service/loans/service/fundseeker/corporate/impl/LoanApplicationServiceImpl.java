@@ -4252,8 +4252,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if ("Success".equals(paymentRequest.getStatus())) {
 						
 					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
+					Long fpProductId = null;
 					if(respProp != null && respProp.getData() != null) {
-						
+						ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)respProp.getData(), ProposalMappingRequest.class);
+						fpProductId = mappingRequest.getFpProductId();
 					}
 					logger.info("Call Connector client for update payment status");
 					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
@@ -4262,10 +4264,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (!CommonUtils.isObjectListNull(connectResponse)) {
 						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-						if(orgId==10L) {
+//						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,respProp.get);
-						}
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+//						}
 						
 						if(connectResponse.getProceed()) {
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
