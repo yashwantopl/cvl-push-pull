@@ -10,7 +10,7 @@ public interface LoanDisbursementService {
 	
 	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest, Long orgId)throws IOException ;
 	
-	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest, LoansResponse loansResponse, String msg, Long orgId) throws IOException  ;
+	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest, Integer statementType ,LoansResponse loansResponse, String msg, Long orgId)  ;
 	
 	public Long getOrgIdByCredential(String userName, String pwd) ;
 }
