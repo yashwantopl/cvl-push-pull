@@ -24,6 +24,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -297,6 +301,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RatingClient ratingClient;
+	
+	@Autowired
+	private EligibilityClient eligibilityClient; 
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -4245,6 +4252,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if ("Success".equals(paymentRequest.getStatus())) {
 						
 					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
+					Long fpProductId = null;
+					if(respProp != null && respProp.getData() != null) {
+						ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)respProp.getData(), ProposalMappingRequest.class);
+						fpProductId = mappingRequest.getFpProductId();
+					}
 					logger.info("Call Connector client for update payment status");
 					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
 							userId,loanApplicationMaster.getBusinessTypeId());
@@ -4252,10 +4264,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (!CommonUtils.isObjectListNull(connectResponse)) {
 						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-						if(orgId==10L) {
+//						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,null);
-						}
+							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+//						}
 						
 						if(connectResponse.getProceed()) {
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
@@ -4819,6 +4831,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
 		Boolean matchesParameters = false;
+		Boolean eligibilityParameters = false;
+		Boolean bankStatement = false;
 		try {
 			
 			//Create Prelim Sheet Object
@@ -4857,17 +4871,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
 				if(data == null) {
 					logger.info("Bank Statement data Request Not Found for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);
+					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, bankStatement);
 				}else {
-					matchesParameters = sidbiIntegrationClient.saveBankStatement(data);
-					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);					
+					bankStatement = sidbiIntegrationClient.saveBankStatement(data);
+					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, bankStatement);					
 				}
 			}catch(Exception e) {
 				e.printStackTrace();
-				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, matchesParameters);
+				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, bankStatement);
 			}
 			
 			//Set Bank Statement Ends
+			
+			//Set Bank Statement Starts
+			try {
+				 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+				if(eligibilityRequest == null) {
+					logger.info("Eligibiity data Request Not Found for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
+				}else {
+					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest);
+					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, eligibilityParameters);
+			}
+			
+			//Set Eligibility Ends
 			
 			// TODO Auto-generated method stub
 	        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -4916,11 +4947,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, false);
 			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, false);
 			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, false);
+			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 		}
 		
-		return (savePrelimInfo && scoringDetails && matchesParameters);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement);
 	}
 		
 
@@ -5086,88 +5118,109 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 		}
 		MatchesParameterRequest res = new MatchesParameterRequest();
+		res.setApplicationId(applicationId);
 		for(int i = 0; i < response.getMatchDisplayObjectList().size(); i++) {
 			MatchDisplayObject displayObject = response.getMatchDisplayObjectList().get(i);
 			switch(i) {
 				case 0:
 					res.setIndustryFp(checkIsNull(displayObject.getFpValue()));
 					res.setIndustryFs(checkIsNull(displayObject.getValue()));
+					res.setIndustryFlag(displayObject.getIsMatched());
 					break;
 				case 1:
 					res.setInvestmentSizeFp(checkIsNull(displayObject.getFpValue()));
 					res.setInvestmentSizeFs(checkIsNull(displayObject.getValue()));
+					res.setInvestmentSizeFlag(displayObject.getIsMatched());
 					break;
 				case 2:
 					res.setGeoMarketFocusFP(checkIsNull(displayObject.getFpValue()));
 					res.setGeoMarketFocusFs(checkIsNull(displayObject.getValue()));
+					res.setGeoMarketFocusFlag(displayObject.getIsMatched());
 					break;
 				case 3:
 					res.setAssetCoverageFp(checkIsNull(displayObject.getFpValue()));
 					res.setAssetCoverageFs(checkIsNull(displayObject.getValue()));
+					res.setAssetCoverageFlag(displayObject.getIsMatched());
 					break;
 				case 4:
 					res.setDebEqRatioFp(checkIsNull(displayObject.getFpValue()));
 					res.setDebEqRatioFs(checkIsNull(displayObject.getValue()));
+					res.setDebEqRatioFlag(displayObject.getIsMatched());
 					break;
 				case 5:
 					res.setCurrentRatioFp(checkIsNull(displayObject.getFpValue()));
 					res.setCurrentRatioFs(checkIsNull(displayObject.getValue()));
+					res.setIndustryFlag(displayObject.getIsMatched());
 					break;
 				case 6:
 					res.setInterestCovRatioFp(checkIsNull(displayObject.getFpValue()));
 					res.setInterestCovRatioFs(checkIsNull(displayObject.getValue()));
+					res.setInterestCovRatioFlag(displayObject.getIsMatched());
 					break;
 				case 7:
 					res.setTolTnwFp(checkIsNull(displayObject.getFpValue()));
 					res.setTolTnwFs(checkIsNull(displayObject.getValue()));
+					res.setTolTnwFlag(displayObject.getIsMatched());
 					break;
 				case 8:
 					res.setCustomerConFp(checkIsNull(displayObject.getFpValue()));
 					res.setCustomerConFs(checkIsNull(displayObject.getValue()));
+					res.setIndustryFlag(displayObject.getIsMatched());
 					break;
 				case 9:
 					res.setNoOfCheckLastOneFp(checkIsNull(displayObject.getFpValue()));
 					res.setNoOfCheckLastOneFs(checkIsNull(displayObject.getValue()));
+					res.setNoOfCheckLastOneFlag(displayObject.getIsMatched());
 					break;
 				case 10:
 					res.setNoOfMonthLastSixFp(checkIsNull(displayObject.getFpValue()));
 					res.setNoOfMonthLastSixFs(checkIsNull(displayObject.getValue()));
+					res.setNoOfMonthLastSixFlag(displayObject.getIsMatched());
 					break;
 				case 11:
 					res.setRiskModelScoreFp(checkIsNull(displayObject.getFpValue()));
 					res.setRiskModelScoreFs(checkIsNull(displayObject.getValue()));
+					res.setRiskModelScoreFlag(displayObject.getIsMatched());
 					break;
 				case 13:
 					res.setAgeEstaFp(checkIsNull(displayObject.getFpValue()));
 					res.setAgeEstaFs(checkIsNull(displayObject.getValue()));
+					res.setAgeEstaFlag(displayObject.getIsMatched());
 					break;
 				case 14:
 					res.setPositiveProfFp(checkIsNull(displayObject.getFpValue()));
 					res.setPositiveProfFs(checkIsNull(displayObject.getValue()));
+					res.setPositiveProfFlag(displayObject.getIsMatched());
 					break;
 				case 15:
 					res.setPastTernOverFp(checkIsNull(displayObject.getFpValue()));
 					res.setPastTernOverFs(checkIsNull(displayObject.getValue()));
+					res.setPastTernOverFlag(displayObject.getIsMatched());
 					break;
 				case 16:
 					res.setPositiveNetFp(checkIsNull(displayObject.getFpValue()));
 					res.setPositiveNetFs(checkIsNull(displayObject.getValue()));
+					res.setPositiveNetFlag(displayObject.getIsMatched());
 					break;
 				case 17:
 					res.setTurnOverToLoanFp(checkIsNull(displayObject.getFpValue()));
 					res.setTurnOverToLoanFs(checkIsNull(displayObject.getValue()));
+					res.setTurnOverToLoanFlag(displayObject.getIsMatched());
 					break;
 				case 18:
 					res.setGrossCashAccuralFp(checkIsNull(displayObject.getFpValue()));
 					res.setGrossCashAccuralFs(checkIsNull(displayObject.getValue()));
+					res.setGrossCashAccuralFlag(displayObject.getIsMatched());
 					break;
 				case 19:
 					res.setMinimumCibilFp(checkIsNull(displayObject.getFpValue()));
 					res.setMinimumCibilFs(checkIsNull(displayObject.getValue()));
+					res.setMinimumCibilFlag(displayObject.getIsMatched());
 					break;
 				case 20:
 					res.setCommercialCibilFp(checkIsNull(displayObject.getFpValue()));
 					res.setCommercialCibilFs(checkIsNull(displayObject.getValue()));
+					res.setCommercialCibilFlag(displayObject.getIsMatched());
 					break;
 			}
 		}
@@ -5175,7 +5228,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
-	private EligibilityDetailRequest createEligibilityRequest() {return null;}
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId) {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			logger.warn("ApplicationMaster Object Found NUll ForApplication==========>{}",applicationId);
+			return null;
+		}
+		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
+		eligibililityRequest.setApplicationId(applicationMaster.getId());
+		eligibililityRequest.setProductId(applicationMaster.getProductId().longValue());
+		
+		try {
+			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
+			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
+				logger.warn("EligibilityResponse Found NUll for ApplicationId===>{}",applicationId);
+				return null;
+			}
+			CLEligibilityRequest clEligibilityRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResponse.getData(), CLEligibilityRequest.class);
+				if(clEligibilityRequest == null) {
+					logger.warn("Corporate Eligibility Request Found Null====>");
+					return null;
+				}
+				EligibilityDetailRequest target = new EligibilityDetailRequest();
+				BeanUtils.copyProperties(clEligibilityRequest, target);
+				target.setApplicationId(applicationId);
+				return target;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	private com.capitaworld.sidbi.integration.model.bankstatement.Data createBankStatementRequest(Long applicationId) {
 		ReportRequest reportRequest = new ReportRequest();
@@ -5293,6 +5376,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					dataRequest.setXns(xns);
 				}
+				dataRequest.setApplicationId(applicationId);
 				return dataRequest;
 			}
 		} catch (Exception e) {

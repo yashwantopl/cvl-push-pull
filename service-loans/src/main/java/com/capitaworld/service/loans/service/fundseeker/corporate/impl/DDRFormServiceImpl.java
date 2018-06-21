@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
@@ -43,6 +44,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
@@ -111,6 +113,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 
 	@Autowired
 	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
 	@Autowired
 	private OwnershipDetailsService ownershipDetailsService;
@@ -917,13 +922,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 			}
 			
 			try {
-				List<PromotorBackgroundDetailRequest> promoBackReqList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(appId, userId);
+				List<DirectorBackgroundDetail> drDetailsList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(appId);
 				DDRFamilyDirectorsDetailsRequest response = null;
-				responseList = new ArrayList<>(promoBackReqList.size());
-				for(PromotorBackgroundDetailRequest promoBackReq : promoBackReqList) {
+				responseList = new ArrayList<>(drDetailsList.size());
+				for(DirectorBackgroundDetail drDetails : drDetailsList) {
 					response = new DDRFamilyDirectorsDetailsRequest();
-					response.setBackgroundId(promoBackReq.getId());
-					response.setName(promoBackReq.getPromotorsName());
+					response.setBackgroundId(drDetails.getId());
+					response.setName(drDetails.getDirectorsName());
 					responseList.add(response);
 				}
 			} catch (Exception e) {
