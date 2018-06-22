@@ -4413,9 +4413,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
-
-		return industryResponse.getBusinessTypeId();
-
+		return industryResponse.getBusinessTypeId();			
 	}
 
 	@Override
@@ -5443,6 +5441,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(source.getSalutationId() != null) {
 					target.setTitle(Title.getById(source.getSalutationId()).getValue());					
 				}
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5461,6 +5460,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setLenderName(source.getFinancialInstitutionName());
 				target.setSanctionedAmount(source.getAmount());
 				target.setAmount(source.getOutstandingAmount());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5478,6 +5478,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				AchievementDetailRequest target = new AchievementDetailRequest();
 				target.setYear(source.getYear());
 				target.setMilestoneAchievedDetail(source.getMilestoneAchievedDetail());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5496,6 +5497,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				ExistingProductDetailRequest target = new ExistingProductDetailRequest();
 				target.setProduct(source.getProduct());
 				target.setApplication(source.getApplication());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5513,6 +5515,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				ProposedProductDetailRequest target = new ProposedProductDetailRequest();
 				target.setProduct(source.getProduct());
 				target.setApplication(source.getApplication());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5533,6 +5536,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				target.setStackPercentage(source.getStackPercentage());
 				target.setRemarks(source.getRemarks());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5574,7 +5578,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						e.printStackTrace();
 					}
 				}
-				
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5595,6 +5599,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setValue(source.getPropertyType());
 				target.setAddress(source.getAddress());
 				target.setOccupation(source.getOccupation());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5612,6 +5617,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				MonthlyTurnoverDetailRequest target = new MonthlyTurnoverDetailRequest();
 				target.setMonthName(source.getMonthName());
 				target.setAmount(source.getAmount());
+				target.setApplicationId(applicationId);
 				listData.add(target);
 			}
 			return listData;
@@ -5628,6 +5634,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for(AssociatedConcernDetail source : associatedConcernDetails) {
 				AssociatedConcernDetailRequest target = new AssociatedConcernDetailRequest();
 				BeanUtils.copyProperties(source, target);
+				target.setApplicationId(applicationId);
 //				target.setName(source.getName());
 //				target.setNatureAssociation(source.getNatureAssociation());
 //				target.setNameOfDirector(source.getNameOfDirector());
@@ -5813,6 +5820,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateProfileRequest.setContLiabilityFyAmt(corporateApplicantDetail.getContLiabilityFyAmt());
 		corporateProfileRequest.setContLiabilitySyAmt(corporateApplicantDetail.getContLiabilitySyAmt());
 		corporateProfileRequest.setContLiabilityTyAmt(corporateApplicantDetail.getContLiabilityTyAmt());
+		corporateProfileRequest.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
 		
 		return corporateProfileRequest;
 	}
