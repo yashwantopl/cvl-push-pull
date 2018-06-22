@@ -31,7 +31,7 @@ public class AuditComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AuditComponent.class);
 	
 	@Async
-	public void updateAudit(Integer type, Long applicationId, Long userId, boolean isSuccess) {
+	public void updateAudit(Integer type, Long applicationId, Long userId,String reason, boolean isSuccess) {
 		AuditMaster auditMaster = new AuditMaster();
 		auditMaster.setApplicationId(applicationId);
 		auditMaster.setUserId(userId);
@@ -40,6 +40,7 @@ public class AuditComponent {
 		auditMaster.setCreatedDate(new Date());
 		auditMaster.setIsActive(true);
 		auditMaster.setIsSuccess(isSuccess);
+		auditMaster.setFailureReason(reason);
 		auditMasterRepository.save(auditMaster);
 		logger.info("SUCCESSFULLY UPADATE AUDIT DATE-----------------TYPE-->" + type + "------Application-----> "+ applicationId);
 	}

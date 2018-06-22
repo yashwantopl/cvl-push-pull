@@ -16,3 +16,6 @@ CHANGE COLUMN `msg` `msg` VARCHAR(200) NULL DEFAULT NULL ;
 
 ALTER TABLE `loan_application`.`bank_cw_audit_trail` 
 CHANGE COLUMN `status` `status` VARCHAR(200) NULL DEFAULT NULL ;
+
+ALTER TABLE `loan_application`.`bank_cw_audit_trail` 
+ADD COLUMN `statement_type` BIGINT(10) NULL AFTER `msg`;

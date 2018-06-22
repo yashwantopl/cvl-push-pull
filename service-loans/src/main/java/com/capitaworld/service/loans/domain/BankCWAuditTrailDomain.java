@@ -39,6 +39,9 @@ public class BankCWAuditTrailDomain implements Serializable{
 	
 	private String msg;
 	
+	@Column(name="statement_type")
+	private Integer statementType;
+	
 	@Column(name="created_date")
 	private Date createdDate;
 	
@@ -101,6 +104,14 @@ public class BankCWAuditTrailDomain implements Serializable{
 		this.msg = msg;
 	}
 
+	public Integer getStatementType() {
+		return statementType;
+	}
+
+	public void setStatementType(Integer statementType) {
+		this.statementType = statementType;
+	}
+
 	public Date getCreatedDate() {
 		return createdDate;
 	}
@@ -121,8 +132,7 @@ public class BankCWAuditTrailDomain implements Serializable{
 	public String toString() {
 		return "BankCWAuditTrailDomain [id=" + id + ", orgId=" + orgId + ", applicationId=" + applicationId
 				+ ", bankRequest=" + bankRequest + ", cwResponse=" + cwResponse + ", status=" + status + ", msg=" + msg
-				+ ", createdDate=" + createdDate + ", isActive=" + isActive + "]";
+				+ ", statementType=" + statementType + ", createdDate=" + createdDate + ", isActive=" + isActive + "]";
 	}
-	
-	
+
 }

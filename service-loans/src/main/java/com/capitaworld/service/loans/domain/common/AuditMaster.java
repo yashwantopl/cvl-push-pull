@@ -32,6 +32,9 @@ public class AuditMaster implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 	
+	@Column(name = "failure_reason")
+	private String failureReason;
+	
 	@Column(name = "is_success")
 	private Boolean isSuccess = false;
 	
@@ -85,6 +88,14 @@ public class AuditMaster implements Serializable {
 		this.userId = userId;
 	}
 
+	public String getFailureReason() {
+		return failureReason;
+	}
+
+	public void setFailureReason(String failureReason) {
+		this.failureReason = failureReason;
+	}
+
 	public Boolean getIsSuccess() {
 		return isSuccess;
 	}
@@ -132,9 +143,13 @@ public class AuditMaster implements Serializable {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
-	
-	
+
+	@Override
+	public String toString() {
+		return "AuditMaster [id=" + id + ", type=" + type + ", applicationId=" + applicationId + ", userId=" + userId
+				+ ", failureReason=" + failureReason + ", isSuccess=" + isSuccess + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", isActive=" + isActive + ", modifiedBy=" + modifiedBy
+				+ ", modifiedDate=" + modifiedDate + "]";
+	}
 	
 }

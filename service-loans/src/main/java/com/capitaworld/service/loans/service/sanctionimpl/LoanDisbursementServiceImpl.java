@@ -115,8 +115,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 
 	@Override
-	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest, LoansResponse loansResponse, String msg,
-			Long orgId) throws IOException {
+	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest,Integer statementType , LoansResponse loansResponse, String msg,
+			Long orgId) {
 		logger.info("Enter in saveBankReqRes() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);
 		try {
 		BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
@@ -127,6 +127,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		bankCWAuditTrailDomain.setMsg(msg);
 		bankCWAuditTrailDomain.setIsActive(true);
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
+		bankCWAuditTrailDomain.setStatementType(statementType);
 		if (loansResponse.getStatus() == 200) {
 			bankCWAuditTrailDomain.setStatus("SUCCESS");
 		} else {
@@ -137,7 +138,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}catch (Exception e) {
 			logger.info("Error/Exception in saveBankReqRes() -----------------------> Message "+e.getMessage());
 			e.printStackTrace();
-			throw e;
+			/*throw e;*/
 		}
 	}
 	
