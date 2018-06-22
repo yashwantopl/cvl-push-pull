@@ -115,7 +115,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 
 	@Override
-	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest,Integer statementType , LoansResponse loansResponse, String msg,
+	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest,Integer apiType , LoansResponse loansResponse, String failureReason,
 			Long orgId) {
 		logger.info("Enter in saveBankReqRes() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);
 		try {
@@ -124,10 +124,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		bankCWAuditTrailDomain.setOrgId(orgId);
 		bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest));
 		bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
-		bankCWAuditTrailDomain.setMsg(msg);
+		bankCWAuditTrailDomain.setFailureReason(failureReason);
 		bankCWAuditTrailDomain.setIsActive(true);
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
-		bankCWAuditTrailDomain.setStatementType(statementType);
+		bankCWAuditTrailDomain.setApiType(apiType);;
 		if (loansResponse.getStatus() == 200) {
 			bankCWAuditTrailDomain.setStatus("SUCCESS");
 		} else {
