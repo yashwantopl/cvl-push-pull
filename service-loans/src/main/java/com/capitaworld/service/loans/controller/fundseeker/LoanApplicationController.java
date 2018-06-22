@@ -1865,7 +1865,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString){
 		LoansResponse loansResponse =null;
 		LoanSanctionRequest  loanSanctionRequest= null;
-		String msg=null;
+		String reason=null;
 		Long orgId=null;
 		try {
 			logger.info("Entry saveLoanSanctionDetail(){} -------------------------> encryptedString =====> " , encryptedString);
@@ -1882,28 +1882,28 @@ public class LoanApplicationController {
 					logger.info("Error while Converting Encrypted Object to LoanSanctionRequest  saveLoanSanctionDetail(){} -------------------------> ", e.getMessage());
 					loansResponse =	new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
-					msg="Error while Converting Encrypted Object to LoanSanctionRequest ====>{} > Msg ==>"+ e.getMessage();
+					reason="Error while Converting Encrypted Object to LoanSanctionRequest ====>{} > Msg ==>"+ e.getMessage();
 					logger.info("Saving Request to DB ===> ");
 					return  new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 				}
 				
 				if(!CommonUtils.isObjectListNull(loanSanctionRequest,loanSanctionRequest.getAccountNo() ,loanSanctionRequest.getApplicationId() , loanSanctionRequest.getBranch(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getSanctionDate(),loanSanctionRequest.getTenure(), loanSanctionRequest.getUserName() ,loanSanctionRequest.getPassword() , loanSanctionRequest.getReferenceNo() ,loanSanctionRequest.getActionBy()))   {
 					orgId = loanSanctionService.getOrgIdByCredential(loanSanctionRequest.getUserName(), loanSanctionRequest.getPassword());
-					msg=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
+					reason=loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId() ,orgId);
 					
-					     if("SUCCESS".equalsIgnoreCase(msg)){
-					    	 logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + msg) ;
+					     if("SUCCESS".equalsIgnoreCase(reason)){
+					    	 logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + reason) ;
 					    	 loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 					    	 loansResponse.setData(loanSanctionService.saveLoanSanctionDetail(loanSanctionRequest));
 					    	 logger.info("Saving Request to DB ===> ");
 					    	 logger.info("Exit saveLoanSanctionDetail() ---------------->  msg ==>"+ "Information Successfully Stored " );
 					    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					     }else {
-					    	 logger.info("Failure msg while saveLoanSanctionDetail() ----------------> msg " + msg) ;
-					    	 loansResponse = new LoansResponse(msg, HttpStatus.BAD_REQUEST.value());
+					    	 logger.info("Failure msg while saveLoanSanctionDetail() ----------------> msg " + reason) ;
+					    	 loansResponse = new LoansResponse(reason, HttpStatus.BAD_REQUEST.value());
 					    	 loansResponse.setData(false);
 					    	 logger.info("Saving Request to DB ===> ");
-					    	 logger.info("Exit saveLoanSanctionDetail() ----------------> msg ==>" +msg);
+					    	 logger.info("Exit saveLoanSanctionDetail() ----------------> msg ==>" +reason);
 					    	 return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					     }
 				
@@ -1911,7 +1911,7 @@ public class LoanApplicationController {
 					logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ----------------> LoanSanctionRequest" + loanSanctionRequest );
 					loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
-					msg="Mandatory Fields Must Not be Null while saveLoanSanctionDetail() ==> LoanSanctionRequest ===> " + loanSanctionRequest ;  
+					reason="Mandatory Fields Must Not be Null while saveLoanSanctionDetail() ==> LoanSanctionRequest ===> " + loanSanctionRequest ;  
 					logger.info("Saving Request to DB ===> ");
 					loanSanctionService.saveBankReqRes(loanSanctionRequest,CommonUtility.StatementType.SANCTION, loansResponse , "Mandatory Fields Must Not be Null" ,null);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);  
@@ -1922,7 +1922,7 @@ public class LoanApplicationController {
 				logger.info("Null encryptedString saveLoanSanctionDetail() ---------------->encryptedString " + encryptedString );
 				loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 				loansResponse.setData(false);
-				msg="Null encryptedString saveLoanSanctionDetail in saveLoanSanctionDetail()  ====> encryptedString  ====> " + encryptedString;
+				reason="Null encryptedString saveLoanSanctionDetail in saveLoanSanctionDetail()  ====> encryptedString  ====> " + encryptedString;
 				logger.info("Saving Request to DB ===> ");
 				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -1932,12 +1932,12 @@ public class LoanApplicationController {
 			e.printStackTrace();
 			loansResponse= new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
-			msg="Error while save SanctionDetail in saveLoanSanctionDetail() ==> Msg "+ e.getMessage(); 
+			reason="Error while save SanctionDetail in saveLoanSanctionDetail() ==> Msg "+ e.getMessage(); 
 			loanSanctionService.saveBankReqRes(loanSanctionRequest, CommonUtility.StatementType.SANCTION, loansResponse, "Error while save SanctionDetail in saveLoanSanctionDetail() ==> Msg "+ e.getMessage() ,null);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
 		finally {
-			loanSanctionService.saveBankReqRes(loanSanctionRequest, CommonUtility.StatementType.SANCTION, loansResponse,msg ,orgId);
+			loanSanctionService.saveBankReqRes(loanSanctionRequest, CommonUtility.StatementType.SANCTION, loansResponse,reason ,orgId);
 		}
 	}
 	
