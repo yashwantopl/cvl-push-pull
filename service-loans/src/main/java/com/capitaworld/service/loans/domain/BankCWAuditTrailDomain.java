@@ -37,10 +37,11 @@ public class BankCWAuditTrailDomain implements Serializable{
 	
 	private String status;
 	
-	private String msg;
+	@Column(name="api_type")
+	private Integer apiType;
 	
-	@Column(name="statement_type")
-	private Integer statementType;
+	@Column(name="failure_reason")
+	private String failureReason;
 	
 	@Column(name="created_date")
 	private Date createdDate;
@@ -96,20 +97,20 @@ public class BankCWAuditTrailDomain implements Serializable{
 		this.status = status;
 	}
 
-	public String getMsg() {
-		return msg;
+	public Integer getApiType() {
+		return apiType;
 	}
 
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public void setApiType(Integer apiType) {
+		this.apiType = apiType;
 	}
 
-	public Integer getStatementType() {
-		return statementType;
+	public String getFailureReason() {
+		return failureReason;
 	}
 
-	public void setStatementType(Integer statementType) {
-		this.statementType = statementType;
+	public void setFailureReason(String failureReason) {
+		this.failureReason = failureReason;
 	}
 
 	public Date getCreatedDate() {
@@ -131,8 +132,9 @@ public class BankCWAuditTrailDomain implements Serializable{
 	@Override
 	public String toString() {
 		return "BankCWAuditTrailDomain [id=" + id + ", orgId=" + orgId + ", applicationId=" + applicationId
-				+ ", bankRequest=" + bankRequest + ", cwResponse=" + cwResponse + ", status=" + status + ", msg=" + msg
-				+ ", statementType=" + statementType + ", createdDate=" + createdDate + ", isActive=" + isActive + "]";
+				+ ", bankRequest=" + bankRequest + ", cwResponse=" + cwResponse + ", status=" + status + ", apiType="
+				+ apiType + ", failureReason=" + failureReason + ", createdDate=" + createdDate + ", isActive="
+				+ isActive + "]";
 	}
 
 }

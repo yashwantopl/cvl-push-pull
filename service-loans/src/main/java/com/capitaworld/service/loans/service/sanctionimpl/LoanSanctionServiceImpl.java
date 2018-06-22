@@ -88,7 +88,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			}
 	}
 	@Override
-	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest,Integer statementType,  LoansResponse loansResponse, String msg,Long orgId) {
+	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest,Integer apiType,  LoansResponse loansResponse, String failureReason ,Long orgId) {
 		logger.info("Enter in saveBankReqRes() -----------------------> LoanSanctionRequest ==>"+ loanSanctionRequest+ " orgId==> "+ orgId);
 		try {
 		 BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
@@ -96,10 +96,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		 bankCWAuditTrailDomain.setOrgId(orgId);
 		 bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanSanctionRequest));
 		 bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
-		 bankCWAuditTrailDomain.setMsg(msg);
+		 bankCWAuditTrailDomain.setFailureReason(failureReason);
 		 bankCWAuditTrailDomain.setIsActive(true);
 		 bankCWAuditTrailDomain.setCreatedDate(new Date());
-		 bankCWAuditTrailDomain.setStatementType(statementType); 
+		 bankCWAuditTrailDomain.setApiType(apiType); 
 		 if(loansResponse.getStatus()==200) {
 			 bankCWAuditTrailDomain.setStatus("SUCCESS");
 		 }else {
