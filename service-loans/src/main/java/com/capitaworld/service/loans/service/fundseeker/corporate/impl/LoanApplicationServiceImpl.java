@@ -4413,11 +4413,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
-		if(industryResponse != null) {
-			return industryResponse.getBusinessTypeId();			
-		}
-		return null;
-
+		return industryResponse.getBusinessTypeId();			
 	}
 
 	@Override
