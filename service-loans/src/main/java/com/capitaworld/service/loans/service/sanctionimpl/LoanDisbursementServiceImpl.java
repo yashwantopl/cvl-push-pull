@@ -115,8 +115,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 
 	@Override
-	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest, LoansResponse loansResponse, String msg,
-			Long orgId) throws IOException {
+	public void saveBankReqRes(LoanDisbursementRequest loanDisbursementRequest,Integer apiType , LoansResponse loansResponse, String failureReason,
+			Long orgId) {
 		logger.info("Enter in saveBankReqRes() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);
 		try {
 		BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
@@ -124,9 +124,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		bankCWAuditTrailDomain.setOrgId(orgId);
 		bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest));
 		bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
-		bankCWAuditTrailDomain.setMsg(msg);
+		bankCWAuditTrailDomain.setFailureReason(failureReason);
 		bankCWAuditTrailDomain.setIsActive(true);
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
+		bankCWAuditTrailDomain.setApiType(apiType);;
 		if (loansResponse.getStatus() == 200) {
 			bankCWAuditTrailDomain.setStatus("SUCCESS");
 		} else {
@@ -137,7 +138,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}catch (Exception e) {
 			logger.info("Error/Exception in saveBankReqRes() -----------------------> Message "+e.getMessage());
 			e.printStackTrace();
-			throw e;
+			/*throw e;*/
 		}
 	}
 	
