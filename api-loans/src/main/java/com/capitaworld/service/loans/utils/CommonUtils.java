@@ -870,6 +870,10 @@ public class CommonUtils {
 		}
 
 	}
+	
+	public static double checkDoubleNull(Double value) {
+		return !isObjectNullOrEmpty(value) ? value : 0.0;
+	}
 
 	public static double checkDouble(Double value) {
 		try {

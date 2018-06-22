@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
@@ -23,7 +24,12 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Liabilities
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.sidbi.integration.model.financial.BalanceSheetAssetReq;
+import com.capitaworld.sidbi.integration.model.financial.BalanceSheetLiabilitiesReq;
+import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
+import com.capitaworld.sidbi.integration.model.financial.ProfiltAndLossStmntReq;
 
 @Service
 @Transactional
@@ -186,5 +192,151 @@ public class CMAServiceImpl implements CMAService {
 		return cmaRequest;
 		
 	}
+	
+	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId) {
+		
+		FinancialRequest response = new FinancialRequest();
+	
+		List<OperatingStatementDetails> operatingStatementList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
+		List<ProfiltAndLossStmntReq> profiltAndLossStmntReqList = new ArrayList<>(operatingStatementList.size());
+		ProfiltAndLossStmntReq prlossStmntReq = null;
+		for(OperatingStatementDetails operatingStatement : operatingStatementList) {
+			prlossStmntReq = new ProfiltAndLossStmntReq();
+			prlossStmntReq.setApplicationId(applicationId);
+			prlossStmntReq.setCurrency(getCurrency(applicationId));
+			prlossStmntReq.setSubTotalOfIncome(operatingStatement.getSubTotalOfIncome());
+			prlossStmntReq.setTotalGrossSales(operatingStatement.getTotalGrossSales());
+			prlossStmntReq.setLessExciseDuty(operatingStatement.getLessExciseDuty());
+			prlossStmntReq.setNetSales(operatingStatement.getNetSales());
+			//(D38-D42)+(D46-D50)
+			prlossStmntReq.setInDecStock((CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStock()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductStockInProcess()))
+					+ (CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStockFg()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductClStockFg())));
+			prlossStmntReq.setRawMaterials(operatingStatement.getRawMaterials());
+			prlossStmntReq.setPowerAndFuel(operatingStatement.getPowerAndFuel());
+			prlossStmntReq.setEmployeeCost(operatingStatement.getDirectLabour());
+			prlossStmntReq.setOtherMfgExpenses(operatingStatement.getOtherMfgExpenses());
+			prlossStmntReq.setGeneralAdminExp(operatingStatement.getGeneralAdminExp());
+			prlossStmntReq.setSellingAndDistributionExpenses(operatingStatement.getSellingAndDistributionExpenses());
+			prlossStmntReq.setMiscellaneousExpenses(operatingStatement.getOtherMfgExpenses());
+			prlossStmntReq.setExpensesAmortised(operatingStatement.getExpensesAmortised());
+			prlossStmntReq.setTotalExpenditure(0.0);
+			prlossStmntReq.setOperatingProfitOI(0.0);
+			prlossStmntReq.setAddOtherRevenueIncome(operatingStatement.getAddOtherRevenueIncome());
+			prlossStmntReq.setOperatingProfitEBITDA(0.0);
+			prlossStmntReq.setInterest(operatingStatement.getInterest());
+			prlossStmntReq.setPbdt(0.0);
+			prlossStmntReq.setDepreciation(operatingStatement.getDepreciation());
+			prlossStmntReq.setProfitBeforeTaxAndExpItems(0.0);
+			prlossStmntReq.setExceptionalIncomeExp(operatingStatement.getNetofNonOpIncomeOrExpenses());
+			prlossStmntReq.setProfitBeforeTax(0.0);
+			//Operating Statement: C75+C77
+			prlossStmntReq.setProvisionForTaxes(CommonUtils.checkDoubleNull(operatingStatement.getProvisionForTaxes())  + CommonUtils.checkDoubleNull(operatingStatement.getProfitBeforeTaxOrLoss()));
+			prlossStmntReq.setProfitAfterTax(0.0);
+			prlossStmntReq.setDividendRate(operatingStatement.getEquityDeividendPaidAmt());
+			prlossStmntReq.setEquityDividend(0.0);
+			prlossStmntReq.setEarningsPerShare(0.0);
+			profiltAndLossStmntReqList.add(prlossStmntReq);
+		}
+		response.setProfiltAndLossStmntReqList(profiltAndLossStmntReqList);
+		
+		List<LiabilitiesDetails> liabilitiesDetailList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
+		List<BalanceSheetLiabilitiesReq> liabilitiesReqList = new ArrayList<>(liabilitiesDetailList.size());
+		BalanceSheetLiabilitiesReq liabilitiesReq = null;
+		for(LiabilitiesDetails liabilitiesDetails : liabilitiesDetailList) {
+			liabilitiesReq = new BalanceSheetLiabilitiesReq();
+			liabilitiesReq.setApplicationId(applicationId);
+			liabilitiesReq.setCurrency(getCurrency(applicationId));
+			liabilitiesReq.setOrdinarySharesCapital(liabilitiesDetails.getOrdinarySharesCapital());
+			liabilitiesReq.setShareWarrentsOutstanding(liabilitiesDetails.getShareWarrentsOutstanding());
+			liabilitiesReq.setRevaluationReservse(liabilitiesDetails.getRevaluationReservse());
+			
+			
+			//Liabilities: C73+C77+C79+C83
+			//23. General Reserve Add 25. Other reserves [excluding provisions] Add 26. Surplus(+) or Deficit(-) in Profit & Loss Account. Add 27 b. Others [specify] 
+			liabilitiesReq.setOtherReservesAndSurplus(CommonUtils.checkDoubleNull(liabilitiesDetails.getGeneralReserve()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherReservse()) 
+			+ CommonUtils.checkDoubleNull(liabilitiesDetails.getSurplusOrDeficit()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOthers()));
+			liabilitiesReq.setShareholderFunds(0.0);
+			liabilitiesReq.setMinorityInterest(liabilitiesDetails.getMinorityInterest());
+			liabilitiesReq.setTermLiabilitiesSecured(liabilitiesDetails.getTermLiabilitiesSecured());
+			liabilitiesReq.setOtherNclUnsecuredLoansFromPromoters(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
+			liabilitiesReq.setUnsecuredLoansOthers(0.0);
+			liabilitiesReq.setDeferredTaxLiability(liabilitiesDetails.getDeferredTaxLiability());
+			liabilitiesReq.setOtherLongTermLiabilities(0.0);
+			liabilitiesReq.setOtherBorrowings(0.0);
+			liabilitiesReq.setOtherNclLongTermProvisions(liabilitiesDetails.getOtherNclLongTermProvisions());
+			liabilitiesReq.setTotalNonCurrentLiabilities(0.0);
+			liabilitiesReq.setSundryCreditors(liabilitiesDetails.getSundryCreditors());
+			liabilitiesReq.setOtherCurrentLiabilities(0.0);
+			liabilitiesReq.setProvisionalForTaxation(liabilitiesDetails.getProvisionalForTaxation());
+			liabilitiesReq.setTotalCurrentLiabilities(0.0);
+			liabilitiesReq.setTotalLiabilities(0.0);
+			liabilitiesReqList.add(liabilitiesReq);
+		}
+		
+		response.setBalanceSheetLiabilitiesReqList(liabilitiesReqList);
+		
+		
+		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
+		List<BalanceSheetAssetReq> bsAssetReqList = new ArrayList<>(assetsDetailsList.size());
+		BalanceSheetAssetReq bsAssetReq = null;
+		for(AssetsDetails assetsDetails : assetsDetailsList) {
+			bsAssetReq = new BalanceSheetAssetReq();
+			bsAssetReq.setApplicationId(applicationId);
+			bsAssetReq.setCurrency(getCurrency(applicationId));
+			bsAssetReq.setGrossBlock(assetsDetails.getGrossBlock());
+			bsAssetReq.setDepreciationToDate(assetsDetails.getDepreciationToDate());
+			bsAssetReq.setImpairmentAsset(assetsDetails.getImpairmentAsset());
+			bsAssetReq.setNetBlock(assetsDetails.getNetBlock());
+			bsAssetReq.setOtherNcaOtherCapitalWorkInprogress(assetsDetails.getOtherNcaOtherCapitalWorkInprogress());
+			bsAssetReq.setIntangibleAssets(assetsDetails.getIntangibleAssets());
+			bsAssetReq.setOthersPreOperativeExpensesPending(assetsDetails.getOthersPreOperativeExpensesPending());
+			bsAssetReq.setOthersAssetsInTransit(assetsDetails.getOthersAssetsInTransit());
+			bsAssetReq.setInvestmentsInSubsidiary(assetsDetails.getInvestmentsInSubsidiary());
+			
+			//Asset: D65+D69+D74
+			//44. Investments/book debts/advances/deposits which are not Current Assets((b) Others Add [iii]  Deferred receivables [maturity exceeding 1 yr] Add [iv]  Others (Others) )
+			bsAssetReq.setOtherInvestments(CommonUtils.checkDoubleNull(assetsDetails.getInvestmentsOrBookDebts()) + CommonUtils.checkDoubleNull(assetsDetails.getDeferredReceviables())
+			+ CommonUtils.checkDoubleNull(assetsDetails.getOthersOther()));
+			
+			bsAssetReq.setAdvanceToSuppliersCapitalGoods(assetsDetails.getAdvanceToSuppliersCapitalGoods());
+			bsAssetReq.setOtherNonCurrentAssets(0.0);
+			bsAssetReq.setTotalNonCurrentAssets(0.0);
+			bsAssetReq.setInventory(assetsDetails.getInventory());
+			bsAssetReq.setSundryDebtors(0.0);
+			bsAssetReq.setCashAndBankBalance(assetsDetails.getCashAndBankBalance());
+			bsAssetReq.setOtherCurrentAssets(assetsDetails.getOtherCurrentAssets());
+			bsAssetReq.setShortTermLoansandAdvances(0.0);
+			bsAssetReq.setTotalCurrentAssets(0.0);
+			bsAssetReq.setTotalAssets(0.0);
+			bsAssetReq.setContingentLiabilities(0.0);
+			bsAssetReq.setBookValue(0.0);
+			bsAssetReqList.add(bsAssetReq);
+		}
+		
+		response.setBalanceSheetAssetReqList(bsAssetReqList);
+		return response;
+		
+	}
+	
+	private String getCurrency(Long applicationId) {
+		
+		String currencyAndDenomination = "NA";
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+		if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
+				&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
+			try {
+				currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+				currencyAndDenomination = currencyAndDenomination.concat(
+						" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())){
+			currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());
+		}
+		return currencyAndDenomination;
+	}
+	
+	
 	
 }
