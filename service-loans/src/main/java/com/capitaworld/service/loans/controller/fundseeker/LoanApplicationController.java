@@ -1911,7 +1911,7 @@ public class LoanApplicationController {
 					logger.info("Null in LoanSanctionRequest while saveLoanSanctionDetail() ----------------> LoanSanctionRequest" + loanSanctionRequest );
 					loansResponse= new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
-					msg=" Null in LoanSanctionRequest while saveLoanSanctionDetail in saveLoanSanctionDetail()  LoanSanctionRequest ===>" + loanSanctionRequest ;  
+					msg="Mandatory Fields Must Not be Null while saveLoanSanctionDetail() ==> LoanSanctionRequest ===> " + loanSanctionRequest ;  
 					logger.info("Saving Request to DB ===> ");
 					loanSanctionService.saveBankReqRes(loanSanctionRequest,CommonUtility.StatementType.SANCTION, loansResponse , "Mandatory Fields Must Not be Null" ,null);
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);  
@@ -1989,7 +1989,7 @@ public class LoanApplicationController {
 					loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
 					logger.info("Saving Request to DB ===> ");
-					reason="Mandatory Fields Must Not be Null LoanDisbursementRequest ====> " + loanDisbursementRequest;
+					reason="Mandatory Fields Must Not be Null while saveLoanDisbursementDetail() ===> LoanDisbursementRequest ====> " + loanDisbursementRequest;
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				}
 			}else {
