@@ -19,6 +19,7 @@ import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -165,6 +166,12 @@ public interface LoanApplicationService {
 	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception;
 
 	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 */
+	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception;
 }
 
 

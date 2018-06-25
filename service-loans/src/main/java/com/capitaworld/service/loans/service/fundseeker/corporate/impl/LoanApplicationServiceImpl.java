@@ -90,6 +90,7 @@ import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
@@ -6020,5 +6021,225 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
 		}
 		return true;
+	}
+	
+	
+	@Override
+	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
+		try {
+			
+			logger.info("In getDataForCGTMSE");
+			HunterRequestDataResponse response = new HunterRequestDataResponse();
+		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
+		if(applicantDetail!=null) {
+			//key vertical Subsector
+			String state= null;
+			List<Long> stateList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+				stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
+			if (!CommonUtils.isListNullOrEmpty(stateList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						state = masterResponse.getValue() + ",";
+					} else {
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			String city= null;
+			List<Long> cityList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+				cityList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
+			if (!CommonUtils.isListNullOrEmpty(cityList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						city = masterResponse.getValue() + ",";
+					} else {
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			String country= null;
+			List<Long> countryList = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+				countryList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
+			if (!CommonUtils.isListNullOrEmpty(countryList)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+							.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper
+								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						country = masterResponse.getValue() + ",";
+					} else {
+
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			response.setOrganisationName(applicantDetail.getOrganisationName());
+	        response.setCompanyCity(city);
+	        response.setCompanyState(state);
+	        response.setCompanyCountry(country);
+	        response.setCompanyPincode(applicantDetail.getRegisteredPincode()!=null ? String.valueOf(applicantDetail.getRegisteredPincode()): null);
+			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+			response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
+			response.setCompanyTelephone(applicantDetail.getLandlineNo());
+			response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
+			
+			response.setEstablishmentDate(applicantDetail.getEstablishmentYear()+"-"+applicantDetail.getEstablishmentMonth()+"-"+"01");
+			
+			response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber()+", "+applicantDetail.getRegisteredStreetName()+", "+applicantDetail.getRegisteredLandMark());
+			response.setCompanyEmail(applicantDetail.getEmail());
+		}
+		
+		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+		
+		if(loan!=null) {
+			response.setLoanAmount(loan.getAmount());
+			response.setLoanApplicationId(loan.getApplicationCode());
+			response.setLoanType(String.valueOf(loan.getProductId()));
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+			response.setDateOfSubmission(dateFormat.format(new Date()));
+			
+			
+		}
+		
+		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+		
+		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+		if(directorList!=null && !directorList.isEmpty()) {
+			for(DirectorBackgroundDetail detail : directorList) {
+				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+				BeanUtils.copyProperties(detail, directorDetail);
+				directorDetail.setGender(Gender.getById(detail.getGender()).toString());
+				directorDetail.setShareholding(detail.getShareholding());
+				
+				response.addDirectorDetail(directorDetail);
+			}
+		}
+		
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+		
+		if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+			Data data = MultipleJSONObjectHelper
+					.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
+			
+			if(data!=null && data.getSummaryInfo()!=null) {
+				response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
+				response.setCompanyBankName(data.getSummaryInfo().getInstName());
+			}
+		}
+		
+		return response;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+	
+	
+	private String getIndustryForHunter(Long industryId) {
+		if (industryId != null) {
+			Integer indId = Integer.valueOf(industryId.intValue());
+			if (Industry.AGRICULTURE_ALLIED_ACTIVITIES.getId() == indId) {
+				return "AGRICULTURE";
+			} else if (Industry.DEFENCE.getId() == indId) {
+				return "ARMED FORCES";
+			}
+
+			else if (Industry.CONSTRUCTION_MATERIAL.getId() == indId) {
+				return "CONSTRUCTION";
+			} else if (Industry.EDUCATION.getId() == indId) {
+				return "EDUCATION";
+			} else if (Industry.ENGINEERING_CAPITAL_GOODS.getId() == indId) {
+				return "ENGINEERING";
+			} else if (Industry.ENTERTAINMENT_MEDIA.getId() == indId) {
+				return "ENTERTAINMENT";
+			} else if (Industry.FINANCE_FINANCIAL_SERVICES.getId() == indId) {
+				return "FINANCIAL SERVICES";
+			} else if (Industry.FOOD_BEVERAGES.getId() == indId) {
+				return "FOOD";
+			} else if (Industry.HEALTHCARE.getId() == indId) {
+				return "HEALTHCARE";
+			} else if (Industry.TRAVEL_HOSPITALITY.getId() == indId) {
+				return "HOSPITALITY AND TOURISM";
+			} else if (Industry.IT_ITES.getId() == indId) {
+				return "INFORMATION TECHNOLOGY";
+			} else if (Industry.CONSUMER_DURABLES.getId() == indId) {
+				return "MANAFACTURING";
+			} else if (Industry.OILGAS.getId() == indId) {
+				return "NATURAL RESOURCES";
+			} else if (Industry.MINERALS_COMMODITIES.getId() == indId) {
+				return "NATURAL RESOURCES";
+			} else if (Industry.REAL_ESTATE.getId() == indId) {
+				return "REAL ESTATE";
+			} else if (Industry.RETAIL_ECOMMERCE.getId() == indId) {
+				return "RETAIL";
+			} else if (Industry.TELECOMMUNICATION.getId() == indId) {
+				return "TELECOMMUNICATIONS";
+			} else if (Industry.TEXTILES.getId() == indId) {
+				return "TEXTILES";
+			} else if (Industry.SHIPPING_LOGISTICS.getId() == indId) {
+				return "TRANSPORT AND LOGISTICS";
+			} else {
+				return "OTHER";
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	
+	private String getConstitutionryForHunter(Integer constitutionId) {
+		if (constitutionId != null) {
+			if (Constitution.PRIVATE_LIMITED.getId() == constitutionId) {
+				return "Private Limited Co";
+			} else if (Constitution.PUBLIC_LISTED.getId() == constitutionId) {
+				return "Public Limited Co";
+			}
+
+			else if (Constitution.PUBLIC_UNLISTED.getId() == constitutionId) {
+				return "Public Limited Co";
+			} else if (Constitution.FOREIGN_COMPANY.getId() == constitutionId) {
+				return "Multi National";
+			} else if (Constitution.SOLE_PROPRIETORSHIP.getId() == constitutionId) {
+				return "Proprietorship";
+			} else if (Constitution.ONE_PERSON.getId() == constitutionId) {
+				return "Proprietorship";
+			} else if (Constitution.PARTNERSHIP.getId() == constitutionId) {
+				return "Partnership";
+			} else if (Constitution.GOVERNMENT_ENTITY.getId() == constitutionId) {
+				return "State Government";
+			} else {
+				return "Others";
+			}
+		} else {
+			return null;
+		}
 	}
 }
