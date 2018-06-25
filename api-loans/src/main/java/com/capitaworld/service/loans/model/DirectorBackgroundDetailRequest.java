@@ -100,6 +100,8 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private String landmark;
 
+	private Boolean isMainDirector;
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -456,6 +458,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.landmark = landmark;
 	}
 
+	public Boolean getMainDirector() {
+		return isMainDirector;
+	}
+
+	public void setMainDirector(Boolean mainDirector) {
+		isMainDirector = mainDirector;
+	}
+
 	@Override
 	public String toString() {
 		return "DirectorBackgroundDetailRequest{" +
@@ -494,6 +504,11 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", residenceSince=" + residenceSince +
 				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
 				", empDetailId=" + empDetailId +
+				", countryId=" + countryId +
+				", premiseNumber='" + premiseNumber + '\'' +
+				", streetName='" + streetName + '\'' +
+				", landmark='" + landmark + '\'' +
+				", isMainDirector=" + isMainDirector +
 				'}';
 	}
 

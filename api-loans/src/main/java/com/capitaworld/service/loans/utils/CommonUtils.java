@@ -1057,6 +1057,12 @@ public enum APIFlags {
 		Double sub= a-b-c;
 		return sub;
 	}
+	public static Double divideNumbers(Double a1,Double a2) {
+		return !isObjectListNull(a1,a2) && a1 != 0 && a2 != 0 ? (a1 / a2) : 0.0;
+	}
+	public static Double multiplyNumbers(Double a1,Double a2) {
+		return !isObjectListNull(a1,a2) ? (a1 * a2) : 0.0;
+	}
 	public static String getOrganizationName(Long x) {
 		if(x == 1L) {
 			return "UNION";
