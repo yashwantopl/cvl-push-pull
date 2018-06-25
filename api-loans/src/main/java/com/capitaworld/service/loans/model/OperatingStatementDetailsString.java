@@ -211,9 +211,188 @@ public class OperatingStatementDetailsString implements Serializable {
 		private String generalAdminExpSy;
 		private String generalAdminExpTy;
 		
-		private String SellingAndDistributionExpensesFy;
-		private String SellingAndDistributionExpensesSy;	
-		private String SellingAndDistributionExpensesTy;
+		private String sellingAndDistributionExpensesFy;
+		private String sellingAndDistributionExpensesSy;	
+		private String sellingAndDistributionExpensesTy;
+		
+		private String grossSalesTotalFY;
+		private String grossSalesTotalSY;
+		private String grossSalesTotalTY;
+		
+		private String exciseDutyTotalFY;
+		private String exciseDutyTotalSY;
+		private String exciseDutyTotalTY;
+		
+		private String increaseDecreaseTotalFy;
+		private String increaseDecreaseTotalSy;
+		private String increaseDecreaseTotalTy;
+		
+		private String rawMaterialsConsumedTotalFy;
+		private String rawMaterialsConsumedTotalSy;
+		private String rawMaterialsConsumedTotalTy;
+		
+		private String provisionForTaxTotalFy;
+		private String provisionForTaxTotalSy;
+		private String provisionForTaxTotalTy;
+		
+		public OperatingStatementDetailsString() {
+			this.addOperatingStockFy = "0.0";
+			this.addOperatingStockSy = "0.0";
+			this.addOperatingStockTy = "0.0";
+			this.addOperatingStockFgFy = "0.0";
+			this.addOperatingStockFgSy = "0.0";
+			this.addOperatingStockFgTy = "0.0";
+			this.addOtherNonOpIncomeFy = "0.0";
+			this.addOtherNonOpIncomeSy = "0.0";
+			this.addOtherNonOpIncomeTy = "0.0";
+			this.addOtherRevenueIncomeFy = "0.0";
+			this.addOtherRevenueIncomeSy = "0.0";
+			this.addOtherRevenueIncomeTy = "0.0";
+			this.deductClStockFgFy = "0.0";
+			this.deductClStockFgSy = "0.0";
+			this.deductClStockFgTy = "0.0";
+			this.deductOtherItemsFy = "0.0";
+			this.deductOtherItemsSy = "0.0";
+			this.deductOtherItemsTy = "0.0";
+			this.deductOtherNonOpExpFy = "0.0";
+			this.deductOtherNonOpExpSy = "0.0";
+			this.deductOtherNonOpExpTy = "0.0";
+			this.deductStockInProcessFy = "0.0";
+			this.deductStockInProcessSy = "0.0";
+			this.deductStockInProcessTy = "0.0";
+			this.depreciationFy = "0.0";
+			this.depreciationSy = "0.0";
+			this.depreciationTy = "0.0";
+			this.directLabourFy = "0.0";
+			this.directLabourSy = "0.0";
+			this.directLabourTy = "0.0";
+			this.dividendRateFy = "0.0";
+			this.dividendRateSy = "0.0";
+			this.dividendRateTy = "0.0";
+			this.domesticSalesFy = "0.0";
+			this.domesticSalesSy = "0.0";
+			this.domesticSalesTy = "0.0";
+			this.equityDeividendPaidAmtFy = "0.0";
+			this.equityDeividendPaidAmtSy = "0.0";
+			this.equityDeividendPaidAmtTy = "0.0";
+			this.expensesAmortisedFy = "0.0";
+			this.expensesAmortisedSy = "0.0";
+			this.expensesAmortisedTy = "0.0";
+			this.exportSalesFy = "0.0";
+			this.exportSalesSy = "0.0";
+			this.exportSalesTy = "0.0";
+			this.financialYearlyStatementFy = "0.0";
+			this.financialYearlyStatementSy = "0.0";
+			this.financialYearlyStatementTy = "0.0";
+			this.interestFy = "0.0";
+			this.interestSy = "0.0";
+			this.interestTy = "0.0";
+			this.lessExciseDutyFy = "0.0";
+			this.lessExciseDutySy = "0.0";
+			this.lessExciseDutyTy = "0.0";
+			this.netProfitOrLossFy = "0.0";
+			this.netProfitOrLossSy = "0.0";
+			this.netProfitOrLossTy = "0.0";
+			this.netSalesFy = "0.0";
+			this.netSalesSy = "0.0";
+			this.netSalesTy = "0.0";
+			this.netofNonOpIncomeOrExpensesFy = "0.0";
+			this.netofNonOpIncomeOrExpensesSy = "0.0";
+			this.netofNonOpIncomeOrExpensesTy = "0.0";
+			this.opProfitAfterInterestFy = "0.0";
+			this.opProfitAfterInterestSy = "0.0";
+			this.opProfitAfterInterestTy = "0.0";
+			this.opProfitBeforeIntrestFy = "0.0";
+			this.opProfitBeforeIntrestSy = "0.0";
+			this.opProfitBeforeIntrestTy = "0.0";
+			this.otherMfgExpensesFy = "0.0";
+			this.otherMfgExpensesSy = "0.0";
+			this.otherMfgExpensesTy = "0.0";
+			this.otherSparesFy = "0.0";
+			this.otherSparesSy = "0.0";
+			this.otherSparesTy = "0.0";
+			this.otherSparesImportedFy = "0.0";
+			this.otherSparesImportedSy = "0.0";
+			this.otherSparesImportedTy = "0.0";
+			this.otherSparesIndigenousFy = "0.0";
+			this.otherSparesIndigenousSy = "0.0";
+			this.otherSparesIndigenousTy = "0.0";
+			this.percentageRiseOrFallFy = "0.0";
+			this.percentageRiseOrFallSy = "0.0";
+			this.percentageRiseOrFallTy = "0.0";
+			this.powerAndFuelFy = "0.0";
+			this.powerAndFuelSy = "0.0";
+			this.powerAndFuelTy = "0.0";
+			this.productionCostFy = "0.0";
+			this.productionCostSy = "0.0";
+			this.productionCostTy = "0.0";
+			this.profitBeforeTaxOrLossFy = "0.0";
+			this.profitBeforeTaxOrLossSy = "0.0";
+			this.profitBeforeTaxOrLossTy = "0.0";
+			this.provisionForDeferredTaxFy = "0.0";
+			this.provisionForDeferredTaxSy = "0.0";
+			this.provisionForDeferredTaxTy = "0.0";
+			this.provisionForTaxesFy = "0.0";
+			this.provisionForTaxesSy = "0.0";
+			this.provisionForTaxesTy = "0.0";
+			this.rawMaterialsFy = "0.0";
+			this.rawMaterialsSy = "0.0";
+			this.rawMaterialsTy = "0.0";
+			this.rawMaterialsImportedFy = "0.0";
+			this.rawMaterialsImportedSy = "0.0";
+			this.rawMaterialsImportedTy = "0.0";
+			this.rawMaterialsIndigenousFy = "0.0";
+			this.rawMaterialsIndigenousSy = "0.0";
+			this.rawMaterialsIndigenousTy = "0.0";
+			this.retainedProfitFy = "0.0";
+			this.retainedProfitSy = "0.0";
+			this.retainedProfitTy = "0.0";
+			this.retainedProfitOrNetProfitFy = "0.0";
+			this.retainedProfitOrNetProfitSy = "0.0";
+			this.retainedProfitOrNetProfitTy = "0.0";
+			this.sellingGenlAdmnExpensesFy = "0.0";
+			this.sellingGenlAdmnExpensesSy = "0.0";
+			this.sellingGenlAdmnExpensesTy = "0.0";
+			this.subTotalCostSalesFy = "0.0";
+			this.subTotalCostSalesSy = "0.0";
+			this.subTotalCostSalesTy = "0.0";
+			this.subTotalCostSalesAndSellingFy = "0.0";
+			this.subTotalCostSalesAndSellingSy = "0.0";
+			this.subTotalCostSalesAndSellingTy = "0.0";
+			this.subTotalDeductAndCostOfProductionFy = "0.0";
+			this.subTotalDeductAndCostOfProductionSy = "0.0";
+			this.subTotalDeductAndCostOfProductionTy = "0.0";
+			this.subTotalExpensesFy = "0.0";
+			this.subTotalExpensesSy = "0.0";
+			this.subTotalExpensesTy = "0.0";
+			this.subTotalOfCostSalesAndOperatingStockFy = "0.0";
+			this.subTotalOfCostSalesAndOperatingStockSy = "0.0";
+			this.subTotalOfCostSalesAndOperatingStockTy = "0.0";
+			this.subTotalOfIncomeFy = "0.0";
+			this.subTotalOfIncomeSy = "0.0";
+			this.subTotalOfIncomeTy = "0.0";
+			this.totalCostSalesFy = "0.0";
+			this.totalCostSalesSy = "0.0";
+			this.totalCostSalesTy = "0.0";
+			this.totalGrossSalesFy = "0.0";
+			this.totalGrossSalesSy = "0.0";
+			this.totalGrossSalesTy = "0.0";
+			this.yearFy = "0.0";
+			this.yearSy = "0.0";
+			this.yearTy = "0.0";
+			this.storageDetailsIdFy = "0.0";
+			this.storageDetailsIdSy = "0.0";
+			this.storageDetailsIdTy = "0.0";
+			this.sellingDistributionExpFy = "0.0";
+			this.sellingDistributionExpSy = "0.0";
+			this.sellingDistributionExpTy = "0.0";
+			this.generalAdminExpFy = "0.0";
+			this.generalAdminExpSy = "0.0";
+			this.generalAdminExpTy = "0.0";
+			this.sellingAndDistributionExpensesFy = "0.0";
+			this.sellingAndDistributionExpensesSy = "0.0";
+			this.sellingAndDistributionExpensesTy = "0.0";
+		}
 		public Long getId() {
 			return id;
 		}
@@ -1139,22 +1318,112 @@ public class OperatingStatementDetailsString implements Serializable {
 			this.generalAdminExpTy = generalAdminExpTy;
 		}
 		public String getSellingAndDistributionExpensesFy() {
-			return SellingAndDistributionExpensesFy;
+			return sellingAndDistributionExpensesFy;
 		}
 		public void setSellingAndDistributionExpensesFy(String sellingAndDistributionExpensesFy) {
-			SellingAndDistributionExpensesFy = sellingAndDistributionExpensesFy;
+			this.sellingAndDistributionExpensesFy = sellingAndDistributionExpensesFy;
 		}
 		public String getSellingAndDistributionExpensesSy() {
-			return SellingAndDistributionExpensesSy;
+			return sellingAndDistributionExpensesSy;
 		}
 		public void setSellingAndDistributionExpensesSy(String sellingAndDistributionExpensesSy) {
-			SellingAndDistributionExpensesSy = sellingAndDistributionExpensesSy;
+			this.sellingAndDistributionExpensesSy = sellingAndDistributionExpensesSy;
 		}
 		public String getSellingAndDistributionExpensesTy() {
-			return SellingAndDistributionExpensesTy;
+			return sellingAndDistributionExpensesTy;
 		}
 		public void setSellingAndDistributionExpensesTy(String sellingAndDistributionExpensesTy) {
-			SellingAndDistributionExpensesTy = sellingAndDistributionExpensesTy;
+			this.sellingAndDistributionExpensesTy = sellingAndDistributionExpensesTy;
+		}
+		public String getGrossSalesTotalFY() {
+			return grossSalesTotalFY;
+		}
+		public void setGrossSalesTotalFY(String grossSalesTotalFY) {
+			this.grossSalesTotalFY = grossSalesTotalFY;
+		}
+		public String getGrossSalesTotalSY() {
+			return grossSalesTotalSY;
+		}
+		public void setGrossSalesTotalSY(String grossSalesTotalSY) {
+			this.grossSalesTotalSY = grossSalesTotalSY;
+		}
+		public String getGrossSalesTotalTY() {
+			return grossSalesTotalTY;
+		}
+		public void setGrossSalesTotalTY(String grossSalesTotalTY) {
+			this.grossSalesTotalTY = grossSalesTotalTY;
+		}
+		public String getExciseDutyTotalFY() {
+			return exciseDutyTotalFY;
+		}
+		public void setExciseDutyTotalFY(String exciseDutyTotalFY) {
+			this.exciseDutyTotalFY = exciseDutyTotalFY;
+		}
+		public String getExciseDutyTotalSY() {
+			return exciseDutyTotalSY;
+		}
+		public void setExciseDutyTotalSY(String exciseDutyTotalSY) {
+			this.exciseDutyTotalSY = exciseDutyTotalSY;
+		}
+		public String getExciseDutyTotalTY() {
+			return exciseDutyTotalTY;
+		}
+		public void setExciseDutyTotalTY(String exciseDutyTotalTY) {
+			this.exciseDutyTotalTY = exciseDutyTotalTY;
+		}
+		public String getIncreaseDecreaseTotalFy() {
+			return increaseDecreaseTotalFy;
+		}
+		public void setIncreaseDecreaseTotalFy(String increaseDecreaseTotalFy) {
+			this.increaseDecreaseTotalFy = increaseDecreaseTotalFy;
+		}
+		public String getIncreaseDecreaseTotalSy() {
+			return increaseDecreaseTotalSy;
+		}
+		public void setIncreaseDecreaseTotalSy(String increaseDecreaseTotalSy) {
+			this.increaseDecreaseTotalSy = increaseDecreaseTotalSy;
+		}
+		public String getIncreaseDecreaseTotalTy() {
+			return increaseDecreaseTotalTy;
+		}
+		public void setIncreaseDecreaseTotalTy(String increaseDecreaseTotalTy) {
+			this.increaseDecreaseTotalTy = increaseDecreaseTotalTy;
+		}
+		public String getRawMaterialsConsumedTotalFy() {
+			return rawMaterialsConsumedTotalFy;
+		}
+		public void setRawMaterialsConsumedTotalFy(String rawMaterialsConsumedTotalFy) {
+			this.rawMaterialsConsumedTotalFy = rawMaterialsConsumedTotalFy;
+		}
+		public String getRawMaterialsConsumedTotalSy() {
+			return rawMaterialsConsumedTotalSy;
+		}
+		public void setRawMaterialsConsumedTotalSy(String rawMaterialsConsumedTotalSy) {
+			this.rawMaterialsConsumedTotalSy = rawMaterialsConsumedTotalSy;
+		}
+		public String getRawMaterialsConsumedTotalTy() {
+			return rawMaterialsConsumedTotalTy;
+		}
+		public void setRawMaterialsConsumedTotalTy(String rawMaterialsConsumedTotalTy) {
+			this.rawMaterialsConsumedTotalTy = rawMaterialsConsumedTotalTy;
+		}
+		public String getProvisionForTaxTotalFy() {
+			return provisionForTaxTotalFy;
+		}
+		public void setProvisionForTaxTotalFy(String provisionForTaxTotalFy) {
+			this.provisionForTaxTotalFy = provisionForTaxTotalFy;
+		}
+		public String getProvisionForTaxTotalSy() {
+			return provisionForTaxTotalSy;
+		}
+		public void setProvisionForTaxTotalSy(String provisionForTaxTotalSy) {
+			this.provisionForTaxTotalSy = provisionForTaxTotalSy;
+		}
+		public String getProvisionForTaxTotalTy() {
+			return provisionForTaxTotalTy;
+		}
+		public void setProvisionForTaxTotalTy(String provisionForTaxTotalTy) {
+			this.provisionForTaxTotalTy = provisionForTaxTotalTy;
 		}
 		
 		
