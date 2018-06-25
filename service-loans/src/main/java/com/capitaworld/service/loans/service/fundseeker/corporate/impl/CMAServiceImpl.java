@@ -322,6 +322,9 @@ public class CMAServiceImpl implements CMAService {
 		
 		String currencyAndDenomination = "NA";
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			return currencyAndDenomination;	
+		}
 		if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())
 				&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getDenominationId())) {
 			try {
