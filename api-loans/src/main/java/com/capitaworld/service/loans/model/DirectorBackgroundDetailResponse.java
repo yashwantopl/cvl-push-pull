@@ -72,6 +72,88 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		private String streetName;
 
 		private String landmark;
+		
+		private Boolean isMainDirector;
+		
+		private String firstName;
+
+		private String lastName;
+
+		private String middleName;
+
+		private String title;
+		
+		
+
+		/**
+		 * @return the firstName
+		 */
+		public String getFirstName() {
+			return firstName;
+		}
+
+		/**
+		 * @param firstName the firstName to set
+		 */
+		public void setFirstName(String firstName) {
+			this.firstName = firstName;
+		}
+
+		/**
+		 * @return the lastName
+		 */
+		public String getLastName() {
+			return lastName;
+		}
+
+		/**
+		 * @param lastName the lastName to set
+		 */
+		public void setLastName(String lastName) {
+			this.lastName = lastName;
+		}
+
+		/**
+		 * @return the middleName
+		 */
+		public String getMiddleName() {
+			return middleName;
+		}
+
+		/**
+		 * @param middleName the middleName to set
+		 */
+		public void setMiddleName(String middleName) {
+			this.middleName = middleName;
+		}
+
+		/**
+		 * @return the title
+		 */
+		public String getTitle() {
+			return title;
+		}
+
+		/**
+		 * @param title the title to set
+		 */
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		/**
+		 * @return the isMainDirector
+		 */
+		public Boolean getIsMainDirector() {
+			return isMainDirector;
+		}
+
+		/**
+		 * @param isMainDirector the isMainDirector to set
+		 */
+		public void setIsMainDirector(Boolean isMainDirector) {
+			this.isMainDirector = isMainDirector;
+		}
 
 		public String getAddress() {
 			return address;

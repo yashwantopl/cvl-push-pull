@@ -6045,7 +6045,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						state = masterResponse.getValue() + ",";
+						state = masterResponse.getValue() ;
 					} else {
 
 					}
@@ -6066,7 +6066,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						city = masterResponse.getValue() + ",";
+						city = masterResponse.getValue();
 					} else {
 
 					}
@@ -6087,7 +6087,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						country = masterResponse.getValue() + ",";
+						country = masterResponse.getValue() ;
 					} else {
 
 					}
@@ -6133,8 +6133,65 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for(DirectorBackgroundDetail detail : directorList) {
 				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
 				BeanUtils.copyProperties(detail, directorDetail);
-				directorDetail.setGender(Gender.getById(detail.getGender()).toString());
+				String gender = null;
+				if(Gender.MALE.getId() == detail.getGender()) {
+					gender = "MALE";
+				}
+				else if(Gender.FEMALE.getId() == detail.getGender()) {
+					gender = "FEMALE";
+				}
+				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
+					gender = "OTHER";
+				}
+				else {
+					gender = "OTHER";
+				}
+				directorDetail.setGender(gender);
 				directorDetail.setShareholding(detail.getShareholding());
+				
+				String state= null;
+				List<Long> stateList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode()))
+					stateList.add(Long.valueOf(detail.getStateCode()));
+				if (!CommonUtils.isListNullOrEmpty(stateList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							state = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				directorDetail.setStateCode(state);
+				
+				String country= null;
+				List<Long> countryList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+					countryList.add(Long.valueOf(detail.getCountryId()));
+				if (!CommonUtils.isListNullOrEmpty(countryList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							country = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				directorDetail.setCountry(country);
 				
 				response.addDirectorDetail(directorDetail);
 			}
