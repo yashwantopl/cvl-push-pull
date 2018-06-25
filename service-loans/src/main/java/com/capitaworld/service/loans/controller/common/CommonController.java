@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -307,6 +308,36 @@ public class CommonController {
 //					userId);
 			
 			CGTMSECalcDataResponse response = applicationService.getDataForCGTMSE(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Recent Profile View Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/getDataForHunter/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDataForHunter(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		try {
+			
+			if (applicationId == null) {
+				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+//			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByAppId(applicationId,
+//					userId);
+			
+			HunterRequestDataResponse response = applicationService.getDataForHunter(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
