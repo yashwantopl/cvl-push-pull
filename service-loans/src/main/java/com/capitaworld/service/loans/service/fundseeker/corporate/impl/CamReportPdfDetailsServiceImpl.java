@@ -19,9 +19,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -38,6 +41,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.model.AssetDetailsString;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -45,6 +49,7 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialInputRequestString;
+import com.capitaworld.service.loans.model.LiabilitiesDetailsString;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.OperatingStatementDetailsString;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
@@ -175,12 +180,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private AchievmentDetailsService achievmentDetailsService;
 	
 	@Autowired
-	private IndustrySectorRepository industrySectorRepository;
-
-	@Autowired
-	private SubSectorRepository subSectorRepository;
-	
-	@Autowired
 	private DirectorBackgroundDetailsService backgroundDetailsService;
 	
 	@Autowired
@@ -225,7 +224,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	AssetsDetailsRepository assetsDetailsRepository;
 	
-
+	@Autowired
+	EligibilityClient eligibilityClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -279,13 +280,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 		
 		//GST DATA
 		try {
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToString(response.getData()) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData()) : " ");
 			
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -406,7 +408,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		//IRR DATA
+		//IRR AND RATIO ANALYSIS DATA
 		try {
 			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
 			Long denominationValue = Denomination.getById(loanApplicationRequest.getDenominationId()).getDigit();
@@ -446,7 +448,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",convertToString(proposalScoreResponse));
+			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse));
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -572,6 +574,34 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//NOTES TO ACCOUNTS
+		try {
+			LoanApplicationRequest loanApplicationRequest = loanApplicationService.get(applicationId, userId);
+			Long denominationValue = Denomination.getById(loanApplicationRequest.getDenominationId()).getDigit();
+			OperatingStatementDetailsString operatingStatementDetailsString =getOperatingStatementMappings(userId, applicationId, null, denominationValue);
+			map.put("operatingStatement", operatingStatementDetailsString);
+			LiabilitiesDetailsString liabilitiesDetailsString = getLiabilitiesDetails(userId, applicationId, null, denominationValue);
+			map.put("liabilitiesDetails", liabilitiesDetailsString);
+			AssetDetailsString assetDetailsString =getAssetDetails(userId, applicationId, null, denominationValue);
+			map.put("assetDetails", assetDetailsString);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
+		try {
+			EligibililityRequest eligibilityReq=new EligibililityRequest();
+			eligibilityReq.setApplicationId(applicationId);
+			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
+			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
+			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+			map.put("assLimits", eligibilityResp.getData());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting Eligibility data");
+		}
 	
 		/**********************************************FINAL DETAILS*****************************************************/
 		
@@ -584,7 +614,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-					map.put("fitchResponse",convertToString(fitchOutputManu));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputManu));
 					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
 					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
 					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
@@ -598,13 +628,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-					map.put("fitchResponse",convertToString(fitchOutputTrad));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputTrad));
 					map.put("fitchTitle","Trading");
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
-					map.put("fitchResponse",convertToString(fitchOutputServ));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputServ));
 					map.put("fitchTitle","Service");
 				}
 			}
@@ -1193,69 +1223,413 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}else {
 			financialInputRequestString.setBookValueTy("0.0");
 		}
-	
+		
+		/*================================================BEGIN CODE FOR RATIO ANALYSIS===========================================================*/
+		
+		 //CASH FLOW 
+		financialInputRequestString.setEbitdaFy(convertValue(financialInputRequest.getOperatingProfitEbitadOiFy()));
+		financialInputRequestString.setEbitdaSy(convertValue(financialInputRequest.getOperatingProfitEbitadOiSy()));
+		financialInputRequest.setEbitdaFy(financialInputRequest.getOperatingProfitEbitadOiFy());
+		financialInputRequest.setEbitdaSy(financialInputRequest.getOperatingProfitEbitadOiSy());
+		
+		financialInputRequestString.setInterestPaidFy(convertValue(financialInputRequest.getInterestFy()));
+		financialInputRequestString.setInterestPaidSy(convertValue(financialInputRequest.getInterestSy()));
+		financialInputRequest.setInterestPaidFy(financialInputRequest.getInterestFy());
+		financialInputRequest.setInterestPaidSy(financialInputRequest.getInterestSy());
+		
+		financialInputRequestString.setIncreaseWorkingCapitalFy(convertValue(financialInputRequest.getInventoriesFy()+financialInputRequest.getSundryDebtorsFy()+financialInputRequest.getOtherCurruntAssetFy()-financialInputRequest.getInventoriesSy()-financialInputRequest.getSundryDebtorsSy()-financialInputRequest.getOtherCurruntAssetSy()+financialInputRequest.getTradePayablesSy()+financialInputRequest.getOtherCurruntLiablitiesSy()+financialInputRequest.getShortTermProvisionSy()-financialInputRequest.getTradePayablesFy()-financialInputRequest.getOtherCurruntLiablitiesFy()-financialInputRequest.getShortTermProvisionFy()));
+		financialInputRequestString.setIncreaseWorkingCapitalSy(convertValue(financialInputRequest.getInventoriesSy()+financialInputRequest.getSundryDebtorsSy()+financialInputRequest.getOtherCurruntAssetSy()-financialInputRequest.getInventoriesTy()-financialInputRequest.getSundryDebtorsTy()-financialInputRequest.getOtherCurruntAssetTy()+financialInputRequest.getTradePayablesTy()+financialInputRequest.getOtherCurruntLiablitiesTy()+financialInputRequest.getShortTermProvisionTy()-financialInputRequest.getTradePayablesSy()-financialInputRequest.getOtherCurruntLiablitiesSy()-financialInputRequest.getShortTermProvisionSy()));
+		financialInputRequest.setIncreaseWorkingCapitalFy(financialInputRequest.getInventoriesFy()+financialInputRequest.getSundryDebtorsFy()+financialInputRequest.getOtherCurruntAssetFy()-financialInputRequest.getInventoriesSy()-financialInputRequest.getSundryDebtorsSy()-financialInputRequest.getOtherCurruntAssetSy()+financialInputRequest.getTradePayablesSy()+financialInputRequest.getOtherCurruntLiablitiesSy()+financialInputRequest.getShortTermProvisionSy()-financialInputRequest.getTradePayablesFy()-financialInputRequest.getOtherCurruntLiablitiesFy()-financialInputRequest.getShortTermProvisionFy());
+		financialInputRequest.setIncreaseWorkingCapitalSy(financialInputRequest.getInventoriesSy()+financialInputRequest.getSundryDebtorsSy()+financialInputRequest.getOtherCurruntAssetSy()-financialInputRequest.getInventoriesTy()-financialInputRequest.getSundryDebtorsTy()-financialInputRequest.getOtherCurruntAssetTy()+financialInputRequest.getTradePayablesTy()+financialInputRequest.getOtherCurruntLiablitiesTy()+financialInputRequest.getShortTermProvisionTy()-financialInputRequest.getTradePayablesSy()-financialInputRequest.getOtherCurruntLiablitiesSy()-financialInputRequest.getShortTermProvisionSy());
+		
+		financialInputRequestString.setTaxPaidFy(convertValue(financialInputRequest.getProvisionForTaxFy()));
+		financialInputRequestString.setTaxPaidSy(convertValue(financialInputRequest.getProvisionForTaxSy()));
+		financialInputRequest.setTaxPaidFy(financialInputRequest.getProvisionForTaxFy());
+		financialInputRequest.setTaxPaidSy(financialInputRequest.getProvisionForTaxSy());
+		
+		financialInputRequestString.setCashFromOperatingFy(convertValue(financialInputRequest.getEbitdaFy()-financialInputRequest.getInterestPaidFy()-financialInputRequest.getIncreaseWorkingCapitalFy()-financialInputRequest.getTaxPaidFy()));
+		financialInputRequestString.setCashFromOperatingSy(convertValue(financialInputRequest.getEbitdaSy()-financialInputRequest.getInterestPaidSy()-financialInputRequest.getIncreaseWorkingCapitalSy()-financialInputRequest.getTaxPaidSy()));
+		financialInputRequest.setCashFromOperatingFy(financialInputRequest.getEbitdaFy()-financialInputRequest.getInterestPaidFy()-financialInputRequest.getIncreaseWorkingCapitalFy()-financialInputRequest.getTaxPaidFy());
+		financialInputRequest.setCashFromOperatingSy(financialInputRequest.getEbitdaSy()-financialInputRequest.getInterestPaidSy()-financialInputRequest.getIncreaseWorkingCapitalSy()-financialInputRequest.getTaxPaidSy());
+		
+		//RATIO ANALYSIS
+		financialInputRequestString.setEbitadPercentageFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(), financialInputRequest.getNetSaleFy())));
+		financialInputRequestString.setEbitadPercentageSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(), financialInputRequest.getNetSaleSy())));
+		financialInputRequestString.setEbitadPercentageTy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(), financialInputRequest.getNetSaleTy())));
+		
+		financialInputRequestString.setPatmFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getProfitAfterTaxFy(), financialInputRequest.getNetSaleFy())));
+		financialInputRequestString.setPatmSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getProfitAfterTaxSy(), financialInputRequest.getNetSaleSy())));
+		financialInputRequestString.setPatmTy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getProfitAfterTaxTy(), financialInputRequest.getNetSaleTy())));
+		
+		financialInputRequestString.setRoceFy(convertValue((financialInputRequest.getOperatingProfitEbitadOiFy()*2/(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalNonCurruntLiablitiesSy())))*12/financialInputRequest.getNoOfMonthFy()));
+		financialInputRequestString.setRoceSy(convertValue((financialInputRequest.getOperatingProfitEbitadOiSy()*2/(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalNonCurruntLiablitiesTy())))*12/financialInputRequest.getNoOfMonthSy()));
+		
+		financialInputRequestString.setAssetTurnOverFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getNetSaleFy() * 12, (CommonUtils.multiplyNumbers(financialInputRequest.getTotalAssetFy(), financialInputRequest.getNoOfMonthFy())))));
+		financialInputRequestString.setAssetTurnOverSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getNetSaleSy() * 12, (CommonUtils.multiplyNumbers(financialInputRequest.getTotalAssetSy(), financialInputRequest.getNoOfMonthSy())))));
+		financialInputRequestString.setAssetTurnOverTy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getNetSaleTy() * 12, (CommonUtils.multiplyNumbers(financialInputRequest.getTotalAssetTy(), financialInputRequest.getNoOfMonthTy())))));
+		
+		financialInputRequestString.setInventoryTurnOverFy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getTotalExpenditureFy()*12, (financialInputRequest.getInventoriesFy()*financialInputRequest.getNoOfMonthFy()))))));
+		financialInputRequestString.setInventoryTurnOverSy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getTotalExpenditureSy()*12, (financialInputRequest.getInventoriesSy()*financialInputRequest.getNoOfMonthSy()))))));
+		financialInputRequestString.setInventoryTurnOverTy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getTotalExpenditureTy()*12, (financialInputRequest.getInventoriesTy()*financialInputRequest.getNoOfMonthTy()))))));
+		
+		financialInputRequestString.setDebtorsTurnoverFy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleFy()*12, (financialInputRequest.getSundryDebtorsFy()*financialInputRequest.getNoOfMonthFy()))))));
+		financialInputRequestString.setDebtorsTurnoverSy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleSy()*12, (financialInputRequest.getSundryDebtorsSy()*financialInputRequest.getNoOfMonthSy()))))));
+		financialInputRequestString.setDebtorsTurnoverTy(convertValue(CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleTy()*12, (financialInputRequest.getSundryDebtorsTy()*financialInputRequest.getNoOfMonthTy()))))));
+		
+		financialInputRequestString.setCreditorsTurnoverFy(convertValue((CommonUtils.divideNumbers(365.0, CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getRawMaterialConsumedFy(), financialInputRequest.getPowerAndFuelCostFy())), financialInputRequest.getTradePayablesFy())))*12/financialInputRequest.getNoOfMonthFy()));
+		financialInputRequestString.setCreditorsTurnoverSy(convertValue((CommonUtils.divideNumbers(365.0, CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getRawMaterialConsumedSy(), financialInputRequest.getPowerAndFuelCostSy())), financialInputRequest.getTradePayablesSy())))*12/financialInputRequest.getNoOfMonthSy()));
+		financialInputRequestString.setCreditorsTurnoverTy(convertValue((CommonUtils.divideNumbers(365.0, CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getRawMaterialConsumedTy(), financialInputRequest.getPowerAndFuelCostTy())), financialInputRequest.getTradePayablesTy())))*12/financialInputRequest.getNoOfMonthTy()));
+		
+		financialInputRequestString.setSalesWorkingCapitalFy(convertValue((CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleFy(), (CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(),financialInputRequest.getSundryDebtorsFy())-financialInputRequest.getTradePayablesFy())))))*12 /financialInputRequest.getNoOfMonthFy()));
+		financialInputRequestString.setSalesWorkingCapitalSy(convertValue((CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleSy(), (CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(),financialInputRequest.getSundryDebtorsSy())-financialInputRequest.getTradePayablesSy())))))*12 /financialInputRequest.getNoOfMonthSy()));
+		financialInputRequestString.setSalesWorkingCapitalTy(convertValue((CommonUtils.divideNumbers(365.0, (CommonUtils.divideNumbers(financialInputRequest.getNetSaleTy(), (CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(),financialInputRequest.getSundryDebtorsTy())-financialInputRequest.getTradePayablesTy())))))*12 /financialInputRequest.getNoOfMonthTy()));
+		
+		financialInputRequestString.setNetSalesGrowthCapitalFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getNetSaleFy(),financialInputRequest.getNetSaleSy())-1));
+		financialInputRequestString.setNetSalesGrowthCapitalSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getNetSaleSy(),financialInputRequest.getNetSaleTy())-1));
+		
+		financialInputRequestString.setPatGrowthCapitalFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getProfitAfterTaxFy(),financialInputRequest.getProfitAfterTaxSy())-1));
+		financialInputRequestString.setPatGrowthCapitalSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getProfitAfterTaxSy(),financialInputRequest.getProfitAfterTaxTy())-1));
+		
+		financialInputRequestString.setAdjustedTotalDebtEquityFy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesFy(),financialInputRequest.getLongTermProvisionFy(),financialInputRequest.getUnsecuredLoansPromotersFy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(),financialInputRequest.getUnsecuredLoansPromotersFy())))));
+		financialInputRequestString.setAdjustedTotalDebtEquitySy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesSy(),financialInputRequest.getLongTermProvisionSy(),financialInputRequest.getUnsecuredLoansPromotersSy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(),financialInputRequest.getUnsecuredLoansPromotersSy())))));
+		financialInputRequestString.setAdjustedTotalDebtEquityTy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesTy(),financialInputRequest.getLongTermProvisionTy(),financialInputRequest.getUnsecuredLoansPromotersTy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(),financialInputRequest.getUnsecuredLoansPromotersTy())))));
+		financialInputRequest.setAdjustedTotalDebtEquityFy(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesFy(),financialInputRequest.getLongTermProvisionFy(),financialInputRequest.getUnsecuredLoansPromotersFy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(),financialInputRequest.getUnsecuredLoansPromotersFy()))));
+		financialInputRequest.setAdjustedTotalDebtEquitySy(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesSy(),financialInputRequest.getLongTermProvisionSy(),financialInputRequest.getUnsecuredLoansPromotersSy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(),financialInputRequest.getUnsecuredLoansPromotersSy()))));
+		financialInputRequest.setAdjustedTotalDebtEquityTy(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesTy(),financialInputRequest.getLongTermProvisionTy(),financialInputRequest.getUnsecuredLoansPromotersTy())), (CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(),financialInputRequest.getUnsecuredLoansPromotersTy()))));
+		
+		financialInputRequestString.setGrowthDebtEquityFy(convertValue((CommonUtils.substractNumbers(financialInputRequest.getAdjustedTotalDebtEquityFy(),financialInputRequest.getAdjustedTotalDebtEquitySy()))/financialInputRequest.getAdjustedTotalDebtEquitySy()));
+		financialInputRequestString.setGrowthDebtEquitySy(convertValue((CommonUtils.substractNumbers(financialInputRequest.getAdjustedTotalDebtEquitySy(),financialInputRequest.getAdjustedTotalDebtEquityTy()))/financialInputRequest.getAdjustedTotalDebtEquityTy()));
+		
+		financialInputRequestString.setCurruntRatioXFy(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(),financialInputRequest.getSundryDebtorsFy())), financialInputRequest.getTradePayablesFy())));
+		financialInputRequestString.setCurruntRatioXSy(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(),financialInputRequest.getSundryDebtorsSy())), financialInputRequest.getTradePayablesSy())));
+		financialInputRequestString.setCurruntRatioXTy(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(),financialInputRequest.getSundryDebtorsTy())), financialInputRequest.getTradePayablesTy())));
+		
+		financialInputRequestString.setQuickRatioXFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getSundryDebtorsFy(),financialInputRequest.getTradePayablesFy())));
+		financialInputRequestString.setQuickRatioXSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getSundryDebtorsSy(),financialInputRequest.getTradePayablesSy())));
+		financialInputRequestString.setQuickRatioXTy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getSundryDebtorsTy(),financialInputRequest.getTradePayablesTy())));
+		
+		financialInputRequestString.setCashInterestCoverFy(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getCashFromOperatingFy(),financialInputRequest.getInterestFy())), financialInputRequest.getInterestFy())));
+		financialInputRequestString.setCashInterestCoverSy(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(financialInputRequest.getCashFromOperatingSy(),financialInputRequest.getInterestSy())), financialInputRequest.getInterestSy())));
+		
+		financialInputRequestString.setDebtEbitadFy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesFy(),financialInputRequest.getUnsecuredLoansPromotersFy(),financialInputRequest.getLongTermProvisionFy())), (12*CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiFy(),financialInputRequest.getNoOfMonthFy())))));
+		financialInputRequestString.setDebtEbitadSy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesSy(),financialInputRequest.getUnsecuredLoansPromotersSy(),financialInputRequest.getLongTermProvisionSy())), (12*CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiSy(),financialInputRequest.getNoOfMonthSy())))));
+		financialInputRequestString.setDebtEbitadTy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(financialInputRequest.getTotalNonCurruntLiablitiesTy(),financialInputRequest.getUnsecuredLoansPromotersTy(),financialInputRequest.getLongTermProvisionTy())), (12*CommonUtils.divideNumbers(financialInputRequest.getOperatingProfitEbitadOiTy(),financialInputRequest.getNoOfMonthTy())))));
+		
+		financialInputRequestString.setFreeReserveEquityFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOtherReserveAndSurplusFy(), (CommonUtils.addNumbers(financialInputRequest.getShareCapitalFy(),financialInputRequest.getShareWarrantOutstandingsFy())))));
+		financialInputRequestString.setFreeReserveEquitySy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOtherReserveAndSurplusSy(), (CommonUtils.addNumbers(financialInputRequest.getShareCapitalSy(),financialInputRequest.getShareWarrantOutstandingsSy())))));
+		financialInputRequestString.setFreeReserveEquityTy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getOtherReserveAndSurplusTy(), (CommonUtils.addNumbers(financialInputRequest.getShareCapitalTy(),financialInputRequest.getShareWarrantOutstandingsTy())))));
+		
+		financialInputRequestString.setCfoMargineFy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getCashFromOperatingFy(),financialInputRequest.getNetSaleFy())));
+		financialInputRequestString.setCfoMargineSy(convertValue(CommonUtils.divideNumbers(financialInputRequest.getCashFromOperatingSy(),financialInputRequest.getNetSaleSy())));
+		financialInputRequest.setCfoMargineFy(CommonUtils.divideNumbers(financialInputRequest.getCashFromOperatingFy(),financialInputRequest.getNetSaleFy()));
+		financialInputRequest.setCfoMargineSy(CommonUtils.divideNumbers(financialInputRequest.getCashFromOperatingSy(),financialInputRequest.getNetSaleSy()));
+		
+		financialInputRequestString.setGrowthCfoMargineFy(convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(financialInputRequest.getCfoMargineFy(),financialInputRequest.getCfoMargineSy())), financialInputRequest.getCfoMargineSy())));
+		financialInputRequestString.setGrowthCfoMargineSy("0.0");
+		
 		return financialInputRequestString;
-
 	}
 	
-	public OperatingStatementDetailsString getCamMappings(Long userId, Long applicationId, String industry, Long denomination) {
-		OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
+	
+	
+	
+	//NOTES TO ACCOUNTS
+	public OperatingStatementDetailsString getOperatingStatementMappings(Long userId, Long applicationId, String industry, Long denomination) {
+		OperatingStatementDetails osDetails = null;
+		OperatingStatementDetailsString osDetailsString = new OperatingStatementDetailsString();
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		/*==============================================THIRD YEAR===========================================================*/
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
-		OperatingStatementDetailsString operatingStatementDetailsString = new OperatingStatementDetailsString();
-		operatingStatementDetailsString.setDomesticSalesFy(convertValue(operatingStatementDetails.getDomesticSales()));
-		operatingStatementDetailsString.setExportSalesFy(convertValue(operatingStatementDetails.getExportSales()));
-		operatingStatementDetailsString.setLessExciseDutyFy(convertValue(operatingStatementDetails.getLessExciseDuty()));
-		operatingStatementDetailsString.setDeductOtherItemsFy(convertValue(operatingStatementDetails.getDeductOtherItems()));
-		operatingStatementDetailsString.setAddOperatingStockFy(convertValue(operatingStatementDetails.getAddOperatingStock()));
-		operatingStatementDetailsString.setDeductStockInProcessFy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
-		operatingStatementDetailsString.setAddOperatingStockFgFy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
-		operatingStatementDetailsString.setDeductClStockFgFy(convertValue(operatingStatementDetails.getDeductClStockFg()));
-		operatingStatementDetailsString.setRetainedProfitFy(convertValue(operatingStatementDetails.getRawMaterials()));
-		operatingStatementDetailsString.setOtherSparesFy(convertValue(operatingStatementDetails.getOtherSpares()));
-		operatingStatementDetailsString.setProvisionForTaxesFy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
-		operatingStatementDetailsString.setProvisionForDeferredTaxFy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+		osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
+			return osDetailsString;
+		}
+		
+		osDetailsString.setDomesticSalesFy(convertValue(osDetails.getDomesticSales()));
+		osDetailsString.setExportSalesFy(convertValue(osDetails.getExportSales()));
+		osDetailsString.setGrossSalesTotalFY(convertValue(CommonUtils.addNumbers(osDetails.getDomesticSales(),osDetails.getExportSales())));
+		
+		osDetailsString.setLessExciseDutyFy(convertValue(osDetails.getLessExciseDuty()));
+		osDetailsString.setDeductOtherItemsFy(convertValue(osDetails.getDeductOtherItems()));
+		osDetailsString.setExciseDutyTotalFY(convertValue(CommonUtils.addNumbers(osDetails.getLessExciseDuty(),osDetails.getDeductOtherItems())));
+		
+		osDetailsString.setAddOperatingStockFy(convertValue(osDetails.getAddOperatingStock()));
+		osDetailsString.setDeductStockInProcessFy(convertValue(osDetails.getDeductStockInProcess()));
+		osDetailsString.setAddOperatingStockFgFy(convertValue(osDetails.getAddOperatingStockFg()));
+		osDetailsString.setDeductClStockFgFy(convertValue(osDetails.getDeductClStockFg()));
+		double subFy = CommonUtils.substractNumbers(osDetails.getAddOperatingStockFg(), osDetails.getDeductClStockFg());
+		double sumFy = CommonUtils.addNumbers(subFy,osDetails.getAddOperatingStockFg());
+		osDetailsString.setIncreaseDecreaseTotalFy(convertValue(CommonUtils.substractNumbers(sumFy, osDetails.getDeductClStockFg())));
+		
+		osDetailsString.setRawMaterialsFy(convertValue(osDetails.getRawMaterials()));
+		osDetailsString.setOtherSparesFy(convertValue(osDetails.getOtherSpares()));
+		osDetailsString.setRawMaterialsConsumedTotalFy(convertValue(CommonUtils.addNumbers(osDetails.getRawMaterials(), osDetails.getOtherSpares())));
+		
+		osDetailsString.setProvisionForTaxesFy(convertValue(osDetails.getProvisionForTaxes()));
+		osDetailsString.setProvisionForDeferredTaxFy(convertValue(osDetails.getProvisionForDeferredTax()));
+		osDetailsString.setProvisionForTaxTotalFy(convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
 		
 		/*==============================================SECOND YEAR===========================================================*/
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
-		operatingStatementDetailsString.setDomesticSalesSy(convertValue(operatingStatementDetails.getDomesticSales()));
-		operatingStatementDetailsString.setExportSalesSy(convertValue(operatingStatementDetails.getExportSales()));
-		operatingStatementDetailsString.setLessExciseDutySy(convertValue(operatingStatementDetails.getLessExciseDuty()));
-		operatingStatementDetailsString.setDeductOtherItemsSy(convertValue(operatingStatementDetails.getDeductOtherItems()));
-		operatingStatementDetailsString.setAddOperatingStockSy(convertValue(operatingStatementDetails.getAddOperatingStock()));
-		operatingStatementDetailsString.setDeductStockInProcessSy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
-		operatingStatementDetailsString.setAddOperatingStockFgSy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
-		operatingStatementDetailsString.setDeductClStockFgSy(convertValue(operatingStatementDetails.getDeductClStockFg()));
-		operatingStatementDetailsString.setRetainedProfitSy(convertValue(operatingStatementDetails.getRawMaterials()));
-		operatingStatementDetailsString.setOtherSparesSy(convertValue(operatingStatementDetails.getOtherSpares()));
-		operatingStatementDetailsString.setProvisionForTaxesSy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
-		operatingStatementDetailsString.setProvisionForDeferredTaxSy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+		osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
+		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
+			return osDetailsString;
+		}
+		osDetailsString.setDomesticSalesSy(convertValue(osDetails.getDomesticSales()));
+		osDetailsString.setExportSalesSy(convertValue(osDetails.getExportSales()));
+		osDetailsString.setGrossSalesTotalSY(convertValue(CommonUtils.addNumbers(osDetails.getDomesticSales(),osDetails.getExportSales())));
+		
+		osDetailsString.setLessExciseDutySy(convertValue(osDetails.getLessExciseDuty()));
+		osDetailsString.setDeductOtherItemsSy(convertValue(osDetails.getDeductOtherItems()));
+		osDetailsString.setExciseDutyTotalSY(convertValue(CommonUtils.addNumbers(osDetails.getLessExciseDuty(),osDetails.getDeductOtherItems())));
+		
+		osDetailsString.setAddOperatingStockSy(convertValue(osDetails.getAddOperatingStock()));
+		osDetailsString.setDeductStockInProcessSy(convertValue(osDetails.getDeductStockInProcess()));
+		osDetailsString.setAddOperatingStockFgSy(convertValue(osDetails.getAddOperatingStockFg()));
+		osDetailsString.setDeductClStockFgSy(convertValue(osDetails.getDeductClStockFg()));
+		double subSy = CommonUtils.substractNumbers(osDetails.getAddOperatingStockFg(), osDetails.getDeductClStockFg());
+		double sumSy = CommonUtils.addNumbers(subSy,osDetails.getAddOperatingStockFg());
+		osDetailsString.setIncreaseDecreaseTotalSy(convertValue(CommonUtils.substractNumbers(sumSy, osDetails.getDeductClStockFg())));
+		
+		osDetailsString.setRawMaterialsSy(convertValue(osDetails.getRawMaterials()));
+		osDetailsString.setOtherSparesSy(convertValue(osDetails.getOtherSpares()));
+		osDetailsString.setRawMaterialsConsumedTotalSy(convertValue(CommonUtils.addNumbers(osDetails.getRawMaterials(), osDetails.getOtherSpares())));
+		
+		osDetailsString.setProvisionForTaxesSy(convertValue(osDetails.getProvisionForTaxes()));
+		osDetailsString.setProvisionForDeferredTaxSy(convertValue(osDetails.getProvisionForDeferredTax()));
+		osDetailsString.setProvisionForTaxTotalSy(convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
 
 		/*==============================================FIRST YEAR===========================================================*/
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
-		operatingStatementDetailsString.setDomesticSalesTy(convertValue(operatingStatementDetails.getDomesticSales()));
-		operatingStatementDetailsString.setExportSalesTy(convertValue(operatingStatementDetails.getExportSales()));
-		operatingStatementDetailsString.setLessExciseDutyTy(convertValue(operatingStatementDetails.getLessExciseDuty()));
-		operatingStatementDetailsString.setDeductOtherItemsTy(convertValue(operatingStatementDetails.getDeductOtherItems()));
-		operatingStatementDetailsString.setAddOperatingStockTy(convertValue(operatingStatementDetails.getAddOperatingStock()));
-		operatingStatementDetailsString.setDeductStockInProcessTy(convertValue(operatingStatementDetails.getDeductStockInProcess()));
-		operatingStatementDetailsString.setAddOperatingStockFgTy(convertValue(operatingStatementDetails.getAddOperatingStockFg()));
-		operatingStatementDetailsString.setDeductClStockFgTy(convertValue(operatingStatementDetails.getDeductClStockFg()));
-		operatingStatementDetailsString.setRetainedProfitTy(convertValue(operatingStatementDetails.getRawMaterials()));
-		operatingStatementDetailsString.setOtherSparesTy(convertValue(operatingStatementDetails.getOtherSpares()));
-		operatingStatementDetailsString.setProvisionForTaxesTy(convertValue(operatingStatementDetails.getProvisionForTaxes()));
-		operatingStatementDetailsString.setProvisionForDeferredTaxTy(convertValue(operatingStatementDetails.getProvisionForDeferredTax()));
+		osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
+		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
+			return osDetailsString;
+		}
+		osDetailsString.setDomesticSalesTy(convertValue(osDetails.getDomesticSales()));
+		osDetailsString.setExportSalesTy(convertValue(osDetails.getExportSales()));
+		osDetailsString.setGrossSalesTotalTY(convertValue(CommonUtils.addNumbers(osDetails.getDomesticSales(),osDetails.getExportSales())));
 		
-		return operatingStatementDetailsString;
+		osDetailsString.setLessExciseDutyTy(convertValue(osDetails.getLessExciseDuty()));
+		osDetailsString.setDeductOtherItemsTy(convertValue(osDetails.getDeductOtherItems()));
+		osDetailsString.setExciseDutyTotalTY(convertValue(CommonUtils.addNumbers(osDetails.getLessExciseDuty(),osDetails.getDeductOtherItems())));
+		
+		osDetailsString.setAddOperatingStockTy(convertValue(osDetails.getAddOperatingStock()));
+		osDetailsString.setDeductStockInProcessTy(convertValue(osDetails.getDeductStockInProcess()));
+		osDetailsString.setAddOperatingStockFgTy(convertValue(osDetails.getAddOperatingStockFg()));
+		osDetailsString.setDeductClStockFgTy(convertValue(osDetails.getDeductClStockFg()));
+		double subTy = CommonUtils.substractNumbers(osDetails.getAddOperatingStockFg(), osDetails.getDeductClStockFg());
+		double sumTy = CommonUtils.addNumbers(subTy,osDetails.getAddOperatingStockFg());
+		osDetailsString.setIncreaseDecreaseTotalTy(convertValue(CommonUtils.substractNumbers(sumTy, osDetails.getDeductClStockFg())));
+		
+		osDetailsString.setRawMaterialsTy(convertValue(osDetails.getRawMaterials()));
+		osDetailsString.setOtherSparesTy(convertValue(osDetails.getOtherSpares()));
+		osDetailsString.setRawMaterialsConsumedTotalTy(convertValue(CommonUtils.addNumbers(osDetails.getRawMaterials(), osDetails.getOtherSpares())));
+		
+		osDetailsString.setProvisionForTaxesTy(convertValue(osDetails.getProvisionForTaxes()));
+		osDetailsString.setProvisionForDeferredTaxTy(convertValue(osDetails.getProvisionForDeferredTax()));
+		osDetailsString.setProvisionForTaxTotalTy(convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
+		
+		return osDetailsString;
 	}
 	
+	public LiabilitiesDetailsString getLiabilitiesDetails(Long userId, Long applicationId, String industry, Long denomination) {
+		LiabilitiesDetails liabilitiesDetails = null;
+		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		/*==============================================THIRD YEAR===========================================================*/
+		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+			return liabilitiesDetailsString;
+		}
+		liabilitiesDetailsString.setOrdinarySharesCapitalFy(convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
+		liabilitiesDetailsString.setPreferencesSharesFy(convertValue(liabilitiesDetails.getPreferencesShares()));
+		liabilitiesDetailsString.setShareCapitalTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOrdinarySharesCapital(), liabilitiesDetails.getPreferencesShares())));
+		
+		liabilitiesDetailsString.setGeneralReserveFy(convertValue(liabilitiesDetails.getGeneralReserve()));
+		liabilitiesDetailsString.setOtherReservseFy(convertValue(liabilitiesDetails.getOtherReservse()));
+		liabilitiesDetailsString.setSurplusOrDeficitFy(convertValue(liabilitiesDetails.getSurplusOrDeficit()));
+		liabilitiesDetailsString.setOthersFy(convertValue(liabilitiesDetails.getOthers()));
+		liabilitiesDetailsString.setOtherReservesTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getGeneralReserve(),liabilitiesDetails.getOtherReservse(), liabilitiesDetails.getSurplusOrDeficit(),liabilitiesDetails.getOthers())));
+		
+		liabilitiesDetailsString.setTermLoansFy(convertValue(liabilitiesDetails.getTermLoans()));
+		liabilitiesDetailsString.setOtherNclUnsecuredLoansFromOtherFy(convertValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
+		liabilitiesDetailsString.setUnsecuredLoansOthersTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getTermLoans(), liabilitiesDetails.getOtherNclUnsecuredLoansFromOther())));
+		
+		liabilitiesDetailsString.setSubTotalAFy(convertValue(liabilitiesDetails.getSubTotalA()));
+		liabilitiesDetailsString.setShortTermBorrowingFromOthersFy(convertValue(liabilitiesDetails.getShortTermBorrowingFromOthers()));
+		liabilitiesDetailsString.setOtherBorrowingsTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getSubTotalA(), liabilitiesDetails.getShortTermBorrowingFromOthers())));
+		
+		liabilitiesDetailsString.setOtherNclFy(convertValue(liabilitiesDetails.getOtherNcl()));
+		liabilitiesDetailsString.setDeferredPaymentsCreditsFy(convertValue(liabilitiesDetails.getDeferredPaymentsCredits()));
+		liabilitiesDetailsString.setTermDepositsFy(convertValue(liabilitiesDetails.getTermDeposits()));
+		liabilitiesDetailsString.setDebenturesFy(convertValue(liabilitiesDetails.getDebentures()));
+		liabilitiesDetailsString.setOtherTermLiabiliesFy(convertValue(liabilitiesDetails.getOtherTermLiabilies()));
+		liabilitiesDetailsString.setOtherLongTermLiabilitiesTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOtherNcl(),liabilitiesDetails.getDeferredPaymentsCredits(),liabilitiesDetails.getTermDeposits(), liabilitiesDetails.getDebentures(), liabilitiesDetails.getOtherTermLiabilies())));
+		
+		liabilitiesDetailsString.setAdvancePaymentsFromCustomersFy(convertValue(liabilitiesDetails.getAdvancePaymentsFromCustomers()));
+		liabilitiesDetailsString.setDividendPayableFy(convertValue(liabilitiesDetails.getDividendPayable()));
+		liabilitiesDetailsString.setOtherStatutoryLiabilityFy(convertValue(liabilitiesDetails.getOtherStatutoryLiability()));
+		liabilitiesDetailsString.setDepositsOrInstalmentsOfTermLoansFy(convertValue(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
+		liabilitiesDetailsString.setOtherCurrentLiabilityFy(convertValue(liabilitiesDetails.getOtherCurrentLiability()));
+		liabilitiesDetailsString.setOtherCurrentLiabilitiesTotalFy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getAdvancePaymentsFromCustomers(),liabilitiesDetails.getDividendPayable(),liabilitiesDetails.getOtherStatutoryLiability(),liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans(),liabilitiesDetails.getOtherCurrentLiability())));
+		
+		/*==============================================SECOND YEAR===========================================================*/
+		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-2+"");
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+			return liabilitiesDetailsString;
+		}
+		liabilitiesDetailsString.setOrdinarySharesCapitalSy(convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
+		liabilitiesDetailsString.setPreferencesSharesSy(convertValue(liabilitiesDetails.getPreferencesShares()));
+		liabilitiesDetailsString.setShareCapitalTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOrdinarySharesCapital(), liabilitiesDetails.getPreferencesShares())));
+		
+		liabilitiesDetailsString.setGeneralReserveSy(convertValue(liabilitiesDetails.getGeneralReserve()));
+		liabilitiesDetailsString.setOtherReservseSy(convertValue(liabilitiesDetails.getOtherReservse()));
+		liabilitiesDetailsString.setSurplusOrDeficitSy(convertValue(liabilitiesDetails.getSurplusOrDeficit()));
+		liabilitiesDetailsString.setOthersSy(convertValue(liabilitiesDetails.getOthers()));
+		liabilitiesDetailsString.setOtherReservesTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getGeneralReserve(),liabilitiesDetails.getOtherReservse(), liabilitiesDetails.getSurplusOrDeficit(),liabilitiesDetails.getOthers())));
+		
+		liabilitiesDetailsString.setTermLoansSy(convertValue(liabilitiesDetails.getTermLoans()));
+		liabilitiesDetailsString.setOtherNclUnsecuredLoansFromOtherSy(convertValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
+		liabilitiesDetailsString.setUnsecuredLoansOthersTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getTermLoans(), liabilitiesDetails.getOtherNclUnsecuredLoansFromOther())));
+		
+		liabilitiesDetailsString.setSubTotalASy(convertValue(liabilitiesDetails.getSubTotalA()));
+		liabilitiesDetailsString.setShortTermBorrowingFromOthersSy(convertValue(liabilitiesDetails.getShortTermBorrowingFromOthers()));
+		liabilitiesDetailsString.setOtherBorrowingsTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getSubTotalA(), liabilitiesDetails.getShortTermBorrowingFromOthers())));
+		
+		liabilitiesDetailsString.setOtherNclSy(convertValue(liabilitiesDetails.getOtherNcl()));
+		liabilitiesDetailsString.setDeferredPaymentsCreditsSy(convertValue(liabilitiesDetails.getDeferredPaymentsCredits()));
+		liabilitiesDetailsString.setTermDepositsSy(convertValue(liabilitiesDetails.getTermDeposits()));
+		liabilitiesDetailsString.setDebenturesSy(convertValue(liabilitiesDetails.getDebentures()));
+		liabilitiesDetailsString.setOtherTermLiabiliesSy(convertValue(liabilitiesDetails.getOtherTermLiabilies()));
+		liabilitiesDetailsString.setOtherLongTermLiabilitiesTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOtherNcl(),liabilitiesDetails.getDeferredPaymentsCredits(),liabilitiesDetails.getTermDeposits(), liabilitiesDetails.getDebentures(), liabilitiesDetails.getOtherTermLiabilies())));
+		
+		liabilitiesDetailsString.setAdvancePaymentsFromCustomersSy(convertValue(liabilitiesDetails.getAdvancePaymentsFromCustomers()));
+		liabilitiesDetailsString.setDividendPayableSy(convertValue(liabilitiesDetails.getDividendPayable()));
+		liabilitiesDetailsString.setOtherStatutoryLiabilitySy(convertValue(liabilitiesDetails.getOtherStatutoryLiability()));
+		liabilitiesDetailsString.setDepositsOrInstalmentsOfTermLoansSy(convertValue(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
+		liabilitiesDetailsString.setOtherCurrentLiabilitySy(convertValue(liabilitiesDetails.getOtherCurrentLiability()));
+		liabilitiesDetailsString.setOtherCurrentLiabilitiesTotalSy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getAdvancePaymentsFromCustomers(),liabilitiesDetails.getDividendPayable(),liabilitiesDetails.getOtherStatutoryLiability(),liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans(),liabilitiesDetails.getOtherCurrentLiability())));
+		
+		/*==============================================FIRST YEAR===========================================================*/
+		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-3+"");
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+			return liabilitiesDetailsString;
+		}
+		liabilitiesDetailsString.setOrdinarySharesCapitalTy(convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
+		liabilitiesDetailsString.setPreferencesSharesTy(convertValue(liabilitiesDetails.getPreferencesShares()));
+		liabilitiesDetailsString.setShareCapitalTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOrdinarySharesCapital(), liabilitiesDetails.getPreferencesShares())));
+		
+		liabilitiesDetailsString.setGeneralReserveTy(convertValue(liabilitiesDetails.getGeneralReserve()));
+		liabilitiesDetailsString.setOtherReservseTy(convertValue(liabilitiesDetails.getOtherReservse()));
+		liabilitiesDetailsString.setSurplusOrDeficitTy(convertValue(liabilitiesDetails.getSurplusOrDeficit()));
+		liabilitiesDetailsString.setOthersTy(convertValue(liabilitiesDetails.getOthers()));
+		liabilitiesDetailsString.setOtherReservesTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getGeneralReserve(),liabilitiesDetails.getOtherReservse(), liabilitiesDetails.getSurplusOrDeficit(),liabilitiesDetails.getOthers())));
+		
+		liabilitiesDetailsString.setTermLoansTy(convertValue(liabilitiesDetails.getTermLoans()));
+		liabilitiesDetailsString.setOtherNclUnsecuredLoansFromOtherTy(convertValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
+		liabilitiesDetailsString.setUnsecuredLoansOthersTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getTermLoans(), liabilitiesDetails.getOtherNclUnsecuredLoansFromOther())));
+		
+		liabilitiesDetailsString.setSubTotalATy(convertValue(liabilitiesDetails.getSubTotalA()));
+		liabilitiesDetailsString.setShortTermBorrowingFromOthersTy(convertValue(liabilitiesDetails.getShortTermBorrowingFromOthers()));
+		liabilitiesDetailsString.setOtherBorrowingsTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getSubTotalA(), liabilitiesDetails.getShortTermBorrowingFromOthers())));
+		
+		liabilitiesDetailsString.setOtherNclTy(convertValue(liabilitiesDetails.getOtherNcl()));
+		liabilitiesDetailsString.setDeferredPaymentsCreditsTy(convertValue(liabilitiesDetails.getDeferredPaymentsCredits()));
+		liabilitiesDetailsString.setTermDepositsTy(convertValue(liabilitiesDetails.getTermDeposits()));
+		liabilitiesDetailsString.setDebenturesTy(convertValue(liabilitiesDetails.getDebentures()));
+		liabilitiesDetailsString.setOtherTermLiabiliesTy(convertValue(liabilitiesDetails.getOtherTermLiabilies()));
+		liabilitiesDetailsString.setOtherLongTermLiabilitiesTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOtherNcl(),liabilitiesDetails.getDeferredPaymentsCredits(),liabilitiesDetails.getTermDeposits(), liabilitiesDetails.getDebentures(), liabilitiesDetails.getOtherTermLiabilies())));
+		
+		liabilitiesDetailsString.setAdvancePaymentsFromCustomersTy(convertValue(liabilitiesDetails.getAdvancePaymentsFromCustomers()));
+		liabilitiesDetailsString.setDividendPayableTy(convertValue(liabilitiesDetails.getDividendPayable()));
+		liabilitiesDetailsString.setOtherStatutoryLiabilityTy(convertValue(liabilitiesDetails.getOtherStatutoryLiability()));
+		liabilitiesDetailsString.setDepositsOrInstalmentsOfTermLoansTy(convertValue(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
+		liabilitiesDetailsString.setOtherCurrentLiabilityTy(convertValue(liabilitiesDetails.getOtherCurrentLiability()));
+		liabilitiesDetailsString.setOtherCurrentLiabilitiesTotalTy(convertValue(CommonUtils.addNumbers(liabilitiesDetails.getAdvancePaymentsFromCustomers(),liabilitiesDetails.getDividendPayable(),liabilitiesDetails.getOtherStatutoryLiability(),liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans(),liabilitiesDetails.getOtherCurrentLiability())));
+		return liabilitiesDetailsString;
+	}
 	
-	
-	
-	
-	
-	
+	public AssetDetailsString getAssetDetails(Long userId, Long applicationId, String industry, Long denomination) {
+		AssetsDetails assetsDetails = null;
+		AssetDetailsString assetDetailsString = new AssetDetailsString();
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		/*==============================================THIRD YEAR===========================================================*/
+		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
+			return assetDetailsString;
+		}
+		assetDetailsString.setInvestmentsOrBookDebtsStringFy(convertValue(assetsDetails.getInvestmentsOrBookDebts()));
+		assetDetailsString.setDeferredReceviablesFy(convertValue(assetsDetails.getDeferredReceviables()));
+		assetDetailsString.setOthersFy(convertValue(assetsDetails.getOthers()));
+		assetDetailsString.setOtherInvestmentsTotalFy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthers())));
+		
+		assetDetailsString.setNonConsumableStoreAndSparesFy(convertValue(assetsDetails.getNonConsumableStoreAndSpares()));
+		assetDetailsString.setOtherNonCurrentAssetsFy(convertValue(assetsDetails.getOtherNonCurrentAssets()));
+		assetDetailsString.setOtherNonCurrentAssestsTotalFy(convertValue(CommonUtils.addNumbers(assetsDetails.getNonConsumableStoreAndSpares(),assetsDetails.getOtherNonCurrentAssets())));
+		
+		assetDetailsString.setReceivableOtherThanDefferredFy(convertValue(assetsDetails.getReceivableOtherThanDefferred()));
+		assetDetailsString.setExportReceivablesFy(convertValue(assetsDetails.getExportReceivables()));
+		assetDetailsString.setSundryDebtorsTotalFy(convertValue(CommonUtils.addNumbers(assetsDetails.getReceivableOtherThanDefferred(),assetsDetails.getExportReceivables())));
+		
+		assetDetailsString.setInvestmentsFy(convertValue(assetsDetails.getInvestments()));
+		assetDetailsString.setInstalmentsDeferredFy(convertValue(assetsDetails.getInstalmentsDeferred()));
+		assetDetailsString.setOtherCurrentAssetsFy(convertValue(assetsDetails.getOtherCurrentAssets()));
+		assetDetailsString.setOtherCurrentAssetsTotalFy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestments(),assetsDetails.getInstalmentsDeferred(), assetsDetails.getOtherCurrentAssets())));
+		
+		assetDetailsString.setAdvanceToSupplierRawMaterialsFy(convertValue(assetsDetails.getAdvanceToSupplierRawMaterials()));
+		assetDetailsString.setAdvancePaymentTaxesFy(convertValue(assetsDetails.getAdvancePaymentTaxes()));
+		assetDetailsString.setShortTermLoansAndAdvancesTotalFy(convertValue(CommonUtils.addNumbers(assetsDetails.getAdvanceToSupplierRawMaterials(),assetsDetails.getAdvancePaymentTaxes() )));
+		/*==============================================SECOND YEAR===========================================================*/
+		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-2+"");
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
+			return assetDetailsString;
+		}
+		assetDetailsString.setInvestmentsOrBookDebtsStringSy(convertValue(assetsDetails.getInvestmentsOrBookDebts()));
+		assetDetailsString.setDeferredReceviablesSy(convertValue(assetsDetails.getDeferredReceviables()));
+		assetDetailsString.setOthersSy(convertValue(assetsDetails.getOthers()));
+		assetDetailsString.setOtherInvestmentsTotalSy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthers())));
+		
+		assetDetailsString.setNonConsumableStoreAndSparesSy(convertValue(assetsDetails.getNonConsumableStoreAndSpares()));
+		assetDetailsString.setOtherNonCurrentAssetsSy(convertValue(assetsDetails.getOtherNonCurrentAssets()));
+		assetDetailsString.setOtherNonCurrentAssestsTotalSy(convertValue(CommonUtils.addNumbers(assetsDetails.getNonConsumableStoreAndSpares(),assetsDetails.getOtherNonCurrentAssets())));
+		
+		assetDetailsString.setReceivableOtherThanDefferredSy(convertValue(assetsDetails.getReceivableOtherThanDefferred()));
+		assetDetailsString.setExportReceivablesSy(convertValue(assetsDetails.getExportReceivables()));
+		assetDetailsString.setSundryDebtorsTotalSy(convertValue(CommonUtils.addNumbers(assetsDetails.getReceivableOtherThanDefferred(),assetsDetails.getExportReceivables())));
+		
+		assetDetailsString.setInvestmentsSy(convertValue(assetsDetails.getInvestments()));
+		assetDetailsString.setInstalmentsDeferredSy(convertValue(assetsDetails.getInstalmentsDeferred()));
+		assetDetailsString.setOtherCurrentAssetsSy(convertValue(assetsDetails.getOtherCurrentAssets()));
+		assetDetailsString.setOtherCurrentAssetsTotalSy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestments(),assetsDetails.getInstalmentsDeferred(), assetsDetails.getOtherCurrentAssets())));
+		
+		assetDetailsString.setAdvanceToSupplierRawMaterialsSy(convertValue(assetsDetails.getAdvanceToSupplierRawMaterials()));
+		assetDetailsString.setAdvancePaymentTaxesSy(convertValue(assetsDetails.getAdvancePaymentTaxes()));
+		assetDetailsString.setShortTermLoansAndAdvancesTotalSy(convertValue(CommonUtils.addNumbers(assetsDetails.getAdvanceToSupplierRawMaterials(),assetsDetails.getAdvancePaymentTaxes() )));
+		/*==============================================SECOND YEAR===========================================================*/
+		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-3+"");
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
+			return assetDetailsString;
+		}
+		assetDetailsString.setInvestmentsOrBookDebtsStringTy(convertValue(assetsDetails.getInvestmentsOrBookDebts()));
+		assetDetailsString.setDeferredReceviablesTy(convertValue(assetsDetails.getDeferredReceviables()));
+		assetDetailsString.setOthersTy(convertValue(assetsDetails.getOthers()));
+		assetDetailsString.setOtherInvestmentsTotalTy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthers())));
+		
+		assetDetailsString.setNonConsumableStoreAndSparesTy(convertValue(assetsDetails.getNonConsumableStoreAndSpares()));
+		assetDetailsString.setOtherNonCurrentAssetsTy(convertValue(assetsDetails.getOtherNonCurrentAssets()));
+		assetDetailsString.setOtherNonCurrentAssestsTotalTy(convertValue(CommonUtils.addNumbers(assetsDetails.getNonConsumableStoreAndSpares(),assetsDetails.getOtherNonCurrentAssets())));
+		
+		assetDetailsString.setReceivableOtherThanDefferredTy(convertValue(assetsDetails.getReceivableOtherThanDefferred()));
+		assetDetailsString.setExportReceivablesTy(convertValue(assetsDetails.getExportReceivables()));
+		assetDetailsString.setSundryDebtorsTotalTy(convertValue(CommonUtils.addNumbers(assetsDetails.getReceivableOtherThanDefferred(),assetsDetails.getExportReceivables())));
+		
+		assetDetailsString.setInvestmentsTy(convertValue(assetsDetails.getInvestments()));
+		assetDetailsString.setInstalmentsDeferredTy(convertValue(assetsDetails.getInstalmentsDeferred()));
+		assetDetailsString.setOtherCurrentAssetsTy(convertValue(assetsDetails.getOtherCurrentAssets()));
+		assetDetailsString.setOtherCurrentAssetsTotalTy(convertValue(CommonUtils.addNumbers(assetsDetails.getInvestments(),assetsDetails.getInstalmentsDeferred(), assetsDetails.getOtherCurrentAssets())));
+		
+		assetDetailsString.setAdvanceToSupplierRawMaterialsTy(convertValue(assetsDetails.getAdvanceToSupplierRawMaterials()));
+		assetDetailsString.setAdvancePaymentTaxesTy(convertValue(assetsDetails.getAdvancePaymentTaxes()));
+		assetDetailsString.setShortTermLoansAndAdvancesTotalTy(convertValue(CommonUtils.addNumbers(assetsDetails.getAdvanceToSupplierRawMaterials(),assetsDetails.getAdvancePaymentTaxes() )));
+		return assetDetailsString;
+	}
 	
 	/*********************************************************CAM UTILS****************************************************************/
 	
@@ -1268,7 +1642,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
 	}
-	public static Object convertToString (Object obj) throws Exception {
+	public static Object convertToDoubleForXml (Object obj) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
 		 for(Field field : fields) {
 			 field.setAccessible(true);
