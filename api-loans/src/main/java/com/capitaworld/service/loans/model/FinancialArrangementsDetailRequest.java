@@ -22,6 +22,8 @@ public class FinancialArrangementsDetailRequest {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date loanDate;
+	
+	private Date reportedDate;
 
 	private String loanType;
 
@@ -137,6 +139,14 @@ public class FinancialArrangementsDetailRequest {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public Date getReportedDate() {
+		return reportedDate;
+	}
+
+	public void setReportedDate(Date reportedDate) {
+		this.reportedDate = reportedDate;
 	}
 
 	public Double getEmi() {
