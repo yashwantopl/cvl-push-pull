@@ -1107,4 +1107,15 @@ public enum APIFlags {
 		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
+	
+	public static String getCMAFilterYear(String year) {
+		if(!isObjectNullOrEmpty(year)) {
+			String[] split = year.split("\\.");
+			if(split.length > 1) {
+				return split[0]; 
+			}
+			return year;
+		}
+		return null;
+	}
 }
