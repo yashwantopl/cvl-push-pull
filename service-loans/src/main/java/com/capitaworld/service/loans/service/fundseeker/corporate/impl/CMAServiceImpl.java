@@ -29,7 +29,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.sidbi.integration.model.financial.BalanceSheetAssetReq;
 import com.capitaworld.sidbi.integration.model.financial.BalanceSheetLiabilitiesReq;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
-import com.capitaworld.sidbi.integration.model.financial.ProfiltAndLossStmntReq;
+import com.capitaworld.sidbi.integration.model.financial.ProfitAndLossStmntReq;
 
 @Service
 @Transactional
@@ -196,12 +196,12 @@ public class CMAServiceImpl implements CMAService {
 	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId) {
 		
 		FinancialRequest response = new FinancialRequest();
-	
+		response.setApplicationId(applicationId);
 		List<OperatingStatementDetails> operatingStatementList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
-		List<ProfiltAndLossStmntReq> profiltAndLossStmntReqList = new ArrayList<>(operatingStatementList.size());
-		ProfiltAndLossStmntReq prlossStmntReq = null;
+		List<ProfitAndLossStmntReq> profiltAndLossStmntReqList = new ArrayList<>(operatingStatementList.size());
+		ProfitAndLossStmntReq prlossStmntReq = null;
 		for(OperatingStatementDetails operatingStatement : operatingStatementList) {
-			prlossStmntReq = new ProfiltAndLossStmntReq();
+			prlossStmntReq = new ProfitAndLossStmntReq();
 			prlossStmntReq.setApplicationId(applicationId);
 			prlossStmntReq.setCurrency(getCurrency(applicationId));
 			prlossStmntReq.setSubTotalOfIncome(operatingStatement.getSubTotalOfIncome());
