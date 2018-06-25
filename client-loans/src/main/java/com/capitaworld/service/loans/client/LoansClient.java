@@ -203,6 +203,8 @@ public class LoansClient {
     private static final String CHECK_AMOUNT_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/check_amount_by_user_and_product";
     private static final String GET_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/get_by_user_and_product";
     
+    private static final String GET_DATA_FOR_HUNTER="/common/getDataForHunter";
+    
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2066,6 +2068,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while call getUserAmountMapByUserAndProduct");
+		}
+	}
+	
+	
+	public LoansResponse getDataForHunter(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_HUNTER).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
 		}
 	}
 }
