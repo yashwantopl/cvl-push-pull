@@ -77,6 +77,7 @@ public class CMAServiceImpl implements CMAService {
 					liabilitiesDetails.setCreatedDate(new Date());
 					liabilitiesDetails.setIsActive(true);
 				}
+				liabilitiesDetails.setYear(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
 				liabilitiesDetailsRepository.save(liabilitiesDetails);
 				
 			}	
@@ -109,6 +110,7 @@ public class CMAServiceImpl implements CMAService {
 					assetsDetails.setCreatedDate(new Date());
 					assetsDetails.setIsActive(true);
 				}
+				assetsDetails.setYear(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
 				assetsDetailsRepository.save(assetsDetails);
 			}	
 		} catch (Exception e) {
@@ -139,6 +141,7 @@ public class CMAServiceImpl implements CMAService {
 					operatingStatementDetails.setCreatedDate(new Date());
 					operatingStatementDetails.setIsActive(true);
 				}
+				operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(operatingStatementDetails.getYear()));
 				operatingStatementDetailsRepository.save(operatingStatementDetails);
 			}
 		} catch (Exception e) {
@@ -193,6 +196,7 @@ public class CMAServiceImpl implements CMAService {
 		
 	}
 	
+	@Override
 	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId) {
 		
 		FinancialRequest response = new FinancialRequest();
@@ -203,6 +207,7 @@ public class CMAServiceImpl implements CMAService {
 		for(OperatingStatementDetails operatingStatement : operatingStatementList) {
 			prlossStmntReq = new ProfitAndLossStmntReq();
 			prlossStmntReq.setApplicationId(applicationId);
+			prlossStmntReq.setYear(CommonUtils.getCMAFilterYear(operatingStatement.getYear()));
 			prlossStmntReq.setCurrency(getCurrency(applicationId));
 			prlossStmntReq.setSubTotalOfIncome(operatingStatement.getSubTotalOfIncome());
 			prlossStmntReq.setTotalGrossSales(operatingStatement.getTotalGrossSales());
@@ -245,6 +250,7 @@ public class CMAServiceImpl implements CMAService {
 		for(LiabilitiesDetails liabilitiesDetails : liabilitiesDetailList) {
 			liabilitiesReq = new BalanceSheetLiabilitiesReq();
 			liabilitiesReq.setApplicationId(applicationId);
+			liabilitiesReq.setYear(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
 			liabilitiesReq.setCurrency(getCurrency(applicationId));
 			liabilitiesReq.setOrdinarySharesCapital(liabilitiesDetails.getOrdinarySharesCapital());
 			liabilitiesReq.setShareWarrentsOutstanding(liabilitiesDetails.getShareWarrentsOutstanding());
@@ -283,6 +289,7 @@ public class CMAServiceImpl implements CMAService {
 			bsAssetReq = new BalanceSheetAssetReq();
 			bsAssetReq.setApplicationId(applicationId);
 			bsAssetReq.setCurrency(getCurrency(applicationId));
+			bsAssetReq.setYear(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
 			bsAssetReq.setGrossBlock(assetsDetails.getGrossBlock());
 			bsAssetReq.setDepreciationToDate(assetsDetails.getDepreciationToDate());
 			bsAssetReq.setImpairmentAsset(assetsDetails.getImpairmentAsset());
