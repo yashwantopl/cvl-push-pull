@@ -49,6 +49,7 @@ public class FundSeekerInputRequestResponse {
 
     private Double collateralSecurityAmount;
 
+    private Integer constitutionId;
     ///////////
 
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
@@ -228,5 +229,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setOrganisationName(String organisationName) {
         this.organisationName = organisationName;
+    }
+
+    public Integer getConstitutionId() {
+        return constitutionId;
+    }
+
+    public void setConstitutionId(Integer constitutionId) {
+        this.constitutionId = constitutionId;
     }
 }
