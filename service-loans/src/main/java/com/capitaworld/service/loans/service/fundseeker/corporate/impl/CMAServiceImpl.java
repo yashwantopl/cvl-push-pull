@@ -2,7 +2,10 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,7 @@ import com.capitaworld.sidbi.integration.model.financial.BalanceSheetAssetReq;
 import com.capitaworld.sidbi.integration.model.financial.BalanceSheetLiabilitiesReq;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
 import com.capitaworld.sidbi.integration.model.financial.ProfitAndLossStmntReq;
+import com.capitaworld.sidbi.integration.model.financial.RatioDetailsReq;
 
 @Service
 @Transactional
@@ -196,12 +200,44 @@ public class CMAServiceImpl implements CMAService {
 		
 	}
 	
+	/** API FOR SIDBI INTEGRATION 
+	 * @author harshit
+	 * Date : 22-Jun-2018
+	 */
 	@Override
 	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId) {
 		
 		FinancialRequest response = new FinancialRequest();
 		response.setApplicationId(applicationId);
+		
+		Set<String> yearList = new HashSet<>();
+		
+		//GET OPERATING DETAILS BY APPLICATION ID
 		List<OperatingStatementDetails> operatingStatementList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
+		//REMOVE . FROM YEAR 
+		for(OperatingStatementDetails operatingStatement : operatingStatementList) {
+			operatingStatement.setYear(CommonUtils.getCMAFilterYear(operatingStatement.getYear()));
+			yearList.add(CommonUtils.getCMAFilterYear(operatingStatement.getYear()));
+		}
+		
+		//GET LIABILITY DETAILS BY APPLICATION ID
+		List<LiabilitiesDetails> liabilitiesDetailList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
+		for(LiabilitiesDetails liabilitiesDetails : liabilitiesDetailList) {
+			liabilitiesDetails.setYear(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
+			yearList.add(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
+		}
+		
+		
+		//GET ASSETS DETAILS BY APPLICATION ID
+		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
+		for(AssetsDetails assetsDetails : assetsDetailsList) {
+			assetsDetails.setYear(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
+			yearList.add(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
+		}
+		
+		
+		//NOW READ DATA FROM LIST AND CALCULATE 
+		
 		List<ProfitAndLossStmntReq> profiltAndLossStmntReqList = new ArrayList<>(operatingStatementList.size());
 		ProfitAndLossStmntReq prlossStmntReq = null;
 		for(OperatingStatementDetails operatingStatement : operatingStatementList) {
@@ -209,42 +245,107 @@ public class CMAServiceImpl implements CMAService {
 			prlossStmntReq.setApplicationId(applicationId);
 			prlossStmntReq.setYear(CommonUtils.getCMAFilterYear(operatingStatement.getYear()));
 			prlossStmntReq.setCurrency(getCurrency(applicationId));
-			prlossStmntReq.setSubTotalOfIncome(operatingStatement.getSubTotalOfIncome());
-			prlossStmntReq.setTotalGrossSales(operatingStatement.getTotalGrossSales());
-			prlossStmntReq.setLessExciseDuty(operatingStatement.getLessExciseDuty());
-			prlossStmntReq.setNetSales(operatingStatement.getNetSales());
-			//(D38-D42)+(D46-D50)
-			prlossStmntReq.setInDecStock((CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStock()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductStockInProcess()))
-					+ (CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStockFg()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductClStockFg())));
-			prlossStmntReq.setRawMaterials(operatingStatement.getRawMaterials());
-			prlossStmntReq.setPowerAndFuel(operatingStatement.getPowerAndFuel());
-			prlossStmntReq.setEmployeeCost(operatingStatement.getDirectLabour());
-			prlossStmntReq.setOtherMfgExpenses(operatingStatement.getOtherMfgExpenses());
-			prlossStmntReq.setGeneralAdminExp(operatingStatement.getGeneralAdminExp());
-			prlossStmntReq.setSellingAndDistributionExpenses(operatingStatement.getSellingAndDistributionExpenses());
-			prlossStmntReq.setMiscellaneousExpenses(operatingStatement.getOtherMfgExpenses());
-			prlossStmntReq.setExpensesAmortised(operatingStatement.getExpensesAmortised());
-			prlossStmntReq.setTotalExpenditure(0.0);
-			prlossStmntReq.setOperatingProfitOI(0.0);
-			prlossStmntReq.setAddOtherRevenueIncome(operatingStatement.getAddOtherRevenueIncome());
-			prlossStmntReq.setOperatingProfitEBITDA(0.0);
-			prlossStmntReq.setInterest(operatingStatement.getInterest());
-			prlossStmntReq.setPbdt(0.0);
-			prlossStmntReq.setDepreciation(operatingStatement.getDepreciation());
-			prlossStmntReq.setProfitBeforeTaxAndExpItems(0.0);
-			prlossStmntReq.setExceptionalIncomeExp(operatingStatement.getNetofNonOpIncomeOrExpenses());
-			prlossStmntReq.setProfitBeforeTax(0.0);
-			//Operating Statement: C75+C77
-			prlossStmntReq.setProvisionForTaxes(CommonUtils.checkDoubleNull(operatingStatement.getProvisionForTaxes())  + CommonUtils.checkDoubleNull(operatingStatement.getProfitBeforeTaxOrLoss()));
-			prlossStmntReq.setProfitAfterTax(0.0);
-			prlossStmntReq.setDividendRate(operatingStatement.getEquityDeividendPaidAmt());
-			prlossStmntReq.setEquityDividend(0.0);
-			prlossStmntReq.setEarningsPerShare(0.0);
+			prlossStmntReq.setSubTotalOfIncome(CommonUtils.checkDoubleNull(operatingStatement.getSubTotalOfIncome()));
+			//B20
+			prlossStmntReq.setTotalGrossSales(CommonUtils.checkDoubleNull(operatingStatement.getTotalGrossSales()));
+			//B21
+			prlossStmntReq.setLessExciseDuty(CommonUtils.checkDoubleNull(operatingStatement.getLessExciseDuty()));
+			//B22 -------------->   =B20-B21
+			double netSales = CommonUtils.checkDoubleNull(operatingStatement.getTotalGrossSales()) - CommonUtils.checkDoubleNull(operatingStatement.getLessExciseDuty());
+			prlossStmntReq.setNetSales(netSales);
+			//B24             (D38-D42)+(D46-D50)
+			double inDecStock = (CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStock()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductStockInProcess()))
+					+ (CommonUtils.checkDoubleNull(operatingStatement.getAddOperatingStockFg()) - CommonUtils.checkDoubleNull(operatingStatement.getDeductClStockFg()));
+			prlossStmntReq.setInDecStock(inDecStock);
+			//B25
+			prlossStmntReq.setRawMaterials(CommonUtils.checkDoubleNull(operatingStatement.getRawMaterials()));
+			//B26
+			prlossStmntReq.setPowerAndFuel(CommonUtils.checkDoubleNull(operatingStatement.getPowerAndFuel()));
+			//B27
+			prlossStmntReq.setEmployeeCost(CommonUtils.checkDoubleNull(operatingStatement.getDirectLabour()));
+			//B28
+			prlossStmntReq.setOtherMfgExpenses(CommonUtils.checkDoubleNull(operatingStatement.getOtherMfgExpenses()));
+			//B29
+			prlossStmntReq.setGeneralAdminExp(CommonUtils.checkDoubleNull(operatingStatement.getGeneralAdminExp()));
+			//B30
+			prlossStmntReq.setSellingAndDistributionExpenses(CommonUtils.checkDoubleNull(operatingStatement.getSellingAndDistributionExpenses()));
+			//B31
+			prlossStmntReq.setMiscellaneousExpenses(CommonUtils.checkDoubleNull(operatingStatement.getOtherMfgExpenses()));
+			//B32
+			prlossStmntReq.setExpensesAmortised(CommonUtils.checkDoubleNull(operatingStatement.getExpensesAmortised()));
+			//B33  --------------------->   =SUM(B24:B31)-B32
+			double totalExpenditure = (inDecStock + CommonUtils.checkDoubleNull(operatingStatement.getOtherMfgExpenses())) - CommonUtils.checkDoubleNull(operatingStatement.getExpensesAmortised());
+			prlossStmntReq.setTotalExpenditure(totalExpenditure);
+			
+			//B34  ---------------------> =B22-B33
+			double opProfitOT = netSales - totalExpenditure;
+			prlossStmntReq.setOperatingProfitOI(opProfitOT);
+			//B35
+			prlossStmntReq.setAddOtherRevenueIncome(CommonUtils.checkDoubleNull(operatingStatement.getAddOtherRevenueIncome()));
+			
+			//B36 ------------------> =B34+B35
+			double opProfitEBITDA = opProfitOT + CommonUtils.checkDoubleNull(operatingStatement.getAddOtherRevenueIncome());
+			prlossStmntReq.setOperatingProfitEBITDA(opProfitEBITDA);
+			//B37
+			prlossStmntReq.setInterest(CommonUtils.checkDoubleNull(operatingStatement.getInterest()));
+			
+			//B38 -----------------------> =B36-B37
+			double pbdt = opProfitEBITDA - CommonUtils.checkDoubleNull(operatingStatement.getInterest());
+			prlossStmntReq.setPbdt(pbdt);
+			//B39
+			prlossStmntReq.setDepreciation(CommonUtils.checkDoubleNull(operatingStatement.getDepreciation()));
+			
+			//B40 ------------------------->=B38-B39
+			double prftBfrTaxAndExp = pbdt - CommonUtils.checkDoubleNull(operatingStatement.getDepreciation());
+			prlossStmntReq.setProfitBeforeTaxAndExpItems(prftBfrTaxAndExp);
+			//B41
+			prlossStmntReq.setExceptionalIncomeExp(CommonUtils.checkDoubleNull(operatingStatement.getNetofNonOpIncomeOrExpenses()));
+			
+			//B42 ------------------> =B40+B41
+			double profitBeforeTax = prftBfrTaxAndExp + CommonUtils.checkDoubleNull(operatingStatement.getNetofNonOpIncomeOrExpenses());
+			prlossStmntReq.setProfitBeforeTax(profitBeforeTax);
+			
+			//B43 ----------------> Operating Statement: C75+C77
+			double provisionForTaxes = CommonUtils.checkDoubleNull(operatingStatement.getProvisionForTaxes())  + CommonUtils.checkDoubleNull(operatingStatement.getProfitBeforeTaxOrLoss());
+			prlossStmntReq.setProvisionForTaxes(provisionForTaxes);
+			
+			//B44  -------------------->=B42-B43
+			double profitAfterTax = profitBeforeTax - provisionForTaxes;
+			prlossStmntReq.setProfitAfterTax(profitAfterTax);
+			//B45
+			double eqDvdntPaidAmt = CommonUtils.checkDoubleNull(operatingStatement.getEquityDeividendPaidAmt());
+			prlossStmntReq.setDividendRate(eqDvdntPaidAmt);
+			
+			
+			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailList.stream().filter(a -> operatingStatement.getYear().equals(a.getYear())).findFirst().orElse(null);
+			Double ordinarySharesCapital = 0.0;
+			if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+				ordinarySharesCapital = CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital());
+			}
+			//B46 -----------------------> =IF(B45=0,0,B45*$B11/B53)
+			if(eqDvdntPaidAmt == 0) {
+				prlossStmntReq.setEquityDividend(0.0);	
+			} else {
+				if(ordinarySharesCapital != 0) {
+					double equityDividend = (eqDvdntPaidAmt * 0) / ordinarySharesCapital;
+					prlossStmntReq.setEquityDividend(equityDividend);
+				} else {
+					prlossStmntReq.setEquityDividend(0.0);	
+				}
+			}
+			
+			//B47 -------------------------------> =(B44)*$B11/B53
+			if(ordinarySharesCapital != 0) {
+				double earningsPerShare = (profitAfterTax * 0) / ordinarySharesCapital;
+				prlossStmntReq.setEarningsPerShare(earningsPerShare);
+			} else {
+				prlossStmntReq.setEarningsPerShare(0.0);	
+			}
 			profiltAndLossStmntReqList.add(prlossStmntReq);
 		}
 		response.setProfiltAndLossStmntReqList(profiltAndLossStmntReqList);
 		
-		List<LiabilitiesDetails> liabilitiesDetailList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
+		
 		List<BalanceSheetLiabilitiesReq> liabilitiesReqList = new ArrayList<>(liabilitiesDetailList.size());
 		BalanceSheetLiabilitiesReq liabilitiesReq = null;
 		for(LiabilitiesDetails liabilitiesDetails : liabilitiesDetailList) {
@@ -252,37 +353,67 @@ public class CMAServiceImpl implements CMAService {
 			liabilitiesReq.setApplicationId(applicationId);
 			liabilitiesReq.setYear(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
 			liabilitiesReq.setCurrency(getCurrency(applicationId));
-			liabilitiesReq.setOrdinarySharesCapital(liabilitiesDetails.getOrdinarySharesCapital());
-			liabilitiesReq.setShareWarrentsOutstanding(liabilitiesDetails.getShareWarrentsOutstanding());
-			liabilitiesReq.setRevaluationReservse(liabilitiesDetails.getRevaluationReservse());
+			//B53
+			liabilitiesReq.setOrdinarySharesCapital(CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital()));
+			//B54
+			liabilitiesReq.setShareWarrentsOutstanding(CommonUtils.checkDoubleNull(liabilitiesDetails.getShareWarrentsOutstanding()));
+			//B55
+			liabilitiesReq.setRevaluationReservse(CommonUtils.checkDoubleNull(liabilitiesDetails.getRevaluationReservse()));
 			
-			
-			//Liabilities: C73+C77+C79+C83
-			//23. General Reserve Add 25. Other reserves [excluding provisions] Add 26. Surplus(+) or Deficit(-) in Profit & Loss Account. Add 27 b. Others [specify] 
-			liabilitiesReq.setOtherReservesAndSurplus(CommonUtils.checkDoubleNull(liabilitiesDetails.getGeneralReserve()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherReservse()) 
-			+ CommonUtils.checkDoubleNull(liabilitiesDetails.getSurplusOrDeficit()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOthers()));
-			liabilitiesReq.setShareholderFunds(0.0);
-			liabilitiesReq.setMinorityInterest(liabilitiesDetails.getMinorityInterest());
-			liabilitiesReq.setTermLiabilitiesSecured(liabilitiesDetails.getTermLiabilitiesSecured());
-			liabilitiesReq.setOtherNclUnsecuredLoansFromPromoters(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters());
-			liabilitiesReq.setUnsecuredLoansOthers(0.0);
-			liabilitiesReq.setDeferredTaxLiability(liabilitiesDetails.getDeferredTaxLiability());
-			liabilitiesReq.setOtherLongTermLiabilities(0.0);
-			liabilitiesReq.setOtherBorrowings(0.0);
-			liabilitiesReq.setOtherNclLongTermProvisions(liabilitiesDetails.getOtherNclLongTermProvisions());
-			liabilitiesReq.setTotalNonCurrentLiabilities(0.0);
-			liabilitiesReq.setSundryCreditors(liabilitiesDetails.getSundryCreditors());
-			liabilitiesReq.setOtherCurrentLiabilities(0.0);
-			liabilitiesReq.setProvisionalForTaxation(liabilitiesDetails.getProvisionalForTaxation());
-			liabilitiesReq.setTotalCurrentLiabilities(0.0);
-			liabilitiesReq.setTotalLiabilities(0.0);
+			//B56      Liabilities: C73+C77+C79+C83
+			//23. General Reserve Add 25. Other reserves [excluding provisions] Add 26. Surplus(+) or Deficit(-) in Profit & Loss Account. Add 27 b. Others [specify]
+			double otherReservesAndSurplus = CommonUtils.checkDoubleNull(liabilitiesDetails.getGeneralReserve()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherReservse()) 
+			+ CommonUtils.checkDoubleNull(liabilitiesDetails.getSurplusOrDeficit()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOthers());
+			liabilitiesReq.setOtherReservesAndSurplus(otherReservesAndSurplus);
+			//B57 -------------------------> =SUM(B53:B56)
+			double shareholderFunds = CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital()) + otherReservesAndSurplus;
+			liabilitiesReq.setShareholderFunds(shareholderFunds);
+			//B58
+			liabilitiesReq.setMinorityInterest(CommonUtils.checkDoubleNull(liabilitiesDetails.getMinorityInterest()));
+			//B59
+			liabilitiesReq.setTermLiabilitiesSecured(CommonUtils.checkDoubleNull(liabilitiesDetails.getTermLiabilitiesSecured()));
+			//B60
+			liabilitiesReq.setOtherNclUnsecuredLoansFromPromoters(CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()));
+			//B61 -----------------> Liabilities: D47+D59
+			liabilitiesReq.setUnsecuredLoansOthers(CommonUtils.checkDoubleNull(liabilitiesDetails.getTermLiabilitiesUnsecured())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
+			//B62
+			liabilitiesReq.setDeferredTaxLiability(CommonUtils.checkDoubleNull(liabilitiesDetails.getDeferredTaxLiability()));
+			//B63    Liabilities: D61+D49+D51+D41+D53
+			liabilitiesReq.setOtherLongTermLiabilities(CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherNclOthers())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getDeferredPaymentsCredits())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getTermDeposits())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getDebentures())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherTermLiabilies()));
+			//B64     Liabilities: D15+D17
+			liabilitiesReq.setOtherBorrowings(CommonUtils.checkDoubleNull(liabilitiesDetails.getSubTotalA())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getShortTermBorrowingFromOthers()));
+			//B65
+			liabilitiesReq.setOtherNclLongTermProvisions(CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherNclLongTermProvisions()));
+			//B66 --------------------> =SUM(B58:B65)
+			double totalNCLiabilities = CommonUtils.checkDoubleNull(liabilitiesDetails.getMinorityInterest()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherNclLongTermProvisions());
+			liabilitiesReq.setTotalNonCurrentLiabilities(totalNCLiabilities);
+			//B67
+			liabilitiesReq.setSundryCreditors(CommonUtils.checkDoubleNull(liabilitiesDetails.getSundryCreditors()));
+			//B68 ------------->  Liabilities: D21+D25+D27+D32+D29
+			liabilitiesReq.setOtherCurrentLiabilities(CommonUtils.checkDoubleNull(liabilitiesDetails.getAdvancePaymentsFromCustomers())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getDividendPayable())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherStatutoryLiability())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getOtherCurrentLiability())
+					+ CommonUtils.checkDoubleNull(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
+			//B69
+			liabilitiesReq.setProvisionalForTaxation(CommonUtils.checkDoubleNull(liabilitiesDetails.getProvisionalForTaxation()));
+			//B70 -----------------------> =SUM(B67:B69)
+			double totalCurrentLiabilities = CommonUtils.checkDoubleNull(liabilitiesDetails.getSundryCreditors()) + CommonUtils.checkDoubleNull(liabilitiesDetails.getProvisionalForTaxation());
+			liabilitiesReq.setTotalCurrentLiabilities(totalCurrentLiabilities);
+			//B71  -------------------> =B57+B66+B70
+			liabilitiesReq.setTotalLiabilities(shareholderFunds + totalNCLiabilities + totalCurrentLiabilities);
 			liabilitiesReqList.add(liabilitiesReq);
 		}
-		
 		response.setBalanceSheetLiabilitiesReqList(liabilitiesReqList);
 		
 		
-		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
+		
 		List<BalanceSheetAssetReq> bsAssetReqList = new ArrayList<>(assetsDetailsList.size());
 		BalanceSheetAssetReq bsAssetReq = null;
 		for(AssetsDetails assetsDetails : assetsDetailsList) {
@@ -290,37 +421,218 @@ public class CMAServiceImpl implements CMAService {
 			bsAssetReq.setApplicationId(applicationId);
 			bsAssetReq.setCurrency(getCurrency(applicationId));
 			bsAssetReq.setYear(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
-			bsAssetReq.setGrossBlock(assetsDetails.getGrossBlock());
-			bsAssetReq.setDepreciationToDate(assetsDetails.getDepreciationToDate());
-			bsAssetReq.setImpairmentAsset(assetsDetails.getImpairmentAsset());
-			bsAssetReq.setNetBlock(assetsDetails.getNetBlock());
-			bsAssetReq.setOtherNcaOtherCapitalWorkInprogress(assetsDetails.getOtherNcaOtherCapitalWorkInprogress());
-			bsAssetReq.setIntangibleAssets(assetsDetails.getIntangibleAssets());
-			bsAssetReq.setOthersPreOperativeExpensesPending(assetsDetails.getOthersPreOperativeExpensesPending());
-			bsAssetReq.setOthersAssetsInTransit(assetsDetails.getOthersAssetsInTransit());
-			bsAssetReq.setInvestmentsInSubsidiary(assetsDetails.getInvestmentsInSubsidiary());
+			//B74
+			bsAssetReq.setGrossBlock(CommonUtils.checkDoubleNull(assetsDetails.getGrossBlock()));
+			//B75
+			bsAssetReq.setDepreciationToDate(CommonUtils.checkDoubleNull(assetsDetails.getDepreciationToDate()));
+			//B76
+			bsAssetReq.setImpairmentAsset(CommonUtils.checkDoubleNull(assetsDetails.getImpairmentAsset()));
+			//B77 -----------------> =B74-B75-B76
+			double netBlock = CommonUtils.checkDoubleNull(assetsDetails.getGrossBlock()) - CommonUtils.checkDoubleNull(assetsDetails.getDepreciationToDate()) - 
+					CommonUtils.checkDoubleNull(assetsDetails.getImpairmentAsset());
+			bsAssetReq.setNetBlock(netBlock);
+			//B78
+			bsAssetReq.setOtherNcaOtherCapitalWorkInprogress(CommonUtils.checkDoubleNull(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()));
+			//B79
+			bsAssetReq.setIntangibleAssets(CommonUtils.checkDoubleNull(assetsDetails.getIntangibleAssets()));
+			//B80
+			bsAssetReq.setOthersPreOperativeExpensesPending(CommonUtils.checkDoubleNull(assetsDetails.getOthersPreOperativeExpensesPending()));
+			//B81
+			bsAssetReq.setOthersAssetsInTransit(CommonUtils.checkDoubleNull(assetsDetails.getOthersAssetsInTransit()));
+			//B82
+			bsAssetReq.setInvestmentsInSubsidiary(CommonUtils.checkDoubleNull(assetsDetails.getInvestmentsInSubsidiary()));
 			
-			//Asset: D65+D69+D74
+			//B83  Asset: D65+D69+D74
 			//44. Investments/book debts/advances/deposits which are not Current Assets((b) Others Add [iii]  Deferred receivables [maturity exceeding 1 yr] Add [iv]  Others (Others) )
-			bsAssetReq.setOtherInvestments(CommonUtils.checkDoubleNull(assetsDetails.getInvestmentsOrBookDebts()) + CommonUtils.checkDoubleNull(assetsDetails.getDeferredReceviables())
-			+ CommonUtils.checkDoubleNull(assetsDetails.getOthersOther()));
+			double otherInvestments = CommonUtils.checkDoubleNull(assetsDetails.getInvestmentsOrBookDebts()) + CommonUtils.checkDoubleNull(assetsDetails.getDeferredReceviables())
+			+ CommonUtils.checkDoubleNull(assetsDetails.getOthersOther());
+			bsAssetReq.setOtherInvestments(otherInvestments);
 			
-			bsAssetReq.setAdvanceToSuppliersCapitalGoods(assetsDetails.getAdvanceToSuppliersCapitalGoods());
-			bsAssetReq.setOtherNonCurrentAssets(0.0);
-			bsAssetReq.setTotalNonCurrentAssets(0.0);
-			bsAssetReq.setInventory(assetsDetails.getInventory());
-			bsAssetReq.setSundryDebtors(0.0);
-			bsAssetReq.setCashAndBankBalance(assetsDetails.getCashAndBankBalance());
-			bsAssetReq.setOtherCurrentAssets(assetsDetails.getOtherCurrentAssets());
-			bsAssetReq.setShortTermLoansandAdvances(0.0);
-			bsAssetReq.setTotalCurrentAssets(0.0);
-			bsAssetReq.setTotalAssets(0.0);
+			//B84
+			bsAssetReq.setAdvanceToSuppliersCapitalGoods(CommonUtils.checkDoubleNull(assetsDetails.getAdvanceToSuppliersCapitalGoods()));
+			//B85   Asset: D76+D78
+			double otherNCAsset = CommonUtils.checkDoubleNull(assetsDetails.getNonConsumableStoreAndSpares()) + CommonUtils.checkDoubleNull(assetsDetails.getOtherNonCurrentAssets());
+			bsAssetReq.setOtherNonCurrentAssets(otherNCAsset);
+			//B86 ---------------> =SUM(B78:B85)
+			double totalNCAssets = CommonUtils.checkDoubleNull(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()) + otherNCAsset;
+			bsAssetReq.setTotalNonCurrentAssets(totalNCAssets);
+			//B87
+			bsAssetReq.setInventory(CommonUtils.checkDoubleNull(assetsDetails.getInventory()));
+			//B88   ---Asset: D16+D18
+			bsAssetReq.setSundryDebtors(CommonUtils.checkDoubleNull(assetsDetails.getReceivableOtherThanDefferred()) + CommonUtils.checkDoubleNull(assetsDetails.getExportReceivables()));
+			//B89
+			bsAssetReq.setCashAndBankBalance(CommonUtils.checkDoubleNull(assetsDetails.getCashAndBankBalance()));
+			//B90  --- Asset: D11+D20+D41
+			bsAssetReq.setOtherCurrentAssets(CommonUtils.checkDoubleNull(assetsDetails.getInvestments()) 
+					+ CommonUtils.checkDoubleNull(assetsDetails.getInstalmentsDeferred())
+					+ CommonUtils.checkDoubleNull(assetsDetails.getOtherCurrentAssets()));
+			//B91    ----Asset:D37+D39
+			double shortTermLoansandAdvances = CommonUtils.checkDoubleNull(assetsDetails.getAdvanceToSupplierRawMaterials()) + CommonUtils.checkDoubleNull(assetsDetails.getAdvancePaymentTaxes());
+			bsAssetReq.setShortTermLoansandAdvances(shortTermLoansandAdvances);
+			//B92 ---------------> =SUM(B87:B91)
+			double totalCurrentAssets = CommonUtils.checkDoubleNull(assetsDetails.getInventory()) + shortTermLoansandAdvances;
+			bsAssetReq.setTotalCurrentAssets(totalCurrentAssets);
+			//B93  ----------------> =B77+B86+B92
+			bsAssetReq.setTotalAssets(netBlock + totalNCAssets + totalCurrentAssets);
+			//B94
 			bsAssetReq.setContingentLiabilities(0.0);
+			
+			
+			BalanceSheetLiabilitiesReq liabilitiesDetails = liabilitiesReqList.stream().filter(a -> assetsDetails.getYear().equals(a.getYear())).findFirst().orElse(null);
+			Double shareCapital = 0.0;
+			Double shareHolderFunds = 0.0;
+			if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
+				shareCapital = liabilitiesDetails.getOrdinarySharesCapital();
+				shareHolderFunds = liabilitiesDetails.getShareholderFunds();
+			}
+			//B95  ------------------> =B57/(B53/$B$11)
 			bsAssetReq.setBookValue(0.0);
+			if(shareCapital != 0) {
+				double bookValue = shareHolderFunds / (shareCapital / 0.0);
+				bsAssetReq.setBookValue(bookValue);
+			}
 			bsAssetReqList.add(bsAssetReq);
 		}
-		
 		response.setBalanceSheetAssetReqList(bsAssetReqList);
+		
+		//SAVE RATION ANALYSIS
+		List<RatioDetailsReq> ratioDetailsReqList = new ArrayList<>();
+		RatioDetailsReq ratioDetailsReq = null;
+		for(String year : yearList) {
+			
+			ProfitAndLossStmntReq profitAndLossStmntReq = profiltAndLossStmntReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
+			ProfitAndLossStmntReq profitAndLossForNextYear = profiltAndLossStmntReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new ProfitAndLossStmntReq());
+			
+			BalanceSheetLiabilitiesReq liabilitiesDetails = liabilitiesReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
+			BalanceSheetLiabilitiesReq liabilitiesForNextYear = liabilitiesReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new BalanceSheetLiabilitiesReq());
+			
+			BalanceSheetAssetReq balanceSheetAssetReq = bsAssetReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
+			BalanceSheetAssetReq balanceSheetAssetForNextYear = bsAssetReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new BalanceSheetAssetReq());
+			
+			if(CommonUtils.isObjectNullOrEmpty(profitAndLossStmntReq) || CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)
+					|| CommonUtils.isObjectNullOrEmpty(balanceSheetAssetReq)) {
+				logger.info("Skip On Ratio Calculation ----------------->" + year);
+				continue;
+			}
+			
+			RatioDetailsReq ratioDtlsForNextYear = ratioDetailsReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new RatioDetailsReq());
+			
+			ratioDetailsReq = new RatioDetailsReq();
+			ratioDetailsReq.setYear(year);
+			ratioDetailsReq.setApplicationId(applicationId);
+			
+			//B108 -----> =B36/B22
+			if(profitAndLossStmntReq.getNetSales() != 0) {
+				ratioDetailsReq.setEbitda(CommonUtils.checkDouble(profitAndLossStmntReq.getOperatingProfitEBITDA() / profitAndLossStmntReq.getNetSales()));
+			}
+			
+			//B109 -----> =B44/B22
+			if(profitAndLossStmntReq.getNetSales() != 0) {
+				ratioDetailsReq.setPatm(CommonUtils.checkDouble(profitAndLossStmntReq.getProfitAfterTax() / profitAndLossStmntReq.getNetSales()));
+			}
+			
+			//B110 -----> =(B36*2/(B57+C57+B66+C66))*12/B18
+			double totalSum = liabilitiesDetails.getShareholderFunds() + liabilitiesForNextYear.getShareholderFunds() + liabilitiesDetails.getTotalNonCurrentLiabilities() +  liabilitiesForNextYear.getTotalNonCurrentLiabilities();
+			if(totalSum != 0) {
+				ratioDetailsReq.setRoce(CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() * 2 / totalSum) * 12 / 12));
+			}
+			
+			//B111 -----> =B22*12/(B93*B18)
+			double assetMulti = balanceSheetAssetReq.getTotalAssets() * 12;
+			if(assetMulti != 0) {
+				ratioDetailsReq.setAssetTurnover(CommonUtils.checkDouble((profitAndLossStmntReq.getNetSales() * 12) / assetMulti));	
+			}
+			
+			//B112 -----> =365/(B33*12/(B87*B18))
+			double inventoryMulti = balanceSheetAssetReq.getInventory() * 12;
+			if(inventoryMulti != 0) {
+				double inventSubMulti = (profitAndLossStmntReq.getTotalExpenditure() * 12) / inventoryMulti;
+				ratioDetailsReq.setInventoryTurnover(CommonUtils.checkDouble(inventSubMulti != 0 ? (365 / inventSubMulti) : 0.0));
+			}
+			
+			//B113 -----> =365/((B22*12/(B88*B18)))
+			double devMulti = balanceSheetAssetReq.getSundryDebtors() * 12;
+			if(devMulti != 0) {
+				double devSubMulti = (profitAndLossStmntReq.getNetSales() * 12) / devMulti;
+				ratioDetailsReq.setDebtorsTurnover(CommonUtils.checkDouble(devSubMulti != 0 ? (365 / devSubMulti) : 0.0));
+			}
+			
+			//B114 -----> =(365/((B25+B26+B28)/B67))*12/B18
+			double creditorsTrnovr = profitAndLossStmntReq.getRawMaterials() + profitAndLossStmntReq.getPowerAndFuel() + profitAndLossStmntReq.getOtherMfgExpenses();
+			if(liabilitiesDetails.getSundryCreditors() != 0) {
+				double creditors = (365 / (creditorsTrnovr / liabilitiesDetails.getSundryCreditors())) * 12 / 12;
+				ratioDetailsReq.setCreditorsTurnover(CommonUtils.checkDouble(creditors));
+			}
+			
+			//B115 -----> =(365/(B22/(B87+B88-B67)))*12/B18
+			double salesAndWcMulti = balanceSheetAssetReq.getInventory() + balanceSheetAssetReq.getSundryDebtors() - liabilitiesDetails.getSundryCreditors();
+			if(salesAndWcMulti != 0) {
+				double salesAndWcSubMulti = profitAndLossStmntReq.getNetSales() / salesAndWcMulti;
+				ratioDetailsReq.setSalesAndWorkingCapital(CommonUtils.checkDouble(salesAndWcSubMulti != 0 ? ((365 / salesAndWcSubMulti) * 12 / 12) : 0.0));
+			}
+			
+			//B116 -----> =B22/C22-1
+			double netSales = profitAndLossForNextYear.getNetSales() - 1;
+			ratioDetailsReq.setNetSalesGrowth(netSales != 0 ? CommonUtils.checkDouble(profitAndLossStmntReq.getNetSales() / netSales) : 0.0);
+			
+			//B117 -----> =B44/C44-1
+			double patGrowth = profitAndLossForNextYear.getProfitAfterTax() - 1;
+			ratioDetailsReq.setPatGrowth(patGrowth != 0 ? CommonUtils.checkDouble(profitAndLossStmntReq.getProfitAfterTax() / patGrowth) : 0.0);
+			
+			//B118 -----> =(B66-B65-B60)/(B57+B60)
+			double adjTotalDbt = liabilitiesDetails.getShareholderFunds() + liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters(); 
+			double adjstedTotalDebtAndEquity = 0.0;
+			if(adjTotalDbt != 0) {
+				adjstedTotalDebtAndEquity = (liabilitiesDetails.getTotalNonCurrentLiabilities() - liabilitiesDetails.getOtherNclLongTermProvisions() - liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()) / adjTotalDbt;
+				ratioDetailsReq.setAdjustedTotalDebtAndEquity(CommonUtils.checkDouble(adjstedTotalDebtAndEquity));	
+			}
+			
+			
+			//B119 -----> =(B118-C118)/C118
+			ratioDetailsReq.setGrowthInDebtAndEquity(ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity() != 0 ? CommonUtils.checkDouble((adjstedTotalDebtAndEquity - ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) / ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) : 0.0);
+			
+			//B120 -----> =(B87+B88)/B67
+			ratioDetailsReq.setCurrentRatio(liabilitiesDetails.getSundryCreditors() != 0 ? CommonUtils.checkDouble((balanceSheetAssetReq.getInventory() + balanceSheetAssetReq.getSundryDebtors()) / liabilitiesDetails.getSundryCreditors()) : 0.0);
+			
+			//B121 -----> =B88/B67
+			ratioDetailsReq.setQuickRatio(liabilitiesDetails.getSundryCreditors() != 0 ? CommonUtils.checkDouble(balanceSheetAssetReq.getSundryDebtors() / liabilitiesDetails.getSundryCreditors()) : 0.0);
+			
+			
+			//B100
+			double ebitda = profitAndLossStmntReq.getOperatingProfitEBITDA();
+			//B101
+			double interestPaid = profitAndLossStmntReq.getInterest();
+			//B102 ------------------> =(B87+B88+B90-C87-C88-C90+C67+C68+C69-B67-B68-B69)
+			double incrsInWL = balanceSheetAssetReq.getInventory() + balanceSheetAssetReq.getSundryDebtors() + balanceSheetAssetReq.getCashAndBankBalance() 
+				- balanceSheetAssetForNextYear.getInventory() - balanceSheetAssetForNextYear.getSundryDebtors() - balanceSheetAssetForNextYear.getCashAndBankBalance()
+				+ liabilitiesForNextYear.getSundryCreditors() + liabilitiesForNextYear.getOtherCurrentLiabilities() + liabilitiesForNextYear.getOtherNclLongTermProvisions()
+				- liabilitiesDetails.getSundryCreditors() - liabilitiesDetails.getOtherCurrentLiabilities() - liabilitiesDetails.getOtherNclLongTermProvisions();
+			//B103
+			double taxPaid = profitAndLossStmntReq.getProvisionForTaxes();
+			
+			//B104 --------> =B100-B101-B102-B103
+			double cashFromOperating = ebitda - interestPaid - incrsInWL -taxPaid;
+			
+			//B122 -----> =(B104+B101)/B101
+			ratioDetailsReq.setCashInterestCover(interestPaid != 0 ? CommonUtils.checkDouble((cashFromOperating + interestPaid) / interestPaid) : 0.0);
+			
+			//B123 -----> =(B66-B60-B65)/(12*B36/B18)
+			double debtEbitdaMulti = (12 * profitAndLossStmntReq.getOperatingProfitEBITDA()) / 12;
+			ratioDetailsReq.setDebtEbitda(debtEbitdaMulti != 0 ? CommonUtils.checkDouble((liabilitiesDetails.getTotalNonCurrentLiabilities() - liabilitiesDetails.getUnsecuredLoansOthers() - liabilitiesDetails.getOtherNclLongTermProvisions()) / debtEbitdaMulti) : 0.0);
+			
+			//B124 -----> =B56/(B53+B54)
+			double freeReserveEq = liabilitiesDetails.getOrdinarySharesCapital() + liabilitiesDetails.getShareWarrentsOutstanding();
+			ratioDetailsReq.setFreeReservesEquity(freeReserveEq != 0 ? CommonUtils.checkDouble(liabilitiesDetails.getOtherReservesAndSurplus() / freeReserveEq) : 0.0);
+			
+			//B125 -----> =B104/B22
+			ratioDetailsReq.setCfoMargin(profitAndLossStmntReq.getNetSales() != 0 ? CommonUtils.checkDouble(cashFromOperating/profitAndLossStmntReq.getNetSales()) : 0.0);
+			
+			//B126 -----> =(B125-C125)/C125
+			ratioDetailsReq.setGrowthInCfoMargin(ratioDtlsForNextYear.getCfoMargin() != 0 ? CommonUtils.checkDouble(ratioDetailsReq.getCfoMargin() - ratioDtlsForNextYear.getCfoMargin() / ratioDtlsForNextYear.getCfoMargin()) : 0.0);
+			
+			ratioDetailsReqList.add(ratioDetailsReq);
+		}
+		response.setRatioDetailsReqList(ratioDetailsReqList);
 		return response;
 		
 	}
