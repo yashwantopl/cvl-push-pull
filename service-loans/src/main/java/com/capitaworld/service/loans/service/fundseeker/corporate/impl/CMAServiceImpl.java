@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.model.corporate.AssetsDetailsRequest;
@@ -23,6 +24,7 @@ import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.LiabilitiesDetailsRequest;
 import com.capitaworld.service.loans.model.corporate.OperatingStatementDetailsRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
@@ -52,6 +54,9 @@ public class CMAServiceImpl implements CMAService {
 	
 	@Autowired 
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	@Autowired
+	CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
 	public void saveCMA(CMARequest cmaRequest) {
 		logger.info("ENTER IN CMA SAVE SERVICE IMPLEMENTATION");
@@ -212,6 +217,16 @@ public class CMAServiceImpl implements CMAService {
 		
 		Set<String> yearList = new HashSet<>();
 		
+		Double shareFaceVal = 0.0;
+		Integer totalMonth = 12;
+
+		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			shareFaceVal = corporateApplicantDetail.getSharePriceFace();
+		}
+            
+
+		
 		//GET OPERATING DETAILS BY APPLICATION ID
 		List<OperatingStatementDetails> operatingStatementList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
 		//REMOVE . FROM YEAR 
@@ -323,23 +338,15 @@ public class CMAServiceImpl implements CMAService {
 				ordinarySharesCapital = CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital());
 			}
 			//B46 -----------------------> =IF(B45=0,0,B45*$B11/B53)
-			if(eqDvdntPaidAmt == 0) {
-				prlossStmntReq.setEquityDividend(0.0);	
-			} else {
-				if(ordinarySharesCapital != 0) {
-					double equityDividend = (eqDvdntPaidAmt * 0) / ordinarySharesCapital;
-					prlossStmntReq.setEquityDividend(equityDividend);
-				} else {
-					prlossStmntReq.setEquityDividend(0.0);	
-				}
+			if(eqDvdntPaidAmt != 0 && ordinarySharesCapital != 0) {
+				double equityDividend = (eqDvdntPaidAmt * shareFaceVal) / ordinarySharesCapital;
+				prlossStmntReq.setEquityDividend(CommonUtils.checkDouble(equityDividend));
 			}
 			
 			//B47 -------------------------------> =(B44)*$B11/B53
 			if(ordinarySharesCapital != 0) {
-				double earningsPerShare = (profitAfterTax * 0) / ordinarySharesCapital;
-				prlossStmntReq.setEarningsPerShare(earningsPerShare);
-			} else {
-				prlossStmntReq.setEarningsPerShare(0.0);	
+				double earningsPerShare = profitAfterTax * (shareFaceVal / ordinarySharesCapital);
+				prlossStmntReq.setEarningsPerShare(CommonUtils.checkDouble(earningsPerShare));
 			}
 			profiltAndLossStmntReqList.add(prlossStmntReq);
 		}
@@ -487,9 +494,9 @@ public class CMAServiceImpl implements CMAService {
 			}
 			//B95  ------------------> =B57/(B53/$B$11)
 			bsAssetReq.setBookValue(0.0);
-			if(shareCapital != 0) {
-				double bookValue = shareHolderFunds / (shareCapital / 0.0);
-				bsAssetReq.setBookValue(bookValue);
+			if(shareFaceVal != 0) {
+				double bookValue = shareCapital / shareFaceVal;
+				bsAssetReq.setBookValue(bookValue != 0 ? CommonUtils.checkDouble(shareHolderFunds / bookValue) : 0.0);
 			}
 			bsAssetReqList.add(bsAssetReq);
 		}
@@ -534,24 +541,24 @@ public class CMAServiceImpl implements CMAService {
 			//B110 -----> =(B36*2/(B57+C57+B66+C66))*12/B18
 			double totalSum = liabilitiesDetails.getShareholderFunds() + liabilitiesForNextYear.getShareholderFunds() + liabilitiesDetails.getTotalNonCurrentLiabilities() +  liabilitiesForNextYear.getTotalNonCurrentLiabilities();
 			if(totalSum != 0) {
-				ratioDetailsReq.setRoce(CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() * 2 / totalSum) * 12 / 12));
+				ratioDetailsReq.setRoce(CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() * 2 / totalSum) * 12 / totalMonth));
 			}
 			
 			//B111 -----> =B22*12/(B93*B18)
-			double assetMulti = balanceSheetAssetReq.getTotalAssets() * 12;
+			double assetMulti = balanceSheetAssetReq.getTotalAssets() * totalMonth;
 			if(assetMulti != 0) {
 				ratioDetailsReq.setAssetTurnover(CommonUtils.checkDouble((profitAndLossStmntReq.getNetSales() * 12) / assetMulti));	
 			}
 			
 			//B112 -----> =365/(B33*12/(B87*B18))
-			double inventoryMulti = balanceSheetAssetReq.getInventory() * 12;
+			double inventoryMulti = balanceSheetAssetReq.getInventory() * totalMonth;
 			if(inventoryMulti != 0) {
 				double inventSubMulti = (profitAndLossStmntReq.getTotalExpenditure() * 12) / inventoryMulti;
 				ratioDetailsReq.setInventoryTurnover(CommonUtils.checkDouble(inventSubMulti != 0 ? (365 / inventSubMulti) : 0.0));
 			}
 			
 			//B113 -----> =365/((B22*12/(B88*B18)))
-			double devMulti = balanceSheetAssetReq.getSundryDebtors() * 12;
+			double devMulti = balanceSheetAssetReq.getSundryDebtors() * totalMonth;
 			if(devMulti != 0) {
 				double devSubMulti = (profitAndLossStmntReq.getNetSales() * 12) / devMulti;
 				ratioDetailsReq.setDebtorsTurnover(CommonUtils.checkDouble(devSubMulti != 0 ? (365 / devSubMulti) : 0.0));
@@ -560,7 +567,7 @@ public class CMAServiceImpl implements CMAService {
 			//B114 -----> =(365/((B25+B26+B28)/B67))*12/B18
 			double creditorsTrnovr = profitAndLossStmntReq.getRawMaterials() + profitAndLossStmntReq.getPowerAndFuel() + profitAndLossStmntReq.getOtherMfgExpenses();
 			if(liabilitiesDetails.getSundryCreditors() != 0) {
-				double creditors = (365 / (creditorsTrnovr / liabilitiesDetails.getSundryCreditors())) * 12 / 12;
+				double creditors = (365 / (creditorsTrnovr / liabilitiesDetails.getSundryCreditors())) * 12 / totalMonth;
 				ratioDetailsReq.setCreditorsTurnover(CommonUtils.checkDouble(creditors));
 			}
 			
@@ -568,7 +575,7 @@ public class CMAServiceImpl implements CMAService {
 			double salesAndWcMulti = balanceSheetAssetReq.getInventory() + balanceSheetAssetReq.getSundryDebtors() - liabilitiesDetails.getSundryCreditors();
 			if(salesAndWcMulti != 0) {
 				double salesAndWcSubMulti = profitAndLossStmntReq.getNetSales() / salesAndWcMulti;
-				ratioDetailsReq.setSalesAndWorkingCapital(CommonUtils.checkDouble(salesAndWcSubMulti != 0 ? ((365 / salesAndWcSubMulti) * 12 / 12) : 0.0));
+				ratioDetailsReq.setSalesAndWorkingCapital(CommonUtils.checkDouble(salesAndWcSubMulti != 0 ? ((365 / salesAndWcSubMulti) * 12 / totalMonth) : 0.0));
 			}
 			
 			//B116 -----> =B22/C22-1
@@ -617,7 +624,7 @@ public class CMAServiceImpl implements CMAService {
 			ratioDetailsReq.setCashInterestCover(interestPaid != 0 ? CommonUtils.checkDouble((cashFromOperating + interestPaid) / interestPaid) : 0.0);
 			
 			//B123 -----> =(B66-B60-B65)/(12*B36/B18)
-			double debtEbitdaMulti = (12 * profitAndLossStmntReq.getOperatingProfitEBITDA()) / 12;
+			double debtEbitdaMulti = (12 * profitAndLossStmntReq.getOperatingProfitEBITDA()) / totalMonth;
 			ratioDetailsReq.setDebtEbitda(debtEbitdaMulti != 0 ? CommonUtils.checkDouble((liabilitiesDetails.getTotalNonCurrentLiabilities() - liabilitiesDetails.getUnsecuredLoansOthers() - liabilitiesDetails.getOtherNclLongTermProvisions()) / debtEbitdaMulti) : 0.0);
 			
 			//B124 -----> =B56/(B53+B54)
