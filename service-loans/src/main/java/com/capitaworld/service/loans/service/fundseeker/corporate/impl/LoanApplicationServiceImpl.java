@@ -6030,9 +6030,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			logger.info("In getDataForHunter with Application ID : "+applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
+			logger.info("Fetching Corporate Applicant Details for application Id : "+applicationId);
 		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
 		if(applicantDetail!=null) {
+			logger.info("FetchedS Corporate Applicant Details for application Id : "+applicationId);
 			//key vertical Subsector
+			
 			String state= null;
 			List<Long> stateList = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
@@ -6111,10 +6114,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber()+", "+applicantDetail.getRegisteredStreetName()+", "+applicantDetail.getRegisteredLandMark());
 			response.setCompanyEmail(applicantDetail.getEmail());
 		}
-		
+		logger.info("Fetching Loan APplication Master for application Id : "+applicationId);
 		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
 		
 		if(loan!=null) {
+			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
 			response.setLoanApplicationId(loan.getApplicationCode());
 			response.setLoanType(String.valueOf(loan.getProductId()));
@@ -6125,11 +6129,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			
 		}
-		
+		logger.info("Fetching Director's background details for application Id : "+applicationId);
 		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 		
 		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
 		if(directorList!=null && !directorList.isEmpty()) {
+			logger.info("Fetched Director's background details for application Id : "+applicationId);
 			for(DirectorBackgroundDetail detail : directorList) {
 				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
 				BeanUtils.copyProperties(detail, directorDetail);
@@ -6196,12 +6201,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.addDirectorDetail(directorDetail);
 			}
 		}
-		
+		logger.info("Fetching Bank details for application Id : "+applicationId);
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
 		
 		if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+			logger.info("Fetched Director's background details for application Id : "+applicationId);
 			Data data = MultipleJSONObjectHelper
 					.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
 			
