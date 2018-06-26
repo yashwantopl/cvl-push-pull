@@ -75,14 +75,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
                 corporateApplicantDetail=new CorporateApplicantDetail();
-                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"secondAddress","sameAs","creditRatingId",
         				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","isActive");
                 corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
                 corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setCreatedDate(new Date());
                 corporateApplicantDetail.setIsActive(true);
             } else {
-            	BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+            	BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"secondAddress","sameAs","creditRatingId",
         				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
             	corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setModifiedDate(new Date());
