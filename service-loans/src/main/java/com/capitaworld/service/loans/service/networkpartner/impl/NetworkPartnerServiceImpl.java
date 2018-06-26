@@ -721,6 +721,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						logger.error("error while fetching FP details");
 						e.printStackTrace();
 					}
+				}else {
+					nhbsApplicationsResponse.setCheckerName("NA");
 				}
 				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 				if(applicantDetail != null){
@@ -803,7 +805,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}else{
 						nhbsApplicationsResponse.setOneFormFilled("Unlocked");
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
+					/*if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
 						usersRequest.setId(loanApplicationMaster.getNpUserId());
 						try {
@@ -815,11 +817,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							logger.error("error while fetching FP details");
 							e.printStackTrace();
 						}
-					}
-					else {
+					}*/
+					/*else {
 						nhbsApplicationsResponse.setCheckerName("NA");
-					}
-					if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED){
+					}*/
+					if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED ||
+							request.getApplicationStatusId()==CommonUtils.ApplicationStatus.SUBMITTED){
 						nhbsApplicationsResponse.setApplicationWith("Maker");
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
 							UsersRequest usersRequest = new UsersRequest();
@@ -834,7 +837,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								e.printStackTrace();
 							}
 						}
-					}else if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+					}else if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 						nhbsApplicationsResponse.setApplicationWith("Checker");
 					}
 				}
