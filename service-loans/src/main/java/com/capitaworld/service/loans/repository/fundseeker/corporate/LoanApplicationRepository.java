@@ -297,24 +297,24 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<LoanApplicationMaster> getFPProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for approved or submitted - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npUserId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
-	public List<LoanApplicationMaster> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+	public List<BigInteger> getFPAssignedToCheckerProposalsByNPUserIdPagination(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
 	//fp - checker - for approved or submitted - count
 	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
     //fp - checker - for reverted applications - pagination
-    @Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npAssigneeId=:npUserId and  lm.isActive = true order by lm.modifiedDate desc")
-    public List<LoanApplicationMaster> getFPAssignedToCheckerReverted(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
+    @Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.ddr_status_id =:id and lm.np_assignee_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+    public List<BigInteger> getFPAssignedToCheckerReverted(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
 	//fp - checker - for reverted applications - count
 	@Query("select lm from LoanApplicationMaster lm where lm.ddrStatusId =:id and lm.npAssigneeId=:npUserId and  lm.isActive = true ")
 	public List<LoanApplicationMaster> getFPAssignedToCheckerRevertedCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId);
 
 	//fp - checker - for other applications - pagination
-	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId!=:npUserId and lm.isActive = true order by lm.modifiedDate desc")
-	public List<LoanApplicationMaster> getFPCheckerProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status >=:id and lm.np_assignee_id!=:npUserId and lm.np_user_id!=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+	public List<BigInteger> getFPCheckerProposalsWithOthersForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
 	//fp - checker - for other applications - count
 	@Query("select lm from LoanApplicationMaster lm where lm.applicationStatusMaster.id >=:id and lm.npAssigneeId!=:npUserId and lm.npUserId!=:npUserId and lm.isActive = true ")
