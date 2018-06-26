@@ -32,6 +32,7 @@ public class FinancialArrangementDetailResponseString implements Serializable{
     
     private String address;
 
+	private Date reportedDate;
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -104,6 +105,12 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 	public void setOutstandingAmount(String outstandingAmount) {
 		this.outstandingAmount = outstandingAmount;
 	}
-    
-    
+
+	public Date getReportedDate() {
+		return reportedDate;
+	}
+
+	public void setReportedDate(Date reportedDate) {
+		this.reportedDate = reportedDate;
+	}
 }

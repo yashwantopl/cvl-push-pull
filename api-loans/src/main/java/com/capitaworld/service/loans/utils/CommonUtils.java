@@ -870,6 +870,10 @@ public class CommonUtils {
 		}
 
 	}
+	
+	public static double checkDoubleNull(Double value) {
+		return !isObjectNullOrEmpty(value) ? value : 0.0;
+	}
 
 	public static double checkDouble(Double value) {
 		try {
@@ -1053,6 +1057,12 @@ public enum APIFlags {
 		Double sub= a-b-c;
 		return sub;
 	}
+	public static Double divideNumbers(Double a1,Double a2) {
+		return !isObjectListNull(a1,a2) && a1 != 0 && a2 != 0 ? (a1 / a2) : 0.0;
+	}
+	public static Double multiplyNumbers(Double a1,Double a2) {
+		return !isObjectListNull(a1,a2) ? (a1 * a2) : 0.0;
+	}
 	public static String getOrganizationName(Long x) {
 		if(x == 1L) {
 			return "UNION";
@@ -1096,5 +1106,16 @@ public enum APIFlags {
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
 		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
+	}
+	
+	public static String getCMAFilterYear(String year) {
+		if(!isObjectNullOrEmpty(year)) {
+			String[] split = year.split("\\.");
+			if(split.length > 1) {
+				return split[0]; 
+			}
+			return year;
+		}
+		return null;
 	}
 }
