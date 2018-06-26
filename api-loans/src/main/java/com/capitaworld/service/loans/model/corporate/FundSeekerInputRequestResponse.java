@@ -25,6 +25,9 @@ public class FundSeekerInputRequestResponse {
 
     private String organisationName;
     ////////////////////
+    private String aadhar;
+
+    private String msmeRegistrationNumber;
 
     private Double loanAmount;
 
@@ -42,8 +45,6 @@ public class FundSeekerInputRequestResponse {
     private Double otherAmt;
 
     private Integer purposeOfLoanId;
-
-
 
     private Boolean haveCollateralSecurity;
 
@@ -237,5 +238,21 @@ public class FundSeekerInputRequestResponse {
 
     public void setConstitutionId(Integer constitutionId) {
         this.constitutionId = constitutionId;
+    }
+
+    public String getAadhar() {
+        return aadhar;
+    }
+
+    public void setAadhar(String aadhar) {
+        this.aadhar = aadhar;
+    }
+
+    public String getMsmeRegistrationNumber() {
+        return msmeRegistrationNumber;
+    }
+
+    public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
+        this.msmeRegistrationNumber = msmeRegistrationNumber;
     }
 }
