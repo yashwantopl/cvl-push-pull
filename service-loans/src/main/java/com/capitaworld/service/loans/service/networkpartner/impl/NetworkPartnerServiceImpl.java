@@ -781,7 +781,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-				if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED){
+				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
 						nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
@@ -821,8 +821,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					/*else {
 						nhbsApplicationsResponse.setCheckerName("NA");
 					}*/
-					if(request.getApplicationStatusId()==CommonUtils.ApplicationStatus.ASSIGNED ||
-							request.getApplicationStatusId()==CommonUtils.ApplicationStatus.SUBMITTED){
+					if(loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.ASSIGNED ||
+                            loanApplicationMaster.getApplicationStatusMaster().getId()==CommonUtils.ApplicationStatus.SUBMITTED){
 						nhbsApplicationsResponse.setApplicationWith("Maker");
 						if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getFpMakerId())){
 							UsersRequest usersRequest = new UsersRequest();
@@ -837,7 +837,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								e.printStackTrace();
 							}
 						}
-					}else if(request.getApplicationStatusId()>=CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
+					}else if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
 						nhbsApplicationsResponse.setApplicationWith("Checker");
 					}
 				}
