@@ -6028,7 +6028,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
 		try {
 			
-			logger.info("In getDataForCGTMSE");
+			logger.info("In getDataForHunter with Application ID : "+applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
 		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
 		if(applicantDetail!=null) {
@@ -6210,7 +6210,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.setCompanyBankName(data.getSummaryInfo().getInstName());
 			}
 		}
-		
+		logger.info("End getDataForHunter with Application ID : "+applicationId);
 		return response;
 		}
 		catch (Exception e) {

@@ -329,7 +329,7 @@ public class CommonController {
 		try {
 			
 			if (applicationId == null) {
-				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				logger.warn("ID Require to getDataForHunter ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -343,7 +343,7 @@ public class CommonController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Recent Profile View Details==>", e);
+			logger.error("Error while getting getDataForHunter==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
