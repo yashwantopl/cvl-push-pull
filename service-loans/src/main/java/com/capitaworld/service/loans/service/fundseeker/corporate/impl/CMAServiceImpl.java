@@ -338,23 +338,15 @@ public class CMAServiceImpl implements CMAService {
 				ordinarySharesCapital = CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital());
 			}
 			//B46 -----------------------> =IF(B45=0,0,B45*$B11/B53)
-			if(eqDvdntPaidAmt == 0) {
-				prlossStmntReq.setEquityDividend(0.0);	
-			} else {
-				if(ordinarySharesCapital != 0) {
-					double equityDividend = (eqDvdntPaidAmt * shareFaceVal) / ordinarySharesCapital;
-					prlossStmntReq.setEquityDividend(equityDividend);
-				} else {
-					prlossStmntReq.setEquityDividend(0.0);	
-				}
+			if(eqDvdntPaidAmt != 0 && ordinarySharesCapital != 0) {
+				double equityDividend = (eqDvdntPaidAmt * shareFaceVal) / ordinarySharesCapital;
+				prlossStmntReq.setEquityDividend(CommonUtils.checkDouble(equityDividend));
 			}
 			
 			//B47 -------------------------------> =(B44)*$B11/B53
 			if(ordinarySharesCapital != 0) {
 				double earningsPerShare = profitAfterTax * (shareFaceVal / ordinarySharesCapital);
-				prlossStmntReq.setEarningsPerShare(earningsPerShare);
-			} else {
-				prlossStmntReq.setEarningsPerShare(0.0);	
+				prlossStmntReq.setEarningsPerShare(CommonUtils.checkDouble(earningsPerShare));
 			}
 			profiltAndLossStmntReqList.add(prlossStmntReq);
 		}
@@ -504,7 +496,7 @@ public class CMAServiceImpl implements CMAService {
 			bsAssetReq.setBookValue(0.0);
 			if(shareFaceVal != 0) {
 				double bookValue = shareCapital / shareFaceVal;
-				bsAssetReq.setBookValue(bookValue != 0 ? (shareHolderFunds / bookValue) : 0.0);
+				bsAssetReq.setBookValue(bookValue != 0 ? CommonUtils.checkDouble(shareHolderFunds / bookValue) : 0.0);
 			}
 			bsAssetReqList.add(bsAssetReq);
 		}
