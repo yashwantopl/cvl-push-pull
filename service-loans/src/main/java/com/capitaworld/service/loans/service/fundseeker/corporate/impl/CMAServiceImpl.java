@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -212,20 +213,15 @@ public class CMAServiceImpl implements CMAService {
 	@Override
 	public FinancialRequest getFinancialDetailsForBankIntegration(Long applicationId) {
 		
-		FinancialRequest response = new FinancialRequest();
-		response.setApplicationId(applicationId);
-		
 		Set<String> yearList = new HashSet<>();
 		
-		Double shareFaceVal = 0.0;
+		double shareFaceVal = 0.0;
 		Integer totalMonth = 12;
 
-		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-			shareFaceVal = corporateApplicantDetail.getSharePriceFace();
+			shareFaceVal = CommonUtils.checkDouble(corporateApplicantDetail.getSharePriceFace());
 		}
-            
-
 		
 		//GET OPERATING DETAILS BY APPLICATION ID
 		List<OperatingStatementDetails> operatingStatementList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
@@ -242,7 +238,6 @@ public class CMAServiceImpl implements CMAService {
 			yearList.add(CommonUtils.getCMAFilterYear(liabilitiesDetails.getYear()));
 		}
 		
-		
 		//GET ASSETS DETAILS BY APPLICATION ID
 		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
 		for(AssetsDetails assetsDetails : assetsDetailsList) {
@@ -250,6 +245,12 @@ public class CMAServiceImpl implements CMAService {
 			yearList.add(CommonUtils.getCMAFilterYear(assetsDetails.getYear()));
 		}
 		
+		if(operatingStatementList.size() <= 0 || liabilitiesDetailList.size() <= 0 || assetsDetailsList.size() <= 0) {
+			return null;
+		}
+		
+		FinancialRequest response = new FinancialRequest();
+		response.setApplicationId(applicationId);
 		
 		//NOW READ DATA FROM LIST AND CALCULATE 
 		
@@ -333,14 +334,14 @@ public class CMAServiceImpl implements CMAService {
 			
 			
 			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailList.stream().filter(a -> operatingStatement.getYear().equals(a.getYear())).findFirst().orElse(null);
-			Double ordinarySharesCapital = 0.0;
+			double ordinarySharesCapital = 0.0;
 			if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
 				ordinarySharesCapital = CommonUtils.checkDoubleNull(liabilitiesDetails.getOrdinarySharesCapital());
 			}
 			//B46 -----------------------> =IF(B45=0,0,B45*$B11/B53)
 			if(eqDvdntPaidAmt != 0 && ordinarySharesCapital != 0) {
 				double equityDividend = (eqDvdntPaidAmt * shareFaceVal) / ordinarySharesCapital;
-				prlossStmntReq.setEquityDividend(CommonUtils.checkDouble(equityDividend));
+				prlossStmntReq.setEquityDividend(CommonUtils.checkDouble(equityDividend * 100));
 			}
 			
 			//B47 -------------------------------> =(B44)*$B11/B53
@@ -486,11 +487,11 @@ public class CMAServiceImpl implements CMAService {
 			
 			
 			BalanceSheetLiabilitiesReq liabilitiesDetails = liabilitiesReqList.stream().filter(a -> assetsDetails.getYear().equals(a.getYear())).findFirst().orElse(null);
-			Double shareCapital = 0.0;
-			Double shareHolderFunds = 0.0;
+			double shareCapital = 0.0;
+			double shareHolderFunds = 0.0;
 			if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-				shareCapital = liabilitiesDetails.getOrdinarySharesCapital();
-				shareHolderFunds = liabilitiesDetails.getShareholderFunds();
+				shareCapital = CommonUtils.checkDouble(liabilitiesDetails.getOrdinarySharesCapital());
+				shareHolderFunds = CommonUtils.checkDouble(liabilitiesDetails.getShareholderFunds());
 			}
 			//B95  ------------------> =B57/(B53/$B$11)
 			bsAssetReq.setBookValue(0.0);
@@ -505,16 +506,19 @@ public class CMAServiceImpl implements CMAService {
 		//SAVE RATION ANALYSIS
 		List<RatioDetailsReq> ratioDetailsReqList = new ArrayList<>();
 		RatioDetailsReq ratioDetailsReq = null;
-		for(String year : yearList) {
+		List<String> sortedList = new ArrayList<String>(yearList);
+		Collections.sort(sortedList);
+		for(String year : sortedList) {
 			
+			String previousYear = String.valueOf(Integer.parseInt(year) - 1);
 			ProfitAndLossStmntReq profitAndLossStmntReq = profiltAndLossStmntReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
-			ProfitAndLossStmntReq profitAndLossForNextYear = profiltAndLossStmntReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new ProfitAndLossStmntReq());
+			ProfitAndLossStmntReq profitAndLossForNextYear = profiltAndLossStmntReqList.stream().filter(a -> previousYear.equals(a.getYear())).findFirst().orElse(new ProfitAndLossStmntReq());
 			
 			BalanceSheetLiabilitiesReq liabilitiesDetails = liabilitiesReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
-			BalanceSheetLiabilitiesReq liabilitiesForNextYear = liabilitiesReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new BalanceSheetLiabilitiesReq());
+			BalanceSheetLiabilitiesReq liabilitiesForNextYear = liabilitiesReqList.stream().filter(a -> previousYear.equals(a.getYear())).findFirst().orElse(new BalanceSheetLiabilitiesReq());
 			
 			BalanceSheetAssetReq balanceSheetAssetReq = bsAssetReqList.stream().filter(a -> year.equals(a.getYear())).findFirst().orElse(null);
-			BalanceSheetAssetReq balanceSheetAssetForNextYear = bsAssetReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new BalanceSheetAssetReq());
+			BalanceSheetAssetReq balanceSheetAssetForNextYear = bsAssetReqList.stream().filter(a -> previousYear.equals(a.getYear())).findFirst().orElse(new BalanceSheetAssetReq());
 			
 			if(CommonUtils.isObjectNullOrEmpty(profitAndLossStmntReq) || CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)
 					|| CommonUtils.isObjectNullOrEmpty(balanceSheetAssetReq)) {
@@ -522,7 +526,7 @@ public class CMAServiceImpl implements CMAService {
 				continue;
 			}
 			
-			RatioDetailsReq ratioDtlsForNextYear = ratioDetailsReqList.stream().filter(a -> (year + 1).equals(a.getYear())).findFirst().orElse(new RatioDetailsReq());
+			RatioDetailsReq ratioDtlsForNextYear = ratioDetailsReqList.stream().filter(a -> previousYear.equals(a.getYear())).findFirst().orElse(new RatioDetailsReq());
 			
 			ratioDetailsReq = new RatioDetailsReq();
 			ratioDetailsReq.setYear(year);
@@ -530,18 +534,19 @@ public class CMAServiceImpl implements CMAService {
 			
 			//B108 -----> =B36/B22
 			if(profitAndLossStmntReq.getNetSales() != 0) {
-				ratioDetailsReq.setEbitda(CommonUtils.checkDouble(profitAndLossStmntReq.getOperatingProfitEBITDA() / profitAndLossStmntReq.getNetSales()));
+				ratioDetailsReq.setEbitda(CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() / profitAndLossStmntReq.getNetSales()) * 100));
 			}
 			
 			//B109 -----> =B44/B22
 			if(profitAndLossStmntReq.getNetSales() != 0) {
-				ratioDetailsReq.setPatm(CommonUtils.checkDouble(profitAndLossStmntReq.getProfitAfterTax() / profitAndLossStmntReq.getNetSales()));
+				ratioDetailsReq.setPatm(CommonUtils.checkDouble((profitAndLossStmntReq.getProfitAfterTax() / profitAndLossStmntReq.getNetSales()) * 100));
 			}
 			
 			//B110 -----> =(B36*2/(B57+C57+B66+C66))*12/B18
 			double totalSum = liabilitiesDetails.getShareholderFunds() + liabilitiesForNextYear.getShareholderFunds() + liabilitiesDetails.getTotalNonCurrentLiabilities() +  liabilitiesForNextYear.getTotalNonCurrentLiabilities();
 			if(totalSum != 0) {
-				ratioDetailsReq.setRoce(CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() * 2 / totalSum) * 12 / totalMonth));
+				double roce = CommonUtils.checkDouble((profitAndLossStmntReq.getOperatingProfitEBITDA() * 2 / totalSum) * 12 / totalMonth);
+				ratioDetailsReq.setRoce(CommonUtils.checkDouble(roce * 100));
 			}
 			
 			//B111 -----> =B22*12/(B93*B18)
@@ -579,12 +584,10 @@ public class CMAServiceImpl implements CMAService {
 			}
 			
 			//B116 -----> =B22/C22-1
-			double netSales = profitAndLossForNextYear.getNetSales() - 1;
-			ratioDetailsReq.setNetSalesGrowth(netSales != 0 ? CommonUtils.checkDouble(profitAndLossStmntReq.getNetSales() / netSales) : 0.0);
+			ratioDetailsReq.setNetSalesGrowth(profitAndLossForNextYear.getNetSales() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getNetSales() / profitAndLossForNextYear.getNetSales() -1) * 100) : 0.0);
 			
 			//B117 -----> =B44/C44-1
-			double patGrowth = profitAndLossForNextYear.getProfitAfterTax() - 1;
-			ratioDetailsReq.setPatGrowth(patGrowth != 0 ? CommonUtils.checkDouble(profitAndLossStmntReq.getProfitAfterTax() / patGrowth) : 0.0);
+			ratioDetailsReq.setPatGrowth(profitAndLossForNextYear.getProfitAfterTax() != 0 ? CommonUtils.checkDouble((profitAndLossStmntReq.getProfitAfterTax() / profitAndLossForNextYear.getProfitAfterTax() - 1) * 100) : 0.0);
 			
 			//B118 -----> =(B66-B65-B60)/(B57+B60)
 			double adjTotalDbt = liabilitiesDetails.getShareholderFunds() + liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters(); 
@@ -596,7 +599,7 @@ public class CMAServiceImpl implements CMAService {
 			
 			
 			//B119 -----> =(B118-C118)/C118
-			ratioDetailsReq.setGrowthInDebtAndEquity(ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity() != 0 ? CommonUtils.checkDouble((adjstedTotalDebtAndEquity - ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) / ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) : 0.0);
+			ratioDetailsReq.setGrowthInDebtAndEquity(ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity() != 0 ? CommonUtils.checkDouble(((adjstedTotalDebtAndEquity - ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) / ratioDtlsForNextYear.getAdjustedTotalDebtAndEquity()) * 100) : 0.0);
 			
 			//B120 -----> =(B87+B88)/B67
 			ratioDetailsReq.setCurrentRatio(liabilitiesDetails.getSundryCreditors() != 0 ? CommonUtils.checkDouble((balanceSheetAssetReq.getInventory() + balanceSheetAssetReq.getSundryDebtors()) / liabilitiesDetails.getSundryCreditors()) : 0.0);
@@ -632,10 +635,10 @@ public class CMAServiceImpl implements CMAService {
 			ratioDetailsReq.setFreeReservesEquity(freeReserveEq != 0 ? CommonUtils.checkDouble(liabilitiesDetails.getOtherReservesAndSurplus() / freeReserveEq) : 0.0);
 			
 			//B125 -----> =B104/B22
-			ratioDetailsReq.setCfoMargin(profitAndLossStmntReq.getNetSales() != 0 ? CommonUtils.checkDouble(cashFromOperating/profitAndLossStmntReq.getNetSales()) : 0.0);
+			ratioDetailsReq.setCfoMargin(profitAndLossStmntReq.getNetSales() != 0 ? CommonUtils.checkDouble((cashFromOperating/profitAndLossStmntReq.getNetSales()) * 100) : 0.0);
 			
 			//B126 -----> =(B125-C125)/C125
-			ratioDetailsReq.setGrowthInCfoMargin(ratioDtlsForNextYear.getCfoMargin() != 0 ? CommonUtils.checkDouble(ratioDetailsReq.getCfoMargin() - ratioDtlsForNextYear.getCfoMargin() / ratioDtlsForNextYear.getCfoMargin()) : 0.0);
+			ratioDetailsReq.setGrowthInCfoMargin(ratioDtlsForNextYear.getCfoMargin() != 0 ? CommonUtils.checkDouble((ratioDetailsReq.getCfoMargin() - ratioDtlsForNextYear.getCfoMargin() / ratioDtlsForNextYear.getCfoMargin()) * 100) : 0.0);
 			
 			ratioDetailsReqList.add(ratioDetailsReq);
 		}
