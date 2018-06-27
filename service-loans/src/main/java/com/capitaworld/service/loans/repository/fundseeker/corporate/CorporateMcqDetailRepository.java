@@ -10,4 +10,7 @@ public interface CorporateMcqDetailRepository extends JpaRepository<CorporateMcq
     @Query("from CorporateMcqDetail pd where pd.applicationId.id =:applicationId and pd.applicationId.userId =:userId")
     public CorporateMcqDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId,
                                                          @Param("userId") Long id);
+    
+    @Query("from CorporateMcqDetail pd where pd.applicationId.id =:applicationId")
+    public CorporateMcqDetail getByApplicationAndUserId(@Param("applicationId") Long applicationId);
 }
