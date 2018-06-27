@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -58,6 +68,15 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.ProposalScoreResponse;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEResponse;
+import com.capitaworld.service.thirdparty.model.ThirdPartyRequest;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -98,6 +117,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     @Autowired
     private IrrService irrService;
 
+    @Autowired
+	private ScoringClient scoringClient;
+	
+	@Autowired
+	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private EligibilityClient eligibilityClient;
+	
+	@Autowired
+	private ThirdPartyClient thirdPartyClient;
+
+	
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     DecimalFormat decim = new DecimalFormat("#,###.00");
     @Override
@@ -552,6 +584,70 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			//bank statement data
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(toApplicationId);
+			reportRequest.setUserId(userId);
+			try {
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+				Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
+				corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
+				corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
+				corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting perfios data");
+			}
+			
+			//scoring Data
+			Long fpProductMappingId= null;
+			try {
+
+                 UsersRequest usersRequest = new UsersRequest();
+                 usersRequest.setId(fundProviderUserId);
+                 UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
+                 fpProductMappingId=userResponse.getId();
+             }catch (Exception e) {
+				e.printStackTrace();
+			}
+			ScoringRequest scoringRequest = new ScoringRequest();
+			scoringRequest.setApplicationId(toApplicationId);
+			scoringRequest.setFpProductId(fpProductMappingId);
+			try {
+				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
+				
+			} catch (ScoringException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//Eligibility Data
+			EligibililityRequest eligibilityReq=new EligibililityRequest();
+			eligibilityReq.setApplicationId(toApplicationId);
+			eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
+			System.out.println(" for eligibility appid============>>"+toApplicationId);
+			
+			try {
+				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+//				CLEligibilityRequest cLEligibilityRequest= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>), CLEligibilityRequest.class);
+				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//CGTMSE
+			try {
+				CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+				corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting CGTMSE data");
+			}
+			
 			
     		
     	

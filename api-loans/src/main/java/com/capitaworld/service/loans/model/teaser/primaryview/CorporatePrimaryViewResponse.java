@@ -60,6 +60,12 @@ public class CorporatePrimaryViewResponse {
     private List<Object> bankStatement;
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
+    private Object monthlyDetailList;
+    private Object top5FundReceivedList;
+    private Object top5FundTransferedList;
+    private Object eligibilityDataObject;
+    private Object dataList;
+    private Object cgtmseData;
     private Long npOrgId;
 
 
@@ -451,6 +457,79 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+	/**
+	 * @return the monthlyDetailList
+	 */
+	public Object getMonthlyDetailList() {
+		return monthlyDetailList;
+	}
+	/**
+	 * @param monthlyDetailList the monthlyDetailList to set
+	 */
+	public void setMonthlyDetailList(Object monthlyDetailList) {
+		this.monthlyDetailList = monthlyDetailList;
+	}
+	/**
+	 * @return the top5FundReceivedList
+	 */
+	public Object getTop5FundReceivedList() {
+		return top5FundReceivedList;
+	}
+	/**
+	 * @param top5FundReceivedList the top5FundReceivedList to set
+	 */
+	public void setTop5FundReceivedList(Object top5FundReceivedList) {
+		this.top5FundReceivedList = top5FundReceivedList;
+	}
+	/**
+	 * @return the top5FundTransferedList
+	 */
+	public Object getTop5FundTransferedList() {
+		return top5FundTransferedList;
+	}
+	/**
+	 * @param top5FundTransferedList the top5FundTransferedList to set
+	 */
+	public void setTop5FundTransferedList(Object top5FundTransferedList) {
+		this.top5FundTransferedList = top5FundTransferedList;
+	}
+	
+	/**
+	 * @return the eligibilityDataObject
+	 */
+	public Object getEligibilityDataObject() {
+		return eligibilityDataObject;
+	}
+	/**
+	 * @param eligibilityDataObject the eligibilityDataObject to set
+	 */
+	public void setEligibilityDataObject(Object eligibilityDataObject) {
+		this.eligibilityDataObject = eligibilityDataObject;
+	}
+	/**
+	 * @return the dataList
+	 */
+	public Object getDataList() {
+		return dataList;
+	}
+	/**
+	 * @param dataList the dataList to set
+	 */
+	public void setDataList(Object dataList) {
+		this.dataList = dataList;
+	}
+	/**
+	 * @return the cgtmseData
+	 */
+	public Object getCgtmseData() {
+		return cgtmseData;
+	}
+	/**
+	 * @param cgtmseData the cgtmseData to set
+	 */
+	public void setCgtmseData(Object cgtmseData) {
+		this.cgtmseData = cgtmseData;
 	}
 	
     
