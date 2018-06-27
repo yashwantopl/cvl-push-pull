@@ -206,6 +206,11 @@ public class LoansClient {
     private static final String GET_DATA_FOR_HUNTER="/common/getDataForHunter";
     
     
+    //For Gateway
+    private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
+    
+    
+    
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
@@ -2085,4 +2090,21 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available");
 		}
 	}
+	
+	
+	public LoansResponse getCMAForGateway(Long applicationId,Long productDocumentMappingId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID).concat("/"+applicationId+"/"+productDocumentMappingId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
 }
+
+
