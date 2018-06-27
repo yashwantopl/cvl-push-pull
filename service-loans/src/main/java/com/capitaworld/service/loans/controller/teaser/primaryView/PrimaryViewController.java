@@ -562,6 +562,7 @@ public class PrimaryViewController {
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
+		Long productId= null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
 			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
 		}

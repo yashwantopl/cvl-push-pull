@@ -179,6 +179,9 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "collateral_security_amt_total")
 	private Double totalCollateralDetails;
 
+	@Column(name= "msme_registration_number")
+	private String msmeRegistrationNumber;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -589,5 +592,13 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setTotalCollateralDetails(Double totalCollateralDetails) {
 		this.totalCollateralDetails = totalCollateralDetails;
+	}
+
+	public String getMsmeRegistrationNumber() {
+		return msmeRegistrationNumber;
+	}
+
+	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
+		this.msmeRegistrationNumber = msmeRegistrationNumber;
 	}
 }
