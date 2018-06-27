@@ -6197,7 +6197,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 				directorDetail.setCountry(country);
-				
+				directorDetail.setPincode(detail.getPincode().toString());
+				directorDetail.setIsMainDirector(detail.getMainDirector());
 				response.addDirectorDetail(directorDetail);
 			}
 		}
