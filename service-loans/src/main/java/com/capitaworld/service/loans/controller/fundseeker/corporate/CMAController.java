@@ -64,6 +64,11 @@ public class CMAController {
 		try {
 			logger.info("Enter in GET Financial Data For Bank Integration----------------->" + applicationId);
 			FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
+			if(financialDetails == null) {
+				logger.info("Data not Found Financial Data For Bank Integration -----> " + applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data Not Found", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}
+			logger.info("Successfully Found Financial Data For Bank Integration");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Succesfully", HttpStatus.OK.value(),financialDetails),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.info("Throw Exception While GET Financial Data For Bank Integration");
