@@ -334,7 +334,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getCreatedDate());
+					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
 					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getModifiedBy());
 						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
@@ -1468,7 +1468,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
-					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getCreatedDate());
+					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 					
 					UsersRequest usersRequest=new UsersRequest();
