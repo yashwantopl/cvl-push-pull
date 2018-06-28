@@ -44,7 +44,7 @@ public class DashboardController {
 		try {
 			CommonDocumentUtils.startHook(logger, "profileDetails");
 			Long userId = null;
-			if(CommonDocumentUtils.isThisClientApplication(request)){
+			if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -94,7 +94,7 @@ public class DashboardController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFsOrFpCount");
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
