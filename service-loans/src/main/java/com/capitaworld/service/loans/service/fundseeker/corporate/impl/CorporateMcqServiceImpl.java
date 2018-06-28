@@ -86,7 +86,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     @Override
     public CorporateMcqRequest get(Long userId, Long applicationId) throws Exception {
         try {
-            CorporateMcqDetail loanDetail = corporateMcqDetailRepository.getByApplicationAndUserId(applicationId, userId);
+            CorporateMcqDetail loanDetail = corporateMcqDetailRepository.getByApplicationAndUserId(applicationId);
             if (loanDetail == null) {
                 throw new NullPointerException(
                         "FinalTermLoanDetail not exist in DB with ID=>" + userId + " applicationId==>" + applicationId);
