@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -558,6 +559,28 @@ public class CorporateUploadController {
           
         }
      
+	}
+	
+	
+	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) {
+		logger.info("In getCmaFile");
+		
+		try {
+
+				Object wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
+				LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), wb);
+
+				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+
+
+		} catch (NullPointerException e) {
+			logger.info("thrown exception from getCmaFile");
+			e.printStackTrace();
+
+        }
+		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(),null);
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
 }
