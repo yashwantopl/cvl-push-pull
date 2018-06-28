@@ -1068,12 +1068,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Object[] yrBeforePrevFinYear = financials.get(currentYear - 3);
 		
 		FinancialInputRequestString curFinYearString =  (FinancialInputRequestString)curFinYear[curFinYear.length - 2];
-		FinancialInputRequestString prevFinYearString =  (FinancialInputRequestString)curFinYear[prevFinYear.length - 2];
-		FinancialInputRequestString yrBeforePrevFinYearString =  (FinancialInputRequestString)curFinYear[yrBeforePrevFinYear.length - 2];
+		FinancialInputRequestString prevFinYearString =  (FinancialInputRequestString)prevFinYear[prevFinYear.length - 2];
+		FinancialInputRequestString yrBeforePrevFinYearString =  (FinancialInputRequestString)yrBeforePrevFinYear[yrBeforePrevFinYear.length - 2];
 		
 		FinancialInputRequestDbl curFinYearDouble =  (FinancialInputRequestDbl)curFinYear[curFinYear.length - 1];
-		FinancialInputRequestDbl prevFinYearDouble =  (FinancialInputRequestDbl)curFinYear[prevFinYear.length - 1];
-		FinancialInputRequestDbl yrBeforePrevFinYearDouble =  (FinancialInputRequestDbl)curFinYear[yrBeforePrevFinYear.length - 1];
+		FinancialInputRequestDbl prevFinYearDouble =  (FinancialInputRequestDbl)prevFinYear[prevFinYear.length - 1];
+		FinancialInputRequestDbl yrBeforePrevFinYearDouble =  (FinancialInputRequestDbl)yrBeforePrevFinYear[yrBeforePrevFinYear.length - 1];
 		
 		 //CASH FLOW 
 		curFinYearDouble.setEbitda(curFinYearDouble.getOperatingProfitEbitadOi());
