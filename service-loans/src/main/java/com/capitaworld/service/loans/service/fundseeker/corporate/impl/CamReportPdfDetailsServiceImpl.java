@@ -1146,8 +1146,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		prevFinYearString.setAdjustedTotalDebtEquity(convertValue(prevFinYearDouble.getAdjustedTotalDebtEquity()));
 		yrBeforePrevFinYearString.setAdjustedTotalDebtEquity(convertValue(yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
 		
-		curFinYearString.setGrowthDebtEquity(convertValue((CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity()))/prevFinYearDouble.getAdjustedTotalDebtEquity()));
-		prevFinYearString.setGrowthDebtEquity(convertValue((CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()))/yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
+		curFinYearString.setGrowthDebtEquity(convertValue(CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity())/prevFinYearDouble.getAdjustedTotalDebtEquity()));
+		prevFinYearString.setGrowthDebtEquity(convertValue(CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())/yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
 		
 		curFinYearString.setCurruntRatioX(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getInventories(),curFinYearDouble.getSundryDebtors())), curFinYearDouble.getTradePayables())));
 		prevFinYearString.setCurruntRatioX(convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getInventories(),prevFinYearDouble.getSundryDebtors())), prevFinYearDouble.getTradePayables())));
