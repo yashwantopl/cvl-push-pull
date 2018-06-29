@@ -4802,7 +4802,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		try {
 			logger.info("Call Post Matche -------------------------------------->");
-			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(), loanApplicationMaster.getUserId(), !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId()) ? loanApplicationMaster.getBusinessTypeId() : CommonUtils.BusinessType.NEW_TO_BUSINESS.getId());
+			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(), loanApplicationMaster.getUserId(), !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId()) ? loanApplicationMaster.getBusinessTypeId() : CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(postMatches)) {
 				logger.info("Response form Connect lient ---------------->" + postMatches.toString());
 				logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
