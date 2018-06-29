@@ -438,9 +438,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(loanApplicationMaster.getTenure().intValue());
 			if(primaryCorporateRequest.getProductId() == 1) {
 				projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear));
+				map.put("tenure", 1);
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
+					map.put("tenure", loanApplicationMaster.getTenure().intValue());
 				}
 			}
 			map.put("projectedFinancials", projectedFin);
