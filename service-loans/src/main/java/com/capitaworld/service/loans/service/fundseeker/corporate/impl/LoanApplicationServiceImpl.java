@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundprovider.DisbursementDetails;
+import com.capitaworld.service.loans.model.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6238,8 +6240,40 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw e;
 		}
 	}
-	
-	
+
+	@Override
+	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception {
+		try{
+			logger.info("Start getDetailsForSanction with data application Id : "+ disbursementRequest.getApplicationId() + " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+			SanctioningDetailResponse sanctioningDetailResponse = new SanctioningDetailResponse();
+
+			logger.info("Fetching data from in-principle: ");
+			ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(disbursementRequest.getProductMappingId(), disbursementRequest.getApplicationId());
+			Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+			if(proposalresp!=null){
+				sanctioningDetailResponse.setSanctionAmount(proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString()) : 0.0);
+				sanctioningDetailResponse.setTenure(proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString()) : 0.0);
+				sanctioningDetailResponse.setRoi(proposalresp.get("elRoi") != null ? Double.valueOf(proposalresp.get("elRoi").toString()) : 0.0);
+				sanctioningDetailResponse.setProcessingFee(proposalresp.get("processingFee") != null ? Double.valueOf(proposalresp.get("processingFee").toString()) : 0.0);
+				sanctioningDetailResponse.setBranch(proposalresp.get("branchId") != null ? Long.valueOf(proposalresp.get("branchId").toString()) : null);
+				sanctioningDetailResponse.setUserOrgId(proposalresp.get("userOrgId") != null ? Long.valueOf(proposalresp.get("userOrgId").toString()) : null);
+			}
+
+			logger.info("Fetching data for proposal: ");
+			DisbursementRequest disbursementDetailsResponse =getDisbursementDetails(disbursementRequest);
+
+			if(disbursementDetailsResponse != null){
+				BeanUtils.copyProperties(disbursementDetailsResponse,sanctioningDetailResponse);
+			}
+			logger.info("End getDetailsForSanction with data application Id : "+ disbursementRequest.getApplicationId() + " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+			return sanctioningDetailResponse;
+		}catch (Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+
 	private String getIndustryForHunter(Long industryId) {
 		if (industryId != null) {
 			Integer indId = Integer.valueOf(industryId.intValue());

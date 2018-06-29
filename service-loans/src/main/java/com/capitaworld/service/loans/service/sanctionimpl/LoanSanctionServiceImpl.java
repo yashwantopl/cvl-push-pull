@@ -2,6 +2,10 @@ package com.capitaworld.service.loans.service.sanctionimpl;
 
 import java.util.Date;
 import javax.transaction.Transactional;
+
+import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -117,6 +121,34 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	public Long getOrgIdByCredential(String userName, String pwd) {
 		 return userClient.getOrganisationDetailIdByCredential(userName, pwd);
 		
+	}
+
+	@Override
+	public Boolean saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception {
+
+		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
+		try {
+
+
+			logger.info("going to fetch username/password");
+			UserOrganisationRequest userOrganisationRequest = userClient.getByOrgId(loanSanctionRequest.getOrgId());
+			if(CommonUtils.isObjectListNull( userOrganisationRequest, userOrganisationRequest.getUsername(),  userOrganisationRequest.getPassword() )){
+                logger.warn("username/password found null ");
+                return false;
+            }
+
+			loanSanctionRequest.setUserName(userOrganisationRequest.getUsername());
+			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());
+			loanSanctionRequest.setSanctionDate(new Date());
+
+			return saveLoanSanctionDetail(loanSanctionRequest);
+
+		}catch (Exception e) {
+			logger.info("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message "+ e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+
 	}
 
 }
