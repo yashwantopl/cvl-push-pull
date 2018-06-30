@@ -40,7 +40,7 @@ public class FinancialInputRequestDbl implements Serializable{
 	private Double grossBlock;
 	private Double grossSales;
 	private Double growthCfoMargine;
-	private Double growthDebtEquitySy;
+	private Double growthDebtEquity;
 	private Double impairmentofAsset;
 	private Double increaseDecreaseStock;
 	private Double increaseWorkingCapital;
@@ -140,7 +140,7 @@ public class FinancialInputRequestDbl implements Serializable{
         this.grossBlock = 0.0;
         this.grossSales = 0.0;
         this.growthCfoMargine = 0.0;
-        this.growthDebtEquitySy = 0.0;
+        this.growthDebtEquity = 0.0;
         this.impairmentofAsset = 0.0;
         this.increaseDecreaseStock = 0.0;
         this.increaseWorkingCapital = 0.0;
@@ -393,11 +393,11 @@ public class FinancialInputRequestDbl implements Serializable{
 	public void setGrowthCfoMargine(Double growthCfoMargine) {
 		this.growthCfoMargine = growthCfoMargine;
 	}
-	public Double getGrowthDebtEquitySy() {
-		return growthDebtEquitySy;
+	public Double getGrowthDebtEquity() {
+		return growthDebtEquity;
 	}
-	public void setGrowthDebtEquitySy(Double growthDebtEquitySy) {
-		this.growthDebtEquitySy = growthDebtEquitySy;
+	public void setGrowthDebtEquity(Double growthDebtEquity) {
+		this.growthDebtEquity = growthDebtEquity;
 	}
 	public Double getImpairmentofAsset() {
 		return impairmentofAsset;

@@ -2,12 +2,14 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
@@ -15,7 +17,6 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
-import com.capitaworld.service.loans.model.common.DisbursementDetailsResponse;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
@@ -26,6 +27,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.RegisteredUserResponse;
 import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 
 public interface LoanApplicationService {
 
@@ -172,6 +174,8 @@ public interface LoanApplicationService {
 	 * @return
 	 */
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception;
+	
+	public String saveDetailedInfo(ProfileReqRes profileReqRes)  throws LoansException, Exception;
 }
 
 

@@ -1292,6 +1292,7 @@ public class DDRFormServiceImpl implements DDRFormService{
                 directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
                 directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
                 directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+                directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
                 directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
             }
             response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
