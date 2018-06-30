@@ -4155,8 +4155,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (loanApplicationMaster == null) {
 			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
 		}
-		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+		/*LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);*/
 		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 		
@@ -4799,8 +4799,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				primaryUnsecuredLoanDetailRepository.save(unsLoan);
 			}
 		}
-		logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
-		return true;
+		
+		try {
+			logger.info("Call Post Matche -------------------------------------->");
+			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(), loanApplicationMaster.getUserId(), !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId()) ? loanApplicationMaster.getBusinessTypeId() : CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(postMatches)) {
+				logger.info("Response form Connect lient ---------------->" + postMatches.toString());
+				logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
+				return postMatches.getProceed();
+			} else {
+				logger.info("Response form Connect lient ---------------->" + null);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
