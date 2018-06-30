@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
@@ -16,8 +14,6 @@ import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepo
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.users.client.UsersClient;
 
 /**
  * @author Ankit
@@ -31,15 +27,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
-
-	@Autowired 
-	private UsersClient userClient;
 	
 	@Autowired 
 	private ProposalDetailsRepository proposalDetailsRepository; 
 	
-	@Autowired
-	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository; 
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
 		try {
@@ -86,37 +77,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	        	logger.info("Error/Exception in requestValidation() ----------------------->  Message "+ e.getMessage());
 	        	throw e;
 			}
-	}
-	@Override
-	public void saveBankReqRes(LoanSanctionRequest loanSanctionRequest,Integer apiType,  LoansResponse loansResponse, String failureReason ,Long orgId) {
-		logger.info("Enter in saveBankReqRes() -----------------------> LoanSanctionRequest ==>"+ loanSanctionRequest+ " orgId==> "+ orgId);
-		try {
-		 BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
-		 bankCWAuditTrailDomain.setApplicationId(loanSanctionRequest !=null?loanSanctionRequest.getApplicationId():null);
-		 bankCWAuditTrailDomain.setOrgId(orgId);
-		 bankCWAuditTrailDomain.setBankRequest(MultipleJSONObjectHelper.getStringfromObject(loanSanctionRequest));
-		 bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse.toString()));
-		 bankCWAuditTrailDomain.setFailureReason(failureReason);
-		 bankCWAuditTrailDomain.setIsActive(true);
-		 bankCWAuditTrailDomain.setCreatedDate(new Date());
-		 bankCWAuditTrailDomain.setApiType(apiType); 
-		 if(loansResponse.getStatus()==200) {
-			 bankCWAuditTrailDomain.setStatus("SUCCESS");
-		 }else {
-			 bankCWAuditTrailDomain.setStatus("FAILURE");
-		 }
-		 		bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
-		}catch (Exception e) {
-			logger.info("Error/Exception in saveBankReqRes() ----------------------->  Message "+ e.getMessage());
-			e.printStackTrace();
-			/*throw e;*/
-		} 		
-	}
-	
-	@Override
-	public Long getOrgIdByCredential(String userName, String pwd) {
-		 return userClient.getOrganisationDetailIdByCredential(userName, pwd);
-		
 	}
 
 }
