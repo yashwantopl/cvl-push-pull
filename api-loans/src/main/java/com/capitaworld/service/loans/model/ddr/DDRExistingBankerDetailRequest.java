@@ -13,6 +13,8 @@ public class DDRExistingBankerDetailRequest implements Serializable {
     private Long id;
 
     private Long ddrFormId;
+    
+    private Long financialArrangementId;
 
     private String financialInstitutionName;
 
@@ -109,8 +111,22 @@ public class DDRExistingBankerDetailRequest implements Serializable {
     public void setActive(Boolean active) {
         isActive = active;
     }
+    
+    /**
+	 * @return the financialArrangementId
+	 */
+	public Long getFinancialArrangementId() {
+		return financialArrangementId;
+	}
 
-    @Override
+	/**
+	 * @param financialArrangementId the financialArrangementId to set
+	 */
+	public void setFinancialArrangementId(Long financialArrangementId) {
+		this.financialArrangementId = financialArrangementId;
+	}
+
+	@Override
     public String toString() {
         return "DDRExistingBankerDetailRequest{" +
                 "id=" + id +
@@ -123,6 +139,7 @@ public class DDRExistingBankerDetailRequest implements Serializable {
                 ", modifyBy=" + modifyBy +
                 ", modifyDate=" + modifyDate +
                 ", isActive=" + isActive +
+                ", financialArrangementId=" + financialArrangementId + 
                 '}';
     }
 
