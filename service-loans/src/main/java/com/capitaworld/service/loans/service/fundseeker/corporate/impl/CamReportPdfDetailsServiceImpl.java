@@ -442,7 +442,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
-					map.put("tenure", loanApplicationMaster.getTenure().intValue());
+					map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 				}
 			}
 			map.put("projectedFinancials", projectedFin);

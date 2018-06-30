@@ -5333,7 +5333,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(!CommonUtils.isObjectNullOrEmpty(dataResponse)) {
 				BeanUtils.copyProperties(dataResponse, dataRequest);
 				//Set Customer Info
-				if(CommonUtils.isObjectNullOrEmpty(dataResponse.getCustomerInfo())) {
+				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getCustomerInfo())) {
 					com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo customerInfo = new com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo();
 					BeanUtils.copyProperties(dataResponse.getCustomerInfo(), customerInfo);
 					dataRequest.setCustomerInfo(customerInfo);
