@@ -6780,4 +6780,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 	
+	@Override
+	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest) {
+		
+		Boolean updatePayment=false;
+		
+		GatewayRequest gatewayRequest = new GatewayRequest();
+		gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+		gatewayRequest.setStatus(paymentRequest.getStatus());
+		gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+
+		
+		try {
+			updatePayment = gatewayClient.updatePayment(gatewayRequest);
+		} catch (Exception e) {
+			logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
+			e.printStackTrace();
+		}
+		
+		return updatePayment;
+	}
+	
 }

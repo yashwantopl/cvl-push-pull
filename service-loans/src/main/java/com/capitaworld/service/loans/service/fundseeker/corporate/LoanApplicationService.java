@@ -176,6 +176,10 @@ public interface LoanApplicationService {
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception;
 	
 	public String saveDetailedInfo(ProfileReqRes profileReqRes)  throws LoansException, Exception;
+	
+	//Update Payment Status after redirection through Gateway for Mobile
+	
+	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 }
 
 
