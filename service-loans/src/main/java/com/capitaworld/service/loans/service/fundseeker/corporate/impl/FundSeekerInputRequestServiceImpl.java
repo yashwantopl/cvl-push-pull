@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -26,6 +28,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -34,6 +37,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -66,6 +70,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
+    @Autowired
+    private LoanApplicationService loanApplicationService;
+    
+    @Autowired
+    private FraudAnalyticsClient fraudAnalyticsClient;
 
     @Override
     public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -389,4 +399,29 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
         // Setting Administrative Address
     }
+
+
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService#invokeFraudAnalytics(com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse)
+	 */
+	@Override
+	public void invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception {
+		
+		try {
+		HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+		AnalyticsRequest request = new AnalyticsRequest();
+		request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
+		request.setUserId(fundSeekerInputRequestResponse.getUserId());
+		request.setData(hunterRequestDataResponse);
+		
+		fraudAnalyticsClient.callHunterIIAPI(request);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 }
