@@ -1176,8 +1176,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 				promoBackResp.setDin(promBackReq.getDin() != null ? promBackReq.getDin().toString() : null);
 				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() + " " : "") + promBackReq.getPromotorsName());
 				promoBackResp.setTotalExperience(promBackReq.getTotalExperience() != null ? promBackReq.getTotalExperience().toString() : null);
-				promoBackResp.setDob(!CommonUtils.isObjectNullOrEmpty(promBackReq.getDob()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getDob())).toString() : null);
-				promoBackResp.setAppointmentDate(!CommonUtils.isObjectNullOrEmpty(promBackReq.getAppointmentDate()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getAppointmentDate())).toString() : null);
+				promoBackResp.setDobDate(!CommonUtils.isObjectNullOrEmpty(promBackReq.getDob()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getDob())) : null);
+				promoBackResp.setAppointment(!CommonUtils.isObjectNullOrEmpty(promBackReq.getAppointmentDate()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getAppointmentDate())) : null);
 				promoBackResp.setNetworth(promBackReq.getNetworth() != null ? promBackReq.getNetworth().toString() : null);
 				PromotorBackgroundDetailResponse.printFields(promoBackResp);
 				promoBackRespList.add(promoBackResp);
