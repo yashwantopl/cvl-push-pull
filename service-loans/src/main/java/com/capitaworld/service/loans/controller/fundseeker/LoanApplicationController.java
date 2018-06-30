@@ -2245,7 +2245,7 @@ public class LoanApplicationController {
 					break;
 			}
 			
-            PaymentRequest paymentRequest = new PaymentRequest();
+         PaymentRequest paymentRequest = new PaymentRequest();
 			
 			paymentRequest.setApplicationId((Long)map.get("applicationId"));
 			paymentRequest.setStatus(map.get("status").toString());
@@ -2265,6 +2265,7 @@ public class LoanApplicationController {
    
 			
 	}
+
 
 	
 	

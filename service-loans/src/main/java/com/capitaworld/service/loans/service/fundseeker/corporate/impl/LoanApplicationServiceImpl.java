@@ -6800,5 +6800,5 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		return updatePayment;
 	}
-	
+
 }
