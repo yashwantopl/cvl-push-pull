@@ -135,6 +135,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	
 	@Query("select lm.denominationId from LoanApplicationMaster lm where lm.id =:applicationId and lm.userId =:userId and lm.isActive = true")
 	public Integer getDenominationId(@Param("applicationId") Long applicationId, @Param("userId") Long userId);
+	
+	@Query("select lm.denominationId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true")
+	public Integer getDenominationId(@Param("applicationId") Long applicationId);
 
 	@Modifying
 	@Query("update LoanApplicationMaster lm set lm.detailsFilledCount =:detailsFilledCount,lm.modifiedDate = NOW(),lm.modifiedBy =:userId where lm.id =:id and lm.userId =:userId and lm.isActive = true")
