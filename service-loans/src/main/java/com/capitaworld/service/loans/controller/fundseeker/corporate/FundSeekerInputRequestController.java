@@ -46,6 +46,10 @@ public class FundSeekerInputRequestController {
             boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
         	if(result){
+        		
+        		// initiate fraudanalytics service to invoke hunter api
+        		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value()),
