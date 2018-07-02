@@ -28,6 +28,8 @@ public class LoanSanctionRequest  implements Serializable {
 	private String userName;
 	private String password;
 	private String actionBy;
+	private Double processingFee;
+	private Long orgId;
 
 	public String getAccountNo() {
 		return accountNo;
@@ -141,13 +143,41 @@ public class LoanSanctionRequest  implements Serializable {
 		this.actionBy = actionBy;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanSanctionRequest [accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount + ", transactionNo="
-				+ transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch=" + branch
-				+ ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + "]";
+	public Double getProcessingFee() {
+		return processingFee;
 	}
 
+	public void setProcessingFee(Double processingFee) {
+		this.processingFee = processingFee;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanSanctionRequest{" +
+				"accountNo='" + accountNo + '\'' +
+				", sanctionAmount=" + sanctionAmount +
+				", transactionNo='" + transactionNo + '\'' +
+				", roi=" + roi +
+				", sanctionDate=" + sanctionDate +
+				", branch=" + branch +
+				", applicationId=" + applicationId +
+				", referenceNo=" + referenceNo +
+				", tenure=" + tenure +
+				", sanctionAuthority='" + sanctionAuthority + '\'' +
+				", remark='" + remark + '\'' +
+				", userName='" + userName + '\'' +
+				", password='" + password + '\'' +
+				", actionBy='" + actionBy + '\'' +
+				", processingFee=" + processingFee +
+				", orgId=" + orgId +
+				'}';
+	}
 }

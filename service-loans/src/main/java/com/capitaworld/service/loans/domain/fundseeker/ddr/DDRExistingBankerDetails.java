@@ -20,6 +20,9 @@ public class DDRExistingBankerDetails  implements Serializable {
 
     @Column(name="financial_institution_name")
     private String financialInstitutionName;
+    
+    @Column(name="financial_arrangement_id")
+    private Long financialArrangementId;
 
     @Column(name="address")
     private String address;
@@ -123,4 +126,19 @@ public class DDRExistingBankerDetails  implements Serializable {
     public void setActive(Boolean active) {
         isActive = active;
     }
+
+	/**
+	 * @return the financialArrangementId
+	 */
+	public Long getFinancialArrangementId() {
+		return financialArrangementId;
+	}
+
+	/**
+	 * @param financialArrangementId the financialArrangementId to set
+	 */
+	public void setFinancialArrangementId(Long financialArrangementId) {
+		this.financialArrangementId = financialArrangementId;
+	}
+    
 }

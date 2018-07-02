@@ -11,6 +11,8 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 //import javax.ws.rs.Path;
 
+import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,10 +84,15 @@ public class LoanApplicationController {
 	private LoanSanctionService loanSanctionService;
 	
 	@Autowired 
-	private LoanDisbursementService  loanDisbursementService; 
+	private LoanDisbursementService  loanDisbursementService;
+
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
+
 	
 	@Autowired
 	private AuditComponentBankToCW  auditComponentBankToCW;
+
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -1810,6 +1817,74 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+
+	@RequestMapping(value = "/getDetailsForSanctionPopup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDetailsForSanctionPopup(@RequestBody DisbursementRequest disbursementRequest,
+																HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start getDetailsForApproval()");
+
+			if (CommonUtils.isObjectListNull(disbursementRequest.getApplicationId(),
+					disbursementRequest.getProductMappingId())) {
+				logger.warn("All parameter must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+
+			response.setData(loanApplicationService.getDetailsForSanction(disbursementRequest));
+			logger.info("end getDetailsForApproval()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getDetailsForApproval", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/saveDetailsForSanctionPopup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+		public ResponseEntity<LoansResponse> saveDetailsForSanctionPopup(@RequestBody LoanSanctionRequest loanSanctionRequest,
+																	HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+			try {
+				logger.info("start getDetailsForApproval()");
+				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				if (userId == null) {
+					logger.warn("UsrId must not be null==>");
+					return new ResponseEntity<LoansResponse>(new LoansResponse(
+							"Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				loanSanctionRequest.setActionBy(userId.toString());
+
+
+
+				if (CommonUtils.isObjectListNull(loanSanctionRequest.getApplicationId(),
+						 loanSanctionRequest.getBranch(),loanSanctionRequest.getOrgId(),  loanSanctionRequest.getRoi() ,loanSanctionRequest.getSanctionAmount(),loanSanctionRequest.getTenure(), loanSanctionRequest.getProcessingFee())) {
+					logger.warn("All parameter must not be null");
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+
+				Boolean result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
+				logger.info("result of save sanction detail ---------------------{}",result);
+				response.setData(result);
+				if(!result){
+					response.setMessage("something went wrong while saving sanctioned details");
+					response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				}
+
+				logger.info("end getDetailsForApproval()");
+				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+			} catch (Exception e) {
+				logger.error("Error while getDetailsForApproval", e);
+				e.printStackTrace();
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.OK);
+			}
+		}
 
 	@RequestMapping(value = "/updateProductDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateProductDetails(@RequestBody LoanApplicationRequest loanRequest) {
