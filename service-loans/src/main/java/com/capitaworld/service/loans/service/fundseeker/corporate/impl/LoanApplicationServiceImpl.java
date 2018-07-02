@@ -6821,6 +6821,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		
 		GatewayRequest gatewayRequest = new GatewayRequest();
 		gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+		gatewayRequest.setUserId(paymentRequest.getUserId());
 		gatewayRequest.setStatus(paymentRequest.getStatus());
 		gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 
