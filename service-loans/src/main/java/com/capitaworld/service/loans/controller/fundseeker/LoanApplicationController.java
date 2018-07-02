@@ -2260,6 +2260,7 @@ public class LoanApplicationController {
 			PaymentRequest paymentRequest = new PaymentRequest();
 			
 			paymentRequest.setApplicationId((Long)map.get("udf1"));
+			paymentRequest.setUserId((Long)map.get("udf2"));
 			paymentRequest.setStatus(map.get("status").toString());
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
@@ -2323,6 +2324,7 @@ public class LoanApplicationController {
          PaymentRequest paymentRequest = new PaymentRequest();
 			
 			paymentRequest.setApplicationId((Long)map.get("applicationId"));
+			paymentRequest.setUserId((Long)map.get("udf2"));
 			paymentRequest.setStatus(map.get("status").toString());
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
