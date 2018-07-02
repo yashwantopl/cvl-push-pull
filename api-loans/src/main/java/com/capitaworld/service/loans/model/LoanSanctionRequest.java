@@ -31,6 +31,9 @@ public class LoanSanctionRequest  implements Serializable {
 	private Double processingFee;
 	private Long orgId;
 
+	private Long proposalId;
+	private Long proposalStatusId;
+
 	public String getAccountNo() {
 		return accountNo;
 	}
@@ -159,6 +162,22 @@ public class LoanSanctionRequest  implements Serializable {
 		this.orgId = orgId;
 	}
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+
+	public Long getProposalStatusId() {
+		return proposalStatusId;
+	}
+
+	public void setProposalStatusId(Long proposalStatusId) {
+		this.proposalStatusId = proposalStatusId;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanSanctionRequest{" +
@@ -178,6 +197,8 @@ public class LoanSanctionRequest  implements Serializable {
 				", actionBy='" + actionBy + '\'' +
 				", processingFee=" + processingFee +
 				", orgId=" + orgId +
+				", proposalId=" + proposalId +
+				", proposalStatusId=" + proposalStatusId +
 				'}';
 	}
 }

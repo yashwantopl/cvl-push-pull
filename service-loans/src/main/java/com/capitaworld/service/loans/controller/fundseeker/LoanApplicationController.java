@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1850,8 +1851,14 @@ public class LoanApplicationController {
 			try {
 				logger.info("start getDetailsForApproval()");
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				Long userType = Long.valueOf(request.getAttribute(CommonUtils.USER_TYPE).toString());
 				if (userId == null) {
 					logger.warn("UsrId must not be null==>");
+					return new ResponseEntity<LoansResponse>(new LoansResponse(
+							"Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				}
+				if(userType == null) {
+					logger.warn("userType must not be null==>");
 					return new ResponseEntity<LoansResponse>(new LoansResponse(
 							"Invalid User. Please relogin and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
@@ -1873,6 +1880,13 @@ public class LoanApplicationController {
 				if(!result){
 					response.setMessage("something went wrong while saving sanctioned details");
 					response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				}else{
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
+					proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
+					proposalMappingRequest.setLastActionPerformedBy(userType);
+					proposalMappingRequest.setUserId(userId);
+					proposalDetailsClient.changeStatus(proposalMappingRequest);
 				}
 
 				logger.info("end getDetailsForApproval()");
