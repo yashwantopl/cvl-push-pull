@@ -450,6 +450,7 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
+		urlsBrforeLogin.add("/loans/loan_application/save_payment_info");
 		
 	}
 
