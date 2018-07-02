@@ -2262,13 +2262,15 @@ public class LoanApplicationController {
 				try {
 					key = c.nextToken();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("Token null==================>"+e.getMessage());
+					//e.printStackTrace();
 					key = null;
 				}
 				try {
 					value = c.nextToken();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("Token null==================>"+e.getMessage());
+					//e.printStackTrace();
 					value = null;
 				}
 				map.put(key, value);
