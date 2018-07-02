@@ -2281,7 +2281,12 @@ public class LoanApplicationController {
 			
 			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
-			paymentRequest.setStatus(map.get("status").toString());
+			if("success".equals(map.get("status").toString())) {
+				paymentRequest.setStatus("Success");	
+			}
+			else {
+				paymentRequest.setStatus("Failed");
+			}
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
@@ -2341,11 +2346,16 @@ public class LoanApplicationController {
 					break;
 			}
 			
-      PaymentRequest paymentRequest = new PaymentRequest();
+            PaymentRequest paymentRequest = new PaymentRequest();
 			
             paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 		    paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
-			paymentRequest.setStatus(map.get("status").toString());
+		    if("success".equals(map.get("status").toString())) {
+				paymentRequest.setStatus("Success");	
+			}
+			else {
+				paymentRequest.setStatus("Failed");
+			}
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
