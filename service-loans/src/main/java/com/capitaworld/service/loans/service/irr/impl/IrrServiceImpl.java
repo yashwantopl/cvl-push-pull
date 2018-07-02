@@ -2059,7 +2059,7 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setIntegrity(corporateMcqDetail.getIntegrity().longValue());
 		qualitativeInputSheetManuRequest.setBusinessCommitment(corporateMcqDetail.getBusinessCommitment().longValue());
 		qualitativeInputSheetManuRequest.setManagementCompetence(corporateMcqDetail.getManagementCompetence().longValue());
-		qualitativeInputSheetManuRequest.setBusinessExperience(corporateMcqDetail.getBusinessCommitment().longValue());
+		qualitativeInputSheetManuRequest.setBusinessExperience(corporateMcqDetail.getBusinessExperience().longValue());
 		qualitativeInputSheetManuRequest.setSuccsessionPlanning(corporateMcqDetail.getSuccessionPlanning().longValue());
 		qualitativeInputSheetManuRequest.setFinancialStrength(corporateMcqDetail.getFinancialSupport().longValue());
 		qualitativeInputSheetManuRequest.setAbilityToRaise(corporateMcqDetail.getAbilityToRaiseFunds().longValue());
