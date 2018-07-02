@@ -31,8 +31,19 @@ public class PaymentRequest implements Serializable {
 	private Boolean isAcceptConsent;
     private String gatewayType;
     private Long userId;
+    private String requestType;
     
     
+    
+    
+	public String getRequestType() {
+		return requestType;
+	}
+
+	public void setRequestType(String requestType) {
+		this.requestType = requestType;
+	}
+
 	public Long getUserId() {
 		return userId;
 	}
