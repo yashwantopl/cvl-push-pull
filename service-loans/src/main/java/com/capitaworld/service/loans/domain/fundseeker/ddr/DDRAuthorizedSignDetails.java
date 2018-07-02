@@ -39,6 +39,9 @@ public class DDRAuthorizedSignDetails implements Serializable {
 	@Column(name ="document_obtained")
 	private String documentObtained;
 	
+	@Column(name ="occupation")
+	private String occupation;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 	
@@ -135,12 +138,27 @@ public class DDRAuthorizedSignDetails implements Serializable {
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
 	}
+	
+
+	/**
+	 * @return the occupation
+	 */
+	public String getOccupation() {
+		return occupation;
+	}
+
+	/**
+	 * @param occupation the occupation to set
+	 */
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
 
 	@Override
 	public String toString() {
 		return "DDRAuthorizedSignDetails [id=" + id + ", ddrFormId=" + ddrFormId + ", name=" + name + ", designation="
 				+ designation + ", documentObtained=" + documentObtained + ", createdBy=" + createdBy + ", createdDate="
-				+ createdDate + ", modifyBy=" + modifyBy + ", modifyDate=" + modifyDate + ", isActive=" + isActive
+				+ createdDate + ", modifyBy=" + modifyBy + ", modifyDate=" + modifyDate + ", isActive=" + isActive + ", occupation=" + occupation
 				+ "]";
 	}
 

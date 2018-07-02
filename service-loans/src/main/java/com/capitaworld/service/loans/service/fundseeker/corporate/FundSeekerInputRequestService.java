@@ -15,4 +15,11 @@ public interface FundSeekerInputRequestService {
     public ResponseEntity<LoansResponse> getDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest);
     
     public LoansResponse callMatchEngineClient(Long applicationId,Long userId,Integer businessTypeId);
+
+	/**
+	 * @param fundSeekerInputRequestResponse
+	 * @throws Exception 
+	 */
+	public void invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception;
+    
 }

@@ -29,6 +29,9 @@ import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -236,6 +239,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	WorkflowClient workflowClient;
 	
+	@Autowired
+	ConnectClient connectClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -289,12 +295,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
-		WorkflowRequest workflowRequest = new WorkflowRequest();
-		workflowRequest.setApplicationId(applicationId);
-		workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
-		WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
-		map.put("trailDates", auditTrail.getData());
-		//map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		try {
+			WorkflowRequest workflowRequest = new WorkflowRequest();
+			workflowRequest.setApplicationId(applicationId);
+			workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
+			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
+			map.put("trailDates", auditTrail.getData());
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		
+		try {
+			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			map.put("dateOfInPrincipalApproval", connectResponse.getData());
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
 		
 		//GST DATA
 		try {
@@ -442,7 +458,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
-					map.put("tenure", loanApplicationMaster.getTenure().intValue());
+					map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 				}
 			}
 			map.put("projectedFinancials", projectedFin);
@@ -461,16 +477,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e.printStackTrace();
 		}
 		//PROPOSAL RESPONSE
-				try {
-					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-					proposalMappingRequest.setApplicationId(applicationId);
-					proposalMappingRequest.setFpProductId(productId);
-					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-					map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+		try {
+				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+				proposalMappingRequest.setApplicationId(applicationId);
+				proposalMappingRequest.setFpProductId(productId);
+				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		//SCORING DATA
 		try {

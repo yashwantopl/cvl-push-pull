@@ -3,13 +3,11 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
 import com.capitaworld.service.loans.model.ddr.*;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
@@ -21,41 +19,38 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.OwnershipDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetailDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
@@ -118,10 +113,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
 	@Autowired
-	private OwnershipDetailsService ownershipDetailsService;
+	private OwnershipDetailsRepository ownershipDetailsRepository;
 	
 	@Autowired
-	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 	
 	@Autowired
 	private ProposedProductDetailsService proposedProductDetailsService; 
@@ -154,13 +149,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 	private BalanceSheetDetailRepository balanceSheetDetailRepository;
 	
 	@Autowired
-	private ReferenceRetailDetailsRepository referenceRetailDetailsRepository;
-	
-	@Autowired
 	private SecurityCorporateDetailsService securityCorporateDetailsService;
-	
-	@Autowired
-	private DirectorBackgroundDetailsService backgroundDetailsService;
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -168,8 +157,6 @@ public class DDRFormServiceImpl implements DDRFormService{
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
 	
-	@Autowired
-	private ProductMasterRepository productMasterRepository;
 	
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
 	/**
@@ -968,12 +955,13 @@ public class DDRFormServiceImpl implements DDRFormService{
 			}
 
 			try {
-				List<FinancialArrangementsDetailRequest> finArrangeReqList = financialArrangementDetailsService.getFinancialArrangementDetailsList(appId, userId);
+				List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(appId);
 				DDRExistingBankerDetailRequest response = null;
-				responseList = new ArrayList<>(finArrangeReqList.size());
-				for(FinancialArrangementsDetailRequest finReq : finArrangeReqList) {
+				responseList = new ArrayList<>(financialArrangementsList.size());
+				for(FinancialArrangementsDetail finDetail : financialArrangementsList) {
 					response = new DDRExistingBankerDetailRequest();
-					response.setFinancialInstitutionName(finReq.getFinancialInstitutionName());
+					response.setFinancialArrangementId(finDetail.getId());
+					response.setFinancialInstitutionName(finDetail.getFinancialInstitutionName());
 					responseList.add(response);
 				}
 			} catch (Exception e) {
@@ -1048,8 +1036,8 @@ public class DDRFormServiceImpl implements DDRFormService{
 	
 	private String getCurrency(Long applicationId, Long userId) {
 		try {
-			Integer currencyId = loanApplicationRepository.getCurrencyId(applicationId, userId);
-			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
+			Integer currencyId = loanApplicationRepository.getCurrencyId(applicationId);
+			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId);
 			return CommonDocumentUtils.getCurrency(currencyId) + " in " + CommonDocumentUtils.getDenomination(denominationId);	
 		} catch (Exception e) {
 			logger.error("DDR ====================> Throw Excetion While get Currency by application id----------->"+ applicationId);
@@ -1073,7 +1061,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
-		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId,applicationId);
+		CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(applicationId);
 		if(CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			logger.info("Corporate Profile Details NUll or Empty!! ----------------->" + applicationId);
 			return response;
@@ -1175,7 +1163,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//PROMOTOR BACKGROUND DETAILS :- LINENO:12
 		try {
-			List<PromotorBackgroundDetailRequest> promoBackReqList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
+			List<PromotorBackgroundDetailRequest> promoBackReqList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, null);
 			List<PromotorBackgroundDetailResponse> promoBackRespList = new ArrayList<>(promoBackReqList.size());
 			PromotorBackgroundDetailResponse promoBackResp = null;
 			for (PromotorBackgroundDetailRequest promBackReq : promoBackReqList) {
@@ -1186,10 +1174,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 				promoBackResp.setGender(promBackReq.getGender() != null ? Gender.getById(promBackReq.getGender()).getValue() : null);
 				promoBackResp.setRelationshipType(promBackReq.getRelationshipType() != null ? DirectorRelationshipType.getById(promBackReq.getRelationshipType()).getValue() : null);
 				promoBackResp.setDin(promBackReq.getDin() != null ? promBackReq.getDin().toString() : null);
-				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() : null )+ " " + promBackReq.getPromotorsName());
+				promoBackResp.setPromotorsName((promBackReq.getSalutationId() != null ? Title.getById(promBackReq.getSalutationId()).getValue() + " " : "") + promBackReq.getPromotorsName());
 				promoBackResp.setTotalExperience(promBackReq.getTotalExperience() != null ? promBackReq.getTotalExperience().toString() : null);
-				promoBackResp.setDob(promBackReq.getDob()!= null ? promBackReq.getDob().toString() : null);
-				promoBackResp.setAppointmentDate(promBackReq.getAppointmentDate() != null ? promBackReq.getAppointmentDate().toString() : null);
+				promoBackResp.setDobDate(!CommonUtils.isObjectNullOrEmpty(promBackReq.getDob()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getDob())) : null);
+				promoBackResp.setAppointment(!CommonUtils.isObjectNullOrEmpty(promBackReq.getAppointmentDate()) ? DATE_FORMAT.parse(DATE_FORMAT.format(promBackReq.getAppointmentDate())) : null);
 				promoBackResp.setNetworth(promBackReq.getNetworth() != null ? promBackReq.getNetworth().toString() : null);
 				PromotorBackgroundDetailResponse.printFields(promoBackResp);
 				promoBackRespList.add(promoBackResp);
@@ -1202,10 +1190,10 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//OWNERSHIP DETAILS :- LINENO:12
 		try {
-			List<OwnershipDetailRequest> ownershipReqList = ownershipDetailsService.getOwnershipDetailList(applicationId, userId);
-			List<OwnershipDetailResponse> ownershipRespList = new ArrayList<>(ownershipReqList.size());
+			List<OwnershipDetail> ownershipList = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
+			List<OwnershipDetailResponse> ownershipRespList = new ArrayList<>(ownershipList.size());
 			OwnershipDetailResponse ownershipResp = null;
-			for (OwnershipDetailRequest ownershipReq : ownershipReqList) {
+			for (OwnershipDetail ownershipReq : ownershipList) {
 				ownershipResp = new OwnershipDetailResponse();
 				BeanUtils.copyProperties(ownershipReq, ownershipResp);
 				ownershipResp.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipReq.getShareHoldingCategoryId()).getValue());
@@ -1220,14 +1208,24 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//CURRENT FINANCIAL ARRANGEMENT DETAILS (Existing Banker(s) Details) :- LINENO:21
 		try {
-            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
-            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
-            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+			List<FinancialArrangementsDetail> financialArrangementsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>(financialArrangementsList.size());
+            FinancialArrangementDetailResponseString financialArrangementsDetailResponse = null;
+            for (FinancialArrangementsDetail financialArrangementsDetailRequest : financialArrangementsList) {
+            	financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+            	
+            	try {
+            		DDRExistingBankerDetails ddrExistingBankerDetails = ddrExistingBankerDetailsRepository.findByFinancialArrangementIdAndIsActive(financialArrangementsDetailRequest.getId(), true);
+            		if(!CommonUtils.isObjectNullOrEmpty(ddrExistingBankerDetails)) {
+            			financialArrangementsDetailResponse.setAddress(ddrExistingBankerDetails.getAddress());
+            		}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
             	financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
                 financialArrangementsDetailResponse.setOutstandingAmount(convertDouble(financialArrangementsDetailRequest.getOutstandingAmount()));
                 financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-                financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+                /*financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());*/
                 financialArrangementsDetailResponse.setAmount(convertDouble(financialArrangementsDetailRequest.getAmount()));
                 //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                 financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
@@ -1258,9 +1256,9 @@ public class DDRFormServiceImpl implements DDRFormService{
 		
 		//DIRECTOR BACKGROUND  DETAIL :- LINENO:12
 		try {
-            List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = backgroundDetailsService.getDirectorBackgroundDetailList(applicationId, userId);
-            List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
-            for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
+            List<DirectorBackgroundDetail> directorBackgroundList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+            List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>(directorBackgroundList.size());
+            for (DirectorBackgroundDetail directorBackgroundDetailRequest : directorBackgroundList) {
                 DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
                 //directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
                 directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
@@ -1286,12 +1284,13 @@ public class DDRFormServiceImpl implements DDRFormService{
                 directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
                 directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.getDin());
                 directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
-                directorBackgroundDetailResponse.setDob(DATE_FORMAT.parse(DATE_FORMAT.format(directorBackgroundDetailRequest.getDob())));
+                directorBackgroundDetailResponse.setDob(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob()) ? DATE_FORMAT.parse(DATE_FORMAT.format(directorBackgroundDetailRequest.getDob())) : null);
                 directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
                 directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
                 directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
                 directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
                 directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
+                directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
                 directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
             }
             response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);

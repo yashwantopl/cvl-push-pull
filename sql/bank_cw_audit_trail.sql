@@ -24,3 +24,6 @@ ALTER TABLE `loan_application`.`bank_cw_audit_trail`
 CHANGE COLUMN `statement_type` `api_type` BIGINT(10) NULL DEFAULT NULL AFTER `status`,
 CHANGE COLUMN `msg` `failure_reason` VARCHAR(200) NULL DEFAULT NULL ;
 
+
+ALTER TABLE `loan_application`.`bank_cw_audit_trail` 
+CHANGE COLUMN `failure_reason` `failure_reason` LONGTEXT NULL DEFAULT NULL ;
