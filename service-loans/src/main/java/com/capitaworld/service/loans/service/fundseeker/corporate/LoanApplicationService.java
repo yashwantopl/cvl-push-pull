@@ -183,6 +183,10 @@ public interface LoanApplicationService {
 
 	
 	public String saveDetailedInfo(ProfileReqRes profileReqRes)  throws LoansException, Exception;
+	
+	//Update Payment Status after redirection through Gateway for Mobile
+	
+	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 
 }
 

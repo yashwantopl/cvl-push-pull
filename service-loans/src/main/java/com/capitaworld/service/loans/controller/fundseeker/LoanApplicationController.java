@@ -3,7 +3,11 @@ package com.capitaworld.service.loans.controller.fundseeker;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
 //import javax.ws.rs.Path;
 
@@ -2219,5 +2223,126 @@ public class LoanApplicationController {
 			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , null,CommonUtility.ApiType.DETAILED_API, loansResponse , reason,orgId);
 		}
 	}
+	
+	// For Payment Gateway response through Mobile API
+	   //===========================================================================================================================
+		
+		@RequestMapping(value = "mobile/successUrl", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+		public ResponseEntity<LoansResponse> payUMoneyResponse(@RequestBody String response) {
+			
+			
+	   try {
+			logger.info("PayUMoney redirect response for Mobile" + response);
+			Map<String, Object> map = new HashMap<String, Object>();
+			StringTokenizer b = new StringTokenizer(response, "&");
+			while (b.hasMoreElements()) {
+				String a = b.nextToken();
+				StringTokenizer c = new StringTokenizer(a, "=");
+				logger.info("Success URL ----------------------------> " + a);
+				String key;
+				String value;
+				try {
+					key = c.nextToken();
+				} catch (Exception e) {
+					e.printStackTrace();
+					key = null;
+				}
+				try {
+					value = c.nextToken();
+				} catch (Exception e) {
+					e.printStackTrace();
+					value = null;
+				}
+				map.put(key, value);
+
+			}
+			
+			PaymentRequest paymentRequest = new PaymentRequest();
+			
+			paymentRequest.setApplicationId((Long)map.get("udf1"));
+			paymentRequest.setStatus(map.get("status").toString());
+			paymentRequest.setTrxnId(map.get("txnid").toString());
+			
+			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.updatePaymentStatusForMobile(paymentRequest));
+			logger.info("end updatePaymentForMobileStatus()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status for mobile==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+			
+	}
+
+		@RequestMapping(value = "mobile/billDesk", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+		public ResponseEntity<LoansResponse> billDeskResponse(@RequestBody String response) {
+			
+	
+		try {
+			logger.info("BillDesk redirect response for Mobile" + response);
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			String responseMessageSequence = "MerchantID|txnid|Filler1|Filler2|TxnAmount|BankID|Filler3|Filler4|CurrencyType|ItemCode|Filler5|Filler6|Filler7|txnDate|statusCode|Filler7|Phone|EmailId|firstname|applicationId|productinfo|AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|status|checkSum";
+			int flag = 0;
+
+			StringTokenizer x = new StringTokenizer(response, "&");
+
+			while (x.hasMoreElements()) {
+				String z = x.nextToken();
+				StringTokenizer p = new StringTokenizer(z, "=");
+				while (p.hasMoreElements()) {
+					String msg = p.nextToken();
+
+					if (!"msg".equals(msg)) {
+						String pipedMessage = msg.replaceAll("%7C", "|");
+						logger.info("Piped Message================>" + pipedMessage);
+						StringTokenizer b = new StringTokenizer(pipedMessage, "|");
+						StringTokenizer c = new StringTokenizer(responseMessageSequence, "|");
+						while (b.hasMoreElements()) {
+							while (c.hasMoreElements()) {
+								String key = c.nextToken();
+								String value = b.nextToken();
+								System.out.println(key + "================>" + value);
+
+								map.put(key, value);
+
+							}
+						}
+						flag = 1;
+					}
+					if (flag == 1)
+						break;
+				}
+				if (flag == 1)
+					break;
+			}
+			
+         PaymentRequest paymentRequest = new PaymentRequest();
+			
+			paymentRequest.setApplicationId((Long)map.get("applicationId"));
+			paymentRequest.setStatus(map.get("status").toString());
+			paymentRequest.setTrxnId(map.get("txnid").toString());
+			
+			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.updatePaymentStatusForMobile(paymentRequest));
+			logger.info("end updatePaymentForMobileStatus()");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status for mobile==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+   
+			
+	}
+
+
+	
+	
 
 }
