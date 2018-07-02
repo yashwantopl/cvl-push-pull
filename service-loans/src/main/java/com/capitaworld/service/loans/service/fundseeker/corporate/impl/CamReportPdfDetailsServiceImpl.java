@@ -42,6 +42,7 @@ import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
 import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.karza.Details;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -103,6 +104,8 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -127,6 +130,8 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEResponseDetails;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -242,6 +247,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	ConnectClient connectClient;
 	
+	@Autowired
+	McaClient mcaClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -299,6 +307,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			WorkflowRequest workflowRequest = new WorkflowRequest();
 			workflowRequest.setApplicationId(applicationId);
 			workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
+			workflowRequest.setUserId(userId);
 			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
 			map.put("trailDates", auditTrail.getData());
 		} catch (Exception e2) {
@@ -618,6 +627,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			map.put("cgtmseData", printFields(cgtmseDataResponse));
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
+				map.put("cgtmseBankWiseDetails", cgtmseResponseDetails);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -630,11 +642,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits", eligibilityResp.getData());
-			
+			map.put("assLimits", convertToDoubleForXml(eligibilityResp.getData()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
+		}
+		//MCA DATA
+		try {
+			String companyId = loanApplicationMaster.getMcaCompanyId();
+			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+			map.put("mcaData", mcaResponse.getData());
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -1202,6 +1221,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financials.put((currentYear - 1), curFinYear);
 		financials.put((currentYear - 2), prevFinYear);
 		financials.put((currentYear - 3), yrBeforePrevFinYear);
+		logger.info("financials=========",financials.toString());
 	}
 	
 	
