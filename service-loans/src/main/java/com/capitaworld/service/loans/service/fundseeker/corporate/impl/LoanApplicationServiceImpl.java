@@ -6814,7 +6814,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 	
-	@Override
+	/*@Override
 	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest) {
 		
 		Boolean updatePayment=false;
@@ -6834,6 +6834,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		
 		return updatePayment;
-	}
+	}*/
 
 }

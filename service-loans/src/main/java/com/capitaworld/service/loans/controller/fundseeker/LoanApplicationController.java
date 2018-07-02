@@ -2279,7 +2279,7 @@ public class LoanApplicationController {
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.updatePaymentStatusForMobile(paymentRequest));
+			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -2335,7 +2335,7 @@ public class LoanApplicationController {
 					break;
 			}
 			
-         PaymentRequest paymentRequest = new PaymentRequest();
+      PaymentRequest paymentRequest = new PaymentRequest();
 			
 			paymentRequest.setApplicationId((Long)map.get("applicationId"));
 			paymentRequest.setUserId((Long)map.get("udf2"));
@@ -2343,7 +2343,7 @@ public class LoanApplicationController {
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
-			loansResponse.setData(loanApplicationService.updatePaymentStatusForMobile(paymentRequest));
+			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -2353,7 +2353,7 @@ public class LoanApplicationController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
-   
+
 			
 	}
 
