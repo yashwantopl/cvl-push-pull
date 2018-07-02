@@ -628,7 +628,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", printFields(cgtmseDataResponse));
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-				map.put("cgtmseBankWiseDetails", cgtmseResponseDetails);
+				map.put("cgtmseBankWiseDetails", !CommonUtils.isObjectNullOrEmpty(cgtmseResponseDetails) ? cgtmseResponseDetails : " ");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -642,7 +642,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits", convertToDoubleForXml(eligibilityResp.getData()));
+			map.put("assLimits", !CommonUtils.isObjectNullOrEmpty(eligibilityResp.getData()) ? convertToDoubleForXml(eligibilityResp.getData()) : " ");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -1221,7 +1221,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financials.put((currentYear - 1), curFinYear);
 		financials.put((currentYear - 2), prevFinYear);
 		financials.put((currentYear - 3), yrBeforePrevFinYear);
-		logger.info("financials=========",financials.toString());
+		logger.info("financials========="+financials.toString());
 	}
 	
 	
