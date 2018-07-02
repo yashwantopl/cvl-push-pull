@@ -57,19 +57,19 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
 		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-		LoanSanctionDomain loanSanctionDomainNew=null;
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
-			loanSanctionDomainNew = new LoanSanctionDomain();
-			loanSanctionDomainNew.setCreatedBy(loanSanctionRequest.getActionBy());
-			loanSanctionDomainNew.setCreatedDate(new Date()); 
+			loanSanctionDomainOld = new LoanSanctionDomain();
+			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
+			loanSanctionDomainOld.setCreatedBy(loanSanctionRequest.getActionBy());
+			loanSanctionDomainOld.setCreatedDate(new Date());
+			loanSanctionDomainOld.setIsActive(true);
+		}else{
+			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
+			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
+			loanSanctionDomainOld.setModifiedDate(new Date());
 		}
-		BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainNew);
-		loanSanctionDomainNew.setIsActive(true);
-		loanSanctionDomainNew.setModifiedBy(loanSanctionRequest.getActionBy());
-		loanSanctionDomainNew.setModifiedDate(new Date());
-		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainNew);
-		
-		return loanSanctionRepository.save(loanSanctionDomainNew) != null;
+		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
+		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
 			logger.info("Error/Exception in saveLoanSanctionDetail() -----------------------> Message "+e.getMessage());
 			e.printStackTrace();
