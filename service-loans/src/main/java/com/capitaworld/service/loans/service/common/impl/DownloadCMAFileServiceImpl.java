@@ -78,8 +78,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	 			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
 	 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
 	 			
-	 			Double tenure = loanApplocationRepo.getTenure(applicationId)+1;
-	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure : 0.0;
+	 			Double tenure = loanApplocationRepo.getTenure(applicationId);
+	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
 	 			
 	 			logger.warn("tenure==>>"+tenure);
 	 			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
