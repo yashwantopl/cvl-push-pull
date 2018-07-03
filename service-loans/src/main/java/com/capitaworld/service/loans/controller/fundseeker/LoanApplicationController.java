@@ -2246,7 +2246,7 @@ public class LoanApplicationController {
 	   //===========================================================================================================================
 		
 		@RequestMapping(value = "mobile/successUrl", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-		public ResponseEntity<LoansResponse> payUMoneyResponse(@RequestBody String response) {
+		public void payUMoneyResponse(@RequestBody String response) {
 			
 			
 	   try {
@@ -2369,19 +2369,19 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			//return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
 			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(
+			/*return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
-		}
+*/		}
 			
 	}
 
 		@RequestMapping(value = "mobile/billDesk", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-		public ResponseEntity<LoansResponse> billDeskResponse(@RequestBody String response) {
+		public void billDeskResponse(@RequestBody String response) {
 			
 	
 		try {
@@ -2438,14 +2438,14 @@ public class LoanApplicationController {
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest,paymentRequest.getUserId()));
 			logger.info("end updatePaymentForMobileStatus()");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			//return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
 			e.printStackTrace();
-			return new ResponseEntity<LoansResponse>(
+			/*return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
-		}
+*/		}
 
 			
 	}
