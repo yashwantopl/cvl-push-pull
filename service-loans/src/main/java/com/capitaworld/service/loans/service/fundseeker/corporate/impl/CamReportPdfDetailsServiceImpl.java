@@ -5,10 +5,12 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.workflow.model.AuditTrailResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -29,6 +32,9 @@ import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -51,7 +57,6 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
@@ -68,11 +73,9 @@ import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
@@ -100,6 +103,8 @@ import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -114,8 +119,6 @@ import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.capitaworld.service.rating.model.FinancialInputRequest;
-import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
@@ -124,6 +127,7 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEResponseDetails;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -236,6 +240,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	WorkflowClient workflowClient;
 	
+	@Autowired
+	ConnectClient connectClient;
+	
+	@Autowired
+	McaClient mcaClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -289,12 +299,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
-		WorkflowRequest workflowRequest = new WorkflowRequest();
-		workflowRequest.setApplicationId(applicationId);
-		workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
-		WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
-		map.put("trailDates", auditTrail.getData());
-		//map.put("dateOfInPrincipalApproval", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		try {
+			WorkflowRequest workflowRequest = new WorkflowRequest();
+			workflowRequest.setApplicationId(applicationId);
+			workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
+			workflowRequest.setUserId(userId);
+			WorkflowResponse auditTrail = workflowClient.getAuditTrail(workflowRequest);
+			map.put("trailDates", auditTrail.getData());
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		
+		try {
+			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
 		
 		//GST DATA
 		try {
@@ -342,7 +363,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
-					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+			!		directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
@@ -428,7 +449,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
-			Map<Integer, Object[]> financials = new HashMap<Integer, Object[]>(years.length);
+			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
 				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year);
 				financials.put(year, data);
@@ -442,7 +463,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
-					map.put("tenure", loanApplicationMaster.getTenure().intValue());
+					map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 				}
 			}
 			map.put("projectedFinancials", projectedFin);
@@ -461,16 +482,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e.printStackTrace();
 		}
 		//PROPOSAL RESPONSE
-				try {
-					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-					proposalMappingRequest.setApplicationId(applicationId);
-					proposalMappingRequest.setFpProductId(productId);
-					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-					map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+		try {
+				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+				proposalMappingRequest.setApplicationId(applicationId);
+				proposalMappingRequest.setFpProductId(productId);
+				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		//SCORING DATA
 		try {
@@ -600,8 +621,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", printFields(cgtmseDataResponse));
+			map.put("cgtmseData", convertToDoubleForXml(cgtmseDataResponse));
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
+				map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -614,11 +638,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits", eligibilityResp.getData());
-			
+			map.put("assLimits", convertToDoubleForXml(eligibilityResp.getData()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
+		}
+		//MCA DATA
+		try {
+			String companyId = loanApplicationMaster.getMcaCompanyId();
+			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+			map.put("mcaData", mcaResponse.getData());
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -1186,6 +1217,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financials.put((currentYear - 1), curFinYear);
 		financials.put((currentYear - 2), prevFinYear);
 		financials.put((currentYear - 3), yrBeforePrevFinYear);
+		logger.info("financials========="+financials.toString());
 	}
 	
 	

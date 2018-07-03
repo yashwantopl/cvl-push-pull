@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -30,12 +31,16 @@ public class PromotorBackgroundDetailResponse implements Serializable{
     private String mobile;
 
     private String dob;
+    
+    private Date dobDate;
 
     private String totalExperience;
     
     private String networth;
 
     private String appointmentDate;
+    
+    private Date appointment;
 
     public String getAddress() {
         return address;
@@ -137,8 +142,38 @@ public class PromotorBackgroundDetailResponse implements Serializable{
     public void setAppointmentDate(String appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
+    
+    
 
-    public static void printFields(Object obj) throws Exception {
+    /**
+	 * @return the appointment
+	 */
+	public Date getAppointment() {
+		return appointment;
+	}
+
+	/**
+	 * @param appointment the appointment to set
+	 */
+	public void setAppointment(Date appointment) {
+		this.appointment = appointment;
+	}
+
+	/**
+	 * @return the dobDate
+	 */
+	public Date getDobDate() {
+		return dobDate;
+	}
+
+	/**
+	 * @param dobDate the dobDate to set
+	 */
+	public void setDobDate(Date dobDate) {
+		this.dobDate = dobDate;
+	}
+
+	public static void printFields(Object obj) throws Exception {
         Field[] fields = PromotorBackgroundDetailResponse.class.getDeclaredFields();
         System.out.println("length : "+fields.length);
         for(Field field : fields) {

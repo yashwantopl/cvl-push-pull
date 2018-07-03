@@ -15,4 +15,6 @@ public interface DDRExistingBankerDetailsRepository extends JpaRepository<DDRExi
 
     @Query("select dd from DDRExistingBankerDetails dd where dd.ddrFormId =:ddrFormId and dd.isActive = true")
     public List<DDRExistingBankerDetails> getListByDDRFormId(@Param("ddrFormId") Long ddrFormId);
+    
+    public DDRExistingBankerDetails findByFinancialArrangementIdAndIsActive(Long financialArrangementId, Boolean isActive);
 }
