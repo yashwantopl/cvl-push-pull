@@ -363,7 +363,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 					DirectorBackgroundDetailResponseString directorBackgroundDetailResponse = new DirectorBackgroundDetailResponseString();
 					//directorBackgroundDetailResponse.setAchivements(directorBackgroundDetailRequest.getAchivements());
-					directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
+			!		directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
 					//directorBackgroundDetailResponse.setAge(directorBackgroundDetailRequest.getAge());
 					directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.getPanNo());
 					directorBackgroundDetailResponse.setDirectorsName((directorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
