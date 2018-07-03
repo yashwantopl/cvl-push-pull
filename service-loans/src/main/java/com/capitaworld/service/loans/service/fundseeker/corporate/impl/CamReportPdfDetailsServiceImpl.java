@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.api.workflow.model.AuditTrailResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -309,7 +308,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} catch (Exception e2) {
 			e2.printStackTrace();
 		}
-		
 		try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
@@ -323,10 +321,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData()) : " ");
-			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
@@ -407,7 +405,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
                 for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
                 	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
-//				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+     				//financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
                     financialArrangementsDetailResponse.setOutstandingAmount(convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
                     financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
                     financialArrangementsDetailResponse.setAmount(convertValue(financialArrangementsDetailRequest.getAmount()));
@@ -419,7 +417,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                     financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
                 }
-                map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
+                	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
 
             } catch (Exception e) {
                 logger.error("Problem to get Data of Financial Arrangements Details {}", e);
@@ -493,7 +491,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e.printStackTrace();
 		}
 		
-		//SCORING DATA
+		//SCORING DATA 
 		try {
 			ScoringRequest scoringRequest = new ScoringRequest();
 			scoringRequest.setApplicationId(applicationId);
@@ -502,9 +500,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse));
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
-			
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
-			
 			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
 			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
 			{
@@ -601,7 +597,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				logger.info("Error while getting scoring data");
 			}
 		
-		//PERFIOS API DATA
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
@@ -621,13 +617,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", convertToDoubleForXml(cgtmseDataResponse));
+			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
 				map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -638,7 +633,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits", convertToDoubleForXml(eligibilityResp.getData()));
+			map.put("assLimits", eligibilityResp.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -655,7 +650,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
-			
 			//FITCH DATA
 			try {
 			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
