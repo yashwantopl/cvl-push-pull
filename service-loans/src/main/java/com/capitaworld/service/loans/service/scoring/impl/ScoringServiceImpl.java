@@ -26,7 +26,10 @@ import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.*;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
 import com.ibm.icu.util.Calendar;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -85,7 +88,6 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
-
     @Autowired
     private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
@@ -97,6 +99,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
 	private Environment environment;
+
+    @Autowired
+    private UsersClient usersClient;
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
@@ -1155,4 +1160,104 @@ public class ScoringServiceImpl implements ScoringService{
 	   return  new ScoreExcelFileGenerator().scoreResultExcel(loansResponseList,environment);
 
 	}
+
+    @Override
+    public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes) {
+        try {
+            /*scoringModelReqRes.setOrgId(1l);*/
+            UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData()))
+            {
+                scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
+                scoringModelReqRes.setOrgId(1l);
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("org id is null or empty");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.getScoringModelList(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while geting score model list from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+    }
+
+    @Override
+    public ScoringModelReqRes saveScoringModel(ScoringModelReqRes scoringModelReqRes) {
+
+        try {
+            /*scoringModelReqRes.getScoringModelResponse().setOrgId(1l);*/
+
+            UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData()))
+            {
+                scoringModelReqRes.getScoringModelResponse().setOrgId(Long.parseLong(userResponse.getData().toString()));
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("org id is null or empty");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.saveScoringModel(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while saving score model from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+        try {
+
+            return scoringClient.getScoringModelDetail(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while getting score model detail from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Override
+    public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+        try {
+
+            return scoringClient.saveScoringModelDetail(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while saving score model detail from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+    }
 }
