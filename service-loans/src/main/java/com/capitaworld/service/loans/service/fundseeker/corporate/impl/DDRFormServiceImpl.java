@@ -1227,6 +1227,7 @@ public class DDRFormServiceImpl implements DDRFormService{
                 financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
                 /*financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());*/
                 financialArrangementsDetailResponse.setAmount(convertDouble(financialArrangementsDetailRequest.getAmount()));
+                financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                 //			financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
                 financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
                 financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
@@ -1234,7 +1235,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 				financialArrangementsDetailResponse.setReportedDate(financialArrangementsDetailRequest.getReportedDate());
                 //			financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
                 if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getRelationshipSince())) {
-                	financialArrangementsDetailResponse.setRelationshipSinceInYear(financialArrangementsDetailRequest.getRelationshipSince().toString());                	
+                	financialArrangementsDetailResponse.setRelationshipSinceInYear(CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getRelationshipSince()) ? null : financialArrangementsDetailRequest.getRelationshipSince().toString());                	
                 }
                 financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
             }
@@ -1290,7 +1291,6 @@ public class DDRFormServiceImpl implements DDRFormService{
                 directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
                 directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " " ));
                 directorBackgroundDetailResponse.setRelationshipType((directorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
-                directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.getAddress());
                 directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
             }
             response.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
