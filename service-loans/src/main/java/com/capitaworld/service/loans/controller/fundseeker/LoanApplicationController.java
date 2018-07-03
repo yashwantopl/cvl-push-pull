@@ -2250,36 +2250,120 @@ public class LoanApplicationController {
 			
 			
 	   try {
-			logger.info("PayUMoney redirect response for Mobile" + response);
+			logger.info("Payment Gateway redirect response for Mobile" + response);
 			Map<String, Object> map = new HashMap<String, Object>();
-			StringTokenizer b = new StringTokenizer(response, "&");
-			while (b.hasMoreElements()) {
-				String a = b.nextToken();
-				StringTokenizer c = new StringTokenizer(a, "=");
-				logger.info("Success URL ----------------------------> " + a);
+			String responseMessageSequence = "MerchantID|txnid|Filler1|Filler2|TxnAmount|BankID|Filler3|Filler4|CurrencyType|ItemCode|Filler5|Filler6|Filler7|txnDate|statusCode|Filler7|Phone|EmailId|firstname|applicationId|productinfo|AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|status|checkSum";
+			String responseType;
+			int flag = 0;
+			
+			StringTokenizer a = new StringTokenizer(response, "&");
+			
+			while(a.hasMoreElements()) {
+			   String z = a.nextToken();
+			   StringTokenizer m = new StringTokenizer(z, "=");
+			   
+			   logger.info("Checking whether the Response is from BillDesk or PayUMoney");
 				String key;
 				String value;
 				try {
-					key = c.nextToken();
+					key = m.nextToken();
+					if("msg".equals(key))
+					{
+						responseType="BillDesk";
+						logger.info("Response is from BillDesk"+key);
+						break;
+					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("Token null==================>"+e.getMessage());
+					//e.printStackTrace();
 					key = null;
 				}
 				try {
-					value = c.nextToken();
+					value = m.nextToken();
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("Token null==================>"+e.getMessage());
+					//e.printStackTrace();
 					value = null;
 				}
-				map.put(key, value);
-
+				//map.put(key, value);
 			}
+			
+			if("BillDesk".equals(responseType)) {
+				
+				StringTokenizer x = new StringTokenizer(response, "&");
+
+				while (x.hasMoreElements()) {
+					String z = x.nextToken();
+					StringTokenizer p = new StringTokenizer(z, "=");
+					while (p.hasMoreElements()) {
+						String msg = p.nextToken();
+
+						if (!"msg".equals(msg)) {
+							String pipedMessage = msg.replaceAll("%7C", "|");
+							logger.info("Piped Message================>" + pipedMessage);
+							StringTokenizer b = new StringTokenizer(pipedMessage, "|");
+							StringTokenizer c = new StringTokenizer(responseMessageSequence, "|");
+							while (b.hasMoreElements()) {
+								while (c.hasMoreElements()) {
+									String key = c.nextToken();
+									String value = b.nextToken();
+									System.out.println(key + "================>" + value);
+
+									map.put(key, value);
+
+								}
+							}
+							flag = 1;
+						}
+						if (flag == 1)
+							break;
+					}
+					if (flag == 1)
+						break;
+				}
+				
+			}
+			
+			else {
+				
+				StringTokenizer x = new StringTokenizer(response, "&");
+				while (x.hasMoreElements()) {
+					String z = x.nextToken();
+					StringTokenizer p = new StringTokenizer(z, "=");
+					logger.info("Success URL ----------------------------> " + p);
+					String key;
+					String value;
+					try {
+						key = p.nextToken();
+					} catch (Exception e) {
+						logger.info("Token null==================>"+e.getMessage());
+						//e.printStackTrace();
+						key = null;
+					}
+					try {
+						value = p.nextToken();
+					} catch (Exception e) {
+						logger.info("Token null==================>"+e.getMessage());
+						//e.printStackTrace();
+						value = null;
+					}
+					map.put(key, value);
+
+				}
+				
+			}
+			
 			
 			PaymentRequest paymentRequest = new PaymentRequest();
 			
-			paymentRequest.setApplicationId((Long)map.get("udf1"));
-			paymentRequest.setUserId((Long)map.get("udf2"));
-			paymentRequest.setStatus(map.get("status").toString());
+			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
+			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+			if("success".equals(map.get("status").toString())) {
+				paymentRequest.setStatus("Success");	
+			}
+			else {
+				paymentRequest.setStatus("Failed");
+			}
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
@@ -2339,11 +2423,16 @@ public class LoanApplicationController {
 					break;
 			}
 			
-      PaymentRequest paymentRequest = new PaymentRequest();
+            PaymentRequest paymentRequest = new PaymentRequest();
 			
-			paymentRequest.setApplicationId((Long)map.get("applicationId"));
-			paymentRequest.setUserId((Long)map.get("udf2"));
-			paymentRequest.setStatus(map.get("status").toString());
+            paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
+		    paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+		    if("success".equals(map.get("status").toString())) {
+				paymentRequest.setStatus("Success");	
+			}
+			else {
+				paymentRequest.setStatus("Failed");
+			}
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 			
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());

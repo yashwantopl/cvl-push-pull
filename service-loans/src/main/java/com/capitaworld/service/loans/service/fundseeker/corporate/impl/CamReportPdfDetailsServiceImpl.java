@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.workflow.model.AuditTrailResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -620,10 +621,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", printFields(cgtmseDataResponse));
+			map.put("cgtmseData", convertToDoubleForXml(cgtmseDataResponse));
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-				map.put("cgtmseBankWiseDetails", !CommonUtils.isObjectNullOrEmpty(cgtmseResponseDetails) ? cgtmseResponseDetails : " ");
+				map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -637,7 +638,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits", !CommonUtils.isObjectNullOrEmpty(eligibilityResp.getData()) ? convertToDoubleForXml(eligibilityResp.getData()) : " ");
+			map.put("assLimits", convertToDoubleForXml(eligibilityResp.getData()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
