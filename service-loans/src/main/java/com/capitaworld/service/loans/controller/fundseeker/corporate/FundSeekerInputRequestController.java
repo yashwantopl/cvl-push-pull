@@ -48,7 +48,7 @@ public class FundSeekerInputRequestController {
         	if(result){
         		
         		// initiate fraudanalytics service to invoke hunter api
-        		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+//        		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
         		
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
