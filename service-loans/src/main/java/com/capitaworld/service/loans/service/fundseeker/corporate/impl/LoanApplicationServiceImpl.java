@@ -6060,6 +6060,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
 			return null;
 		}
+		if(Boolean.valueOf(isProduction)) {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
+		}else {
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
+		}
 		
 		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
 		GenerateTokenRequest generateTokenRequest = new GenerateTokenRequest();
@@ -6085,12 +6090,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 		} /*CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());*/
 		
-		
-		if(Boolean.valueOf(isProduction)) {
-			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
-		}else {
-			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
-		}
 		return generateTokenRequest ;
 	}
 	
