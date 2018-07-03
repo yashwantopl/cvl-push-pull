@@ -2253,7 +2253,7 @@ public class LoanApplicationController {
 			logger.info("Payment Gateway redirect response for Mobile" + response);
 			Map<String, Object> map = new HashMap<String, Object>();
 			String responseMessageSequence = "MerchantID|txnid|Filler1|Filler2|TxnAmount|BankID|Filler3|Filler4|CurrencyType|ItemCode|Filler5|Filler6|Filler7|txnDate|statusCode|Filler7|Phone|EmailId|firstname|applicationId|productinfo|AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|status|checkSum";
-			String responseType;
+			String responseType=null;
 			int flag = 0;
 			
 			StringTokenizer a = new StringTokenizer(response, "&");
