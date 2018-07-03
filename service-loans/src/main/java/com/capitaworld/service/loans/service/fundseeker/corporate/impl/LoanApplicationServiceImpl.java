@@ -4203,11 +4203,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 				}
 
-				if(connectResponse.getProceed()) {
-					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
-					}
-				}
+//				if(connectResponse.getProceed()) {
+//					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+//						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+//					}
+//				}
 			} else {
 				logger.info("Connector Response null or empty");
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
@@ -4296,11 +4296,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 //						}
 						
-						if(connectResponse.getProceed()) {
-							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
-							}
-						}
+//						if(connectResponse.getProceed()) {
+//							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+//								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+//							}
+//						}
 						
 					} else {
 						logger.info("Connector Response null or empty");
