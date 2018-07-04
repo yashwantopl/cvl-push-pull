@@ -611,15 +611,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("datassBA", datas);
+					map.put("bankStatementAnalysis", datas);
 				}
-			}
-			for (int i=0 ; i<datas.size() ; i++) {
-				map.put("bankStatement", printFields(datas.get(i).getXns().getXn()));
-				map.put("monthlyDetails", printFields(datas.get(i).getMonthlyDetailList().getMonthlyDetails()));
-				map.put("top5FundReceived", printFields(datas.get(i).getTop5FundReceivedList().getItem()));
-				map.put("top5FundTransfered", printFields(datas.get(i).getTop5FundTransferedList().getItem()));
-				map.put("bouncedChequeList", printFields(datas.get(i).getBouncedOrPenalXnList().getBouncedOrPenalXns()));
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
