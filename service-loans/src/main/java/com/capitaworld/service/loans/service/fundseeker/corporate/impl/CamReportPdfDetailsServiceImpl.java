@@ -611,6 +611,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
+					map.put("datassBA", datas);
 				}
 			}
 			for (int i=0 ; i<datas.size() ; i++) {
