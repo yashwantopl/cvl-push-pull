@@ -189,6 +189,9 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Boolean isCommercialCibilMandatory = false;
 
+	//-----------------------added eligibility method for product
+	private Integer assessmentMethodId;
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -972,7 +975,11 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
 	}
 
-	
-	
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
 
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
 }
