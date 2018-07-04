@@ -64,6 +64,8 @@ public class FundSeekerInputRequestResponse {
 
     private List<Long> subsectors = Collections.emptyList();
     /////////
+    private Double costOfMachinery;
+    private Double incrementalTurnover;
 
     public Long getUserId() {
         return userId;
@@ -254,5 +256,21 @@ public class FundSeekerInputRequestResponse {
 
     public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
         this.msmeRegistrationNumber = msmeRegistrationNumber;
+    }
+
+    public Double getCostOfMachinery() {
+        return costOfMachinery;
+    }
+
+    public void setCostOfMachinery(Double costOfMachinery) {
+        this.costOfMachinery = costOfMachinery;
+    }
+
+    public Double getIncrementalTurnover() {
+        return incrementalTurnover;
+    }
+
+    public void setIncrementalTurnover(Double incrementalTurnover) {
+        this.incrementalTurnover = incrementalTurnover;
     }
 }

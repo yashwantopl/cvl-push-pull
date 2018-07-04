@@ -302,6 +302,10 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
     @Column(name="is_Commercial_cibil_mandatory")
     private Boolean isCommercialCibilMandatory = false;
 
+	//-----------------------added eligibility method for product
+	@Column(name="assessment_method_id")
+	private Integer assessmentMethodId;
+
     public Integer getIndividualCibil() {
         return individualCibil;
     }
@@ -1059,5 +1063,11 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
 	}
 
-	
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
+
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
 }
