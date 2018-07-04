@@ -1494,8 +1494,11 @@ public class LoanApplicationController {
 			} else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);	
+					logger.info("User id from browser===>"+userId);
+				
 				} else {
 					userId = paymentRequest.getUserId();
+					logger.info("User id from mobile===>"+userId);
 				}
 			}
 
