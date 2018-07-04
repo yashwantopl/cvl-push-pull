@@ -601,14 +601,26 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
+		List<Data> datas=new ArrayList<>();
 		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-			Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
-			map.put("bankStatement", printFields(data.getXns().getXn()));
-			map.put("monthlyDetails", printFields(data.getMonthlyDetailList().getMonthlyDetails()));
-			map.put("top5FundReceived", printFields(data.getTop5FundReceivedList().getItem()));
-			map.put("top5FundTransfered", printFields(data.getTop5FundTransferedList().getItem()));
-			map.put("bouncedChequeList", printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+			if(!CommonUtils.isListNullOrEmpty(hashMap))
+			{
+				for(HashMap<String,Object> rec:hashMap)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					map.put("datassBA", datas);
+				}
+			}
+			for (int i=0 ; i<datas.size() ; i++) {
+				map.put("bankStatement", printFields(datas.get(i).getXns().getXn()));
+				map.put("monthlyDetails", printFields(datas.get(i).getMonthlyDetailList().getMonthlyDetails()));
+				map.put("top5FundReceived", printFields(datas.get(i).getTop5FundReceivedList().getItem()));
+				map.put("top5FundTransfered", printFields(datas.get(i).getTop5FundTransferedList().getItem()));
+				map.put("bouncedChequeList", printFields(datas.get(i).getBouncedOrPenalXnList().getBouncedOrPenalXns()));
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");

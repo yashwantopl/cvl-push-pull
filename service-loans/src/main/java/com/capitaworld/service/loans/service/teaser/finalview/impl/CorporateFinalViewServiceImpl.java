@@ -1219,18 +1219,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error("Problem to get Data of Monthly Turnover {}", e);
 		}
 
-		// bank statement data
+		//bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
 		reportRequest.setUserId(userId);
+		List<Data> datas=new ArrayList<>();
 		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-			Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(),
-					Data.class);
-			corporateFinalViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
-			corporateFinalViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
-			corporateFinalViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
-		} catch (Exception e) {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMaps=(List<HashMap<String, Object>>) analyzerResponse.getData();
+			if(!CommonUtils.isListNullOrEmpty(hashMaps))
+			{
+			for(HashMap<String,Object> hashMap:hashMaps)
+			{
+				Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+				datas.add(data);
+			}
+			}
+			corporateFinalViewResponse.setBankData(datas);
+//			Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
+//			corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
+//			corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
+//			corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+		}catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
 		}

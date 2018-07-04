@@ -1492,10 +1492,15 @@ public class LoanApplicationController {
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
+				logger.info("User id from front end===>"+request.getAttribute(CommonUtils.USER_ID));
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);	
+					logger.info("User id from browser===>"+userId);
+				
 				} else {
 					userId = paymentRequest.getUserId();
+					
+					logger.info("User id from mobile===>"+userId);
 				}
 			}
 
