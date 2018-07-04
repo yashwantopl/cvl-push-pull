@@ -4254,6 +4254,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 
 			Boolean updatePayment = false;
+			ProposalMappingResponse respProp = null;
+			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
+				if ("Success".equals(paymentRequest.getStatus())) {
+					try {
+						logger.info("Start update true proposal-------------------------->" + paymentRequest.getApplicationId());
+						respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());	
+					} catch (Exception e) {
+						logger.info("Throw Exception WHile Activate Proposals");
+						e.printStackTrace();
+					}
+					
+				}
+			}
 			try {
 				updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
@@ -4280,7 +4293,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					
 					if ("Success".equals(paymentRequest.getStatus())) {
 						
-					ProposalMappingResponse respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 					Long fpProductId = null;
 					if(respProp != null && respProp.getData() != null) {
 						ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)respProp.getData(), ProposalMappingRequest.class);
