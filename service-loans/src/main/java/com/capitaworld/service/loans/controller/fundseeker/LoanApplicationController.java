@@ -1552,6 +1552,61 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/save_payment_info_for_mobile", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> savePaymentInforForMobile(@RequestBody PaymentRequest paymentRequest) {
+		try {
+			logger.info("start save_payment_info()");
+			Long userId = paymentRequest.getUserId();
+
+			if (CommonUtils.isObjectNullOrEmpty(paymentRequest.getApplicationId())) {
+				logger.info("Application id is null or empty");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid Request, Application Id Null Or Empty",
+								HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Object applicationMaster = loanApplicationService.updateLoanApplicationMaster(paymentRequest, userId);
+			logger.info("Response========>{}", applicationMaster);
+
+			try {
+				if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
+						&& paymentRequest.getPurposeCode().equals("NHBS_FEES")) {
+					logger.info("Start Sent Mail When FS select Online Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_ONLINE, NotificationAlias.SYS_FS_PAYMENT_ONLINE);
+					logger.info("End Sent Mail When FS select Online Payment");
+				} else if (CommonUtils.PaymentMode.CASH.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+					logger.info("Start Sent Mail When FS select CASH Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					logger.info("End Sent Mail When FS select CASH Payment");
+				} else if (CommonUtils.PaymentMode.CHEQUE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())) {
+					logger.info("Start Sent Mail When FS select CHEQUE Payment");
+					asyncComponent.sendMailWhenFSSelectOnlinePayment(userId, paymentRequest,
+							NotificationTemplate.EMAIL_FS_PAYMENT_CASH_CHEQUE,
+							NotificationAlias.SYS_FS_PAYMENT_CASH_CHEQUE);
+					logger.info("End Sent Mail When FS select CHEQUE Payment");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Throw Exception while send mail when save payment ");
+			}
+
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(applicationMaster);
+			logger.info("end save_payment_info()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while Saving Payment info==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/update_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updatePaymentStatus(@RequestBody PaymentRequest paymentRequest,
