@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.model.ZipRequest;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -589,12 +591,23 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setApplicationId(toApplicationId);
 			reportRequest.setUserId(userId);
+			List<Data> datas=new ArrayList<>();
 			try {
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-				Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
-				corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
-				corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
-				corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+				List<HashMap<String, Object>> hashMaps=(List<HashMap<String, Object>>) analyzerResponse.getData();
+				if(!CommonUtils.isListNullOrEmpty(hashMaps))
+				{
+				for(HashMap<String,Object> hashMap:hashMaps)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+					datas.add(data);
+				}
+				}
+				corporatePrimaryViewResponse.setBankData(datas);
+//				Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
+//				corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
+//				corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
+//				corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
 			}catch (Exception e) {
 				e.printStackTrace();
 				logger.info("Error while getting perfios data");
@@ -616,9 +629,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			scoringRequest.setFpProductId(fpProductMappingId);
 			try {
 				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
-				
-			} catch (ScoringException e1) {
+				corporatePrimaryViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
+				corporatePrimaryViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
+				corporatePrimaryViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
+				corporatePrimaryViewResponse.setManagementRiskScoreWeight(proposalScoreResponse.getManagementRiskWeight());
+				corporatePrimaryViewResponse.setFinancialRiskScoreWeight(proposalScoreResponse.getFinancialRiskWeight());
+				corporatePrimaryViewResponse.setBuisnessRiskScoreWeight(proposalScoreResponse.getBusinessRiskWeight());
+				corporatePrimaryViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+			} catch (ScoringException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -684,6 +704,28 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
+//            documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
+//            try {
+//                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+//                corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
+//            } catch (DocumentException e) {
+//                e.printStackTrace();
+//            }
+//            List<Long> ids=new ArrayList<>();
+//            ids.add(354l);
+//            ids.add(358l);
+//            ids.add(365l);
+//            ids.add(406l);
+//            ZipRequest zipRequest=new ZipRequest();
+//            zipRequest.setApplicationId(toApplicationId);
+//            zipRequest.setProductDocumentMappingIds(ids);
+//            try {
+//            	DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
+//				corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
+//			} catch (DocumentException e) {
+//				  e.printStackTrace();
+//			}
+            
         return corporatePrimaryViewResponse;
     }
     public String convertValue(Double value) {

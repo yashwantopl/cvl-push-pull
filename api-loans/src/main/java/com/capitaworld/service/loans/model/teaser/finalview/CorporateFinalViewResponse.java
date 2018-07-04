@@ -155,6 +155,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private Object eligibilityDataObject;
     private Object cgtmseData;
 	private Long npOrgId;
+	private Object bankData;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1364,6 +1365,20 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setCgtmseData(Object cgtmseData) {
 		this.cgtmseData = cgtmseData;
+	}
+
+	/**
+	 * @return the bankData
+	 */
+	public Object getBankData() {
+		return bankData;
+	}
+
+	/**
+	 * @param bankData the bankData to set
+	 */
+	public void setBankData(Object bankData) {
+		this.bankData = bankData;
 	}
 	
 
