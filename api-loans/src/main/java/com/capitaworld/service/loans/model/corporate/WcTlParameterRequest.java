@@ -196,6 +196,9 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	private Boolean isCommercialCibilMandatory = false;
 
+	//-----------------------added eligibility method for product
+	private Integer assessmentMethodId;
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -970,8 +973,12 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
 	}
 
-	
-		
-	
 
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
+
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
 }
