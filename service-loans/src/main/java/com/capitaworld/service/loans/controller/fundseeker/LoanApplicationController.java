@@ -2418,6 +2418,7 @@ public class LoanApplicationController {
 			
 			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+			paymentRequest.setPurposeCode(map.get("productinfo").toString());
 			if("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus("Success");	
 			}
@@ -2487,6 +2488,7 @@ public class LoanApplicationController {
 			
             paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 		    paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+		    paymentRequest.setPurposeCode(map.get("productinfo").toString());
 		    if("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus("Success");	
 			}
