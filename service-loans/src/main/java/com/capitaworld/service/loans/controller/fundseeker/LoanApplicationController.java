@@ -2419,6 +2419,9 @@ public class LoanApplicationController {
 			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
 			paymentRequest.setPurposeCode(map.get("productinfo").toString());
+			
+			logger.info("AppId==>"+paymentRequest.getApplicationId()+" UserId==>"+paymentRequest.getUserId()+" PuposeCode==>"+paymentRequest.getPurposeCode());
+			
 			if("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus("Success");	
 			}

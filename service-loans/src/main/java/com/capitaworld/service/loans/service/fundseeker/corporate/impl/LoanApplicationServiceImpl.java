@@ -4288,6 +4288,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				loanApplicationMaster.setPaymentStatus(paymentRequest.getStatus());
+				logger.info("Business Type Id===============>"+loanApplicationMaster.getBusinessTypeId());
 				loanApplicationRepository.save(loanApplicationMaster);
 				try {
 					
