@@ -6099,7 +6099,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(Boolean.valueOf(isProduction)) {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
 		}else {
-			sidbiIntegrationClient.setIntegrationBaseUrl("http://localhost:8287/sidbi-integration");//request.getUatUrl());
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
 		}
 		
 		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
