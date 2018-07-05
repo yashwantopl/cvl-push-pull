@@ -626,7 +626,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
 				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-					map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
+					map.put("cgtmseBankWise", cgtmseResponseDetails);
+					map.put("bankName", printFields(cgtmseResponseDetails.getMemBankName()));
 				}
 			}
 		} catch (Exception e) {
@@ -640,7 +641,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",escapeXml(eligibilityResp.getData()));
+			map.put("assLimits",eligibilityResp.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -1288,14 +1289,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			}else if(value instanceof Double){
-            	 if(!Double.isNaN((Double)value)) {
-            		 DecimalFormat decim = new DecimalFormat("0.00");
-                	 value = decim.format(value).toString();
-                	 field.set(obj,value);        
-            	 }
-             }
-          
+			} 
 			else {
 				continue;
 			}
