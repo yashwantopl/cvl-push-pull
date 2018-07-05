@@ -624,8 +624,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
-			for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-				map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
+			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
+				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
+					map.put("cgtmseBankWiseDetails", convertToDoubleForXml(cgtmseResponseDetails));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -638,7 +640,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",convertToDoubleForXml(eligibilityResp.getData()));
+			map.put("assLimits",escapeXml(eligibilityResp.getData()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -1286,7 +1288,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			} 
+			}else if(value instanceof Double){
+            	 if(!Double.isNaN((Double)value)) {
+            		 DecimalFormat decim = new DecimalFormat("0.00");
+                	 value = decim.format(value).toString();
+                	 field.set(obj,value);        
+            	 }
+             }
+          
 			else {
 				continue;
 			}
