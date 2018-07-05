@@ -6916,7 +6916,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
 				target.setTotalCost(totalCostOfProject.getTotalCost());
-				target.setId(totalCostOfProject.getId());
+				target.setCreatedBy(userId);
 				totalCostOfProjectRequestsList.add(target);
 			}
 			return totalCostOfProjectRequestsList;
@@ -6961,7 +6961,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setAmount(securityCorporateDetail.getAmount());
 				target.setPrimarySecurityName(securityCorporateDetail.getPrimarySecurityName());
 				target.setApplicationId(applicationId);
-				target.setCreatedBy(applicationId);
+				target.setCreatedBy(userId);
 				securityCorporateDetailRequestList.add(target);
 			}
 			return securityCorporateDetailRequestList;
