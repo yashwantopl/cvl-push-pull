@@ -1,17 +1,12 @@
 
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
-//import javax.ws.rs.Path;
-
-import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import org.json.simple.JSONObject;
