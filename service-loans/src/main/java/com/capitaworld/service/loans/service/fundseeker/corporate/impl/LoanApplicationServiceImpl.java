@@ -6935,6 +6935,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for(FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
 				target = new FinanceMeansDetailRequest();
 				target.setAlreadyInfused(financeMeansDetail.getAlreadyInfused());
+				target.setApplicationId(applicationId);
 				if(financeMeansDetail.getFinanceMeansCategoryId()!=null) {
 					target.setFinanceMeansCategory(FinanceCategory.getById(financeMeansDetail.getFinanceMeansCategoryId().intValue()).getValue());
 				}
