@@ -4913,6 +4913,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
 					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
 					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest);
@@ -4936,6 +4937,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
 					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
 					bankStatement = sidbiIntegrationClient.saveBankStatement(data);
@@ -4957,7 +4959,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(eligibilityRequest == null) {
 					logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
-					//setTokenAsExpired(generateTokenRequest);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
 					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest);
@@ -4996,6 +4999,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						try {
 							ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
 	                                ScoreParameterResult.class);
+							if(scoreParameterResult == null) {
+								logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
+								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+								setTokenAsExpired(generateTokenRequest);
+								return false;
+							}
 							ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
 							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 							try {
@@ -5053,6 +5062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}catch(Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient in savePhese2DataToSidbi() ");
 			e.printStackTrace();
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
 			return false;
 		}
 		
@@ -5065,6 +5075,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(applicationMaster == null) {
 				logger.info("Loan Application Found Null====>{}",applicationId);
 				auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
+				setTokenAsExpired(generateTokenRequest);
 				return false;
 			}
 			userId = applicationMaster.getUserId();
