@@ -144,4 +144,13 @@ public class FinanceMeansDetail implements Serializable {
 		this.total = total;
 	}
 
+	@Override
+	public String toString() {
+		return "FinanceMeansDetail [id=" + id + ", alreadyInfused=" + alreadyInfused + ", applicationId="
+				+ applicationId + ", createdBy=" + createdBy + ", createdDate=" + createdDate
+				+ ", financeMeansCategoryId=" + financeMeansCategoryId + ", isActive=" + isActive + ", modifiedBy="
+				+ modifiedBy + ", modifiedDate=" + modifiedDate + ", toBeIncurred=" + toBeIncurred + ", total=" + total
+				+ "]";
+	}
+
 }

@@ -171,10 +171,12 @@ import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
@@ -6910,11 +6912,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target = new TotalCostOfProjectRequest();
 				target.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred());
 				target.setApplicationId(applicationId);
-				target.setParticularsId(totalCostOfProject.getParticularsId());
+				target.setParticulars(Particular.getById(totalCostOfProject.getParticularsId()).getValue());
 				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
 				target.setTotalCost(totalCostOfProject.getTotalCost());
 				target.setId(totalCostOfProject.getId());
-				
 				totalCostOfProjectRequestsList.add(target);
 			}
 			return totalCostOfProjectRequestsList;
@@ -6932,9 +6933,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			FinanceMeansDetailRequest target =null;
 			for(FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
 				target = new FinanceMeansDetailRequest();
-				
 				target.setAlreadyInfused(financeMeansDetail.getAlreadyInfused());
-				target.setFinanceMeansCategoryId(financeMeansDetail.getFinanceMeansCategoryId());
+				target.setFinanceMeansCategory(FinanceCategory.getById(financeMeansDetail.getFinanceMeansCategoryId().intValue()).getValue());
 				target.setToBeIncurred(financeMeansDetail.getToBeIncurred());
 				target.setTotal(financeMeansDetail.getTotal());
 				target.setCreatedBy(userId);
@@ -6946,7 +6946,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList(Long applicationId, Long userId){
 		List<SecurityCorporateDetail> securityCorporateDetailList= securityCorporateDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId, userId);
-				//listMonthlyTurnoverFromAppId(applicationId);
+				
 		if(CommonUtils.isListNullOrEmpty(securityCorporateDetailList)) {
 			logger.warn("No SecurityCorporateDetailList Found for Application Id ==>{}",applicationId);
 			return Collections.emptyList();
