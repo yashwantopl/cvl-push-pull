@@ -5076,6 +5076,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
 				profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
 				profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
+				profileReqRes.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
+				profileReqRes.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
+				profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
 				try {
 					logger.info("Going to Save Detailed Infor==>");
 					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
@@ -6892,5 +6895,73 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		logger.info("End expiring Token setTokenAsExpired(){} -------------");
 		
+	}
+	
+	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId){
+		List<TotalCostOfProject> totalCostOfProjectsList= totalCostOfProjectRepository.listCostOfProjectFromAppId(applicationId, userId);
+				
+		if(CommonUtils.isListNullOrEmpty(totalCostOfProjectsList)) {
+			logger.warn("No totalCostOfProjectsList Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<TotalCostOfProjectRequest> totalCostOfProjectRequestsList = new ArrayList<>(totalCostOfProjectsList.size());
+			TotalCostOfProjectRequest target =null;
+			for(TotalCostOfProject totalCostOfProject : totalCostOfProjectsList) {
+				target = new TotalCostOfProjectRequest();
+				target.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred());
+				target.setApplicationId(applicationId);
+				target.setParticularsId(totalCostOfProject.getParticularsId());
+				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
+				target.setTotalCost(totalCostOfProject.getTotalCost());
+				target.setId(totalCostOfProject.getId());
+				
+				totalCostOfProjectRequestsList.add(target);
+			}
+			return totalCostOfProjectRequestsList;
+		}	
+	}
+	
+	public List<FinanceMeansDetailRequest> getFinanceMeansDetailRequestList(Long applicationId, Long userId){
+		List<FinanceMeansDetail> financeMeansDetailsList=  financeMeansDetailRepository.listFinanceMeansFromAppId(applicationId, userId);
+				
+		if(CommonUtils.isListNullOrEmpty(financeMeansDetailsList)) {
+			logger.warn("No FinanceMeansDetailList Found for Application Id ==>{} ",applicationId +  " userId==>{} ",userId);
+			return Collections.emptyList();
+		}else {
+			List<FinanceMeansDetailRequest> financeMeansDetailRequestList = new ArrayList<>(financeMeansDetailsList.size());
+			FinanceMeansDetailRequest target =null;
+			for(FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
+				target = new FinanceMeansDetailRequest();
+				
+				target.setAlreadyInfused(financeMeansDetail.getAlreadyInfused());
+				target.setFinanceMeansCategoryId(financeMeansDetail.getFinanceMeansCategoryId());
+				target.setToBeIncurred(financeMeansDetail.getToBeIncurred());
+				target.setTotal(financeMeansDetail.getTotal());
+				target.setCreatedBy(userId);
+				financeMeansDetailRequestList.add(target);
+			}
+			return financeMeansDetailRequestList;
+		}	
+	}
+	
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList(Long applicationId, Long userId){
+		List<SecurityCorporateDetail> securityCorporateDetailList= securityCorporateDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId, userId);
+				//listMonthlyTurnoverFromAppId(applicationId);
+		if(CommonUtils.isListNullOrEmpty(securityCorporateDetailList)) {
+			logger.warn("No SecurityCorporateDetailList Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList = new ArrayList<>(securityCorporateDetailList.size());
+			SecurityCorporateDetailRequest target =null;
+			for(SecurityCorporateDetail securityCorporateDetail : securityCorporateDetailList) {
+				target = new SecurityCorporateDetailRequest();
+				target.setAmount(securityCorporateDetail.getAmount());
+				target.setPrimarySecurityName(securityCorporateDetail.getPrimarySecurityName());
+				target.setApplicationId(applicationId);
+				target.setCreatedBy(applicationId);
+				securityCorporateDetailRequestList.add(target);
+			}
+			return securityCorporateDetailRequestList;
+		}	
 	}
 }
