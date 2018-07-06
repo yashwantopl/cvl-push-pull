@@ -164,6 +164,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
             //==== Applicant Address
+        	
+        	logger.info("Enter in save directors details ---------------------------------------->" + fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
@@ -178,7 +180,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             	CorporateApplicantDetail copyObj = corporateApplicantDetail;
                 BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
                         "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
-                
+                logger.info("Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding() + "---------------in DB------------->" + copyObj.getConstitutionId());
                 corporateApplicantDetail.setKeyVericalFunding(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVericalFunding()) ? fundSeekerInputRequest.getKeyVericalFunding() : copyObj.getKeyVericalFunding());
                 corporateApplicantDetail.setKeyVerticalSector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSector()) ? fundSeekerInputRequest.getKeyVerticalSector() : copyObj.getKeyVerticalSector());
                 corporateApplicantDetail.setKeyVerticalSubsector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSubsector()) ? fundSeekerInputRequest.getKeyVerticalSubsector() : copyObj.getKeyVerticalSubsector());
@@ -191,6 +193,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 corporateApplicantDetail.setModifiedDate(new Date());
             }
             copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+            logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
             //==== Director details
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
