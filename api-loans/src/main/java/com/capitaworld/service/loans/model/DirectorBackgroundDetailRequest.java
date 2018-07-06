@@ -51,7 +51,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	
 	private String city;
 
-	/*@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")*/
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dob;
 
 	private String mobile;
