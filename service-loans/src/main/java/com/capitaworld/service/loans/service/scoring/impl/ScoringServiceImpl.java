@@ -1175,7 +1175,7 @@ public class ScoringServiceImpl implements ScoringService{
             if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData()))
             {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
-                scoringModelReqRes.setOrgId(1l);
+                /*scoringModelReqRes.setOrgId(1l);*/
             }
             else
             {
