@@ -104,6 +104,8 @@ public class ScoringController {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
+
+            logger.info("userId ============> "+userId);
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelList(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
