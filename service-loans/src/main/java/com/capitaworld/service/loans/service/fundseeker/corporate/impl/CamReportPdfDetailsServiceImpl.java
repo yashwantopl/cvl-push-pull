@@ -630,10 +630,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-					map.put("cgtmseBankWise", cgtmseResponseDetails);
-					map.put("bankName", printFields(cgtmseResponseDetails.getMemBankName()));
-				}
+//				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
+//					map.put("cgtmseBankWise", cgtmseResponseDetails);
+//				}
+				
+				map.put("cgtmseBankWise", cgtmseDataResponse.getCgtmseResponse().getDetails());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
