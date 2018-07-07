@@ -571,7 +571,7 @@ public class CorporateUploadController {
 		try {
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream("CMA");
+				FileOutputStream fileOutputStream = new FileOutputStream("/home/userthree/Desktop/CMA");
 				wb.write(fileOutputStream);
 				cma = new byte[4096];
 				fileOutputStream.write(cma);
