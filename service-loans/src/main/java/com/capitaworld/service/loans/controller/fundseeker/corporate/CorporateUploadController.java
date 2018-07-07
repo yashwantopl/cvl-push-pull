@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -565,21 +567,28 @@ public class CorporateUploadController {
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) {
 		logger.info("In getCmaFile");
-		
+		byte[] cma = null;
 		try {
+			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream("CMA");
+				wb.write(fileOutputStream);
+				cma = new byte[4096];
+				fileOutputStream.write(cma);
 
-				Object wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
-				LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), wb);
+			} catch (IOException e) {
+				logger.info("Exception occured while performing File Input/Output Operation====>"+e.getMessage());
+			}
 
-				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cma);
 
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (NullPointerException e) {
-			logger.info("thrown exception from getCmaFile");
-			e.printStackTrace();
+			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
 
-        }
-		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(),null);
+		}
+		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
