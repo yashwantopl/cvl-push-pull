@@ -641,7 +641,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",eligibilityResp.getData());
+			map.put("assLimits",escapeXml(eligibilityResp.getData()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -1289,8 +1289,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			} 
-			else {
+			}else if(value instanceof Double){
+           	 if(!Double.isNaN((Double)value)) {
+        		 DecimalFormat decim = new DecimalFormat("0.00");
+        		 String a = decim.format(value).toString();
+                 value = a;
+            	 field.set(obj,value);        
+        	 }
+			}else {
 				continue;
 			}
 		}
