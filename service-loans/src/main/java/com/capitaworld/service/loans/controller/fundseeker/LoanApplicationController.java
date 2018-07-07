@@ -1,17 +1,12 @@
 
 package com.capitaworld.service.loans.controller.fundseeker;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
-//import javax.ws.rs.Path;
-
-import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import org.json.simple.JSONObject;
@@ -2418,6 +2413,10 @@ public class LoanApplicationController {
 			
 			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+			paymentRequest.setPurposeCode(map.get("productinfo").toString());
+			
+			logger.info("AppId==>"+paymentRequest.getApplicationId()+" UserId==>"+paymentRequest.getUserId()+" PuposeCode==>"+paymentRequest.getPurposeCode());
+			
 			if("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus("Success");	
 			}
@@ -2487,6 +2486,7 @@ public class LoanApplicationController {
 			
             paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 		    paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+		    paymentRequest.setPurposeCode(map.get("productinfo").toString());
 		    if("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus("Success");	
 			}

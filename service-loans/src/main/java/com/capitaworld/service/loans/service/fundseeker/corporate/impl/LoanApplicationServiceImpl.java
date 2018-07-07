@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.capitaworld.service.loans.domain.fundprovider.DisbursementDetails;
 import com.capitaworld.service.loans.model.common.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -80,7 +78,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.domain.token.TokenDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.CommonResponse;
@@ -162,7 +159,6 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
-//import com.capitaworld.service.matchengine.model.ProposalStatusList;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CampaignCode;
 import com.capitaworld.service.oneform.enums.Constitution;
@@ -171,10 +167,12 @@ import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
 import com.capitaworld.service.oneform.enums.OccupationNature;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
@@ -4288,6 +4286,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				loanApplicationMaster.setPaymentStatus(paymentRequest.getStatus());
+				logger.info("Business Type Id===============>"+loanApplicationMaster.getBusinessTypeId());
 				loanApplicationRepository.save(loanApplicationMaster);
 				try {
 					
@@ -4877,6 +4876,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}catch(Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
 			e.printStackTrace();
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
 			return false;
 		}
 		
@@ -4892,6 +4892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(prelimData == null) {
 				logger.error("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
+				setTokenAsExpired(generateTokenRequest);
 				return false;
 			}
 			try {
@@ -4911,6 +4912,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(parameterRequest == null) {
 					logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
 					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest);
@@ -4933,6 +4936,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(data == null) {
 					logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
 					bankStatement = sidbiIntegrationClient.saveBankStatement(data);
@@ -4954,6 +4959,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(eligibilityRequest == null) {
 					logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}else {
 					logger.error("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
 					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest);
@@ -4992,6 +4999,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						try {
 							ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
 	                                ScoreParameterResult.class);
+							if(scoreParameterResult == null) {
+								logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
+								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+								setTokenAsExpired(generateTokenRequest);
+								return false;
+							}
 							ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
 							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 							try {
@@ -5008,12 +5021,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						} catch (IOException e) {
 							logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 							e.printStackTrace();
+							setTokenAsExpired(generateTokenRequest);
 						}
+					}else {
+						//setTokenAsExpired(generateTokenRequest);
 					}
 				} catch (ScoringException e) {
 					logger.info("Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 					auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
 					e.printStackTrace();
+					setTokenAsExpired(generateTokenRequest);
 				}
 			}
 		
@@ -5028,6 +5045,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
 		}
+		setTokenAsExpired(generateTokenRequest);
 		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement);
 	}
 		
@@ -5044,6 +5062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}catch(Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient in savePhese2DataToSidbi() ");
 			e.printStackTrace();
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
 			return false;
 		}
 		
@@ -5055,7 +5074,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 			if(applicationMaster == null) {
 				logger.info("Loan Application Found Null====>{}",applicationId);
-				auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
+				auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
+				setTokenAsExpired(generateTokenRequest);
 				return false;
 			}
 			userId = applicationMaster.getUserId();
@@ -5075,6 +5095,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
 				profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
 				profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
+				profileReqRes.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
+				profileReqRes.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
+				profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
 				try {
 					logger.info("Going to Save Detailed Infor==>");
 					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
@@ -5157,6 +5180,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
 		}
+		setTokenAsExpired(generateTokenRequest);
 		if(saveDetailsInfo && saveDDRInfo && saveIRRInfo) {
 			return true;
 		}
@@ -6062,7 +6086,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 	
-	public GenerateTokenRequest setUrlAndTokenInSidbiClient(Long organizationId, Long applicationId) {
+	public GenerateTokenRequest setUrlAndTokenInSidbiClient(Long organizationId, Long applicationId) throws Exception {
 		UserOrganisationRequest request = getOrganizationDetails(organizationId);
 		if(request == null) {
 			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
@@ -6084,7 +6108,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		generateTokenRequest.setPassword(request.getPassword());
 		
 		String token=null;
-		try {
 			token = sidbiIntegrationClient.getToken(generateTokenRequest);
 			sidbiIntegrationClient.setToken(token);
 			logger.warn("Successfully  set token from SidbiIntegrationClient -------------- applicationId " +applicationId);
@@ -6095,13 +6118,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			tokenDetail.setIsActive(true);
 			tokenDetail.setToken(token);*/
 			/*End  */
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.warn("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
-			return null;
-		} /*CommonUtils.getEncodedUserNamePassword(request.getUsername(), request.getPassword());*/
-		
 		return generateTokenRequest ;
 	}
 	
@@ -6891,5 +6907,76 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		logger.info("End expiring Token setTokenAsExpired(){} -------------");
 		
+	}
+	
+	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId){
+		List<TotalCostOfProject> totalCostOfProjectsList= totalCostOfProjectRepository.listCostOfProjectFromAppId(applicationId, userId);
+				
+		if(CommonUtils.isListNullOrEmpty(totalCostOfProjectsList)) {
+			logger.warn("No totalCostOfProjectsList Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<TotalCostOfProjectRequest> totalCostOfProjectRequestsList = new ArrayList<>(totalCostOfProjectsList.size());
+			TotalCostOfProjectRequest target =null;
+			for(TotalCostOfProject totalCostOfProject : totalCostOfProjectsList) {
+				target = new TotalCostOfProjectRequest();
+				target.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred());
+				target.setApplicationId(applicationId);
+				if(totalCostOfProject.getParticularsId()!= null) {
+					target.setParticulars(Particular.getById(totalCostOfProject.getParticularsId()).getValue());
+				}
+				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
+				target.setTotalCost(totalCostOfProject.getTotalCost());
+				target.setCreatedBy(userId);
+				totalCostOfProjectRequestsList.add(target);
+			}
+			return totalCostOfProjectRequestsList;
+		}	
+	}
+	
+	public List<FinanceMeansDetailRequest> getFinanceMeansDetailRequestList(Long applicationId, Long userId){
+		List<FinanceMeansDetail> financeMeansDetailsList=  financeMeansDetailRepository.listFinanceMeansFromAppId(applicationId, userId);
+				
+		if(CommonUtils.isListNullOrEmpty(financeMeansDetailsList)) {
+			logger.warn("No FinanceMeansDetailList Found for Application Id ==>{} ",applicationId +  " userId==>{} ",userId);
+			return Collections.emptyList();
+		}else {
+			List<FinanceMeansDetailRequest> financeMeansDetailRequestList = new ArrayList<>(financeMeansDetailsList.size());
+			FinanceMeansDetailRequest target =null;
+			for(FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
+				target = new FinanceMeansDetailRequest();
+				target.setAlreadyInfused(financeMeansDetail.getAlreadyInfused());
+				target.setApplicationId(applicationId);
+				if(financeMeansDetail.getFinanceMeansCategoryId()!=null) {
+					target.setFinanceMeansCategory(FinanceCategory.getById(financeMeansDetail.getFinanceMeansCategoryId().intValue()).getValue());
+				}
+				target.setToBeIncurred(financeMeansDetail.getToBeIncurred());
+				target.setTotal(financeMeansDetail.getTotal());
+				target.setCreatedBy(userId);
+				financeMeansDetailRequestList.add(target);
+			}
+			return financeMeansDetailRequestList;
+		}	
+	}
+	
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList(Long applicationId, Long userId){
+		List<SecurityCorporateDetail> securityCorporateDetailList= securityCorporateDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId, userId);
+				
+		if(CommonUtils.isListNullOrEmpty(securityCorporateDetailList)) {
+			logger.warn("No SecurityCorporateDetailList Found for Application Id ==>{}",applicationId);
+			return Collections.emptyList();
+		}else {
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList = new ArrayList<>(securityCorporateDetailList.size());
+			SecurityCorporateDetailRequest target =null;
+			for(SecurityCorporateDetail securityCorporateDetail : securityCorporateDetailList) {
+				target = new SecurityCorporateDetailRequest();
+				target.setAmount(securityCorporateDetail.getAmount());
+				target.setPrimarySecurityName(securityCorporateDetail.getPrimarySecurityName());
+				target.setApplicationId(applicationId);
+				target.setCreatedBy(userId);
+				securityCorporateDetailRequestList.add(target);
+			}
+			return securityCorporateDetailRequestList;
+		}	
 	}
 }
