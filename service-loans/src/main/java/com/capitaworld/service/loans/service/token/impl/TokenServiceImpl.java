@@ -63,6 +63,7 @@ public class TokenServiceImpl implements TokenService{
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
 		Calendar c= Calendar.getInstance();
 		c.set(0, 0, 0, 0 , tokenExpireTime);
+		System.out.println(c.getTime());
 		TokenDetail tokenDetail =tokenRepository.getTokenByApplicationId(tokenString , c.getTime());
 		if(CommonUtils.isObjectNullOrEmpty(tokenDetail)) {
 			logger.info("-------------------token is expired . Start saving... checkTokenExpiration() {} ------------------------");
