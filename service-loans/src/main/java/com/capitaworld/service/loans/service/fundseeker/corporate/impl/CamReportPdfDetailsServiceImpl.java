@@ -1251,15 +1251,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		 for(Field field : fields) {
 			 field.setAccessible(true);
              Object value = field.get(obj);
+             data.put(field.getName(), value);
+             logger.info("field NAMESS================>"+field.getName());
              if(!CommonUtils.isObjectNullOrEmpty(value)) {
+            	 logger.info("field NAMESS in 1st IF================>"+field.getName());
             	 if(value instanceof Double){
+            		 logger.info("field NAMESS checked for double================>"+field.getName());
                 	 if(!Double.isNaN((Double)value)) {
+                		 logger.info("field NAMESS if not NAN================>"+field.getName());
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
-                    	 logger.info("field NAMESS================>"+field.getName());
                     	 if(data != null) {
+                    		 logger.info("field NAMESS if map data not null================>"+field.getName());
                     		 data.put(field.getName(), value);
-                    		 logger.info("In condition field NAMESS================>"+field.getName());
                     	 }else {
                     		 field.set(obj,value);                    		 
                     	 }
