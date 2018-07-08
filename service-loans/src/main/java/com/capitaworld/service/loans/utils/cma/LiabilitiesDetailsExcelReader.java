@@ -63,6 +63,7 @@ public class LiabilitiesDetailsExcelReader
         liabilitiesMappingList.add("81");
         liabilitiesMappingList.add("83");
         liabilitiesMappingList.add("85");
+        liabilitiesMappingList.add("86");
         liabilitiesMappingList.add("87");
         
 
@@ -174,6 +175,7 @@ public class LiabilitiesDetailsExcelReader
             cmaLiabilities.setDeferredTaxLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setNetWorth(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherIncomeNeedTocCheckLia(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setTotalLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             
             cmaLiabilities.setIsActive(true);
