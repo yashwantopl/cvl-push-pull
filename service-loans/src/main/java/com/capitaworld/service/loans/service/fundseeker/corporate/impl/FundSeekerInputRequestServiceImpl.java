@@ -204,20 +204,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                     DirectorBackgroundDetail saveDirObj = null;
                     if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
-                        saveDirObj = new DirectorBackgroundDetail();
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setCreatedDate(new Date());
-                        saveDirObj.setIsActive(true);
-                    } else {
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
                         saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setModifiedDate(new Date());
                     }
+                    else
+                    {
+                        logger.info("New Object Created for Director");
+                        saveDirObj = new DirectorBackgroundDetail();
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setCreatedDate(new Date());
+                        saveDirObj.setIsActive(true);
+                    }
+
                     directorBackgroundDetailsRepository.save(saveDirObj);
                 }
             }catch (Exception e){

@@ -325,7 +325,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData()) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData(),null) : " ");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -503,7 +503,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse));
+			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse,null));
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
@@ -616,7 +616,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", printFields(datas));
+					map.put("bankStatementAnalysis", datas);
 				}
 			}
 		}catch (Exception e) {
@@ -630,10 +630,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-					map.put("cgtmseBankWise", cgtmseResponseDetails);
-					map.put("bankName", printFields(cgtmseResponseDetails.getMemBankName()));
-				}
+				map.put("cgtmseBankWise", cgtmseDataResponse.getCgtmseResponse().getDetails());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -646,7 +643,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",printFields(eligibilityResp.getData()));
+			map.put("assLimits",convertToDoubleForXml(eligibilityResp.getData(), new HashMap<>()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -655,7 +652,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			map.put("mcaData", printFields(mcaResponse.getData()));
+			map.put("mcaData", mcaResponse.getData());
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -663,7 +660,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//HUNTER API ANALYSIS
 		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
-			map.put("hunterResponse", printFields(hunterResp.getData()));
+			map.put("hunterResponse", hunterResp.getData());
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -679,7 +676,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputManu));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputManu,null));
 					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
 					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
 					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
@@ -693,13 +690,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputTrad));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputTrad,null));
 					map.put("fitchTitle","Trading");
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputServ));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputServ,null));
 					map.put("fitchTitle","Service");
 				}
 			}
@@ -1248,7 +1245,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
 	}
-	public static Object convertToDoubleForXml (Object obj) throws Exception {
+	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
 		 for(Field field : fields) {
 			 field.setAccessible(true);
@@ -1258,10 +1255,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
-                    	 field.set(obj,value);        
+                    	 if(data != null) {
+                    		 data.put(field.getName(), value);
+                    	 }else {
+                    		 field.set(obj,value);                    		 
+                    	 }
                 	 }
                  }
              }
+		 }
+		 if(data != null) {
+			 return data;
 		 }
 		return obj;
 	}
