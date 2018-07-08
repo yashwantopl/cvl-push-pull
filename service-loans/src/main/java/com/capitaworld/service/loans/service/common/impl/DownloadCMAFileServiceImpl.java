@@ -181,6 +181,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				//sheet1.getRow(72).getCell(j).setCellValue(operatingStatementDetails.getProfitBeforeTaxOrLoss());
 				
 				sheet1.getRow(74).getCell(j).setCellValue(operatingStatementDetails.getProvisionForTaxes());
+				sheet1.getRow(75).getCell(j).setCellValue(operatingStatementDetails.getOtherIncomeNeedTocCheckOp());
 				sheet1.getRow(76).getCell(j).setCellValue(operatingStatementDetails.getProvisionForDeferredTax());
 
 				//sheet1.getRow(77).getCell(j).setCellValue(operatingStatementDetails.getNetProfitOrLoss());
@@ -294,7 +295,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(78).getCell(j).setCellValue(liabilitiesDetails.getSurplusOrDeficit());
 				sheet2.getRow(80).getCell(j).setCellValue(liabilitiesDetails.getDeferredTaxLiability());
 				sheet2.getRow(82).getCell(j).setCellValue(liabilitiesDetails.getOthers());
-				
+				sheet2.getRow(82).getCell(j).setCellValue(liabilitiesDetails.getOtherIncomeNeedTocCheckLia());
 				//sheet2.getRow(84).getCell(j).setCellValue(liabilitiesDetails.getNetWorth());
 				
          	    //sheet2.getRow(86).getCell(j).setCellValue(liabilitiesDetails.getTotalLiability());
@@ -410,7 +411,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(84).getCell(j).setCellValue(assetsDetails.getPrelimExpenses());
 				sheet3.getRow(85).getCell(j).setCellValue(assetsDetails.getBadOrDoubtfulExpenses());
 				sheet3.getRow(86).getCell(j).setCellValue(assetsDetails.getAnyOther());
-
+				sheet3.getRow(86).getCell(j).setCellValue(assetsDetails.getOtherIncomeNeedTocCheckAsset());
 				//sheet3.getRow(88).getCell(j).setCellValue(assetsDetails.getTotalAssets());
 				
 				//sheet3.getRow(90).getCell(j).setCellValue(assetsDetails.getTangibleNetWorth());
