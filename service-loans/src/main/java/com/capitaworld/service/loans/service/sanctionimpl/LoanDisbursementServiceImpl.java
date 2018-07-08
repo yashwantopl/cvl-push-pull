@@ -63,7 +63,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		logger.info("Enter in requestValidation() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);  
 		try {
 			
-			if (orgId != null) {
 				LoanSanctionDomain loanSanctionDomain  =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 				
 				if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
@@ -94,10 +93,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid ApplicationId ");
 					return "Invalid ApplicationId ";
 				}
-			} else {
-				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid Credential");
-				return "Invalid Credential";
-			}
+			
 		} catch (Exception e) {
 			logger.info("Error/Exception in requestValidation() -----------------------> Message "+e.getMessage());
 			e.printStackTrace();
