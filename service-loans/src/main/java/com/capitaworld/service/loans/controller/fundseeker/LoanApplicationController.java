@@ -2030,10 +2030,12 @@ public class LoanApplicationController {
 		LoanSanctionRequest  loanSanctionRequest= null;
 		String reason=null;
 		Long orgId=null;
+		GenerateTokenRequest generateTokenRequest =null;
 		String decrypt = null;
+		String tokenString = null ;
 		try {
 			logger.info("=============================Entry saveLoanSanctionDetail(){} ============================= ");
-			String tokenString =httpServletRequest.getHeader("token");
+			tokenString =httpServletRequest.getHeader("token");
 			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = "Token is null";
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
@@ -2116,6 +2118,9 @@ public class LoanApplicationController {
 		}
 		finally {
 			logger.info("Saving Request to DB ===> ");
+			generateTokenRequest = new GenerateTokenRequest() ;
+			generateTokenRequest.setToken(tokenString);
+			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt!=null ? decrypt : encryptedString, loanSanctionRequest!=null ? loanSanctionRequest.getApplicationId() : null , CommonUtility.ApiType.SANCTION, loansResponse, reason ,null);
 		}
 	}
@@ -2127,9 +2132,11 @@ public class LoanApplicationController {
 		Long orgId=null;
 		String decrypt = null;
 		LoanDisbursementRequest loanDisbursementRequest = null;
+		GenerateTokenRequest generateTokenRequest =null;
+		String tokenString =null;
 		try {
 			logger.info("=============================Entry saveLoanDisbursementDetail(){} ============================= ");
-			String tokenString =httpServletRequest.getHeader("token");
+			tokenString =httpServletRequest.getHeader("token");
 			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = "Token is null";
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
@@ -2213,6 +2220,9 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}finally {
 			logger.info("Saving Request to DB ===> ");
+			generateTokenRequest = new GenerateTokenRequest() ;
+			generateTokenRequest.setToken(tokenString);
+			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt!=null ? decrypt : encryptedString , loanDisbursementRequest!=null ? loanDisbursementRequest.getApplicationId() : null , CommonUtility.ApiType.DISBURSEMENT, loansResponse , reason,orgId);
 		}
 	}
@@ -2260,17 +2270,18 @@ public class LoanApplicationController {
 
 	@RequestMapping(value = "/saveDetailedInfo", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveDetailedInfo(@RequestBody String encryptedString , HttpServletRequest httpServletRequest){
-		
+		GenerateTokenRequest generateTokenRequest =null;
 		String decrypt = null;
 		LoansResponse loansResponse=null;
 		String reason=null;
 		Long orgId=null;
 		Boolean isSuccess = false;
 		ProfileReqRes profileReqRes = null;
+		String tokenString =null;
 		try {
 			
 			logger.info("=============================Entry saveDetailedInfo(){} ============================= ");
-			String tokenString =httpServletRequest.getHeader("token");
+			tokenString =httpServletRequest.getHeader("token");
 			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = "Token is null";
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
@@ -2361,6 +2372,9 @@ public class LoanApplicationController {
 		}finally {
 			logger.info("Reason ---------------------> ", reason);
 			reason+=" \n while saveDetailedInfo()";
+			generateTokenRequest = new GenerateTokenRequest();
+			generateTokenRequest.setToken(tokenString);
+			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , null,CommonUtility.ApiType.DETAILED_API, loansResponse , reason,orgId);
 		}
 	}

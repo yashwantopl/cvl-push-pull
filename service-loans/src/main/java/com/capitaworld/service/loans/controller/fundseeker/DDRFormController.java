@@ -39,6 +39,7 @@ import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
 
 @RestController
@@ -342,9 +343,11 @@ public class DDRFormController {
 		Boolean isSuccess= null;
 		Long orgId=null;
 		String decrypt = null;
+		GenerateTokenRequest generateTokenRequest =null;
+		String tokenString =null; 
 		try {
 			logger.info("=============================Entry saveDDRInfo(){} ============================= ");
-			String tokenString =httpServletRequest.getHeader("token");
+			tokenString =httpServletRequest.getHeader("token");
 			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = "Token is null";
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
@@ -425,8 +428,10 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}finally {
 			reason+=" \n while saveDDRInfo()";
+			generateTokenRequest= new GenerateTokenRequest();
+			generateTokenRequest.setToken(tokenString);
+			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId);
-			//auditComponent.updateAudit(CommonUtility.ApiType.DDR_API, ddrFormDetailsRequest.getApplicationId() , ddrFormDetailsRequest.getUserId(), reason , isSuccess);
 		}
 	}
 	
