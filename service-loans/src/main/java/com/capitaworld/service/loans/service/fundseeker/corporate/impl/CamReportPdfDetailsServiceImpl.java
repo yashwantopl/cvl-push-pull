@@ -643,6 +643,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
 			map.put("assLimits",convertToDoubleForXml(eligibilityResp.getData(), new HashMap<>()));
 		} catch (Exception e) {
 			e.printStackTrace();
