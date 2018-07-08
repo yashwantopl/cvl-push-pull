@@ -1255,8 +1255,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
+                    	 logger.info("field NAMESS================>"+field.getName());
                     	 if(data != null) {
                     		 data.put(field.getName(), value);
+                    		 logger.info("In condition field NAMESS================>"+field.getName());
                     	 }else {
                     		 field.set(obj,value);                    		 
                     	 }
