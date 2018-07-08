@@ -405,6 +405,7 @@ public class ScoringServiceImpl implements ScoringService{
                             scoringParameterRequest.setTol(tol);
                             scoringParameterRequest.setTnw(tnw);
                             scoringParameterRequest.setTolTnw_p(true);
+                            scoringParameterRequest.setLoanAmount(loanAmount);
 
                             /*if(tnw!=0.0)
                                 map.put("TOL_TNW",(tol+loanAmount)/tnw);
