@@ -567,24 +567,25 @@ public class CorporateUploadController {
 	
 	
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
-	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) {
+	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) throws IOException {
 		logger.info("In getCmaFile");
-		ByteArrayOutputStream bos = null;
-		ObjectOutputStream oos = null;
-		byte[] cmaFile = null;
+		
 		try {
+			
+			ByteArrayOutputStream bos = null;
+			ObjectOutputStream oos = null;
+			byte[] cmaFile = null;
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
-			try {
+			logger.info("WorkBook Object====>"+wb);
+			
 				
 			    bos = new ByteArrayOutputStream();
 			    oos = new ObjectOutputStream(bos);
 			    oos.writeObject(wb);
 			    cmaFile = bos.toByteArray();
-				
+			    logger.info("WorkBook Object as bytes====>"+cmaFile);	
 
-			} catch (IOException e) {
-				logger.info("Exception occured while performing File Input/Output Operation====>"+e.getMessage());
-			}
+			
 
 			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cmaFile);
 
