@@ -203,8 +203,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
                     DirectorBackgroundDetail saveDirObj = null;
                     if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>"+saveDirObj.getId());
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
                         saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setModifiedDate(new Date());
