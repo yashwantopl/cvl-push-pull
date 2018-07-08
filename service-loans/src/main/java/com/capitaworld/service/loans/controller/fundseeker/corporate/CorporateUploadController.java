@@ -1,8 +1,10 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -567,20 +569,24 @@ public class CorporateUploadController {
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) {
 		logger.info("In getCmaFile");
-		byte[] cma = null;
+		ByteArrayOutputStream bos = null;
+		ObjectOutputStream oos = null;
+		byte[] cmaFile = null;
 		try {
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream("/home/userthree/Desktop/CMA");
-				wb.write(fileOutputStream);
-				cma = new byte[4096];
-				fileOutputStream.write(cma);
+				
+			    bos = new ByteArrayOutputStream();
+			    oos = new ObjectOutputStream(bos);
+			    oos.writeObject(wb);
+			    cmaFile = bos.toByteArray();
+				
 
 			} catch (IOException e) {
 				logger.info("Exception occured while performing File Input/Output Operation====>"+e.getMessage());
 			}
 
-			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cma);
+			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cmaFile);
 
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
