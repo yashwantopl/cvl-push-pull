@@ -371,9 +371,9 @@ public class DDRFormController {
 					loansResponse.setData(false);
 					if(CommonUtils.isObjectNullOrEmpty(decrypt)) {
 						reason="ERROR WHILE DECRYPT ENCRYPTED OBJECT   ====> Msg ===> ";
-						}else {
-							reason="error while converting decrypt string to DDRFormDetailsRequest  ====> Msg ===> " ;
-						}
+					}else {
+						reason="error while converting decrypt string to DDRFormDetailsRequest  ====> Msg ===> " ;
+					}
 					reason+=e.getMessage();
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}

@@ -2607,7 +2607,7 @@ public class LoanApplicationController {
 					reason+=e.getMessage();
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}
-				if(CommonUtils.isObjectListNull(generateTokenRequest , generateTokenRequest.getApplicationId() , generateTokenRequest.getUserName() , generateTokenRequest.getPassword())) {
+				if(!CommonUtils.isObjectListNull(generateTokenRequest , generateTokenRequest.getApplicationId() , generateTokenRequest.getUserName() , generateTokenRequest.getPassword())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(generateTokenRequest .getUserName(),generateTokenRequest.getPassword());
 					if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						applicationId = generateTokenRequest.getApplicationId();
@@ -2676,7 +2676,7 @@ public class LoanApplicationController {
 					reason+=e.getMessage();
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}
-				if(CommonUtils.isObjectListNull(generateTokenRequest , generateTokenRequest.getApplicationId() , generateTokenRequest.getUserName() , generateTokenRequest.getPassword())) {
+				if(!CommonUtils.isObjectListNull(generateTokenRequest , generateTokenRequest.getApplicationId() , generateTokenRequest.getUserName() , generateTokenRequest.getPassword())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(generateTokenRequest .getUserName(),generateTokenRequest.getPassword());
 					if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						applicationId = generateTokenRequest.getApplicationId();
