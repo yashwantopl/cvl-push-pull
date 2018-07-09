@@ -854,7 +854,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/************************************************** OPERATING STATEMENT ***************************************************/
 		OperatingStatementDetails osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
-			return null;
+			osDetails = new OperatingStatementDetails();
 		}
 		
 		osDetailsString.setDomesticSales(convertValue(osDetails.getDomesticSales()));
@@ -920,7 +920,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/************************************************ LIABILITIES DETAIL ***************************************************/
 		LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-			return null;
+			liabilitiesDetails = new LiabilitiesDetails();
 		}
 		liabilitiesDetailsString.setOrdinarySharesCapital(convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
 		liabilitiesDetailsString.setPreferencesShares(convertValue(liabilitiesDetails.getPreferencesShares()));
@@ -991,7 +991,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/************************************************ ASSETS DETAIL ***************************************************/
 		AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
-			return null;
+			assetsDetails = new AssetsDetails();
 		}
 		
 		financialInputRequestDbl.setGrossBlock(assetsDetails.getGrossBlock() * denomination);
