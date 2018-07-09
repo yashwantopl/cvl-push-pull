@@ -58,8 +58,7 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public String checkTokenExpiration(String tokenString) {
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
-		/*Calendar c= Calendar.getInstance();
-		c.set(0, 0, 0, 0 , tokenExpireTime);*/
+		
 		System.out.println(tokenExpireTime);
 		TokenDetail tokenDetail =tokenRepository.getTokenByApplicationId(tokenString , tokenExpireTime);
 		if(CommonUtils.isObjectNullOrEmpty(tokenDetail)) {
