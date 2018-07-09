@@ -446,6 +446,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
 			operatingStatementDetails.setProvisionForDeferredTax(0.0);
 		financialInputRequest.setProvisionForTaxFy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
+        
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckOpFy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
 			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
@@ -541,6 +545,10 @@ public class IrrServiceImpl implements IrrService{
 			liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
 		financialInputRequest.setOtherCurruntLiablitiesFy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
 		
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
+				liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckLiaFy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+		
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
 			liabilitiesDetails.setProvisionalForTaxation(0.0);
 		financialInputRequest.setShortTermProvisionFy(liabilitiesDetails.getProvisionalForTaxation() * denom);
@@ -628,6 +636,11 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesFy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
+			assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckAssetFy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
+		
 		// -----CONTIGENT LIABILITIES
 		if(corporateFinalInfoRequest == null)
 			financialInputRequest.setContingentLiablitiesFy(null);
@@ -719,6 +732,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
 			operatingStatementDetails.setProvisionForDeferredTax(0.0);
 		financialInputRequest.setProvisionForTaxSy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
+		
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckOpSy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
 			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
@@ -814,6 +831,10 @@ public class IrrServiceImpl implements IrrService{
 			liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
 		financialInputRequest.setOtherCurruntLiablitiesSy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
 		
+		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
+			liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckLiaSy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+		
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
 			liabilitiesDetails.setProvisionalForTaxation(0.0);
 		financialInputRequest.setShortTermProvisionSy(liabilitiesDetails.getProvisionalForTaxation() * denom);
@@ -901,6 +922,10 @@ public class IrrServiceImpl implements IrrService{
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 			assetsDetails.setAdvancePaymentTaxes(0.0);
 		financialInputRequest.setShortTermLoansAdvancesSy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+		
+		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
+			assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckAssetSy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
 		// -----CONTIGENT LIABILITIES
 		if(corporateFinalInfoRequest == null)
 			financialInputRequest.setContingentLiablitiesSy(null);
@@ -996,6 +1021,10 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails.setProvisionForDeferredTax(0.0);
 		financialInputRequest.setProvisionForTaxTy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
 		
+		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+		financialInputRequest.setOtherIncomeNeedTocCheckOpTy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
+		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
 			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
 		financialInputRequest.setDividendPayOutTy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
@@ -1090,6 +1119,10 @@ public class IrrServiceImpl implements IrrService{
 					liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
 				financialInputRequest.setOtherCurruntLiablitiesTy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
 				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
+					liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckLiaTy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
 					liabilitiesDetails.setProvisionalForTaxation(0.0);
 				financialInputRequest.setShortTermProvisionTy(liabilitiesDetails.getProvisionalForTaxation() * denom);
@@ -1177,6 +1210,11 @@ public class IrrServiceImpl implements IrrService{
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 					assetsDetails.setAdvancePaymentTaxes(0.0);
 				financialInputRequest.setShortTermLoansAdvancesTy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
+					assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckAssetTy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
+				
 				// -----CONTIGENT LIABILITIES
 		if(corporateFinalInfoRequest == null)
 			financialInputRequest.setContingentLiablitiestTy(null);
