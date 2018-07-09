@@ -1328,13 +1328,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			}else if(value instanceof Double){
-           	 if(!Double.isNaN((Double)value)) {
-        		 DecimalFormat decim = new DecimalFormat("0.00");
-        		 String a = decim.format(value).toString();
-                 value = a;
-            	 field.set(obj,value);        
-        	 }
 			}else {
 				continue;
 			}

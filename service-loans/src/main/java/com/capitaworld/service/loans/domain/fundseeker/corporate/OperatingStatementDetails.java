@@ -253,6 +253,7 @@ public class OperatingStatementDetails implements Serializable {
 		this.totalGrossSales = 0.0;
 		this.generalAdminExp=0.0;
 		this.otherIncomeNeedTocCheckOp=0.0;
+		this.SellingAndDistributionExpenses=0.0;
 	}
 
 	public Double getSellingAndDistributionExpenses() {
