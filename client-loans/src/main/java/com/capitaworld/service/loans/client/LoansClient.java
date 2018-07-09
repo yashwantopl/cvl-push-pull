@@ -28,6 +28,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.GenerateTokenRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -209,6 +210,9 @@ public class LoansClient {
     
     //For Gateway
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
+    private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status";
+    
+    
     
     private static final String GET_TOKEN ="/loan_application/getToken";
     private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
@@ -2101,6 +2105,20 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updatePaymentInfoForGateway(PaymentRequest paymentRequest) throws LoansException {
+		String url = loansBaseUrl.concat(UPDATE_PAYMENT_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
