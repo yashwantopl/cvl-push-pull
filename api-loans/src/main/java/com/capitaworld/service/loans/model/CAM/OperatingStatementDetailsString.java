@@ -64,6 +64,7 @@ public class OperatingStatementDetailsString implements Serializable {
 		private String increaseDecreaseTotal;
 		private String rawMaterialsConsumedTotal;
 		private String provisionForTaxTotal;
+		private String otherIncomeNeedTocCheckOp;
 		
 		
 		public OperatingStatementDetailsString() {
@@ -124,6 +125,7 @@ public class OperatingStatementDetailsString implements Serializable {
             this.increaseDecreaseTotal = "0.0";
             this.rawMaterialsConsumedTotal = "0.0";
             this.provisionForTaxTotal = "0.0";
+            this.otherIncomeNeedTocCheckOp = "0.0";
 		}
 		public Long getId() {
 			return id;
@@ -472,6 +474,12 @@ public class OperatingStatementDetailsString implements Serializable {
 		}
 		public void setProvisionForTaxTotal(String provisionForTaxTotal) {
 			this.provisionForTaxTotal = provisionForTaxTotal;
+		}
+		public String getOtherIncomeNeedTocCheckOp() {
+			return otherIncomeNeedTocCheckOp;
+		}
+		public void setOtherIncomeNeedTocCheckOp(String otherIncomeNeedTocCheckOp) {
+			this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
 		}
 		
 		
