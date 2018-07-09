@@ -1269,7 +1269,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
             	 if(value instanceof Double){
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("0.00");
-                    	 value = Double.parseDouble(decim.format(value));
+                    	 value =  decim.format(value);
                     	 if(data != null) {
                     		 logger.info("field NAMESS if map data not null================>"+field.getName());
                     		 data.put(field.getName(), value);
