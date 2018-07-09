@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.token.TokenDetail;
 
-public interface TokenRepository extends JpaRepository<TokenDetail,Long>{
+public interface TokenRepository extends JpaRepository<TokenDetail,Long>{ 
 
-	@Query("select td FROM TokenDetail td WHERE td.token =:token AND td.isExpired = false AND  (time(now())- time(createdDate)) <= time( :time ) AND td.isActive = true")
+	@Query("select td FROM TokenDetail td WHERE td.token =:token AND td.isExpired = false AND td.createdDate = date_sub( NOW(),INTERVAL 5 MINUTE )   AND td.isActive = true")
 	public TokenDetail getTokenByApplicationId(@Param("token") String tokenString, @Param("time") Date time);
 
 	@Modifying
