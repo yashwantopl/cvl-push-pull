@@ -354,10 +354,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(25).getCell(j).setCellValue(assetsDetails.getRawMaterialImported());
 				sheet3.getRow(26).getCell(j).setCellValue(assetsDetails.getRawMaterialIndegenous());
 				
-				//sheet3.getRow(28).getCell(j).setCellValue(assetsDetails.getStockInProcess());
+				sheet3.getRow(28).getCell(j).setCellValue(assetsDetails.getStockInProcess());
 				
 				
-				//sheet3.getRow(30).getCell(j).setCellValue(assetsDetails.getFinishedGoods());
+				sheet3.getRow(30).getCell(j).setCellValue(assetsDetails.getFinishedGoods());
 				
 				//sheet3.getRow(32).getCell(j).setCellValue(assetsDetails.getOtherConsumableSpares());
 
@@ -427,8 +427,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(10).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(10).getCell(j)));
 				sheet3.getRow(21).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(21).getCell(j)));
 				sheet3.getRow(23).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(23).getCell(j)));
-				sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
-				sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j)));
+				//sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
+				//sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j)));
 				sheet3.getRow(32).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(32).getCell(j)));
 				sheet3.getRow(42).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(42).getCell(j)));
 				sheet3.getRow(44).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(44).getCell(j)));
