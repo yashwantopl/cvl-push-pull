@@ -578,8 +578,7 @@ public class CorporateUploadController {
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			logger.info("WorkBook Object====>"+wb);
 			    bos = new ByteArrayOutputStream();
-			    oos = new ObjectOutputStream(bos);
-			    wb.write(oos);
+			    wb.write(bos);
 			    cmaFile = bos.toByteArray();
 			    logger.info("WorkBook Object as bytes====>"+cmaFile);
 			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cmaFile);
