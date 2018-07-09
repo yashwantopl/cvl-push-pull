@@ -1,4 +1,6 @@
 package com.capitaworld.service.loans.service.token.impl;
+
+import java.util.Calendar;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ public class TokenServiceImpl implements TokenService{
 	private TokenRepository tokenRepository ;
 	
 	@Value("${capitaworld.sidbi.integration.token.expire.time}")
-	private Long  tokenExpireTime;
+	private int  tokenExpireTime;
 	
 	@Override
 	public String getToken(GenerateTokenRequest generateTokenRequest) {
@@ -59,9 +61,10 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public String checkTokenExpiration(String tokenString) {
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
-		
-		System.out.println(tokenExpireTime);
-		TokenDetail tokenDetail =tokenRepository.getTokenByApplicationId(tokenString , tokenExpireTime);
+		Calendar c= Calendar.getInstance();
+		c.set(0, 0, 0, 0 , tokenExpireTime);
+		System.out.println(c.getTime());
+		TokenDetail tokenDetail =tokenRepository.getTokenByApplicationId(tokenString , c.getTime());
 		if(CommonUtils.isObjectNullOrEmpty(tokenDetail)) {
 			logger.info("-------------------token is expired . Start saving... checkTokenExpiration() {} ------------------------");
 			tokenRepository.updateTokenAsExpired(tokenString);
