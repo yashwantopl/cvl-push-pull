@@ -76,6 +76,7 @@ public class AssetDetailsString implements Serializable{
 	private String sundryDebtorsTotal;
 	private String otherCurrentAssetsTotal;
 	private String shortTermLoansAndAdvancesTotal;
+	private String otherIncomeNeedTocCheckAsset;
 	
 	
 	public AssetDetailsString() {
@@ -148,6 +149,7 @@ public class AssetDetailsString implements Serializable{
         this.sundryDebtorsTotal = "0.0";
         this.otherCurrentAssetsTotal = "0.0";
         this.shortTermLoansAndAdvancesTotal = "0.0";
+        this.otherIncomeNeedTocCheckAsset = "0.0";
 	}
 	public Long getId() {
 		return id;
@@ -568,6 +570,12 @@ public class AssetDetailsString implements Serializable{
 	}
 	public void setShortTermLoansAndAdvancesTotal(String shortTermLoansAndAdvancesTotal) {
 		this.shortTermLoansAndAdvancesTotal = shortTermLoansAndAdvancesTotal;
+	}
+	public String getOtherIncomeNeedTocCheckAsset() {
+		return otherIncomeNeedTocCheckAsset;
+	}
+	public void setOtherIncomeNeedTocCheckAsset(String otherIncomeNeedTocCheckAsset) {
+		this.otherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
 	}
 	
 	

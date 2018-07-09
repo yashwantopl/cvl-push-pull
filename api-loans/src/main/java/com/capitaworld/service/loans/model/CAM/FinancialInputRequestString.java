@@ -106,6 +106,9 @@ public class FinancialInputRequestString implements Serializable {
     private String unsecuredLoansOthers;
     private String unsecuredLoansPromoters;
     private String ratioAnalysisFullDate;
+    private String otherIncomeNeedTocCheckAsset;
+	private String otherIncomeNeedTocCheckOp;
+	private String otherIncomeNeedTocCheckLia;
     private Integer status;
     private String message;
     
@@ -204,6 +207,9 @@ public class FinancialInputRequestString implements Serializable {
         this.unsecuredLoansOthers = "0.0";
         this.unsecuredLoansPromoters = "0.0";
         this.ratioAnalysisFullDate = "0.0";
+        this.otherIncomeNeedTocCheckAsset ="0.0";
+        this.otherIncomeNeedTocCheckLia ="0.0";
+        this.otherIncomeNeedTocCheckOp = "0.0";
 	}
 	public Long getId() {
 		return id;
@@ -799,7 +805,25 @@ public class FinancialInputRequestString implements Serializable {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
+	public String getOtherIncomeNeedTocCheckAsset() {
+		return otherIncomeNeedTocCheckAsset;
+	}
+	public void setOtherIncomeNeedTocCheckAsset(String otherIncomeNeedTocCheckAsset) {
+		this.otherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
+	}
+	public String getOtherIncomeNeedTocCheckOp() {
+		return otherIncomeNeedTocCheckOp;
+	}
+	public void setOtherIncomeNeedTocCheckOp(String otherIncomeNeedTocCheckOp) {
+		this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
+	}
+	public String getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+	public void setOtherIncomeNeedTocCheckLia(String otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
+	}
+	
     
     
     
