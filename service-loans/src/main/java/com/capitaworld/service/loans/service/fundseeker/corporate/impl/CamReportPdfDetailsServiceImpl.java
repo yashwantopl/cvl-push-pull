@@ -467,8 +467,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
-					map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 				}
+				map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 			}
 			map.put("projectedFinancials", projectedFin);
 		}catch (Exception e) {
@@ -646,6 +646,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
 			map.put("assLimits",convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -1265,6 +1266,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		 for(Field field : fields) {
 			 field.setAccessible(true);
              Object value = field.get(obj);
+             if(data != null) {
+            	 data.put(field.getName(), value);
+             }
              if(!CommonUtils.isObjectNullOrEmpty(value)) {
             	 if(value instanceof Double){
                 	 if(!Double.isNaN((Double)value)) {
