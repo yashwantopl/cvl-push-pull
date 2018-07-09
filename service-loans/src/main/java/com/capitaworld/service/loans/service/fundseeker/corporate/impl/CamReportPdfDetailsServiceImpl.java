@@ -660,12 +660,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//HUNTER API ANALYSIS
-		try {
+		/*try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 			map.put("hunterResponse", hunterResp.getData());
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}
+		}*/
 		
 	
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -721,7 +721,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 			} catch (Exception e) {
 				e.printStackTrace();
-		}
+		    }
 			//PROMOTOR BACKGROUND DETAILS
 			try {
 				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
