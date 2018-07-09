@@ -198,6 +198,10 @@ public class OperatingStatementDetails implements Serializable {
 	
 	@Column(name="selling_distribution_exp")
 	private Double SellingAndDistributionExpenses;
+	
+	@Column(name = "other_income_need_to_chek_op")
+	private Double otherIncomeNeedTocCheckOp;
+	
 
 	public OperatingStatementDetails() {
 		super();
@@ -248,6 +252,7 @@ public class OperatingStatementDetails implements Serializable {
 		this.totalCostSales =0.0;
 		this.totalGrossSales = 0.0;
 		this.generalAdminExp=0.0;
+		this.otherIncomeNeedTocCheckOp=0.0;
 	}
 
 	public Double getSellingAndDistributionExpenses() {
@@ -723,6 +728,20 @@ public class OperatingStatementDetails implements Serializable {
 
 	public void setLoanApplicationMaster(LoanApplicationMaster loanApplicationMaster) {
 		this.loanApplicationMaster = loanApplicationMaster;
+	}
+
+	/**
+	 * @return the otherIncomeNeedTocCheckOp
+	 */
+	public Double getOtherIncomeNeedTocCheckOp() {
+		return otherIncomeNeedTocCheckOp;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckOp the otherIncomeNeedTocCheckOp to set
+	 */
+	public void setOtherIncomeNeedTocCheckOp(Double otherIncomeNeedTocCheckOp) {
+		this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
 	}
 
 	

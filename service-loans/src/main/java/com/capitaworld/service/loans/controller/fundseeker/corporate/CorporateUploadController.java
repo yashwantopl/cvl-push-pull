@@ -577,21 +577,16 @@ public class CorporateUploadController {
 			byte[] cmaFile = null;
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			logger.info("WorkBook Object====>"+wb);
-			
-				
 			    bos = new ByteArrayOutputStream();
 			    oos = new ObjectOutputStream(bos);
-			    oos.writeObject(wb);
+			    wb.write(oos);
 			    cmaFile = bos.toByteArray();
-			    logger.info("WorkBook Object as bytes====>"+cmaFile);	
-
-			
-
+			    logger.info("WorkBook Object as bytes====>"+cmaFile);
 			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cmaFile);
-
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (NullPointerException e) {
+			e.printStackTrace();
 			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
 
 		}

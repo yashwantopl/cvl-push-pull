@@ -21,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -643,7 +644,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",convertToDoubleForXml(eligibilityResp.getData(), new HashMap<>()));
+			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
+			map.put("assLimits",convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -903,6 +905,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestDbl.setExceptionalIncome(osDetails.getNetofNonOpIncomeOrExpenses() * denomination);
 		financialInputRequestString.setExceptionalIncome(convertValue(financialInputRequestDbl.getExceptionalIncome()));
 		
+		osDetailsString.setOtherIncomeNeedTocCheckOp(convertValue(osDetails.getOtherIncomeNeedTocCheckOp()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckOp(osDetails.getOtherIncomeNeedTocCheckOp() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckOp(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckOp()));
+		
 		osDetailsString.setProvisionForTaxes(convertValue(osDetails.getProvisionForTaxes()));
 		osDetailsString.setProvisionForDeferredTax(convertValue(osDetails.getProvisionForDeferredTax()));
 		osDetailsString.setProvisionForTaxTotal(convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
@@ -978,6 +984,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestDbl.setShortTermProvision(liabilitiesDetails.getProvisionalForTaxation() * denomination);
 		financialInputRequestString.setShortTermProvision(convertValue(financialInputRequestDbl.getShortTermProvision()));
 		
+		liabilitiesDetailsString.setOtherIncomeNeedTocCheckLia(convertValue(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckLia(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckLia(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
+		
 		/************************************************ ASSETS DETAIL ***************************************************/
 		AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
@@ -1047,6 +1057,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			financialInputRequestDbl.setContingentLiablities(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denomination));
 			financialInputRequestString.setContingentLiablities(convertValue(financialInputRequestDbl.getContingentLiablities()));
 		}
+		
+		assetDetailsString.setOtherIncomeNeedTocCheckAsset(convertValue(assetsDetails.getOtherIncomeNeedTocCheckAsset()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckAsset(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckAsset(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
+		
 		/************************************************** OTHER CALCULATIONS *******************************************************/ 
 		//Profit & Loss Statement
         financialInputRequestDbl.setNetSale(CommonUtils.substractNumbers(financialInputRequestDbl.getGrossSales(), financialInputRequestDbl.getLessExciseDuity()));
@@ -1063,7 +1078,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setProfitBeforeTaxation(convertValue(financialInputRequestDbl.getProfitBeforeTaxation()));
 		financialInputRequestDbl.setProfitBeforeTax(CommonUtils.addNumbers(financialInputRequestDbl.getProfitBeforeTaxation(), financialInputRequestDbl.getExceptionalIncome()));
 		financialInputRequestString.setProfitBeforeTax(convertValue(financialInputRequestDbl.getProfitBeforeTax()));
-		financialInputRequestDbl.setProfitAfterTax(CommonUtils.substractNumbers(financialInputRequestDbl.getProfitBeforeTax(), financialInputRequestDbl.getProvisionForTax()));
+		financialInputRequestDbl.setProfitAfterTax(CommonUtils.substractNumbers(financialInputRequestDbl.getProfitBeforeTax(), financialInputRequestDbl.getProvisionForTax()) + financialInputRequestDbl.getOtherIncomeNeedTocCheckOp());
 		financialInputRequestString.setProfitAfterTax(convertValue(financialInputRequestDbl.getProfitAfterTax()));
 		if(financialInputRequestDbl.getDividendPayOut() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getDividendPayOut()) || financialInputRequestDbl.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareFaceValue()) || financialInputRequestDbl.getShareCapital() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareCapital()))
 			financialInputRequestString.setEquityDividend("0.0");
@@ -1085,7 +1100,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalNonCurruntLiablities(convertValue(financialInputRequestDbl.getTotalNonCurruntLiablities()));
 		financialInputRequestDbl.setTotalCurruntLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getTradePayables(), financialInputRequestDbl.getOtherCurruntLiablities(), financialInputRequestDbl.getShortTermProvision()));
 		financialInputRequestString.setTotalCurruntLiablities(convertValue(financialInputRequestDbl.getTotalCurruntLiablities()));
-		financialInputRequestDbl.setTotalLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getShareHolderFunds(), financialInputRequestDbl.getTotalNonCurruntLiablities(), financialInputRequestDbl.getTotalCurruntLiablities()));
+		financialInputRequestDbl.setTotalLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getShareHolderFunds(), financialInputRequestDbl.getTotalNonCurruntLiablities(), financialInputRequestDbl.getTotalCurruntLiablities(), financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 		financialInputRequestString.setTotalLiablities(convertValue(financialInputRequestDbl.getTotalLiablities()));
 
 		//Balance Sheet -ASSETS
@@ -1095,7 +1110,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalNonCurruntAsset(convertValue(financialInputRequestDbl.getTotalNonCurruntAsset()));
 		financialInputRequestDbl.setTotalCurruntAsset(CommonUtils.addNumbers(financialInputRequestDbl.getInventories(), financialInputRequestDbl.getSundryDebtors(), financialInputRequestDbl.getCashAndBank(), financialInputRequestDbl.getOtherCurruntAsset(), financialInputRequestDbl.getShortTermLoansAdvances()));
 		financialInputRequestString.setTotalCurruntAsset(convertValue(financialInputRequestDbl.getTotalCurruntAsset()));
-		financialInputRequestDbl.setTotalAsset(CommonUtils.addNumbers(financialInputRequestDbl.getNetBlock(), financialInputRequestDbl.getTotalCurruntAsset(), financialInputRequestDbl.getTotalNonCurruntAsset()));
+		financialInputRequestDbl.setTotalAsset(CommonUtils.addNumbers(financialInputRequestDbl.getNetBlock(), financialInputRequestDbl.getTotalCurruntAsset(), financialInputRequestDbl.getTotalNonCurruntAsset(), financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
 		financialInputRequestString.setTotalAsset(convertValue(financialInputRequestDbl.getTotalAsset()));
 		if(financialInputRequestDbl.getShareFaceValue() !=0 && financialInputRequestDbl.getShareCapital() !=0) {
 			double total = financialInputRequestDbl.getShareCapital()/financialInputRequestDbl.getShareFaceValue();
@@ -1256,6 +1271,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
                     	 if(data != null) {
+                    		 logger.info("eligibility data================>"+field.getName());
+                    		 value = decim.format(value);
                     		 data.put(field.getName(), value);
                     	 }else {
                     		 field.set(obj,value);                    		 

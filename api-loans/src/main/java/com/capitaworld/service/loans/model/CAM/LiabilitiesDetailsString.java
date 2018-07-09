@@ -54,6 +54,7 @@ public class LiabilitiesDetailsString implements Serializable{
 	 private String otherBorrowingsTotal;
 	 private String otherLongTermLiabilitiesTotal;
 	 private String otherCurrentLiabilitiesTotal;
+	 private String otherIncomeNeedTocCheckLia;
 	 
 	 
 	 
@@ -105,6 +106,7 @@ public class LiabilitiesDetailsString implements Serializable{
         this.otherBorrowingsTotal = "0.0";
         this.otherLongTermLiabilitiesTotal = "0.0";
         this.otherCurrentLiabilitiesTotal = "0.0";
+        this.otherIncomeNeedTocCheckLia ="0.0";
 	}
 	public Long getId() {
 		return id;
@@ -394,7 +396,13 @@ public class LiabilitiesDetailsString implements Serializable{
 	public void setOtherCurrentLiabilitiesTotal(String otherCurrentLiabilitiesTotal) {
 		this.otherCurrentLiabilitiesTotal = otherCurrentLiabilitiesTotal;
 	}
-	 
+	public String getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+	public void setOtherIncomeNeedTocCheckLia(String otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
+	}
+	
 	 
 	 
 	 

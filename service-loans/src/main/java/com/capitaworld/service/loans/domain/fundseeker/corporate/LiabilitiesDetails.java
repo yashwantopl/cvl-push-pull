@@ -162,6 +162,9 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name="other_ncl")
 	private Double otherNcl;
 	
+	@Column(name = "other_income_need_to_chek_lia")
+	private Double otherIncomeNeedTocCheckLia;
+	
 	
 	public LiabilitiesDetails() {
 		super();
@@ -205,6 +208,7 @@ public class LiabilitiesDetails implements Serializable{
 		this.otherNclUnsecuredLoansFromPromoters = 0.0;
 		this.otherNcl  = 0.0;
 		this.termLiabilitiesUnsecured = 0.0;
+		this.otherIncomeNeedTocCheckLia=0.0;
 	}
 
 	public Double getOtherNcl() {
@@ -619,6 +623,20 @@ public class LiabilitiesDetails implements Serializable{
 
 	public void setFsLoanApplicationMaster(LoanApplicationMaster fsLoanApplicationMaster) {
 		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	}
+
+	/**
+	 * @return the otherIncomeNeedTocCheckLia
+	 */
+	public Double getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckLia the otherIncomeNeedTocCheckLia to set
+	 */
+	public void setOtherIncomeNeedTocCheckLia(Double otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
 	}
 
 

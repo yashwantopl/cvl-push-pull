@@ -695,12 +695,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy()));
 			financialInputRequest.setProfitBeforeTaxTy(CommonUtils.addNumbers(
 					financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy()));
-			financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(
-					financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy()));
-			financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(
-					financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy()));
-			financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(
-					financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy()));
+			financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpFy());
+    		financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpSy());
+    		financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpTy());
 			if (financialInputRequest.getDividendPayOutFy() == 0)
 				financialInputRequest.setEquityDividendFy(0.0);
 			else
@@ -769,18 +766,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			financialInputRequest.setTotalCurruntLiablitiesTy(CommonUtils.addNumbers(
 					financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(),
 					financialInputRequest.getShortTermProvisionTy()));
-			financialInputRequest
-					.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(),
-							financialInputRequest.getTotalNonCurruntLiablitiesFy(),
-							financialInputRequest.getTotalCurruntLiablitiesFy()));
-			financialInputRequest
-					.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(),
-							financialInputRequest.getTotalNonCurruntLiablitiesSy(),
-							financialInputRequest.getTotalCurruntLiablitiesSy()));
-			financialInputRequest
-					.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(),
-							financialInputRequest.getTotalNonCurruntLiablitiesTy(),
-							financialInputRequest.getTotalCurruntLiablitiesTy()));
+			financialInputRequest.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaFy()));
+    		financialInputRequest.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaSy()));
+    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaTy()));
 
 			// Balance Sheet -ASSETS
 			financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(
@@ -792,24 +780,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(
 					financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),
 					financialInputRequest.getImpairmentofAssetTy()));
-			financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(
-					financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(),
-					financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(),
-					financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(),
-					financialInputRequest.getLongTermLoansAndAdvaFy(),
-					financialInputRequest.getOtheNonCurruntAssetFy()));
-			financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(
-					financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(),
-					financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(),
-					financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(),
-					financialInputRequest.getLongTermLoansAndAdvaSy(),
-					financialInputRequest.getOtheNonCurruntAssetSy()));
-			financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(
-					financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(),
-					financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(),
-					financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(),
-					financialInputRequest.getLongTermLoansAndAdvaTy(),
-					financialInputRequest.getOtheNonCurruntAssetTy()));
+			financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
+    		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
+    		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));
 			financialInputRequest.setTotalCurruntAssetFy(CommonUtils.addNumbers(
 					financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(),
 					financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(),
