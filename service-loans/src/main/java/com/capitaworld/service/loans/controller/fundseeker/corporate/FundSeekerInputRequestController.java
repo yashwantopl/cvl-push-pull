@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
@@ -48,7 +49,12 @@ public class FundSeekerInputRequestController {
         	if(result){
         		
         		// initiate fraudanalytics service to invoke hunter api
-//        		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		if(!resp) {
+        			return new ResponseEntity<LoansResponse>(
+                            new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.BAD_REQUEST.value()),
+                            HttpStatus.OK);
+        		}
         		
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(

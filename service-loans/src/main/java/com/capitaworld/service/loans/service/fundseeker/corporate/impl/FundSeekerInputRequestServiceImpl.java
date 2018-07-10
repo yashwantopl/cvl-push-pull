@@ -19,6 +19,7 @@ import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -406,7 +407,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService#invokeFraudAnalytics(com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse)
 	 */
 	@Override
-	public void invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception {
+	public Boolean invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception {
 		
 		try {
 		HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
@@ -415,10 +416,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		request.setUserId(fundSeekerInputRequestResponse.getUserId());
 		request.setData(hunterRequestDataResponse);
 		
-		fraudAnalyticsClient.callHunterIIAPI(request);
+		AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
+		Boolean resp = false;
+		if(response!=null) {
+			resp = Boolean.valueOf(response.getData().toString());
+		}
+		return resp;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			throw new Exception();
 		}
 	}
 
