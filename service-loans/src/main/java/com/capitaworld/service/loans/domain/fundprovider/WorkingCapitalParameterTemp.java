@@ -12,9 +12,9 @@ import java.util.Date;
  * 
  */
 @Entity
-@Table(name="fp_working_capital_details")
+@Table(name="fp_working_capital_details_temp")
 @PrimaryKeyJoinColumn(name="fp_product_id",referencedColumnName="fp_product_id")
-public class WorkingCapitalParameter extends ProductMaster implements Serializable {
+public class WorkingCapitalParameterTemp extends ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	
@@ -301,9 +301,99 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
     @Column(name="is_Commercial_cibil_mandatory")
     private Boolean isCommercialCibilMandatory = false;
+    
+	@Column(name="is_approved")
+    private Boolean isApproved;
 
-    @Column(name ="job_id")
-	private Long jobId;
+    @Column(name="is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name="is_copied")
+    private Boolean isCopied;
+
+    @Column(name="is_edit")
+    private Boolean isEdit;
+
+    @Column(name="status_id")
+    private Integer statusId;
+
+    @Column(name="job_id")
+    private Long jobId;
+
+    @Column(name="approval_date")
+    private Date approvalDate;
+    
+    
+
+	/**
+	 * @return the isApproved
+	 */
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	/**
+	 * @param isApproved the isApproved to set
+	 */
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
+	/**
+	 * @return the isDeleted
+	 */
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	/**
+	 * @param isDeleted the isDeleted to set
+	 */
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	/**
+	 * @return the isCopied
+	 */
+	public Boolean getIsCopied() {
+		return isCopied;
+	}
+
+	/**
+	 * @param isCopied the isCopied to set
+	 */
+	public void setIsCopied(Boolean isCopied) {
+		this.isCopied = isCopied;
+	}
+
+	/**
+	 * @return the isEdit
+	 */
+	public Boolean getIsEdit() {
+		return isEdit;
+	}
+
+	/**
+	 * @param isEdit the isEdit to set
+	 */
+	public void setIsEdit(Boolean isEdit) {
+		this.isEdit = isEdit;
+	}
+
+	/**
+	 * @return the statusId
+	 */
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	/**
+	 * @param statusId the statusId to set
+	 */
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
+	}
 
 	/**
 	 * @return the jobId
@@ -318,6 +408,22 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
+
+	/**
+	 * @return the approvalDate
+	 */
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
+
+	/**
+	 * @param approvalDate the approvalDate to set
+	 */
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
+	}
+
+
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
@@ -674,7 +780,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 		isRiskModelScoreMandatory = riskModelScoreMandatory;
 	}
 
-	public WorkingCapitalParameter() {
+	public WorkingCapitalParameterTemp() {
 	}
 
 	public ProductMaster getFpProductId() {

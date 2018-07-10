@@ -306,7 +306,23 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_Commercial_cibil_mandatory")
 	private Boolean isCommercialCibilMandatory = false;
+	
+	@Column(name ="job_id")
+	private Long jobId;
 
+	/**
+	 * @return the jobId
+	 */
+	public Long getJobId() {
+		return jobId;
+	}
+
+	/**
+	 * @param jobId the jobId to set
+	 */
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
