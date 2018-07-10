@@ -101,6 +101,8 @@ public class LiabilitiesDetailsRequest implements Serializable{
 	
 	private Double otherNcl;
 	
+	private Double otherIncomeNeedTocCheckLia;
+	
 	
 	public LiabilitiesDetailsRequest() {
 		super();
@@ -144,6 +146,7 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.otherNclUnsecuredLoansFromPromoters = 0.0;
 		this.otherNcl  = 0.0;
 		this.termLiabilitiesUnsecured = 0.0;
+		this.otherIncomeNeedTocCheckLia=0.0;
 	}
 
 	public Double getOtherNcl() {
@@ -555,6 +558,23 @@ public class LiabilitiesDetailsRequest implements Serializable{
 		this.applicationId = applicationId;
 	}
 
+	/**
+	 * @return the otherIncomeNeedTocCheckLia
+	 */
+	public Double getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckLia the otherIncomeNeedTocCheckLia to set
+	 */
+	public void setOtherIncomeNeedTocCheckLia(Double otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "LiabilitiesDetailsRequest [id=" + id + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
@@ -579,10 +599,12 @@ public class LiabilitiesDetailsRequest implements Serializable{
 				+ ", minorityInterest=" + minorityInterest + ", otherNclUnsecuredLoansFromOther="
 				+ otherNclUnsecuredLoansFromOther + ", otherNclLongTermProvisions=" + otherNclLongTermProvisions
 				+ ", otherNclOthers=" + otherNclOthers + ", otherNclUnsecuredLoansFromPromoters="
-				+ otherNclUnsecuredLoansFromPromoters + ", otherNcl=" + otherNcl + ", termLiabilitiesUnsecured="
-				+ termLiabilitiesUnsecured + ", year=" + year + ", storageDetailsId=" + storageDetailsId
-				+ ", applicationId=" + applicationId + "]";
+				+ otherNclUnsecuredLoansFromPromoters + ", otherNcl=" + otherNcl + ", otherIncomeNeedTocCheckLia="
+				+ otherIncomeNeedTocCheckLia + ", termLiabilitiesUnsecured=" + termLiabilitiesUnsecured + ", year="
+				+ year + ", storageDetailsId=" + storageDetailsId + ", applicationId=" + applicationId + "]";
 	}
+
+
 
 	
 

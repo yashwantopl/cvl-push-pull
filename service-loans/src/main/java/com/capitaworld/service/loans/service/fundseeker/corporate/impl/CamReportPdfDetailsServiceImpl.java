@@ -21,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
@@ -42,6 +43,8 @@ import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
 import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
 import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -245,6 +248,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	McaClient mcaClient;
 	
+	@Autowired
+	FraudAnalyticsClient fraudAnalyticsClient;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -320,7 +326,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData()) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData(),null) : " ");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -461,8 +467,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else {
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
-					map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 				}
+				map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
 			}
 			map.put("projectedFinancials", projectedFin);
 		}catch (Exception e) {
@@ -498,7 +504,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse));
+			map.put("proposalScoreResponse",convertToDoubleForXml(proposalScoreResponse,null));
 			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
@@ -625,10 +631,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				for (CGTMSEResponseDetails cgtmseResponseDetails : cgtmseDataResponse.getCgtmseResponse().getDetails()) {
-					map.put("cgtmseBankWise", cgtmseResponseDetails);
-					map.put("bankName", printFields(cgtmseResponseDetails.getMemBankName()));
-				}
+				map.put("cgtmseBankWise", cgtmseDataResponse.getCgtmseResponse().getDetails());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -641,7 +644,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",eligibilityResp.getData());
+			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
+			map.put("assLimits",convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -654,6 +659,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		
+		//HUNTER API ANALYSIS
+		/*try {
+			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
+			map.put("hunterResponse", hunterResp.getData());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}*/
+		
 	
 		/**********************************************FINAL DETAILS*****************************************************/
 		
@@ -665,7 +679,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputManu));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputManu,null));
 					map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
 					map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
 					map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
@@ -679,13 +693,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputTrad));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputTrad,null));
 					map.put("fitchTitle","Trading");
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
-					map.put("fitchResponse",convertToDoubleForXml(fitchOutputServ));
+					map.put("fitchResponse",convertToDoubleForXml(fitchOutputServ,null));
 					map.put("fitchTitle","Service");
 				}
 			}
@@ -708,7 +722,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 			} catch (Exception e) {
 				e.printStackTrace();
-		}
+		    }
 			//PROMOTOR BACKGROUND DETAILS
 			try {
 				List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(applicationId, userId);
@@ -841,7 +855,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/************************************************** OPERATING STATEMENT ***************************************************/
 		OperatingStatementDetails osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
-			return null;
+			osDetails = new OperatingStatementDetails();
 		}
 		
 		osDetailsString.setDomesticSales(convertValue(osDetails.getDomesticSales()));
@@ -892,6 +906,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestDbl.setExceptionalIncome(osDetails.getNetofNonOpIncomeOrExpenses() * denomination);
 		financialInputRequestString.setExceptionalIncome(convertValue(financialInputRequestDbl.getExceptionalIncome()));
 		
+		osDetailsString.setOtherIncomeNeedTocCheckOp(convertValue(osDetails.getOtherIncomeNeedTocCheckOp()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckOp(osDetails.getOtherIncomeNeedTocCheckOp() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckOp(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckOp()));
+		
 		osDetailsString.setProvisionForTaxes(convertValue(osDetails.getProvisionForTaxes()));
 		osDetailsString.setProvisionForDeferredTax(convertValue(osDetails.getProvisionForDeferredTax()));
 		osDetailsString.setProvisionForTaxTotal(convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
@@ -903,7 +921,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		/************************************************ LIABILITIES DETAIL ***************************************************/
 		LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-			return null;
+			liabilitiesDetails = new LiabilitiesDetails();
 		}
 		liabilitiesDetailsString.setOrdinarySharesCapital(convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
 		liabilitiesDetailsString.setPreferencesShares(convertValue(liabilitiesDetails.getPreferencesShares()));
@@ -967,10 +985,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestDbl.setShortTermProvision(liabilitiesDetails.getProvisionalForTaxation() * denomination);
 		financialInputRequestString.setShortTermProvision(convertValue(financialInputRequestDbl.getShortTermProvision()));
 		
+		liabilitiesDetailsString.setOtherIncomeNeedTocCheckLia(convertValue(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckLia(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckLia(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
+		
 		/************************************************ ASSETS DETAIL ***************************************************/
 		AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
-			return null;
+			assetsDetails = new AssetsDetails();
 		}
 		
 		financialInputRequestDbl.setGrossBlock(assetsDetails.getGrossBlock() * denomination);
@@ -1036,6 +1058,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			financialInputRequestDbl.setContingentLiablities(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denomination));
 			financialInputRequestString.setContingentLiablities(convertValue(financialInputRequestDbl.getContingentLiablities()));
 		}
+		
+		assetDetailsString.setOtherIncomeNeedTocCheckAsset(convertValue(assetsDetails.getOtherIncomeNeedTocCheckAsset()));
+		financialInputRequestDbl.setOtherIncomeNeedTocCheckAsset(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denomination);
+		financialInputRequestString.setOtherIncomeNeedTocCheckAsset(convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
+		
 		/************************************************** OTHER CALCULATIONS *******************************************************/ 
 		//Profit & Loss Statement
         financialInputRequestDbl.setNetSale(CommonUtils.substractNumbers(financialInputRequestDbl.getGrossSales(), financialInputRequestDbl.getLessExciseDuity()));
@@ -1052,7 +1079,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setProfitBeforeTaxation(convertValue(financialInputRequestDbl.getProfitBeforeTaxation()));
 		financialInputRequestDbl.setProfitBeforeTax(CommonUtils.addNumbers(financialInputRequestDbl.getProfitBeforeTaxation(), financialInputRequestDbl.getExceptionalIncome()));
 		financialInputRequestString.setProfitBeforeTax(convertValue(financialInputRequestDbl.getProfitBeforeTax()));
-		financialInputRequestDbl.setProfitAfterTax(CommonUtils.substractNumbers(financialInputRequestDbl.getProfitBeforeTax(), financialInputRequestDbl.getProvisionForTax()));
+		financialInputRequestDbl.setProfitAfterTax(CommonUtils.substractNumbers(financialInputRequestDbl.getProfitBeforeTax(), financialInputRequestDbl.getProvisionForTax()) + financialInputRequestDbl.getOtherIncomeNeedTocCheckOp());
 		financialInputRequestString.setProfitAfterTax(convertValue(financialInputRequestDbl.getProfitAfterTax()));
 		if(financialInputRequestDbl.getDividendPayOut() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getDividendPayOut()) || financialInputRequestDbl.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareFaceValue()) || financialInputRequestDbl.getShareCapital() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareCapital()))
 			financialInputRequestString.setEquityDividend("0.0");
@@ -1074,7 +1101,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalNonCurruntLiablities(convertValue(financialInputRequestDbl.getTotalNonCurruntLiablities()));
 		financialInputRequestDbl.setTotalCurruntLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getTradePayables(), financialInputRequestDbl.getOtherCurruntLiablities(), financialInputRequestDbl.getShortTermProvision()));
 		financialInputRequestString.setTotalCurruntLiablities(convertValue(financialInputRequestDbl.getTotalCurruntLiablities()));
-		financialInputRequestDbl.setTotalLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getShareHolderFunds(), financialInputRequestDbl.getTotalNonCurruntLiablities(), financialInputRequestDbl.getTotalCurruntLiablities()));
+		financialInputRequestDbl.setTotalLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getShareHolderFunds(), financialInputRequestDbl.getTotalNonCurruntLiablities(), financialInputRequestDbl.getTotalCurruntLiablities(), financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 		financialInputRequestString.setTotalLiablities(convertValue(financialInputRequestDbl.getTotalLiablities()));
 
 		//Balance Sheet -ASSETS
@@ -1084,7 +1111,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setTotalNonCurruntAsset(convertValue(financialInputRequestDbl.getTotalNonCurruntAsset()));
 		financialInputRequestDbl.setTotalCurruntAsset(CommonUtils.addNumbers(financialInputRequestDbl.getInventories(), financialInputRequestDbl.getSundryDebtors(), financialInputRequestDbl.getCashAndBank(), financialInputRequestDbl.getOtherCurruntAsset(), financialInputRequestDbl.getShortTermLoansAdvances()));
 		financialInputRequestString.setTotalCurruntAsset(convertValue(financialInputRequestDbl.getTotalCurruntAsset()));
-		financialInputRequestDbl.setTotalAsset(CommonUtils.addNumbers(financialInputRequestDbl.getNetBlock(), financialInputRequestDbl.getTotalCurruntAsset(), financialInputRequestDbl.getTotalNonCurruntAsset()));
+		financialInputRequestDbl.setTotalAsset(CommonUtils.addNumbers(financialInputRequestDbl.getNetBlock(), financialInputRequestDbl.getTotalCurruntAsset(), financialInputRequestDbl.getTotalNonCurruntAsset(), financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
 		financialInputRequestString.setTotalAsset(convertValue(financialInputRequestDbl.getTotalAsset()));
 		if(financialInputRequestDbl.getShareFaceValue() !=0 && financialInputRequestDbl.getShareCapital() !=0) {
 			double total = financialInputRequestDbl.getShareCapital()/financialInputRequestDbl.getShareFaceValue();
@@ -1234,20 +1261,32 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	public Double checkDoubleNUll(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
 	}
-	public static Object convertToDoubleForXml (Object obj) throws Exception {
+	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
 		 for(Field field : fields) {
 			 field.setAccessible(true);
              Object value = field.get(obj);
+             if(data != null) {
+            	 data.put(field.getName(), value);
+             }
              if(!CommonUtils.isObjectNullOrEmpty(value)) {
             	 if(value instanceof Double){
                 	 if(!Double.isNaN((Double)value)) {
                 		 DecimalFormat decim = new DecimalFormat("0.00");
                     	 value = Double.parseDouble(decim.format(value));
-                    	 field.set(obj,value);        
+                    	 if(data != null) {
+                    		 logger.info("eligibility data================>"+field.getName());
+                    		 value = decim.format(value);
+                    		 data.put(field.getName(), value);
+                    	 }else {
+                    		 field.set(obj,value);                    		 
+                    	 }
                 	 }
                  }
              }
+		 }
+		 if(data != null) {
+			 return data;
 		 }
 		return obj;
 	}
@@ -1289,8 +1328,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			} 
-			else {
+			}else {
 				continue;
 			}
 		}

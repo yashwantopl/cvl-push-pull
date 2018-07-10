@@ -13,10 +13,12 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.score.ScoreParameterNTBRequest;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -268,7 +270,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
                             {
                                 customer_ass_concern_year = (Double)cibilResponse.getData();
-
+                                
                                 scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
                                 scoringParameterRequest.setCustomerAsscociateConcern_p(true);
 
@@ -1276,5 +1278,42 @@ public class ScoringServiceImpl implements ScoringService{
             e.printStackTrace();
             return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
         }
+    }
+    
+    public ScoringModelReqRes calculateScoreForNTB(ScoringRequestLoans scoringRequestLoans) throws Exception {
+    			
+    	List<DirectorBackgroundDetail> directorBackgroundDetailsList =  directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(scoringRequestLoans.getApplicationId());
+     
+    	ScoreParameterNTBRequest scoreParameterNTBRequest  =null;
+    	for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
+    		//director
+    		scoreParameterNTBRequest =new  ScoreParameterNTBRequest();
+    		scoreParameterNTBRequest.setTotalworkingExperience(directorBackgroundDetail.getTotalExperience());
+
+    		//scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(directorBackgroundDetail.getFamilyMemberInBusiness());
+    		scoreParameterNTBRequest.setMaritialStatus(directorBackgroundDetail.getMaritalStatus());
+    		scoreParameterNTBRequest.setNetworth(directorBackgroundDetail.getNetworth());
+    		
+    		//cibil
+    		Double cibil_score_avg_promotor=null;
+            CibilRequest cibilRequest=new CibilRequest();
+            cibilRequest.setApplicationId(scoringRequestLoans.getApplicationId());
+            
+            CibilResponse cibilResponse =cibilClient.getCibilScore(cibilRequest);
+            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+            {
+            	cibil_score_avg_promotor = (Double)cibilResponse.getData();
+            	scoreParameterNTBRequest.setCibilTransunionScore(cibil_score_avg_promotor);
+            	scoreParameterNTBRequest.setIsCibilTransunionScore(true);;
+            }else{
+            	scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+            }
+            
+            //corporate
+            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(scoringRequestLoans.getApplicationId());
+            scoreParameterNTBRequest.setLoanAmount(loanAmount);
+    	}
+    	
+    	return null;
     }
 }

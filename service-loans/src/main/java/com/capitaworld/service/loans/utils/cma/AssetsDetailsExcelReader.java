@@ -75,6 +75,7 @@ public class AssetsDetailsExcelReader
         assetsMappingList.add("85");
         assetsMappingList.add("86");
         assetsMappingList.add("87");
+        assetsMappingList.add("88");
         assetsMappingList.add("89");
         assetsMappingList.add("91");
         assetsMappingList.add("93");
@@ -190,6 +191,7 @@ public class AssetsDetailsExcelReader
             cmaAssets.setPrelimExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setBadOrDoubtfulExpenses(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setAnyOther(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaAssets.setOtherIncomeNeedTocCheckAsset(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setTotalAssets(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setTangibleNetWorth(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setNetWorkingCapital(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

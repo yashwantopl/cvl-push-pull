@@ -177,9 +177,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 corporateApplicantDetail.setCreatedDate(new Date());
                 corporateApplicantDetail.setIsActive(true);
             } else {
+            	logger.info("constitution id  ------------------------------------------>" + corporateApplicantDetail.getConstitutionId());
             	CorporateApplicantDetail copyObj = corporateApplicantDetail;
                 BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
-                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","constitutionId");
                 logger.info("Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding() + "---------------in DB------------->" + copyObj.getConstitutionId());
                 corporateApplicantDetail.setKeyVericalFunding(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVericalFunding()) ? fundSeekerInputRequest.getKeyVericalFunding() : copyObj.getKeyVericalFunding());
                 corporateApplicantDetail.setKeyVerticalSector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSector()) ? fundSeekerInputRequest.getKeyVerticalSector() : copyObj.getKeyVerticalSector());
@@ -202,8 +203,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 for(DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
                     DirectorBackgroundDetail saveDirObj = null;
                     if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>"+saveDirObj.getId());
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
                         saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setModifiedDate(new Date());

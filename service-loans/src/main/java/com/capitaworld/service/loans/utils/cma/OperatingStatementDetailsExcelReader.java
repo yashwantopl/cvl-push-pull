@@ -65,6 +65,7 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementMappingList.add("71");
             operatingStatementMappingList.add("73");
             operatingStatementMappingList.add("75");
+            operatingStatementMappingList.add("76");
             operatingStatementMappingList.add("77");
             operatingStatementMappingList.add("78");
             operatingStatementMappingList.add("80");
@@ -167,6 +168,7 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setExpensesAmortised(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setProfitBeforeTaxOrLoss(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setProvisionForTaxes(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            operatingStatementDetails.setOtherIncomeNeedTocCheckOp(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setProvisionForDeferredTax(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setNetProfitOrLoss(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setEquityDeividendPaidAmt(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

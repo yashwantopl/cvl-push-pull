@@ -1,7 +1,5 @@
 package com.capitaworld.service.loans.model.score;
 
-import java.util.Map;
-
 public class ScoringRequestLoans {
 
     /*private Long scoringModelId;*/
@@ -14,7 +12,12 @@ public class ScoringRequestLoans {
 
     private Long scoringModelId;
 	private Long applicationId;
+	
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
+	
+	private ScoreParameterNTBRequest scoreParameterNTBRequest;
+	
+	
 	public Long getFsDigit() {
 		return fsDigit;
 	}
@@ -48,12 +51,18 @@ public class ScoringRequestLoans {
 		this.scoreParameterRequestLoans = scoreParameterRequestLoans;
 	}
 
+	
+	public ScoreParameterNTBRequest getScoreParameterNTBRequest() {
+		return scoreParameterNTBRequest;
+	}
+	public void setScoreParameterNTBRequest(ScoreParameterNTBRequest scoreParameterNTBRequest) {
+		this.scoreParameterNTBRequest = scoreParameterNTBRequest;
+	}
 	@Override
 	public String toString() {
 		return "ScoringRequestLoans [fsDigit=" + fsDigit + ", fpProductId=" + fpProductId + ", scoringModelId="
 				+ scoringModelId + ", applicationId=" + applicationId + ", scoreParameterRequestLoans="
-				+ scoreParameterRequestLoans + "]";
+				+ scoreParameterRequestLoans + ", scoreParameterNTBRequest=" + scoreParameterNTBRequest + "]";
 	}
-
 	
 }

@@ -1,6 +1,10 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -563,23 +567,29 @@ public class CorporateUploadController {
 	
 	
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
-	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) {
+	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) throws IOException {
 		logger.info("In getCmaFile");
 		
 		try {
-
-				Object wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
-				LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), wb);
-
-				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
-
+			
+			ByteArrayOutputStream bos = null;
+			ObjectOutputStream oos = null;
+			byte[] cmaFile = null;
+			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
+			logger.info("WorkBook Object====>"+wb);
+			    bos = new ByteArrayOutputStream();
+			    wb.write(bos);
+			    cmaFile = bos.toByteArray();
+			    logger.info("WorkBook Object as bytes====>"+cmaFile);
+			LoansResponse response = new LoansResponse("CMA Successfully generated", HttpStatus.OK.value(), cmaFile);
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (NullPointerException e) {
-			logger.info("thrown exception from getCmaFile");
 			e.printStackTrace();
+			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
 
-        }
-		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(),null);
+		}
+		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
