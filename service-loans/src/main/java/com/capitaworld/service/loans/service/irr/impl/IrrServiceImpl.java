@@ -939,11 +939,15 @@ public class IrrServiceImpl implements IrrService{
 
 		log.info("App Id::"+aplicationId);
 		log.info("currentYear-1::"+(currentYear-1));
+		if(operatingStatementDetails!=null) {
 		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
-
+		}else {
+			log.info("operatingStatementDetails is:: NULL");
+		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 			operatingStatementDetails = new OperatingStatementDetails();
+			operatingStatementDetails.setDepreciation(0.0);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
 			operatingStatementDetails.setDomesticSales(0.0);
