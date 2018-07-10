@@ -720,6 +720,8 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>17");
 				cmaDetailResponse.setAdvanceToSupplierRawMaterials((Double)asset.get(0)[3]);
 				logger.info("==================================>18");
+				cmaDetailResponse.setGrossBlock((Double)asset.get(0)[4]);
+				logger.info("==================================>19");
 				logger.info("Successfully get from asset ");
 			}
 			

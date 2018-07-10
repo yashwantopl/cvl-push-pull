@@ -237,6 +237,10 @@ public class AssetsDetails implements Serializable {
 
 	@Column(name = "gross_block_4")
 	private Double GrossBlock4;
+	
+	@Column(name = "other_income_need_to_chek_asset")
+	private Double otherIncomeNeedTocCheckAsset;
+	
 
 //	@Column(name = "gross_block_5")
 //	private Double GrossBlock5;
@@ -311,6 +315,7 @@ public class AssetsDetails implements Serializable {
 		this.GrossBlock2 = 0.0;
 		this.GrossBlock3 = 0.0;
 		this.GrossBlock4 = 0.0;
+		this.otherIncomeNeedTocCheckAsset=0.0;
 	}
 
 	public Long getStorageDetailsId() {
@@ -902,6 +907,20 @@ public class AssetsDetails implements Serializable {
 
 	public void setOtherNcaOtherCapitalWorkInprogress(Double otherNcaOtherCapitalWorkInprogress) {
 		this.otherNcaOtherCapitalWorkInprogress = otherNcaOtherCapitalWorkInprogress;
+	}
+
+	/**
+	 * @return the otherIncomeNeedTocCheckAsset
+	 */
+	public Double getOtherIncomeNeedTocCheckAsset() {
+		return otherIncomeNeedTocCheckAsset;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckAsset the otherIncomeNeedTocCheckAsset to set
+	 */
+	public void setOtherIncomeNeedTocCheckAsset(Double otherIncomeNeedTocCheckAsset) {
+		this.otherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
 	}
 
 	

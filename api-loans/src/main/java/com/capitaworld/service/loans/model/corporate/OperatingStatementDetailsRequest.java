@@ -123,6 +123,8 @@ public class OperatingStatementDetailsRequest implements Serializable {
 	
 	private Double SellingAndDistributionExpenses;
 	
+	private Double otherIncomeNeedTocCheckOp;
+	
 	private Long applicationId;
 
 	public OperatingStatementDetailsRequest() {
@@ -175,6 +177,7 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.totalGrossSales = 0.0;
 		this.generalAdminExp=0.0;
 		this.SellingAndDistributionExpenses = 0.0;
+		this.otherIncomeNeedTocCheckOp=0.0;
 	}
 
 	public Double getSellingAndDistributionExpenses() {
@@ -648,6 +651,23 @@ public class OperatingStatementDetailsRequest implements Serializable {
 		this.applicationId = applicationId;
 	}
 
+	/**
+	 * @return the otherIncomeNeedTocCheckOp
+	 */
+	public Double getOtherIncomeNeedTocCheckOp() {
+		return otherIncomeNeedTocCheckOp;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckOp the otherIncomeNeedTocCheckOp to set
+	 */
+	public void setOtherIncomeNeedTocCheckOp(Double otherIncomeNeedTocCheckOp) {
+		this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "OperatingStatementDetailsRequest [id=" + id + ", addOperatingStock=" + addOperatingStock
@@ -678,8 +698,10 @@ public class OperatingStatementDetailsRequest implements Serializable {
 				+ ", subTotalOfIncome=" + subTotalOfIncome + ", totalCostSales=" + totalCostSales + ", totalGrossSales="
 				+ totalGrossSales + ", year=" + year + ", storageDetailsId=" + storageDetailsId + ", generalAdminExp="
 				+ generalAdminExp + ", SellingAndDistributionExpenses=" + SellingAndDistributionExpenses
-				+ ", applicationId=" + applicationId + "]";
+				+ ", otherIncomeNeedTocCheckOp=" + otherIncomeNeedTocCheckOp + ", applicationId=" + applicationId + "]";
 	}
+
+	
 	
 	
 

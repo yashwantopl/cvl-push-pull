@@ -165,6 +165,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
             //==== Applicant Address
+        	
+        	logger.info("Enter in save directors details ---------------------------------------->" + fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
@@ -176,12 +178,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 corporateApplicantDetail.setCreatedDate(new Date());
                 corporateApplicantDetail.setIsActive(true);
             } else {
+            	logger.info("constitution id  ------------------------------------------>" + corporateApplicantDetail.getConstitutionId());
+            	CorporateApplicantDetail copyObj = corporateApplicantDetail;
                 BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
-                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","constitutionId");
+                logger.info("Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding() + "---------------in DB------------->" + copyObj.getConstitutionId());
+                corporateApplicantDetail.setKeyVericalFunding(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVericalFunding()) ? fundSeekerInputRequest.getKeyVericalFunding() : copyObj.getKeyVericalFunding());
+                corporateApplicantDetail.setKeyVerticalSector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSector()) ? fundSeekerInputRequest.getKeyVerticalSector() : copyObj.getKeyVerticalSector());
+                corporateApplicantDetail.setKeyVerticalSubsector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSubsector()) ? fundSeekerInputRequest.getKeyVerticalSubsector() : copyObj.getKeyVerticalSubsector());
+                corporateApplicantDetail.setOrganisationName(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getOrganisationName()) ? fundSeekerInputRequest.getOrganisationName() : copyObj.getOrganisationName());
+                corporateApplicantDetail.setAadhar(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAadhar()) ? fundSeekerInputRequest.getAadhar() : copyObj.getAadhar());
+                corporateApplicantDetail.setMsmeRegistrationNumber(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getMsmeRegistrationNumber()) ? fundSeekerInputRequest.getMsmeRegistrationNumber() : copyObj.getMsmeRegistrationNumber());
+                corporateApplicantDetail.setConstitutionId(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getConstitutionId()) ? fundSeekerInputRequest.getConstitutionId() : copyObj.getConstitutionId());
+                
                 corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setModifiedDate(new Date());
             }
             copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+            logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
             //==== Director details
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
@@ -191,20 +205,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                     DirectorBackgroundDetail saveDirObj = null;
                     if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
-                        saveDirObj = new DirectorBackgroundDetail();
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setCreatedDate(new Date());
-                        saveDirObj.setIsActive(true);
-                    } else {
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
                         saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setModifiedDate(new Date());
                     }
+                    else
+                    {
+                        logger.info("New Object Created for Director");
+                        saveDirObj = new DirectorBackgroundDetail();
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setCreatedDate(new Date());
+                        saveDirObj.setIsActive(true);
+                    }
+
                     directorBackgroundDetailsRepository.save(saveDirObj);
                 }
             }catch (Exception e){

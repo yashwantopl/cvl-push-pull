@@ -150,6 +150,8 @@ public class AssetsDetailsRequest implements Serializable {
 	private Double GrossBlock3;
 
 	private Double GrossBlock4;
+	
+	private Double OtherIncomeNeedTocCheckAsset;
 
 	private Long applicationId;
 	
@@ -218,6 +220,7 @@ public class AssetsDetailsRequest implements Serializable {
 		this.GrossBlock2 = 0.0;
 		this.GrossBlock3 = 0.0;
 		this.GrossBlock4 = 0.0;
+		this.OtherIncomeNeedTocCheckAsset=0.0;
 	}
 
 	public Long getStorageDetailsId() {
@@ -811,6 +814,24 @@ public class AssetsDetailsRequest implements Serializable {
 		this.otherNcaOtherCapitalWorkInprogress = otherNcaOtherCapitalWorkInprogress;
 	}
 
+	
+	/**
+	 * @return the otherIncomeNeedTocCheckAsset
+	 */
+	public Double getOtherIncomeNeedTocCheckAsset() {
+		return OtherIncomeNeedTocCheckAsset;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckAsset the otherIncomeNeedTocCheckAsset to set
+	 */
+	public void setOtherIncomeNeedTocCheckAsset(Double otherIncomeNeedTocCheckAsset) {
+		OtherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "AssetsDetailsRequest [id=" + id + ", advancePaymentTaxes=" + advancePaymentTaxes
@@ -848,9 +869,11 @@ public class AssetsDetailsRequest implements Serializable {
 				+ totalOtherNcaPrelimnaryExpenses + ", totalOtherNcaBadExpenses=" + totalOtherNcaBadExpenses
 				+ ", totalOtherNcaOther=" + totalOtherNcaOther + ", otherNcaOtherCapitalWorkInprogress="
 				+ otherNcaOtherCapitalWorkInprogress + ", GrossBlock1=" + GrossBlock1 + ", GrossBlock2=" + GrossBlock2
-				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", applicationId="
-				+ applicationId + "]";
+				+ ", GrossBlock3=" + GrossBlock3 + ", GrossBlock4=" + GrossBlock4 + ", OtherIncomeNeedTocCheckAsset="
+				+ OtherIncomeNeedTocCheckAsset + ", applicationId=" + applicationId + "]";
 	}
+
+	
 
 	
 

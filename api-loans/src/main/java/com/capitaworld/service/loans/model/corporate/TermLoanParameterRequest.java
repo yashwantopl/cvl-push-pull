@@ -196,6 +196,9 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	private Boolean isCommercialCibilMandatory = false;
 
+	//-----------------------added eligibility method for product
+	private Integer assessmentMethodId;
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -970,8 +973,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isUnInterestedIndustryMandatory = isUnInterestedIndustryMandatory;
 	}
 
-	
-		
-	
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
 
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
 }

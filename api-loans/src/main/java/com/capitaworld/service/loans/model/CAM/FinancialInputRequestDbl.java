@@ -106,6 +106,9 @@ public class FinancialInputRequestDbl implements Serializable{
 	private Double unsecuredLoansOthers;
 	private Double unsecuredLoansPromoters;
 	private String ratioAnalysisFullDate;
+	private Double otherIncomeNeedTocCheckAsset;
+	private Double otherIncomeNeedTocCheckOp;
+	private Double otherIncomeNeedTocCheckLia;
 	private Integer status;
 	private String message;
 	private Object data;
@@ -205,6 +208,9 @@ public class FinancialInputRequestDbl implements Serializable{
         this.tradePayables = 0.0;
         this.unsecuredLoansOthers = 0.0;
         this.unsecuredLoansPromoters = 0.0;
+        this.otherIncomeNeedTocCheckAsset =0.0;
+        this.otherIncomeNeedTocCheckLia =0.0;
+        this.otherIncomeNeedTocCheckOp = 0.0;
 	}
 	
 	public Long getId() {
@@ -807,6 +813,32 @@ public class FinancialInputRequestDbl implements Serializable{
 	public void setData(Object data) {
 		this.data = data;
 	}
+
+	public Double getOtherIncomeNeedTocCheckAsset() {
+		return otherIncomeNeedTocCheckAsset;
+	}
+
+	public void setOtherIncomeNeedTocCheckAsset(Double otherIncomeNeedTocCheckAsset) {
+		this.otherIncomeNeedTocCheckAsset = otherIncomeNeedTocCheckAsset;
+	}
+
+	public Double getOtherIncomeNeedTocCheckOp() {
+		return otherIncomeNeedTocCheckOp;
+	}
+
+	public void setOtherIncomeNeedTocCheckOp(Double otherIncomeNeedTocCheckOp) {
+		this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
+	}
+
+	public Double getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+
+	public void setOtherIncomeNeedTocCheckLia(Double otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
+	}
+
+	
 	
 	
 }

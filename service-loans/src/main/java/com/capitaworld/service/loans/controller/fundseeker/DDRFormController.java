@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 import java.util.HashMap;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,6 @@ import com.capitaworld.api.reports.ReportRequest;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
-import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
@@ -33,12 +33,13 @@ import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.token.TokenService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.sidbi.integration.model.ProfileReqRes;
+import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
 
 @RestController
@@ -60,7 +61,7 @@ public class DDRFormController {
 	private DMSClient dmsClient;
 
 	@Autowired 
-	private AuditComponent auditComponent;
+	private TokenService tokenService ;
 	
 	@Autowired
 	private AuditComponentBankToCW auditComponentBankToCW;
@@ -335,15 +336,31 @@ public class DDRFormController {
 	}
 	
 	@RequestMapping(value = "/saveDDRInfo", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<LoansResponse> saveDDRInfo(@RequestBody String encryptedString ){
+	public ResponseEntity<LoansResponse> saveDDRInfo(@RequestBody String encryptedString ,HttpServletRequest httpServletRequest ){
 		LoansResponse loansResponse=null;
 		String reason=null;
 		DDRFormDetailsRequest  ddrFormDetailsRequest= null;
 		Boolean isSuccess= null;
 		Long orgId=null;
 		String decrypt = null;
+		GenerateTokenRequest generateTokenRequest =null;
+		String tokenString =null; 
 		try {
-			logger.info("Entry saveDDRInfo(){} -------------------------> encryptedString =====> " + encryptedString);
+			logger.info("=============================Entry saveDDRInfo(){} ============================= ");
+			tokenString =httpServletRequest.getHeader("token");
+			if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
+				reason = "Token is null";
+				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
+			}else {
+				if(CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+					reason = "Token is Expired ";
+					loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
+				}
+			}
+			
+			logger.info("------------------- Entry saveDDRInfo(){} -------------------");
 			if(encryptedString != null) {
 				
 				try {
@@ -357,9 +374,9 @@ public class DDRFormController {
 					loansResponse.setData(false);
 					if(CommonUtils.isObjectNullOrEmpty(decrypt)) {
 						reason="ERROR WHILE DECRYPT ENCRYPTED OBJECT   ====> Msg ===> ";
-						}else {
-							reason="error while converting decrypt string to DDRFormDetailsRequest  ====> Msg ===> " ;
-						}
+					}else {
+						reason="error while converting decrypt string to DDRFormDetailsRequest  ====> Msg ===> " ;
+					}
 					reason+=e.getMessage();
 					return  new ResponseEntity<LoansResponse>(loansResponse,  HttpStatus.OK);
 				}
@@ -411,8 +428,10 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}finally {
 			reason+=" \n while saveDDRInfo()";
+			generateTokenRequest= new GenerateTokenRequest();
+			generateTokenRequest.setToken(tokenString);
+			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId);
-			//auditComponent.updateAudit(CommonUtility.ApiType.DDR_API, ddrFormDetailsRequest.getApplicationId() , ddrFormDetailsRequest.getUserId(), reason , isSuccess);
 		}
 	}
 	

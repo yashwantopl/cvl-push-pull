@@ -25,8 +25,10 @@ import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.GenerateTokenRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -208,8 +210,12 @@ public class LoansClient {
     
     //For Gateway
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
+    private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status";
     
     
+    
+    private static final String GET_TOKEN ="/loan_application/getToken";
+    private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -1938,7 +1944,6 @@ public class LoansClient {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public MobileApiResponse getOneFormForMobile(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws ExcelException {
 		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE);
 		System.out.println("url for Getting Oneform details From Client=================>" + url);
@@ -2101,6 +2106,60 @@ public class LoansClient {
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updatePaymentInfoForGateway(PaymentRequest paymentRequest) throws LoansException {
+		String url = loansBaseUrl.concat(UPDATE_PAYMENT_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public String getToken(GenerateTokenRequest generateTokenRequest) throws LoansException {
+
+		String url = loansBaseUrl.concat(GET_TOKEN);
+		System.out.println("Sidbi Integration get token URL===>" + url);
+		try {
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			
+			HttpEntity<?> entity = new HttpEntity<>(generateTokenRequest, headers);
+			
+			return restTemplate.exchange(url, HttpMethod.POST, entity , String.class)
+					.getBody();
+		} catch (Exception e) {
+			System.out.println("Exception while getting token in  Loan Client!!");
+			
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	public String setTokenAsExpired(GenerateTokenRequest generateTokenRequest) throws LoansException {
+
+		String url = loansBaseUrl.concat(SET_TOKEN_AS_EXPIRED);
+		System.out.println("Sidbi Integration set token as expire URL===>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+		
+			HttpEntity<?> entity = new HttpEntity<>(generateTokenRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity , String.class)
+					.getBody();
+		} catch (Exception e) {
+			System.out.println("Exception while setting  token as expired Loan Client!!");
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
 		}
