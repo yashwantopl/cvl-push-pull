@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -139,6 +140,7 @@ import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
@@ -1237,9 +1239,17 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		scoringRequest.setFpProductId(fpProductMappingId);
 		try {
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 			corporateFinalViewResponse.setDataList(scoringResponse.getDataList());
+			corporateFinalViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
+			corporateFinalViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
+			corporateFinalViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
+			corporateFinalViewResponse.setManagementRiskScoreWeight(proposalScoreResponse.getManagementRiskWeight());
+			corporateFinalViewResponse.setFinancialRiskScoreWeight(proposalScoreResponse.getFinancialRiskWeight());
+			corporateFinalViewResponse.setBuisnessRiskScoreWeight(proposalScoreResponse.getBusinessRiskWeight());
+			corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
 
-		} catch (ScoringException e1) {
+		} catch (ScoringException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			logger.info("Error while getting Scoring data");
